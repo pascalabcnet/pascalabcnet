@@ -1937,6 +1937,12 @@ namespace PascalABCCompiler
                         cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x64;
                     else if (plt.Equals("anycpu"))
                         cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.AnyCPU;
+                    else if (plt.Equals("dotnet5win"))
+                        cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5win;
+                    else if (plt.Equals("dotnet5linux"))
+                        cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5linux;
+                    else if (plt.Equals("dotnet5macos"))
+                        cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5macos;
                 }
                 if (this.compilerOptions.Only32Bit)
                     cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
@@ -2612,7 +2618,6 @@ namespace PascalABCCompiler
             {
                 if (FileName.IndexOf(Path.DirectorySeparatorChar) != -1)
                 {
-
                     File.Copy(Path.Combine(Environment.CurrentDirectory, FileName), Path.Combine(Environment.CurrentDirectory, Path.GetFileName(FileName)), true);
                     if (CompilerOptions.useOutputDirectory)
                         File.Copy(Path.Combine(Environment.CurrentDirectory, FileName), Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FileName)), true);
@@ -2955,6 +2960,11 @@ namespace PascalABCCompiler
                 directives = (Unit.SemanticTree as TreeRealization.common_unit_node).compiler_directives;
             else
                 directives = ConvertDirectives(Unit.SyntaxTree);
+            foreach (TreeRealization.compiler_directive cd in directives)
+            {
+                if (cd.name.ToLower() == TreeConverter.compiler_string_consts.compiler_directive_platformtarget && !string.IsNullOrEmpty(cd.directive) && cd.directive.IndexOf("dotnet5") != -1)
+                    CompilerOptions.UseDllForSystemUnits = false;
+            }
             if (CompilerOptions.UseDllForSystemUnits)
             {
                 directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PABCRtl.dll", null));
@@ -2976,6 +2986,7 @@ namespace PascalABCCompiler
                         directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.dll", null));
                     }
                 }
+                
             }
             foreach (TreeRealization.compiler_directive cd in directives)
             {

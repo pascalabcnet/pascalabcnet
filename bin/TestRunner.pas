@@ -206,6 +206,11 @@ end;
 
 procedure RunAllTests(redirectIO: boolean);
 begin
+  var dlls := Directory.GetFiles(TestSuiteDir, '*.dll');
+  foreach var dll in dlls do
+  begin
+    System.IO.File.Copy(dll, TestSuiteDir + PathSeparator + 'exe' + PathSeparator + Path.GetFileName(dll), true);
+  end;
   var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'exe', '*.exe');
   for var i := 0 to files.Length - 1 do
   begin

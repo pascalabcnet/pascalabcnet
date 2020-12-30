@@ -2602,7 +2602,25 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }*/
                     }
-
+                }
+                List<function_node> to_remove = new List<function_node>();
+                foreach (function_node fn in funcs)
+                {
+                    if (fn.is_generic_function_instance)
+                    foreach (parameter p in fn.original_function.parameters)
+                    {
+                        if (p.type.is_generic_parameter)
+                        {
+                            to_remove.Add(fn);
+                            break;
+                        }
+                    }
+                }
+                if (set_of_possible_functions.Count - to_remove.Count == 1)
+                {
+                    foreach (function_node fn in to_remove)
+                        set_of_possible_functions.Remove(fn);
+                    return set_of_possible_functions[0];
                 }
             }
 

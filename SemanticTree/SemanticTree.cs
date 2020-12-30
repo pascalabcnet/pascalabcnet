@@ -2241,7 +2241,20 @@ namespace PascalABCCompiler.SemanticTree
         }
     }
 
-    public interface ILabelNode : IDefinitionNode, ILocated
+	public interface IDoubleQuestionColonExpressionNode : IExpressionNode
+	{
+		IExpressionNode condition
+		{
+			get;
+		}
+
+		IExpressionNode ret_if_null
+		{
+			get;
+		}
+	}
+
+	public interface ILabelNode : IDefinitionNode, ILocated
     {
         //Имя метки. Для языков не чувствительных к регистрам хранит имя в том виде, в каком тип объявлен.
         string name

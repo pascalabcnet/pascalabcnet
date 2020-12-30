@@ -1307,13 +1307,28 @@ namespace PascalABCCompiler.TreeConverter
 			return cfn;
 		}
 
-		public common_type_node advanced_create_type(string name,location def_loc, bool type_is_interface, bool is_partial=false)
+		public common_type_node advanced_create_type(string name,location def_loc, bool type_is_interface, bool is_partial=false, SyntaxTree.class_attribute attr = SyntaxTree.class_attribute.None)
         {
 			//check_name_free(name,def_loc);
             common_type_node partial_class = null;
             common_type_node rez = check_type_name_free_and_predop(name, def_loc, ref partial_class, is_partial);
             if (rez != null)
             {
+                if (is_partial)
+                {
+                    if ((attr & SyntaxTree.class_attribute.Static) == SyntaxTree.class_attribute.Static && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Static) != SyntaxTree.class_attribute.Static && rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract && !rez.IsAbstract)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Abstract) != SyntaxTree.class_attribute.Abstract && rez.IsAbstract && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed && !rez.IsSealed)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Sealed) != SyntaxTree.class_attribute.Sealed && rez.IsSealed && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                }
                 _ctn = rez;
                 if (def_loc != null)
                     _ctn.loc = def_loc;
@@ -2040,26 +2055,28 @@ namespace PascalABCCompiler.TreeConverter
                     location lid = ((local_block_variable)vdn).loc;
                     local_block_variable_reference lbvr = new local_block_variable_reference((local_block_variable)vdn, lid);
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
-                	{
-                		userInitalValue = syntax_tree_visitor.get_init_call_for_set_as_constr(vdn,userInitalValue);
-                	//userInitalValue.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
-                	}
+                    {
+                        userInitalValue = syntax_tree_visitor.get_init_call_for_set_as_constr(vdn, userInitalValue);
+                        //userInitalValue.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
+                    }
                     else if (vdn.type.type_special_kind == SemanticTree.type_special_kind.short_string)
                     {
                         userInitalValue = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, null, convertion_data_and_alghoritms.convert_type(userInitalValue, SystemLibrary.SystemLibrary.string_type), new int_const_node((vdn.type as short_string_type_node).Length, null));
                     }
                     else if (userInitalValue is array_initializer)
-                	{
-                		array_initializer arr = userInitalValue as array_initializer;
-                		if (vdn.type.element_type.type_special_kind == SemanticTree.type_special_kind.short_string)
-                		{
-                			for (int i=0; i<arr.element_values.Count; i++)
-                			{
-                				//arr.element_values[i] = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, arr.element_values[i], null);
-                				arr.element_values[i] = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node,null,convertion_data_and_alghoritms.convert_type(arr.element_values[i],SystemLibrary.SystemLibrary.string_type),new int_const_node((vdn.type.element_type as short_string_type_node).Length,null));
-                			}
-                		}
-                	}
+                    {
+                        array_initializer arr = userInitalValue as array_initializer;
+                        if (vdn.type.element_type.type_special_kind == SemanticTree.type_special_kind.short_string)
+                        {
+                            for (int i = 0; i < arr.element_values.Count; i++)
+                            {
+                                //arr.element_values[i] = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, arr.element_values[i], null);
+                                arr.element_values[i] = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, null, convertion_data_and_alghoritms.convert_type(arr.element_values[i], SystemLibrary.SystemLibrary.string_type), new int_const_node((vdn.type.element_type as short_string_type_node).Length, null));
+                            }
+                        }
+                    }
+                    else if (vdn.type.is_value_type && userInitalValue is common_constructor_call)
+                        return userInitalValue;
                     CurrentStatementList.statements.AddElement(syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, lbvr, userInitalValue, lid));
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
                 	{

@@ -200,9 +200,9 @@ parse_goal
 			var stl = $2 as statement_list;
 			stl.left_logical_bracket = $1;
 			var un = new unit_or_namespace(new ident_list("SF"),null);
-			var un1 = new unit_or_namespace(new ident_list("School"),null);
+			//var un1 = new unit_or_namespace(new ident_list("School"),null);
 			var ul = new uses_list(un,null);		
-			ul.Add(un1);
+			//ul.Add(un1);
 			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
 		}
     ;

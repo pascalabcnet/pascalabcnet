@@ -1554,5 +1554,10 @@ namespace VisualPascalABCPlugins
         {
             throw new System.NotImplementedException();
         }
+
+        public void visit(IDoubleQuestionColonExpressionNode value)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
