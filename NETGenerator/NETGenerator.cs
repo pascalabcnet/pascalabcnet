@@ -2952,6 +2952,10 @@ namespace PascalABCCompiler.NETGenerator
             }
             in_var_init = true;
             GenerateInitCode(var, il);
+            if (var.type.is_value_type && var.inital_value is ICommonConstructorCall)
+            {
+                il.Emit(OpCodes.Stloc, lb);
+            }
             in_var_init = false;
         }
 
