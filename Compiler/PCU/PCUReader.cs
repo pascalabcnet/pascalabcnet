@@ -3395,7 +3395,12 @@ namespace PascalABCCompiler.PCU
         {
             return new question_colon_expression(CreateExpression(), CreateExpression(), CreateExpression(), null);
         }
-        
+
+        private double_question_colon_expression CreateDoubleQuestionColonExpression()
+        {
+            return new double_question_colon_expression(CreateExpression(), CreateExpression(), null);
+        }
+
         private statements_expression_node CreateStatementsExpressionNode()
         {
             statement_node_list sl = new statement_node_list();
@@ -3444,6 +3449,8 @@ namespace PascalABCCompiler.PCU
                     return CreateStatementsExpressionNode();
                 case semantic_node_type.question_colon_expression:
                     return CreateQuestionColonExpression();
+                case semantic_node_type.double_question_colon_expression:
+                    return CreateDoubleQuestionColonExpression();
                 case semantic_node_type.sizeof_operator:
                     return CreateSizeOfOperator();
                 case semantic_node_type.is_node:

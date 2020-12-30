@@ -3456,7 +3456,7 @@ namespace PascalABCCompiler.TreeRealization
                 List<SymbolInfo> sil2 = find_in_additional_names(name);
                 List<SymbolInfo> sil3 = compiled_find(name);
                 bool clone = false;
-                if (!no_search_in_extension_methods || this._compiled_type.IsGenericType)
+                if (!no_search_in_extension_methods || this._compiled_type.IsGenericType || this.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 {
                     
                     if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)

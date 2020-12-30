@@ -3611,7 +3611,13 @@ namespace PascalABCCompiler.PCU
             VisitExpression(node.internal_ret_if_true);
             VisitExpression(node.internal_ret_if_false);
         }
-        
+
+        private void VisitDoubleQuestionColonExpression(double_question_colon_expression node)
+        {
+            VisitExpression(node.internal_condition);
+            VisitExpression(node.internal_ret_if_null);
+        }
+
         private void VisitStatementsExpressionNode(statements_expression_node node)
         {
             bw.Write(node.internal_statements.Count);
@@ -3654,6 +3660,8 @@ namespace PascalABCCompiler.PCU
                     VisitStatementsExpressionNode((statements_expression_node)en); break;
                 case semantic_node_type.question_colon_expression:
                     VisitQuestionColonExpression((question_colon_expression)en); break;
+                case semantic_node_type.double_question_colon_expression:
+                    VisitDoubleQuestionColonExpression((double_question_colon_expression)en); break;
                 case semantic_node_type.sizeof_operator:
                     VisitSizeOfOperator((sizeof_operator)en); break;
                 case semantic_node_type.is_node:
