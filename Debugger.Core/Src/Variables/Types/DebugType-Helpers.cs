@@ -62,7 +62,7 @@ namespace Debugger
 					case CorElementType.R4: return typeof(System.Single);
 					case CorElementType.R8: return typeof(System.Double);
 					case CorElementType.I: return typeof(int);
-					case CorElementType.U: return typeof(uint);
+					case CorElementType.U: return System.Environment.Is64BitProcess?typeof(ulong):typeof(uint);
 					case CorElementType.SZARRAY:
 					case CorElementType.ARRAY: return typeof(System.Array);
 					case CorElementType.OBJECT: return typeof(System.Object);
