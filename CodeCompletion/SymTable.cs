@@ -2588,7 +2588,10 @@ namespace CodeCompletion
                         if (this.parameters[i].param_kind != ps.parameters[i].param_kind)
                             return false;
                         if (!this.parameters[i].sc.IsEqual(ps.parameters[i].sc))
-                            return false;
+                            if (this.parameters[i].sc is UnknownScope)
+                                return true;
+                            else
+                                return false;
                     }
                     if (this.return_type == null)
                         if (ps.return_type != null)
