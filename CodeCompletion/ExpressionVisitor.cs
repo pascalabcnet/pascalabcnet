@@ -902,6 +902,12 @@ namespace CodeCompletion
                                 return;
                             }
                         }
+                        else if (ps != null)
+                        {
+                            method_call mc = new method_call(_dot_node, new expression_list());
+                            mc.visit(this);
+                            return;
+                        }
                         if (tmp_tn is ElementScope && stv != null)
                         {
                             List<ProcScope> procs = stv.entry_scope.GetExtensionMethods((_dot_node.right as ident).name, (tmp_tn as ElementScope).sc as TypeScope);
