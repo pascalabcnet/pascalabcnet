@@ -122,6 +122,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("overload", "overload"); keys.Add("overload");
             keywords.Add("internal", "internal"); keys.Add("internal");
             //keywords.Add("template", "template"); keys.Add("template");
+            keywords.Add("partial", "partial"); keys.Add("partial");
             keywords.Add("namespace", "namespace"); keys.Add("namespace");
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
