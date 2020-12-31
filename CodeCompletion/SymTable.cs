@@ -4358,8 +4358,25 @@ namespace CodeCompletion
             ts.loc = this.loc;
             for (int i = 0; i < gen_args.Count; i++)
             {
-                ts.AddGenericInstanceParameter(gen_args[i].si.name);
-                ts.AddGenericInstanciation(gen_args[i]);
+                TypeScope gen_arg = gen_args[i];
+                if (gen_arg.instances != null && gen_arg.original_type != null)
+                {
+                    if (gen_arg.original_type.generic_params != null && this.generic_params != null)
+                        for (int j = 0; j < gen_arg.original_type.generic_params.Count; j++)
+                        {
+                            if (string.Compare(gen_arg.original_type.generic_params[j], this.generic_params[j], true) == 0)
+                            {
+                                ts.AddGenericInstanceParameter(gen_arg.instances[j].si.name);
+                                ts.AddGenericInstanciation(gen_arg.instances[j]);
+                            }
+                        }
+                }
+                else
+                {
+                    ts.AddGenericInstanceParameter(gen_args[i].si.name);
+                    ts.AddGenericInstanciation(gen_args[i]);
+                }
+                    
             }
             ts.si.name = this.si.name;
             ts.documentation = this.documentation;
@@ -5588,6 +5605,11 @@ namespace CodeCompletion
             {
                 return ctn;
             }
+        }
+
+        protected override TypeScope simpleGetInstance(List<TypeScope> gen_args)
+        {
+            return this.GetInstance(gen_args);
         }
 
         public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
