@@ -3705,7 +3705,9 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (context.converted_type.IsStatic)
                             AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_HAVE_PARENT");
+                        context.skip_check_where_sections = true;
                         type_node tn = ret.visit(_class_definition.class_parents.types[0]);
+                        context.skip_check_where_sections = false;
                         //if (tn == context.converted_type)
                         if (type_table.original_types_equals(tn, context.converted_type))
                             AddError(new UndefinedNameReference(tn.name, get_location(_class_definition.class_parents.types[0])));
@@ -3737,6 +3739,8 @@ namespace PascalABCCompiler.TreeConverter
                             //Добавляем интерфейс
                             used_interfs.Add(tn, tn);
                             type_table.AddInterface(context.converted_type, tn, get_location(_class_definition.class_parents.types[0]));
+                            if (tn.is_generic_type_instance)
+                                ret.visit(_class_definition.class_parents.types[0]);
                         }
                         else
                         {
@@ -3749,6 +3753,8 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
                             }
                             context.converted_type.SetBaseType(tn);
+                            if (tn.is_generic_type_instance)
+                                ret.visit(_class_definition.class_parents.types[0]);
                             var type_instances = generic_convertions.get_type_instances(context.converted_type);
                             if (type_instances != null)
                                 foreach (generic_type_instance_info gti in type_instances)
@@ -3912,6 +3918,7 @@ namespace PascalABCCompiler.TreeConverter
                     record_type_name = null;
                     record_is_generic = false;
                     context.converted_type.internal_is_value = true;
+
                     if (_class_definition.body == null &&
                         (_class_definition.class_parents == null || _class_definition.class_parents.types.Count == 0))
                     {
@@ -3924,6 +3931,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
+                        
                         context.converted_type.ForwardDeclarationOnly = false;
                         weak_node_test_and_visit(_class_definition.body);
                         
@@ -4045,7 +4053,13 @@ namespace PascalABCCompiler.TreeConverter
         
         private void visit_class_member_realizations(SyntaxTree.class_body_list _class_body)
         {
-        	foreach (SyntaxTree.class_members clmem in _class_body.class_def_blocks)
+            if (context.converted_type.internal_is_value)
+            {
+                context.add_equal_operator_if_need();
+                context.add_notequal_operator_if_need();
+            }
+            
+            foreach (SyntaxTree.class_members clmem in _class_body.class_def_blocks)
             {
         		foreach (SyntaxTree.declaration sd in clmem.members)
             	{
