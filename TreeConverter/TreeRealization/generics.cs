@@ -309,6 +309,8 @@ namespace PascalABCCompiler.TreeRealization
             //Определяем базовый тип
             type_node btype = determine_type(
                 original.base_type, param_types, false);
+            if (btype == null)
+                btype = SystemLibrary.SystemLibrary.object_type;
             instance.SetBaseTypeIgnoringScope(btype);
             
             //instance._scope = new SymbolTable.GenericTypeInstanceScope(instance, instance.original_generic.Scope, btype.Scope);
