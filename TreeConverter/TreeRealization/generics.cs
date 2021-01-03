@@ -166,6 +166,10 @@ namespace PascalABCCompiler.TreeRealization
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.name);
                     }
                 }
+                if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type && tn.is_value && !gpe.base_class.is_value && gpe.base_class != SystemLibrary.SystemLibrary.value_type)
+                {
+                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
+                }
                 foreach (type_node interf in gpe.implementing_interfaces)
                 {
                     type_node di = generic_convertions.determine_type(interf, tparams, method_param_types);
