@@ -11974,6 +11974,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 make_attributes_for_declaration(_type_declaration, ctn);
             }
+            if (cl_def.keyword == class_keyword.Class || cl_def.keyword == class_keyword.Interface)
+                ctn.is_class = true;//nado ranshe pomechat kak is_class
             if (is_generic)
             {
                 if (predefined_generic)
@@ -12011,6 +12013,7 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(get_location(cl_def.class_parents.types[i]), "PARTIAL_CLASS_PARENTS_MISMATCH");
                 }*/
             }
+            
             visit_where_list(cl_def.where_section);
            
             CheckWaitedRefTypes(ctn);
