@@ -1,13 +1,9 @@
-﻿type 
-  tc1[T] = typeclass
-  end;
+﻿type
+  tc1[T]=typeclass end;
   
-  I1=interface
+  tc1[integer]=instance
+    function f1: integer := 1;
   end;
-  
-  tc1[I1] = instance
-  end;//не должно компилироваться
 
 begin
-
 end.
