@@ -1,4 +1,5 @@
-﻿
+﻿#pragma OPENCL EXTENSION cl_khr_fp64: enable
+
 
 
 __kernel void MatrMltMatr(__global double* A, __global double* B, __global double* C, int W)
