@@ -24,11 +24,17 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 cd ..\bin
 REM MPGORunner.exe
 TestRunner.exe 1 1
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 TestRunner.exe 2 1
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 TestRunner.exe 3 1
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 TestRunner.exe 4 1
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 TestRunner.exe 5 1
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 TestRunner.exe 6 1
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 cd ..
 GOTO EXIT
 
