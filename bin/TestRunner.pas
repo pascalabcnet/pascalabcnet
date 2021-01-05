@@ -11,7 +11,8 @@ uses PascalABCCompiler, System.IO, System.Diagnostics;
 
 var
   TestSuiteDir: string;
-
+  nogui: boolean;
+  
 var
   PathSeparator: string := Path.DirectorySeparatorChar;
 
@@ -56,13 +57,19 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count = 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of error sample ' + files[i] + ' was successfull');
       System.Windows.Forms.MessageBox.Show('Compilation of error sample ' + files[i] + ' was successfull' + System.Environment.NewLine);
       Halt();
     end
     else if comp.ErrorsList.Count = 1 then
     begin
       if comp.ErrorsList[0].GetType() = typeof(PascalABCCompiler.Errors.CompilerInternalError) then
+      begin
+        if nogui then
+          raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
         System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
+      end;
     end;
     if i mod 50 = 0 then
       System.GC.Collect();
@@ -96,6 +103,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count > 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
@@ -130,6 +139,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count > 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
@@ -159,6 +170,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count > 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
@@ -186,6 +199,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count > 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
@@ -235,6 +250,8 @@ begin
     //  Sleep(5);
     if p.ExitCode <> 0 then
     begin
+      if nogui then
+        raise new Exception('Running of ' + files[i] + ' failed. Exit code is not 0');
       System.Windows.Forms.MessageBox.Show('Running of ' + files[i] + ' failed. Exit code is not 0');
       Halt;
     end;
@@ -344,6 +361,8 @@ begin
   try
     TestSuiteDir := GetTestSuiteDir;
     System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
+    if (ParamCount = 2) and (ParamStr(2) = '1') then
+      nogui := true;
     if (ParamCount = 0) or (ParamStr(1) = '1') then
     begin
       DeletePCUFiles;

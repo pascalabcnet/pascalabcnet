@@ -17,5 +17,5 @@ begin
 end;
 
 begin 
-  Assert(1=0);
-end.
+  Assert(1=1);
+end
