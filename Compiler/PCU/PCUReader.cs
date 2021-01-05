@@ -264,7 +264,7 @@ namespace PascalABCCompiler.PCU
                 ReadPCUHeader();
                 units[FileName] = this;
                 unit = new CompilationUnit();
-                unit.UnitName = unit_name;
+                unit.UnitFileName = FileName;
                 cun = new common_unit_node();
                 cun.compiler_directives = pcu_file.compiler_directives;
                 unit.SemanticTree = cun;

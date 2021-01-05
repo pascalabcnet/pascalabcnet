@@ -399,9 +399,9 @@ namespace PascalABCCompiler
 	public class CompilationUnit
 	{
         internal bool CaseSensitive = false;
-		public string CurrentUsesUnit;
+        public string CurrentUsesUnitId;
         public PascalABCCompiler.Errors.SyntaxError syntax_error;
-        public string UnitName;
+        public string UnitFileName;
 		public List<Errors.Error> ErrorList=new List<Errors.Error>();
 		public bool Documented;
         internal List<SyntaxTree.unit_or_namespace> PossibleNamespaces = new List<PascalABCCompiler.SyntaxTree.unit_or_namespace>();
@@ -1884,7 +1884,7 @@ namespace PascalABCCompiler
                         CurrentUnit.State = UnitState.Compiled;
                         OnChangeCompilerState(this, CompilerState.EndCompileFile, UnitName);
                         //SavePCU(CurrentUnit, UnitName);
-                        CurrentUnit.UnitName = UnitName;
+                        CurrentUnit.UnitFileName = UnitName;
                     }
 
                 ClosePCUReadersAndWriters();
@@ -2582,7 +2582,7 @@ namespace PascalABCCompiler
                 last = next;
             }
 
-            throw new InvalidOperationException($"Could not find path to \"{u2.UnitName}\" relative to \"{u1.UnitName}\"");
+            throw new InvalidOperationException($"Could not find path to \"{u2.UnitFileName}\" relative to \"{u1.UnitFileName}\"");
         }
 
         private string FindFileInDirs(string FileName, params string[] Dirs)
@@ -3177,23 +3177,17 @@ namespace PascalABCCompiler
 
         public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, Dictionary<unit_node, CompilationUnit> DirectCompilationUnits, SyntaxTree.unit_or_namespace SyntaxUsesUnit, string prev_path)
         {
-            string UnitName = GetUnitFileName(SyntaxUsesUnit, prev_path);
+            string UnitFileName = GetUnitFileName(SyntaxUsesUnit, prev_path);
+            string UnitId = Path.ChangeExtension(UnitFileName, null);
             // Имя папки, в которой лежит текущий модуль
             // Используется для подключения модулей, $include и т.п. из модуля, подключённого с uses-in
-            var curr_path = Path.GetDirectoryName(UnitName);
+            var curr_path = Path.GetDirectoryName(UnitFileName);
 
-            CompilationUnit CurrentUnit = UnitTable[UnitName];
+            CompilationUnit CurrentUnit = UnitTable[UnitId];
             if (CurrentUnit != null && CurrentUnit.SemanticTree is PascalABCCompiler.TreeRealization.dot_net_unit_node 
                 && SyntaxUsesUnit is PascalABCCompiler.SyntaxTree.uses_unit_in ui && ui.in_file != null) // значит, это пространство имен и секция in у него должна отсутствовать
             {
                 ErrorsList.Add(new NamespaceCannotHaveInSection(ui.in_file.source_context));
-            }
-
-            if (Path.GetExtension(UnitName).ToLower() == CompilerOptions.CompiledUnitExtension)
-            {
-                string sfn = FindSourceFileName(Path.ChangeExtension(UnitName, null), null, out _);
-                if (sfn != null && UnitTable[sfn] != null)
-                    CurrentUnit = UnitTable[sfn];
             }
 
             if (CurrentUnit != null)
@@ -3205,18 +3199,18 @@ namespace PascalABCCompiler
                     return CurrentUnit;
                 }
 
-            if (Path.GetExtension(UnitName).ToLower() == CompilerOptions.CompiledUnitExtension)
-                if (File.Exists(UnitName))
+            if (CurrentUnit==null && Path.GetExtension(UnitFileName).ToLower() == CompilerOptions.CompiledUnitExtension)
+                if (File.Exists(UnitFileName))
                 {
-                    if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
+                    if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitFileName, null);
                     try
                     {
-                        if ((CurrentUnit = ReadPCU(UnitName)) != null)
+                        if ((CurrentUnit = ReadPCU(UnitFileName)) != null)
                         {
                             if (Units.AddElement(CurrentUnit.SemanticTree, SyntaxUsesUnit.UsesPath()))
                                 DirectCompilationUnits.Add(CurrentUnit.SemanticTree, CurrentUnit);
                             Units.AddRange(GetReferences(CurrentUnit));
-                            UnitTable[UnitName] = CurrentUnit;
+                            UnitTable[UnitId] = CurrentUnit;
                             return CurrentUnit;
                         }
                     }
@@ -3230,17 +3224,17 @@ namespace PascalABCCompiler
                     }
                     catch (Exception e)
                     {
-                        OnChangeCompilerState(this, CompilerState.PCUReadingError, UnitName);
+                        OnChangeCompilerState(this, CompilerState.PCUReadingError, UnitFileName);
 #if DEBUG
                         if (!InternalDebug.SkipPCUErrors)
                             throw new Errors.CompilerInternalError("PCUReader", e);
 #endif
                     }
-                    string SourceFileName = FindSourceFileName(Path.ChangeExtension(UnitName, null), null, out _);
+                    string SourceFileName = FindSourceFileName(Path.ChangeExtension(UnitFileName, null), null, out _);
                     if (SourceFileName == null)
-                        throw new ReadPCUError(UnitName);
+                        throw new ReadPCUError(UnitFileName);
                     else
-                        UnitName = SourceFileName;
+                        UnitFileName = SourceFileName;
                 }
             string SourceText = null;
             Dictionary<SyntaxTree.syntax_tree_node, string> docs = null;
@@ -3250,20 +3244,20 @@ namespace PascalABCCompiler
                 CurrentUnit = new CompilationUnit();
                 if (FirstCompilationUnit == null)
                     FirstCompilationUnit = CurrentUnit;
-                OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitName);
-                SourceText = GetSourceFileText(UnitName);
+                OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName);
+                SourceText = GetSourceFileText(UnitFileName);
                 if (SourceText == null)
                     if (CurrentUnit == FirstCompilationUnit)
-                        throw new SourceFileNotFound(UnitName);
+                        throw new SourceFileNotFound(UnitFileName);
                     else
-                        throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, SyntaxUsesUnit.source_context);
+                        throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitFileName, SyntaxUsesUnit.source_context);
                 List<string> DefinesList = new List<string>();
                 DefinesList.Add("PASCALABC");
                 if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
                     DefinesList.Add("RELEASE");
                 else
                     DefinesList.Add("DEBUG");
-                CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList, warnings, DefinesList);
+                CurrentUnit.SyntaxTree = InternalParseText(UnitFileName, SourceText, errorsList, warnings, DefinesList);
                 
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
@@ -3326,13 +3320,13 @@ namespace PascalABCCompiler
                     throw errorsList[0];
                 }
 
-                UnitTable[UnitName] = CurrentUnit;
+                UnitTable[UnitId] = CurrentUnit;
 
                 if (UnitTable.Count > 1)//если это не главный модуль
                     if (CurrentUnit.SyntaxTree is SyntaxTree.program_module)
-                        throw new UnitModuleExpected(UnitName, CurrentUnit.SyntaxTree.source_context.LeftSourceContext);
+                        throw new UnitModuleExpected(UnitFileName, CurrentUnit.SyntaxTree.source_context.LeftSourceContext);
                     else if (is_dll(CurrentUnit.SyntaxTree))
-                        throw new UnitModuleExpectedLibraryFound(UnitName, CurrentUnit.SyntaxTree.source_context.LeftSourceContext);
+                        throw new UnitModuleExpectedLibraryFound(UnitFileName, CurrentUnit.SyntaxTree.source_context.LeftSourceContext);
                 //здесь в начало uses добавляем стандартные модули
 #if DEBUG
                 if (InternalDebug.AddStandartUnits)
@@ -3376,20 +3370,22 @@ namespace PascalABCCompiler
                     }
                     else
                     {
-                        string CurrentSyntaxUnitName = GetUnitFileName(SyntaxUsesList[i], curr_path);
-                        CurrentUnit.CurrentUsesUnit = CurrentSyntaxUnitName;
-                        if (UnitTable[CurrentSyntaxUnitName] != null)
-                            if (UnitTable[CurrentSyntaxUnitName].State == UnitState.BeginCompilation)
+                        var CurrentSyntaxUnitFileName = GetUnitFileName(SyntaxUsesList[i], curr_path);
+                        var CurrentSyntaxUnitId = Path.ChangeExtension(CurrentSyntaxUnitFileName, null);
+                        CurrentUnit.CurrentUsesUnitId = CurrentSyntaxUnitId;
+
+                        if (UnitTable[CurrentSyntaxUnitId] != null)
+                            if (UnitTable[CurrentSyntaxUnitId].State == UnitState.BeginCompilation)
                             {
-                                string CurrentSyntaxUnitNameCurrentUsesUnit = UnitTable[CurrentSyntaxUnitName].CurrentUsesUnit;
-                                if (CurrentSyntaxUnitNameCurrentUsesUnit != null)
+                                string CurrentSyntaxUnit_CurrentUsesUnitId = UnitTable[CurrentSyntaxUnitId].CurrentUsesUnitId;
+                                if (CurrentSyntaxUnit_CurrentUsesUnitId != null)
                                 {
-                                    //если сначало взали pcu а потом решили его перекомпилировать, поэтому в таблице его нет
-                                    if (UnitTable[CurrentSyntaxUnitNameCurrentUsesUnit] == null)
-                                        UnitTable[CurrentSyntaxUnitName].CurrentUsesUnit = FindSourceFileName(Path.ChangeExtension(CurrentSyntaxUnitNameCurrentUsesUnit, null), null, out _);
+                                    //если сначало взяли pcu а потом решили его перекомпилировать, поэтому в таблице его нет
+                                    if (UnitTable[CurrentSyntaxUnit_CurrentUsesUnitId] == null)
+                                        UnitTable[CurrentSyntaxUnitId].CurrentUsesUnitId = CurrentSyntaxUnit_CurrentUsesUnitId;
                                     //далее финальная поверка на зацикливание
-                                    if (UnitTable[CurrentSyntaxUnitName].CurrentUsesUnit != null && UnitTable[UnitTable[CurrentSyntaxUnitName].CurrentUsesUnit].State == UnitState.BeginCompilation)
-                                        throw new CycleUnitReference(UnitName, SyntaxUsesList[i]);
+                                    if (UnitTable[CurrentSyntaxUnitId].CurrentUsesUnitId != null && UnitTable[UnitTable[CurrentSyntaxUnitId].CurrentUsesUnitId].State == UnitState.BeginCompilation)
+                                        throw new CycleUnitReference(UnitFileName, SyntaxUsesList[i]);
                                 }
                             }
                         CompileUnit(CurrentUnit.InterfaceUsedUnits, CurrentUnit.DirectInterfaceCompilationUnits, SyntaxUsesList[i], curr_path);
@@ -3419,7 +3415,7 @@ namespace PascalABCCompiler
             {
                 if (CurrentUnit.State != UnitState.InterfaceCompiled)
                 {
-                    OnChangeCompilerState(this, CompilerState.CompileInterface, UnitName);
+                    OnChangeCompilerState(this, CompilerState.CompileInterface, UnitFileName);
                     PascalABCCompiler.TreeConverter.SemanticRules.SymbolTableCaseSensitive = CurrentUnit.CaseSensitive;
                     CurrentUnit.SemanticTree = SyntaxTreeToSemanticTreeConverter.CompileInterface(
                         CurrentUnit.SyntaxTree,
@@ -3457,7 +3453,7 @@ namespace PascalABCCompiler
                 for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                     if (!IsPossibleNamespace(SyntaxUsesList[i], true, curr_path))
                     {
-                        cu = UnitTable[GetUnitFileName(SyntaxUsesList[i], curr_path)];
+                        cu = UnitTable[Path.ChangeExtension(GetUnitFileName(SyntaxUsesList[i], curr_path), null)];
                         if (cu != null && cu.State == UnitState.BeginCompilation)
                         {
                             UnitsToCompile.Add(cu);
@@ -3502,7 +3498,7 @@ namespace PascalABCCompiler
                 if (InternalDebug.SemanticAnalysis)
 #endif
                 {
-                    OnChangeCompilerState(this, CompilerState.CompileImplementation, UnitName);
+                    OnChangeCompilerState(this, CompilerState.CompileImplementation, UnitFileName);
                     PascalABCCompiler.TreeConverter.SemanticRules.SymbolTableCaseSensitive = CurrentUnit.CaseSensitive;
                     SyntaxTreeToSemanticTreeConverter.CompileImplementation(
                         (PascalABCCompiler.TreeRealization.common_unit_node)CurrentUnit.SemanticTree,
@@ -3526,9 +3522,9 @@ namespace PascalABCCompiler
                 if (!UnitsSortedList.Contains(CurrentUnit))//vnimanie zdes inogda pri silnoj zavisimosti modulej moduli popadajut neskolko raz
                     UnitsSortedList.Add(CurrentUnit);
             }
-            OnChangeCompilerState(this, CompilerState.EndCompileFile, UnitName);
+            OnChangeCompilerState(this, CompilerState.EndCompileFile, UnitFileName);
             //SavePCU(CurrentUnit, UnitName);
-            CurrentUnit.UnitName = UnitName;
+            CurrentUnit.UnitFileName = UnitFileName;
             return CurrentUnit;
             /*if(CurrentUnit.State!=UnitState.Compiled)
             { 
@@ -3626,14 +3622,14 @@ namespace PascalABCCompiler
                     dbginfo = InternalDebug.IncludeDebugInfoInPCU;
 #endif
                     
-                    writer.SaveSemanticTree(Unit, Path.ChangeExtension(Unit.UnitName, CompilerOptions.CompiledUnitExtension), dbginfo);
+                    writer.SaveSemanticTree(Unit, Path.ChangeExtension(Unit.UnitFileName, CompilerOptions.CompiledUnitExtension), dbginfo);
                     
                 }
             }
             catch (Exception err)
             {
                 //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.CurrentCompilationUnit.SyntaxTree.file_name)), err));
-                OnChangeCompilerState(this, CompilerState.PCUWritingError, Unit.UnitName);
+                OnChangeCompilerState(this, CompilerState.PCUWritingError, Unit.UnitFileName);
 #if DEBUG
                 if (!InternalDebug.SkipPCUErrors)
                     throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.CurrentCompilationUnit.SyntaxTree.file_name)), err);
@@ -3855,7 +3851,7 @@ namespace PascalABCCompiler
             string pas_name = FindSourceFileName(Path.ChangeExtension(pcu_name, null), null, out _);
             var dir = Path.GetDirectoryName(pcu_name);
 
-            if (UnitTable[pas_name] != null)
+            if (UnitTable[Path.ChangeExtension(pas_name, null)] != null)
                 return true;
 
             bool need = false;
@@ -3868,7 +3864,7 @@ namespace PascalABCCompiler
 
                 if (!used_unit_is_pcu)
                 {
-                    if (UnitTable[used_unit_fname] != null) return true;
+                    if (UnitTable[Path.ChangeExtension(used_unit_fname, null)] != null) return true;
                     need = true;
                     RecompileList[pcu_name] = pcu_name;
                 }
