@@ -107,9 +107,12 @@ namespace TreeConverter.LambdaExpressions.Closure
             var s = stmtList.subnodes.Count + " " + stmtList.subnodes[0].ToString() + "\n";
             System.IO.File.AppendAllText("d:\\bb3.txt", s);
 #endif*/
-            _syntaxTreeNodeStack.Push(stmtList);
+
+            if (!stmtList.IsInternal)
+                _syntaxTreeNodeStack.Push(stmtList);
             base.visit(stmtList);
-            _syntaxTreeNodeStack.Pop();
+            if (!stmtList.IsInternal)
+                _syntaxTreeNodeStack.Pop();
         }
 
         public override void visit(for_node fn)
@@ -222,7 +225,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                         {
                             closure_substituting_node csn = new closure_substituting_node(subst);
                             if (subst.right is ident)
+                            {
                                 csn.name = (subst.right as ident).name;
+                                //if (id.name.ToLower() == "result")
+                                //    (subst.right as ident).source_context = id.source_context;
+                                csn.source_context = id.source_context;
+                            }                                
                             nodeWhereSubstitute[identSubnodesIndexes[i]] = csn;
                         }
                     }
@@ -468,6 +476,35 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+        private void TreeStatementListToQueue(statement_list sl, Queue<statement> q)
+        {
+            foreach (var st in sl.list)
+            {
+                if (st is statement_list stl && stl.IsInternal)
+                    TreeStatementListToQueue(stl, q);
+                else q.Enqueue(st);
+            }
+        }
+
+        private void TreeStatementListToStatementList(statement_list sl, statement_list newsl)
+        {
+            newsl.left_logical_bracket = sl.left_logical_bracket;
+            newsl.right_logical_bracket = sl.right_logical_bracket;
+            newsl.expr_lambda_body = sl.expr_lambda_body;
+            foreach (var st in sl.list)
+            {
+                if (st is statement_list stl)
+                {
+                    TreeStatementListToStatementList(stl, newsl);
+                }
+                else
+                {
+                    newsl.Add(st);
+                    st.Parent = newsl;
+                }
+            }
+        }
+
         private void SubstituteVariablesDeclarations()
         {
             var classDefsTreeNodes = _generatedScopeClassesInfo.Join(_capturedVarsTreeNodesDictionary,
@@ -508,13 +545,17 @@ namespace TreeConverter.LambdaExpressions.Closure
                     }
 
                     var newStmtList = new statement_list();
+                    //newStmtList.IsInternal = statementListNode.IsInternal;
+                    // Попробуем вытянуть в линию тех, у кого IsInternal=true
                     newStmtList.Add(classDefTreeNode.ClassDeclaration.GeneratedVarStatementForScope);
                     if (classDefTreeNode.ClassDeclaration.AssignNodeForUpperClassFieldInitialization != null)
                     {
                         newStmtList.Add(classDefTreeNode.ClassDeclaration.AssignNodeForUpperClassFieldInitialization);
                     }
 
-                    var stmtListQueue = new Queue<statement>(statementListNode.subnodes);
+                    //var stmtListQueue = new Queue<statement>(statementListNode.subnodes);
+                    var stmtListQueue = new Queue<statement>();
+                    TreeStatementListToQueue(statementListNode, stmtListQueue); // сделали плоскую последовательность
                     while (stmtListQueue.Count > 0)
                     {
                         var currentStatement = stmtListQueue.Dequeue();
@@ -739,7 +780,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             CapturedVariablesSubstitutionClassGenerator.ScopeClassDefinition generatedClass;
             if (_generatedScopeClassesInfo.TryGetValue(classDefsTreeNode.TreeNode.ScopeIndex, out generatedClass))
             {
-                var exprList = variables.Select(v => (expression)new ident(((IVAriableDefinitionNode) v.SymbolInfo.sym_info).name)).ToList();
+                var exprList = variables.Select(v => (expression)new ident(((IVAriableDefinitionNode) v.SymbolInfo.sym_info).name, v.SymbolInfo.sym_info.location)).ToList();
 
                 if (IsInGenerics)
                 {
@@ -1072,7 +1113,12 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                 if (_visitor.context._ctn != null && _visitor.context._ctn.generic_params != null)
                 {
-                    genericParameterEliminations.AddRange(generic_parameter_eliminations.make_eliminations_common(_visitor.context._ctn.generic_params));
+                    List<generic_parameter_eliminations> lst = generic_parameter_eliminations.make_eliminations_common(_visitor.context._ctn.generic_params);
+                    for (int i = 0; i < lst.Count; i++)
+                        if (!lst[i].has_default_ctor && _visitor.context._ctn.generic_params[i] is common_type_node)
+                            lst[i].has_default_ctor = (_visitor.context._ctn.generic_params[i] as common_type_node).has_default_constructor;
+                    genericParameterEliminations.AddRange(lst);
+                    
                 }
 
                 if (_visitor.context.top_function != null && _visitor.context.top_function.generic_params != null)

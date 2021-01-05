@@ -3225,6 +3225,94 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="diapason_expr_new" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="expression" />
+        <SyntaxField Name="right" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="if_expr_new" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="condition" SyntaxType="expression" />
+        <SyntaxField Name="if_true" SyntaxType="expression" />
+        <SyntaxField Name="if_false" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="simple_expr_with_deref" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="simple_expr" SyntaxType="expression" />
+        <ExtendedField Name="has_deref" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="index" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="index_expr" SyntaxType="expression" />
+        <ExtendedField Name="inverted" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="array_const_new" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="elements" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="semantic_ith_element_of" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="id" SyntaxType="ident" />
+        <SyntaxField Name="index" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="bigint_const" BaseName="const_node">
+      <Fields>
+        <ExtendedField Name="val" Type="UInt64" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="foreach_stmt_formatting" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="il" SyntaxType="ident_list" />
+        <SyntaxField Name="in_what" SyntaxType="expression" />
+        <SyntaxField Name="stmt" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3274,12 +3362,15 @@
       <HelpData Key=".body" Value="" />
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".char_num" Value="Номер символа." />
+      <HelpData Key=".condition" Value="" />
+      <HelpData Key=".container" Value="" />
       <HelpData Key=".count" Value="" />
       <HelpData Key=".def" Value="" />
       <HelpData Key=".definitions" Value="" />
       <HelpData Key=".defs" Value="" />
       <HelpData Key=".directives" Value="" />
       <HelpData Key=".el" Value="" />
+      <HelpData Key=".elements" Value="" />
       <HelpData Key=".elements_type" Value="Тип элементов" />
       <HelpData Key=".ex" Value="" />
       <HelpData Key=".expr" Value="" />
@@ -3287,7 +3378,15 @@
       <HelpData Key=".from" Value="" />
       <HelpData Key=".guardstats" Value="" />
       <HelpData Key=".handlers" Value="" />
+      <HelpData Key=".has_deref" Value="" />
       <HelpData Key=".i" Value="" />
+      <HelpData Key=".if_false" Value="" />
+      <HelpData Key=".if_true" Value="" />
+      <HelpData Key=".il" Value="" />
+      <HelpData Key=".in_what" Value="" />
+      <HelpData Key=".index" Value="" />
+      <HelpData Key=".index_expr" Value="" />
+      <HelpData Key=".inverted" Value="" />
       <HelpData Key=".item_expression" Value="" />
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
@@ -3310,10 +3409,12 @@
       <HelpData Key=".restriction_args" Value="" />
       <HelpData Key=".right" Value="" />
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
+      <HelpData Key=".simple_expr" Value="" />
       <HelpData Key=".specificator" Value="" />
       <HelpData Key=".stat" Value="" />
       <HelpData Key=".statements" Value="" />
       <HelpData Key=".step" Value="" />
+      <HelpData Key=".stmt" Value="" />
       <HelpData Key=".string" Value="" />
       <HelpData Key=".subprogram_definitions" Value="" />
       <HelpData Key=".substitution" Value="" />
@@ -3325,6 +3426,7 @@
       <HelpData Key=".to" Value="" />
       <HelpData Key=".typ" Value="" />
       <HelpData Key=".type" Value="" />
+      <HelpData Key=".type_name" Value="" />
       <HelpData Key=".types" Value="" />
       <HelpData Key=".unknown_foreach" Value="" />
       <HelpData Key=".usings" Value="" />
@@ -3349,6 +3451,8 @@
       <HelpData Key="addressed_value_list.void Add(addressed_value av)" Value="" />
       <HelpData Key="array_const" Value="" />
       <HelpData Key="array_const.elements" Value="" />
+      <HelpData Key="array_const_new" Value="" />
+      <HelpData Key="array_const_new.elements" Value="" />
       <HelpData Key="array_of_const_type" Value="array of const" />
       <HelpData Key="array_of_const_type_defenition" Value="array of const" />
       <HelpData Key="array_of_const_type_definition" Value="array of const" />
@@ -3408,6 +3512,8 @@
       <HelpData Key="attribute_list.attributes" Value="" />
       <HelpData Key="attribute_list.void Add(simple_attribute_list sal, SourceContext sc)" Value="" />
       <HelpData Key="attribute_list.w" Value="" />
+      <HelpData Key="bigint_const" Value="" />
+      <HelpData Key="bigint_const.val" Value="" />
       <HelpData Key="bin_expr" Value="Бинарное выражение" />
       <HelpData Key="bin_expr.left" Value="" />
       <HelpData Key="bin_expr.operation_type" Value="" />
@@ -3618,6 +3724,9 @@
       <HelpData Key="diapason_expr." Value="" />
       <HelpData Key="diapason_expr.left" Value="" />
       <HelpData Key="diapason_expr.right" Value="" />
+      <HelpData Key="diapason_expr_new" Value="" />
+      <HelpData Key="diapason_expr_new.left" Value="" />
+      <HelpData Key="diapason_expr_new.right" Value="" />
       <HelpData Key="documentation_comment_list" Value="" />
       <HelpData Key="documentation_comment_list." Value="" />
       <HelpData Key="documentation_comment_list.documentation_comment_list Add(documentation_comment_section _documentation_comment_section)" Value="" />
@@ -3749,10 +3858,16 @@
       <HelpData Key="for_node.type_name" Value="" />
       <HelpData Key="foreach_stmt" Value="" />
       <HelpData Key="foreach_stmt." Value="" />
+      <HelpData Key="foreach_stmt.ext" Value="" />
       <HelpData Key="foreach_stmt.identifier" Value="" />
       <HelpData Key="foreach_stmt.in_what" Value="" />
       <HelpData Key="foreach_stmt.stmt" Value="" />
       <HelpData Key="foreach_stmt.type_name" Value="" />
+      <HelpData Key="foreach_stmt_formatting" Value="// для форматирования только" />
+      <HelpData Key="foreach_stmt_formatting.il" Value="" />
+      <HelpData Key="foreach_stmt_formatting.in_what" Value="" />
+      <HelpData Key="foreach_stmt_formatting.stmt" Value="" />
+      <HelpData Key="foreach_stmt_formatting.type_name" Value="" />
       <HelpData Key="formal_parameters" Value="" />
       <HelpData Key="formal_parameters.formal_parameters Add(typed_parameters _typed_parameters)" Value="" />
       <HelpData Key="formal_parameters.formal_parameters Add(typed_parameters _typed_parameters, SourceContext sc)" Value="" />
@@ -3765,6 +3880,8 @@
       <HelpData Key="format_expr.expr" Value="" />
       <HelpData Key="format_expr.format1" Value="" />
       <HelpData Key="format_expr.format2" Value="" />
+      <HelpData Key="format_expr.index_inversion_from" Value="" />
+      <HelpData Key="format_expr.index_inversion_to" Value="" />
       <HelpData Key="forward_directive" Value="" />
       <HelpData Key="forward_directr" Value="" />
       <HelpData Key="fptype_and_expr" Value="" />
@@ -3842,6 +3959,10 @@
       <HelpData Key="ident_with_templateparams." Value="" />
       <HelpData Key="ident_with_templateparams.name" Value="" />
       <HelpData Key="ident_with_templateparams.template_params" Value="" />
+      <HelpData Key="if_expr_new" Value="Новое условное выражение в стиле Паскаля. Доступно только при форматировании" />
+      <HelpData Key="if_expr_new.condition" Value="" />
+      <HelpData Key="if_expr_new.if_false" Value="" />
+      <HelpData Key="if_expr_new.if_true" Value="" />
       <HelpData Key="if_node" Value="Условный оператор" />
       <HelpData Key="if_node.condition" Value="Условие" />
       <HelpData Key="if_node.else_body" Value="Оператор по ветви else" />
@@ -3852,6 +3973,9 @@
       <HelpData Key="implementation_node.implementation_definitions" Value="" />
       <HelpData Key="implementation_node.uses_modules" Value="" />
       <HelpData Key="implementation_node.using_namespaces" Value="" />
+      <HelpData Key="index" Value="" />
+      <HelpData Key="index.index_expr" Value="" />
+      <HelpData Key="index.inverted" Value="" />
       <HelpData Key="index_property" Value="" />
       <HelpData Key="index_property.is_default" Value="" />
       <HelpData Key="index_property.property_parametres" Value="" />
@@ -3904,6 +4028,9 @@
       <HelpData Key="is_pattern_expr.constDeconstructorParamCheck" Value="" />
       <HelpData Key="is_pattern_expr.left" Value="" />
       <HelpData Key="is_pattern_expr.right" Value="" />
+      <HelpData Key="ith_element_of" Value="" />
+      <HelpData Key="ith_element_of.container" Value="" />
+      <HelpData Key="ith_element_of.index" Value="" />
       <HelpData Key="jump_stmt" Value="" />
       <HelpData Key="jump_stmt.JumpType" Value="" />
       <HelpData Key="jump_stmt.expr" Value="" />
@@ -4321,6 +4448,10 @@
       <HelpData Key="semantic_check_sugared_var_def_statement_node.typ" Value="" />
       <HelpData Key="semantic_expr_node" Value="" />
       <HelpData Key="semantic_expr_node.expr" Value="" />
+      <HelpData Key="semantic_ith_element_of" Value="" />
+      <HelpData Key="semantic_ith_element_of.container" Value="" />
+      <HelpData Key="semantic_ith_element_of.id" Value="" />
+      <HelpData Key="semantic_ith_element_of.index" Value="" />
       <HelpData Key="semantic_type_node" Value="" />
       <HelpData Key="semantic_type_node.type" Value="" />
       <HelpData Key="sequence_type" Value="" />
@@ -4353,6 +4484,9 @@
       <HelpData Key="simple_const_definition" Value="" />
       <HelpData Key="simple_const_definition." Value="" />
       <HelpData Key="simple_const_definition.simple_const_definition(ident name, expression value, SourceContext sc)" Value="" />
+      <HelpData Key="simple_expr_with_deref" Value="" />
+      <HelpData Key="simple_expr_with_deref.has_deref" Value="" />
+      <HelpData Key="simple_expr_with_deref.simple_expr" Value="" />
       <HelpData Key="simple_property" Value="property property_name[parameter_list]:property_type index index_expression accessors; [virtual;] array_default;" />
       <HelpData Key="simple_property." Value="" />
       <HelpData Key="simple_property.accessors" Value="" />
@@ -4375,6 +4509,8 @@
       <HelpData Key="sizeof_operator.type_name" Value="" />
       <HelpData Key="slice_expr" Value="" />
       <HelpData Key="slice_expr.from" Value="" />
+      <HelpData Key="slice_expr.index_inversion_from" Value="" />
+      <HelpData Key="slice_expr.index_inversion_to" Value="" />
       <HelpData Key="slice_expr.step" Value="" />
       <HelpData Key="slice_expr.to" Value="" />
       <HelpData Key="slice_expr.v" Value="" />

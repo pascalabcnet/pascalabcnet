@@ -129,7 +129,8 @@ namespace SyntaxVisitors
 
             Replace(var_def, newVS);
             listNodes[listNodes.Count - 1] = newVS; //SSM 8.11.18
-            base.visit(newVS);
+            ProcessNode(newVS.inital_value); // SSM 10.06.2020 #2103
+            //base.visit(newVS); // SSM 10.06.2020 - зачем обходить всё?
         }
 
         /*public override void visit(var_statement vs)
@@ -197,6 +198,8 @@ namespace SyntaxVisitors
 
         public override void visit(ident id)
         {
+            // Это очень частный алгоритм переименования в мини-ПИ, но затрагивает он и лямбды. И механизм для этого - неадекватный
+            // Надо исключать формальные параметры лямбд и одноимённые переменнные, определяемые у них внутри
             var newName = this.GetNewVariableName(id.name.ToLower());
             if (newName != null)
             {
@@ -209,6 +212,18 @@ namespace SyntaxVisitors
             ProcessNode(dn.left);
             if (dn.right.GetType() != typeof(ident))
                 ProcessNode(dn.right);
+        }
+
+        public override void visit(function_lambda_definition fld)
+        {
+            BlockNamesStack.Add(new Dictionary<string, string>());
+            var last = BlockNamesStack.Count - 1;
+            for (var i=0; i< fld.parameters.expressions.Count; i++)
+            {
+                var qname = (fld.parameters.expressions[i] as ident).name.ToLower();
+                BlockNamesStack[last][qname] = "-fl"; // -fl - формальный параметр лямбды - это стоп в поиске в GetNewVariableName
+            }
+            base.visit(fld);
         }
 
         private string CreateNewVariableName(string name)
@@ -232,6 +247,8 @@ namespace SyntaxVisitors
             {
                 if (BlockNamesStack[i].ContainsKey(name))
                 {
+                    if (BlockNamesStack[i][name] == "-fl") // формальный параметр лямбды - это стоп в поиске (переименовывать не надо!)
+                        return null;
                     return BlockNamesStack[i][name];
                 }
             }

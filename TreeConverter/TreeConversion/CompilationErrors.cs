@@ -765,6 +765,10 @@ namespace PascalABCCompiler.TreeConverter
 
         public override string ToString()
         {
+            if (_name.ToLower().StartsWith("$rv_"))
+            {
+                return string.Format(StringResources.Get("UNDEFINED_NAME_RESULT_IN_{0}"), _name.Remove(0,4));
+            }
             return string.Format(StringResources.Get("UNDEFINED_NAME_REFERENCE_{0}"), _name);
         }        
     }
@@ -1662,6 +1666,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public override string ToString()
         {
+            if (_id.Parent != null && _id.Parent is SyntaxTree.dot_node dnn && dnn.left is SyntaxTree.dot_node dn && 
+                dn.right is SyntaxTree.ident iid && iid.name.StartsWith("<>") && iid.name.EndsWith("__self"))
+                    return StringResources.Get("MEMBER_{0}_OF_TYPE_{1}_CANNOT_BE_FOUND_IN_THE_CONTEEXT_OF_FUNCTION_WITH_YIELD", _id.name, _tn.PrintableName);
             //return ("Member "+_id.PrintableName+" is not declared in type "+_tn.PrintableName+"\n"+loc_to_string(_loc));
             return (StringResources.Get("MEMBER_{0}_IS_NOT_DECLARED_IN_TYPE_{1}", _id.name, _tn.PrintableName));
         }
@@ -2817,10 +2824,17 @@ namespace PascalABCCompiler.TreeConverter
         }
         public override string ToString()
         {
+            if (_member_name.StartsWith("get_"))
+                return string.Format(StringResources.Get("PROPERTY_{2}_OF_CLASS_{0}_FROM_INTERFACE_{1}_MUST_BE_PUBLIC_AND_NON_STATIC"), _class_name, _interface_name, _member_name.Replace("get_",""));
             if (_is_value)
+            {
                 return string.Format(StringResources.Get("MEMBER_{2}_OF_RECORD_{0}_FROM_INTERFACE_{1}_MUST_BE_PUBLIC_AND_NON_STATIC"), _class_name, _interface_name, _member_name);
+            }
             else
+            {
+                
                 return string.Format(StringResources.Get("MEMBER_{2}_OF_CLASS_{0}_FROM_INTERFACE_{1}_MUST_BE_PUBLIC_AND_NON_STATIC"), _class_name, _interface_name, _member_name);
+            }
         }
     }
 

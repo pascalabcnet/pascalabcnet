@@ -206,9 +206,15 @@ end;
 
 procedure RunAllTests(redirectIO: boolean);
 begin
+  var dlls := Directory.GetFiles(TestSuiteDir, '*.dll');
+  foreach var dll in dlls do
+  begin
+    System.IO.File.Copy(dll, TestSuiteDir + PathSeparator + 'exe' + PathSeparator + Path.GetFileName(dll), true);
+  end;
   var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'exe', '*.exe');
   for var i := 0 to files.Length - 1 do
   begin
+    //Println(files[i]);
     var psi := new System.Diagnostics.ProcessStartInfo(files[i]);
     psi.CreateNoWindow := true;
     psi.UseShellExecute := false;
@@ -224,9 +230,9 @@ begin
       p.StandardInput.WriteLine('GO');
 		  //p.StandardInput.AutoFlush := true;
 		  //var p := System.Diagnostics.Process.Start(psi);
-    
-    while not p.HasExited do
-      Sleep(10);
+    p.WaitForExit();
+    //while not p.HasExited do
+    //  Sleep(5);
     if p.ExitCode <> 0 then
     begin
       System.Windows.Forms.MessageBox.Show('Running of ' + files[i] + ' failed. Exit code is not 0');
@@ -343,12 +349,14 @@ begin
       DeletePCUFiles;
       ClearExeDir;
       CompileAllRunTests(false);
+      writeln('Tests to run: '+Milliseconds()+'ms');
     end;
     
     if (ParamCount = 0) or (ParamStr(1) = '2') then
     begin
       CopyLibFiles;
       CompileAllCompilationTests('CompilationSamples', false);
+      writeln('CompilationSamples: '+Milliseconds()+'ms');
     end;
     if (ParamCount = 0) or (ParamStr(1) = '3') then
     begin
@@ -356,12 +364,12 @@ begin
       CopyPCUFiles;
       CompileAllUsesUnits;
       CompileErrorTests(false);
-      writeln('Tests compiled successfully');
+      writeln('Other tests '+Milliseconds()+'ms'+'. Tests compiled successfully ');
     end;
     if (ParamCount = 0) or (ParamStr(1) = '4') then
     begin
       RunAllTests(false);
-      writeln('Tests run successfully');
+      writeln('Tests run successfully: '+Milliseconds()+'ms');
       ClearExeDir;
       DeletePCUFiles;
     end;

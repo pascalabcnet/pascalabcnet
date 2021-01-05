@@ -21,6 +21,10 @@ namespace VisualPascalABC
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
+            var sc = ScreenScale.Calc();
+            if (sc >= 1.99) 
+                this.tvProjectExplorer.ImageList = this.imageList2;
+
             this.tvProjectExplorer.LabelEdit = true;
             this.tvProjectExplorer.BeforeLabelEdit += tvProjectExplorer_BeforeLabelEdit;
 			this.Icon = new System.Drawing.Icon(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("VisualPascalABC.Resources.PadIcons.ProjectBrowser.ico"));

@@ -173,6 +173,7 @@ namespace VisualPascalABC
 
         private void btReplaceAll_Click(object sender, EventArgs e)
         {
+            startOffset = 0;
             if (FindNext(false))
             {
                 Close();

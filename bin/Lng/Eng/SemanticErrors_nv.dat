@@ -3,6 +3,9 @@
 NAME_CANNOT_HAVE_GENERIC_PARAMETERS_{0}=Name {0} can not have generic parameters
 AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Auto class can not have fields of pointer type
 AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Auto class can not have parents
+AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS=Auto class can not have fields with unnamed enums type
+AUTO_CLASS_MUST_NOT_HAVE_EVENTS=Auto class can not have events
+AUTO_CLASS_MUST_NOT_HAVE_PROPERTIES=Auto class can not have properties
 UNDEFINED_NAME_REFERENCE_{0}=Undefined name reference '{0}'
 TWO_TYPE_CONVERTIONS_POSSIBLE_FIRST_TYPE_{0}_SECOND_TYE_{1}=Two type of convertions are possible: to type '{0}' and to type '{1}'
 CAN_NOT_CONVERT_TYPES_FROM_{0}_TO_{1}=Incompatible types: '{0}' and '{1}'
@@ -103,3 +106,4 @@ NEGATIVE_ARRAY_LENGTH_({0})_NOT_ALLOWED=Upper bound of range is less than lower 
 INCOMPATIBLE_ARRAY_BOUNDS_TYPES=Incompatible types of array bounds
 CAN_NOT_APPLY_SETLENGTH_TO_THIS_OPERAND_TYPE=Cannot call SetLength for this type
 FUNCTION_NEED_RETURN_TYPE=Function must have a return type
+UNDEFINED_NAME_RESULT_IN_{0}=Undefined name Result in {0} (probably in one of the internal lambda-expressions)

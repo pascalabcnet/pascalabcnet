@@ -10,11 +10,13 @@
 	<Digits name = "Digits" bold = "false" italic = "false" color = "DarkGreen"/>
 
 	<RuleSets>
+
 		<RuleSet ignorecase="true">
-			<Delimiters>&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
-            <Span name = "LineBigComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+			<Delimiters>&lt;&gt;~!%^*()-+=|\/{}[]:;"' ,	.?</Delimiters>
+	<Span name = "LineBigComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
 			   	<Begin>////</Begin>
 		  	</Span>
+
 		  	<Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
 			   	<Begin>//@!/@</Begin>
 		  	</Span>
@@ -46,7 +48,18 @@
 				<Begin>'</Begin>
 				<End>'</End>
 			</Span>
-			
+		  	
+			<Span name = "InterpolatedString" rule = "StringInterpolation" bold = "false" italic = "false" color = "Blue" stopateol = "true">
+				<Begin>$'</Begin>
+				<End>'</End>
+			</Span>
+
+
+		<KeyWords name = "ShortProgram" bold = "false" italic = "false" color = "Green">
+			<Key word = "##" />
+			<Key word = "###" />
+		</KeyWords>
+
 	<KeyWords name = "KeyWords" bold = "true" italic = "false" color = "Black">
 		<Key word = "external" />
 		<Key word = "in" />
@@ -182,7 +195,8 @@
 		<Key word = "for" />
 		<Key word = "foreach" />
 	</KeyWords>
-					
+		
+
 	<KeyWords name = "ExceptionHandlingStatements" bold="true" italic="false" color="Black">
 		<Key word = "except" />
 		<Key word = "on" />
@@ -273,6 +287,7 @@
 
 	<RuleSet name = "CompilerDirectivesSet" ignorecase = "true">
 		<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+
 		<Span name = "String" bold = "false" italic = "false" color = "DarkRed" stopateol = "true">
 			<Begin>'</Begin>
 			<End>'</End>
@@ -302,8 +317,17 @@
 			<Key word = "true" />
 	  	</KeyWords>
 	</RuleSet>
-		
+	
+	<RuleSet name = "StringInterpolation" ignorecase = "true">
+		<Span name = "String" rule="Default" bold = "false" italic = "false" color = "Black" stopateol = "true">
+			<Begin>{</Begin>
+			<End>}</End>
+		</Span>
+	</RuleSet>
+	
+	<RuleSet name = "Default" ignorecase = "true" reference="PascalABC.NET">
+			<Delimiters>&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+	</RuleSet>
 
-		
 	</RuleSets>
 </SyntaxDefinition>

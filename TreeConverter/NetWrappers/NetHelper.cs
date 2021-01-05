@@ -57,13 +57,33 @@ namespace PascalABCCompiler.NetHelper
             {
                 foreach (using_namespace un in unl)
                 {
-                    if (string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
+                    if (tni.us_ns != null && string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
                     {
                         return tni.type_info;
                     }
                 }
+                if (tni.us_ns == null)
+                    return tni.type_info;
             }
             return null;
+        }
+        
+        public List<TypeInfo> GetTypesByNamespaceList(using_namespace_list unl)
+        {
+            List<TypeInfo> types = new List<TypeInfo>();
+            foreach (TypeNamespaceInfo tni in type_infos)
+            {
+                foreach (using_namespace un in unl)
+                {
+                    if (tni.us_ns != null && string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
+                    {
+                        types.Add(tni.type_info);
+                    }
+                }
+                if (tni.us_ns == null)
+                    types.Add(tni.type_info);
+            }
+            return types;
         }
     }
 
@@ -916,10 +936,13 @@ namespace PascalABCCompiler.NetHelper
         {
             try
             {
+                
                 if (curr_inited_assm_path != null)
                 {
                     Assembly assm = null;
                     string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(curr_inited_assm_path), args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
+                    if (!System.IO.File.Exists(path))
+                        path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
                     if (System.IO.File.Exists(path))
                         assm = LoadAssembly(path);
                     curr_inited_assm_path = null;
@@ -1083,7 +1106,8 @@ namespace PascalABCCompiler.NetHelper
                             function_node fn = si.sym_info as function_node;
                             if ((fn.return_value_type == to || fn.return_value_type.original_generic == to) && 
                                 fn.parameters.Count == 1 && 
-                                (fn.parameters[0].type == from || fn.parameters[0].type.original_generic == from))
+                                (fn.parameters[0].type == from || fn.parameters[0].type.original_generic == from)
+                                || fn.parameters[0].type.type_special_kind == type_special_kind.array_kind && fn.parameters[0].type.element_type.is_generic_parameter)
                             {
                                 return fn;
                             }
@@ -1369,7 +1393,7 @@ namespace PascalABCCompiler.NetHelper
             }
             common_type_node curr_type = SystemLibrary.SystemLibrary.syn_visitor.context.converted_type;
             compiled_type_node comp_node = compiled_type_node.get_type_node(mi.DeclaringType);
-            return curr_type != null && type_table.is_derived(comp_node, curr_type);
+            return curr_type != null && type_table.is_derived(comp_node, curr_type, true);
         }
 		
         public static List<SymbolInfo> GetConstructor(Type t)
@@ -1844,6 +1868,7 @@ namespace PascalABCCompiler.NetHelper
                 fi = new FoundInfo(false);
                 type_search_cache[name] = fi;
             }
+            
 			return null;
 		}
 
@@ -1930,8 +1955,8 @@ namespace PascalABCCompiler.NetHelper
             {
                 if (!fi.exists)
                     return null;
-                TypeInfo ti = fi.GetTypeByNamespaceList(_unar);
-                if (ti != null)
+                List<TypeInfo> ti_list = fi.GetTypesByNamespaceList(_unar);
+                foreach (TypeInfo ti in ti_list)
                     if (cur_used_assemblies.ContainsKey(ti.type.Assembly))
                         return ti.type;
             }
@@ -1944,6 +1969,22 @@ namespace PascalABCCompiler.NetHelper
             if (o is TypeInfo)
             {
                 TypeInfo t = o as TypeInfo;
+                if (t.type.FullName != null && t.type.FullName.IndexOf('.') == -1 && t.type.FullName.IndexOf('+') == -1)
+                {
+                    if (!type_search_cache.TryGetValue(name, out fi))
+                    {
+                        fi = new FoundInfo(true, t);
+                        type_search_cache[name] = fi;
+                    }
+                    else
+                    {
+                        fi.type_infos.Add(new TypeNamespaceInfo(t, null));
+                    }
+                    if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                        return t.type;
+                    else
+                        return null;
+                }
                 for (int i = 0; i < _unar.Count; i++)
                 {
                     if (string.Compare(_unar[i].namespace_name + "." + name, t.FullName, true) == 0)
@@ -1970,6 +2011,20 @@ namespace PascalABCCompiler.NetHelper
             {
                 foreach (TypeInfo t in o as List<TypeInfo>)
                 {
+                    if (t.type.FullName != null && t.type.FullName.IndexOf('.') == -1 && t.type.FullName.IndexOf('+') == -1)
+                    {
+                        if (!type_search_cache.TryGetValue(name, out fi))
+                        {
+                            fi = new FoundInfo(true, t, null);
+                            type_search_cache[name] = fi;
+                        }
+                        else
+                        {
+                            fi.type_infos.Add(new TypeNamespaceInfo(t, null));
+                        }
+                        if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                            return t.type;
+                    }
                     for (int i = 0; i < _unar.Count; i++)
                     {
                         if (string.Compare(_unar[i].namespace_name + "." + name, t.FullName, true) == 0)
@@ -1985,8 +2040,8 @@ namespace PascalABCCompiler.NetHelper
                             }
                             if (cur_used_assemblies.ContainsKey(t.type.Assembly))
                                 return t.type;
-                            else
-                                return null;
+                            //else
+                            //    return null;
                         }
                     }
                 }

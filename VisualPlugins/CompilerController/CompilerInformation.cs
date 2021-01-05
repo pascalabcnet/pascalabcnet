@@ -232,7 +232,9 @@ namespace VisualPascalABCPlugins
         void Button2Click(object sender, EventArgs e)
         {
         	CodeCompletion.CodeCompletionTester.Test();
-            CodeCompletion.CodeCompletionTester.TestIntellisense(Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests"));
+            
+            CodeCompletion.CodeCompletionTester.TestIntellisense(Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\pascalabcnet\TestSuite", "intellisense_tests"));
+            CodeCompletion.CodeCompletionTester.TestRename(@"c:\Work\Miks\_PABCNETGitHub\pascalabcnet\TestSuite\refactoring_tests\rename_tests");
             MessageBox.Show("Done");
         }
         
@@ -246,6 +248,11 @@ namespace VisualPascalABCPlugins
         {
             CodeCompletion.FormatterTester.Test();
             MessageBox.Show("Done");
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            CodeCompletion.CodeCompletionTester.TestRename(@"c:\Work\Miks\_PABCNETGitHub\TestSuite\refactoring_tests\rename_tests");
         }
     }
 }

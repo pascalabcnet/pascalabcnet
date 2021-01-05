@@ -15,12 +15,26 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor
 {
-	/// <summary>
-	/// This class views the line numbers and folding markers.
-	/// </summary>
+    public static class ScreenScale
+    {
+        public static double scale = -1;
+        public static double Calc()
+        {
+            if (scale > 0)
+                return scale;
+            var dpiXProperty = typeof(System.Windows.SystemParameters).GetProperty("DpiX", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var dpiX = (int)dpiXProperty.GetValue(null, null);
+            scale = (double)dpiX / 96;
+            return scale;
+        }
+    }
+
+    /// <summary>
+    /// This class views the line numbers and folding markers.
+    /// </summary>
     public class IconBarMargin : AbstractMargin
 	{
-		const int iconBarWidth = 18;
+		static int iconBarWidth = 18 + Convert.ToInt32(Math.Max(0,(ScreenScale.Calc() - 1) * 16));
 		
 		static readonly Size iconBarSize = new Size(iconBarWidth, -1);
 		
@@ -104,7 +118,9 @@ namespace ICSharpCode.TextEditor
 			get
 			{
 				if (brpt_bmp == null)
-					brpt_bmp = new System.Drawing.Bitmap(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.TextEditor.Resources.Breakpoint24x24.png"));
+                    if (ScreenScale.Calc()>=1.75)
+                        brpt_bmp = new System.Drawing.Bitmap(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.TextEditor.Resources.Breakpoint32x32.png"));
+                    else brpt_bmp = new System.Drawing.Bitmap(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.TextEditor.Resources.Breakpoint24x24.png"));
 				return brpt_bmp;
 			}
 		}
@@ -133,10 +149,12 @@ namespace ICSharpCode.TextEditor
 			                               diameter);
 			
 			if (!onCondition)
-				g.DrawImage(BrptBitmap,rect.X,rect.Y);
-			else
-				g.DrawImage(CondBrptBitmap,rect.X,rect.Y);
-			g.SmoothingMode = mode;
+                //g.DrawImage(BrptBitmap,rect.X,rect.Y); // SSM 17/04/2020
+                g.DrawImage(BrptBitmap, rect);
+            else
+                //g.DrawImage(CondBrptBitmap,rect.X,rect.Y);
+                g.DrawImage(CondBrptBitmap, rect);
+            g.SmoothingMode = mode;
 			return;
 			using (GraphicsPath path = new GraphicsPath()) {
 				path.AddEllipse(rect);

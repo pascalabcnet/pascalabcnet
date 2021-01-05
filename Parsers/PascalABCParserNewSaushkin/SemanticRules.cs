@@ -438,7 +438,7 @@ namespace GPPGParserScanner
                     int sqbracked_pos = s.LastIndexOf(']');
                     if (comma_pos != -1 && comma_pos > bracket_pos && comma_pos > sqbracked_pos)
                         colon_pos = comma_pos;
-                    if (colon_pos != -1 && s.IndexOf('?') == -1)
+                    if (colon_pos != -1 && s.IndexOf('?') == -1 && s.Substring(colon_pos).IndexOf(']') == -1)
                     {
                         var_formats.Add(ind, s.Substring(colon_pos));
                         s = s.Substring(0, colon_pos);

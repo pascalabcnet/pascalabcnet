@@ -518,6 +518,22 @@ namespace PascalABCCompiler.SyntaxTree
 					return new tuple_pattern_var_parameter();
 				case 248:
 					return new recursive_tuple_parameter();
+				case 249:
+					return new diapason_expr_new();
+				case 250:
+					return new if_expr_new();
+				case 251:
+					return new simple_expr_with_deref();
+				case 252:
+					return new index();
+				case 253:
+					return new array_const_new();
+				case 254:
+					return new semantic_ith_element_of();
+				case 255:
+					return new bigint_const();
+				case 256:
+					return new foreach_stmt_formatting();
 			}
 			return null;
 		}
@@ -4353,6 +4369,110 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_recursive_tuple_parameter(recursive_tuple_parameter _recursive_tuple_parameter)
 		{
 			read_recursive_pattern_parameter(_recursive_tuple_parameter);
+		}
+
+
+		public void visit(diapason_expr_new _diapason_expr_new)
+		{
+			read_diapason_expr_new(_diapason_expr_new);
+		}
+
+		public void read_diapason_expr_new(diapason_expr_new _diapason_expr_new)
+		{
+			read_addressed_value(_diapason_expr_new);
+			_diapason_expr_new.left = _read_node() as expression;
+			_diapason_expr_new.right = _read_node() as expression;
+		}
+
+
+		public void visit(if_expr_new _if_expr_new)
+		{
+			read_if_expr_new(_if_expr_new);
+		}
+
+		public void read_if_expr_new(if_expr_new _if_expr_new)
+		{
+			read_expression(_if_expr_new);
+			_if_expr_new.condition = _read_node() as expression;
+			_if_expr_new.if_true = _read_node() as expression;
+			_if_expr_new.if_false = _read_node() as expression;
+		}
+
+
+		public void visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			read_simple_expr_with_deref(_simple_expr_with_deref);
+		}
+
+		public void read_simple_expr_with_deref(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			read_expression(_simple_expr_with_deref);
+			_simple_expr_with_deref.simple_expr = _read_node() as expression;
+			_simple_expr_with_deref.has_deref = br.ReadBoolean();
+		}
+
+
+		public void visit(index _index)
+		{
+			read_index(_index);
+		}
+
+		public void read_index(index _index)
+		{
+			read_expression(_index);
+			_index.index_expr = _read_node() as expression;
+			_index.inverted = br.ReadBoolean();
+		}
+
+
+		public void visit(array_const_new _array_const_new)
+		{
+			read_array_const_new(_array_const_new);
+		}
+
+		public void read_array_const_new(array_const_new _array_const_new)
+		{
+			read_addressed_value(_array_const_new);
+			_array_const_new.elements = _read_node() as expression_list;
+		}
+
+
+		public void visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			read_semantic_ith_element_of(_semantic_ith_element_of);
+		}
+
+		public void read_semantic_ith_element_of(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			read_expression(_semantic_ith_element_of);
+			_semantic_ith_element_of.id = _read_node() as ident;
+			_semantic_ith_element_of.index = _read_node() as expression;
+		}
+
+
+		public void visit(bigint_const _bigint_const)
+		{
+			read_bigint_const(_bigint_const);
+		}
+
+		public void read_bigint_const(bigint_const _bigint_const)
+		{
+			read_const_node(_bigint_const);
+			_bigint_const.val = br.ReadUInt64();
+		}
+
+
+		public void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			read_foreach_stmt_formatting(_foreach_stmt_formatting);
+		}
+
+		public void read_foreach_stmt_formatting(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			read_statement(_foreach_stmt_formatting);
+			_foreach_stmt_formatting.il = _read_node() as ident_list;
+			_foreach_stmt_formatting.in_what = _read_node() as expression;
+			_foreach_stmt_formatting.stmt = _read_node() as statement;
 		}
 
 	}

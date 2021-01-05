@@ -295,9 +295,10 @@ namespace SyntaxVisitors
             stl1.Add(new assign("Result", "$res"));
 
 
-            GetEnumeratorBody.Add(new if_node(new bin_expr(new ident(YieldConsts.State), new int32_const(0), Operators.Equal),
+            /*GetEnumeratorBody.Add(new if_node(new bin_expr(new ident(YieldConsts.State), new int32_const(0), Operators.Equal),
                 new assign("Result", "Self"),
-                stl1));
+                stl1));*/ // SSM 06.12.20 - исправление неработающего Batch. Нужно по хорошему вводить доп. состояние - как в C#: -2. Так медленнее, но правильно
+            GetEnumeratorBody.Add(stl1);
 
             var cct = new type_declarations(/*td*/);
             cct.Add(td1);
@@ -970,6 +971,10 @@ namespace SyntaxVisitors
                     Enumerable.Empty<string>()));
             pd.visit(checkVarRedefVisitor);
             */
+
+            
+            // SSM 21/06 - Выносим yield x -> x
+            CapturedLambdaInYieldVisitor.Accept(pd);
 
             // Выносим выражение из yield в отдельную переменную
             ReplaceYieldExprByVarVisitor.Accept(pd);

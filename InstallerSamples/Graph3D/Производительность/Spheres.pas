@@ -17,7 +17,7 @@ begin
   //end);
   
   foreach var x in l do
-    x.AnimMoveOn(Random,Random,Random).AutoReverse.Forever.Begin;
+    x.AnimMoveBy(Random,Random,Random).AutoReverse.Forever.Begin;
   
   //Print(Milliseconds);
 end.

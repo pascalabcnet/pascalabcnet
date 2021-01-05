@@ -108,6 +108,8 @@ namespace VisualPascalABC
             //toolStrip1.Refresh();
         }
 
+        
+
         bool BottomDockContentVisible
         {
             get

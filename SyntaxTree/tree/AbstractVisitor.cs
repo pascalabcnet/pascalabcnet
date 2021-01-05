@@ -1252,6 +1252,46 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_recursive_tuple_parameter);
 		}
+
+		public virtual void visit(diapason_expr_new _diapason_expr_new)
+		{
+			DefaultVisit(_diapason_expr_new);
+		}
+
+		public virtual void visit(if_expr_new _if_expr_new)
+		{
+			DefaultVisit(_if_expr_new);
+		}
+
+		public virtual void visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			DefaultVisit(_simple_expr_with_deref);
+		}
+
+		public virtual void visit(index _index)
+		{
+			DefaultVisit(_index);
+		}
+
+		public virtual void visit(array_const_new _array_const_new)
+		{
+			DefaultVisit(_array_const_new);
+		}
+
+		public virtual void visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			DefaultVisit(_semantic_ith_element_of);
+		}
+
+		public virtual void visit(bigint_const _bigint_const)
+		{
+			DefaultVisit(_bigint_const);
+		}
+
+		public virtual void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			DefaultVisit(_foreach_stmt_formatting);
+		}
 	}
 
 

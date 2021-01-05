@@ -13,28 +13,28 @@
     File "..\bin\SyntaxTreeConverters.dll"
     File "..\bin\SyntaxVisitors.dll"
     File "..\bin\YieldHelpers.dll"
-	File "..\bin\ICSharpCode.NRefactory.dll"
+    File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
     File "..\bin\OptimizerConversion.dll"
-	File "..\bin\ICSharpCode.AvalonEdit.dll"
-	File "..\bin\ICSharpCode.SharpDevelop.dll"
-	File "..\bin\ICSharpCode.SharpDevelop.Dom.dll"
-	File "..\bin\ICSharpCode.Core.WinForms.dll"
-	File "..\bin\ICSharpCode.Core.dll"
-	File "..\bin\ICSharpCode.Core.Presentation.dll"
-	File "..\bin\ICSharpCode.SharpDevelop.Widgets.dll"
-	File "..\bin\ControlLibrary.sdcl"
-	File "..\bin\AvalonDock.dll"
-	File "..\bin\Mono.Cecil.dll"
+    File "..\bin\ICSharpCode.AvalonEdit.dll"
+    File "..\bin\ICSharpCode.SharpDevelop.dll"
+    File "..\bin\ICSharpCode.SharpDevelop.Dom.dll"
+    File "..\bin\ICSharpCode.Core.WinForms.dll"
+    File "..\bin\ICSharpCode.Core.dll"
+    File "..\bin\ICSharpCode.Core.Presentation.dll"
+    File "..\bin\ICSharpCode.SharpDevelop.Widgets.dll"
+    File "..\bin\ControlLibrary.sdcl"
+    File "..\bin\AvalonDock.dll"
+    File "..\bin\Mono.Cecil.dll"
 	;File "libs\System.Core.dll"
-	File "gacutil.exe"
-	File "gacutil.exe.config"
-	File "gacutlrc.dll"
+    File "gacutil.exe"
+    File "gacutil.exe.config"
+    File "gacutlrc.dll"
     File "License.txt"
     File "License_en.txt"
     File "copyright.txt"
-	File "..\bin\pabcnetc.exe.config"
-	File "..\bin\pabcnetcclear.exe.config"
+    File "..\bin\pabcnetc.exe.config"
+    File "..\bin\pabcnetcclear.exe.config"
 
 
 ; main config - only .NET 4.7.1 and above
@@ -61,14 +61,14 @@
     ${AddFile} "SyntaxTreeConverters.dll"
     ${AddFile} "YieldHelpers.dll"
     ${AddFile} "SyntaxVisitors.dll"
-	${AddFile} "ICSharpCode.NRefactory.dll"
+    ${AddFile} "ICSharpCode.NRefactory.dll"
     ${AddFile} "TreeConverter.dll"
     ${AddFile} "OptimizerConversion.dll"
-	${AddFile} "Mono.Cecil.dll"
+    ${AddFile} "Mono.Cecil.dll"
     ${AddFile} "License.txt"
     ${AddFile} "copyright.txt"
-	${AddFile} "pabcnetc.exe.config"
-	${AddFile} "pabcnetcclear.exe.config"
+    ${AddFile} "pabcnetc.exe.config"
+    ${AddFile} "pabcnetcclear.exe.config"
 
     Delete "$INSTDIR\Lib\*.pas"
     SetOutPath "$INSTDIR\Lib"
@@ -129,14 +129,21 @@
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
+    File ..\bin\Lib\OpenCLABCBase.pcu
     File ..\bin\Lib\OpenCLABC.pcu
     File ..\bin\Lib\OpenGL.pcu
+    File ..\bin\Lib\OpenGLABCBase.pcu
     File ..\bin\Lib\OpenGLABC.pcu
+    File ..\bin\Lib\School.pcu
+    File ..\bin\Lib\SF.pcu
+    File ..\bin\Lib\Turtle.pcu
+    File ..\bin\Lib\TwoPanelsWindow.pcu
+    File ..\bin\Lib\NUnitABC.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
-
+    File ..\bin\Lib\nunit.framework.dll 
 	
     ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
@@ -195,12 +202,23 @@
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
+    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "OpenGL.pcu"
+    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pcu"
+    ${AddFile} "School.pcu"
+    ${AddFile} "SF.pcu"
+    ${AddFile} "Turtle.pcu"
+    ${AddFile} "TwoPanelsWindow.pcu"
+    ${AddFile} "NUnitABC.pcu"
+
+
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
+    ${AddFile} "nunit.framework.dll"
+    
     ${AddFile} "PABCRtl.pdb"
 
     SetOutPath "$INSTDIR\Doc"
@@ -213,6 +231,8 @@
     Push "Lib\HelixToolkit.Wpf.dll"
     Call NGEN
     Push "Lib\HelixToolkit.dll"
+    Call NGEN
+    Push "Lib\nunit.framework.dll"
     Call NGEN
 	
     SetOutPath "$INSTDIR\LibSource"
@@ -271,9 +291,17 @@
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
+    File ..\bin\Lib\OpenCLABCBase.pas
     File ..\bin\Lib\OpenCLABC.pas
     File ..\bin\Lib\OpenGL.pas
+    File ..\bin\Lib\OpenGLABCBase.pas
     File ..\bin\Lib\OpenGLABC.pas
+    File ..\bin\Lib\School.pas
+    File ..\bin\Lib\SF.pas
+    File ..\bin\Lib\Turtle.pas
+    File ..\bin\Lib\TwoPanelsWindow.pas
+    File ..\bin\Lib\NUnitABC.pas
+
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -327,15 +355,23 @@
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
-    ${AddFile} "OpenGL.pas"
     ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "Speech.pas"
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
+    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pas"
     ${AddFile} "OpenGL.pas"
+    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pas"
+    ${AddFile} "School.pas"
+    ${AddFile} "SF.pas"
+    ${AddFile} "Turtle.pas"
+    ${AddFile} "TwoPanelsWindow.pas"
+    ${AddFile} "NUnitABC.pas"
+
+
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	

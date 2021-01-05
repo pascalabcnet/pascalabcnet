@@ -7,7 +7,7 @@
 <link rel="StyleSheet" href="../../default.css">
 </head>
 <body><H1>Условная операция</H1>
-<p>Условная операция имеет следующий вид:</p>
+<p>Условная операция (<strong>первая форма</strong>) имеет следующий вид:</p>
 <blockquote>
 	<em>условие</em> <code>?</code> <em>выражение1</em> <code>:</code> <em>выражение2</em>
 </blockquote>
@@ -24,5 +24,31 @@
 	<p><code><b>var</b> min: real;<br><strong>if</strong> a&lt;b <strong>then</strong><br>&nbsp; 
 	min := a<br><strong>else</strong> min := b;</code></p>
 </blockquote>
+
+<p>Кроме того, имеется <strong>вторая форма условной операции</strong> в 
+синтаксисе Паскаля: </p>
+<blockquote>
+	<code><strong>if</strong><em> </em> </code>
+	<em>условие</em> <code> <strong>then</strong></code> <em>выражение1</em> <code><strong>else</strong></code> <em>выражение2</em>
+</blockquote>
+<p>Например: </p>
+<blockquote>
+	<p><code><b>var</b> min := <strong>if</strong> a &lt; b <strong>then</strong> a 
+	<strong>else</strong> b;</code></p>
+</blockquote>
+<p>Рекомендуется использовать вторую форму условной операции.</p>
+<p><strong>Ограничение</strong>. Вторую форму условной операции нельзя 
+использовать в качестве выражения верхнего уровня в лямбдах. Следующий код 
+ошибочен:</p>
+<blockquote>
+	<p><code><b>var</b> l: real -&gt; real := x -&gt; <strong>if</strong> x&lt;0 <strong>
+	then</strong> 0 <strong>else</strong> x;</code></p>
+</blockquote>
+<p>Для решения указанной проблемы можно взять условную операцию в скобки:</p>
+<blockquote>
+	<p><code><b>var</b> l: real -&gt; real := x -&gt; (<strong>if</strong> x&lt;0 <strong>
+	then</strong> 0 <strong>else</strong> x);</code></p>
+</blockquote>
+<p>&nbsp;</p>
 
 </body></html>

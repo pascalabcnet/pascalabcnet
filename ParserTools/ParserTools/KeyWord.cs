@@ -52,6 +52,7 @@ namespace PascalABCCompiler.Parsers
         PointerType,
         Colon,
         Punkt,
+        SquareBracket,
         ThrowNew,
         CommonKeyword,
         CommonExpressionKeyword

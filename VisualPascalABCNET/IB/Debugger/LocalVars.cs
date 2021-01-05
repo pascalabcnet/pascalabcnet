@@ -837,7 +837,7 @@ namespace VisualPascalABC
                 List<IListItem> list = new List<IListItem>();
                 if (val.IsArray)
                 {
-                    foreach (NamedValue element in val.Dereference.GetArrayElements())
+                    foreach (NamedValue element in val.GetArrayElements())
                     {
                         list.Add(new ValueItem(element,null));
                     }

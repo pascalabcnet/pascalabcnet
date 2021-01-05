@@ -2,7 +2,6 @@
 <tags>
   <tag value="Выражения">
     <name value="stmt_or_expression" />
-    <name value="const_expr" />
     <name value="question_constexpr" />
     <name value="const_simple_expr" />
     <name value="as_is_constexpr" />
@@ -22,7 +21,6 @@
     <name value="question_expr" />
     <name value="new_expr" />
     <name value="relop_expr" />
-    <name value="simple_expr" />
     <name value="as_is_expr" />
     <name value="term" />
     <name value="default_expr" />
@@ -131,7 +129,6 @@
     <name value="array_const" />
     <name value="question_constexpr" />
     <name value="init_const_expr" />
-    <name value="const_expr" />
     <name value="const_elem" />
     <name value="record_const" />
     <name value="const_simple_expr" />
@@ -151,7 +148,6 @@
     <name value="question_constexpr" />
     <name value="init_const_expr" />
     <name value="const_name" />
-    <name value="const_expr" />
     <name value="const_elem" />
     <name value="literal_or_number" />
     <name value="const_simple_expr" />
@@ -323,7 +319,6 @@
     <name value="var_decl_part" />
     <name value="typed_const" />
     <name value="var_stmt" />
-    <name value="const_expr" />
     <name value="func_decl_lambda" />
   </tag>
 </tags>

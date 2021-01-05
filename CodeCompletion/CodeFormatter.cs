@@ -416,7 +416,13 @@ namespace CodeFormatters
                                         lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
                                 }
                                 else
+                                {
+                                    
                                     lines[i] = new string(' ', off) + lines[i].Trim();
+                                    if (lines[i].EndsWith(" else"))
+                                        lines[i] += " ";
+                                }
+                                    
                             }
                                 
                         }
@@ -484,7 +490,7 @@ namespace CodeFormatters
                 if (s.Length > 0 && !char.IsWhiteSpace(s[0]) && s[0] != '{' && !s.StartsWith("//") && !s.StartsWith("(*") && s[0] != ';' && !char.IsWhiteSpace(s[0]) && (sb.Length == 0 || !char.IsWhiteSpace(sb[sb.Length-1])))
                     sb.Append(' ');
             }
-            else
+            else if (s.IndexOf("//") == -1)
                 s = s.TrimStart(' ', '\t');
             sb.Append(s);
             if (add_space_after)
@@ -902,9 +908,11 @@ namespace CodeFormatters
                     add_newline_before = true;
                 }*/
                 visit_node(_statement_list.left_logical_bracket);
+                //add_space_before = true;
             }
             
-            if (!in_one_row(_statement_list) && _statement_list.left_logical_bracket != null && _statement_list.subnodes.Count > 0 && _statement_list.subnodes[0].source_context != null && _statement_list.left_logical_bracket.source_context.end_position.line_num == _statement_list.subnodes[0].source_context.begin_position.line_num)
+            if (!in_one_row(_statement_list) && _statement_list.left_logical_bracket != null && _statement_list.subnodes.Count > 0 && _statement_list.subnodes[0].source_context != null && _statement_list.left_logical_bracket.source_context.end_position.line_num == _statement_list.subnodes[0].source_context.begin_position.line_num 
+                && !_statement_list.left_logical_bracket.text.StartsWith("##"))
                 add_newline_after = true;
             else
                 add_space_after = true;
@@ -1673,7 +1681,7 @@ namespace CodeFormatters
         {
             if (_program_module.program_name != null)
                 visit_node(_program_module.program_name);
-            if (_program_module.used_units != null)
+            if (_program_module.used_units != null && _program_module.used_units.source_context != null)
                 visit_node(_program_module.used_units);
             if (_program_module.program_block != null)
                 visit_node(_program_module.program_block); 
@@ -2385,6 +2393,14 @@ namespace CodeFormatters
                 WriteKeyword("begin");
                 IncOffset();
             }
+            else if (string.Compare(_token_info.text, "##", true) == 0)
+            {
+                WriteKeyword("##\n");
+            }
+            else if (string.Compare(_token_info.text, "###", true) == 0)
+            {
+                WriteKeyword("###\n");
+            }
             else if (string.Compare(_token_info.text, "initialization", true) == 0)
             {
                 WriteKeyword("initialization");
@@ -3054,8 +3070,8 @@ namespace CodeFormatters
             add_space_after = true;
             
             visit_node(_short_func_definition.procdef.proc_body);
-            if (!(_short_func_definition.procdef.proc_header is constructor))
-                IncOffset();
+            //if (!(_short_func_definition.procdef.proc_header is constructor))
+               IncOffset();
             in_procedure = tmp_in_procedure;
             multiline_stack_pop(_short_func_definition);
         }
@@ -3186,6 +3202,13 @@ namespace CodeFormatters
                 visit_node(_slice_expr_question.to);
             if (_slice_expr_question.step != null)
                 visit_node(_slice_expr_question.step);
+        }
+
+        public override void visit(index _index)
+        {
+            if (_index.inverted)
+                sb.Append("^");
+            visit_node(_index.index_expr);
         }
 
         public override void visit(is_pattern_expr _is_pattern_expr)
@@ -3381,6 +3404,65 @@ namespace CodeFormatters
         {
             visit_node(_dot_question_node.left);
             visit_node(_dot_question_node.right);
+        }
+        public override void visit(diapason_expr_new diap)
+        {
+            visit_node(diap.left);
+            visit_node(diap.right);
+        }
+
+        public override void visit(if_expr_new _if_expr_new)
+        {
+            sb.Append("if"); //sb.Append(" ");
+            SetKeywordOffset("if");
+            read_from_beg_pos = true;
+            visit_node(_if_expr_new.condition);
+            if (!in_one_row(_if_expr_new.condition))
+                add_newline_after = true;
+            add_space_before = true;
+            visit_node(_if_expr_new.if_true);
+            if (_if_expr_new.if_false != null)
+            {
+                add_space_before = true;
+                visit_node(_if_expr_new.if_false);
+            }
+        }
+
+        public override void visit(array_const_new acn)
+        {
+            sb.Append("|");
+            visit_node(acn.elements);
+            //sb.Append("|");
+        }
+
+        public override void visit(double_question_node dn)
+        {
+            visit_node(dn.left);
+            visit_node(dn.right);
+        }
+        public override void visit(bigint_const bi)
+        {
+            visit(new uint64_const(bi.val, bi.source_context));
+            //sb.Append("bi");
+        }
+        public override void visit(foreach_stmt_formatting fe)
+        {
+            WriteKeyword("foreach");
+            SetKeywordOffset("foreach");
+            sb.Append(" var (");
+            visit_node(fe.il);
+            add_space_after = true;
+            add_space_before = true;
+            visit_node(fe.in_what);
+            if (!in_one_row(fe.stmt))
+                add_newline_after = true;
+            add_space_before = true;
+            bool need_off = !(fe.stmt is statement_list);
+            if (need_off)
+                IncOffset();
+            visit_node(fe.stmt);
+            if (need_off)
+                DecOffset();
         }
         #endregion
     }

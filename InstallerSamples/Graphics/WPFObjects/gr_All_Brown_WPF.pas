@@ -5,7 +5,7 @@ uses WPFObjects;
 procedure MoveAll(a,b: integer);
 begin
   for var j:=0 to Objects.Count-1 do
-    Objects[j].moveOn(a,b);
+    Objects[j].moveBy(a,b);
 end;
 
 begin
@@ -33,7 +33,7 @@ begin
   while True do
   begin
     for var j:=0 to Objects.Count-1 do
-      Objects[j].MoveOn(Random(-1,1),Random(-1,1));
+      Objects[j].MoveBy(Random(-1,1),Random(-1,1));
     Sleep(10);
   end;
 end.

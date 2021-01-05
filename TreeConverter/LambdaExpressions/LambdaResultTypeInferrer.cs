@@ -107,6 +107,11 @@ namespace TreeConverter.LambdaExpressions
                         converted = syntaxTreeVisitor.convert_typed_expression_to_function_call(converted as typed_expression);
                 }
                 resultExpressionsTypes.Add(new Tuple<type_node, expression, expression_node>(converted.type, from, converted));
+                var si_list = syntaxTreeVisitor.context.find(RESULT_KEY_WORD);
+                if (si_list != null && si_list.Count > 0 && si_list[0].sym_info == null)
+                {
+                    si_list[0].sym_info = new local_variable(RESULT_KEY_WORD, converted.type, syntaxTreeVisitor.context.top_function, null);
+                }
             }
         }
 

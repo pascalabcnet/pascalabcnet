@@ -43,6 +43,8 @@ type
   /// Тип размера
   GSize = System.Windows.Size;
   /// Тип точки
+  Point = System.Windows.Point;
+  /// Тип точки
   GPoint = System.Windows.Point;
   /// Тип окна
   GWindow = System.Windows.Window;
@@ -79,7 +81,7 @@ function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): SolidColorBrush;
 /// Возвращает случайную точку графического окна. Необязательный параметр z задаёт отступ от края  
-function RandomWindowPoint(z: real := 0): GPoint;
+function RandomPoint(z: real := 0): GPoint;
 /// Процедура ускорения вывода. Обновляет экран после всех изменений
 procedure Redraw(p: ()->());
 //{{{--doc: Конец секции 1 }}} 
@@ -137,6 +139,19 @@ type
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator;
     begin
       Result := l.GetEnumerator;
+    end;
+    /// Очистить список игровых объектов 
+    procedure Clear;
+    begin
+      for var i:=Count-1 downto 0 do
+        Destroy(Items[i]);
+    end;
+    /// Удалить все игровые объекты, удовлетворяющие условию
+    procedure DestroyAll(condition: ObjectWPF -> boolean);
+    begin
+      for var i := Count - 1 downto 0 do
+        if condition(Items[i]) then
+          Destroy(Items[i]);
     end;
   end;
 
@@ -228,7 +243,7 @@ type
     /// Видимость графического объекта
     property Visible: boolean 
       read InvokeBoolean(()->ob.Visibility = Visibility.Visible)
-      write Invoke(procedure -> if value then ob.Visibility := Visibility.Visible else ob.Visibility := Visibility.Hidden);
+      write Invoke(procedure -> if value then begin gr.Visibility := Visibility.Visible; ob.Visibility := Visibility.Visible end else begin gr.Visibility := Visibility.Hidden; ob.Visibility := Visibility.Hidden end);
     /// Выравнивание текста внутри графического объекта
     property TextAlignment: Alignment write Invoke(WTA,Value);
     /// Размер шрифта текста внутри графического объекта
@@ -274,14 +289,18 @@ type
     procedure MoveForward(r: real);
     begin
       var a := Pi/180*(90-RotateAngle);
-      MoveOn(r*Cos(a),-r*Sin(a));
+      MoveBy(r*Cos(a),-r*Sin(a));
     end;
     /// Перемещает графический объект на вектор (a,b)
-    procedure MoveOn(a,b: real) := MoveTo(Left+a,Top+b);
+    procedure MoveBy(a,b: real) := MoveTo(Left+a,Top+b);
     /// Перемещает графический объект на вектор (a,b)
+    procedure MoveBy(v: (real,real)) := MoveTo(Left+v[0],Top+v[1]);
+    ///--
+    procedure MoveOn(a,b: real) := MoveTo(Left+a,Top+b);
+    ///--
     procedure MoveOn(v: (real,real)) := MoveTo(Left+v[0],Top+v[1]);
     /// Перемещает графический объект на вектор (dx,dy)
-    procedure Move; virtual := MoveOn(dx,dy);
+    procedure Move; virtual := MoveBy(dx,dy);
     /// Перемещает графический объект вдоль вектора Direction со скоростью Velocity за время dt
     procedure MoveTime(dt: real); virtual;
     begin
@@ -290,7 +309,7 @@ type
         exit;
       var dvx := dx/len*Velocity;
       var dvy := dy/len*Velocity;
-      MoveOn(dvx*dt,dvy*dt);
+      MoveBy(dvx*dt,dvy*dt);
     end;
     /// Поворачивает графический объект по часовой стрелке на угол a
     procedure Rotate(a: real) := RotateAngle += a;
@@ -315,7 +334,7 @@ type
     procedure Scale(r: real) := ScaleFactor *= r;
   
   private
-    procedure AnimMoveOnP(a,b,sec: real);
+    procedure AnimMoveByP(a,b,sec: real);
     begin
       var ax := new DoubleAnimation(a + transl.X, System.TimeSpan.FromSeconds(sec));
       var ay := new DoubleAnimation(b + transl.Y, System.TimeSpan.FromSeconds(sec));
@@ -350,12 +369,14 @@ type
     end;
   public
     /// Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд
-    procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveOnP,a,b,sec);
+    procedure AnimMoveBy(a,b: real; sec: real := 1) := Invoke(AnimMoveByP,a,b,sec);
+    ///--
+    procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveByP,a,b,sec);
     /// Анимирует перемещение графического объекта в направлении RotateAngle (вверх при RotateAngle=0)
     procedure AnimMoveForward(r: real);
     begin
       var a := Pi/180*(90-RotateAngle);
-      AnimMoveOn(r*Cos(a),-r*Sin(a));
+      AnimMoveBy(r*Cos(a),-r*Sin(a));
     end;
     /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
     procedure AnimMoveTo(x,y: real; sec: real := 1) := Invoke(AnimMoveToP,x,y,sec);
@@ -402,6 +423,8 @@ type
     begin
       Result := (Left < 0) or (Top < 0) or (Right > GraphWindow.Width) or (Bottom > GraphWindow.Height);
     end;
+    /// Tag хранит любые присоединённые характеристики объекта
+    auto property Tag: object;
   end;
   
 // -----------------------------------------------------
@@ -1185,7 +1208,9 @@ var
   /// Событие изменения размера графического окна
   OnResize: procedure;
   /// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
-  OnDrawFrame: procedure(dt: real) := nil;
+  OnDrawFrame: procedure(dt: real);
+  /// Событие, происходящее при закрытии основного окна
+  OnClose: procedure;
 
 // -----------------------------------------------------
 //>>     Функции пересечения# Intersection functions
@@ -1228,7 +1253,7 @@ function EmptyColor := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
-function RandomWindowPoint(z: real): GPoint := Pnt(Random(z,GraphWindow.Width-z),Random(z,GraphWindow.Height-z));
+function RandomPoint(z: real): GPoint := Pnt(Random(z,GraphWindow.Width-z),Random(z,GraphWindow.Height-z));
 
 var ColorsDict := new Dictionary<GColor,SolidColorBrush>;
 
@@ -1250,7 +1275,7 @@ procedure Redraw(p: ()->()) := GraphWPFBase.Invoke(p);
 procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
 
-function MoveOn(Self: Point; vx,vy: real): Point; extensionmethod;
+function MoveBy(Self: Point; vx,vy: real): Point; extensionmethod;
 begin
   Result.X := Self.X + vx;
   Result.Y := Self.Y + vy;
@@ -1527,21 +1552,29 @@ begin
 end;
 
 /// --- SystemKeyEvents
-procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs) := 
+procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs);
+begin
   if OnKeyDown<>nil then
     OnKeyDown(e.Key);
+end;
 
 procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) := 
+begin
   if OnKeyUp<>nil then
     OnKeyUp(e.Key);
+end;
     
 procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
+begin
   if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
     OnKeyPress(e.Text[1]);
+end;
     
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
+begin
   if OnResize<>nil then
     OnResize();
+end;
 
 var LastUpdatedTimeWPF := new System.TimeSpan(integer.MinValue); 
 
@@ -1550,6 +1583,8 @@ begin
   if OnDrawFrame<>nil then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
+    if LastUpdatedTimeWPF.Ticks = integer.MinValue then // первый раз
+      LastUpdatedTimeWPF := e1;
     var dt := e1 - LastUpdatedTimeWPF;
     LastUpdatedTimeWPF := e1;  
     OnDrawFrame(dt.Milliseconds/1000);
@@ -1569,6 +1604,10 @@ begin
     MainWindow.KeyUp += SystemOnKeyUp;
     MainWindow.TextInput += SystemOnKeyPress;
     MainWindow.SizeChanged += SystemOnResize;
+    MainWindow.Closing += (sender,e) -> begin 
+      if OnClose<>nil then
+        OnClose;
+    end;
     
     CompositionTarget.Rendering += RenderFrameWPF;
     
@@ -1577,12 +1616,14 @@ begin
     GraphWindow := GraphWPF.GraphWindow;
 
     host := new Canvas();
+    host.ClipToBounds := True;
     {host.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
     end;}
     var g := MainWindow.Content as DockPanel;
+    (g.children[0] as Canvas).ClipToBounds := False; // SSM 04/08/20 - возвращаем в False иначе графику GraphWPF становится не видно
     g.children.Add(host); // Слой графики WPF - последний
   end;
   app.Dispatcher.Invoke(AdditionalInit);
