@@ -12743,10 +12743,10 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     AddError(get_location(specificators[i]), "OBJECT_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 }
-                                if (spec_type == SystemLibrary.SystemLibrary.enum_base_type)
+                                /*if (spec_type == SystemLibrary.SystemLibrary.enum_base_type)
                                 {
                                     AddError(get_location(specificators[i]), "ENUM_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
-                                }
+                                }*/
                                 if (spec_type.IsStatic)
                                     AddError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 check_cycle_inheritance(param, spec_type);

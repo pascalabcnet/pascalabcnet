@@ -2272,7 +2272,7 @@ namespace PascalABCCompiler.NETGenerator
 
             TypeAttributes ta = (not_exist) ? ConvertAttributes(value) : TypeAttributes.NotPublic;
 
-            if (value.base_type is ICompiledTypeNode && (value.base_type as ICompiledTypeNode).compiled_type == TypeFactory.EnumType)
+            if (value.base_type is ICompiledTypeNode && (value.base_type as ICompiledTypeNode).compiled_type == TypeFactory.EnumType && gtpb == null)
             {
                 ta = TypeAttributes.Public;
                 if (value.type_access_level == type_access_level.tal_internal)
