@@ -18,4 +18,4 @@ end;
 
 begin 
   Assert(1=0);
-end
+end.
