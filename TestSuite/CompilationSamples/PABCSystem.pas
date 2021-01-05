@@ -8212,7 +8212,7 @@ function LogN(base, x: real) := Math.Log(x) / Math.Log(base);
 
 function Sqrt(x: real) := Math.Sqrt(x);
 
-function Sqr(x: integer): int64 := x * x;
+function Sqr(x: integer): int64 := int64(x) * int64(x);
 
 function Sqr(x: shortint): integer := x * x;
 
@@ -8222,11 +8222,11 @@ function Sqr(x: BigInteger): BigInteger := x * x;
 
 function Sqr(x: byte): integer := x * x;
 
-function Sqr(x: word): uint64 := x * x;
+function Sqr(x: word): uint64 := uint64(x) * uint64(x);
 
-function Sqr(x: longword): uint64 := x * x;
+function Sqr(x: longword): uint64 := uint64(x) * uint64(x);
 
-function Sqr(x: int64): int64 := x * x;
+function Sqr(x: int64): int64 := int64(x) * int64(x);
 
 function Sqr(x: uint64): uint64 := x * x;
 

@@ -1017,22 +1017,42 @@ namespace PascalABCCompiler.TreeConverter
 
         private readonly System.Collections.Generic.Stack<common_type_node> type_stack = new System.Collections.Generic.Stack<common_type_node>();
         
-        private void add_notequal_operator_if_need()
+        internal void add_notequal_operator_if_need(bool not_add_body= false)
         {
             List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.noteq_name);
+            common_method_node cmn = null;
+            common_parameter prm1 = null;
+            common_parameter prm2 = null;
             foreach (SymbolInfo si2 in si_list)
                 if (si2.sym_info is common_method_node)
-                    return;
+                {
+                    cmn = si2.sym_info as common_method_node;
+                    if (cmn.function_code != null)
+                        return;
+                }
             SymbolInfo si = si_list[0];
             SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
-        	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
-        	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
-        	cmn.IsOperator = true;
-        	common_parameter prm1 = new common_parameter("a",_ctn,SemanticTree.parameter_type.value,cmn,concrete_parameter_type.cpt_none,null,null);
-        	common_parameter prm2 = new common_parameter("b",_ctn,SemanticTree.parameter_type.value,cmn,concrete_parameter_type.cpt_none,null,null);
-        	cmn.parameters.AddElement(prm1);
-        	cmn.parameters.AddElement(prm2);
-        	statements_list body = new statements_list(null);
+            if (cmn == null)
+            {
+                cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name), SystemLibrary.SystemLibrary.bool_type, null, _ctn,
+                                                            SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_public, scope);
+                cmn.IsOperator = true;
+                prm1 = new common_parameter("a", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
+                prm2 = new common_parameter("b", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
+                cmn.parameters.AddElement(prm1);
+                cmn.parameters.AddElement(prm2);
+                cmn.is_overload = true;
+                _ctn.methods.AddElement(cmn);
+                _ctn.Scope.AddSymbol(compiler_string_consts.noteq_name, new SymbolInfo(cmn));
+            }
+            else
+            {
+                prm1 = cmn.parameters[0] as common_parameter;
+                prm2 = cmn.parameters[1] as common_parameter;
+            }
+            if (not_add_body)
+                return;
+            statements_list body = new statements_list(null);
         	foreach (class_field cf in _ctn.fields)
         	{
                 if (cf.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
@@ -1048,26 +1068,45 @@ namespace PascalABCCompiler.TreeConverter
         	}
         	body.statements.AddElement(new return_node(new bool_const_node(false,null),null));
         	cmn.function_code = body;
-        	cmn.is_overload = true;
-        	_ctn.methods.AddElement(cmn);
-        	_ctn.Scope.AddSymbol(compiler_string_consts.noteq_name,new SymbolInfo(cmn));
+        	
         }
         
-        private void add_equal_operator_if_need()
+        internal void add_equal_operator_if_need(bool not_add_body=false)
         {
         	List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.eq_name);
+            common_method_node cmn = null;
+            common_parameter prm1 = null;
+            common_parameter prm2 = null;
             foreach (SymbolInfo si2 in si_list)
         	    if (si2.sym_info is common_method_node)
-        		    return;
+                {
+                    cmn = si2.sym_info as common_method_node;
+                    if (cmn.function_code != null)
+                        return;
+                }
+        		    
             SymbolInfo si = si_list[0];
             SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
-        	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
-        	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
-        	cmn.IsOperator = true;
-        	common_parameter prm1 = new common_parameter("a",_ctn,SemanticTree.parameter_type.value,cmn,concrete_parameter_type.cpt_none,null,null);
-        	common_parameter prm2 = new common_parameter("b",_ctn,SemanticTree.parameter_type.value,cmn,concrete_parameter_type.cpt_none,null,null);
-        	cmn.parameters.AddElement(prm1);
-        	cmn.parameters.AddElement(prm2);
+            if (cmn == null)
+            {
+                cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name), SystemLibrary.SystemLibrary.bool_type, null, _ctn,
+                                                            SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_public, scope);
+                cmn.IsOperator = true;
+                prm1 = new common_parameter("a", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
+                prm2 = new common_parameter("b", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
+                cmn.parameters.AddElement(prm1);
+                cmn.parameters.AddElement(prm2);
+                cmn.is_overload = true;
+                _ctn.methods.AddElement(cmn);
+                _ctn.Scope.AddSymbol(compiler_string_consts.eq_name, new SymbolInfo(cmn));
+            }
+        	else
+            {
+                prm1 = cmn.parameters[0] as common_parameter;
+                prm2 = cmn.parameters[1] as common_parameter;
+            }
+            if (not_add_body)
+                return;
         	statements_list body = new statements_list(null);
         	foreach (class_field cf in _ctn.fields)
         	{
@@ -1084,9 +1123,7 @@ namespace PascalABCCompiler.TreeConverter
         	}
         	body.statements.AddElement(new return_node(new bool_const_node(true,null),null));
         	cmn.function_code = body;
-        	cmn.is_overload = true;
-        	_ctn.methods.AddElement(cmn);
-        	_ctn.Scope.AddSymbol(compiler_string_consts.eq_name,new SymbolInfo(cmn));
+        	
         }
         
         public void leave_record()
@@ -1094,8 +1131,8 @@ namespace PascalABCCompiler.TreeConverter
             check_implement_interfaces();
             if (!_ctn.IsEnum)
             {
-            	add_equal_operator_if_need();
-            	add_notequal_operator_if_need();
+            	//add_equal_operator_if_need();
+            	//add_notequal_operator_if_need();
             }
             if (type_stack.Count != 0)
             {

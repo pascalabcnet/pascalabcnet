@@ -490,7 +490,7 @@ namespace CodeFormatters
                 if (s.Length > 0 && !char.IsWhiteSpace(s[0]) && s[0] != '{' && !s.StartsWith("//") && !s.StartsWith("(*") && s[0] != ';' && !char.IsWhiteSpace(s[0]) && (sb.Length == 0 || !char.IsWhiteSpace(sb[sb.Length-1])))
                     sb.Append(' ');
             }
-            else
+            else if (s.IndexOf("//") == -1)
                 s = s.TrimStart(' ', '\t');
             sb.Append(s);
             if (add_space_after)
@@ -908,6 +908,7 @@ namespace CodeFormatters
                     add_newline_before = true;
                 }*/
                 visit_node(_statement_list.left_logical_bracket);
+                //add_space_before = true;
             }
             
             if (!in_one_row(_statement_list) && _statement_list.left_logical_bracket != null && _statement_list.subnodes.Count > 0 && _statement_list.subnodes[0].source_context != null && _statement_list.left_logical_bracket.source_context.end_position.line_num == _statement_list.subnodes[0].source_context.begin_position.line_num 

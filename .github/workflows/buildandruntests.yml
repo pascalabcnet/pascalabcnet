@@ -1,0 +1,38 @@
+name: Build & Run all tests (release)
+
+on:
+  workflow_dispatch:
+
+  release:
+    types:
+      - created
+
+defaults:
+  run:
+    shell: cmd
+
+jobs:
+  build:
+
+    name: Prepare and build on Windows Server 2016 VM
+    runs-on: windows-2016
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies into Virtual Environment...
+      run: _RegisterHelixNUnit.bat
+
+    - name: Build project in Release-mode, compile Pas-units, run tests
+      run: _RebuildReleaseAndRunTestsForGitHubActions.bat
+      timeout-minutes: 40
+      env:
+        PABCNET_BUILD_MODE: Release
+        PABCNET_RUN_TESTS:  false
+        PABCNET_INC_BUILD:  false
+        PABCNET_VERBOSE:    false
+
+    #- name: Publish artifacts (5/5)...
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: All_distros
+    #    path: Release
