@@ -998,7 +998,7 @@ type
       else SaveMaterialHelper(mat,info,1,back);
     end;
   public  
-    ///--
+///--
     procedure GetObjectData(info: System.Runtime.Serialization.SerializationInfo; context: System.Runtime.Serialization.StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -1088,17 +1088,17 @@ type
         RemoveChild(l[i]);
       end;  
     end;
-    ///--
+///--
     function CreateModel: Visual3D; override;
     begin
       Result := new ModelVisual3D;
     end;
-    ///--
+///--
     procedure GetObjectData(info: System.Runtime.Serialization.SerializationInfo; context: System.Runtime.Serialization.StreamingContext);
     begin
       inherited GetObjectData(info,context);
     end;
-    ///--
+///--
     constructor Create(info: System.Runtime.Serialization.SerializationInfo; context: System.Runtime.Serialization.StreamingContext);
     begin
       inherited Create(info,context);
@@ -1788,15 +1788,15 @@ type
 /// Возвращает клон сферы
     function Clone := (inherited Clone) as SphereT;
 
-    ///--
+///--
     function CreateModel: Visual3D; override := new SphereVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
       info.AddValue('radius', Radius, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -1842,9 +1842,9 @@ type
     property RadiusZ: real read GetRZ write SetRZ;
 /// Возвращает клон эллипсоида
     function Clone := (inherited Clone) as EllipsoidT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new EllipsoidVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -1852,7 +1852,7 @@ type
       info.AddValue('RadiusY', RadiusY, typeof(real));
       info.AddValue('RadiusZ', RadiusZ, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -1891,15 +1891,15 @@ type
     property SideLength: real read GetW write SetW;
 /// Возвращает клон куба
     function Clone := (inherited Clone) as CubeT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new CubeVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
       info.AddValue('SideLength', SideLength, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -1954,9 +1954,9 @@ type
     property Size: Size3D read GetSz write SetSz;
 /// Возвращает клон паралеллепипеда
     function Clone := (inherited Clone) as BoxT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new BoxVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -1964,7 +1964,7 @@ type
       info.AddValue('Width', Width, typeof(real));
       info.AddValue('Height', Height, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2022,9 +2022,9 @@ type
     property Direction: Vector3D read GetDir write SetDir;
 /// Возвращает клон 3D-стрелки
     function Clone := (inherited Clone) as ArrowT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new ArrowVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2034,7 +2034,7 @@ type
       info.AddValue('DirectionY', Direction.Y, typeof(real));
       info.AddValue('DirectionZ', Direction.Z, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2103,9 +2103,9 @@ type
     property Topcap: boolean read GetTC write SetTC;
 /// Возвращает клон усеченного конуса
     function Clone := (inherited Clone) as TruncatedConeT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new TruncatedConeVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2114,7 +2114,7 @@ type
       info.AddValue('TopRadius', TopRadius, typeof(real));
       info.AddValue('Topcap', Topcap, typeof(boolean));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2152,9 +2152,9 @@ type
     property Radius: real read GetR write SetR;
 /// Возвращает клон цилиндра
     function Clone := (inherited Clone) as CylinderT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new TruncatedConeVisual3D;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2184,9 +2184,9 @@ type
     property Visible: boolean read GetV write SetV;
 /// Возвращает клон чайника
     function Clone := (inherited Clone) as TeapotT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new Teapot;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2224,16 +2224,16 @@ type
     property Diameter: real read GetD;
 /// Возвращает клон системы координат
     function Clone := (inherited Clone) as CoordinateSystemT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new CoordinateSystemVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
       info.AddValue('ArrowLengths', ArrowLengths, typeof(real));
       info.AddValue('Diameter', Diameter, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2281,16 +2281,16 @@ type
     property FontSize: real read GetFS write SetFS;
 /// Возвращает клон билборда
     function Clone := (inherited Clone) as BillboardTextT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new BillboardTextVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
       info.AddValue('Text', Text, typeof(string));
       info.AddValue('FontSize', FontSize, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2356,9 +2356,9 @@ type
     property Color: GColor read GetColor write SetColor; override;
 /// Возвращает клон 3D-текстового объекта
     function Clone := (inherited Clone) as TextT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new TextVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2370,7 +2370,7 @@ type
       info.AddValue('UpDirectionZ', UpDirection.Z, typeof(real));
       info.AddValue('Color', ColorToLongWord(Color), typeof(longword));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2432,9 +2432,9 @@ type
     property Normal: Vector3D read GetN write SetN;
 /// Возвращает клон 3D-прямоугольника
     function Clone := (inherited Clone) as RectangleT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new RectangleVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2447,7 +2447,7 @@ type
       info.AddValue('NormalY', Normal.Y, typeof(real));
       info.AddValue('NormalZ', Normal.Z, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2500,15 +2500,15 @@ type
   public 
 /// Возвращает клон 3D-модели
     function Clone := (inherited Clone) as FileModelT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new FileModelVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
       info.AddValue('FileName', (model as FileModelVisual3D).Source as string, typeof(string));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2556,9 +2556,9 @@ type
     property Height: real read GetH write SetH;
 /// Возвращает клон трубы
     function Clone := (inherited Clone) as PipeT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new PipeVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2566,7 +2566,7 @@ type
       info.AddValue('InnerRadius', InnerRadius, typeof(real));
       info.AddValue('Height', Height, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2617,9 +2617,9 @@ type
     {property Size: Size3D read GetSz write SetSz;}
 /// Возвращает клон лего-детали
     function Clone := (inherited Clone) as LegoT;
-    ///--
+///--
     function CreateModel: Visual3D; override;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2627,7 +2627,7 @@ type
       info.AddValue('Rows', Rows, typeof(integer));
       info.AddValue('Height', Height, typeof(integer));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2649,13 +2649,13 @@ type
   public 
 /// Длина грани
     property Length: real read GetLength write Invoke(SetLengthP, value);
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
       info.AddValue('Length', Length, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2675,9 +2675,9 @@ type
     constructor(x, y, z, Length: real; m: GMaterial);
 /// Возвращает клон икосаэдра
     function Clone := (inherited Clone) as IcosahedronT;
-    ///--
+///--
     function CreateModel: Visual3D; override;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2696,9 +2696,9 @@ type
     constructor(x, y, z, Length: real; m: GMaterial);
 /// Возвращает клон додекаэдра
     function Clone := (inherited Clone) as DodecahedronT;
-    ///--
+///--
     function CreateModel: Visual3D; override;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2717,9 +2717,9 @@ type
     constructor(x, y, z, Length: real; m: GMaterial);
 /// Возвращает клон тетраэдра
     function Clone := (inherited Clone) as TetrahedronT;
-    ///--
+///--
     function CreateModel: Visual3D; override;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2738,9 +2738,9 @@ type
     constructor(x, y, z, Length: real; m: GMaterial);
 /// Возвращает клон октаэдра
     function Clone := (inherited Clone) as OctahedronT;
-    ///--
+///--
     function CreateModel: Visual3D; override;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2773,9 +2773,9 @@ type
     property P3: Point3D read GetP3 write SetP3;
 /// Устанавливает точки 3D-треугольника
     procedure SetPoints(p1, p2, p3: Point3D);
-    ///--
+///--
     function CreateModel: Visual3D; override;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2789,7 +2789,7 @@ type
       info.AddValue('p3y', P3.Y, typeof(real));
       info.AddValue('p3z', P3.Z, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2824,9 +2824,9 @@ type
     property Sides: integer read GetN write SetN;
 /// Возвращает клон правильной призмы
     function Clone := (inherited Clone) as PrismT;
-    ///--
+///--
     function CreateModel: Visual3D; override;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2834,7 +2834,7 @@ type
       info.AddValue('Height', Height, typeof(real));
       info.AddValue('Sides', Sides, typeof(integer));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2864,12 +2864,12 @@ type
 /// Возвращает клон правильной пирамиды
     function Clone := (inherited Clone) as PyramidT;
     function CreateModel: Visual3D; override;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -2982,9 +2982,9 @@ type
     property Color: GColor read GetC write SetC; override;
 /// Толщина проволоки правильной призмы
     property Thickness: real read GetT write SetT;
-    ///--
+///--
     function CreateModel: Visual3D; override := NewVisualObject(1,0,0,0,Colors.Transparent);
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -2994,7 +2994,7 @@ type
       info.AddValue('Color', ColorToLongword(Color), typeof(longword));
       info.AddValue('Thickness', Thickness, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -3044,7 +3044,7 @@ type
     property Color: GColor read GetC write SetC; override;
 /// Толщина проволоки правильной пирамиды
     property Thickness: real read GetT write SetT;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -3054,7 +3054,7 @@ type
     begin
       inherited Create(x, y, z, N, Radius, Height, Thickness, c);
     end;  
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -3102,9 +3102,9 @@ type
     property Points: array of Point3D read GetP write SetP;
 /// Возвращает клон 3D-отрезков
     function Clone := (inherited Clone) as SegmentsT;
-    ///--
+///--
     function CreateModel: Visual3D; override := new LinesVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
@@ -3118,7 +3118,7 @@ type
         info.AddValue('pz'+i, Points[i].Z, typeof(real));
       end;
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
@@ -3167,14 +3167,14 @@ type
     function Clone := (inherited Clone) as PrismT;
     
     function CreateModel: Visual3D; override := new TorusVisual3D;
-    ///--
+///--
     procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
     begin
       inherited GetObjectData(info,context);
       info.AddValue('Diameter', Diameter, typeof(real));
       info.AddValue('TubeDiameter', TubeDiameter, typeof(real));
     end;
-    ///--
+///--
     constructor Create(info: SerializationInfo; context: StreamingContext);
     begin
       inherited Create(info,context);
