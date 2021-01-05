@@ -916,7 +916,7 @@ window.onload = ()=>{
 </div>
 <script>on_page_added(document.getElementById("page-1"))</script>
 <div id="page-2" page_name="О неуправляемых .dll" hidden=true>
-<p>Лучше прочитайте <a href="https://docs.microsoft.com/en-us/dotnet/standard/managed-code">оффициальный документ от microsoft</a>, если хотите точной и подробно информации.</p>
+<p>Лучше прочитайте <a href="https://docs.microsoft.com/en-us/dotnet/standard/managed-code">оффициальный документ от microsoft</a>, если хотите точной и подробной информации.</p>
 <p>Если в кратце:</p>
 <p>Есть платформа .Net, объединяющая много языков программирования. В том числе C# и PascalABC.NET.</p>
 <p>.exe и .dll созданные такими языками содержат код в особом виде, позволяющем легко подключать
@@ -939,7 +939,7 @@ window.onload = ()=>{
 <p>Чтоб чистить подпрограммы было проще - я написал несколько инструментов.
 Вся упаковка н.у. модулей находится <a href="https://github.com/SunSerega/POCGL/tree/master/Packing/Template">тут</a>.
 Откройте папку <code>OpenCL</code> или <code>OpenGL</code>. Они устроены одинаково, поэтому объяснять можно на любой из них.</p>
-<p>Все файлы (кроме .exe и .pdb, которые создаёт паскаль) в
+<p>Все файлы (кроме .exe, .pdb и .pcu, которые создаёт паскаль) в
 этих папках открываются любым текстовым редактором.</p>
 <hr />
 <h3>Fixers</h3>
@@ -964,7 +964,7 @@ window.onload = ()=>{
 <hr />
 <p>Чтоб применить фиксеры и посмотреть на что они влияют - вызывайте <code>Pack Most.pas</code>.</p>
 <p>Ну а чтоб полностью собрать модули - вызывайте <code>PackAll.exe</code> в корне репозитория.<br />
-(или <code>.bat</code> файлы там же, для сборки отдельно 1 модуля)</p>
+(или <code>.bat</code> файлы там же, для сборки отдельных компонентов)</p>
 </div>
 <script>on_page_added(document.getElementById("page-3"))</script>
 <script>on_end_folder()</script>
@@ -998,12 +998,12 @@ window.onload = ()=>{
 <p>Имена объектов - это числа (в OpenGL обычно на 32 бита, в OpenCL - зависит от битности системы).</p>
 <p>Чтоб в подпрограмму, принимающую имена объектов определённого типа нельзя было передать имя
 объекта неправильного типа - в н.у. модулях для каждого типа объектов описана подобная запись:</p>
-<pre><code>  BufferName = record
+<pre><code>  gl_buffer = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
-    public static property Zero: BufferName read default(BufferName);
+    public static property Zero: gl_buffer read default(gl_buffer);
     public static property Size: integer read Marshal.SizeOf&amp;&lt;UInt32&gt;;
-    public function ToString: string; override := $'BufferName[{val}]';
+    public function ToString: string; override := $'gl_buffer[{val}]';
   end;
 </code></pre>
 <p>Такой подход не замедляет готовую программу, но позволяет отловить некоторые ошибки на этапе компиляции.</p>
@@ -1012,8 +1012,8 @@ window.onload = ()=>{
 <p>В обычной ситуации - вы будете взаимодействовать с именами только 3 способами:</p>
 <ol>
 <li><p>Объявление:</p>
-<pre><code>var name: BufferName;
-var names: array of BufferName := new BufferName[5];
+<pre><code>var name: gl_buffer;
+var names: array of gl_buffer := new gl_buffer[5];
 </code></pre>
 </li>
 <li><p>Передача исходным библиотекам:</p>
@@ -1022,14 +1022,14 @@ gl.CreateBuffers(names.Length, names);
 </code></pre>
 </li>
 <li><p>Использование статичного свойства <code>.Zero</code>:</p>
-<pre><code>procedure MyProc(buff: BufferName);
+<pre><code>procedure MyProc(buff: gl_buffer);
 begin
   ...
 end;
 ...
-MyProc(BufferName.Zero);
-// Это то же самое, но с лишними скобками
-MyProc(default(BufferName));
+MyProc(gl_buffer.Zero);
+// То же самое, но с лишними скобками:
+MyProc(default(gl_buffer));
 </code></pre>
 <p>У настоящих объектов имя никогда не будет нулевым.</p>
 <p>Но бывает не мало случаев когда исходные библиотеки могут принимать нулевое имя.<br />
@@ -1076,7 +1076,7 @@ MyProc(default(BufferName));
   end;
 </code></pre>
 <p>То есть вызов может выглядеть так:</p>
-<pre><code>var name: QueryName;
+<pre><code>var name: gl_query;
 ...
 gl.BeginQuery(QueryTarget.VERTICES_SUBMITTED, name);
 </code></pre>
@@ -1087,15 +1087,10 @@ gl.BeginQuery(QueryTarget.VERTICES_SUBMITTED, name);
 <pre><code>procedure gl.Clear(mask: ClearBufferMask);
 </code></pre>
 <pre><code>gl.Clear(
-  ClearBufferMask.COLOR_BUFFER_BIT or // очистка поверхности рисования одним цветом
-  ClearBufferMask.DEPTH_BUFFER_BIT    // очистка буфера глубины - обязательна при рисовании 3D
+  ClearBufferMask.COLOR_BUFFER_BIT + // очистка поверхности рисования одним цветом
+  ClearBufferMask.DEPTH_BUFFER_BIT   // очистка буфера глубины - обязательна при рисовании 3D
 );
 </code></pre>
-<p><code>or</code>, в данном случае, побитовое, а не логическое.</p>
-<p>Выражение<br />
-<code>ClearBufferMask.COLOR_BUFFER_BIT or ClearBufferMask.DEPTH_BUFFER_BIT</code><br />
-можно читать как &quot;все биты <code>COLOR_BUFFER_BIT</code> + все биты <code>DEPTH_BUFFER_BIT</code>&quot;.</p>
-<p>А в случае <code>gl.Clear</code> эта комбинация значит &quot;очистить буфер цвета <strong>и</strong> буфер глубины&quot;</p>
 </div>
 <script>on_page_added(document.getElementById("page-6"))</script>
 <div id="page-7" page_name="Классы-контейнеры подпрограмм" hidden=true>
@@ -1109,9 +1104,9 @@ gl.BeginQuery(QueryTarget.VERTICES_SUBMITTED, name);
 <hr />
 <p>С OpenGL немного сложнее: в каждом контексте у каждой подпрограммы может быть свой адрес.
 Поэтому подпрограммы надо получать в зависимости от контекста. В модуле <code>OpenGL</code> это реализовано так:</p>
-<pre><code>//ToDo создание контекста и привязка его к текущему потоку
+<pre><code>//ToDo Создание контекста и привязка его к текущему потоку
 
-// все адреса и экземпляры делегатов создаются в конструкторе
+// Все адреса и экземпляры делегатов создаются в конструкторе
 var gl := new OpenGL.gl;
 
 while true do
@@ -1126,7 +1121,7 @@ end;
 </code></pre>
 <hr />
 <p>У каждого расширения есть свой класс. К примеру, так используется расширение <code>GL_AMD_debug_output</code>:</p>
-<pre><code>//ToDo опять же, сначала контекст
+<pre><code>//ToDo Опять же, сначала контекст
 
 var glDebugOutputAMD := new OpenGL.glDebugOutputAMD;
 ...
@@ -1139,7 +1134,7 @@ glDebugOutputAMD.DebugMessageEnableAMD(...);
 Подпрограммы включённые в класс <code>gdi</code> - это то что может понадобиться вам чтоб настроить и подготовить форму для рисования на ней с помощью OpenGL.</p>
 </li>
 <li><p><code>wgl</code> содержит методы для работы с OpenGL на Windows. Для других ОС есть класс <code>glX</code>, но он сейчас выключен из релиза.
-Это потому, что у меня нет компьютера, на котором установлена другая ОС, а значит я не могу
+Это потому, что у меня нет компьютера, на котором установлена не_Windows, а значит я не могу
 заняться тестированием чтоб узнать как правильно объявлять всё в этом классе. Если у вас есть
 другая ОС и вы хотите помочь мне разобраться - пожалуйста, свяжитесь со мной (желательно в issue).</p>
 </li>
@@ -1270,25 +1265,29 @@ v2.Println;
 v2.SqrLength.Sqrt.Println; // Обязательно будет 1
 </code></pre>
 <h3>Cross</h3>
-<p>Статичный метод <code>.Cross</code> возвращает произведение векторов (Cross product, не путать со скалярным произведением).
+<p>Статичные методы <code>.Cross[CW,CCW]</code> возвращают векторное произведение двух
+3-х мерных векторов (&quot;Cross product&quot;, не путать со скалярным произведением).<br />
 Векторное произведение - это вектор, перпендикулярный обоим входным векторам и имеющий длину,
 равную площади параллелограмма, образованного входными векторами.</p>
-<p>Работает только для 3-х мерных векторов.</p>
-<p>И не работает для векторов с элементами-беззнаковыми целыми.<br />
-(потому что даёт переполнение на практически любых входных значениях. Если найдёте нормальное применение - напишите в issue).</p>
+<p>Не работает для векторов с элементами-беззнаковыми_целыми, потому что даёт переполнение
+на практически любых входных значениях. Если найдёте нормальное применение - напишите в issue.</p>
 <p>В математике произведение векторов может вернуть один из двух противоположных друг-другу векторов,
 в зависимости от ориентации системы координат. В модуле <code>OpenGL</code> это решено следующим образом:</p>
-<pre><code>var c := Vec3d.Cross(a, b);
-</code></pre>
-<p>В данном случае, вектор <code>c</code> будет такой, чтоб соблюдалось следующее условие:</p>
 <ul>
-<li>Если поставить начала всех 3 векторов в точку (0;0;0), а камеру в точку (a+b+c) и направить
-в точку (0;0;0) - вектора a, b и c будут расположены по часовой стрелке вокруг центра экрана.</li>
+<li><p><code>Vec3d.CrossCW(new Vec3d(1,0,0), new Vec3d(0,1,0)) = new Vec3d(0,0,1)</code>.</p>
+</li>
+<li><p><code>Vec3d.CrossCCW(a,b) = -Vec3d.CrossCW(a,b)</code>;</p>
+</li>
 </ul>
-<p>Если надо чтоб было против часовой стрелки - можно использовать CCW (counter clock wise, против часовой стрелки) версию <code>.Cross</code>:</p>
-<pre><code>var c := Vec3d.CrossCCW(a,b);
+<h3>Ввод с клавиатуры</h3>
+<p>Статичные методы <code>Read</code> и <code>Readln</code> создают новый вектор из элементов, прочитанных из стандартного ввода:</p>
+<pre><code>// Прочитать 2 числа из ввода
+Vec2d.Read('Введите 2 координаты:').Println;
+
+// Прочитать 2 числа из ввода
+// и затем пропустить всё до конца строки
+Vec2d.Readln.Println;
 </code></pre>
-<p>(ну или можно использовать <code>-Vec3d.Cross(a,b)</code>, это даст тот же результат но с 1 лишней операцией)</p>
 <h3>Превращение в строку</h3>
 <pre><code>var v1: Vec4d;
 ...
@@ -1438,6 +1437,19 @@ m.Transpose.Println; // Выводит:
 <code>v*m</code> это то же самое что <code>m.Transpose*v</code>.</p>
 <h3>Умножение 2 матриц</h3>
 <p><code>m1*m2</code> - это математическое умножение матриц <code>m1</code> и <code>m2</code>.</p>
+<h3>Ввод с клавиатуры</h3>
+<p>Статичные методы <code>Read[,ln][Rows,Cols]</code> создают новую матрицу из элементов, прочитанных из стандартного ввода:</p>
+<pre><code>// Прочитать 3*4=12 элементов из ввода
+// и сохранить в новую матрицу по строкам
+Mtr3x4d.ReadRows('Введите 12 элементов матрицы:').Println;
+
+// Прочитать 4 элемета из ввода, переходя на
+// следущую строку ввода после чтения каждого столбца
+Mtr2d.ReadlnCols(
+  'Введите столбцы матрицы...',
+  col -&gt; $'Столбец #{col}:'
+).Println;
+</code></pre>
 <h3>Превращение в строку</h3>
 <p>Как и у векторов - матрицы можно выводить и превращать в строку</p>
 <pre><code>var m: Mtr4d;
