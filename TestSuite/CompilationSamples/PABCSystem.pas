@@ -259,6 +259,9 @@ type
   /// Указывает на возможность сериализации класса
   Serializable = System.SerializableAttribute;
   
+  /// Указывает, что поле сериализуемого класса не должно быть сериализовано
+  NonSerialized = System.NonSerializedAttribute;
+
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   

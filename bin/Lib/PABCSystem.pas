@@ -259,6 +259,9 @@ type
   /// Указывает на возможность сериализации класса
   Serializable = System.SerializableAttribute;
   
+  /// Указывает, что поле сериализуемого класса не должно быть сериализовано
+  NonSerialized = System.NonSerializedAttribute;
+
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
@@ -617,7 +620,7 @@ type
     end;
     property Low: integer read l;
     property High: integer read h;
-    property Count: integer read GetCount;
+    //property Count: integer read GetCount;
 
     static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator in(x: real; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
@@ -660,15 +663,15 @@ type
     end;}
     function ToLinkedList: LinkedList<integer>;
     begin
-      Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
     function ToHashSet: HashSet<integer>;
     begin
-      Result := new HashSet<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new HashSet<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
     function ToSortedSet: SortedSet<integer>;
     begin
-      Result := new SortedSet<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new SortedSet<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
   end;
 
@@ -690,7 +693,7 @@ type
     end;
     property Low: char read l;
     property High: char read h;
-    property Count: integer read GetCount;
+    //property Count: integer read GetCount;
 
     static function operator in(x: char; r: CharRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
@@ -733,15 +736,15 @@ type
     end;}
     function ToLinkedList: LinkedList<char>;
     begin
-      Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
     function ToHashSet: HashSet<char>;
     begin
-      Result := new HashSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new HashSet<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
     function ToSortedSet: SortedSet<char>;
     begin
-      Result := new SortedSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new SortedSet<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
   end;
   

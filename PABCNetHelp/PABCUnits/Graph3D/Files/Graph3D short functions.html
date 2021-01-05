@@ -2,6 +2,7 @@
 <param name="Keyword" value="ARGB">
 <param name="Keyword" value="EmptyColor">
 <param name="Keyword" value="GrayColor">
+<param name="Keyword" value="Invoke">
 <param name="Keyword" value="P3D">
 <param name="Keyword" value="Pnt">
 <param name="Keyword" value="RandomColor">
@@ -18,6 +19,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает полностью прозрачный цвет</td></tr>
 <tr><td><code><b>function</b> GrayColor(b: byte): Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает серый цвет с интенсивностью b</td></tr>
+<tr><td><code><b>procedure</b> Invoke(p: <b>procedure</b>);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Процедура синхронизации операций с потоком, создающим графические элементы</td></tr>
 <tr><td><code><b>function</b> P3D(x, y, z: real): Point3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-точку с координатами (x,y,z)</td></tr>
 <tr><td><code><b>function</b> Pnt(x, y: real): Point;</code>
@@ -26,7 +29,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный цвет</td></tr>
 <tr><td><code><b>function</b> Rect(x, y, w, h: real): GRect;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h</td></tr>
-<tr><td><code><b>procedure</b> Redraw(p: ()-&gt;());</code>
+<tr><td><code><b>procedure</b> Redraw(p: <b>procedure</b>);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Процедура ускорения вывода. Обновляет экран после всех изменений</td></tr>
 <tr><td><code><b>function</b> RGB(r, g, b: byte): Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)</td></tr>
