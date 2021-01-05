@@ -418,6 +418,11 @@ begin
     end;
   except
     on e: Exception do
+    begin
+      if nogui then
+        raise new Exception(e.ToString());
       assert(false, e.ToString());
+    end;
+     
   end;
 end.
