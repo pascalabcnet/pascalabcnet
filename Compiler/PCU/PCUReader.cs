@@ -2104,6 +2104,10 @@ namespace PascalABCCompiler.PCU
             ctn.type_special_kind = tsk;
             if (ctn.full_name == "PABCSystem.BinaryFile")
                 ctn.type_special_kind = SemanticTree.type_special_kind.binary_file;
+            if (ctn.type_special_kind != SemanticTree.type_special_kind.set_type)
+            {
+                SystemLibrary.SystemLibrary.init_reference_type(ctn);
+            }
             if (type_is_generic_definition)
             {
                 foreach (common_type_node par in type_params)
@@ -2112,14 +2116,11 @@ namespace PascalABCCompiler.PCU
                     ReadTypeParameterEliminations(par);
                 }
             }
-            type_node elemnet_type = null;
+            type_node element_type = null;
             if (CanReadObject())
-                elemnet_type = GetTypeReference();
-            ctn.element_type = elemnet_type;
-            if (ctn.type_special_kind != SemanticTree.type_special_kind.set_type)
-            {
-                SystemLibrary.SystemLibrary.init_reference_type(ctn);
-            }
+                element_type = GetTypeReference();
+            ctn.element_type = element_type;
+            
             if (ctn.type_special_kind == SemanticTree.type_special_kind.set_type)
             {
                 ctn = compilation_context.AddTypeToSetTypeList(ctn);

@@ -3918,6 +3918,7 @@ namespace PascalABCCompiler.TreeConverter
                     record_type_name = null;
                     record_is_generic = false;
                     context.converted_type.internal_is_value = true;
+
                     if (_class_definition.body == null &&
                         (_class_definition.class_parents == null || _class_definition.class_parents.types.Count == 0))
                     {
@@ -3930,6 +3931,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
+                        
                         context.converted_type.ForwardDeclarationOnly = false;
                         weak_node_test_and_visit(_class_definition.body);
                         
@@ -4051,7 +4053,13 @@ namespace PascalABCCompiler.TreeConverter
         
         private void visit_class_member_realizations(SyntaxTree.class_body_list _class_body)
         {
-        	foreach (SyntaxTree.class_members clmem in _class_body.class_def_blocks)
+            if (context.converted_type.internal_is_value)
+            {
+                context.add_equal_operator_if_need();
+                context.add_notequal_operator_if_need();
+            }
+            
+            foreach (SyntaxTree.class_members clmem in _class_body.class_def_blocks)
             {
         		foreach (SyntaxTree.declaration sd in clmem.members)
             	{
@@ -11966,6 +11974,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 make_attributes_for_declaration(_type_declaration, ctn);
             }
+            if (cl_def.keyword == class_keyword.Class || cl_def.keyword == class_keyword.Interface)
+                ctn.is_class = true;//nado ranshe pomechat kak is_class
             if (is_generic)
             {
                 if (predefined_generic)
@@ -12003,6 +12013,7 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(get_location(cl_def.class_parents.types[i]), "PARTIAL_CLASS_PARENTS_MISMATCH");
                 }*/
             }
+            
             visit_where_list(cl_def.where_section);
            
             CheckWaitedRefTypes(ctn);

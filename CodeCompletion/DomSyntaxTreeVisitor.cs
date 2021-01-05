@@ -2910,6 +2910,13 @@ namespace CodeCompletion
                                 }
 
                             }
+                            else if (returned_scope is ProcScope)
+                            {
+                                method_call mc = new method_call(_dot_node, new expression_list());
+                                search_all = true;
+                                mc.visit(this);
+                                return;
+                            }
                         }
                         
                         if (returned_scope != null && returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
