@@ -245,7 +245,16 @@ begin
       p.StandardInput.WriteLine('GO');
 		  //p.StandardInput.AutoFlush := true;
 		  //var p := System.Diagnostics.Process.Start(psi);
-    p.WaitForExit();
+		if nogui then
+    begin
+      var success := p.WaitForExit(60000);
+      if not success then
+      begin
+        raise new Exception('Running of ' + files[i] + ' failed.');
+      end;
+    end
+    else
+      p.WaitForExit();
     //while not p.HasExited do
     //  Sleep(5);
     if p.ExitCode <> 0 then
