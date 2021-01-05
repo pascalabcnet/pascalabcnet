@@ -14,11 +14,11 @@
 <param name="Keyword" value="FillRectangle">
 <param name="Keyword" value="FillSector">
 <param name="Keyword" value="Line">
-<param name="Keyword" value="LineOn">
+<param name="Keyword" value="LineBy">
 <param name="Keyword" value="LineRel">
 <param name="Keyword" value="Lines">
 <param name="Keyword" value="LineTo">
-<param name="Keyword" value="MoveOn">
+<param name="Keyword" value="MoveBy">
 <param name="Keyword" value="MoveRel">
 <param name="Keyword" value="MoveTo">
 <param name="Keyword" value="Pie">
@@ -118,7 +118,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки p до точки p1</td></tr>
 <tr><td><code><b>procedure</b> Line(p,p1: Point; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки p до точки p1 цветом c</td></tr>
-<tr><td><code><b>procedure</b> LineOn(dx,dy: real);</code>
+<tr><td><code><b>procedure</b> LineBy(dx,dy: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку</td></tr>
 <tr><td><code><b>procedure</b> LineRel(dx,dy: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку</td></tr>
@@ -128,7 +128,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезки, заданные массивом пар точек, цветом c</td></tr>
 <tr><td><code><b>procedure</b> LineTo(x,y: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)</td></tr>
-<tr><td><code><b>procedure</b> MoveOn(dx,dy: real);</code>
+<tr><td><code><b>procedure</b> MoveBy(dx,dy: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает текущую позицию рисования на вектор (dx,dy)</td></tr>
 <tr><td><code><b>procedure</b> MoveRel(dx,dy: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает текущую позицию рисования на вектор (dx,dy)</td></tr>

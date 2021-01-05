@@ -202,6 +202,11 @@ type
         Result := $'Bool[{self.val}]';
     end;
     
+    public static function operator implicit(b: Bool): boolean := b.val<>Bool.FALSE.val;
+    public static function operator implicit(b: boolean): Bool := new Bool(UInt32(b));
+    
+    public static function operator not(b: Bool): Bool := b.val=Bool.FALSE.val ? Bool.TRUE : Bool.FALSE;
+    
   end;
   
   BufferCreateType = record
@@ -474,7 +479,7 @@ type
     private static _QUEUE_ON_DEVICE                      := new CommandQueueProperties($0004);
     private static _QUEUE_ON_DEVICE_DEFAULT              := new CommandQueueProperties($0008);
     private static _QUEUE_RESERVED_QCOM                  := new CommandQueueProperties($40000000);
-    private static _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL := new CommandQueueProperties($FFFFFFFF80000000);
+    private static _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL := new CommandQueueProperties($80000000);
     
     public static property NONE:                                 CommandQueueProperties read _NONE;
     public static property QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:  CommandQueueProperties read _QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
@@ -484,7 +489,8 @@ type
     public static property QUEUE_RESERVED_QCOM:                  CommandQueueProperties read _QUEUE_RESERVED_QCOM;
     public static property QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: CommandQueueProperties read _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL;
     
-    public static function operator or(f1,f2: CommandQueueProperties) := new CommandQueueProperties(f1.val or f2.val);
+    public static function operator+(f1,f2: CommandQueueProperties) := new CommandQueueProperties(f1.val or f2.val);
+    public static function operator or(f1,f2: CommandQueueProperties) := f1+f2;
     
     public property ANY_FLAGS: boolean read self.val<>0;
     public property HAS_FLAG_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:  boolean read self.val and $0001 <> 0;
@@ -492,7 +498,7 @@ type
     public property HAS_FLAG_QUEUE_ON_DEVICE:                      boolean read self.val and $0004 <> 0;
     public property HAS_FLAG_QUEUE_ON_DEVICE_DEFAULT:              boolean read self.val and $0008 <> 0;
     public property HAS_FLAG_QUEUE_RESERVED_QCOM:                  boolean read self.val and $40000000 <> 0;
-    public property HAS_FLAG_QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: boolean read self.val and $FFFFFFFF80000000 <> 0;
+    public property HAS_FLAG_QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: boolean read self.val and $80000000 <> 0;
     
     public function ToString: string; override;
     begin
@@ -503,7 +509,7 @@ type
       if self.val and UInt64($0004) = UInt64($0004) then res += 'QUEUE_ON_DEVICE+';
       if self.val and UInt64($0008) = UInt64($0008) then res += 'QUEUE_ON_DEVICE_DEFAULT+';
       if self.val and UInt64($40000000) = UInt64($40000000) then res += 'QUEUE_RESERVED_QCOM+';
-      if self.val and UInt64($FFFFFFFF80000000) = UInt64($FFFFFFFF80000000) then res += 'QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL+';
+      if self.val and UInt64($80000000) = UInt64($80000000) then res += 'QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL+';
       if res.Length<>0 then
       begin
         res.Length -= 1;
@@ -561,6 +567,14 @@ type
     private static _COMMAND_MIGRATE_MEM_OBJECT_EXT              := new CommandType($4040);
     private static _COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL := new CommandType($409A);
     private static _COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL := new CommandType($409B);
+    private static _COMMAND_SVM_FREE_ARM                        := new CommandType($40BA);
+    private static _COMMAND_SVM_MEMCPY_ARM                      := new CommandType($40BB);
+    private static _COMMAND_SVM_MEMFILL_ARM                     := new CommandType($40BC);
+    private static _COMMAND_SVM_MAP_ARM                         := new CommandType($40BD);
+    private static _COMMAND_SVM_UNMAP_ARM                       := new CommandType($40BE);
+    private static _COMMAND_ACQUIRE_GRALLOC_OBJECTS_IMG         := new CommandType($40D2);
+    private static _COMMAND_RELEASE_GRALLOC_OBJECTS_IMG         := new CommandType($40D3);
+    private static _COMMAND_GENERATE_MIPMAP_IMG                 := new CommandType($40D6);
     private static _COMMAND_MEMFILL_INTEL                       := new CommandType($4204);
     private static _COMMAND_MEMCPY_INTEL                        := new CommandType($4205);
     private static _COMMAND_MIGRATEMEM_INTEL                    := new CommandType($4206);
@@ -609,6 +623,14 @@ type
     public static property COMMAND_MIGRATE_MEM_OBJECT_EXT:              CommandType read _COMMAND_MIGRATE_MEM_OBJECT_EXT;
     public static property COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL: CommandType read _COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL;
     public static property COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL: CommandType read _COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL;
+    public static property COMMAND_SVM_FREE_ARM:                        CommandType read _COMMAND_SVM_FREE_ARM;
+    public static property COMMAND_SVM_MEMCPY_ARM:                      CommandType read _COMMAND_SVM_MEMCPY_ARM;
+    public static property COMMAND_SVM_MEMFILL_ARM:                     CommandType read _COMMAND_SVM_MEMFILL_ARM;
+    public static property COMMAND_SVM_MAP_ARM:                         CommandType read _COMMAND_SVM_MAP_ARM;
+    public static property COMMAND_SVM_UNMAP_ARM:                       CommandType read _COMMAND_SVM_UNMAP_ARM;
+    public static property COMMAND_ACQUIRE_GRALLOC_OBJECTS_IMG:         CommandType read _COMMAND_ACQUIRE_GRALLOC_OBJECTS_IMG;
+    public static property COMMAND_RELEASE_GRALLOC_OBJECTS_IMG:         CommandType read _COMMAND_RELEASE_GRALLOC_OBJECTS_IMG;
+    public static property COMMAND_GENERATE_MIPMAP_IMG:                 CommandType read _COMMAND_GENERATE_MIPMAP_IMG;
     public static property COMMAND_MEMFILL_INTEL:                       CommandType read _COMMAND_MEMFILL_INTEL;
     public static property COMMAND_MEMCPY_INTEL:                        CommandType read _COMMAND_MEMCPY_INTEL;
     public static property COMMAND_MIGRATEMEM_INTEL:                    CommandType read _COMMAND_MIGRATEMEM_INTEL;
@@ -659,6 +681,14 @@ type
       if self.val = UInt32($4040) then Result := 'COMMAND_MIGRATE_MEM_OBJECT_EXT' else
       if self.val = UInt32($409A) then Result := 'COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL' else
       if self.val = UInt32($409B) then Result := 'COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL' else
+      if self.val = UInt32($40BA) then Result := 'COMMAND_SVM_FREE_ARM' else
+      if self.val = UInt32($40BB) then Result := 'COMMAND_SVM_MEMCPY_ARM' else
+      if self.val = UInt32($40BC) then Result := 'COMMAND_SVM_MEMFILL_ARM' else
+      if self.val = UInt32($40BD) then Result := 'COMMAND_SVM_MAP_ARM' else
+      if self.val = UInt32($40BE) then Result := 'COMMAND_SVM_UNMAP_ARM' else
+      if self.val = UInt32($40D2) then Result := 'COMMAND_ACQUIRE_GRALLOC_OBJECTS_IMG' else
+      if self.val = UInt32($40D3) then Result := 'COMMAND_RELEASE_GRALLOC_OBJECTS_IMG' else
+      if self.val = UInt32($40D6) then Result := 'COMMAND_GENERATE_MIPMAP_IMG' else
       if self.val = UInt32($4204) then Result := 'COMMAND_MEMFILL_INTEL' else
       if self.val = UInt32($4205) then Result := 'COMMAND_MEMCPY_INTEL' else
       if self.val = UInt32($4206) then Result := 'COMMAND_MIGRATEMEM_INTEL' else
@@ -731,30 +761,44 @@ type
     public constructor(val: IntPtr) := self.val := val;
     public constructor(val: Int32) := self.val := new IntPtr(val);
     
-    private static _CONTEXT_PLATFORM          := new ContextProperties($1084);
-    private static _CONTEXT_INTEROP_USER_SYNC := new ContextProperties($1085);
-    private static _GL_CONTEXT_KHR            := new ContextProperties($2008);
-    private static _EGL_DISPLAY_KHR           := new ContextProperties($2009);
-    private static _GLX_DISPLAY_KHR           := new ContextProperties($200A);
-    private static _WGL_HDC_KHR               := new ContextProperties($200B);
-    private static _CGL_SHAREGROUP_KHR        := new ContextProperties($200C);
-    private static _CONTEXT_TERMINATE_KHR     := new ContextProperties($2032);
-    private static _PRINTF_CALLBACK_ARM       := new ContextProperties($40B0);
-    private static _PRINTF_BUFFERSIZE_ARM     := new ContextProperties($40B1);
+    private static _CONTEXT_DIAGNOSTICS_LEVEL_GOOD_INTEL    := new ContextProperties($0001);
+    private static _CONTEXT_DIAGNOSTICS_LEVEL_BAD_INTEL     := new ContextProperties($0002);
+    private static _CONTEXT_DIAGNOSTICS_LEVEL_NEUTRAL_INTEL := new ContextProperties($0004);
+    private static _CONTEXT_DIAGNOSTICS_LEVEL_ALL_INTEL     := new ContextProperties($00FF);
+    private static _CONTEXT_PLATFORM                        := new ContextProperties($1084);
+    private static _CONTEXT_INTEROP_USER_SYNC               := new ContextProperties($1085);
+    private static _GL_CONTEXT_KHR                          := new ContextProperties($2008);
+    private static _EGL_DISPLAY_KHR                         := new ContextProperties($2009);
+    private static _GLX_DISPLAY_KHR                         := new ContextProperties($200A);
+    private static _WGL_HDC_KHR                             := new ContextProperties($200B);
+    private static _CGL_SHAREGROUP_KHR                      := new ContextProperties($200C);
+    private static _CONTEXT_TERMINATE_KHR                   := new ContextProperties($2032);
+    private static _PRINTF_CALLBACK_ARM                     := new ContextProperties($40B0);
+    private static _PRINTF_BUFFERSIZE_ARM                   := new ContextProperties($40B1);
+    private static _CONTEXT_SHOW_DIAGNOSTICS_INTEL          := new ContextProperties($4106);
     
-    public static property CONTEXT_PLATFORM:          ContextProperties read _CONTEXT_PLATFORM;
-    public static property CONTEXT_INTEROP_USER_SYNC: ContextProperties read _CONTEXT_INTEROP_USER_SYNC;
-    public static property GL_CONTEXT_KHR:            ContextProperties read _GL_CONTEXT_KHR;
-    public static property EGL_DISPLAY_KHR:           ContextProperties read _EGL_DISPLAY_KHR;
-    public static property GLX_DISPLAY_KHR:           ContextProperties read _GLX_DISPLAY_KHR;
-    public static property WGL_HDC_KHR:               ContextProperties read _WGL_HDC_KHR;
-    public static property CGL_SHAREGROUP_KHR:        ContextProperties read _CGL_SHAREGROUP_KHR;
-    public static property CONTEXT_TERMINATE_KHR:     ContextProperties read _CONTEXT_TERMINATE_KHR;
-    public static property PRINTF_CALLBACK_ARM:       ContextProperties read _PRINTF_CALLBACK_ARM;
-    public static property PRINTF_BUFFERSIZE_ARM:     ContextProperties read _PRINTF_BUFFERSIZE_ARM;
+    public static property CONTEXT_DIAGNOSTICS_LEVEL_GOOD_INTEL:    ContextProperties read _CONTEXT_DIAGNOSTICS_LEVEL_GOOD_INTEL;
+    public static property CONTEXT_DIAGNOSTICS_LEVEL_BAD_INTEL:     ContextProperties read _CONTEXT_DIAGNOSTICS_LEVEL_BAD_INTEL;
+    public static property CONTEXT_DIAGNOSTICS_LEVEL_NEUTRAL_INTEL: ContextProperties read _CONTEXT_DIAGNOSTICS_LEVEL_NEUTRAL_INTEL;
+    public static property CONTEXT_DIAGNOSTICS_LEVEL_ALL_INTEL:     ContextProperties read _CONTEXT_DIAGNOSTICS_LEVEL_ALL_INTEL;
+    public static property CONTEXT_PLATFORM:                        ContextProperties read _CONTEXT_PLATFORM;
+    public static property CONTEXT_INTEROP_USER_SYNC:               ContextProperties read _CONTEXT_INTEROP_USER_SYNC;
+    public static property GL_CONTEXT_KHR:                          ContextProperties read _GL_CONTEXT_KHR;
+    public static property EGL_DISPLAY_KHR:                         ContextProperties read _EGL_DISPLAY_KHR;
+    public static property GLX_DISPLAY_KHR:                         ContextProperties read _GLX_DISPLAY_KHR;
+    public static property WGL_HDC_KHR:                             ContextProperties read _WGL_HDC_KHR;
+    public static property CGL_SHAREGROUP_KHR:                      ContextProperties read _CGL_SHAREGROUP_KHR;
+    public static property CONTEXT_TERMINATE_KHR:                   ContextProperties read _CONTEXT_TERMINATE_KHR;
+    public static property PRINTF_CALLBACK_ARM:                     ContextProperties read _PRINTF_CALLBACK_ARM;
+    public static property PRINTF_BUFFERSIZE_ARM:                   ContextProperties read _PRINTF_BUFFERSIZE_ARM;
+    public static property CONTEXT_SHOW_DIAGNOSTICS_INTEL:          ContextProperties read _CONTEXT_SHOW_DIAGNOSTICS_INTEL;
     
     public function ToString: string; override;
     begin
+      if self.val = IntPtr($0001) then Result := 'CONTEXT_DIAGNOSTICS_LEVEL_GOOD_INTEL' else
+      if self.val = IntPtr($0002) then Result := 'CONTEXT_DIAGNOSTICS_LEVEL_BAD_INTEL' else
+      if self.val = IntPtr($0004) then Result := 'CONTEXT_DIAGNOSTICS_LEVEL_NEUTRAL_INTEL' else
+      if self.val = IntPtr($00FF) then Result := 'CONTEXT_DIAGNOSTICS_LEVEL_ALL_INTEL' else
       if self.val = IntPtr($1084) then Result := 'CONTEXT_PLATFORM' else
       if self.val = IntPtr($1085) then Result := 'CONTEXT_INTEROP_USER_SYNC' else
       if self.val = IntPtr($2008) then Result := 'GL_CONTEXT_KHR' else
@@ -765,7 +809,84 @@ type
       if self.val = IntPtr($2032) then Result := 'CONTEXT_TERMINATE_KHR' else
       if self.val = IntPtr($40B0) then Result := 'PRINTF_CALLBACK_ARM' else
       if self.val = IntPtr($40B1) then Result := 'PRINTF_BUFFERSIZE_ARM' else
+      if self.val = IntPtr($4106) then Result := 'CONTEXT_SHOW_DIAGNOSTICS_INTEL' else
         Result := $'ContextProperties[{self.val}]';
+    end;
+    
+  end;
+  
+  D3d10DeviceSetKhr = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    private static _PREFERRED_DEVICES_FOR_D3D10_KHR := new D3d10DeviceSetKhr($4012);
+    private static _ALL_DEVICES_FOR_D3D10_KHR       := new D3d10DeviceSetKhr($4013);
+    
+    public static property PREFERRED_DEVICES_FOR_D3D10_KHR: D3d10DeviceSetKhr read _PREFERRED_DEVICES_FOR_D3D10_KHR;
+    public static property ALL_DEVICES_FOR_D3D10_KHR:       D3d10DeviceSetKhr read _ALL_DEVICES_FOR_D3D10_KHR;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($4012) then Result := 'PREFERRED_DEVICES_FOR_D3D10_KHR' else
+      if self.val = UInt32($4013) then Result := 'ALL_DEVICES_FOR_D3D10_KHR' else
+        Result := $'D3d10DeviceSetKhr[{self.val}]';
+    end;
+    
+  end;
+  
+  D3d10DeviceSourceKhr = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    private static _D3D10_DEVICE_KHR       := new D3d10DeviceSourceKhr($4010);
+    private static _D3D10_DXGI_ADAPTER_KHR := new D3d10DeviceSourceKhr($4011);
+    
+    public static property D3D10_DEVICE_KHR:       D3d10DeviceSourceKhr read _D3D10_DEVICE_KHR;
+    public static property D3D10_DXGI_ADAPTER_KHR: D3d10DeviceSourceKhr read _D3D10_DXGI_ADAPTER_KHR;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($4010) then Result := 'D3D10_DEVICE_KHR' else
+      if self.val = UInt32($4011) then Result := 'D3D10_DXGI_ADAPTER_KHR' else
+        Result := $'D3d10DeviceSourceKhr[{self.val}]';
+    end;
+    
+  end;
+  
+  D3d11DeviceSetKhr = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    private static _PREFERRED_DEVICES_FOR_D3D11_KHR := new D3d11DeviceSetKhr($401B);
+    private static _ALL_DEVICES_FOR_D3D11_KHR       := new D3d11DeviceSetKhr($401C);
+    
+    public static property PREFERRED_DEVICES_FOR_D3D11_KHR: D3d11DeviceSetKhr read _PREFERRED_DEVICES_FOR_D3D11_KHR;
+    public static property ALL_DEVICES_FOR_D3D11_KHR:       D3d11DeviceSetKhr read _ALL_DEVICES_FOR_D3D11_KHR;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($401B) then Result := 'PREFERRED_DEVICES_FOR_D3D11_KHR' else
+      if self.val = UInt32($401C) then Result := 'ALL_DEVICES_FOR_D3D11_KHR' else
+        Result := $'D3d11DeviceSetKhr[{self.val}]';
+    end;
+    
+  end;
+  
+  D3d11DeviceSourceKhr = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    private static _D3D11_DEVICE_KHR       := new D3d11DeviceSourceKhr($4019);
+    private static _D3D11_DXGI_ADAPTER_KHR := new D3d11DeviceSourceKhr($401A);
+    
+    public static property D3D11_DEVICE_KHR:       D3d11DeviceSourceKhr read _D3D11_DEVICE_KHR;
+    public static property D3D11_DXGI_ADAPTER_KHR: D3d11DeviceSourceKhr read _D3D11_DXGI_ADAPTER_KHR;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($4019) then Result := 'D3D11_DEVICE_KHR' else
+      if self.val = UInt32($401A) then Result := 'D3D11_DXGI_ADAPTER_KHR' else
+        Result := $'D3d11DeviceSourceKhr[{self.val}]';
     end;
     
   end;
@@ -788,7 +909,8 @@ type
     public static property DEVICE_AFFINITY_DOMAIN_L1_CACHE:           DeviceAffinityDomain read _DEVICE_AFFINITY_DOMAIN_L1_CACHE;
     public static property DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE: DeviceAffinityDomain read _DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE;
     
-    public static function operator or(f1,f2: DeviceAffinityDomain) := new DeviceAffinityDomain(f1.val or f2.val);
+    public static function operator+(f1,f2: DeviceAffinityDomain) := new DeviceAffinityDomain(f1.val or f2.val);
+    public static function operator or(f1,f2: DeviceAffinityDomain) := f1+f2;
     
     public property HAS_FLAG_DEVICE_AFFINITY_DOMAIN_NUMA:               boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_DEVICE_AFFINITY_DOMAIN_L4_CACHE:           boolean read self.val and $0002 <> 0;
@@ -826,7 +948,8 @@ type
     public static property EXEC_KERNEL:        DeviceExecCapabilities read _EXEC_KERNEL;
     public static property EXEC_NATIVE_KERNEL: DeviceExecCapabilities read _EXEC_NATIVE_KERNEL;
     
-    public static function operator or(f1,f2: DeviceExecCapabilities) := new DeviceExecCapabilities(f1.val or f2.val);
+    public static function operator+(f1,f2: DeviceExecCapabilities) := new DeviceExecCapabilities(f1.val or f2.val);
+    public static function operator or(f1,f2: DeviceExecCapabilities) := f1+f2;
     
     public property HAS_FLAG_EXEC_KERNEL:        boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_EXEC_NATIVE_KERNEL: boolean read self.val and $0002 <> 0;
@@ -868,7 +991,8 @@ type
     public static property FP_SOFT_FLOAT:                    DeviceFPConfig read _FP_SOFT_FLOAT;
     public static property FP_CORRECTLY_ROUNDED_DIVIDE_SQRT: DeviceFPConfig read _FP_CORRECTLY_ROUNDED_DIVIDE_SQRT;
     
-    public static function operator or(f1,f2: DeviceFPConfig) := new DeviceFPConfig(f1.val or f2.val);
+    public static function operator+(f1,f2: DeviceFPConfig) := new DeviceFPConfig(f1.val or f2.val);
+    public static function operator or(f1,f2: DeviceFPConfig) := f1+f2;
     
     public property HAS_FLAG_FP_DENORM:                        boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_FP_INF_NAN:                       boolean read self.val and $0002 <> 0;
@@ -980,7 +1104,9 @@ type
     private static _DEVICE_PREFERRED_INTEROP_USER_SYNC                 := new DeviceInfo($1048);
     private static _DEVICE_PRINTF_BUFFER_SIZE                          := new DeviceInfo($1049);
     private static _DEVICE_IMAGE_PITCH_ALIGNMENT                       := new DeviceInfo($104A);
+    private static _DEVICE_IMAGE_PITCH_ALIGNMENT_KHR                   := new DeviceInfo($104A);
     private static _DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT                := new DeviceInfo($104B);
+    private static _DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT_KHR            := new DeviceInfo($104B);
     private static _DEVICE_MAX_READ_WRITE_IMAGE_ARGS                   := new DeviceInfo($104C);
     private static _DEVICE_MAX_GLOBAL_VARIABLE_SIZE                    := new DeviceInfo($104D);
     private static _DEVICE_QUEUE_ON_DEVICE_PROPERTIES                  := new DeviceInfo($104E);
@@ -1001,9 +1127,14 @@ type
     private static _DEVICE_MAX_NUM_SUB_GROUPS                          := new DeviceInfo($105C);
     private static _DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS      := new DeviceInfo($105D);
     private static _DEVICE_NUMERIC_VERSION                             := new DeviceInfo($105E);
+    private static _DEVICE_NUMERIC_VERSION_KHR                         := new DeviceInfo($105E);
+    private static _DEVICE_OPENCL_C_NUMERIC_VERSION_KHR                := new DeviceInfo($105F);
     private static _DEVICE_EXTENSIONS_WITH_VERSION                     := new DeviceInfo($1060);
+    private static _DEVICE_EXTENSIONS_WITH_VERSION_KHR                 := new DeviceInfo($1060);
     private static _DEVICE_ILS_WITH_VERSION                            := new DeviceInfo($1061);
+    private static _DEVICE_ILS_WITH_VERSION_KHR                        := new DeviceInfo($1061);
     private static _DEVICE_BUILT_IN_KERNELS_WITH_VERSION               := new DeviceInfo($1062);
+    private static _DEVICE_BUILT_IN_KERNELS_WITH_VERSION_KHR           := new DeviceInfo($1062);
     private static _DEVICE_ATOMIC_MEMORY_CAPABILITIES                  := new DeviceInfo($1063);
     private static _DEVICE_ATOMIC_FENCE_CAPABILITIES                   := new DeviceInfo($1064);
     private static _DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT              := new DeviceInfo($1065);
@@ -1020,7 +1151,6 @@ type
     private static _DEVICE_DEVICE_ENQUEUE_CAPABILITIES                 := new DeviceInfo($1070);
     private static _DEVICE_PIPE_SUPPORT                                := new DeviceInfo($1071);
     private static _DEVICE_LATEST_CONFORMANCE_VERSION_PASSED           := new DeviceInfo($1072);
-    private static _PROGRAM_IL_KHR                                     := new DeviceInfo($1169);
     private static _DEVICE_TERMINATE_CAPABILITY_KHR                    := new DeviceInfo($2031);
     private static _DEVICE_MAX_NAMED_BARRIER_COUNT_KHR                 := new DeviceInfo($2035);
     private static _DEVICE_COMPUTE_CAPABILITY_MAJOR_NV                 := new DeviceInfo($4000);
@@ -1057,6 +1187,9 @@ type
     private static _DEVICE_REFERENCE_COUNT_EXT                         := new DeviceInfo($4057);
     private static _DEVICE_PARTITION_STYLE_EXT                         := new DeviceInfo($4058);
     private static _DEVICE_ME_VERSION_INTEL                            := new DeviceInfo($407E);
+    private static _DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM               := new DeviceInfo($40A0);
+    private static _DEVICE_PAGE_SIZE_QCOM                              := new DeviceInfo($40A1);
+    private static _DEVICE_SVM_CAPABILITIES_ARM                        := new DeviceInfo($40B6);
     private static _DEVICE_COMPUTE_UNITS_BITFIELD_ARM                  := new DeviceInfo($40BF);
     private static _DEVICE_SPIR_VERSIONS                               := new DeviceInfo($40E0);
     private static _DEVICE_SIMULTANEOUS_INTEROPS_INTEL                 := new DeviceInfo($4104);
@@ -1072,6 +1205,8 @@ type
     private static _DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL := new DeviceInfo($4192);
     private static _DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL  := new DeviceInfo($4193);
     private static _DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL        := new DeviceInfo($4194);
+    private static _DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM        := new DeviceInfo($41E4);
+    private static _DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT          := new DeviceInfo($4230);
     
     public static property DEVICE_TYPE:                                        DeviceInfo read _DEVICE_TYPE;
     public static property DEVICE_VENDOR_ID:                                   DeviceInfo read _DEVICE_VENDOR_ID;
@@ -1149,7 +1284,9 @@ type
     public static property DEVICE_PREFERRED_INTEROP_USER_SYNC:                 DeviceInfo read _DEVICE_PREFERRED_INTEROP_USER_SYNC;
     public static property DEVICE_PRINTF_BUFFER_SIZE:                          DeviceInfo read _DEVICE_PRINTF_BUFFER_SIZE;
     public static property DEVICE_IMAGE_PITCH_ALIGNMENT:                       DeviceInfo read _DEVICE_IMAGE_PITCH_ALIGNMENT;
+    public static property DEVICE_IMAGE_PITCH_ALIGNMENT_KHR:                   DeviceInfo read _DEVICE_IMAGE_PITCH_ALIGNMENT_KHR;
     public static property DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT:                DeviceInfo read _DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT;
+    public static property DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT_KHR:            DeviceInfo read _DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT_KHR;
     public static property DEVICE_MAX_READ_WRITE_IMAGE_ARGS:                   DeviceInfo read _DEVICE_MAX_READ_WRITE_IMAGE_ARGS;
     public static property DEVICE_MAX_GLOBAL_VARIABLE_SIZE:                    DeviceInfo read _DEVICE_MAX_GLOBAL_VARIABLE_SIZE;
     public static property DEVICE_QUEUE_ON_DEVICE_PROPERTIES:                  DeviceInfo read _DEVICE_QUEUE_ON_DEVICE_PROPERTIES;
@@ -1170,9 +1307,14 @@ type
     public static property DEVICE_MAX_NUM_SUB_GROUPS:                          DeviceInfo read _DEVICE_MAX_NUM_SUB_GROUPS;
     public static property DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS:      DeviceInfo read _DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS;
     public static property DEVICE_NUMERIC_VERSION:                             DeviceInfo read _DEVICE_NUMERIC_VERSION;
+    public static property DEVICE_NUMERIC_VERSION_KHR:                         DeviceInfo read _DEVICE_NUMERIC_VERSION_KHR;
+    public static property DEVICE_OPENCL_C_NUMERIC_VERSION_KHR:                DeviceInfo read _DEVICE_OPENCL_C_NUMERIC_VERSION_KHR;
     public static property DEVICE_EXTENSIONS_WITH_VERSION:                     DeviceInfo read _DEVICE_EXTENSIONS_WITH_VERSION;
+    public static property DEVICE_EXTENSIONS_WITH_VERSION_KHR:                 DeviceInfo read _DEVICE_EXTENSIONS_WITH_VERSION_KHR;
     public static property DEVICE_ILS_WITH_VERSION:                            DeviceInfo read _DEVICE_ILS_WITH_VERSION;
+    public static property DEVICE_ILS_WITH_VERSION_KHR:                        DeviceInfo read _DEVICE_ILS_WITH_VERSION_KHR;
     public static property DEVICE_BUILT_IN_KERNELS_WITH_VERSION:               DeviceInfo read _DEVICE_BUILT_IN_KERNELS_WITH_VERSION;
+    public static property DEVICE_BUILT_IN_KERNELS_WITH_VERSION_KHR:           DeviceInfo read _DEVICE_BUILT_IN_KERNELS_WITH_VERSION_KHR;
     public static property DEVICE_ATOMIC_MEMORY_CAPABILITIES:                  DeviceInfo read _DEVICE_ATOMIC_MEMORY_CAPABILITIES;
     public static property DEVICE_ATOMIC_FENCE_CAPABILITIES:                   DeviceInfo read _DEVICE_ATOMIC_FENCE_CAPABILITIES;
     public static property DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT:              DeviceInfo read _DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT;
@@ -1189,7 +1331,6 @@ type
     public static property DEVICE_DEVICE_ENQUEUE_CAPABILITIES:                 DeviceInfo read _DEVICE_DEVICE_ENQUEUE_CAPABILITIES;
     public static property DEVICE_PIPE_SUPPORT:                                DeviceInfo read _DEVICE_PIPE_SUPPORT;
     public static property DEVICE_LATEST_CONFORMANCE_VERSION_PASSED:           DeviceInfo read _DEVICE_LATEST_CONFORMANCE_VERSION_PASSED;
-    public static property PROGRAM_IL_KHR:                                     DeviceInfo read _PROGRAM_IL_KHR;
     public static property DEVICE_TERMINATE_CAPABILITY_KHR:                    DeviceInfo read _DEVICE_TERMINATE_CAPABILITY_KHR;
     public static property DEVICE_MAX_NAMED_BARRIER_COUNT_KHR:                 DeviceInfo read _DEVICE_MAX_NAMED_BARRIER_COUNT_KHR;
     public static property DEVICE_COMPUTE_CAPABILITY_MAJOR_NV:                 DeviceInfo read _DEVICE_COMPUTE_CAPABILITY_MAJOR_NV;
@@ -1226,6 +1367,9 @@ type
     public static property DEVICE_REFERENCE_COUNT_EXT:                         DeviceInfo read _DEVICE_REFERENCE_COUNT_EXT;
     public static property DEVICE_PARTITION_STYLE_EXT:                         DeviceInfo read _DEVICE_PARTITION_STYLE_EXT;
     public static property DEVICE_ME_VERSION_INTEL:                            DeviceInfo read _DEVICE_ME_VERSION_INTEL;
+    public static property DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM:               DeviceInfo read _DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM;
+    public static property DEVICE_PAGE_SIZE_QCOM:                              DeviceInfo read _DEVICE_PAGE_SIZE_QCOM;
+    public static property DEVICE_SVM_CAPABILITIES_ARM:                        DeviceInfo read _DEVICE_SVM_CAPABILITIES_ARM;
     public static property DEVICE_COMPUTE_UNITS_BITFIELD_ARM:                  DeviceInfo read _DEVICE_COMPUTE_UNITS_BITFIELD_ARM;
     public static property DEVICE_SPIR_VERSIONS:                               DeviceInfo read _DEVICE_SPIR_VERSIONS;
     public static property DEVICE_SIMULTANEOUS_INTEROPS_INTEL:                 DeviceInfo read _DEVICE_SIMULTANEOUS_INTEROPS_INTEL;
@@ -1241,6 +1385,8 @@ type
     public static property DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL: DeviceInfo read _DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL;
     public static property DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL:  DeviceInfo read _DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL;
     public static property DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL:        DeviceInfo read _DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL;
+    public static property DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM:        DeviceInfo read _DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM;
+    public static property DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT:          DeviceInfo read _DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT;
     
     public function ToString: string; override;
     begin
@@ -1320,7 +1466,9 @@ type
       if self.val = UInt32($1048) then Result := 'DEVICE_PREFERRED_INTEROP_USER_SYNC' else
       if self.val = UInt32($1049) then Result := 'DEVICE_PRINTF_BUFFER_SIZE' else
       if self.val = UInt32($104A) then Result := 'DEVICE_IMAGE_PITCH_ALIGNMENT' else
+      if self.val = UInt32($104A) then Result := 'DEVICE_IMAGE_PITCH_ALIGNMENT_KHR' else
       if self.val = UInt32($104B) then Result := 'DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT' else
+      if self.val = UInt32($104B) then Result := 'DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT_KHR' else
       if self.val = UInt32($104C) then Result := 'DEVICE_MAX_READ_WRITE_IMAGE_ARGS' else
       if self.val = UInt32($104D) then Result := 'DEVICE_MAX_GLOBAL_VARIABLE_SIZE' else
       if self.val = UInt32($104E) then Result := 'DEVICE_QUEUE_ON_DEVICE_PROPERTIES' else
@@ -1341,9 +1489,14 @@ type
       if self.val = UInt32($105C) then Result := 'DEVICE_MAX_NUM_SUB_GROUPS' else
       if self.val = UInt32($105D) then Result := 'DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS' else
       if self.val = UInt32($105E) then Result := 'DEVICE_NUMERIC_VERSION' else
+      if self.val = UInt32($105E) then Result := 'DEVICE_NUMERIC_VERSION_KHR' else
+      if self.val = UInt32($105F) then Result := 'DEVICE_OPENCL_C_NUMERIC_VERSION_KHR' else
       if self.val = UInt32($1060) then Result := 'DEVICE_EXTENSIONS_WITH_VERSION' else
+      if self.val = UInt32($1060) then Result := 'DEVICE_EXTENSIONS_WITH_VERSION_KHR' else
       if self.val = UInt32($1061) then Result := 'DEVICE_ILS_WITH_VERSION' else
+      if self.val = UInt32($1061) then Result := 'DEVICE_ILS_WITH_VERSION_KHR' else
       if self.val = UInt32($1062) then Result := 'DEVICE_BUILT_IN_KERNELS_WITH_VERSION' else
+      if self.val = UInt32($1062) then Result := 'DEVICE_BUILT_IN_KERNELS_WITH_VERSION_KHR' else
       if self.val = UInt32($1063) then Result := 'DEVICE_ATOMIC_MEMORY_CAPABILITIES' else
       if self.val = UInt32($1064) then Result := 'DEVICE_ATOMIC_FENCE_CAPABILITIES' else
       if self.val = UInt32($1065) then Result := 'DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT' else
@@ -1360,7 +1513,6 @@ type
       if self.val = UInt32($1070) then Result := 'DEVICE_DEVICE_ENQUEUE_CAPABILITIES' else
       if self.val = UInt32($1071) then Result := 'DEVICE_PIPE_SUPPORT' else
       if self.val = UInt32($1072) then Result := 'DEVICE_LATEST_CONFORMANCE_VERSION_PASSED' else
-      if self.val = UInt32($1169) then Result := 'PROGRAM_IL_KHR' else
       if self.val = UInt32($2031) then Result := 'DEVICE_TERMINATE_CAPABILITY_KHR' else
       if self.val = UInt32($2035) then Result := 'DEVICE_MAX_NAMED_BARRIER_COUNT_KHR' else
       if self.val = UInt32($4000) then Result := 'DEVICE_COMPUTE_CAPABILITY_MAJOR_NV' else
@@ -1397,6 +1549,9 @@ type
       if self.val = UInt32($4057) then Result := 'DEVICE_REFERENCE_COUNT_EXT' else
       if self.val = UInt32($4058) then Result := 'DEVICE_PARTITION_STYLE_EXT' else
       if self.val = UInt32($407E) then Result := 'DEVICE_ME_VERSION_INTEL' else
+      if self.val = UInt32($40A0) then Result := 'DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM' else
+      if self.val = UInt32($40A1) then Result := 'DEVICE_PAGE_SIZE_QCOM' else
+      if self.val = UInt32($40B6) then Result := 'DEVICE_SVM_CAPABILITIES_ARM' else
       if self.val = UInt32($40BF) then Result := 'DEVICE_COMPUTE_UNITS_BITFIELD_ARM' else
       if self.val = UInt32($40E0) then Result := 'DEVICE_SPIR_VERSIONS' else
       if self.val = UInt32($4104) then Result := 'DEVICE_SIMULTANEOUS_INTEROPS_INTEL' else
@@ -1412,6 +1567,8 @@ type
       if self.val = UInt32($4192) then Result := 'DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($4193) then Result := 'DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($4194) then Result := 'DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL' else
+      if self.val = UInt32($41E4) then Result := 'DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM' else
+      if self.val = UInt32($4230) then Result := 'DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT' else
         Result := $'DeviceInfo[{self.val}]';
     end;
     
@@ -1490,7 +1647,13 @@ type
     
     private static _PARTITION_BY_COUNTS_LIST_END_EXT        := new DevicePartitionPropertyExt($0000);
     private static _PROPERTIES_LIST_END_EXT                 := new DevicePartitionPropertyExt($0000);
+    private static _AFFINITY_DOMAIN_L1_CACHE_EXT            := new DevicePartitionPropertyExt($0001);
     private static _PARTITION_BY_NAMES_LIST_END_EXT         := new DevicePartitionPropertyExt(-1);
+    private static _AFFINITY_DOMAIN_L2_CACHE_EXT            := new DevicePartitionPropertyExt($0002);
+    private static _AFFINITY_DOMAIN_L3_CACHE_EXT            := new DevicePartitionPropertyExt($0003);
+    private static _AFFINITY_DOMAIN_L4_CACHE_EXT            := new DevicePartitionPropertyExt($0004);
+    private static _AFFINITY_DOMAIN_NUMA_EXT                := new DevicePartitionPropertyExt($0010);
+    private static _AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT    := new DevicePartitionPropertyExt($0100);
     private static _DEVICE_PARTITION_EQUALLY_EXT            := new DevicePartitionPropertyExt($4050);
     private static _DEVICE_PARTITION_BY_COUNTS_EXT          := new DevicePartitionPropertyExt($4051);
     private static _DEVICE_PARTITION_BY_NAMES_EXT           := new DevicePartitionPropertyExt($4052);
@@ -1498,7 +1661,13 @@ type
     
     public static property PARTITION_BY_COUNTS_LIST_END_EXT:        DevicePartitionPropertyExt read _PARTITION_BY_COUNTS_LIST_END_EXT;
     public static property PROPERTIES_LIST_END_EXT:                 DevicePartitionPropertyExt read _PROPERTIES_LIST_END_EXT;
+    public static property AFFINITY_DOMAIN_L1_CACHE_EXT:            DevicePartitionPropertyExt read _AFFINITY_DOMAIN_L1_CACHE_EXT;
     public static property PARTITION_BY_NAMES_LIST_END_EXT:         DevicePartitionPropertyExt read _PARTITION_BY_NAMES_LIST_END_EXT;
+    public static property AFFINITY_DOMAIN_L2_CACHE_EXT:            DevicePartitionPropertyExt read _AFFINITY_DOMAIN_L2_CACHE_EXT;
+    public static property AFFINITY_DOMAIN_L3_CACHE_EXT:            DevicePartitionPropertyExt read _AFFINITY_DOMAIN_L3_CACHE_EXT;
+    public static property AFFINITY_DOMAIN_L4_CACHE_EXT:            DevicePartitionPropertyExt read _AFFINITY_DOMAIN_L4_CACHE_EXT;
+    public static property AFFINITY_DOMAIN_NUMA_EXT:                DevicePartitionPropertyExt read _AFFINITY_DOMAIN_NUMA_EXT;
+    public static property AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT:    DevicePartitionPropertyExt read _AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT;
     public static property DEVICE_PARTITION_EQUALLY_EXT:            DevicePartitionPropertyExt read _DEVICE_PARTITION_EQUALLY_EXT;
     public static property DEVICE_PARTITION_BY_COUNTS_EXT:          DevicePartitionPropertyExt read _DEVICE_PARTITION_BY_COUNTS_EXT;
     public static property DEVICE_PARTITION_BY_NAMES_EXT:           DevicePartitionPropertyExt read _DEVICE_PARTITION_BY_NAMES_EXT;
@@ -1508,7 +1677,13 @@ type
     begin
       if self.val = UInt64($0000) then Result := 'PARTITION_BY_COUNTS_LIST_END_EXT' else
       if self.val = UInt64($0000) then Result := 'PROPERTIES_LIST_END_EXT' else
+      if self.val = UInt64($0001) then Result := 'AFFINITY_DOMAIN_L1_CACHE_EXT' else
       if self.val = UInt64(-1) then Result := 'PARTITION_BY_NAMES_LIST_END_EXT' else
+      if self.val = UInt64($0002) then Result := 'AFFINITY_DOMAIN_L2_CACHE_EXT' else
+      if self.val = UInt64($0003) then Result := 'AFFINITY_DOMAIN_L3_CACHE_EXT' else
+      if self.val = UInt64($0004) then Result := 'AFFINITY_DOMAIN_L4_CACHE_EXT' else
+      if self.val = UInt64($0010) then Result := 'AFFINITY_DOMAIN_NUMA_EXT' else
+      if self.val = UInt64($0100) then Result := 'AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT' else
       if self.val = UInt64($4050) then Result := 'DEVICE_PARTITION_EQUALLY_EXT' else
       if self.val = UInt64($4051) then Result := 'DEVICE_PARTITION_BY_COUNTS_EXT' else
       if self.val = UInt64($4052) then Result := 'DEVICE_PARTITION_BY_NAMES_EXT' else
@@ -1532,7 +1707,8 @@ type
     public static property DEVICE_SVM_FINE_GRAIN_SYSTEM:   DeviceSVMCapabilities read _DEVICE_SVM_FINE_GRAIN_SYSTEM;
     public static property DEVICE_SVM_ATOMICS:             DeviceSVMCapabilities read _DEVICE_SVM_ATOMICS;
     
-    public static function operator or(f1,f2: DeviceSVMCapabilities) := new DeviceSVMCapabilities(f1.val or f2.val);
+    public static function operator+(f1,f2: DeviceSVMCapabilities) := new DeviceSVMCapabilities(f1.val or f2.val);
+    public static function operator or(f1,f2: DeviceSVMCapabilities) := f1+f2;
     
     public property HAS_FLAG_DEVICE_SVM_COARSE_GRAIN_BUFFER: boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_DEVICE_SVM_FINE_GRAIN_BUFFER:   boolean read self.val and $0002 <> 0;
@@ -1574,7 +1750,8 @@ type
     public static property DEVICE_TYPE_CUSTOM:      DeviceType read _DEVICE_TYPE_CUSTOM;
     public static property DEVICE_TYPE_ALL:         DeviceType read _DEVICE_TYPE_ALL;
     
-    public static function operator or(f1,f2: DeviceType) := new DeviceType(f1.val or f2.val);
+    public static function operator+(f1,f2: DeviceType) := new DeviceType(f1.val or f2.val);
+    public static function operator or(f1,f2: DeviceType) := f1+f2;
     
     public property HAS_FLAG_DEVICE_TYPE_DEFAULT:     boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_DEVICE_TYPE_CPU:         boolean read self.val and $0002 <> 0;
@@ -1761,6 +1938,7 @@ type
     private static _PIPE_FULL_INTEL                             := new ErrorCode(-1106);
     private static _PIPE_EMPTY_INTEL                            := new ErrorCode(-1107);
     private static _CONTEXT_TERMINATED_KHR                      := new ErrorCode(-1121);
+    private static _NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE         := new ErrorCode(-9999);
     
     public static property SUCCESS:                                     ErrorCode read _SUCCESS;
     public static property DEVICE_NOT_FOUND:                            ErrorCode read _DEVICE_NOT_FOUND;
@@ -1859,6 +2037,7 @@ type
     public static property PIPE_FULL_INTEL:                             ErrorCode read _PIPE_FULL_INTEL;
     public static property PIPE_EMPTY_INTEL:                            ErrorCode read _PIPE_EMPTY_INTEL;
     public static property CONTEXT_TERMINATED_KHR:                      ErrorCode read _CONTEXT_TERMINATED_KHR;
+    public static property NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE:         ErrorCode read _NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE;
     
     public function ToString: string; override;
     begin
@@ -1959,6 +2138,7 @@ type
       if self.val = Int32(-1106) then Result := 'PIPE_FULL_INTEL' else
       if self.val = Int32(-1107) then Result := 'PIPE_EMPTY_INTEL' else
       if self.val = Int32(-1121) then Result := 'CONTEXT_TERMINATED_KHR' else
+      if self.val = Int32(-9999) then Result := 'NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE' else
         Result := $'ErrorCode[{self.val}]';
     end;
     
@@ -2157,6 +2337,60 @@ type
     
   end;
   
+  ImagePitchInfoQcom = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    private static _IMAGE_ROW_ALIGNMENT_QCOM   := new ImagePitchInfoQcom($40A2);
+    private static _IMAGE_SLICE_ALIGNMENT_QCOM := new ImagePitchInfoQcom($40A3);
+    
+    public static property IMAGE_ROW_ALIGNMENT_QCOM:   ImagePitchInfoQcom read _IMAGE_ROW_ALIGNMENT_QCOM;
+    public static property IMAGE_SLICE_ALIGNMENT_QCOM: ImagePitchInfoQcom read _IMAGE_SLICE_ALIGNMENT_QCOM;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($40A2) then Result := 'IMAGE_ROW_ALIGNMENT_QCOM' else
+      if self.val = UInt32($40A3) then Result := 'IMAGE_SLICE_ALIGNMENT_QCOM' else
+        Result := $'ImagePitchInfoQcom[{self.val}]';
+    end;
+    
+  end;
+  
+  ImportPropertiesArm = record
+    public val: IntPtr;
+    public constructor(val: IntPtr) := self.val := val;
+    public constructor(val: Int32) := self.val := new IntPtr(val);
+    
+    private static _IMPORT_MEMORY_WHOLE_ALLOCATION_ARM            := new ImportPropertiesArm(-1);
+    private static _IMPORT_TYPE_ARM                               := new ImportPropertiesArm($40B2);
+    private static _IMPORT_TYPE_HOST_ARM                          := new ImportPropertiesArm($40B3);
+    private static _IMPORT_TYPE_DMA_BUF_ARM                       := new ImportPropertiesArm($40B4);
+    private static _IMPORT_TYPE_PROTECTED_ARM                     := new ImportPropertiesArm($40B5);
+    private static _IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM       := new ImportPropertiesArm($41E2);
+    private static _IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM := new ImportPropertiesArm($41E3);
+    
+    public static property IMPORT_MEMORY_WHOLE_ALLOCATION_ARM:            ImportPropertiesArm read _IMPORT_MEMORY_WHOLE_ALLOCATION_ARM;
+    public static property IMPORT_TYPE_ARM:                               ImportPropertiesArm read _IMPORT_TYPE_ARM;
+    public static property IMPORT_TYPE_HOST_ARM:                          ImportPropertiesArm read _IMPORT_TYPE_HOST_ARM;
+    public static property IMPORT_TYPE_DMA_BUF_ARM:                       ImportPropertiesArm read _IMPORT_TYPE_DMA_BUF_ARM;
+    public static property IMPORT_TYPE_PROTECTED_ARM:                     ImportPropertiesArm read _IMPORT_TYPE_PROTECTED_ARM;
+    public static property IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM:       ImportPropertiesArm read _IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM;
+    public static property IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM: ImportPropertiesArm read _IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = IntPtr(-1) then Result := 'IMPORT_MEMORY_WHOLE_ALLOCATION_ARM' else
+      if self.val = IntPtr($40B2) then Result := 'IMPORT_TYPE_ARM' else
+      if self.val = IntPtr($40B3) then Result := 'IMPORT_TYPE_HOST_ARM' else
+      if self.val = IntPtr($40B4) then Result := 'IMPORT_TYPE_DMA_BUF_ARM' else
+      if self.val = IntPtr($40B5) then Result := 'IMPORT_TYPE_PROTECTED_ARM' else
+      if self.val = IntPtr($41E2) then Result := 'IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM' else
+      if self.val = IntPtr($41E3) then Result := 'IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM' else
+        Result := $'ImportPropertiesArm[{self.val}]';
+    end;
+    
+  end;
+  
   KernelArgAccessQualifier = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
@@ -2267,29 +2501,54 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_EXEC_INFO_SVM_PTRS                     := new KernelExecInfo($11B6);
-    private static _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM        := new KernelExecInfo($11B7);
-    private static _KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL   := new KernelExecInfo($4200);
-    private static _KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL := new KernelExecInfo($4201);
-    private static _KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL := new KernelExecInfo($4202);
-    private static _KERNEL_EXEC_INFO_USM_PTRS_INTEL               := new KernelExecInfo($4203);
+    private static _KERNEL_EXEC_INFO_SVM_PTRS                          := new KernelExecInfo($11B6);
+    private static _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM             := new KernelExecInfo($11B7);
+    private static _KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_ARM          := new KernelExecInfo($41E5);
+    private static _KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_MODIFIER_ARM := new KernelExecInfo($41E6);
+    private static _KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL        := new KernelExecInfo($4200);
+    private static _KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL      := new KernelExecInfo($4201);
+    private static _KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL      := new KernelExecInfo($4202);
+    private static _KERNEL_EXEC_INFO_USM_PTRS_INTEL                    := new KernelExecInfo($4203);
     
-    public static property KERNEL_EXEC_INFO_SVM_PTRS:                     KernelExecInfo read _KERNEL_EXEC_INFO_SVM_PTRS;
-    public static property KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM:        KernelExecInfo read _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM;
-    public static property KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL:   KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL;
-    public static property KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL: KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL;
-    public static property KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL: KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL;
-    public static property KERNEL_EXEC_INFO_USM_PTRS_INTEL:               KernelExecInfo read _KERNEL_EXEC_INFO_USM_PTRS_INTEL;
+    public static property KERNEL_EXEC_INFO_SVM_PTRS:                          KernelExecInfo read _KERNEL_EXEC_INFO_SVM_PTRS;
+    public static property KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM:             KernelExecInfo read _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM;
+    public static property KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_ARM:          KernelExecInfo read _KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_ARM;
+    public static property KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_MODIFIER_ARM: KernelExecInfo read _KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_MODIFIER_ARM;
+    public static property KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL:        KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL;
+    public static property KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL:      KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL;
+    public static property KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL:      KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL;
+    public static property KERNEL_EXEC_INFO_USM_PTRS_INTEL:                    KernelExecInfo read _KERNEL_EXEC_INFO_USM_PTRS_INTEL;
     
     public function ToString: string; override;
     begin
       if self.val = UInt32($11B6) then Result := 'KERNEL_EXEC_INFO_SVM_PTRS' else
       if self.val = UInt32($11B7) then Result := 'KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM' else
+      if self.val = UInt32($41E5) then Result := 'KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_ARM' else
+      if self.val = UInt32($41E6) then Result := 'KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_MODIFIER_ARM' else
       if self.val = UInt32($4200) then Result := 'KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL' else
       if self.val = UInt32($4201) then Result := 'KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL' else
       if self.val = UInt32($4202) then Result := 'KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL' else
       if self.val = UInt32($4203) then Result := 'KERNEL_EXEC_INFO_USM_PTRS_INTEL' else
         Result := $'KernelExecInfo[{self.val}]';
+    end;
+    
+  end;
+  
+  KernelExecInfoArm = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    private static _KERNEL_EXEC_INFO_SVM_PTRS_ARM              := new KernelExecInfoArm($40B8);
+    private static _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM_ARM := new KernelExecInfoArm($40B9);
+    
+    public static property KERNEL_EXEC_INFO_SVM_PTRS_ARM:              KernelExecInfoArm read _KERNEL_EXEC_INFO_SVM_PTRS_ARM;
+    public static property KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM_ARM: KernelExecInfoArm read _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM_ARM;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($40B8) then Result := 'KERNEL_EXEC_INFO_SVM_PTRS_ARM' else
+      if self.val = UInt32($40B9) then Result := 'KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM_ARM' else
+        Result := $'KernelExecInfoArm[{self.val}]';
     end;
     
   end;
@@ -2408,7 +2667,8 @@ type
     public static property MAP_WRITE:                   MapFlags read _MAP_WRITE;
     public static property MAP_WRITE_INVALIDATE_REGION: MapFlags read _MAP_WRITE_INVALIDATE_REGION;
     
-    public static function operator or(f1,f2: MapFlags) := new MapFlags(f1.val or f2.val);
+    public static function operator+(f1,f2: MapFlags) := new MapFlags(f1.val or f2.val);
+    public static function operator or(f1,f2: MapFlags) := f1+f2;
     
     public property HAS_FLAG_MAP_READ:                    boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_MAP_WRITE:                   boolean read self.val and $0002 <> 0;
@@ -2435,97 +2695,102 @@ type
     public constructor(val: UInt64) := self.val := val;
     
     private static _MEM_READ_WRITE                      := new MemFlags($0001);
-    private static _MEM_RESERVED0_ARM                   := new MemFlags($0001);
-    private static _MEM_RESERVED1_ARM                   := new MemFlags($0002);
     private static _MEM_WRITE_ONLY                      := new MemFlags($0002);
     private static _MEM_READ_ONLY                       := new MemFlags($0004);
-    private static _MEM_RESERVED2_ARM                   := new MemFlags($0004);
-    private static _MEM_RESERVED3_ARM                   := new MemFlags($0008);
     private static _MEM_USE_HOST_PTR                    := new MemFlags($0008);
     private static _MEM_ALLOC_HOST_PTR                  := new MemFlags($0010);
-    private static _MEM_RESERVED4_ARM                   := new MemFlags($0010);
     private static _MEM_COPY_HOST_PTR                   := new MemFlags($0020);
     private static _MEM_HOST_WRITE_ONLY                 := new MemFlags($0080);
     private static _MEM_HOST_READ_ONLY                  := new MemFlags($0100);
     private static _MEM_HOST_NO_ACCESS                  := new MemFlags($0200);
     private static _MEM_KERNEL_READ_AND_WRITE           := new MemFlags($1000);
+    private static _MEM_FORCE_HOST_MEMORY_INTEL         := new MemFlags($100000);
     private static _MEM_NO_ACCESS_INTEL                 := new MemFlags($1000000);
     private static _MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL := new MemFlags($2000000);
     private static _MEM_USE_UNCACHED_CPU_MEMORY_IMG     := new MemFlags($4000000);
     private static _MEM_USE_CACHED_CPU_MEMORY_IMG       := new MemFlags($8000000);
     private static _MEM_USE_GRALLOC_PTR_IMG             := new MemFlags($10000000);
     private static _MEM_EXT_HOST_PTR_QCOM               := new MemFlags($20000000);
+    private static _MEM_RESERVED0_ARM                   := new MemFlags($100000000);
+    private static _MEM_RESERVED1_ARM                   := new MemFlags($200000000);
+    private static _MEM_RESERVED2_ARM                   := new MemFlags($400000000);
+    private static _MEM_RESERVED3_ARM                   := new MemFlags($800000000);
+    private static _MEM_RESERVED4_ARM                   := new MemFlags($1000000000);
     
     public static property MEM_READ_WRITE:                      MemFlags read _MEM_READ_WRITE;
-    public static property MEM_RESERVED0_ARM:                   MemFlags read _MEM_RESERVED0_ARM;
-    public static property MEM_RESERVED1_ARM:                   MemFlags read _MEM_RESERVED1_ARM;
     public static property MEM_WRITE_ONLY:                      MemFlags read _MEM_WRITE_ONLY;
     public static property MEM_READ_ONLY:                       MemFlags read _MEM_READ_ONLY;
-    public static property MEM_RESERVED2_ARM:                   MemFlags read _MEM_RESERVED2_ARM;
-    public static property MEM_RESERVED3_ARM:                   MemFlags read _MEM_RESERVED3_ARM;
     public static property MEM_USE_HOST_PTR:                    MemFlags read _MEM_USE_HOST_PTR;
     public static property MEM_ALLOC_HOST_PTR:                  MemFlags read _MEM_ALLOC_HOST_PTR;
-    public static property MEM_RESERVED4_ARM:                   MemFlags read _MEM_RESERVED4_ARM;
     public static property MEM_COPY_HOST_PTR:                   MemFlags read _MEM_COPY_HOST_PTR;
     public static property MEM_HOST_WRITE_ONLY:                 MemFlags read _MEM_HOST_WRITE_ONLY;
     public static property MEM_HOST_READ_ONLY:                  MemFlags read _MEM_HOST_READ_ONLY;
     public static property MEM_HOST_NO_ACCESS:                  MemFlags read _MEM_HOST_NO_ACCESS;
     public static property MEM_KERNEL_READ_AND_WRITE:           MemFlags read _MEM_KERNEL_READ_AND_WRITE;
+    public static property MEM_FORCE_HOST_MEMORY_INTEL:         MemFlags read _MEM_FORCE_HOST_MEMORY_INTEL;
     public static property MEM_NO_ACCESS_INTEL:                 MemFlags read _MEM_NO_ACCESS_INTEL;
     public static property MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL: MemFlags read _MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL;
     public static property MEM_USE_UNCACHED_CPU_MEMORY_IMG:     MemFlags read _MEM_USE_UNCACHED_CPU_MEMORY_IMG;
     public static property MEM_USE_CACHED_CPU_MEMORY_IMG:       MemFlags read _MEM_USE_CACHED_CPU_MEMORY_IMG;
     public static property MEM_USE_GRALLOC_PTR_IMG:             MemFlags read _MEM_USE_GRALLOC_PTR_IMG;
     public static property MEM_EXT_HOST_PTR_QCOM:               MemFlags read _MEM_EXT_HOST_PTR_QCOM;
+    public static property MEM_RESERVED0_ARM:                   MemFlags read _MEM_RESERVED0_ARM;
+    public static property MEM_RESERVED1_ARM:                   MemFlags read _MEM_RESERVED1_ARM;
+    public static property MEM_RESERVED2_ARM:                   MemFlags read _MEM_RESERVED2_ARM;
+    public static property MEM_RESERVED3_ARM:                   MemFlags read _MEM_RESERVED3_ARM;
+    public static property MEM_RESERVED4_ARM:                   MemFlags read _MEM_RESERVED4_ARM;
     
-    public static function operator or(f1,f2: MemFlags) := new MemFlags(f1.val or f2.val);
+    public static function operator+(f1,f2: MemFlags) := new MemFlags(f1.val or f2.val);
+    public static function operator or(f1,f2: MemFlags) := f1+f2;
     
     public property HAS_FLAG_MEM_READ_WRITE:                      boolean read self.val and $0001 <> 0;
-    public property HAS_FLAG_MEM_RESERVED0_ARM:                   boolean read self.val and $0001 <> 0;
-    public property HAS_FLAG_MEM_RESERVED1_ARM:                   boolean read self.val and $0002 <> 0;
     public property HAS_FLAG_MEM_WRITE_ONLY:                      boolean read self.val and $0002 <> 0;
     public property HAS_FLAG_MEM_READ_ONLY:                       boolean read self.val and $0004 <> 0;
-    public property HAS_FLAG_MEM_RESERVED2_ARM:                   boolean read self.val and $0004 <> 0;
-    public property HAS_FLAG_MEM_RESERVED3_ARM:                   boolean read self.val and $0008 <> 0;
     public property HAS_FLAG_MEM_USE_HOST_PTR:                    boolean read self.val and $0008 <> 0;
     public property HAS_FLAG_MEM_ALLOC_HOST_PTR:                  boolean read self.val and $0010 <> 0;
-    public property HAS_FLAG_MEM_RESERVED4_ARM:                   boolean read self.val and $0010 <> 0;
     public property HAS_FLAG_MEM_COPY_HOST_PTR:                   boolean read self.val and $0020 <> 0;
     public property HAS_FLAG_MEM_HOST_WRITE_ONLY:                 boolean read self.val and $0080 <> 0;
     public property HAS_FLAG_MEM_HOST_READ_ONLY:                  boolean read self.val and $0100 <> 0;
     public property HAS_FLAG_MEM_HOST_NO_ACCESS:                  boolean read self.val and $0200 <> 0;
     public property HAS_FLAG_MEM_KERNEL_READ_AND_WRITE:           boolean read self.val and $1000 <> 0;
+    public property HAS_FLAG_MEM_FORCE_HOST_MEMORY_INTEL:         boolean read self.val and $100000 <> 0;
     public property HAS_FLAG_MEM_NO_ACCESS_INTEL:                 boolean read self.val and $1000000 <> 0;
     public property HAS_FLAG_MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL: boolean read self.val and $2000000 <> 0;
     public property HAS_FLAG_MEM_USE_UNCACHED_CPU_MEMORY_IMG:     boolean read self.val and $4000000 <> 0;
     public property HAS_FLAG_MEM_USE_CACHED_CPU_MEMORY_IMG:       boolean read self.val and $8000000 <> 0;
     public property HAS_FLAG_MEM_USE_GRALLOC_PTR_IMG:             boolean read self.val and $10000000 <> 0;
     public property HAS_FLAG_MEM_EXT_HOST_PTR_QCOM:               boolean read self.val and $20000000 <> 0;
+    public property HAS_FLAG_MEM_RESERVED0_ARM:                   boolean read self.val and $100000000 <> 0;
+    public property HAS_FLAG_MEM_RESERVED1_ARM:                   boolean read self.val and $200000000 <> 0;
+    public property HAS_FLAG_MEM_RESERVED2_ARM:                   boolean read self.val and $400000000 <> 0;
+    public property HAS_FLAG_MEM_RESERVED3_ARM:                   boolean read self.val and $800000000 <> 0;
+    public property HAS_FLAG_MEM_RESERVED4_ARM:                   boolean read self.val and $1000000000 <> 0;
     
     public function ToString: string; override;
     begin
       var res := new StringBuilder;
       if self.val and UInt64($0001) = UInt64($0001) then res += 'MEM_READ_WRITE+';
-      if self.val and UInt64($0001) = UInt64($0001) then res += 'MEM_RESERVED0_ARM+';
-      if self.val and UInt64($0002) = UInt64($0002) then res += 'MEM_RESERVED1_ARM+';
       if self.val and UInt64($0002) = UInt64($0002) then res += 'MEM_WRITE_ONLY+';
       if self.val and UInt64($0004) = UInt64($0004) then res += 'MEM_READ_ONLY+';
-      if self.val and UInt64($0004) = UInt64($0004) then res += 'MEM_RESERVED2_ARM+';
-      if self.val and UInt64($0008) = UInt64($0008) then res += 'MEM_RESERVED3_ARM+';
       if self.val and UInt64($0008) = UInt64($0008) then res += 'MEM_USE_HOST_PTR+';
       if self.val and UInt64($0010) = UInt64($0010) then res += 'MEM_ALLOC_HOST_PTR+';
-      if self.val and UInt64($0010) = UInt64($0010) then res += 'MEM_RESERVED4_ARM+';
       if self.val and UInt64($0020) = UInt64($0020) then res += 'MEM_COPY_HOST_PTR+';
       if self.val and UInt64($0080) = UInt64($0080) then res += 'MEM_HOST_WRITE_ONLY+';
       if self.val and UInt64($0100) = UInt64($0100) then res += 'MEM_HOST_READ_ONLY+';
       if self.val and UInt64($0200) = UInt64($0200) then res += 'MEM_HOST_NO_ACCESS+';
       if self.val and UInt64($1000) = UInt64($1000) then res += 'MEM_KERNEL_READ_AND_WRITE+';
+      if self.val and UInt64($100000) = UInt64($100000) then res += 'MEM_FORCE_HOST_MEMORY_INTEL+';
       if self.val and UInt64($1000000) = UInt64($1000000) then res += 'MEM_NO_ACCESS_INTEL+';
       if self.val and UInt64($2000000) = UInt64($2000000) then res += 'MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL+';
       if self.val and UInt64($4000000) = UInt64($4000000) then res += 'MEM_USE_UNCACHED_CPU_MEMORY_IMG+';
       if self.val and UInt64($8000000) = UInt64($8000000) then res += 'MEM_USE_CACHED_CPU_MEMORY_IMG+';
       if self.val and UInt64($10000000) = UInt64($10000000) then res += 'MEM_USE_GRALLOC_PTR_IMG+';
       if self.val and UInt64($20000000) = UInt64($20000000) then res += 'MEM_EXT_HOST_PTR_QCOM+';
+      if self.val and UInt64($100000000) = UInt64($100000000) then res += 'MEM_RESERVED0_ARM+';
+      if self.val and UInt64($200000000) = UInt64($200000000) then res += 'MEM_RESERVED1_ARM+';
+      if self.val and UInt64($400000000) = UInt64($400000000) then res += 'MEM_RESERVED2_ARM+';
+      if self.val and UInt64($800000000) = UInt64($800000000) then res += 'MEM_RESERVED3_ARM+';
+      if self.val and UInt64($1000000000) = UInt64($1000000000) then res += 'MEM_RESERVED4_ARM+';
       if res.Length<>0 then
       begin
         res.Length -= 1;
@@ -2558,6 +2823,7 @@ type
     private static _MEM_DX9_RESOURCE_INTEL         := new MemInfo($4027);
     private static _MEM_DX9_SHARED_HANDLE_INTEL    := new MemInfo($4074);
     private static _MEM_VA_API_MEDIA_SURFACE_INTEL := new MemInfo($4098);
+    private static _MEM_USES_SVM_POINTER_ARM       := new MemInfo($40B7);
     
     public static property MEM_TYPE:                       MemInfo read _MEM_TYPE;
     public static property MEM_FLAGS:                      MemInfo read _MEM_FLAGS;
@@ -2577,6 +2843,7 @@ type
     public static property MEM_DX9_RESOURCE_INTEL:         MemInfo read _MEM_DX9_RESOURCE_INTEL;
     public static property MEM_DX9_SHARED_HANDLE_INTEL:    MemInfo read _MEM_DX9_SHARED_HANDLE_INTEL;
     public static property MEM_VA_API_MEDIA_SURFACE_INTEL: MemInfo read _MEM_VA_API_MEDIA_SURFACE_INTEL;
+    public static property MEM_USES_SVM_POINTER_ARM:       MemInfo read _MEM_USES_SVM_POINTER_ARM;
     
     public function ToString: string; override;
     begin
@@ -2598,6 +2865,7 @@ type
       if self.val = UInt32($4027) then Result := 'MEM_DX9_RESOURCE_INTEL' else
       if self.val = UInt32($4074) then Result := 'MEM_DX9_SHARED_HANDLE_INTEL' else
       if self.val = UInt32($4098) then Result := 'MEM_VA_API_MEDIA_SURFACE_INTEL' else
+      if self.val = UInt32($40B7) then Result := 'MEM_USES_SVM_POINTER_ARM' else
         Result := $'MemInfo[{self.val}]';
     end;
     
@@ -2613,7 +2881,8 @@ type
     public static property MIGRATE_MEM_OBJECT_HOST:              MemMigrationFlags read _MIGRATE_MEM_OBJECT_HOST;
     public static property MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED: MemMigrationFlags read _MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED;
     
-    public static function operator or(f1,f2: MemMigrationFlags) := new MemMigrationFlags(f1.val or f2.val);
+    public static function operator+(f1,f2: MemMigrationFlags) := new MemMigrationFlags(f1.val or f2.val);
+    public static function operator or(f1,f2: MemMigrationFlags) := f1+f2;
     
     public property HAS_FLAG_MIGRATE_MEM_OBJECT_HOST:              boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED: boolean read self.val and $0002 <> 0;
@@ -2686,18 +2955,56 @@ type
     
   end;
   
+  MemProperties = record
+    public val: UInt64;
+    public constructor(val: UInt64) := self.val := val;
+    
+    private static _MEM_ALLOC_FLAGS_IMG := new MemProperties($40D7);
+    
+    public static property MEM_ALLOC_FLAGS_IMG: MemProperties read _MEM_ALLOC_FLAGS_IMG;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt64($40D7) then Result := 'MEM_ALLOC_FLAGS_IMG' else
+        Result := $'MemProperties[{self.val}]';
+    end;
+    
+  end;
+  
   MemPropertiesIntel = record
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
     private static _MEM_ALLOC_FLAGS_INTEL := new MemPropertiesIntel($4195);
+    private static _MEM_CHANNEL_INTEL     := new MemPropertiesIntel($4213);
     
     public static property MEM_ALLOC_FLAGS_INTEL: MemPropertiesIntel read _MEM_ALLOC_FLAGS_INTEL;
+    public static property MEM_CHANNEL_INTEL:     MemPropertiesIntel read _MEM_CHANNEL_INTEL;
     
     public function ToString: string; override;
     begin
       if self.val = UInt64($4195) then Result := 'MEM_ALLOC_FLAGS_INTEL' else
+      if self.val = UInt64($4213) then Result := 'MEM_CHANNEL_INTEL' else
         Result := $'MemPropertiesIntel[{self.val}]';
+    end;
+    
+  end;
+  
+  MipmapFilterModeImg = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    private static _MIPMAP_FILTER_ANY_IMG := new MipmapFilterModeImg($0000);
+    private static _MIPMAP_FILTER_BOX_IMG := new MipmapFilterModeImg($0001);
+    
+    public static property MIPMAP_FILTER_ANY_IMG: MipmapFilterModeImg read _MIPMAP_FILTER_ANY_IMG;
+    public static property MIPMAP_FILTER_BOX_IMG: MipmapFilterModeImg read _MIPMAP_FILTER_BOX_IMG;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($0000) then Result := 'MIPMAP_FILTER_ANY_IMG' else
+      if self.val = UInt32($0001) then Result := 'MIPMAP_FILTER_BOX_IMG' else
+        Result := $'MipmapFilterModeImg[{self.val}]';
     end;
     
   end;
@@ -2728,25 +3035,29 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PLATFORM_PROFILE                 := new PlatformInfo($0900);
-    private static _PLATFORM_VERSION                 := new PlatformInfo($0901);
-    private static _PLATFORM_NAME                    := new PlatformInfo($0902);
-    private static _PLATFORM_VENDOR                  := new PlatformInfo($0903);
-    private static _PLATFORM_EXTENSIONS              := new PlatformInfo($0904);
-    private static _PLATFORM_HOST_TIMER_RESOLUTION   := new PlatformInfo($0905);
-    private static _PLATFORM_NUMERIC_VERSION         := new PlatformInfo($0906);
-    private static _PLATFORM_EXTENSIONS_WITH_VERSION := new PlatformInfo($0907);
-    private static _PLATFORM_ICD_SUFFIX_KHR          := new PlatformInfo($0920);
+    private static _PLATFORM_PROFILE                     := new PlatformInfo($0900);
+    private static _PLATFORM_VERSION                     := new PlatformInfo($0901);
+    private static _PLATFORM_NAME                        := new PlatformInfo($0902);
+    private static _PLATFORM_VENDOR                      := new PlatformInfo($0903);
+    private static _PLATFORM_EXTENSIONS                  := new PlatformInfo($0904);
+    private static _PLATFORM_HOST_TIMER_RESOLUTION       := new PlatformInfo($0905);
+    private static _PLATFORM_NUMERIC_VERSION             := new PlatformInfo($0906);
+    private static _PLATFORM_NUMERIC_VERSION_KHR         := new PlatformInfo($0906);
+    private static _PLATFORM_EXTENSIONS_WITH_VERSION     := new PlatformInfo($0907);
+    private static _PLATFORM_EXTENSIONS_WITH_VERSION_KHR := new PlatformInfo($0907);
+    private static _PLATFORM_ICD_SUFFIX_KHR              := new PlatformInfo($0920);
     
-    public static property PLATFORM_PROFILE:                 PlatformInfo read _PLATFORM_PROFILE;
-    public static property PLATFORM_VERSION:                 PlatformInfo read _PLATFORM_VERSION;
-    public static property PLATFORM_NAME:                    PlatformInfo read _PLATFORM_NAME;
-    public static property PLATFORM_VENDOR:                  PlatformInfo read _PLATFORM_VENDOR;
-    public static property PLATFORM_EXTENSIONS:              PlatformInfo read _PLATFORM_EXTENSIONS;
-    public static property PLATFORM_HOST_TIMER_RESOLUTION:   PlatformInfo read _PLATFORM_HOST_TIMER_RESOLUTION;
-    public static property PLATFORM_NUMERIC_VERSION:         PlatformInfo read _PLATFORM_NUMERIC_VERSION;
-    public static property PLATFORM_EXTENSIONS_WITH_VERSION: PlatformInfo read _PLATFORM_EXTENSIONS_WITH_VERSION;
-    public static property PLATFORM_ICD_SUFFIX_KHR:          PlatformInfo read _PLATFORM_ICD_SUFFIX_KHR;
+    public static property PLATFORM_PROFILE:                     PlatformInfo read _PLATFORM_PROFILE;
+    public static property PLATFORM_VERSION:                     PlatformInfo read _PLATFORM_VERSION;
+    public static property PLATFORM_NAME:                        PlatformInfo read _PLATFORM_NAME;
+    public static property PLATFORM_VENDOR:                      PlatformInfo read _PLATFORM_VENDOR;
+    public static property PLATFORM_EXTENSIONS:                  PlatformInfo read _PLATFORM_EXTENSIONS;
+    public static property PLATFORM_HOST_TIMER_RESOLUTION:       PlatformInfo read _PLATFORM_HOST_TIMER_RESOLUTION;
+    public static property PLATFORM_NUMERIC_VERSION:             PlatformInfo read _PLATFORM_NUMERIC_VERSION;
+    public static property PLATFORM_NUMERIC_VERSION_KHR:         PlatformInfo read _PLATFORM_NUMERIC_VERSION_KHR;
+    public static property PLATFORM_EXTENSIONS_WITH_VERSION:     PlatformInfo read _PLATFORM_EXTENSIONS_WITH_VERSION;
+    public static property PLATFORM_EXTENSIONS_WITH_VERSION_KHR: PlatformInfo read _PLATFORM_EXTENSIONS_WITH_VERSION_KHR;
+    public static property PLATFORM_ICD_SUFFIX_KHR:              PlatformInfo read _PLATFORM_ICD_SUFFIX_KHR;
     
     public function ToString: string; override;
     begin
@@ -2757,7 +3068,9 @@ type
       if self.val = UInt32($0904) then Result := 'PLATFORM_EXTENSIONS' else
       if self.val = UInt32($0905) then Result := 'PLATFORM_HOST_TIMER_RESOLUTION' else
       if self.val = UInt32($0906) then Result := 'PLATFORM_NUMERIC_VERSION' else
+      if self.val = UInt32($0906) then Result := 'PLATFORM_NUMERIC_VERSION_KHR' else
       if self.val = UInt32($0907) then Result := 'PLATFORM_EXTENSIONS_WITH_VERSION' else
+      if self.val = UInt32($0907) then Result := 'PLATFORM_EXTENSIONS_WITH_VERSION_KHR' else
       if self.val = UInt32($0920) then Result := 'PLATFORM_ICD_SUFFIX_KHR' else
         Result := $'PlatformInfo[{self.val}]';
     end;
@@ -2862,6 +3175,7 @@ type
     private static _PROGRAM_NUM_KERNELS                := new ProgramInfo($1167);
     private static _PROGRAM_KERNEL_NAMES               := new ProgramInfo($1168);
     private static _PROGRAM_IL                         := new ProgramInfo($1169);
+    private static _PROGRAM_IL_KHR                     := new ProgramInfo($1169);
     private static _PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT := new ProgramInfo($116A);
     private static _PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT := new ProgramInfo($116B);
     
@@ -2875,6 +3189,7 @@ type
     public static property PROGRAM_NUM_KERNELS:                ProgramInfo read _PROGRAM_NUM_KERNELS;
     public static property PROGRAM_KERNEL_NAMES:               ProgramInfo read _PROGRAM_KERNEL_NAMES;
     public static property PROGRAM_IL:                         ProgramInfo read _PROGRAM_IL;
+    public static property PROGRAM_IL_KHR:                     ProgramInfo read _PROGRAM_IL_KHR;
     public static property PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: ProgramInfo read _PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT;
     public static property PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: ProgramInfo read _PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT;
     
@@ -2890,6 +3205,7 @@ type
       if self.val = UInt32($1167) then Result := 'PROGRAM_NUM_KERNELS' else
       if self.val = UInt32($1168) then Result := 'PROGRAM_KERNEL_NAMES' else
       if self.val = UInt32($1169) then Result := 'PROGRAM_IL' else
+      if self.val = UInt32($1169) then Result := 'PROGRAM_IL_KHR' else
       if self.val = UInt32($116A) then Result := 'PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT' else
       if self.val = UInt32($116B) then Result := 'PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT' else
         Result := $'ProgramInfo[{self.val}]';
@@ -2901,16 +3217,19 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _QUEUE_PRIORITY_KHR := new QueueProperties($1096);
-    private static _QUEUE_THROTTLE_KHR := new QueueProperties($1097);
+    private static _QUEUE_PRIORITY_KHR        := new QueueProperties($1096);
+    private static _QUEUE_THROTTLE_KHR        := new QueueProperties($1097);
+    private static _QUEUE_KERNEL_BATCHING_ARM := new QueueProperties($41E7);
     
-    public static property QUEUE_PRIORITY_KHR: QueueProperties read _QUEUE_PRIORITY_KHR;
-    public static property QUEUE_THROTTLE_KHR: QueueProperties read _QUEUE_THROTTLE_KHR;
+    public static property QUEUE_PRIORITY_KHR:        QueueProperties read _QUEUE_PRIORITY_KHR;
+    public static property QUEUE_THROTTLE_KHR:        QueueProperties read _QUEUE_THROTTLE_KHR;
+    public static property QUEUE_KERNEL_BATCHING_ARM: QueueProperties read _QUEUE_KERNEL_BATCHING_ARM;
     
     public function ToString: string; override;
     begin
       if self.val = UInt64($1096) then Result := 'QUEUE_PRIORITY_KHR' else
       if self.val = UInt64($1097) then Result := 'QUEUE_THROTTLE_KHR' else
+      if self.val = UInt64($41E7) then Result := 'QUEUE_KERNEL_BATCHING_ARM' else
         Result := $'QueueProperties[{self.val}]';
     end;
     
@@ -3023,6 +3342,25 @@ type
       if self.val = UInt64($0800) then Result := 'MEM_SVM_ATOMICS' else
       if self.val = UInt64($1000) then Result := 'MEM_KERNEL_READ_AND_WRITE' else
         Result := $'SvmMemFlags[{self.val}]';
+    end;
+    
+  end;
+  
+  SvmMemFlagsArm = record
+    public val: UInt64;
+    public constructor(val: UInt64) := self.val := val;
+    
+    private static _MEM_SVM_FINE_GRAIN_BUFFER_ARM := new SvmMemFlagsArm($0400);
+    private static _MEM_SVM_ATOMICS_ARM           := new SvmMemFlagsArm($0800);
+    
+    public static property MEM_SVM_FINE_GRAIN_BUFFER_ARM: SvmMemFlagsArm read _MEM_SVM_FINE_GRAIN_BUFFER_ARM;
+    public static property MEM_SVM_ATOMICS_ARM:           SvmMemFlagsArm read _MEM_SVM_ATOMICS_ARM;
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt64($0400) then Result := 'MEM_SVM_FINE_GRAIN_BUFFER_ARM' else
+      if self.val = UInt64($0800) then Result := 'MEM_SVM_ATOMICS_ARM' else
+        Result := $'SvmMemFlagsArm[{self.val}]';
     end;
     
   end;
@@ -3169,6 +3507,7 @@ type
   {$region Функции}
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   cl = static class
     
     // added in cl1.0
@@ -3333,15 +3672,15 @@ type
     z_CreateBuffer_ovr_2(context, flags, size, host_ptr, errcode_ret);
     
     // added in cl3.0
-    private static function z_CreateBufferWithProperties_ovr_0(context: cl_context; var properties: UInt64; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateBufferWithProperties_ovr_0(context: cl_context; var properties: MemProperties; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateBufferWithProperties';
     private static function z_CreateBufferWithProperties_ovr_0_anh0010000(context: cl_context; properties: IntPtr; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateBufferWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       z_CreateBufferWithProperties_ovr_0(context, properties[0], flags, size, host_ptr, errcode_ret) else
       z_CreateBufferWithProperties_ovr_0_anh0010000(context, IntPtr.Zero, flags, size, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_CreateBufferWithProperties_ovr_0(context, properties, flags, size, host_ptr, errcode_ret);
     private static function z_CreateBufferWithProperties_ovr_2(context: cl_context; properties: IntPtr; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateBufferWithProperties';
@@ -3497,23 +3836,23 @@ type
     z_CreateImage3D_ovr_2(context, flags, image_format, image_width, image_height, image_depth, image_row_pitch, image_slice_pitch, host_ptr, errcode_ret);
     
     // added in cl3.0
-    private static function z_CreateImageWithProperties_ovr_0(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_0(context: cl_context; var properties: MemProperties; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_0_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    private static function z_CreateImageWithProperties_ovr_0_anh00001000(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_0_anh00001000(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_0_anh00101000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    private static function z_CreateImageWithProperties_ovr_0_anh00000100(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_0_anh00000100(context: cl_context; var properties: MemProperties; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_0_anh00100100(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    private static function z_CreateImageWithProperties_ovr_0_anh00001100(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_0_anh00001100(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_0_anh00101100(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: array of cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; image_format: array of cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       if (image_format<>nil) and (image_format.Length<>0) then
         if (image_desc<>nil) and (image_desc.Length<>0) then
@@ -3531,11 +3870,11 @@ type
           z_CreateImageWithProperties_ovr_0_anh00101100(context, IntPtr.Zero, flags, IntPtr.Zero, IntPtr.Zero, host_ptr, errcode_ret);
     private static function z_CreateImageWithProperties_ovr_1_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    private static function z_CreateImageWithProperties_ovr_1_anh00001000(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_1_anh00001000(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_1_anh00101000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: array of cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; image_format: array of cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       if (image_format<>nil) and (image_format.Length<>0) then
         z_CreateImageWithProperties_ovr_0(context, properties[0], flags, image_format[0], image_desc, host_ptr, errcode_ret) else
@@ -3543,15 +3882,15 @@ type
       if (image_format<>nil) and (image_format.Length<>0) then
         z_CreateImageWithProperties_ovr_0_anh00100000(context, IntPtr.Zero, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
         z_CreateImageWithProperties_ovr_0_anh00101000(context, IntPtr.Zero, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
-    private static function z_CreateImageWithProperties_ovr_2(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_2(context: cl_context; var properties: MemProperties; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_2_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    private static function z_CreateImageWithProperties_ovr_2_anh00001000(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_2_anh00001000(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_2_anh00101000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: array of cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; image_format: array of cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       if (image_format<>nil) and (image_format.Length<>0) then
         z_CreateImageWithProperties_ovr_2(context, properties[0], flags, image_format[0], image_desc, host_ptr, errcode_ret) else
@@ -3563,7 +3902,7 @@ type
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_3_anh00100100(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; var image_format: cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       if (image_desc<>nil) and (image_desc.Length<>0) then
         z_CreateImageWithProperties_ovr_0(context, properties[0], flags, image_format, image_desc[0], host_ptr, errcode_ret) else
@@ -3573,25 +3912,25 @@ type
         z_CreateImageWithProperties_ovr_0_anh00100100(context, IntPtr.Zero, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
     private static function z_CreateImageWithProperties_ovr_4_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       z_CreateImageWithProperties_ovr_0(context, properties[0], flags, image_format, image_desc, host_ptr, errcode_ret) else
       z_CreateImageWithProperties_ovr_0_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc, host_ptr, errcode_ret);
     private static function z_CreateImageWithProperties_ovr_5_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       z_CreateImageWithProperties_ovr_2(context, properties[0], flags, image_format, image_desc, host_ptr, errcode_ret) else
       z_CreateImageWithProperties_ovr_2_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc, host_ptr, errcode_ret);
-    private static function z_CreateImageWithProperties_ovr_6(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_6(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_6_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    private static function z_CreateImageWithProperties_ovr_6_anh00000100(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_6_anh00000100(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_6_anh00100100(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: IntPtr; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; image_format: IntPtr; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       if (image_desc<>nil) and (image_desc.Length<>0) then
         z_CreateImageWithProperties_ovr_6(context, properties[0], flags, image_format, image_desc[0], host_ptr, errcode_ret) else
@@ -3601,19 +3940,19 @@ type
         z_CreateImageWithProperties_ovr_6_anh00100100(context, IntPtr.Zero, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
     private static function z_CreateImageWithProperties_ovr_7_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       z_CreateImageWithProperties_ovr_6(context, properties[0], flags, image_format, image_desc, host_ptr, errcode_ret) else
       z_CreateImageWithProperties_ovr_6_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc, host_ptr, errcode_ret);
-    private static function z_CreateImageWithProperties_ovr_8(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_CreateImageWithProperties_ovr_8(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
     private static function z_CreateImageWithProperties_ovr_8_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of MemProperties; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       z_CreateImageWithProperties_ovr_8(context, properties[0], flags, image_format, image_desc, host_ptr, errcode_ret) else
       z_CreateImageWithProperties_ovr_8_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: array of cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: array of cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (image_format<>nil) and (image_format.Length<>0) then
       if (image_desc<>nil) and (image_desc.Length<>0) then
         z_CreateImageWithProperties_ovr_0(context, properties, flags, image_format[0], image_desc[0], host_ptr, errcode_ret) else
@@ -3621,29 +3960,29 @@ type
       if (image_desc<>nil) and (image_desc.Length<>0) then
         z_CreateImageWithProperties_ovr_0_anh00001000(context, properties, flags, IntPtr.Zero, image_desc[0], host_ptr, errcode_ret) else
         z_CreateImageWithProperties_ovr_0_anh00001100(context, properties, flags, IntPtr.Zero, IntPtr.Zero, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: array of cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: array of cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (image_format<>nil) and (image_format.Length<>0) then
       z_CreateImageWithProperties_ovr_0(context, properties, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
       z_CreateImageWithProperties_ovr_0_anh00001000(context, properties, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: array of cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: array of cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (image_format<>nil) and (image_format.Length<>0) then
       z_CreateImageWithProperties_ovr_2(context, properties, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
       z_CreateImageWithProperties_ovr_2_anh00001000(context, properties, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; var image_format: cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (image_desc<>nil) and (image_desc.Length<>0) then
       z_CreateImageWithProperties_ovr_0(context, properties, flags, image_format, image_desc[0], host_ptr, errcode_ret) else
       z_CreateImageWithProperties_ovr_0_anh00000100(context, properties, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_CreateImageWithProperties_ovr_0(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_CreateImageWithProperties_ovr_2(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (image_desc<>nil) and (image_desc.Length<>0) then
       z_CreateImageWithProperties_ovr_6(context, properties, flags, image_format, image_desc[0], host_ptr, errcode_ret) else
       z_CreateImageWithProperties_ovr_6_anh00000100(context, properties, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_CreateImageWithProperties_ovr_6(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: MemProperties; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_CreateImageWithProperties_ovr_8(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
     private static function z_CreateImageWithProperties_ovr_18(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateImageWithProperties';
@@ -5919,46 +6258,46 @@ type
     z_EnqueueReadBuffer_ovr_17(command_queue, buffer, blocking_read, offset, size, ptr, num_events_in_wait_list, event_wait_list, &event);
     
     // added in cl1.1
-    private static function z_EnqueueReadBufferRect_ovr_0(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueReadBufferRect_ovr_0(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode; where T: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode; where T: record;
     begin
-      Result := z_EnqueueReadBufferRect_ovr_0(command_queue, buffer, blocking_read, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
+      Result := z_EnqueueReadBufferRect_ovr_0(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
     end;
-    private static function z_EnqueueReadBufferRect_ovr_1(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueReadBufferRect_ovr_1(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode; where T: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode; where T: record;
     begin
-      Result := z_EnqueueReadBufferRect_ovr_1(command_queue, buffer, blocking_read, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
+      Result := z_EnqueueReadBufferRect_ovr_1(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
     end;
-    private static function z_EnqueueReadBufferRect_ovr_2(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueReadBufferRect_ovr_2(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode; where T: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode; where T: record;
     begin
-      Result := z_EnqueueReadBufferRect_ovr_2(command_queue, buffer, blocking_read, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
+      Result := z_EnqueueReadBufferRect_ovr_2(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
     end;
-    private static function z_EnqueueReadBufferRect_ovr_3(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueReadBufferRect_ovr_3(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode; where T: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode; where T: record;
     begin
-      Result := z_EnqueueReadBufferRect_ovr_3(command_queue, buffer, blocking_read, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
+      Result := z_EnqueueReadBufferRect_ovr_3(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
     end;
-    private static function z_EnqueueReadBufferRect_ovr_4(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueReadBufferRect_ovr_4(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
-    z_EnqueueReadBufferRect_ovr_4(command_queue, buffer, blocking_read, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueReadBufferRect_ovr_5(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueReadBufferRect_ovr_4(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReadBufferRect_ovr_5(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
-    z_EnqueueReadBufferRect_ovr_5(command_queue, buffer, blocking_read, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueReadBufferRect_ovr_6(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueReadBufferRect_ovr_5(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReadBufferRect_ovr_6(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
-    z_EnqueueReadBufferRect_ovr_6(command_queue, buffer, blocking_read, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueReadBufferRect_ovr_7(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueReadBufferRect_ovr_6(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReadBufferRect_ovr_7(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
-    z_EnqueueReadBufferRect_ovr_7(command_queue, buffer, blocking_read, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReadBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueReadBufferRect_ovr_7(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
     
     // added in cl1.0
     private static function z_EnqueueReadImage_ovr_0(command_queue: cl_command_queue; image: cl_mem; blocking_read: Bool; var origin: UIntPtr; var region: UIntPtr; row_pitch: UIntPtr; slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
@@ -6769,46 +7108,46 @@ type
     z_EnqueueWriteBuffer_ovr_17(command_queue, buffer, blocking_write, offset, size, ptr, num_events_in_wait_list, event_wait_list, &event);
     
     // added in cl1.1
-    private static function z_EnqueueWriteBufferRect_ovr_0(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueWriteBufferRect_ovr_0(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode; where T: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode; where T: record;
     begin
-      Result := z_EnqueueWriteBufferRect_ovr_0(command_queue, buffer, blocking_write, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
+      Result := z_EnqueueWriteBufferRect_ovr_0(command_queue, buffer, blocking_write, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
     end;
-    private static function z_EnqueueWriteBufferRect_ovr_1(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueWriteBufferRect_ovr_1(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode; where T: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode; where T: record;
     begin
-      Result := z_EnqueueWriteBufferRect_ovr_1(command_queue, buffer, blocking_write, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
+      Result := z_EnqueueWriteBufferRect_ovr_1(command_queue, buffer, blocking_write, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
     end;
-    private static function z_EnqueueWriteBufferRect_ovr_2(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueWriteBufferRect_ovr_2(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode; where T: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode; where T: record;
     begin
-      Result := z_EnqueueWriteBufferRect_ovr_2(command_queue, buffer, blocking_write, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
+      Result := z_EnqueueWriteBufferRect_ovr_2(command_queue, buffer, blocking_write, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
     end;
-    private static function z_EnqueueWriteBufferRect_ovr_3(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueWriteBufferRect_ovr_3(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode; where T: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect<T>(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; var ptr: T; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode; where T: record;
     begin
-      Result := z_EnqueueWriteBufferRect_ovr_3(command_queue, buffer, blocking_write, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
+      Result := z_EnqueueWriteBufferRect_ovr_3(command_queue, buffer, blocking_write, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, PByte(pointer(@ptr))^, num_events_in_wait_list, event_wait_list, &event);
     end;
-    private static function z_EnqueueWriteBufferRect_ovr_4(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueWriteBufferRect_ovr_4(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
-    z_EnqueueWriteBufferRect_ovr_4(command_queue, buffer, blocking_write, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueWriteBufferRect_ovr_5(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueWriteBufferRect_ovr_4(command_queue, buffer, blocking_write, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWriteBufferRect_ovr_5(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
-    z_EnqueueWriteBufferRect_ovr_5(command_queue, buffer, blocking_write, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueWriteBufferRect_ovr_6(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueWriteBufferRect_ovr_5(command_queue, buffer, blocking_write, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWriteBufferRect_ovr_6(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
-    z_EnqueueWriteBufferRect_ovr_6(command_queue, buffer, blocking_write, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueWriteBufferRect_ovr_7(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueWriteBufferRect_ovr_6(command_queue, buffer, blocking_write, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWriteBufferRect_ovr_7(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBufferRect';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_offset: UIntPtr; var host_offset: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
-    z_EnqueueWriteBufferRect_ovr_7(command_queue, buffer, blocking_write, buffer_offset, host_offset, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWriteBufferRect(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: Bool; var buffer_origin: UIntPtr; var host_origin: UIntPtr; var region: UIntPtr; buffer_row_pitch: UIntPtr; buffer_slice_pitch: UIntPtr; host_row_pitch: UIntPtr; host_slice_pitch: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueWriteBufferRect_ovr_7(command_queue, buffer, blocking_write, buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, event_wait_list, &event);
     
     // added in cl1.0
     private static function z_EnqueueWriteImage_ovr_0(command_queue: cl_command_queue; image: cl_mem; blocking_write: Bool; var origin: UIntPtr; var region: UIntPtr; input_row_pitch: UIntPtr; input_slice_pitch: UIntPtr; var ptr: Byte; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
@@ -8157,18 +8496,19 @@ type
   {$region Extensions}
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clD3d10SharingKHR = static class
     public const _ExtStr = 'khr_d3d10_sharing';
     
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_0(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_0(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000010(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000010(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000001(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000001(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000011(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000011(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: array of cl_device_id; num_devices: array of UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: array of cl_device_id; num_devices: array of UInt32): ErrorCode :=
     if (devices<>nil) and (devices.Length<>0) then
       if (num_devices<>nil) and (num_devices.Length<>0) then
         z_GetDeviceIDsFromD3D10KHR_ovr_0(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices[0], num_devices[0]) else
@@ -8176,41 +8516,41 @@ type
       if (num_devices<>nil) and (num_devices.Length<>0) then
         z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000010(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, IntPtr.Zero, num_devices[0]) else
         z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000011(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, IntPtr.Zero, IntPtr.Zero);
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_1_anh00000010(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_1_anh00000010(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: array of cl_device_id; var num_devices: UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: array of cl_device_id; var num_devices: UInt32): ErrorCode :=
     if (devices<>nil) and (devices.Length<>0) then
       z_GetDeviceIDsFromD3D10KHR_ovr_0(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices[0], num_devices) else
       z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000010(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, IntPtr.Zero, num_devices);
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_2(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_2(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_2_anh00000010(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_2_anh00000010(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: array of cl_device_id; num_devices: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: array of cl_device_id; num_devices: IntPtr): ErrorCode :=
     if (devices<>nil) and (devices.Length<>0) then
       z_GetDeviceIDsFromD3D10KHR_ovr_2(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices[0], num_devices) else
       z_GetDeviceIDsFromD3D10KHR_ovr_2_anh00000010(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, IntPtr.Zero, num_devices);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; num_devices: array of UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; num_devices: array of UInt32): ErrorCode :=
     if (num_devices<>nil) and (num_devices.Length<>0) then
       z_GetDeviceIDsFromD3D10KHR_ovr_0(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices[0]) else
       z_GetDeviceIDsFromD3D10KHR_ovr_0_anh00000001(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode :=
     z_GetDeviceIDsFromD3D10KHR_ovr_0(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode :=
     z_GetDeviceIDsFromD3D10KHR_ovr_2(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices);
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_6(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_6(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_6_anh00000001(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_6_anh00000001(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: array of UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: array of UInt32): ErrorCode :=
     if (num_devices<>nil) and (num_devices.Length<>0) then
       z_GetDeviceIDsFromD3D10KHR_ovr_6(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices[0]) else
       z_GetDeviceIDsFromD3D10KHR_ovr_6_anh00000001(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode :=
     z_GetDeviceIDsFromD3D10KHR_ovr_6(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices);
-    private static function z_GetDeviceIDsFromD3D10KHR_ovr_8(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D10KHR_ovr_8(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D10KHR(platform: cl_platform_id; d3d_device_source: D3d10DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d10DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode :=
     z_GetDeviceIDsFromD3D10KHR_ovr_8(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices);
     
     private static function z_CreateFromD3D10BufferKHR_ovr_0(context: cl_context; flags: MemFlags; var resource: IntPtr; var errcode_ret: ErrorCode): cl_mem;
@@ -8663,18 +9003,19 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clD3d11SharingKHR = static class
     public const _ExtStr = 'khr_d3d11_sharing';
     
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_0(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_0(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000010(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000010(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000001(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000001(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000011(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000011(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: array of cl_device_id; num_devices: array of UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: array of cl_device_id; num_devices: array of UInt32): ErrorCode :=
     if (devices<>nil) and (devices.Length<>0) then
       if (num_devices<>nil) and (num_devices.Length<>0) then
         z_GetDeviceIDsFromD3D11KHR_ovr_0(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices[0], num_devices[0]) else
@@ -8682,41 +9023,41 @@ type
       if (num_devices<>nil) and (num_devices.Length<>0) then
         z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000010(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, IntPtr.Zero, num_devices[0]) else
         z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000011(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, IntPtr.Zero, IntPtr.Zero);
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_1_anh00000010(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_1_anh00000010(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: array of cl_device_id; var num_devices: UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: array of cl_device_id; var num_devices: UInt32): ErrorCode :=
     if (devices<>nil) and (devices.Length<>0) then
       z_GetDeviceIDsFromD3D11KHR_ovr_0(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices[0], num_devices) else
       z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000010(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, IntPtr.Zero, num_devices);
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_2(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_2(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_2_anh00000010(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_2_anh00000010(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: array of cl_device_id; num_devices: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: array of cl_device_id; num_devices: IntPtr): ErrorCode :=
     if (devices<>nil) and (devices.Length<>0) then
       z_GetDeviceIDsFromD3D11KHR_ovr_2(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices[0], num_devices) else
       z_GetDeviceIDsFromD3D11KHR_ovr_2_anh00000010(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, IntPtr.Zero, num_devices);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; num_devices: array of UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; num_devices: array of UInt32): ErrorCode :=
     if (num_devices<>nil) and (num_devices.Length<>0) then
       z_GetDeviceIDsFromD3D11KHR_ovr_0(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices[0]) else
       z_GetDeviceIDsFromD3D11KHR_ovr_0_anh00000001(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode :=
     z_GetDeviceIDsFromD3D11KHR_ovr_0(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; var devices: cl_device_id; num_devices: IntPtr): ErrorCode :=
     z_GetDeviceIDsFromD3D11KHR_ovr_2(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices);
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_6(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_6(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_6_anh00000001(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_6_anh00000001(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: array of UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: array of UInt32): ErrorCode :=
     if (num_devices<>nil) and (num_devices.Length<>0) then
       z_GetDeviceIDsFromD3D11KHR_ovr_6(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices[0]) else
       z_GetDeviceIDsFromD3D11KHR_ovr_6_anh00000001(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; var num_devices: UInt32): ErrorCode :=
     z_GetDeviceIDsFromD3D11KHR_ovr_6(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices);
-    private static function z_GetDeviceIDsFromD3D11KHR_ovr_8(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
+    private static function z_GetDeviceIDsFromD3D11KHR_ovr_8(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceIDsFromD3D11KHR(platform: cl_platform_id; d3d_device_source: D3d11DeviceSourceKhr; d3d_object: IntPtr; d3d_device_set: D3d11DeviceSetKhr; num_entries: UInt32; devices: IntPtr; num_devices: IntPtr): ErrorCode :=
     z_GetDeviceIDsFromD3D11KHR_ovr_8(platform, d3d_device_source, d3d_object, d3d_device_set, num_entries, devices, num_devices);
     
     private static function z_CreateFromD3D11BufferKHR_ovr_0(context: cl_context; flags: MemFlags; var resource: IntPtr; var errcode_ret: ErrorCode): cl_mem;
@@ -9169,6 +9510,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clDx9MediaSharingKHR = static class
     public const _ExtStr = 'khr_dx9_media_sharing';
     
@@ -9783,6 +10125,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clEglImageKHR = static class
     public const _ExtStr = 'khr_egl_image';
     
@@ -10206,6 +10549,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clEglEventKHR = static class
     public const _ExtStr = 'khr_egl_event';
     
@@ -10217,6 +10561,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clSetMemObjectDestructorAPPLE = static class
     public const _ExtStr = 'APPLE_SetMemObjectDestructor';
     
@@ -10228,6 +10573,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clContextLoggingFunctionsAPPLE = static class
     public const _ExtStr = 'APPLE_ContextLoggingFunctions';
     
@@ -10279,6 +10625,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clIcdKHR = static class
     public const _ExtStr = 'khr_icd';
     
@@ -10338,6 +10685,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clIlProgramKHR = static class
     public const _ExtStr = 'khr_il_program';
     
@@ -10359,6 +10707,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clTerminateContextKHR = static class
     public const _ExtStr = 'khr_terminate_context';
     
@@ -10370,6 +10719,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clCreateCommandQueueKHR = static class
     public const _ExtStr = 'khr_create_command_queue';
     
@@ -10391,6 +10741,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clDeviceFissionEXT = static class
     public const _ExtStr = 'ext_device_fission';
     
@@ -10608,6 +10959,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clMigrateMemobjectEXT = static class
     public const _ExtStr = 'ext_migrate_memobject';
     
@@ -10815,18 +11167,19 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clExtHostPtrQCOM = static class
     public const _ExtStr = 'qcom_ext_host_ptr';
     
-    private static function z_GetDeviceImageInfoQCOM_ovr_0(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_0(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    private static function z_GetDeviceImageInfoQCOM_ovr_0_anh000010000(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_0_anh000010000(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    private static function z_GetDeviceImageInfoQCOM_ovr_0_anh000000001(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_0_anh000000001(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    private static function z_GetDeviceImageInfoQCOM_ovr_0_anh000010001(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_0_anh000010001(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: array of cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: array of cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
     if (image_format<>nil) and (image_format.Length<>0) then
       if (param_value_size_ret<>nil) and (param_value_size_ret.Length<>0) then
         z_GetDeviceImageInfoQCOM_ovr_0(device, image_width, image_height, image_format[0], param_name, param_value_size, param_value, param_value_size_ret[0]) else
@@ -10834,46 +11187,47 @@ type
       if (param_value_size_ret<>nil) and (param_value_size_ret.Length<>0) then
         z_GetDeviceImageInfoQCOM_ovr_0_anh000010000(device, image_width, image_height, IntPtr.Zero, param_name, param_value_size, param_value, param_value_size_ret[0]) else
         z_GetDeviceImageInfoQCOM_ovr_0_anh000010001(device, image_width, image_height, IntPtr.Zero, param_name, param_value_size, param_value, IntPtr.Zero);
-    private static function z_GetDeviceImageInfoQCOM_ovr_1_anh000010000(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_1_anh000010000(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: array of cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: array of cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
     if (image_format<>nil) and (image_format.Length<>0) then
       z_GetDeviceImageInfoQCOM_ovr_0(device, image_width, image_height, image_format[0], param_name, param_value_size, param_value, param_value_size_ret) else
       z_GetDeviceImageInfoQCOM_ovr_0_anh000010000(device, image_width, image_height, IntPtr.Zero, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceImageInfoQCOM_ovr_2(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_2(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    private static function z_GetDeviceImageInfoQCOM_ovr_2_anh000010000(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_2_anh000010000(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: array of cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: array of cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
     if (image_format<>nil) and (image_format.Length<>0) then
       z_GetDeviceImageInfoQCOM_ovr_2(device, image_width, image_height, image_format[0], param_name, param_value_size, param_value, param_value_size_ret) else
       z_GetDeviceImageInfoQCOM_ovr_2_anh000010000(device, image_width, image_height, IntPtr.Zero, param_name, param_value_size, param_value, param_value_size_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
     if (param_value_size_ret<>nil) and (param_value_size_ret.Length<>0) then
       z_GetDeviceImageInfoQCOM_ovr_0(device, image_width, image_height, image_format, param_name, param_value_size, param_value, param_value_size_ret[0]) else
       z_GetDeviceImageInfoQCOM_ovr_0_anh000000001(device, image_width, image_height, image_format, param_name, param_value_size, param_value, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetDeviceImageInfoQCOM_ovr_0(device, image_width, image_height, image_format, param_name, param_value_size, param_value, param_value_size_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetDeviceImageInfoQCOM_ovr_2(device, image_width, image_height, image_format, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceImageInfoQCOM_ovr_6(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_6(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    private static function z_GetDeviceImageInfoQCOM_ovr_6_anh000000001(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_6_anh000000001(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
     if (param_value_size_ret<>nil) and (param_value_size_ret.Length<>0) then
       z_GetDeviceImageInfoQCOM_ovr_6(device, image_width, image_height, image_format, param_name, param_value_size, param_value, param_value_size_ret[0]) else
       z_GetDeviceImageInfoQCOM_ovr_6_anh000000001(device, image_width, image_height, image_format, param_name, param_value_size, param_value, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetDeviceImageInfoQCOM_ovr_6(device, image_width, image_height, image_format, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceImageInfoQCOM_ovr_8(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetDeviceImageInfoQCOM_ovr_8(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceImageInfoQCOM(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; image_format: IntPtr; param_name: ImagePitchInfoQcom; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetDeviceImageInfoQCOM_ovr_8(device, image_width, image_height, image_format, param_name, param_value_size, param_value, param_value_size_ret);
     
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clUseGrallocPtrIMG = static class
     public const _ExtStr = 'img_use_gralloc_ptr';
     
@@ -11282,6 +11636,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clSubgroupsKHR = static class
     public const _ExtStr = 'khr_subgroups';
     
@@ -11303,33 +11658,35 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clImportMemoryARM = static class
     public const _ExtStr = 'arm_import_memory';
     
-    private static function z_ImportMemoryARM_ovr_0(context: cl_context; flags: MemFlags; var properties: IntPtr; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_ImportMemoryARM_ovr_0(context: cl_context; flags: MemFlags; var properties: ImportPropertiesArm; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clImportMemoryARM';
     private static function z_ImportMemoryARM_ovr_0_anh0001000(context: cl_context; flags: MemFlags; properties: IntPtr; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clImportMemoryARM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function ImportMemoryARM(context: cl_context; flags: MemFlags; properties: array of IntPtr; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function ImportMemoryARM(context: cl_context; flags: MemFlags; properties: array of ImportPropertiesArm; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem :=
     if (properties<>nil) and (properties.Length<>0) then
       z_ImportMemoryARM_ovr_0(context, flags, properties[0], memory, size, errcode_ret) else
       z_ImportMemoryARM_ovr_0_anh0001000(context, flags, IntPtr.Zero, memory, size, errcode_ret);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function ImportMemoryARM(context: cl_context; flags: MemFlags; var properties: IntPtr; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function ImportMemoryARM(context: cl_context; flags: MemFlags; var properties: ImportPropertiesArm; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_ImportMemoryARM_ovr_0(context, flags, properties, memory, size, errcode_ret);
-    private static function z_ImportMemoryARM_ovr_2(context: cl_context; flags: MemFlags; properties: pointer; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem;
+    private static function z_ImportMemoryARM_ovr_2(context: cl_context; flags: MemFlags; properties: IntPtr; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clImportMemoryARM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function ImportMemoryARM(context: cl_context; flags: MemFlags; properties: pointer; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function ImportMemoryARM(context: cl_context; flags: MemFlags; properties: IntPtr; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_ImportMemoryARM_ovr_2(context, flags, properties, memory, size, errcode_ret);
     
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clSharedVirtualMemoryARM = static class
     public const _ExtStr = 'arm_shared_virtual_memory';
     
-    private static function z_SVMAllocARM_ovr_0(context: cl_context; flags: UInt64; size: UIntPtr; alignment: UInt32): IntPtr;
+    private static function z_SVMAllocARM_ovr_0(context: cl_context; flags: SvmMemFlagsArm; size: UIntPtr; alignment: UInt32): IntPtr;
     external 'opencl.dll' name 'clSVMAllocARM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SVMAllocARM(context: cl_context; flags: UInt64; size: UIntPtr; alignment: UInt32): IntPtr :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SVMAllocARM(context: cl_context; flags: SvmMemFlagsArm; size: UIntPtr; alignment: UInt32): IntPtr :=
     z_SVMAllocARM_ovr_0(context, flags, size, alignment);
     
     private static procedure z_SVMFreeARM_ovr_0(context: cl_context; svm_pointer: IntPtr);
@@ -11607,14 +11964,15 @@ type
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SetKernelArgSVMPointerARM(kernel: cl_kernel; arg_index: UInt32; arg_value: IntPtr): ErrorCode :=
     z_SetKernelArgSVMPointerARM_ovr_0(kernel, arg_index, arg_value);
     
-    private static function z_SetKernelExecInfoARM_ovr_0(kernel: cl_kernel; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr): ErrorCode;
+    private static function z_SetKernelExecInfoARM_ovr_0(kernel: cl_kernel; param_name: KernelExecInfoArm; param_value_size: UIntPtr; param_value: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clSetKernelExecInfoARM';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SetKernelExecInfoARM(kernel: cl_kernel; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SetKernelExecInfoARM(kernel: cl_kernel; param_name: KernelExecInfoArm; param_value_size: UIntPtr; param_value: IntPtr): ErrorCode :=
     z_SetKernelExecInfoARM_ovr_0(kernel, param_name, param_value_size, param_value);
     
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clAcceleratorINTEL = static class
     public const _ExtStr = 'intel_accelerator';
     
@@ -11651,6 +12009,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clGlEventKHR = static class
     public const _ExtStr = 'khr_gl_event';
     
@@ -11662,6 +12021,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clVaApiMediaSharingINTEL = static class
     public const _ExtStr = 'intel_va_api_media_sharing';
     
@@ -12138,6 +12498,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clDx9MediaSharingINTEL = static class
     public const _ExtStr = 'intel_dx9_media_sharing';
     
@@ -12614,6 +12975,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clGlSharingKHR = static class
     public const _ExtStr = 'khr_gl_sharing';
     
@@ -13168,6 +13530,7 @@ type
   end;
   
   [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
   clUnifiedSharedMemoryINTEL = static class
     public const _ExtStr = 'intel_unified_shared_memory';
     
@@ -13400,6 +13763,59 @@ type
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemcpyINTEL(command_queue: cl_command_queue; blocking: Bool; dst_ptr: IntPtr; src_ptr: IntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
     z_EnqueueMemcpyINTEL_ovr_8(command_queue, blocking, dst_ptr, src_ptr, size, num_events_in_wait_list, event_wait_list, &event);
     
+    private static function z_EnqueueMemAdviseINTEL_ovr_0(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    private static function z_EnqueueMemAdviseINTEL_ovr_0_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    private static function z_EnqueueMemAdviseINTEL_ovr_0_anh00000001(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    private static function z_EnqueueMemAdviseINTEL_ovr_0_anh00000011(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueMemAdviseINTEL_ovr_0(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueMemAdviseINTEL_ovr_0_anh00000001(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueMemAdviseINTEL_ovr_0_anh00000010(command_queue, ptr, size, advice, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueMemAdviseINTEL_ovr_0_anh00000011(command_queue, ptr, size, advice, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueMemAdviseINTEL_ovr_1_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueMemAdviseINTEL_ovr_0(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueMemAdviseINTEL_ovr_0_anh00000010(command_queue, ptr, size, advice, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueMemAdviseINTEL_ovr_2(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    private static function z_EnqueueMemAdviseINTEL_ovr_2_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueMemAdviseINTEL_ovr_2(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueMemAdviseINTEL_ovr_2_anh00000010(command_queue, ptr, size, advice, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueMemAdviseINTEL_ovr_0(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueMemAdviseINTEL_ovr_0_anh00000001(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueMemAdviseINTEL_ovr_0(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueMemAdviseINTEL_ovr_2(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueMemAdviseINTEL_ovr_6(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    private static function z_EnqueueMemAdviseINTEL_ovr_6_anh00000001(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueMemAdviseINTEL_ovr_6(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueMemAdviseINTEL_ovr_6_anh00000001(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueMemAdviseINTEL_ovr_6(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueMemAdviseINTEL_ovr_8(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueMemAdviseINTEL_ovr_8(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event);
+    
     private static function z_EnqueueMigrateMemINTEL_ovr_0(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
     private static function z_EnqueueMigrateMemINTEL_ovr_0_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
@@ -13453,58 +13869,819 @@ type
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
     z_EnqueueMigrateMemINTEL_ovr_8(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, &event);
     
-    private static function z_EnqueueMemAdviseINTEL_ovr_0(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    private static function z_EnqueueMemAdviseINTEL_ovr_0_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    private static function z_EnqueueMemAdviseINTEL_ovr_0_anh00000001(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    private static function z_EnqueueMemAdviseINTEL_ovr_0_anh00000011(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clCreateBufferWithPropertiesINTEL = static class
+    public const _ExtStr = 'intel_create_buffer_with_properties';
+    
+    private static function z_CreateBufferWithPropertiesINTEL_ovr_0(context: cl_context; var properties: MemPropertiesIntel; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateBufferWithPropertiesINTEL';
+    private static function z_CreateBufferWithPropertiesINTEL_ovr_0_anh0010000(context: cl_context; properties: IntPtr; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateBufferWithPropertiesINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithPropertiesINTEL(context: cl_context; properties: array of MemPropertiesIntel; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      z_CreateBufferWithPropertiesINTEL_ovr_0(context, properties[0], flags, size, host_ptr, errcode_ret) else
+      z_CreateBufferWithPropertiesINTEL_ovr_0_anh0010000(context, IntPtr.Zero, flags, size, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithPropertiesINTEL(context: cl_context; var properties: MemPropertiesIntel; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateBufferWithPropertiesINTEL_ovr_0(context, properties, flags, size, host_ptr, errcode_ret);
+    private static function z_CreateBufferWithPropertiesINTEL_ovr_2(context: cl_context; properties: IntPtr; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateBufferWithPropertiesINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithPropertiesINTEL(context: cl_context; properties: IntPtr; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateBufferWithPropertiesINTEL_ovr_2(context, properties, flags, size, host_ptr, errcode_ret);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clGenerateMipmapIMG = static class
+    public const _ExtStr = 'img_generate_mipmap';
+    
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010011(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011011(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_1_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_1_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_1_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_1_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_1_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_1_anh0000001010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_1_anh0000011010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_2(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_2_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_2_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_2_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_2_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_2_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_2_anh0000001010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_2_anh0000011010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_2(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueGenerateMipmapIMG_ovr_2_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_2_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueGenerateMipmapIMG_ovr_2_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_2_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueGenerateMipmapIMG_ovr_2_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_2_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueGenerateMipmapIMG_ovr_2_anh0000011010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_3_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_3_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_3_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_3_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_3_anh0000001001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_3_anh0000011001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_4_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_4_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_4_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_5_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_5_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_5_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_2(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_6(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_6_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_6_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_6_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_6_anh0000000001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_6_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_6_anh0000001001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_6_anh0000011001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_6(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_6_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_6_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_6_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_6_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_6_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_6_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_6_anh0000011001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_7_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_7_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_7_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_6(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_8(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_8_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_8_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_8_anh0000011000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_8(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_8_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (mip_region<>nil) and (mip_region.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_8_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_8_anh0000011000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_9_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_9_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_9_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_9_anh0000010011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010011(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_10_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_10_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_11_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_11_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_2(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_12_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_12_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_13_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_0_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_14_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_2(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_2_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_15_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_15_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_6(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_16_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_6(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_6_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_17_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_8(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_8_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_18(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_18(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010011(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_19_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_19_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_19_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_18(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_20(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_20_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_20_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_20_anh0000010010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_20(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_20_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_20_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_20_anh0000010010(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_21_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_21_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_18(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_22_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_18(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_18_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_23_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_20(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_20_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_24(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_24_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_24_anh0000000001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_24_anh0000010001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_24(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_24_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_24_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_24_anh0000010001(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_25_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_24(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_24_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_26(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_26_anh0000010000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: array of UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (array_region<>nil) and (array_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_26(command_queue, src_image, dst_image, mipmap_filter_mode, array_region[0], mip_region, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_26_anh0000010000(command_queue, src_image, dst_image, mipmap_filter_mode, IntPtr.Zero, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_2(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_2_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_0_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_2(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_2_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_6(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_6_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_6(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_6_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_8(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_8_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
     if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
       if (&event<>nil) and (&event.Length<>0) then
-        z_EnqueueMemAdviseINTEL_ovr_0(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list[0], &event[0]) else
-        z_EnqueueMemAdviseINTEL_ovr_0_anh00000001(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
       if (&event<>nil) and (&event.Length<>0) then
-        z_EnqueueMemAdviseINTEL_ovr_0_anh00000010(command_queue, ptr, size, advice, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
-        z_EnqueueMemAdviseINTEL_ovr_0_anh00000011(command_queue, ptr, size, advice, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
-    private static function z_EnqueueMemAdviseINTEL_ovr_1_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
     if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
-      z_EnqueueMemAdviseINTEL_ovr_0(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list[0], &event) else
-      z_EnqueueMemAdviseINTEL_ovr_0_anh00000010(command_queue, ptr, size, advice, num_events_in_wait_list, IntPtr.Zero, &event);
-    private static function z_EnqueueMemAdviseINTEL_ovr_2(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    private static function z_EnqueueMemAdviseINTEL_ovr_2_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+      z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
     if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
-      z_EnqueueMemAdviseINTEL_ovr_2(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list[0], &event) else
-      z_EnqueueMemAdviseINTEL_ovr_2_anh00000010(command_queue, ptr, size, advice, num_events_in_wait_list, IntPtr.Zero, &event);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+      z_EnqueueGenerateMipmapIMG_ovr_2(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_2_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
     if (&event<>nil) and (&event.Length<>0) then
-      z_EnqueueMemAdviseINTEL_ovr_0(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event[0]) else
-      z_EnqueueMemAdviseINTEL_ovr_0_anh00000001(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
-    z_EnqueueMemAdviseINTEL_ovr_0(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
-    z_EnqueueMemAdviseINTEL_ovr_2(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueMemAdviseINTEL_ovr_6(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    private static function z_EnqueueMemAdviseINTEL_ovr_6_anh00000001(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+      z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueGenerateMipmapIMG_ovr_0_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_0(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_2(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
     if (&event<>nil) and (&event.Length<>0) then
-      z_EnqueueMemAdviseINTEL_ovr_6(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event[0]) else
-      z_EnqueueMemAdviseINTEL_ovr_6_anh00000001(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
-    z_EnqueueMemAdviseINTEL_ovr_6(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueMemAdviseINTEL_ovr_8(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
-    external 'opencl.dll' name 'clEnqueueMemAdviseINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemAdviseINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
-    z_EnqueueMemAdviseINTEL_ovr_8(command_queue, ptr, size, advice, num_events_in_wait_list, event_wait_list, &event);
+      z_EnqueueGenerateMipmapIMG_ovr_6(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueGenerateMipmapIMG_ovr_6_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_6(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_8(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_18(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_18(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_20(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_20_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_18(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueGenerateMipmapIMG_ovr_18_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_18(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_20(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_24(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueGenerateMipmapIMG_ovr_24_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_24(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; var array_region: UIntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_26(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_54(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_54(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_55_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_55_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_55_anh0000001010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_54(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_56(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_56_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_56_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_56_anh0000001010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_56(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_56_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_56_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueGenerateMipmapIMG_ovr_56_anh0000001010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_57_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_57_anh0000001001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_54(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_58_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_54(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_54_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_59_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_56(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_56_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_60(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_60_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_60_anh0000000001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_60_anh0000001001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_60(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_60_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_60_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_60_anh0000001001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_61_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_60(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_60_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_62(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_62_anh0000001000(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: array of UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (mip_region<>nil) and (mip_region.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_62(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_62_anh0000001000(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_54(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_54(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_56(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_56_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_54(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueGenerateMipmapIMG_ovr_54_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_54(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_56(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_60(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueGenerateMipmapIMG_ovr_60_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_60(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; var mip_region: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_62(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_72(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_72_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_72_anh0000000001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_72_anh0000000011(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_72(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_72_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueGenerateMipmapIMG_ovr_72_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueGenerateMipmapIMG_ovr_72_anh0000000011(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_73_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_72(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_72_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_74(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_74_anh0000000010(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_74(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueGenerateMipmapIMG_ovr_74_anh0000000010(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_72(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueGenerateMipmapIMG_ovr_72_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_72(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_74(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_78(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    private static function z_EnqueueGenerateMipmapIMG_ovr_78_anh0000000001(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueGenerateMipmapIMG_ovr_78(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueGenerateMipmapIMG_ovr_78_anh0000000001(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_78(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueGenerateMipmapIMG_ovr_80(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueGenerateMipmapIMG_ovr_80(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
     
   end;
   

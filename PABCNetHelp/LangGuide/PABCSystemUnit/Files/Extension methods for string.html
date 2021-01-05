@@ -82,6 +82,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив вещественных</td></tr>
 <tr><td><code><b>function</b> ToWords(Self: string; <b>params</b> delim: <b>array</b>  <b>of</b> char): <b>array</b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив слов</td></tr>
+<tr><td><code><b>function</b> ToWords(Self: string; delims: string := ' '): <b>array</b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив слов, использу€ в качестве разделителей символы из строки delims</td></tr>
 <tr><td><code><b>function</b> TryToInteger(Self: string; <b>var</b> value: integer): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в целое и записывает его в value.ѕри невозможности преобразовани€ возвращаетс€ False</td></tr>
 <tr><td><code><b>function</b> TryToReal(Self: string; <b>var</b> value: real): boolean;</code>
