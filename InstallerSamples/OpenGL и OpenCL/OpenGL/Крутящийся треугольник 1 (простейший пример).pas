@@ -13,11 +13,11 @@ uses OpenGL;
 
 {$apptype windows} // убирает консоль
 
-var gl: OpenGL.gl;
+var gl: OpenGL.gl<PlWin>;
 
 {$region Shader}
 
-function InitShader(fname: string; st: ShaderType): ShaderName;
+function InitShader(fname: string; st: ShaderType): gl_shader;
 begin
   Result := gl.CreateShader(st);
   
@@ -61,12 +61,12 @@ end;
 
 {$region Program}
 
-function InitProgram(vertex_shader, fragment_shader: ShaderName): ProgramName;
+function InitProgram(vertex_shader, fragment_shader: gl_shader): gl_program;
 begin
   Result := gl.CreateProgram;
   
   gl.AttachShader(Result, vertex_shader);
-  if fragment_shader<>ShaderName.Zero then gl.AttachShader(Result, fragment_shader);
+  if fragment_shader<>gl_shader.Zero then gl.AttachShader(Result, fragment_shader);
   
   gl.LinkProgram(Result);
   // всё то же самое что и у шейдеров
@@ -113,13 +113,13 @@ begin
     
     // При создании экземпляра OpenGL.gl инициализируются некоторые функции
     // Это необходимо для всех функций из OpenGL1.2 и выше, потому что они локальны для контекста OpenGL
-    gl := new OpenGL.gl;
+    gl := new OpenGL.gl<PlWin>;
     
     {$endregion Настройка глобальных параметров OpenGL}
     
     {$region Инициализация переменных}
     
-    var vertex_pos_buffer: BufferName;
+    var vertex_pos_buffer: gl_buffer;
     gl.CreateBuffers(1, vertex_pos_buffer);
     gl.NamedBufferData(
       vertex_pos_buffer,
@@ -137,7 +137,7 @@ begin
       VertexBufferObjectUsage.STATIC_DRAW
     );
     
-    var vertex_clr_buffer: BufferName;
+    var vertex_clr_buffer: gl_buffer;
     gl.CreateBuffers(1, vertex_clr_buffer);
     gl.NamedBufferData(
       vertex_clr_buffer,
@@ -150,7 +150,7 @@ begin
       VertexBufferObjectUsage.STATIC_DRAW
     );
     
-    var element_buffer: BufferName;
+    var element_buffer: gl_buffer;
     gl.CreateBuffers(1, element_buffer);
     gl.NamedBufferData(
       element_buffer,
@@ -164,7 +164,7 @@ begin
     var vertex_shader := InitShader('Rot Triangle 1.vertex.glsl', ShaderType.VERTEX_SHADER);
 //    var fragment_shader := InitShader('fragment.glsl', ShaderType.FRAGMENT_SHADER);
     
-    var sprog := InitProgram(vertex_shader, ShaderName.Zero {fragment_shader});
+    var sprog := InitProgram(vertex_shader, gl_shader.Zero {fragment_shader});
     
     var uniform_rot_k :=     gl.GetUniformLocation(sprog, 'rot_k');
     

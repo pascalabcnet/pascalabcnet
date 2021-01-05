@@ -278,7 +278,12 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     if (tn.is_generic_parameter)
                     {
-                        return (tn.is_class || tn.base_type != SystemLibrary.SystemLibrary.object_type && tn.base_type.is_class);
+                        if (tn.is_class)
+                            return true;
+                        if (tn.base_type.is_value || tn.is_value_type)
+                            return false;
+                        return true;
+                        //return (tn.is_class || tn.base_type != SystemLibrary.SystemLibrary.object_type && tn.base_type.is_class);
                     }
                     else if (tn is ref_type_node)
                     {
