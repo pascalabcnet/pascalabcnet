@@ -3353,8 +3353,8 @@ namespace PascalABCCompiler.NETGenerator
         {
             if (ti.init_meth != null)
             {
-                il.Emit(OpCodes.Ldloca, lb);
-                il.Emit(OpCodes.Call, ti.init_meth);
+                //il.Emit(OpCodes.Ldloca, lb);
+                //il.Emit(OpCodes.Call, ti.init_meth);
             }
             LocalBuilder llb = il.DeclareLocal(lb.LocalType.MakePointerType());
             il.Emit(OpCodes.Ldloca, lb);

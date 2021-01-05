@@ -2129,7 +2129,7 @@ namespace PascalABCCompiler.TreeConverter
                 	{
                  		lbvr.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
                 	}
-                    if (vdn.type.is_value_type && userInitalValue is common_constructor_call)
+                    if (vdn.type.is_value_type /*&& userInitalValue is common_constructor_call*/)
                     {
                         return new default_operator_node(vdn.type, lid);
                     }
