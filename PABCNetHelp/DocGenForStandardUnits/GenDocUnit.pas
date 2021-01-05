@@ -43,6 +43,8 @@ begin
   var skipUntilEnd := False;
   foreach var s in ReadLines(fname) do
   begin
+    if '[Serializable]' in s then
+      continue;
     if s.Trim.StartsWith('/// !! ')then
       continue;
     if s.Trim.StartsWith('// ') then
@@ -227,8 +229,19 @@ begin
     //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;\)]*\)','()');
     //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;]*;\ *','(');
     ConvertFunDef(fds[i].fun);
-
-    var dd := fds[i].def.Remove(0,3).Trim;
+    var dd: string;
+try
+  //if fds[i].def.Length >= 3 then
+    dd := fds[i].def.Remove(0,3).Trim;
+  //else dd := fds[i].def; 
+except
+  Println(fds[i-3].fun,'!!!',fds[i-3].def);
+  Println(fds[i-2].fun,'!!!',fds[i-2].def);
+  Println(fds[i-1].fun,'!!!',fds[i-1].def);
+  Println(fds[i-0].fun,'!!!',fds[i-0].def);
+  Println('i=',i);
+  halt;
+end;    
     var td := fds[i].fun.Around('code')
       .Replace('System.IComparable','IComparable')
       .Replace('function','<b>function</b>')
@@ -291,15 +304,28 @@ begin
   begin
     Println(funcs[ind]);
     var str := funcs[ind];
-    classdef := defs[ind].ToString.Remove(0,3).Trim;
+
+  //try
+    //if defs[ind].ToString.Length>=3 then
+      classdef := defs[ind].ToString.Remove(0,3).Trim;
+    //else classdef := defs[ind].ToString;  
+  {except
+    //Println(defs[ind-0],'!!!');
+    Println('ind=',ind,defs.Count);
+    halt;
+  end;    }
+    
     funcs.RemoveAt(ind);
     defs.RemoveAt(ind);
     
-    var ss := str.ToWords(' ','=','(',')');
+    var ss := str.ToWords(' =()');
     classname := ss[0];
     if ss.Length>2 then
       classbase := ss[2];
-      
+    var q := classbase.ToWords(',');
+    if q.Count>0 then
+      classbase := q[0];      
+    
     classdef := classdef + '.';
     if classbase<>'' then
       classdef += ' Базовый класс - '+ classbase.Around('code') + '.';
