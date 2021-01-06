@@ -19980,7 +19980,7 @@ namespace PascalABCCompiler.TreeConverter
                         try
                         {
                             qq = convert_strong(ff.dereferencing_value);
-                            if (qq is exit_procedure && stl.list.Count == 1)
+                            if (qq is exit_procedure && stl.list.Count == 1 || qq is local_block_variable_reference && qq.type is compiled_type_node && (qq.type as compiled_type_node).compiled_type == typeof(Action))
                             {
                                 // SSM #2172 27/06/20 - тело - это вызов exit 
                                 stl.list[0] = new procedure_call(ff, ff.source_context);
