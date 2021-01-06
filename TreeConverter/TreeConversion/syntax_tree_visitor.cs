@@ -17657,7 +17657,6 @@ namespace PascalABCCompiler.TreeConverter
 
             statements_list stl = new statements_list(get_location(_statement_list), get_location_with_check(_statement_list.left_logical_bracket), get_location_with_check(_statement_list.right_logical_bracket));
             convertion_data_and_alghoritms.statement_list_stack_push(stl);
-
             for (var i = 0; i < _statement_list.subnodes.Count; i++) // SSM 13.10.16 - поменял т.к. собираюсь менять узлы в процессе обхода
             {
                 statement syntax_statement = _statement_list.subnodes[i];
@@ -17669,7 +17668,8 @@ namespace PascalABCCompiler.TreeConverter
                         if (stl.statements.Count > 0 && stl.statements[0] is basic_function_call && i == 2)
                         {
                             base_function_call bfc = stl.statements[0] as basic_function_call;
-                            if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && (semantic_statement is compiled_constructor_call || semantic_statement is common_constructor_call) 
+                            if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && 
+                                (semantic_statement is compiled_constructor_call && !(semantic_statement as compiled_constructor_call).new_obj_awaited() || semantic_statement is common_constructor_call && !(semantic_statement as common_constructor_call).new_obj_awaited()) 
                                 && !context.converted_func_stack.Empty && context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).is_constructor)
                                 stl.statements.AddElementFirst(semantic_statement);
                             else
