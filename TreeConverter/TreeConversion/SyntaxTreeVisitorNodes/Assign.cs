@@ -135,7 +135,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 #region Вывод параметров лямбда-выражения
 
-                LambdaHelper.InferTypesFromVarStmt(to.type, fromAsLambda, this); //lroman//
+                LambdaHelper.InferTypesFromVarStmt(to.type, fromAsLambda, this, _assign.operator_type); //lroman//
 
                 #endregion
 
