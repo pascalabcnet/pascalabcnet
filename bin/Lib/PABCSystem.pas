@@ -7222,7 +7222,9 @@ end;
 
 function Eof(f: Text): boolean;
 begin
-  if f.sr <> nil then
+  if f = input then
+    Result := Eof
+  else if f.sr <> nil then
     Result := f.sr.EndOfStream
   else if f.sw <> nil then
     raise new IOException(GetTranslation(EOF_FOR_TEXT_WRITEOPENED))
@@ -7231,7 +7233,9 @@ end;
 
 function Eoln(f: Text): boolean;
 begin
-  if f.sr <> nil then
+  if f = input then
+    Result := Eoln
+  else if f.sr <> nil then
     Result := f.sr.EndOfStream or (f.sr.Peek = 13) or (f.sr.Peek = 10) 
   else if f.sw <> nil then
     raise new IOException(GetTranslation(EOLN_FOR_TEXT_WRITEOPENED))
@@ -7240,6 +7244,11 @@ end;
 
 function SeekEof(f: Text): boolean;
 begin
+  if f = input then
+  begin  
+    Result := SeekEof;
+    exit;
+  end;  
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOF_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
@@ -7257,6 +7266,11 @@ end;
 
 function SeekEoln(f: Text): boolean;
 begin
+  if f = input then
+  begin  
+    Result := SeekEoln;
+    exit;
+  end;  
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOLN_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
@@ -11830,7 +11844,7 @@ begin
   Result := True;
 end;
 
-/// Возвращает все перестановки
+/// Возвращает все перестановки множества элементов, заданного массивом
 function Permutations<T>(Self: array of T): sequence of array of T; extensionmethod;
 begin
   var a := Self;
@@ -11843,6 +11857,44 @@ begin
     yield Arr(res);
   until not NextPermutation(ind);  
 end;
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Permutations<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.Combinations(m).SelectMany(c->c.Permutations);
+end;
+
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  var r := new integer[n];
+  var ar1 := new T[n];
+  for var i:=0 to n-1 do
+    ar1[i] := Self[r[i]];
+  yield ar1;
+  
+  var m := Self.Length;
+  while True do
+  begin
+    var i := n-1;  
+    r[i] += 1;
+    while r[i]>=m do
+    begin
+      r[i] := 0;
+      i -= 1;
+      if i<0 then
+        exit;
+      r[i] += 1;
+    end;
+    
+    var ar := new T[n];
+    for var j:=0 to n-1 do
+      ar[j] := Self[r[j]];
+    yield ar;
+  end;  
+end;
+
 
 // Внутренние функции для одномерных массивов
 
