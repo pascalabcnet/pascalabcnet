@@ -7222,7 +7222,9 @@ end;
 
 function Eof(f: Text): boolean;
 begin
-  if f.sr <> nil then
+  if f = input then
+    Result := Eof
+  else if f.sr <> nil then
     Result := f.sr.EndOfStream
   else if f.sw <> nil then
     raise new IOException(GetTranslation(EOF_FOR_TEXT_WRITEOPENED))
@@ -7231,7 +7233,9 @@ end;
 
 function Eoln(f: Text): boolean;
 begin
-  if f.sr <> nil then
+  if f = input then
+    Result := Eoln
+  else if f.sr <> nil then
     Result := f.sr.EndOfStream or (f.sr.Peek = 13) or (f.sr.Peek = 10) 
   else if f.sw <> nil then
     raise new IOException(GetTranslation(EOLN_FOR_TEXT_WRITEOPENED))
@@ -7240,6 +7244,11 @@ end;
 
 function SeekEof(f: Text): boolean;
 begin
+  if f = input then
+  begin  
+    Result := SeekEof;
+    exit;
+  end;  
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOF_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
@@ -7257,6 +7266,11 @@ end;
 
 function SeekEoln(f: Text): boolean;
 begin
+  if f = input then
+  begin  
+    Result := SeekEoln;
+    exit;
+  end;  
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOLN_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
