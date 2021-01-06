@@ -275,7 +275,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (op != Operators.Undefined)
                         {
                             var sil = leftType.find_in_type(name_reflector.get_name(op));
-                            if (sil.Count > 0)
+                            if (sil != null && sil.Count > 0)
                             {
                                 foreach (SymbolInfo si in sil)
                                 {
