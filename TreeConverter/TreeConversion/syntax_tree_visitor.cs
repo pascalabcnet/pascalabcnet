@@ -7203,7 +7203,10 @@ namespace PascalABCCompiler.TreeConverter
                             else
                             {
                                 var enLambda = (SyntaxTree.function_lambda_definition)en;
-                                LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, enLambda, this);
+                                if (fn.parameters[exprCounter].is_params)
+                                    LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type.element_type, enLambda, this);
+                                else
+                                    LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, enLambda, this);
                                 enLambda.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
                                 exprs[exprCounter] = convert_strong(en);
                                 enLambda.lambda_visit_mode = LambdaVisitMode.VisitForInitialMethodCallProcessing;
