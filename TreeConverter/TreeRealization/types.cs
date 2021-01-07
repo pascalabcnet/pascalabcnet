@@ -2362,11 +2362,14 @@ namespace PascalABCCompiler.TreeRealization
                             }
                             else if (ctn.instance_params != null && ctn.instance_params.Count > 0)
                             {
-                                fn = fn.get_instance(ctn.instance_params, true, null);
+                                if (fn.parameters[0].type.is_generic_parameter)
+                                    fn = fn.get_instance(new List<type_node>() { ctn }, true, null);
+                                else
+                                    fn = fn.get_instance(ctn.instance_params, true, null);
                             }
                             else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
                             {
-                                if (ctn is ref_type_node)
+                                if (ctn is ref_type_node && !fn.parameters[0].type.is_generic_parameter)
                                     ctn = (ctn as ref_type_node).pointed_type;
                                 if (ctn.IsPointer)
                                     continue;

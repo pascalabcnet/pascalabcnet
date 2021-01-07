@@ -17700,6 +17700,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 catch (Errors.Error ex)
                 {
+                    if (ex is CompilationErrorWithLocation && (ex as CompilationErrorWithLocation).loc == null)
+                        (ex as CompilationErrorWithLocation).loc = get_location(syntax_statement);
                     if (ThrowCompilationError || ex is MemberIsNotDeclaredInType || ex is UndefinedNameReference)//TODO: add interface
                         throw ex;
                     else
