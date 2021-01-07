@@ -5749,6 +5749,18 @@ namespace PascalABCCompiler.TreeConverter
                                                     {
                                                         ThrowCompilationError = true;
                                                         RemoveLastError();
+                                                        if (last_err is CanNotConvertTypes)
+                                                        {
+                                                            var from_type = (last_err as CanNotConvertTypes).from;
+                                                            foreach (SymbolInfo si in sil)
+                                                            {
+                                                                function_node si_fn = si.sym_info as function_node;
+                                                                if (si_fn != null && si_fn.is_extension_method && si_fn.parameters[0].type == from_type)
+                                                                {
+                                                                    throw new NoFunctionWithSameParametresNum(subloc, true, si_fn);
+                                                                }
+                                                            }
+                                                        }
                                                         throw last_err;
                                                     }
                                                 }
