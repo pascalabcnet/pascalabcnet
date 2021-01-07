@@ -2740,7 +2740,7 @@ namespace CodeCompletion
                 var left_column_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num;
                 var right_line_num = _program_module.program_block.program_code.source_context.end_position.line_num;
                 var right_column_num = _program_module.program_block.program_code.source_context.end_position.column_num;
-                if (_program_module.program_block.program_code.right_logical_bracket.source_context == null)
+                if (_program_module.program_block.program_code.right_logical_bracket == null || _program_module.program_block.program_code.right_logical_bracket.source_context == null)
                 {
                     right_line_num += 2;
                     _program_module.program_block.program_code.source_context = new SourceContext(_program_module.program_block.program_code.source_context.begin_position.line_num,

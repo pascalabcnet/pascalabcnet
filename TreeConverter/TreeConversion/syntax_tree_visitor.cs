@@ -5749,6 +5749,18 @@ namespace PascalABCCompiler.TreeConverter
                                                     {
                                                         ThrowCompilationError = true;
                                                         RemoveLastError();
+                                                        if (last_err is CanNotConvertTypes)
+                                                        {
+                                                            var from_type = (last_err as CanNotConvertTypes).from;
+                                                            foreach (SymbolInfo si in sil)
+                                                            {
+                                                                function_node si_fn = si.sym_info as function_node;
+                                                                if (si_fn != null && si_fn.is_extension_method && si_fn.parameters[0].type == from_type)
+                                                                {
+                                                                    throw new NoFunctionWithSameParametresNum(subloc, true, si_fn);
+                                                                }
+                                                            }
+                                                        }
                                                         throw last_err;
                                                     }
                                                 }
@@ -7403,6 +7415,8 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             catch (Exception e)
                             {
+                                if (e is CompilationErrorWithLocation && (e as CompilationErrorWithLocation).loc == null)
+                                    (e as CompilationErrorWithLocation).loc = mcloc;
                                 if (silExt.Count == 0)
                                     throw; // не проверять в методах расширения, поскольку их нет
                             }
@@ -12589,8 +12603,9 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                             if (t.methods.Length > thist.methods.Length)
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
-                            if (t.base_type != SystemLibrary.SystemLibrary.object_type && t.base_type != thist.base_type)
+                            if (t.base_type != SystemLibrary.SystemLibrary.object_type && !type_table.is_type_or_original_generics_equal(t.base_type as type_node, thist.base_type as type_node))
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                                
                         }
                     }
                 }

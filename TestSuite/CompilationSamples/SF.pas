@@ -258,6 +258,29 @@ procedure Tr<T>(a: array of T; transform: T->T) := a.Transform(transform);
 /// Возвращает индекс последнего элемента массива
 function H<T>(Self: array of T): integer; extensionmethod := Self.High;
 
+/// Возвращает все перестановки множества элементов, заданного массивом
+function Prm<T>(Self: array of T): sequence of array of T; extensionmethod := Self.Permutations;
+
+/// Возвращает все перестановки множества элементов, заданного массивом
+function Prm<T>(Self: sequence of T): sequence of array of T; extensionmethod := Self.Permutations;
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Prm<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod := Self.Permutations(m);
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Prm<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod := Self.Permutations(m);
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cart<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cart<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
+
+/// Возвращает все сочетания по m элементов
+function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod := Self.Combinations(m);
+
+/// Возвращает все сочетания по m элементов
+function Cmb<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod := Self.Combinations(m);
 
 ///--
 procedure __InitModule__;

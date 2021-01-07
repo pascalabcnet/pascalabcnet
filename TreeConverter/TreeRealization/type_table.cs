@@ -851,6 +851,8 @@ namespace PascalABCCompiler.TreeRealization
             if (left.type_special_kind == SemanticTree.type_special_kind.set_type && right == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info
                 || right.type_special_kind == SemanticTree.type_special_kind.set_type && left == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info)
                 return true;
+            if (left is ref_type_node && right is ref_type_node)
+                return is_type_or_original_generics_equal((left as ref_type_node).pointed_type, (right as ref_type_node).pointed_type);
             return left == right;
         }
 

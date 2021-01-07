@@ -188,20 +188,24 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
-	| tkShortProgram stmt_list	
+	| tkShortProgram uses_clause stmt_list	
 		{ 
-			var stl = $2 as statement_list;
+			var stl = $3 as statement_list;
 			stl.left_logical_bracket = $1;
 			stl.right_logical_bracket = new token_info("");
-			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info(""), @$); 
+			var ul = $2 as uses_list;
+			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
 		}
-	| tkShortSFProgram stmt_list	
+	| tkShortSFProgram uses_clause stmt_list	
 		{
-			var stl = $2 as statement_list;
+			var stl = $3 as statement_list;
 			stl.left_logical_bracket = $1;
 			var un = new unit_or_namespace(new ident_list("SF"),null);
+			var ul = $2 as uses_list;
+			if (ul == null)
 			//var un1 = new unit_or_namespace(new ident_list("School"),null);
-			var ul = new uses_list(un,null);		
+				ul = new uses_list(un,null);
+			else ul.Insert(0,un);
 			//ul.Add(un1);
 			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
 		}
