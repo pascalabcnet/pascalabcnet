@@ -4,10 +4,7 @@
     begin
       Writeln('rec');
     end;
-    static function operator implicit<T>(val: ^T): t1;
-    begin
-      Writeln('ptr');
-    end;
+   
   end;
   
   t2<T> = class end;

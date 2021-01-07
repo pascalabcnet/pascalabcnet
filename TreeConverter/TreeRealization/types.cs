@@ -2369,7 +2369,7 @@ namespace PascalABCCompiler.TreeRealization
                             }
                             else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
                             {
-                                if (ctn is ref_type_node)
+                                if (ctn is ref_type_node && !fn.parameters[0].type.is_generic_parameter)
                                     ctn = (ctn as ref_type_node).pointed_type;
                                 if (ctn.IsPointer)
                                     continue;
