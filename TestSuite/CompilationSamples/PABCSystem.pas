@@ -11815,6 +11815,12 @@ begin
   until not NextCombHelper(ind,m,n);  
 end;
 
+/// Возвращает все сочетания по m элементов
+function Combinations<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Combinations(m);
+end;
+
 // Возвращает все сочетания по 2 элемента в виде кортежей
 {function Combinations2<T>(Self: array of T): sequence of (T,T); extensionmethod;
 begin
@@ -11858,12 +11864,23 @@ begin
   until not NextPermutation(ind);  
 end;
 
+/// Возвращает все перестановки множества элементов, заданного последовательностью
+function Permutations<T>(Self: sequence of T): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Permutations
+end;
+
 /// Возвращает все частичные перестановки из n элементов по m 
 function Permutations<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod;
 begin
   Result := Self.Combinations(m).SelectMany(c->c.Permutations);
 end;
 
+/// Возвращает все частичные перестановки из n элементов по m 
+function Permutations<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Permutations(m);
+end;
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
 function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
@@ -11895,6 +11912,11 @@ begin
   end;  
 end;
 
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Cartesian(n);
+end;
 
 // Внутренние функции для одномерных массивов
 
