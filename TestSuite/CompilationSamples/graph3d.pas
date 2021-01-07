@@ -379,7 +379,7 @@ type
 
     procedure AddToObject3DList;
     procedure DeleteFromObject3DList;
-    
+  protected  
     procedure CreateBase0(m: Visual3D; x, y, z: real);
     begin
       model := m;
@@ -395,7 +395,7 @@ type
       hvp.Children.Add(model);
       AddToObject3DList;
     end;
-    
+  private  
     procedure SetX(xx: real) := Invoke(()->begin transltransform.OffsetX += xx - Self.X; end); 
     function GetX: real := InvokeReal(()->transfgroup.Value.OffsetX);
     procedure SetY(yy: real) := Invoke(()->begin transltransform.OffsetY += yy - Self.Y; end);
