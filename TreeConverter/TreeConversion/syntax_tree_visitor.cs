@@ -7415,6 +7415,8 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             catch (Exception e)
                             {
+                                if (e is CompilationErrorWithLocation && (e as CompilationErrorWithLocation).loc == null)
+                                    (e as CompilationErrorWithLocation).loc = mcloc;
                                 if (silExt.Count == 0)
                                     throw; // не проверять в методах расширения, поскольку их нет
                             }
