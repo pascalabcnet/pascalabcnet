@@ -2387,7 +2387,7 @@ namespace PascalABCCompiler.TreeRealization
                                     continue;
                             }
                         }
-                        else if (fn.parameters[0].type.is_generic_parameter)
+                        else if (fn.parameters[0].type.is_generic_parameter && type_table.is_derived(ctn, this))
                             continue;
                         return fn;
                     }
