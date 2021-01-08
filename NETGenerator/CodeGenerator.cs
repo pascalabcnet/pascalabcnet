@@ -25,7 +25,7 @@ namespace PascalABCCompiler.CodeGenerators
             NETGenerator.CompilerOptions options, Hashtable StandartDirectories, string[] ResourceFiles)
 		{
             il_converter = new NETGenerator.ILConverter(StandartDirectories);
-            il_converter.ConvertFromTree(ProgramTree,TargetFileName,SourceFileName,options,ResourceFiles);
+			il_converter.ConvertFromTree(ProgramTree, TargetFileName, SourceFileName, options, ResourceFiles);
 		}
 
 		public void Reset()
