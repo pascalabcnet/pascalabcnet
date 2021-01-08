@@ -114,15 +114,10 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _ACCELERATOR_DESCRIPTOR_INTEL      := new AcceleratorInfoIntel($4090);
-    private static _ACCELERATOR_REFERENCE_COUNT_INTEL := new AcceleratorInfoIntel($4091);
-    private static _ACCELERATOR_CONTEXT_INTEL         := new AcceleratorInfoIntel($4092);
-    private static _ACCELERATOR_TYPE_INTEL            := new AcceleratorInfoIntel($4093);
-    
-    public static property ACCELERATOR_DESCRIPTOR_INTEL:      AcceleratorInfoIntel read _ACCELERATOR_DESCRIPTOR_INTEL;
-    public static property ACCELERATOR_REFERENCE_COUNT_INTEL: AcceleratorInfoIntel read _ACCELERATOR_REFERENCE_COUNT_INTEL;
-    public static property ACCELERATOR_CONTEXT_INTEL:         AcceleratorInfoIntel read _ACCELERATOR_CONTEXT_INTEL;
-    public static property ACCELERATOR_TYPE_INTEL:            AcceleratorInfoIntel read _ACCELERATOR_TYPE_INTEL;
+    public static property ACCELERATOR_DESCRIPTOR_INTEL:      AcceleratorInfoIntel read new AcceleratorInfoIntel($4090);
+    public static property ACCELERATOR_REFERENCE_COUNT_INTEL: AcceleratorInfoIntel read new AcceleratorInfoIntel($4091);
+    public static property ACCELERATOR_CONTEXT_INTEL:         AcceleratorInfoIntel read new AcceleratorInfoIntel($4092);
+    public static property ACCELERATOR_TYPE_INTEL:            AcceleratorInfoIntel read new AcceleratorInfoIntel($4093);
     
     public function ToString: string; override;
     begin
@@ -139,9 +134,7 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _ACCELERATOR_TYPE_MOTION_ESTIMATION_INTEL := new AcceleratorTypeIntel($0000);
-    
-    public static property ACCELERATOR_TYPE_MOTION_ESTIMATION_INTEL: AcceleratorTypeIntel read _ACCELERATOR_TYPE_MOTION_ESTIMATION_INTEL;
+    public static property ACCELERATOR_TYPE_MOTION_ESTIMATION_INTEL: AcceleratorTypeIntel read new AcceleratorTypeIntel($0000);
     
     public function ToString: string; override;
     begin
@@ -155,17 +148,11 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _ADDRESS_NONE            := new AddressingMode($1130);
-    private static _ADDRESS_CLAMP_TO_EDGE   := new AddressingMode($1131);
-    private static _ADDRESS_CLAMP           := new AddressingMode($1132);
-    private static _ADDRESS_REPEAT          := new AddressingMode($1133);
-    private static _ADDRESS_MIRRORED_REPEAT := new AddressingMode($1134);
-    
-    public static property ADDRESS_NONE:            AddressingMode read _ADDRESS_NONE;
-    public static property ADDRESS_CLAMP_TO_EDGE:   AddressingMode read _ADDRESS_CLAMP_TO_EDGE;
-    public static property ADDRESS_CLAMP:           AddressingMode read _ADDRESS_CLAMP;
-    public static property ADDRESS_REPEAT:          AddressingMode read _ADDRESS_REPEAT;
-    public static property ADDRESS_MIRRORED_REPEAT: AddressingMode read _ADDRESS_MIRRORED_REPEAT;
+    public static property ADDRESS_NONE:            AddressingMode read new AddressingMode($1130);
+    public static property ADDRESS_CLAMP_TO_EDGE:   AddressingMode read new AddressingMode($1131);
+    public static property ADDRESS_CLAMP:           AddressingMode read new AddressingMode($1132);
+    public static property ADDRESS_REPEAT:          AddressingMode read new AddressingMode($1133);
+    public static property ADDRESS_MIRRORED_REPEAT: AddressingMode read new AddressingMode($1134);
     
     public function ToString: string; override;
     begin
@@ -183,15 +170,10 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _FALSE        := new Bool($0000);
-    private static _NON_BLOCKING := new Bool($0000);
-    private static _BLOCKING     := new Bool($0001);
-    private static _TRUE         := new Bool($0001);
-    
-    public static property FALSE:        Bool read _FALSE;
-    public static property NON_BLOCKING: Bool read _NON_BLOCKING;
-    public static property BLOCKING:     Bool read _BLOCKING;
-    public static property TRUE:         Bool read _TRUE;
+    public static property FALSE:        Bool read new Bool($0000);
+    public static property NON_BLOCKING: Bool read new Bool($0000);
+    public static property BLOCKING:     Bool read new Bool($0001);
+    public static property TRUE:         Bool read new Bool($0001);
     
     public function ToString: string; override;
     begin
@@ -213,9 +195,7 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _BUFFER_CREATE_TYPE_REGION := new BufferCreateType($1220);
-    
-    public static property BUFFER_CREATE_TYPE_REGION: BufferCreateType read _BUFFER_CREATE_TYPE_REGION;
+    public static property BUFFER_CREATE_TYPE_REGION: BufferCreateType read new BufferCreateType($1220);
     
     public function ToString: string; override;
     begin
@@ -229,15 +209,10 @@ type
     public val: Int32;
     public constructor(val: Int32) := self.val := val;
     
-    private static _BUILD_SUCCESS     := new BuildStatus($0000);
-    private static _BUILD_NONE        := new BuildStatus(-1);
-    private static _BUILD_ERROR       := new BuildStatus(-2);
-    private static _BUILD_IN_PROGRESS := new BuildStatus(-3);
-    
-    public static property BUILD_SUCCESS:     BuildStatus read _BUILD_SUCCESS;
-    public static property BUILD_NONE:        BuildStatus read _BUILD_NONE;
-    public static property BUILD_ERROR:       BuildStatus read _BUILD_ERROR;
-    public static property BUILD_IN_PROGRESS: BuildStatus read _BUILD_IN_PROGRESS;
+    public static property BUILD_SUCCESS:     BuildStatus read new BuildStatus($0000);
+    public static property BUILD_NONE:        BuildStatus read new BuildStatus(-1);
+    public static property BUILD_ERROR:       BuildStatus read new BuildStatus(-2);
+    public static property BUILD_IN_PROGRESS: BuildStatus read new BuildStatus(-3);
     
     public function ToString: string; override;
     begin
@@ -254,61 +229,33 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _R             := new ChannelOrder($10B0);
-    private static _A             := new ChannelOrder($10B1);
-    private static _RG            := new ChannelOrder($10B2);
-    private static _RA            := new ChannelOrder($10B3);
-    private static _RGB           := new ChannelOrder($10B4);
-    private static _RGBA          := new ChannelOrder($10B5);
-    private static _BGRA          := new ChannelOrder($10B6);
-    private static _ARGB          := new ChannelOrder($10B7);
-    private static _INTENSITY     := new ChannelOrder($10B8);
-    private static _LUMINANCE     := new ChannelOrder($10B9);
-    private static _Rx            := new ChannelOrder($10BA);
-    private static _RGx           := new ChannelOrder($10BB);
-    private static _RGBx          := new ChannelOrder($10BC);
-    private static _DEPTH         := new ChannelOrder($10BD);
-    private static _DEPTH_STENCIL := new ChannelOrder($10BE);
-    private static _sRGB          := new ChannelOrder($10BF);
-    private static _sRGBx         := new ChannelOrder($10C0);
-    private static _sRGBA         := new ChannelOrder($10C1);
-    private static _sBGRA         := new ChannelOrder($10C2);
-    private static _ABGR          := new ChannelOrder($10C3);
-    private static _YUYV_INTEL    := new ChannelOrder($4076);
-    private static _UYVY_INTEL    := new ChannelOrder($4077);
-    private static _YVYU_INTEL    := new ChannelOrder($4078);
-    private static _VYUY_INTEL    := new ChannelOrder($4079);
-    private static _NV21_IMG      := new ChannelOrder($40D0);
-    private static _YV12_IMG      := new ChannelOrder($40D1);
-    private static _NV12_INTEL    := new ChannelOrder($410E);
-    
-    public static property R:             ChannelOrder read _R;
-    public static property A:             ChannelOrder read _A;
-    public static property RG:            ChannelOrder read _RG;
-    public static property RA:            ChannelOrder read _RA;
-    public static property RGB:           ChannelOrder read _RGB;
-    public static property RGBA:          ChannelOrder read _RGBA;
-    public static property BGRA:          ChannelOrder read _BGRA;
-    public static property ARGB:          ChannelOrder read _ARGB;
-    public static property INTENSITY:     ChannelOrder read _INTENSITY;
-    public static property LUMINANCE:     ChannelOrder read _LUMINANCE;
-    public static property Rx:            ChannelOrder read _Rx;
-    public static property RGx:           ChannelOrder read _RGx;
-    public static property RGBx:          ChannelOrder read _RGBx;
-    public static property DEPTH:         ChannelOrder read _DEPTH;
-    public static property DEPTH_STENCIL: ChannelOrder read _DEPTH_STENCIL;
-    public static property sRGB:          ChannelOrder read _sRGB;
-    public static property sRGBx:         ChannelOrder read _sRGBx;
-    public static property sRGBA:         ChannelOrder read _sRGBA;
-    public static property sBGRA:         ChannelOrder read _sBGRA;
-    public static property ABGR:          ChannelOrder read _ABGR;
-    public static property YUYV_INTEL:    ChannelOrder read _YUYV_INTEL;
-    public static property UYVY_INTEL:    ChannelOrder read _UYVY_INTEL;
-    public static property YVYU_INTEL:    ChannelOrder read _YVYU_INTEL;
-    public static property VYUY_INTEL:    ChannelOrder read _VYUY_INTEL;
-    public static property NV21_IMG:      ChannelOrder read _NV21_IMG;
-    public static property YV12_IMG:      ChannelOrder read _YV12_IMG;
-    public static property NV12_INTEL:    ChannelOrder read _NV12_INTEL;
+    public static property R:             ChannelOrder read new ChannelOrder($10B0);
+    public static property A:             ChannelOrder read new ChannelOrder($10B1);
+    public static property RG:            ChannelOrder read new ChannelOrder($10B2);
+    public static property RA:            ChannelOrder read new ChannelOrder($10B3);
+    public static property RGB:           ChannelOrder read new ChannelOrder($10B4);
+    public static property RGBA:          ChannelOrder read new ChannelOrder($10B5);
+    public static property BGRA:          ChannelOrder read new ChannelOrder($10B6);
+    public static property ARGB:          ChannelOrder read new ChannelOrder($10B7);
+    public static property INTENSITY:     ChannelOrder read new ChannelOrder($10B8);
+    public static property LUMINANCE:     ChannelOrder read new ChannelOrder($10B9);
+    public static property Rx:            ChannelOrder read new ChannelOrder($10BA);
+    public static property RGx:           ChannelOrder read new ChannelOrder($10BB);
+    public static property RGBx:          ChannelOrder read new ChannelOrder($10BC);
+    public static property DEPTH:         ChannelOrder read new ChannelOrder($10BD);
+    public static property DEPTH_STENCIL: ChannelOrder read new ChannelOrder($10BE);
+    public static property sRGB:          ChannelOrder read new ChannelOrder($10BF);
+    public static property sRGBx:         ChannelOrder read new ChannelOrder($10C0);
+    public static property sRGBA:         ChannelOrder read new ChannelOrder($10C1);
+    public static property sBGRA:         ChannelOrder read new ChannelOrder($10C2);
+    public static property ABGR:          ChannelOrder read new ChannelOrder($10C3);
+    public static property YUYV_INTEL:    ChannelOrder read new ChannelOrder($4076);
+    public static property UYVY_INTEL:    ChannelOrder read new ChannelOrder($4077);
+    public static property YVYU_INTEL:    ChannelOrder read new ChannelOrder($4078);
+    public static property VYUY_INTEL:    ChannelOrder read new ChannelOrder($4079);
+    public static property NV21_IMG:      ChannelOrder read new ChannelOrder($40D0);
+    public static property YV12_IMG:      ChannelOrder read new ChannelOrder($40D1);
+    public static property NV12_INTEL:    ChannelOrder read new ChannelOrder($410E);
     
     public function ToString: string; override;
     begin
@@ -348,41 +295,23 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _SNORM_INT8         := new ChannelType($10D0);
-    private static _SNORM_INT16        := new ChannelType($10D1);
-    private static _UNORM_INT8         := new ChannelType($10D2);
-    private static _UNORM_INT16        := new ChannelType($10D3);
-    private static _UNORM_SHORT_565    := new ChannelType($10D4);
-    private static _UNORM_SHORT_555    := new ChannelType($10D5);
-    private static _UNORM_INT_101010   := new ChannelType($10D6);
-    private static _SIGNED_INT8        := new ChannelType($10D7);
-    private static _SIGNED_INT16       := new ChannelType($10D8);
-    private static _SIGNED_INT32       := new ChannelType($10D9);
-    private static _UNSIGNED_INT8      := new ChannelType($10DA);
-    private static _UNSIGNED_INT16     := new ChannelType($10DB);
-    private static _UNSIGNED_INT32     := new ChannelType($10DC);
-    private static _HALF_FLOAT         := new ChannelType($10DD);
-    private static _FLOAT              := new ChannelType($10DE);
-    private static _UNORM_INT24        := new ChannelType($10DF);
-    private static _UNORM_INT_101010_2 := new ChannelType($10E0);
-    
-    public static property SNORM_INT8:         ChannelType read _SNORM_INT8;
-    public static property SNORM_INT16:        ChannelType read _SNORM_INT16;
-    public static property UNORM_INT8:         ChannelType read _UNORM_INT8;
-    public static property UNORM_INT16:        ChannelType read _UNORM_INT16;
-    public static property UNORM_SHORT_565:    ChannelType read _UNORM_SHORT_565;
-    public static property UNORM_SHORT_555:    ChannelType read _UNORM_SHORT_555;
-    public static property UNORM_INT_101010:   ChannelType read _UNORM_INT_101010;
-    public static property SIGNED_INT8:        ChannelType read _SIGNED_INT8;
-    public static property SIGNED_INT16:       ChannelType read _SIGNED_INT16;
-    public static property SIGNED_INT32:       ChannelType read _SIGNED_INT32;
-    public static property UNSIGNED_INT8:      ChannelType read _UNSIGNED_INT8;
-    public static property UNSIGNED_INT16:     ChannelType read _UNSIGNED_INT16;
-    public static property UNSIGNED_INT32:     ChannelType read _UNSIGNED_INT32;
-    public static property HALF_FLOAT:         ChannelType read _HALF_FLOAT;
-    public static property FLOAT:              ChannelType read _FLOAT;
-    public static property UNORM_INT24:        ChannelType read _UNORM_INT24;
-    public static property UNORM_INT_101010_2: ChannelType read _UNORM_INT_101010_2;
+    public static property SNORM_INT8:         ChannelType read new ChannelType($10D0);
+    public static property SNORM_INT16:        ChannelType read new ChannelType($10D1);
+    public static property UNORM_INT8:         ChannelType read new ChannelType($10D2);
+    public static property UNORM_INT16:        ChannelType read new ChannelType($10D3);
+    public static property UNORM_SHORT_565:    ChannelType read new ChannelType($10D4);
+    public static property UNORM_SHORT_555:    ChannelType read new ChannelType($10D5);
+    public static property UNORM_INT_101010:   ChannelType read new ChannelType($10D6);
+    public static property SIGNED_INT8:        ChannelType read new ChannelType($10D7);
+    public static property SIGNED_INT16:       ChannelType read new ChannelType($10D8);
+    public static property SIGNED_INT32:       ChannelType read new ChannelType($10D9);
+    public static property UNSIGNED_INT8:      ChannelType read new ChannelType($10DA);
+    public static property UNSIGNED_INT16:     ChannelType read new ChannelType($10DB);
+    public static property UNSIGNED_INT32:     ChannelType read new ChannelType($10DC);
+    public static property HALF_FLOAT:         ChannelType read new ChannelType($10DD);
+    public static property FLOAT:              ChannelType read new ChannelType($10DE);
+    public static property UNORM_INT24:        ChannelType read new ChannelType($10DF);
+    public static property UNORM_INT_101010_2: ChannelType read new ChannelType($10E0);
     
     public function ToString: string; override;
     begin
@@ -412,15 +341,10 @@ type
     public val: Int32;
     public constructor(val: Int32) := self.val := val;
     
-    private static _COMPLETE  := new CommandExecutionStatus($0000);
-    private static _RUNNING   := new CommandExecutionStatus($0001);
-    private static _SUBMITTED := new CommandExecutionStatus($0002);
-    private static _QUEUED    := new CommandExecutionStatus($0003);
-    
-    public static property COMPLETE:  CommandExecutionStatus read _COMPLETE;
-    public static property RUNNING:   CommandExecutionStatus read _RUNNING;
-    public static property SUBMITTED: CommandExecutionStatus read _SUBMITTED;
-    public static property QUEUED:    CommandExecutionStatus read _QUEUED;
+    public static property COMPLETE:  CommandExecutionStatus read new CommandExecutionStatus($0000);
+    public static property RUNNING:   CommandExecutionStatus read new CommandExecutionStatus($0001);
+    public static property SUBMITTED: CommandExecutionStatus read new CommandExecutionStatus($0002);
+    public static property QUEUED:    CommandExecutionStatus read new CommandExecutionStatus($0003);
     
     public function ToString: string; override;
     begin
@@ -439,21 +363,13 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _QUEUE_CONTEXT          := new CommandQueueInfo($1090);
-    private static _QUEUE_DEVICE           := new CommandQueueInfo($1091);
-    private static _QUEUE_REFERENCE_COUNT  := new CommandQueueInfo($1092);
-    private static _QUEUE_PROPERTIES       := new CommandQueueInfo($1093);
-    private static _QUEUE_SIZE             := new CommandQueueInfo($1094);
-    private static _QUEUE_DEVICE_DEFAULT   := new CommandQueueInfo($1095);
-    private static _QUEUE_PROPERTIES_ARRAY := new CommandQueueInfo($1098);
-    
-    public static property QUEUE_CONTEXT:          CommandQueueInfo read _QUEUE_CONTEXT;
-    public static property QUEUE_DEVICE:           CommandQueueInfo read _QUEUE_DEVICE;
-    public static property QUEUE_REFERENCE_COUNT:  CommandQueueInfo read _QUEUE_REFERENCE_COUNT;
-    public static property QUEUE_PROPERTIES:       CommandQueueInfo read _QUEUE_PROPERTIES;
-    public static property QUEUE_SIZE:             CommandQueueInfo read _QUEUE_SIZE;
-    public static property QUEUE_DEVICE_DEFAULT:   CommandQueueInfo read _QUEUE_DEVICE_DEFAULT;
-    public static property QUEUE_PROPERTIES_ARRAY: CommandQueueInfo read _QUEUE_PROPERTIES_ARRAY;
+    public static property QUEUE_CONTEXT:          CommandQueueInfo read new CommandQueueInfo($1090);
+    public static property QUEUE_DEVICE:           CommandQueueInfo read new CommandQueueInfo($1091);
+    public static property QUEUE_REFERENCE_COUNT:  CommandQueueInfo read new CommandQueueInfo($1092);
+    public static property QUEUE_PROPERTIES:       CommandQueueInfo read new CommandQueueInfo($1093);
+    public static property QUEUE_SIZE:             CommandQueueInfo read new CommandQueueInfo($1094);
+    public static property QUEUE_DEVICE_DEFAULT:   CommandQueueInfo read new CommandQueueInfo($1095);
+    public static property QUEUE_PROPERTIES_ARRAY: CommandQueueInfo read new CommandQueueInfo($1098);
     
     public function ToString: string; override;
     begin
@@ -473,21 +389,13 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _NONE                                 := new CommandQueueProperties($0000);
-    private static _QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE  := new CommandQueueProperties($0001);
-    private static _QUEUE_PROFILING_ENABLE               := new CommandQueueProperties($0002);
-    private static _QUEUE_ON_DEVICE                      := new CommandQueueProperties($0004);
-    private static _QUEUE_ON_DEVICE_DEFAULT              := new CommandQueueProperties($0008);
-    private static _QUEUE_RESERVED_QCOM                  := new CommandQueueProperties($40000000);
-    private static _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL := new CommandQueueProperties($80000000);
-    
-    public static property NONE:                                 CommandQueueProperties read _NONE;
-    public static property QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:  CommandQueueProperties read _QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
-    public static property QUEUE_PROFILING_ENABLE:               CommandQueueProperties read _QUEUE_PROFILING_ENABLE;
-    public static property QUEUE_ON_DEVICE:                      CommandQueueProperties read _QUEUE_ON_DEVICE;
-    public static property QUEUE_ON_DEVICE_DEFAULT:              CommandQueueProperties read _QUEUE_ON_DEVICE_DEFAULT;
-    public static property QUEUE_RESERVED_QCOM:                  CommandQueueProperties read _QUEUE_RESERVED_QCOM;
-    public static property QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: CommandQueueProperties read _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL;
+    public static property NONE:                                 CommandQueueProperties read new CommandQueueProperties($0000);
+    public static property QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:  CommandQueueProperties read new CommandQueueProperties($0001);
+    public static property QUEUE_PROFILING_ENABLE:               CommandQueueProperties read new CommandQueueProperties($0002);
+    public static property QUEUE_ON_DEVICE:                      CommandQueueProperties read new CommandQueueProperties($0004);
+    public static property QUEUE_ON_DEVICE_DEFAULT:              CommandQueueProperties read new CommandQueueProperties($0008);
+    public static property QUEUE_RESERVED_QCOM:                  CommandQueueProperties read new CommandQueueProperties($40000000);
+    public static property QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: CommandQueueProperties read new CommandQueueProperties($80000000);
     
     public static function operator+(f1,f2: CommandQueueProperties) := new CommandQueueProperties(f1.val or f2.val);
     public static function operator or(f1,f2: CommandQueueProperties) := f1+f2;
@@ -524,117 +432,61 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _COMMAND_NDRANGE_KERNEL                      := new CommandType($11F0);
-    private static _COMMAND_TASK                                := new CommandType($11F1);
-    private static _COMMAND_NATIVE_KERNEL                       := new CommandType($11F2);
-    private static _COMMAND_READ_BUFFER                         := new CommandType($11F3);
-    private static _COMMAND_WRITE_BUFFER                        := new CommandType($11F4);
-    private static _COMMAND_COPY_BUFFER                         := new CommandType($11F5);
-    private static _COMMAND_READ_IMAGE                          := new CommandType($11F6);
-    private static _COMMAND_WRITE_IMAGE                         := new CommandType($11F7);
-    private static _COMMAND_COPY_IMAGE                          := new CommandType($11F8);
-    private static _COMMAND_COPY_IMAGE_TO_BUFFER                := new CommandType($11F9);
-    private static _COMMAND_COPY_BUFFER_TO_IMAGE                := new CommandType($11FA);
-    private static _COMMAND_MAP_BUFFER                          := new CommandType($11FB);
-    private static _COMMAND_MAP_IMAGE                           := new CommandType($11FC);
-    private static _COMMAND_UNMAP_MEM_OBJECT                    := new CommandType($11FD);
-    private static _COMMAND_MARKER                              := new CommandType($11FE);
-    private static _COMMAND_ACQUIRE_GL_OBJECTS                  := new CommandType($11FF);
-    private static _COMMAND_RELEASE_GL_OBJECTS                  := new CommandType($1200);
-    private static _COMMAND_READ_BUFFER_RECT                    := new CommandType($1201);
-    private static _COMMAND_WRITE_BUFFER_RECT                   := new CommandType($1202);
-    private static _COMMAND_COPY_BUFFER_RECT                    := new CommandType($1203);
-    private static _COMMAND_USER                                := new CommandType($1204);
-    private static _COMMAND_BARRIER                             := new CommandType($1205);
-    private static _COMMAND_MIGRATE_MEM_OBJECTS                 := new CommandType($1206);
-    private static _COMMAND_FILL_BUFFER                         := new CommandType($1207);
-    private static _COMMAND_FILL_IMAGE                          := new CommandType($1208);
-    private static _COMMAND_SVM_FREE                            := new CommandType($1209);
-    private static _COMMAND_SVM_MEMCPY                          := new CommandType($120A);
-    private static _COMMAND_SVM_MEMFILL                         := new CommandType($120B);
-    private static _COMMAND_SVM_MAP                             := new CommandType($120C);
-    private static _COMMAND_SVM_UNMAP                           := new CommandType($120D);
-    private static _COMMAND_SVM_MIGRATE_MEM                     := new CommandType($120E);
-    private static _COMMAND_GL_FENCE_SYNC_OBJECT_KHR            := new CommandType($200D);
-    private static _COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR      := new CommandType($202B);
-    private static _COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR      := new CommandType($202C);
-    private static _COMMAND_ACQUIRE_D3D10_OBJECTS_KHR           := new CommandType($4017);
-    private static _COMMAND_RELEASE_D3D10_OBJECTS_KHR           := new CommandType($4018);
-    private static _COMMAND_ACQUIRE_D3D11_OBJECTS_KHR           := new CommandType($4020);
-    private static _COMMAND_RELEASE_D3D11_OBJECTS_KHR           := new CommandType($4021);
-    private static _COMMAND_ACQUIRE_DX9_OBJECTS_INTEL           := new CommandType($402A);
-    private static _COMMAND_RELEASE_DX9_OBJECTS_INTEL           := new CommandType($402B);
-    private static _COMMAND_MIGRATE_MEM_OBJECT_EXT              := new CommandType($4040);
-    private static _COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL := new CommandType($409A);
-    private static _COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL := new CommandType($409B);
-    private static _COMMAND_SVM_FREE_ARM                        := new CommandType($40BA);
-    private static _COMMAND_SVM_MEMCPY_ARM                      := new CommandType($40BB);
-    private static _COMMAND_SVM_MEMFILL_ARM                     := new CommandType($40BC);
-    private static _COMMAND_SVM_MAP_ARM                         := new CommandType($40BD);
-    private static _COMMAND_SVM_UNMAP_ARM                       := new CommandType($40BE);
-    private static _COMMAND_ACQUIRE_GRALLOC_OBJECTS_IMG         := new CommandType($40D2);
-    private static _COMMAND_RELEASE_GRALLOC_OBJECTS_IMG         := new CommandType($40D3);
-    private static _COMMAND_GENERATE_MIPMAP_IMG                 := new CommandType($40D6);
-    private static _COMMAND_MEMFILL_INTEL                       := new CommandType($4204);
-    private static _COMMAND_MEMCPY_INTEL                        := new CommandType($4205);
-    private static _COMMAND_MIGRATEMEM_INTEL                    := new CommandType($4206);
-    private static _COMMAND_MEMADVISE_INTEL                     := new CommandType($4207);
-    
-    public static property COMMAND_NDRANGE_KERNEL:                      CommandType read _COMMAND_NDRANGE_KERNEL;
-    public static property COMMAND_TASK:                                CommandType read _COMMAND_TASK;
-    public static property COMMAND_NATIVE_KERNEL:                       CommandType read _COMMAND_NATIVE_KERNEL;
-    public static property COMMAND_READ_BUFFER:                         CommandType read _COMMAND_READ_BUFFER;
-    public static property COMMAND_WRITE_BUFFER:                        CommandType read _COMMAND_WRITE_BUFFER;
-    public static property COMMAND_COPY_BUFFER:                         CommandType read _COMMAND_COPY_BUFFER;
-    public static property COMMAND_READ_IMAGE:                          CommandType read _COMMAND_READ_IMAGE;
-    public static property COMMAND_WRITE_IMAGE:                         CommandType read _COMMAND_WRITE_IMAGE;
-    public static property COMMAND_COPY_IMAGE:                          CommandType read _COMMAND_COPY_IMAGE;
-    public static property COMMAND_COPY_IMAGE_TO_BUFFER:                CommandType read _COMMAND_COPY_IMAGE_TO_BUFFER;
-    public static property COMMAND_COPY_BUFFER_TO_IMAGE:                CommandType read _COMMAND_COPY_BUFFER_TO_IMAGE;
-    public static property COMMAND_MAP_BUFFER:                          CommandType read _COMMAND_MAP_BUFFER;
-    public static property COMMAND_MAP_IMAGE:                           CommandType read _COMMAND_MAP_IMAGE;
-    public static property COMMAND_UNMAP_MEM_OBJECT:                    CommandType read _COMMAND_UNMAP_MEM_OBJECT;
-    public static property COMMAND_MARKER:                              CommandType read _COMMAND_MARKER;
-    public static property COMMAND_ACQUIRE_GL_OBJECTS:                  CommandType read _COMMAND_ACQUIRE_GL_OBJECTS;
-    public static property COMMAND_RELEASE_GL_OBJECTS:                  CommandType read _COMMAND_RELEASE_GL_OBJECTS;
-    public static property COMMAND_READ_BUFFER_RECT:                    CommandType read _COMMAND_READ_BUFFER_RECT;
-    public static property COMMAND_WRITE_BUFFER_RECT:                   CommandType read _COMMAND_WRITE_BUFFER_RECT;
-    public static property COMMAND_COPY_BUFFER_RECT:                    CommandType read _COMMAND_COPY_BUFFER_RECT;
-    public static property COMMAND_USER:                                CommandType read _COMMAND_USER;
-    public static property COMMAND_BARRIER:                             CommandType read _COMMAND_BARRIER;
-    public static property COMMAND_MIGRATE_MEM_OBJECTS:                 CommandType read _COMMAND_MIGRATE_MEM_OBJECTS;
-    public static property COMMAND_FILL_BUFFER:                         CommandType read _COMMAND_FILL_BUFFER;
-    public static property COMMAND_FILL_IMAGE:                          CommandType read _COMMAND_FILL_IMAGE;
-    public static property COMMAND_SVM_FREE:                            CommandType read _COMMAND_SVM_FREE;
-    public static property COMMAND_SVM_MEMCPY:                          CommandType read _COMMAND_SVM_MEMCPY;
-    public static property COMMAND_SVM_MEMFILL:                         CommandType read _COMMAND_SVM_MEMFILL;
-    public static property COMMAND_SVM_MAP:                             CommandType read _COMMAND_SVM_MAP;
-    public static property COMMAND_SVM_UNMAP:                           CommandType read _COMMAND_SVM_UNMAP;
-    public static property COMMAND_SVM_MIGRATE_MEM:                     CommandType read _COMMAND_SVM_MIGRATE_MEM;
-    public static property COMMAND_GL_FENCE_SYNC_OBJECT_KHR:            CommandType read _COMMAND_GL_FENCE_SYNC_OBJECT_KHR;
-    public static property COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR:      CommandType read _COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR;
-    public static property COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR:      CommandType read _COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR;
-    public static property COMMAND_ACQUIRE_D3D10_OBJECTS_KHR:           CommandType read _COMMAND_ACQUIRE_D3D10_OBJECTS_KHR;
-    public static property COMMAND_RELEASE_D3D10_OBJECTS_KHR:           CommandType read _COMMAND_RELEASE_D3D10_OBJECTS_KHR;
-    public static property COMMAND_ACQUIRE_D3D11_OBJECTS_KHR:           CommandType read _COMMAND_ACQUIRE_D3D11_OBJECTS_KHR;
-    public static property COMMAND_RELEASE_D3D11_OBJECTS_KHR:           CommandType read _COMMAND_RELEASE_D3D11_OBJECTS_KHR;
-    public static property COMMAND_ACQUIRE_DX9_OBJECTS_INTEL:           CommandType read _COMMAND_ACQUIRE_DX9_OBJECTS_INTEL;
-    public static property COMMAND_RELEASE_DX9_OBJECTS_INTEL:           CommandType read _COMMAND_RELEASE_DX9_OBJECTS_INTEL;
-    public static property COMMAND_MIGRATE_MEM_OBJECT_EXT:              CommandType read _COMMAND_MIGRATE_MEM_OBJECT_EXT;
-    public static property COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL: CommandType read _COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL;
-    public static property COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL: CommandType read _COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL;
-    public static property COMMAND_SVM_FREE_ARM:                        CommandType read _COMMAND_SVM_FREE_ARM;
-    public static property COMMAND_SVM_MEMCPY_ARM:                      CommandType read _COMMAND_SVM_MEMCPY_ARM;
-    public static property COMMAND_SVM_MEMFILL_ARM:                     CommandType read _COMMAND_SVM_MEMFILL_ARM;
-    public static property COMMAND_SVM_MAP_ARM:                         CommandType read _COMMAND_SVM_MAP_ARM;
-    public static property COMMAND_SVM_UNMAP_ARM:                       CommandType read _COMMAND_SVM_UNMAP_ARM;
-    public static property COMMAND_ACQUIRE_GRALLOC_OBJECTS_IMG:         CommandType read _COMMAND_ACQUIRE_GRALLOC_OBJECTS_IMG;
-    public static property COMMAND_RELEASE_GRALLOC_OBJECTS_IMG:         CommandType read _COMMAND_RELEASE_GRALLOC_OBJECTS_IMG;
-    public static property COMMAND_GENERATE_MIPMAP_IMG:                 CommandType read _COMMAND_GENERATE_MIPMAP_IMG;
-    public static property COMMAND_MEMFILL_INTEL:                       CommandType read _COMMAND_MEMFILL_INTEL;
-    public static property COMMAND_MEMCPY_INTEL:                        CommandType read _COMMAND_MEMCPY_INTEL;
-    public static property COMMAND_MIGRATEMEM_INTEL:                    CommandType read _COMMAND_MIGRATEMEM_INTEL;
-    public static property COMMAND_MEMADVISE_INTEL:                     CommandType read _COMMAND_MEMADVISE_INTEL;
+    public static property COMMAND_NDRANGE_KERNEL:                      CommandType read new CommandType($11F0);
+    public static property COMMAND_TASK:                                CommandType read new CommandType($11F1);
+    public static property COMMAND_NATIVE_KERNEL:                       CommandType read new CommandType($11F2);
+    public static property COMMAND_READ_BUFFER:                         CommandType read new CommandType($11F3);
+    public static property COMMAND_WRITE_BUFFER:                        CommandType read new CommandType($11F4);
+    public static property COMMAND_COPY_BUFFER:                         CommandType read new CommandType($11F5);
+    public static property COMMAND_READ_IMAGE:                          CommandType read new CommandType($11F6);
+    public static property COMMAND_WRITE_IMAGE:                         CommandType read new CommandType($11F7);
+    public static property COMMAND_COPY_IMAGE:                          CommandType read new CommandType($11F8);
+    public static property COMMAND_COPY_IMAGE_TO_BUFFER:                CommandType read new CommandType($11F9);
+    public static property COMMAND_COPY_BUFFER_TO_IMAGE:                CommandType read new CommandType($11FA);
+    public static property COMMAND_MAP_BUFFER:                          CommandType read new CommandType($11FB);
+    public static property COMMAND_MAP_IMAGE:                           CommandType read new CommandType($11FC);
+    public static property COMMAND_UNMAP_MEM_OBJECT:                    CommandType read new CommandType($11FD);
+    public static property COMMAND_MARKER:                              CommandType read new CommandType($11FE);
+    public static property COMMAND_ACQUIRE_GL_OBJECTS:                  CommandType read new CommandType($11FF);
+    public static property COMMAND_RELEASE_GL_OBJECTS:                  CommandType read new CommandType($1200);
+    public static property COMMAND_READ_BUFFER_RECT:                    CommandType read new CommandType($1201);
+    public static property COMMAND_WRITE_BUFFER_RECT:                   CommandType read new CommandType($1202);
+    public static property COMMAND_COPY_BUFFER_RECT:                    CommandType read new CommandType($1203);
+    public static property COMMAND_USER:                                CommandType read new CommandType($1204);
+    public static property COMMAND_BARRIER:                             CommandType read new CommandType($1205);
+    public static property COMMAND_MIGRATE_MEM_OBJECTS:                 CommandType read new CommandType($1206);
+    public static property COMMAND_FILL_BUFFER:                         CommandType read new CommandType($1207);
+    public static property COMMAND_FILL_IMAGE:                          CommandType read new CommandType($1208);
+    public static property COMMAND_SVM_FREE:                            CommandType read new CommandType($1209);
+    public static property COMMAND_SVM_MEMCPY:                          CommandType read new CommandType($120A);
+    public static property COMMAND_SVM_MEMFILL:                         CommandType read new CommandType($120B);
+    public static property COMMAND_SVM_MAP:                             CommandType read new CommandType($120C);
+    public static property COMMAND_SVM_UNMAP:                           CommandType read new CommandType($120D);
+    public static property COMMAND_SVM_MIGRATE_MEM:                     CommandType read new CommandType($120E);
+    public static property COMMAND_GL_FENCE_SYNC_OBJECT_KHR:            CommandType read new CommandType($200D);
+    public static property COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR:      CommandType read new CommandType($202B);
+    public static property COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR:      CommandType read new CommandType($202C);
+    public static property COMMAND_ACQUIRE_D3D10_OBJECTS_KHR:           CommandType read new CommandType($4017);
+    public static property COMMAND_RELEASE_D3D10_OBJECTS_KHR:           CommandType read new CommandType($4018);
+    public static property COMMAND_ACQUIRE_D3D11_OBJECTS_KHR:           CommandType read new CommandType($4020);
+    public static property COMMAND_RELEASE_D3D11_OBJECTS_KHR:           CommandType read new CommandType($4021);
+    public static property COMMAND_ACQUIRE_DX9_OBJECTS_INTEL:           CommandType read new CommandType($402A);
+    public static property COMMAND_RELEASE_DX9_OBJECTS_INTEL:           CommandType read new CommandType($402B);
+    public static property COMMAND_MIGRATE_MEM_OBJECT_EXT:              CommandType read new CommandType($4040);
+    public static property COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL: CommandType read new CommandType($409A);
+    public static property COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL: CommandType read new CommandType($409B);
+    public static property COMMAND_SVM_FREE_ARM:                        CommandType read new CommandType($40BA);
+    public static property COMMAND_SVM_MEMCPY_ARM:                      CommandType read new CommandType($40BB);
+    public static property COMMAND_SVM_MEMFILL_ARM:                     CommandType read new CommandType($40BC);
+    public static property COMMAND_SVM_MAP_ARM:                         CommandType read new CommandType($40BD);
+    public static property COMMAND_SVM_UNMAP_ARM:                       CommandType read new CommandType($40BE);
+    public static property COMMAND_ACQUIRE_GRALLOC_OBJECTS_IMG:         CommandType read new CommandType($40D2);
+    public static property COMMAND_RELEASE_GRALLOC_OBJECTS_IMG:         CommandType read new CommandType($40D3);
+    public static property COMMAND_GENERATE_MIPMAP_IMG:                 CommandType read new CommandType($40D6);
+    public static property COMMAND_MEMFILL_INTEL:                       CommandType read new CommandType($4204);
+    public static property COMMAND_MEMCPY_INTEL:                        CommandType read new CommandType($4205);
+    public static property COMMAND_MIGRATEMEM_INTEL:                    CommandType read new CommandType($4206);
+    public static property COMMAND_MEMADVISE_INTEL:                     CommandType read new CommandType($4207);
     
     public function ToString: string; override;
     begin
@@ -702,37 +554,21 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _CONTEXT_REFERENCE_COUNT                   := new ContextInfo($1080);
-    private static _CONTEXT_DEVICES                           := new ContextInfo($1081);
-    private static _CONTEXT_PROPERTIES                        := new ContextInfo($1082);
-    private static _CONTEXT_NUM_DEVICES                       := new ContextInfo($1083);
-    private static _CONTEXT_ADAPTER_D3D9_KHR                  := new ContextInfo($2025);
-    private static _CONTEXT_ADAPTER_D3D9EX_KHR                := new ContextInfo($2026);
-    private static _CONTEXT_ADAPTER_DXVA_KHR                  := new ContextInfo($2027);
-    private static _CONTEXT_D3D10_DEVICE_KHR                  := new ContextInfo($4014);
-    private static _CONTEXT_D3D11_DEVICE_KHR                  := new ContextInfo($401D);
-    private static _CONTEXT_D3D9_DEVICE_INTEL                 := new ContextInfo($4026);
-    private static _CONTEXT_D3D10_PREFER_SHARED_RESOURCES_KHR := new ContextInfo($402C);
-    private static _CONTEXT_D3D11_PREFER_SHARED_RESOURCES_KHR := new ContextInfo($402D);
-    private static _CONTEXT_D3D9EX_DEVICE_INTEL               := new ContextInfo($4072);
-    private static _CONTEXT_DXVA_DEVICE_INTEL                 := new ContextInfo($4073);
-    private static _CONTEXT_VA_API_DISPLAY_INTEL              := new ContextInfo($4097);
-    
-    public static property CONTEXT_REFERENCE_COUNT:                   ContextInfo read _CONTEXT_REFERENCE_COUNT;
-    public static property CONTEXT_DEVICES:                           ContextInfo read _CONTEXT_DEVICES;
-    public static property CONTEXT_PROPERTIES:                        ContextInfo read _CONTEXT_PROPERTIES;
-    public static property CONTEXT_NUM_DEVICES:                       ContextInfo read _CONTEXT_NUM_DEVICES;
-    public static property CONTEXT_ADAPTER_D3D9_KHR:                  ContextInfo read _CONTEXT_ADAPTER_D3D9_KHR;
-    public static property CONTEXT_ADAPTER_D3D9EX_KHR:                ContextInfo read _CONTEXT_ADAPTER_D3D9EX_KHR;
-    public static property CONTEXT_ADAPTER_DXVA_KHR:                  ContextInfo read _CONTEXT_ADAPTER_DXVA_KHR;
-    public static property CONTEXT_D3D10_DEVICE_KHR:                  ContextInfo read _CONTEXT_D3D10_DEVICE_KHR;
-    public static property CONTEXT_D3D11_DEVICE_KHR:                  ContextInfo read _CONTEXT_D3D11_DEVICE_KHR;
-    public static property CONTEXT_D3D9_DEVICE_INTEL:                 ContextInfo read _CONTEXT_D3D9_DEVICE_INTEL;
-    public static property CONTEXT_D3D10_PREFER_SHARED_RESOURCES_KHR: ContextInfo read _CONTEXT_D3D10_PREFER_SHARED_RESOURCES_KHR;
-    public static property CONTEXT_D3D11_PREFER_SHARED_RESOURCES_KHR: ContextInfo read _CONTEXT_D3D11_PREFER_SHARED_RESOURCES_KHR;
-    public static property CONTEXT_D3D9EX_DEVICE_INTEL:               ContextInfo read _CONTEXT_D3D9EX_DEVICE_INTEL;
-    public static property CONTEXT_DXVA_DEVICE_INTEL:                 ContextInfo read _CONTEXT_DXVA_DEVICE_INTEL;
-    public static property CONTEXT_VA_API_DISPLAY_INTEL:              ContextInfo read _CONTEXT_VA_API_DISPLAY_INTEL;
+    public static property CONTEXT_REFERENCE_COUNT:                   ContextInfo read new ContextInfo($1080);
+    public static property CONTEXT_DEVICES:                           ContextInfo read new ContextInfo($1081);
+    public static property CONTEXT_PROPERTIES:                        ContextInfo read new ContextInfo($1082);
+    public static property CONTEXT_NUM_DEVICES:                       ContextInfo read new ContextInfo($1083);
+    public static property CONTEXT_ADAPTER_D3D9_KHR:                  ContextInfo read new ContextInfo($2025);
+    public static property CONTEXT_ADAPTER_D3D9EX_KHR:                ContextInfo read new ContextInfo($2026);
+    public static property CONTEXT_ADAPTER_DXVA_KHR:                  ContextInfo read new ContextInfo($2027);
+    public static property CONTEXT_D3D10_DEVICE_KHR:                  ContextInfo read new ContextInfo($4014);
+    public static property CONTEXT_D3D11_DEVICE_KHR:                  ContextInfo read new ContextInfo($401D);
+    public static property CONTEXT_D3D9_DEVICE_INTEL:                 ContextInfo read new ContextInfo($4026);
+    public static property CONTEXT_D3D10_PREFER_SHARED_RESOURCES_KHR: ContextInfo read new ContextInfo($402C);
+    public static property CONTEXT_D3D11_PREFER_SHARED_RESOURCES_KHR: ContextInfo read new ContextInfo($402D);
+    public static property CONTEXT_D3D9EX_DEVICE_INTEL:               ContextInfo read new ContextInfo($4072);
+    public static property CONTEXT_DXVA_DEVICE_INTEL:                 ContextInfo read new ContextInfo($4073);
+    public static property CONTEXT_VA_API_DISPLAY_INTEL:              ContextInfo read new ContextInfo($4097);
     
     public function ToString: string; override;
     begin
@@ -761,37 +597,21 @@ type
     public constructor(val: IntPtr) := self.val := val;
     public constructor(val: Int32) := self.val := new IntPtr(val);
     
-    private static _CONTEXT_DIAGNOSTICS_LEVEL_GOOD_INTEL    := new ContextProperties($0001);
-    private static _CONTEXT_DIAGNOSTICS_LEVEL_BAD_INTEL     := new ContextProperties($0002);
-    private static _CONTEXT_DIAGNOSTICS_LEVEL_NEUTRAL_INTEL := new ContextProperties($0004);
-    private static _CONTEXT_DIAGNOSTICS_LEVEL_ALL_INTEL     := new ContextProperties($00FF);
-    private static _CONTEXT_PLATFORM                        := new ContextProperties($1084);
-    private static _CONTEXT_INTEROP_USER_SYNC               := new ContextProperties($1085);
-    private static _GL_CONTEXT_KHR                          := new ContextProperties($2008);
-    private static _EGL_DISPLAY_KHR                         := new ContextProperties($2009);
-    private static _GLX_DISPLAY_KHR                         := new ContextProperties($200A);
-    private static _WGL_HDC_KHR                             := new ContextProperties($200B);
-    private static _CGL_SHAREGROUP_KHR                      := new ContextProperties($200C);
-    private static _CONTEXT_TERMINATE_KHR                   := new ContextProperties($2032);
-    private static _PRINTF_CALLBACK_ARM                     := new ContextProperties($40B0);
-    private static _PRINTF_BUFFERSIZE_ARM                   := new ContextProperties($40B1);
-    private static _CONTEXT_SHOW_DIAGNOSTICS_INTEL          := new ContextProperties($4106);
-    
-    public static property CONTEXT_DIAGNOSTICS_LEVEL_GOOD_INTEL:    ContextProperties read _CONTEXT_DIAGNOSTICS_LEVEL_GOOD_INTEL;
-    public static property CONTEXT_DIAGNOSTICS_LEVEL_BAD_INTEL:     ContextProperties read _CONTEXT_DIAGNOSTICS_LEVEL_BAD_INTEL;
-    public static property CONTEXT_DIAGNOSTICS_LEVEL_NEUTRAL_INTEL: ContextProperties read _CONTEXT_DIAGNOSTICS_LEVEL_NEUTRAL_INTEL;
-    public static property CONTEXT_DIAGNOSTICS_LEVEL_ALL_INTEL:     ContextProperties read _CONTEXT_DIAGNOSTICS_LEVEL_ALL_INTEL;
-    public static property CONTEXT_PLATFORM:                        ContextProperties read _CONTEXT_PLATFORM;
-    public static property CONTEXT_INTEROP_USER_SYNC:               ContextProperties read _CONTEXT_INTEROP_USER_SYNC;
-    public static property GL_CONTEXT_KHR:                          ContextProperties read _GL_CONTEXT_KHR;
-    public static property EGL_DISPLAY_KHR:                         ContextProperties read _EGL_DISPLAY_KHR;
-    public static property GLX_DISPLAY_KHR:                         ContextProperties read _GLX_DISPLAY_KHR;
-    public static property WGL_HDC_KHR:                             ContextProperties read _WGL_HDC_KHR;
-    public static property CGL_SHAREGROUP_KHR:                      ContextProperties read _CGL_SHAREGROUP_KHR;
-    public static property CONTEXT_TERMINATE_KHR:                   ContextProperties read _CONTEXT_TERMINATE_KHR;
-    public static property PRINTF_CALLBACK_ARM:                     ContextProperties read _PRINTF_CALLBACK_ARM;
-    public static property PRINTF_BUFFERSIZE_ARM:                   ContextProperties read _PRINTF_BUFFERSIZE_ARM;
-    public static property CONTEXT_SHOW_DIAGNOSTICS_INTEL:          ContextProperties read _CONTEXT_SHOW_DIAGNOSTICS_INTEL;
+    public static property CONTEXT_DIAGNOSTICS_LEVEL_GOOD_INTEL:    ContextProperties read new ContextProperties($0001);
+    public static property CONTEXT_DIAGNOSTICS_LEVEL_BAD_INTEL:     ContextProperties read new ContextProperties($0002);
+    public static property CONTEXT_DIAGNOSTICS_LEVEL_NEUTRAL_INTEL: ContextProperties read new ContextProperties($0004);
+    public static property CONTEXT_DIAGNOSTICS_LEVEL_ALL_INTEL:     ContextProperties read new ContextProperties($00FF);
+    public static property CONTEXT_PLATFORM:                        ContextProperties read new ContextProperties($1084);
+    public static property CONTEXT_INTEROP_USER_SYNC:               ContextProperties read new ContextProperties($1085);
+    public static property GL_CONTEXT_KHR:                          ContextProperties read new ContextProperties($2008);
+    public static property EGL_DISPLAY_KHR:                         ContextProperties read new ContextProperties($2009);
+    public static property GLX_DISPLAY_KHR:                         ContextProperties read new ContextProperties($200A);
+    public static property WGL_HDC_KHR:                             ContextProperties read new ContextProperties($200B);
+    public static property CGL_SHAREGROUP_KHR:                      ContextProperties read new ContextProperties($200C);
+    public static property CONTEXT_TERMINATE_KHR:                   ContextProperties read new ContextProperties($2032);
+    public static property PRINTF_CALLBACK_ARM:                     ContextProperties read new ContextProperties($40B0);
+    public static property PRINTF_BUFFERSIZE_ARM:                   ContextProperties read new ContextProperties($40B1);
+    public static property CONTEXT_SHOW_DIAGNOSTICS_INTEL:          ContextProperties read new ContextProperties($4106);
     
     public function ToString: string; override;
     begin
@@ -819,11 +639,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PREFERRED_DEVICES_FOR_D3D10_KHR := new D3d10DeviceSetKhr($4012);
-    private static _ALL_DEVICES_FOR_D3D10_KHR       := new D3d10DeviceSetKhr($4013);
-    
-    public static property PREFERRED_DEVICES_FOR_D3D10_KHR: D3d10DeviceSetKhr read _PREFERRED_DEVICES_FOR_D3D10_KHR;
-    public static property ALL_DEVICES_FOR_D3D10_KHR:       D3d10DeviceSetKhr read _ALL_DEVICES_FOR_D3D10_KHR;
+    public static property PREFERRED_DEVICES_FOR_D3D10_KHR: D3d10DeviceSetKhr read new D3d10DeviceSetKhr($4012);
+    public static property ALL_DEVICES_FOR_D3D10_KHR:       D3d10DeviceSetKhr read new D3d10DeviceSetKhr($4013);
     
     public function ToString: string; override;
     begin
@@ -838,11 +655,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _D3D10_DEVICE_KHR       := new D3d10DeviceSourceKhr($4010);
-    private static _D3D10_DXGI_ADAPTER_KHR := new D3d10DeviceSourceKhr($4011);
-    
-    public static property D3D10_DEVICE_KHR:       D3d10DeviceSourceKhr read _D3D10_DEVICE_KHR;
-    public static property D3D10_DXGI_ADAPTER_KHR: D3d10DeviceSourceKhr read _D3D10_DXGI_ADAPTER_KHR;
+    public static property D3D10_DEVICE_KHR:       D3d10DeviceSourceKhr read new D3d10DeviceSourceKhr($4010);
+    public static property D3D10_DXGI_ADAPTER_KHR: D3d10DeviceSourceKhr read new D3d10DeviceSourceKhr($4011);
     
     public function ToString: string; override;
     begin
@@ -857,11 +671,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PREFERRED_DEVICES_FOR_D3D11_KHR := new D3d11DeviceSetKhr($401B);
-    private static _ALL_DEVICES_FOR_D3D11_KHR       := new D3d11DeviceSetKhr($401C);
-    
-    public static property PREFERRED_DEVICES_FOR_D3D11_KHR: D3d11DeviceSetKhr read _PREFERRED_DEVICES_FOR_D3D11_KHR;
-    public static property ALL_DEVICES_FOR_D3D11_KHR:       D3d11DeviceSetKhr read _ALL_DEVICES_FOR_D3D11_KHR;
+    public static property PREFERRED_DEVICES_FOR_D3D11_KHR: D3d11DeviceSetKhr read new D3d11DeviceSetKhr($401B);
+    public static property ALL_DEVICES_FOR_D3D11_KHR:       D3d11DeviceSetKhr read new D3d11DeviceSetKhr($401C);
     
     public function ToString: string; override;
     begin
@@ -876,11 +687,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _D3D11_DEVICE_KHR       := new D3d11DeviceSourceKhr($4019);
-    private static _D3D11_DXGI_ADAPTER_KHR := new D3d11DeviceSourceKhr($401A);
-    
-    public static property D3D11_DEVICE_KHR:       D3d11DeviceSourceKhr read _D3D11_DEVICE_KHR;
-    public static property D3D11_DXGI_ADAPTER_KHR: D3d11DeviceSourceKhr read _D3D11_DXGI_ADAPTER_KHR;
+    public static property D3D11_DEVICE_KHR:       D3d11DeviceSourceKhr read new D3d11DeviceSourceKhr($4019);
+    public static property D3D11_DXGI_ADAPTER_KHR: D3d11DeviceSourceKhr read new D3d11DeviceSourceKhr($401A);
     
     public function ToString: string; override;
     begin
@@ -895,19 +703,12 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _DEVICE_AFFINITY_DOMAIN_NUMA               := new DeviceAffinityDomain($0001);
-    private static _DEVICE_AFFINITY_DOMAIN_L4_CACHE           := new DeviceAffinityDomain($0002);
-    private static _DEVICE_AFFINITY_DOMAIN_L3_CACHE           := new DeviceAffinityDomain($0004);
-    private static _DEVICE_AFFINITY_DOMAIN_L2_CACHE           := new DeviceAffinityDomain($0008);
-    private static _DEVICE_AFFINITY_DOMAIN_L1_CACHE           := new DeviceAffinityDomain($0010);
-    private static _DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE := new DeviceAffinityDomain($0020);
-    
-    public static property DEVICE_AFFINITY_DOMAIN_NUMA:               DeviceAffinityDomain read _DEVICE_AFFINITY_DOMAIN_NUMA;
-    public static property DEVICE_AFFINITY_DOMAIN_L4_CACHE:           DeviceAffinityDomain read _DEVICE_AFFINITY_DOMAIN_L4_CACHE;
-    public static property DEVICE_AFFINITY_DOMAIN_L3_CACHE:           DeviceAffinityDomain read _DEVICE_AFFINITY_DOMAIN_L3_CACHE;
-    public static property DEVICE_AFFINITY_DOMAIN_L2_CACHE:           DeviceAffinityDomain read _DEVICE_AFFINITY_DOMAIN_L2_CACHE;
-    public static property DEVICE_AFFINITY_DOMAIN_L1_CACHE:           DeviceAffinityDomain read _DEVICE_AFFINITY_DOMAIN_L1_CACHE;
-    public static property DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE: DeviceAffinityDomain read _DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE;
+    public static property DEVICE_AFFINITY_DOMAIN_NUMA:               DeviceAffinityDomain read new DeviceAffinityDomain($0001);
+    public static property DEVICE_AFFINITY_DOMAIN_L4_CACHE:           DeviceAffinityDomain read new DeviceAffinityDomain($0002);
+    public static property DEVICE_AFFINITY_DOMAIN_L3_CACHE:           DeviceAffinityDomain read new DeviceAffinityDomain($0004);
+    public static property DEVICE_AFFINITY_DOMAIN_L2_CACHE:           DeviceAffinityDomain read new DeviceAffinityDomain($0008);
+    public static property DEVICE_AFFINITY_DOMAIN_L1_CACHE:           DeviceAffinityDomain read new DeviceAffinityDomain($0010);
+    public static property DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE: DeviceAffinityDomain read new DeviceAffinityDomain($0020);
     
     public static function operator+(f1,f2: DeviceAffinityDomain) := new DeviceAffinityDomain(f1.val or f2.val);
     public static function operator or(f1,f2: DeviceAffinityDomain) := f1+f2;
@@ -942,11 +743,8 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _EXEC_KERNEL        := new DeviceExecCapabilities($0001);
-    private static _EXEC_NATIVE_KERNEL := new DeviceExecCapabilities($0002);
-    
-    public static property EXEC_KERNEL:        DeviceExecCapabilities read _EXEC_KERNEL;
-    public static property EXEC_NATIVE_KERNEL: DeviceExecCapabilities read _EXEC_NATIVE_KERNEL;
+    public static property EXEC_KERNEL:        DeviceExecCapabilities read new DeviceExecCapabilities($0001);
+    public static property EXEC_NATIVE_KERNEL: DeviceExecCapabilities read new DeviceExecCapabilities($0002);
     
     public static function operator+(f1,f2: DeviceExecCapabilities) := new DeviceExecCapabilities(f1.val or f2.val);
     public static function operator or(f1,f2: DeviceExecCapabilities) := f1+f2;
@@ -973,23 +771,14 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _FP_DENORM                        := new DeviceFPConfig($0001);
-    private static _FP_INF_NAN                       := new DeviceFPConfig($0002);
-    private static _FP_ROUND_TO_NEAREST              := new DeviceFPConfig($0004);
-    private static _FP_ROUND_TO_ZERO                 := new DeviceFPConfig($0008);
-    private static _FP_ROUND_TO_INF                  := new DeviceFPConfig($0010);
-    private static _FP_FMA                           := new DeviceFPConfig($0020);
-    private static _FP_SOFT_FLOAT                    := new DeviceFPConfig($0040);
-    private static _FP_CORRECTLY_ROUNDED_DIVIDE_SQRT := new DeviceFPConfig($0080);
-    
-    public static property FP_DENORM:                        DeviceFPConfig read _FP_DENORM;
-    public static property FP_INF_NAN:                       DeviceFPConfig read _FP_INF_NAN;
-    public static property FP_ROUND_TO_NEAREST:              DeviceFPConfig read _FP_ROUND_TO_NEAREST;
-    public static property FP_ROUND_TO_ZERO:                 DeviceFPConfig read _FP_ROUND_TO_ZERO;
-    public static property FP_ROUND_TO_INF:                  DeviceFPConfig read _FP_ROUND_TO_INF;
-    public static property FP_FMA:                           DeviceFPConfig read _FP_FMA;
-    public static property FP_SOFT_FLOAT:                    DeviceFPConfig read _FP_SOFT_FLOAT;
-    public static property FP_CORRECTLY_ROUNDED_DIVIDE_SQRT: DeviceFPConfig read _FP_CORRECTLY_ROUNDED_DIVIDE_SQRT;
+    public static property FP_DENORM:                        DeviceFPConfig read new DeviceFPConfig($0001);
+    public static property FP_INF_NAN:                       DeviceFPConfig read new DeviceFPConfig($0002);
+    public static property FP_ROUND_TO_NEAREST:              DeviceFPConfig read new DeviceFPConfig($0004);
+    public static property FP_ROUND_TO_ZERO:                 DeviceFPConfig read new DeviceFPConfig($0008);
+    public static property FP_ROUND_TO_INF:                  DeviceFPConfig read new DeviceFPConfig($0010);
+    public static property FP_FMA:                           DeviceFPConfig read new DeviceFPConfig($0020);
+    public static property FP_SOFT_FLOAT:                    DeviceFPConfig read new DeviceFPConfig($0040);
+    public static property FP_CORRECTLY_ROUNDED_DIVIDE_SQRT: DeviceFPConfig read new DeviceFPConfig($0080);
     
     public static function operator+(f1,f2: DeviceFPConfig) := new DeviceFPConfig(f1.val or f2.val);
     public static function operator or(f1,f2: DeviceFPConfig) := f1+f2;
@@ -1028,365 +817,185 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _DEVICE_TYPE                                        := new DeviceInfo($1000);
-    private static _DEVICE_VENDOR_ID                                   := new DeviceInfo($1001);
-    private static _DEVICE_MAX_COMPUTE_UNITS                           := new DeviceInfo($1002);
-    private static _DEVICE_MAX_WORK_ITEM_DIMENSIONS                    := new DeviceInfo($1003);
-    private static _DEVICE_MAX_WORK_GROUP_SIZE                         := new DeviceInfo($1004);
-    private static _DEVICE_MAX_WORK_ITEM_SIZES                         := new DeviceInfo($1005);
-    private static _DEVICE_PREFERRED_VECTOR_WIDTH_CHAR                 := new DeviceInfo($1006);
-    private static _DEVICE_PREFERRED_VECTOR_WIDTH_SHORT                := new DeviceInfo($1007);
-    private static _DEVICE_PREFERRED_VECTOR_WIDTH_INT                  := new DeviceInfo($1008);
-    private static _DEVICE_PREFERRED_VECTOR_WIDTH_LONG                 := new DeviceInfo($1009);
-    private static _DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT                := new DeviceInfo($100A);
-    private static _DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE               := new DeviceInfo($100B);
-    private static _DEVICE_MAX_CLOCK_FREQUENCY                         := new DeviceInfo($100C);
-    private static _DEVICE_ADDRESS_BITS                                := new DeviceInfo($100D);
-    private static _DEVICE_MAX_READ_IMAGE_ARGS                         := new DeviceInfo($100E);
-    private static _DEVICE_MAX_WRITE_IMAGE_ARGS                        := new DeviceInfo($100F);
-    private static _DEVICE_MAX_MEM_ALLOC_SIZE                          := new DeviceInfo($1010);
-    private static _DEVICE_IMAGE2D_MAX_WIDTH                           := new DeviceInfo($1011);
-    private static _DEVICE_IMAGE2D_MAX_HEIGHT                          := new DeviceInfo($1012);
-    private static _DEVICE_IMAGE3D_MAX_WIDTH                           := new DeviceInfo($1013);
-    private static _DEVICE_IMAGE3D_MAX_HEIGHT                          := new DeviceInfo($1014);
-    private static _DEVICE_IMAGE3D_MAX_DEPTH                           := new DeviceInfo($1015);
-    private static _DEVICE_IMAGE_SUPPORT                               := new DeviceInfo($1016);
-    private static _DEVICE_MAX_PARAMETER_SIZE                          := new DeviceInfo($1017);
-    private static _DEVICE_MAX_SAMPLERS                                := new DeviceInfo($1018);
-    private static _DEVICE_MEM_BASE_ADDR_ALIGN                         := new DeviceInfo($1019);
-    private static _DEVICE_MIN_DATA_TYPE_ALIGN_SIZE                    := new DeviceInfo($101A);
-    private static _DEVICE_SINGLE_FP_CONFIG                            := new DeviceInfo($101B);
-    private static _DEVICE_GLOBAL_MEM_CACHE_TYPE                       := new DeviceInfo($101C);
-    private static _DEVICE_GLOBAL_MEM_CACHELINE_SIZE                   := new DeviceInfo($101D);
-    private static _DEVICE_GLOBAL_MEM_CACHE_SIZE                       := new DeviceInfo($101E);
-    private static _DEVICE_GLOBAL_MEM_SIZE                             := new DeviceInfo($101F);
-    private static _DEVICE_MAX_CONSTANT_BUFFER_SIZE                    := new DeviceInfo($1020);
-    private static _DEVICE_MAX_CONSTANT_ARGS                           := new DeviceInfo($1021);
-    private static _DEVICE_LOCAL_MEM_TYPE                              := new DeviceInfo($1022);
-    private static _DEVICE_LOCAL_MEM_SIZE                              := new DeviceInfo($1023);
-    private static _DEVICE_ERROR_CORRECTION_SUPPORT                    := new DeviceInfo($1024);
-    private static _DEVICE_PROFILING_TIMER_RESOLUTION                  := new DeviceInfo($1025);
-    private static _DEVICE_ENDIAN_LITTLE                               := new DeviceInfo($1026);
-    private static _DEVICE_AVAILABLE                                   := new DeviceInfo($1027);
-    private static _DEVICE_COMPILER_AVAILABLE                          := new DeviceInfo($1028);
-    private static _DEVICE_EXECUTION_CAPABILITIES                      := new DeviceInfo($1029);
-    private static _DEVICE_QUEUE_ON_HOST_PROPERTIES                    := new DeviceInfo($102A);
-    private static _DEVICE_QUEUE_PROPERTIES                            := new DeviceInfo($102A);
-    private static _DEVICE_NAME                                        := new DeviceInfo($102B);
-    private static _DEVICE_VENDOR                                      := new DeviceInfo($102C);
-    private static _DRIVER_VERSION                                     := new DeviceInfo($102D);
-    private static _DEVICE_PROFILE                                     := new DeviceInfo($102E);
-    private static _DEVICE_VERSION                                     := new DeviceInfo($102F);
-    private static _DEVICE_EXTENSIONS                                  := new DeviceInfo($1030);
-    private static _DEVICE_PLATFORM                                    := new DeviceInfo($1031);
-    private static _DEVICE_DOUBLE_FP_CONFIG                            := new DeviceInfo($1032);
-    private static _DEVICE_HALF_FP_CONFIG                              := new DeviceInfo($1033);
-    private static _DEVICE_PREFERRED_VECTOR_WIDTH_HALF                 := new DeviceInfo($1034);
-    private static _DEVICE_HOST_UNIFIED_MEMORY                         := new DeviceInfo($1035);
-    private static _DEVICE_NATIVE_VECTOR_WIDTH_CHAR                    := new DeviceInfo($1036);
-    private static _DEVICE_NATIVE_VECTOR_WIDTH_SHORT                   := new DeviceInfo($1037);
-    private static _DEVICE_NATIVE_VECTOR_WIDTH_INT                     := new DeviceInfo($1038);
-    private static _DEVICE_NATIVE_VECTOR_WIDTH_LONG                    := new DeviceInfo($1039);
-    private static _DEVICE_NATIVE_VECTOR_WIDTH_FLOAT                   := new DeviceInfo($103A);
-    private static _DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE                  := new DeviceInfo($103B);
-    private static _DEVICE_NATIVE_VECTOR_WIDTH_HALF                    := new DeviceInfo($103C);
-    private static _DEVICE_OPENCL_C_VERSION                            := new DeviceInfo($103D);
-    private static _DEVICE_LINKER_AVAILABLE                            := new DeviceInfo($103E);
-    private static _DEVICE_BUILT_IN_KERNELS                            := new DeviceInfo($103F);
-    private static _DEVICE_IMAGE_MAX_BUFFER_SIZE                       := new DeviceInfo($1040);
-    private static _DEVICE_IMAGE_MAX_ARRAY_SIZE                        := new DeviceInfo($1041);
-    private static _DEVICE_PARENT_DEVICE                               := new DeviceInfo($1042);
-    private static _DEVICE_PARTITION_MAX_SUB_DEVICES                   := new DeviceInfo($1043);
-    private static _DEVICE_PARTITION_PROPERTIES                        := new DeviceInfo($1044);
-    private static _DEVICE_PARTITION_AFFINITY_DOMAIN                   := new DeviceInfo($1045);
-    private static _DEVICE_PARTITION_TYPE                              := new DeviceInfo($1046);
-    private static _DEVICE_REFERENCE_COUNT                             := new DeviceInfo($1047);
-    private static _DEVICE_PREFERRED_INTEROP_USER_SYNC                 := new DeviceInfo($1048);
-    private static _DEVICE_PRINTF_BUFFER_SIZE                          := new DeviceInfo($1049);
-    private static _DEVICE_IMAGE_PITCH_ALIGNMENT                       := new DeviceInfo($104A);
-    private static _DEVICE_IMAGE_PITCH_ALIGNMENT_KHR                   := new DeviceInfo($104A);
-    private static _DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT                := new DeviceInfo($104B);
-    private static _DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT_KHR            := new DeviceInfo($104B);
-    private static _DEVICE_MAX_READ_WRITE_IMAGE_ARGS                   := new DeviceInfo($104C);
-    private static _DEVICE_MAX_GLOBAL_VARIABLE_SIZE                    := new DeviceInfo($104D);
-    private static _DEVICE_QUEUE_ON_DEVICE_PROPERTIES                  := new DeviceInfo($104E);
-    private static _DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE              := new DeviceInfo($104F);
-    private static _DEVICE_QUEUE_ON_DEVICE_MAX_SIZE                    := new DeviceInfo($1050);
-    private static _DEVICE_MAX_ON_DEVICE_QUEUES                        := new DeviceInfo($1051);
-    private static _DEVICE_MAX_ON_DEVICE_EVENTS                        := new DeviceInfo($1052);
-    private static _DEVICE_SVM_CAPABILITIES                            := new DeviceInfo($1053);
-    private static _DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE        := new DeviceInfo($1054);
-    private static _DEVICE_MAX_PIPE_ARGS                               := new DeviceInfo($1055);
-    private static _DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS                := new DeviceInfo($1056);
-    private static _DEVICE_PIPE_MAX_PACKET_SIZE                        := new DeviceInfo($1057);
-    private static _DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT         := new DeviceInfo($1058);
-    private static _DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT           := new DeviceInfo($1059);
-    private static _DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT            := new DeviceInfo($105A);
-    private static _DEVICE_IL_VERSION                                  := new DeviceInfo($105B);
-    private static _DEVICE_IL_VERSION_KHR                              := new DeviceInfo($105B);
-    private static _DEVICE_MAX_NUM_SUB_GROUPS                          := new DeviceInfo($105C);
-    private static _DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS      := new DeviceInfo($105D);
-    private static _DEVICE_NUMERIC_VERSION                             := new DeviceInfo($105E);
-    private static _DEVICE_NUMERIC_VERSION_KHR                         := new DeviceInfo($105E);
-    private static _DEVICE_OPENCL_C_NUMERIC_VERSION_KHR                := new DeviceInfo($105F);
-    private static _DEVICE_EXTENSIONS_WITH_VERSION                     := new DeviceInfo($1060);
-    private static _DEVICE_EXTENSIONS_WITH_VERSION_KHR                 := new DeviceInfo($1060);
-    private static _DEVICE_ILS_WITH_VERSION                            := new DeviceInfo($1061);
-    private static _DEVICE_ILS_WITH_VERSION_KHR                        := new DeviceInfo($1061);
-    private static _DEVICE_BUILT_IN_KERNELS_WITH_VERSION               := new DeviceInfo($1062);
-    private static _DEVICE_BUILT_IN_KERNELS_WITH_VERSION_KHR           := new DeviceInfo($1062);
-    private static _DEVICE_ATOMIC_MEMORY_CAPABILITIES                  := new DeviceInfo($1063);
-    private static _DEVICE_ATOMIC_FENCE_CAPABILITIES                   := new DeviceInfo($1064);
-    private static _DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT              := new DeviceInfo($1065);
-    private static _DEVICE_OPENCL_C_ALL_VERSIONS                       := new DeviceInfo($1066);
-    private static _DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE          := new DeviceInfo($1067);
-    private static _DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT     := new DeviceInfo($1068);
-    private static _DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT               := new DeviceInfo($1069);
-    private static _DEVICE_UUID_KHR                                    := new DeviceInfo($106A);
-    private static _DRIVER_UUID_KHR                                    := new DeviceInfo($106B);
-    private static _DEVICE_LUID_VALID_KHR                              := new DeviceInfo($106C);
-    private static _DEVICE_LUID_KHR                                    := new DeviceInfo($106D);
-    private static _DEVICE_NODE_MASK_KHR                               := new DeviceInfo($106E);
-    private static _DEVICE_OPENCL_C_FEATURES                           := new DeviceInfo($106F);
-    private static _DEVICE_DEVICE_ENQUEUE_CAPABILITIES                 := new DeviceInfo($1070);
-    private static _DEVICE_PIPE_SUPPORT                                := new DeviceInfo($1071);
-    private static _DEVICE_LATEST_CONFORMANCE_VERSION_PASSED           := new DeviceInfo($1072);
-    private static _DEVICE_TERMINATE_CAPABILITY_KHR                    := new DeviceInfo($2031);
-    private static _DEVICE_MAX_NAMED_BARRIER_COUNT_KHR                 := new DeviceInfo($2035);
-    private static _DEVICE_COMPUTE_CAPABILITY_MAJOR_NV                 := new DeviceInfo($4000);
-    private static _DEVICE_COMPUTE_CAPABILITY_MINOR_NV                 := new DeviceInfo($4001);
-    private static _DEVICE_REGISTERS_PER_BLOCK_NV                      := new DeviceInfo($4002);
-    private static _DEVICE_WARP_SIZE_NV                                := new DeviceInfo($4003);
-    private static _DEVICE_GPU_OVERLAP_NV                              := new DeviceInfo($4004);
-    private static _DEVICE_KERNEL_EXEC_TIMEOUT_NV                      := new DeviceInfo($4005);
-    private static _DEVICE_INTEGRATED_MEMORY_NV                        := new DeviceInfo($4006);
-    private static _DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD               := new DeviceInfo($4030);
-    private static _DEVICE_MAX_WORK_GROUP_SIZE_AMD                     := new DeviceInfo($4031);
-    private static _DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD          := new DeviceInfo($4033);
-    private static _DEVICE_PCIE_ID_AMD                                 := new DeviceInfo($4034);
-    private static _DEVICE_PROFILING_TIMER_OFFSET_AMD                  := new DeviceInfo($4036);
-    private static _DEVICE_TOPOLOGY_AMD                                := new DeviceInfo($4037);
-    private static _DEVICE_BOARD_NAME_AMD                              := new DeviceInfo($4038);
-    private static _DEVICE_GLOBAL_FREE_MEMORY_AMD                      := new DeviceInfo($4039);
-    private static _DEVICE_SIMD_PER_COMPUTE_UNIT_AMD                   := new DeviceInfo($4040);
-    private static _DEVICE_SIMD_WIDTH_AMD                              := new DeviceInfo($4041);
-    private static _DEVICE_SIMD_INSTRUCTION_WIDTH_AMD                  := new DeviceInfo($4042);
-    private static _DEVICE_WAVEFRONT_WIDTH_AMD                         := new DeviceInfo($4043);
-    private static _DEVICE_GLOBAL_MEM_CHANNELS_AMD                     := new DeviceInfo($4044);
-    private static _DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD                := new DeviceInfo($4045);
-    private static _DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD           := new DeviceInfo($4046);
-    private static _DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD         := new DeviceInfo($4047);
-    private static _DEVICE_LOCAL_MEM_BANKS_AMD                         := new DeviceInfo($4048);
-    private static _DEVICE_THREAD_TRACE_SUPPORTED_AMD                  := new DeviceInfo($4049);
-    private static _DEVICE_GFXIP_MAJOR_AMD                             := new DeviceInfo($404A);
-    private static _DEVICE_GFXIP_MINOR_AMD                             := new DeviceInfo($404B);
-    private static _DEVICE_AVAILABLE_ASYNC_QUEUES_AMD                  := new DeviceInfo($404C);
-    private static _DEVICE_PARENT_DEVICE_EXT                           := new DeviceInfo($4054);
-    private static _DEVICE_PARTITION_TYPES_EXT                         := new DeviceInfo($4055);
-    private static _DEVICE_AFFINITY_DOMAINS_EXT                        := new DeviceInfo($4056);
-    private static _DEVICE_REFERENCE_COUNT_EXT                         := new DeviceInfo($4057);
-    private static _DEVICE_PARTITION_STYLE_EXT                         := new DeviceInfo($4058);
-    private static _DEVICE_ME_VERSION_INTEL                            := new DeviceInfo($407E);
-    private static _DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM               := new DeviceInfo($40A0);
-    private static _DEVICE_PAGE_SIZE_QCOM                              := new DeviceInfo($40A1);
-    private static _DEVICE_SVM_CAPABILITIES_ARM                        := new DeviceInfo($40B6);
-    private static _DEVICE_COMPUTE_UNITS_BITFIELD_ARM                  := new DeviceInfo($40BF);
-    private static _DEVICE_SPIR_VERSIONS                               := new DeviceInfo($40E0);
-    private static _DEVICE_SIMULTANEOUS_INTEROPS_INTEL                 := new DeviceInfo($4104);
-    private static _DEVICE_NUM_SIMULTANEOUS_INTEROPS_INTEL             := new DeviceInfo($4105);
-    private static _DEVICE_SUB_GROUP_SIZES_INTEL                       := new DeviceInfo($4108);
-    private static _DEVICE_AVC_ME_VERSION_INTEL                        := new DeviceInfo($410B);
-    private static _DEVICE_AVC_ME_SUPPORTS_TEXTURE_SAMPLER_USE_INTEL   := new DeviceInfo($410C);
-    private static _DEVICE_AVC_ME_SUPPORTS_PREEMPTION_INTEL            := new DeviceInfo($410D);
-    private static _DEVICE_PLANAR_YUV_MAX_WIDTH_INTEL                  := new DeviceInfo($417E);
-    private static _DEVICE_PLANAR_YUV_MAX_HEIGHT_INTEL                 := new DeviceInfo($417F);
-    private static _DEVICE_HOST_MEM_CAPABILITIES_INTEL                 := new DeviceInfo($4190);
-    private static _DEVICE_DEVICE_MEM_CAPABILITIES_INTEL               := new DeviceInfo($4191);
-    private static _DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL := new DeviceInfo($4192);
-    private static _DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL  := new DeviceInfo($4193);
-    private static _DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL        := new DeviceInfo($4194);
-    private static _DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM        := new DeviceInfo($41E4);
-    private static _DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT          := new DeviceInfo($4230);
-    
-    public static property DEVICE_TYPE:                                        DeviceInfo read _DEVICE_TYPE;
-    public static property DEVICE_VENDOR_ID:                                   DeviceInfo read _DEVICE_VENDOR_ID;
-    public static property DEVICE_MAX_COMPUTE_UNITS:                           DeviceInfo read _DEVICE_MAX_COMPUTE_UNITS;
-    public static property DEVICE_MAX_WORK_ITEM_DIMENSIONS:                    DeviceInfo read _DEVICE_MAX_WORK_ITEM_DIMENSIONS;
-    public static property DEVICE_MAX_WORK_GROUP_SIZE:                         DeviceInfo read _DEVICE_MAX_WORK_GROUP_SIZE;
-    public static property DEVICE_MAX_WORK_ITEM_SIZES:                         DeviceInfo read _DEVICE_MAX_WORK_ITEM_SIZES;
-    public static property DEVICE_PREFERRED_VECTOR_WIDTH_CHAR:                 DeviceInfo read _DEVICE_PREFERRED_VECTOR_WIDTH_CHAR;
-    public static property DEVICE_PREFERRED_VECTOR_WIDTH_SHORT:                DeviceInfo read _DEVICE_PREFERRED_VECTOR_WIDTH_SHORT;
-    public static property DEVICE_PREFERRED_VECTOR_WIDTH_INT:                  DeviceInfo read _DEVICE_PREFERRED_VECTOR_WIDTH_INT;
-    public static property DEVICE_PREFERRED_VECTOR_WIDTH_LONG:                 DeviceInfo read _DEVICE_PREFERRED_VECTOR_WIDTH_LONG;
-    public static property DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT:                DeviceInfo read _DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT;
-    public static property DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE:               DeviceInfo read _DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE;
-    public static property DEVICE_MAX_CLOCK_FREQUENCY:                         DeviceInfo read _DEVICE_MAX_CLOCK_FREQUENCY;
-    public static property DEVICE_ADDRESS_BITS:                                DeviceInfo read _DEVICE_ADDRESS_BITS;
-    public static property DEVICE_MAX_READ_IMAGE_ARGS:                         DeviceInfo read _DEVICE_MAX_READ_IMAGE_ARGS;
-    public static property DEVICE_MAX_WRITE_IMAGE_ARGS:                        DeviceInfo read _DEVICE_MAX_WRITE_IMAGE_ARGS;
-    public static property DEVICE_MAX_MEM_ALLOC_SIZE:                          DeviceInfo read _DEVICE_MAX_MEM_ALLOC_SIZE;
-    public static property DEVICE_IMAGE2D_MAX_WIDTH:                           DeviceInfo read _DEVICE_IMAGE2D_MAX_WIDTH;
-    public static property DEVICE_IMAGE2D_MAX_HEIGHT:                          DeviceInfo read _DEVICE_IMAGE2D_MAX_HEIGHT;
-    public static property DEVICE_IMAGE3D_MAX_WIDTH:                           DeviceInfo read _DEVICE_IMAGE3D_MAX_WIDTH;
-    public static property DEVICE_IMAGE3D_MAX_HEIGHT:                          DeviceInfo read _DEVICE_IMAGE3D_MAX_HEIGHT;
-    public static property DEVICE_IMAGE3D_MAX_DEPTH:                           DeviceInfo read _DEVICE_IMAGE3D_MAX_DEPTH;
-    public static property DEVICE_IMAGE_SUPPORT:                               DeviceInfo read _DEVICE_IMAGE_SUPPORT;
-    public static property DEVICE_MAX_PARAMETER_SIZE:                          DeviceInfo read _DEVICE_MAX_PARAMETER_SIZE;
-    public static property DEVICE_MAX_SAMPLERS:                                DeviceInfo read _DEVICE_MAX_SAMPLERS;
-    public static property DEVICE_MEM_BASE_ADDR_ALIGN:                         DeviceInfo read _DEVICE_MEM_BASE_ADDR_ALIGN;
-    public static property DEVICE_MIN_DATA_TYPE_ALIGN_SIZE:                    DeviceInfo read _DEVICE_MIN_DATA_TYPE_ALIGN_SIZE;
-    public static property DEVICE_SINGLE_FP_CONFIG:                            DeviceInfo read _DEVICE_SINGLE_FP_CONFIG;
-    public static property DEVICE_GLOBAL_MEM_CACHE_TYPE:                       DeviceInfo read _DEVICE_GLOBAL_MEM_CACHE_TYPE;
-    public static property DEVICE_GLOBAL_MEM_CACHELINE_SIZE:                   DeviceInfo read _DEVICE_GLOBAL_MEM_CACHELINE_SIZE;
-    public static property DEVICE_GLOBAL_MEM_CACHE_SIZE:                       DeviceInfo read _DEVICE_GLOBAL_MEM_CACHE_SIZE;
-    public static property DEVICE_GLOBAL_MEM_SIZE:                             DeviceInfo read _DEVICE_GLOBAL_MEM_SIZE;
-    public static property DEVICE_MAX_CONSTANT_BUFFER_SIZE:                    DeviceInfo read _DEVICE_MAX_CONSTANT_BUFFER_SIZE;
-    public static property DEVICE_MAX_CONSTANT_ARGS:                           DeviceInfo read _DEVICE_MAX_CONSTANT_ARGS;
-    public static property DEVICE_LOCAL_MEM_TYPE:                              DeviceInfo read _DEVICE_LOCAL_MEM_TYPE;
-    public static property DEVICE_LOCAL_MEM_SIZE:                              DeviceInfo read _DEVICE_LOCAL_MEM_SIZE;
-    public static property DEVICE_ERROR_CORRECTION_SUPPORT:                    DeviceInfo read _DEVICE_ERROR_CORRECTION_SUPPORT;
-    public static property DEVICE_PROFILING_TIMER_RESOLUTION:                  DeviceInfo read _DEVICE_PROFILING_TIMER_RESOLUTION;
-    public static property DEVICE_ENDIAN_LITTLE:                               DeviceInfo read _DEVICE_ENDIAN_LITTLE;
-    public static property DEVICE_AVAILABLE:                                   DeviceInfo read _DEVICE_AVAILABLE;
-    public static property DEVICE_COMPILER_AVAILABLE:                          DeviceInfo read _DEVICE_COMPILER_AVAILABLE;
-    public static property DEVICE_EXECUTION_CAPABILITIES:                      DeviceInfo read _DEVICE_EXECUTION_CAPABILITIES;
-    public static property DEVICE_QUEUE_ON_HOST_PROPERTIES:                    DeviceInfo read _DEVICE_QUEUE_ON_HOST_PROPERTIES;
-    public static property DEVICE_QUEUE_PROPERTIES:                            DeviceInfo read _DEVICE_QUEUE_PROPERTIES;
-    public static property DEVICE_NAME:                                        DeviceInfo read _DEVICE_NAME;
-    public static property DEVICE_VENDOR:                                      DeviceInfo read _DEVICE_VENDOR;
-    public static property DRIVER_VERSION:                                     DeviceInfo read _DRIVER_VERSION;
-    public static property DEVICE_PROFILE:                                     DeviceInfo read _DEVICE_PROFILE;
-    public static property DEVICE_VERSION:                                     DeviceInfo read _DEVICE_VERSION;
-    public static property DEVICE_EXTENSIONS:                                  DeviceInfo read _DEVICE_EXTENSIONS;
-    public static property DEVICE_PLATFORM:                                    DeviceInfo read _DEVICE_PLATFORM;
-    public static property DEVICE_DOUBLE_FP_CONFIG:                            DeviceInfo read _DEVICE_DOUBLE_FP_CONFIG;
-    public static property DEVICE_HALF_FP_CONFIG:                              DeviceInfo read _DEVICE_HALF_FP_CONFIG;
-    public static property DEVICE_PREFERRED_VECTOR_WIDTH_HALF:                 DeviceInfo read _DEVICE_PREFERRED_VECTOR_WIDTH_HALF;
-    public static property DEVICE_HOST_UNIFIED_MEMORY:                         DeviceInfo read _DEVICE_HOST_UNIFIED_MEMORY;
-    public static property DEVICE_NATIVE_VECTOR_WIDTH_CHAR:                    DeviceInfo read _DEVICE_NATIVE_VECTOR_WIDTH_CHAR;
-    public static property DEVICE_NATIVE_VECTOR_WIDTH_SHORT:                   DeviceInfo read _DEVICE_NATIVE_VECTOR_WIDTH_SHORT;
-    public static property DEVICE_NATIVE_VECTOR_WIDTH_INT:                     DeviceInfo read _DEVICE_NATIVE_VECTOR_WIDTH_INT;
-    public static property DEVICE_NATIVE_VECTOR_WIDTH_LONG:                    DeviceInfo read _DEVICE_NATIVE_VECTOR_WIDTH_LONG;
-    public static property DEVICE_NATIVE_VECTOR_WIDTH_FLOAT:                   DeviceInfo read _DEVICE_NATIVE_VECTOR_WIDTH_FLOAT;
-    public static property DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE:                  DeviceInfo read _DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE;
-    public static property DEVICE_NATIVE_VECTOR_WIDTH_HALF:                    DeviceInfo read _DEVICE_NATIVE_VECTOR_WIDTH_HALF;
-    public static property DEVICE_OPENCL_C_VERSION:                            DeviceInfo read _DEVICE_OPENCL_C_VERSION;
-    public static property DEVICE_LINKER_AVAILABLE:                            DeviceInfo read _DEVICE_LINKER_AVAILABLE;
-    public static property DEVICE_BUILT_IN_KERNELS:                            DeviceInfo read _DEVICE_BUILT_IN_KERNELS;
-    public static property DEVICE_IMAGE_MAX_BUFFER_SIZE:                       DeviceInfo read _DEVICE_IMAGE_MAX_BUFFER_SIZE;
-    public static property DEVICE_IMAGE_MAX_ARRAY_SIZE:                        DeviceInfo read _DEVICE_IMAGE_MAX_ARRAY_SIZE;
-    public static property DEVICE_PARENT_DEVICE:                               DeviceInfo read _DEVICE_PARENT_DEVICE;
-    public static property DEVICE_PARTITION_MAX_SUB_DEVICES:                   DeviceInfo read _DEVICE_PARTITION_MAX_SUB_DEVICES;
-    public static property DEVICE_PARTITION_PROPERTIES:                        DeviceInfo read _DEVICE_PARTITION_PROPERTIES;
-    public static property DEVICE_PARTITION_AFFINITY_DOMAIN:                   DeviceInfo read _DEVICE_PARTITION_AFFINITY_DOMAIN;
-    public static property DEVICE_PARTITION_TYPE:                              DeviceInfo read _DEVICE_PARTITION_TYPE;
-    public static property DEVICE_REFERENCE_COUNT:                             DeviceInfo read _DEVICE_REFERENCE_COUNT;
-    public static property DEVICE_PREFERRED_INTEROP_USER_SYNC:                 DeviceInfo read _DEVICE_PREFERRED_INTEROP_USER_SYNC;
-    public static property DEVICE_PRINTF_BUFFER_SIZE:                          DeviceInfo read _DEVICE_PRINTF_BUFFER_SIZE;
-    public static property DEVICE_IMAGE_PITCH_ALIGNMENT:                       DeviceInfo read _DEVICE_IMAGE_PITCH_ALIGNMENT;
-    public static property DEVICE_IMAGE_PITCH_ALIGNMENT_KHR:                   DeviceInfo read _DEVICE_IMAGE_PITCH_ALIGNMENT_KHR;
-    public static property DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT:                DeviceInfo read _DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT;
-    public static property DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT_KHR:            DeviceInfo read _DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT_KHR;
-    public static property DEVICE_MAX_READ_WRITE_IMAGE_ARGS:                   DeviceInfo read _DEVICE_MAX_READ_WRITE_IMAGE_ARGS;
-    public static property DEVICE_MAX_GLOBAL_VARIABLE_SIZE:                    DeviceInfo read _DEVICE_MAX_GLOBAL_VARIABLE_SIZE;
-    public static property DEVICE_QUEUE_ON_DEVICE_PROPERTIES:                  DeviceInfo read _DEVICE_QUEUE_ON_DEVICE_PROPERTIES;
-    public static property DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE:              DeviceInfo read _DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE;
-    public static property DEVICE_QUEUE_ON_DEVICE_MAX_SIZE:                    DeviceInfo read _DEVICE_QUEUE_ON_DEVICE_MAX_SIZE;
-    public static property DEVICE_MAX_ON_DEVICE_QUEUES:                        DeviceInfo read _DEVICE_MAX_ON_DEVICE_QUEUES;
-    public static property DEVICE_MAX_ON_DEVICE_EVENTS:                        DeviceInfo read _DEVICE_MAX_ON_DEVICE_EVENTS;
-    public static property DEVICE_SVM_CAPABILITIES:                            DeviceInfo read _DEVICE_SVM_CAPABILITIES;
-    public static property DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE:        DeviceInfo read _DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE;
-    public static property DEVICE_MAX_PIPE_ARGS:                               DeviceInfo read _DEVICE_MAX_PIPE_ARGS;
-    public static property DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS:                DeviceInfo read _DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS;
-    public static property DEVICE_PIPE_MAX_PACKET_SIZE:                        DeviceInfo read _DEVICE_PIPE_MAX_PACKET_SIZE;
-    public static property DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT:         DeviceInfo read _DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT;
-    public static property DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT:           DeviceInfo read _DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT;
-    public static property DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT:            DeviceInfo read _DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT;
-    public static property DEVICE_IL_VERSION:                                  DeviceInfo read _DEVICE_IL_VERSION;
-    public static property DEVICE_IL_VERSION_KHR:                              DeviceInfo read _DEVICE_IL_VERSION_KHR;
-    public static property DEVICE_MAX_NUM_SUB_GROUPS:                          DeviceInfo read _DEVICE_MAX_NUM_SUB_GROUPS;
-    public static property DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS:      DeviceInfo read _DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS;
-    public static property DEVICE_NUMERIC_VERSION:                             DeviceInfo read _DEVICE_NUMERIC_VERSION;
-    public static property DEVICE_NUMERIC_VERSION_KHR:                         DeviceInfo read _DEVICE_NUMERIC_VERSION_KHR;
-    public static property DEVICE_OPENCL_C_NUMERIC_VERSION_KHR:                DeviceInfo read _DEVICE_OPENCL_C_NUMERIC_VERSION_KHR;
-    public static property DEVICE_EXTENSIONS_WITH_VERSION:                     DeviceInfo read _DEVICE_EXTENSIONS_WITH_VERSION;
-    public static property DEVICE_EXTENSIONS_WITH_VERSION_KHR:                 DeviceInfo read _DEVICE_EXTENSIONS_WITH_VERSION_KHR;
-    public static property DEVICE_ILS_WITH_VERSION:                            DeviceInfo read _DEVICE_ILS_WITH_VERSION;
-    public static property DEVICE_ILS_WITH_VERSION_KHR:                        DeviceInfo read _DEVICE_ILS_WITH_VERSION_KHR;
-    public static property DEVICE_BUILT_IN_KERNELS_WITH_VERSION:               DeviceInfo read _DEVICE_BUILT_IN_KERNELS_WITH_VERSION;
-    public static property DEVICE_BUILT_IN_KERNELS_WITH_VERSION_KHR:           DeviceInfo read _DEVICE_BUILT_IN_KERNELS_WITH_VERSION_KHR;
-    public static property DEVICE_ATOMIC_MEMORY_CAPABILITIES:                  DeviceInfo read _DEVICE_ATOMIC_MEMORY_CAPABILITIES;
-    public static property DEVICE_ATOMIC_FENCE_CAPABILITIES:                   DeviceInfo read _DEVICE_ATOMIC_FENCE_CAPABILITIES;
-    public static property DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT:              DeviceInfo read _DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT;
-    public static property DEVICE_OPENCL_C_ALL_VERSIONS:                       DeviceInfo read _DEVICE_OPENCL_C_ALL_VERSIONS;
-    public static property DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE:          DeviceInfo read _DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE;
-    public static property DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT:     DeviceInfo read _DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT;
-    public static property DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT:               DeviceInfo read _DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT;
-    public static property DEVICE_UUID_KHR:                                    DeviceInfo read _DEVICE_UUID_KHR;
-    public static property DRIVER_UUID_KHR:                                    DeviceInfo read _DRIVER_UUID_KHR;
-    public static property DEVICE_LUID_VALID_KHR:                              DeviceInfo read _DEVICE_LUID_VALID_KHR;
-    public static property DEVICE_LUID_KHR:                                    DeviceInfo read _DEVICE_LUID_KHR;
-    public static property DEVICE_NODE_MASK_KHR:                               DeviceInfo read _DEVICE_NODE_MASK_KHR;
-    public static property DEVICE_OPENCL_C_FEATURES:                           DeviceInfo read _DEVICE_OPENCL_C_FEATURES;
-    public static property DEVICE_DEVICE_ENQUEUE_CAPABILITIES:                 DeviceInfo read _DEVICE_DEVICE_ENQUEUE_CAPABILITIES;
-    public static property DEVICE_PIPE_SUPPORT:                                DeviceInfo read _DEVICE_PIPE_SUPPORT;
-    public static property DEVICE_LATEST_CONFORMANCE_VERSION_PASSED:           DeviceInfo read _DEVICE_LATEST_CONFORMANCE_VERSION_PASSED;
-    public static property DEVICE_TERMINATE_CAPABILITY_KHR:                    DeviceInfo read _DEVICE_TERMINATE_CAPABILITY_KHR;
-    public static property DEVICE_MAX_NAMED_BARRIER_COUNT_KHR:                 DeviceInfo read _DEVICE_MAX_NAMED_BARRIER_COUNT_KHR;
-    public static property DEVICE_COMPUTE_CAPABILITY_MAJOR_NV:                 DeviceInfo read _DEVICE_COMPUTE_CAPABILITY_MAJOR_NV;
-    public static property DEVICE_COMPUTE_CAPABILITY_MINOR_NV:                 DeviceInfo read _DEVICE_COMPUTE_CAPABILITY_MINOR_NV;
-    public static property DEVICE_REGISTERS_PER_BLOCK_NV:                      DeviceInfo read _DEVICE_REGISTERS_PER_BLOCK_NV;
-    public static property DEVICE_WARP_SIZE_NV:                                DeviceInfo read _DEVICE_WARP_SIZE_NV;
-    public static property DEVICE_GPU_OVERLAP_NV:                              DeviceInfo read _DEVICE_GPU_OVERLAP_NV;
-    public static property DEVICE_KERNEL_EXEC_TIMEOUT_NV:                      DeviceInfo read _DEVICE_KERNEL_EXEC_TIMEOUT_NV;
-    public static property DEVICE_INTEGRATED_MEMORY_NV:                        DeviceInfo read _DEVICE_INTEGRATED_MEMORY_NV;
-    public static property DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD:               DeviceInfo read _DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD;
-    public static property DEVICE_MAX_WORK_GROUP_SIZE_AMD:                     DeviceInfo read _DEVICE_MAX_WORK_GROUP_SIZE_AMD;
-    public static property DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD:          DeviceInfo read _DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD;
-    public static property DEVICE_PCIE_ID_AMD:                                 DeviceInfo read _DEVICE_PCIE_ID_AMD;
-    public static property DEVICE_PROFILING_TIMER_OFFSET_AMD:                  DeviceInfo read _DEVICE_PROFILING_TIMER_OFFSET_AMD;
-    public static property DEVICE_TOPOLOGY_AMD:                                DeviceInfo read _DEVICE_TOPOLOGY_AMD;
-    public static property DEVICE_BOARD_NAME_AMD:                              DeviceInfo read _DEVICE_BOARD_NAME_AMD;
-    public static property DEVICE_GLOBAL_FREE_MEMORY_AMD:                      DeviceInfo read _DEVICE_GLOBAL_FREE_MEMORY_AMD;
-    public static property DEVICE_SIMD_PER_COMPUTE_UNIT_AMD:                   DeviceInfo read _DEVICE_SIMD_PER_COMPUTE_UNIT_AMD;
-    public static property DEVICE_SIMD_WIDTH_AMD:                              DeviceInfo read _DEVICE_SIMD_WIDTH_AMD;
-    public static property DEVICE_SIMD_INSTRUCTION_WIDTH_AMD:                  DeviceInfo read _DEVICE_SIMD_INSTRUCTION_WIDTH_AMD;
-    public static property DEVICE_WAVEFRONT_WIDTH_AMD:                         DeviceInfo read _DEVICE_WAVEFRONT_WIDTH_AMD;
-    public static property DEVICE_GLOBAL_MEM_CHANNELS_AMD:                     DeviceInfo read _DEVICE_GLOBAL_MEM_CHANNELS_AMD;
-    public static property DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD:                DeviceInfo read _DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD;
-    public static property DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD:           DeviceInfo read _DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD;
-    public static property DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD:         DeviceInfo read _DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD;
-    public static property DEVICE_LOCAL_MEM_BANKS_AMD:                         DeviceInfo read _DEVICE_LOCAL_MEM_BANKS_AMD;
-    public static property DEVICE_THREAD_TRACE_SUPPORTED_AMD:                  DeviceInfo read _DEVICE_THREAD_TRACE_SUPPORTED_AMD;
-    public static property DEVICE_GFXIP_MAJOR_AMD:                             DeviceInfo read _DEVICE_GFXIP_MAJOR_AMD;
-    public static property DEVICE_GFXIP_MINOR_AMD:                             DeviceInfo read _DEVICE_GFXIP_MINOR_AMD;
-    public static property DEVICE_AVAILABLE_ASYNC_QUEUES_AMD:                  DeviceInfo read _DEVICE_AVAILABLE_ASYNC_QUEUES_AMD;
-    public static property DEVICE_PARENT_DEVICE_EXT:                           DeviceInfo read _DEVICE_PARENT_DEVICE_EXT;
-    public static property DEVICE_PARTITION_TYPES_EXT:                         DeviceInfo read _DEVICE_PARTITION_TYPES_EXT;
-    public static property DEVICE_AFFINITY_DOMAINS_EXT:                        DeviceInfo read _DEVICE_AFFINITY_DOMAINS_EXT;
-    public static property DEVICE_REFERENCE_COUNT_EXT:                         DeviceInfo read _DEVICE_REFERENCE_COUNT_EXT;
-    public static property DEVICE_PARTITION_STYLE_EXT:                         DeviceInfo read _DEVICE_PARTITION_STYLE_EXT;
-    public static property DEVICE_ME_VERSION_INTEL:                            DeviceInfo read _DEVICE_ME_VERSION_INTEL;
-    public static property DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM:               DeviceInfo read _DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM;
-    public static property DEVICE_PAGE_SIZE_QCOM:                              DeviceInfo read _DEVICE_PAGE_SIZE_QCOM;
-    public static property DEVICE_SVM_CAPABILITIES_ARM:                        DeviceInfo read _DEVICE_SVM_CAPABILITIES_ARM;
-    public static property DEVICE_COMPUTE_UNITS_BITFIELD_ARM:                  DeviceInfo read _DEVICE_COMPUTE_UNITS_BITFIELD_ARM;
-    public static property DEVICE_SPIR_VERSIONS:                               DeviceInfo read _DEVICE_SPIR_VERSIONS;
-    public static property DEVICE_SIMULTANEOUS_INTEROPS_INTEL:                 DeviceInfo read _DEVICE_SIMULTANEOUS_INTEROPS_INTEL;
-    public static property DEVICE_NUM_SIMULTANEOUS_INTEROPS_INTEL:             DeviceInfo read _DEVICE_NUM_SIMULTANEOUS_INTEROPS_INTEL;
-    public static property DEVICE_SUB_GROUP_SIZES_INTEL:                       DeviceInfo read _DEVICE_SUB_GROUP_SIZES_INTEL;
-    public static property DEVICE_AVC_ME_VERSION_INTEL:                        DeviceInfo read _DEVICE_AVC_ME_VERSION_INTEL;
-    public static property DEVICE_AVC_ME_SUPPORTS_TEXTURE_SAMPLER_USE_INTEL:   DeviceInfo read _DEVICE_AVC_ME_SUPPORTS_TEXTURE_SAMPLER_USE_INTEL;
-    public static property DEVICE_AVC_ME_SUPPORTS_PREEMPTION_INTEL:            DeviceInfo read _DEVICE_AVC_ME_SUPPORTS_PREEMPTION_INTEL;
-    public static property DEVICE_PLANAR_YUV_MAX_WIDTH_INTEL:                  DeviceInfo read _DEVICE_PLANAR_YUV_MAX_WIDTH_INTEL;
-    public static property DEVICE_PLANAR_YUV_MAX_HEIGHT_INTEL:                 DeviceInfo read _DEVICE_PLANAR_YUV_MAX_HEIGHT_INTEL;
-    public static property DEVICE_HOST_MEM_CAPABILITIES_INTEL:                 DeviceInfo read _DEVICE_HOST_MEM_CAPABILITIES_INTEL;
-    public static property DEVICE_DEVICE_MEM_CAPABILITIES_INTEL:               DeviceInfo read _DEVICE_DEVICE_MEM_CAPABILITIES_INTEL;
-    public static property DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL: DeviceInfo read _DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL;
-    public static property DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL:  DeviceInfo read _DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL;
-    public static property DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL:        DeviceInfo read _DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL;
-    public static property DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM:        DeviceInfo read _DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM;
-    public static property DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT:          DeviceInfo read _DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT;
+    public static property DEVICE_TYPE:                                        DeviceInfo read new DeviceInfo($1000);
+    public static property DEVICE_VENDOR_ID:                                   DeviceInfo read new DeviceInfo($1001);
+    public static property DEVICE_MAX_COMPUTE_UNITS:                           DeviceInfo read new DeviceInfo($1002);
+    public static property DEVICE_MAX_WORK_ITEM_DIMENSIONS:                    DeviceInfo read new DeviceInfo($1003);
+    public static property DEVICE_MAX_WORK_GROUP_SIZE:                         DeviceInfo read new DeviceInfo($1004);
+    public static property DEVICE_MAX_WORK_ITEM_SIZES:                         DeviceInfo read new DeviceInfo($1005);
+    public static property DEVICE_PREFERRED_VECTOR_WIDTH_CHAR:                 DeviceInfo read new DeviceInfo($1006);
+    public static property DEVICE_PREFERRED_VECTOR_WIDTH_SHORT:                DeviceInfo read new DeviceInfo($1007);
+    public static property DEVICE_PREFERRED_VECTOR_WIDTH_INT:                  DeviceInfo read new DeviceInfo($1008);
+    public static property DEVICE_PREFERRED_VECTOR_WIDTH_LONG:                 DeviceInfo read new DeviceInfo($1009);
+    public static property DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT:                DeviceInfo read new DeviceInfo($100A);
+    public static property DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE:               DeviceInfo read new DeviceInfo($100B);
+    public static property DEVICE_MAX_CLOCK_FREQUENCY:                         DeviceInfo read new DeviceInfo($100C);
+    public static property DEVICE_ADDRESS_BITS:                                DeviceInfo read new DeviceInfo($100D);
+    public static property DEVICE_MAX_READ_IMAGE_ARGS:                         DeviceInfo read new DeviceInfo($100E);
+    public static property DEVICE_MAX_WRITE_IMAGE_ARGS:                        DeviceInfo read new DeviceInfo($100F);
+    public static property DEVICE_MAX_MEM_ALLOC_SIZE:                          DeviceInfo read new DeviceInfo($1010);
+    public static property DEVICE_IMAGE2D_MAX_WIDTH:                           DeviceInfo read new DeviceInfo($1011);
+    public static property DEVICE_IMAGE2D_MAX_HEIGHT:                          DeviceInfo read new DeviceInfo($1012);
+    public static property DEVICE_IMAGE3D_MAX_WIDTH:                           DeviceInfo read new DeviceInfo($1013);
+    public static property DEVICE_IMAGE3D_MAX_HEIGHT:                          DeviceInfo read new DeviceInfo($1014);
+    public static property DEVICE_IMAGE3D_MAX_DEPTH:                           DeviceInfo read new DeviceInfo($1015);
+    public static property DEVICE_IMAGE_SUPPORT:                               DeviceInfo read new DeviceInfo($1016);
+    public static property DEVICE_MAX_PARAMETER_SIZE:                          DeviceInfo read new DeviceInfo($1017);
+    public static property DEVICE_MAX_SAMPLERS:                                DeviceInfo read new DeviceInfo($1018);
+    public static property DEVICE_MEM_BASE_ADDR_ALIGN:                         DeviceInfo read new DeviceInfo($1019);
+    public static property DEVICE_MIN_DATA_TYPE_ALIGN_SIZE:                    DeviceInfo read new DeviceInfo($101A);
+    public static property DEVICE_SINGLE_FP_CONFIG:                            DeviceInfo read new DeviceInfo($101B);
+    public static property DEVICE_GLOBAL_MEM_CACHE_TYPE:                       DeviceInfo read new DeviceInfo($101C);
+    public static property DEVICE_GLOBAL_MEM_CACHELINE_SIZE:                   DeviceInfo read new DeviceInfo($101D);
+    public static property DEVICE_GLOBAL_MEM_CACHE_SIZE:                       DeviceInfo read new DeviceInfo($101E);
+    public static property DEVICE_GLOBAL_MEM_SIZE:                             DeviceInfo read new DeviceInfo($101F);
+    public static property DEVICE_MAX_CONSTANT_BUFFER_SIZE:                    DeviceInfo read new DeviceInfo($1020);
+    public static property DEVICE_MAX_CONSTANT_ARGS:                           DeviceInfo read new DeviceInfo($1021);
+    public static property DEVICE_LOCAL_MEM_TYPE:                              DeviceInfo read new DeviceInfo($1022);
+    public static property DEVICE_LOCAL_MEM_SIZE:                              DeviceInfo read new DeviceInfo($1023);
+    public static property DEVICE_ERROR_CORRECTION_SUPPORT:                    DeviceInfo read new DeviceInfo($1024);
+    public static property DEVICE_PROFILING_TIMER_RESOLUTION:                  DeviceInfo read new DeviceInfo($1025);
+    public static property DEVICE_ENDIAN_LITTLE:                               DeviceInfo read new DeviceInfo($1026);
+    public static property DEVICE_AVAILABLE:                                   DeviceInfo read new DeviceInfo($1027);
+    public static property DEVICE_COMPILER_AVAILABLE:                          DeviceInfo read new DeviceInfo($1028);
+    public static property DEVICE_EXECUTION_CAPABILITIES:                      DeviceInfo read new DeviceInfo($1029);
+    public static property DEVICE_QUEUE_ON_HOST_PROPERTIES:                    DeviceInfo read new DeviceInfo($102A);
+    public static property DEVICE_QUEUE_PROPERTIES:                            DeviceInfo read new DeviceInfo($102A);
+    public static property DEVICE_NAME:                                        DeviceInfo read new DeviceInfo($102B);
+    public static property DEVICE_VENDOR:                                      DeviceInfo read new DeviceInfo($102C);
+    public static property DRIVER_VERSION:                                     DeviceInfo read new DeviceInfo($102D);
+    public static property DEVICE_PROFILE:                                     DeviceInfo read new DeviceInfo($102E);
+    public static property DEVICE_VERSION:                                     DeviceInfo read new DeviceInfo($102F);
+    public static property DEVICE_EXTENSIONS:                                  DeviceInfo read new DeviceInfo($1030);
+    public static property DEVICE_PLATFORM:                                    DeviceInfo read new DeviceInfo($1031);
+    public static property DEVICE_DOUBLE_FP_CONFIG:                            DeviceInfo read new DeviceInfo($1032);
+    public static property DEVICE_HALF_FP_CONFIG:                              DeviceInfo read new DeviceInfo($1033);
+    public static property DEVICE_PREFERRED_VECTOR_WIDTH_HALF:                 DeviceInfo read new DeviceInfo($1034);
+    public static property DEVICE_HOST_UNIFIED_MEMORY:                         DeviceInfo read new DeviceInfo($1035);
+    public static property DEVICE_NATIVE_VECTOR_WIDTH_CHAR:                    DeviceInfo read new DeviceInfo($1036);
+    public static property DEVICE_NATIVE_VECTOR_WIDTH_SHORT:                   DeviceInfo read new DeviceInfo($1037);
+    public static property DEVICE_NATIVE_VECTOR_WIDTH_INT:                     DeviceInfo read new DeviceInfo($1038);
+    public static property DEVICE_NATIVE_VECTOR_WIDTH_LONG:                    DeviceInfo read new DeviceInfo($1039);
+    public static property DEVICE_NATIVE_VECTOR_WIDTH_FLOAT:                   DeviceInfo read new DeviceInfo($103A);
+    public static property DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE:                  DeviceInfo read new DeviceInfo($103B);
+    public static property DEVICE_NATIVE_VECTOR_WIDTH_HALF:                    DeviceInfo read new DeviceInfo($103C);
+    public static property DEVICE_OPENCL_C_VERSION:                            DeviceInfo read new DeviceInfo($103D);
+    public static property DEVICE_LINKER_AVAILABLE:                            DeviceInfo read new DeviceInfo($103E);
+    public static property DEVICE_BUILT_IN_KERNELS:                            DeviceInfo read new DeviceInfo($103F);
+    public static property DEVICE_IMAGE_MAX_BUFFER_SIZE:                       DeviceInfo read new DeviceInfo($1040);
+    public static property DEVICE_IMAGE_MAX_ARRAY_SIZE:                        DeviceInfo read new DeviceInfo($1041);
+    public static property DEVICE_PARENT_DEVICE:                               DeviceInfo read new DeviceInfo($1042);
+    public static property DEVICE_PARTITION_MAX_SUB_DEVICES:                   DeviceInfo read new DeviceInfo($1043);
+    public static property DEVICE_PARTITION_PROPERTIES:                        DeviceInfo read new DeviceInfo($1044);
+    public static property DEVICE_PARTITION_AFFINITY_DOMAIN:                   DeviceInfo read new DeviceInfo($1045);
+    public static property DEVICE_PARTITION_TYPE:                              DeviceInfo read new DeviceInfo($1046);
+    public static property DEVICE_REFERENCE_COUNT:                             DeviceInfo read new DeviceInfo($1047);
+    public static property DEVICE_PREFERRED_INTEROP_USER_SYNC:                 DeviceInfo read new DeviceInfo($1048);
+    public static property DEVICE_PRINTF_BUFFER_SIZE:                          DeviceInfo read new DeviceInfo($1049);
+    public static property DEVICE_IMAGE_PITCH_ALIGNMENT:                       DeviceInfo read new DeviceInfo($104A);
+    public static property DEVICE_IMAGE_PITCH_ALIGNMENT_KHR:                   DeviceInfo read new DeviceInfo($104A);
+    public static property DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT:                DeviceInfo read new DeviceInfo($104B);
+    public static property DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT_KHR:            DeviceInfo read new DeviceInfo($104B);
+    public static property DEVICE_MAX_READ_WRITE_IMAGE_ARGS:                   DeviceInfo read new DeviceInfo($104C);
+    public static property DEVICE_MAX_GLOBAL_VARIABLE_SIZE:                    DeviceInfo read new DeviceInfo($104D);
+    public static property DEVICE_QUEUE_ON_DEVICE_PROPERTIES:                  DeviceInfo read new DeviceInfo($104E);
+    public static property DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE:              DeviceInfo read new DeviceInfo($104F);
+    public static property DEVICE_QUEUE_ON_DEVICE_MAX_SIZE:                    DeviceInfo read new DeviceInfo($1050);
+    public static property DEVICE_MAX_ON_DEVICE_QUEUES:                        DeviceInfo read new DeviceInfo($1051);
+    public static property DEVICE_MAX_ON_DEVICE_EVENTS:                        DeviceInfo read new DeviceInfo($1052);
+    public static property DEVICE_SVM_CAPABILITIES:                            DeviceInfo read new DeviceInfo($1053);
+    public static property DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE:        DeviceInfo read new DeviceInfo($1054);
+    public static property DEVICE_MAX_PIPE_ARGS:                               DeviceInfo read new DeviceInfo($1055);
+    public static property DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS:                DeviceInfo read new DeviceInfo($1056);
+    public static property DEVICE_PIPE_MAX_PACKET_SIZE:                        DeviceInfo read new DeviceInfo($1057);
+    public static property DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT:         DeviceInfo read new DeviceInfo($1058);
+    public static property DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT:           DeviceInfo read new DeviceInfo($1059);
+    public static property DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT:            DeviceInfo read new DeviceInfo($105A);
+    public static property DEVICE_IL_VERSION:                                  DeviceInfo read new DeviceInfo($105B);
+    public static property DEVICE_IL_VERSION_KHR:                              DeviceInfo read new DeviceInfo($105B);
+    public static property DEVICE_MAX_NUM_SUB_GROUPS:                          DeviceInfo read new DeviceInfo($105C);
+    public static property DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS:      DeviceInfo read new DeviceInfo($105D);
+    public static property DEVICE_NUMERIC_VERSION:                             DeviceInfo read new DeviceInfo($105E);
+    public static property DEVICE_NUMERIC_VERSION_KHR:                         DeviceInfo read new DeviceInfo($105E);
+    public static property DEVICE_OPENCL_C_NUMERIC_VERSION_KHR:                DeviceInfo read new DeviceInfo($105F);
+    public static property DEVICE_EXTENSIONS_WITH_VERSION:                     DeviceInfo read new DeviceInfo($1060);
+    public static property DEVICE_EXTENSIONS_WITH_VERSION_KHR:                 DeviceInfo read new DeviceInfo($1060);
+    public static property DEVICE_ILS_WITH_VERSION:                            DeviceInfo read new DeviceInfo($1061);
+    public static property DEVICE_ILS_WITH_VERSION_KHR:                        DeviceInfo read new DeviceInfo($1061);
+    public static property DEVICE_BUILT_IN_KERNELS_WITH_VERSION:               DeviceInfo read new DeviceInfo($1062);
+    public static property DEVICE_BUILT_IN_KERNELS_WITH_VERSION_KHR:           DeviceInfo read new DeviceInfo($1062);
+    public static property DEVICE_ATOMIC_MEMORY_CAPABILITIES:                  DeviceInfo read new DeviceInfo($1063);
+    public static property DEVICE_ATOMIC_FENCE_CAPABILITIES:                   DeviceInfo read new DeviceInfo($1064);
+    public static property DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT:              DeviceInfo read new DeviceInfo($1065);
+    public static property DEVICE_OPENCL_C_ALL_VERSIONS:                       DeviceInfo read new DeviceInfo($1066);
+    public static property DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE:          DeviceInfo read new DeviceInfo($1067);
+    public static property DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT:     DeviceInfo read new DeviceInfo($1068);
+    public static property DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT:               DeviceInfo read new DeviceInfo($1069);
+    public static property DEVICE_UUID_KHR:                                    DeviceInfo read new DeviceInfo($106A);
+    public static property DRIVER_UUID_KHR:                                    DeviceInfo read new DeviceInfo($106B);
+    public static property DEVICE_LUID_VALID_KHR:                              DeviceInfo read new DeviceInfo($106C);
+    public static property DEVICE_LUID_KHR:                                    DeviceInfo read new DeviceInfo($106D);
+    public static property DEVICE_NODE_MASK_KHR:                               DeviceInfo read new DeviceInfo($106E);
+    public static property DEVICE_OPENCL_C_FEATURES:                           DeviceInfo read new DeviceInfo($106F);
+    public static property DEVICE_DEVICE_ENQUEUE_CAPABILITIES:                 DeviceInfo read new DeviceInfo($1070);
+    public static property DEVICE_PIPE_SUPPORT:                                DeviceInfo read new DeviceInfo($1071);
+    public static property DEVICE_LATEST_CONFORMANCE_VERSION_PASSED:           DeviceInfo read new DeviceInfo($1072);
+    public static property DEVICE_TERMINATE_CAPABILITY_KHR:                    DeviceInfo read new DeviceInfo($2031);
+    public static property DEVICE_MAX_NAMED_BARRIER_COUNT_KHR:                 DeviceInfo read new DeviceInfo($2035);
+    public static property DEVICE_COMPUTE_CAPABILITY_MAJOR_NV:                 DeviceInfo read new DeviceInfo($4000);
+    public static property DEVICE_COMPUTE_CAPABILITY_MINOR_NV:                 DeviceInfo read new DeviceInfo($4001);
+    public static property DEVICE_REGISTERS_PER_BLOCK_NV:                      DeviceInfo read new DeviceInfo($4002);
+    public static property DEVICE_WARP_SIZE_NV:                                DeviceInfo read new DeviceInfo($4003);
+    public static property DEVICE_GPU_OVERLAP_NV:                              DeviceInfo read new DeviceInfo($4004);
+    public static property DEVICE_KERNEL_EXEC_TIMEOUT_NV:                      DeviceInfo read new DeviceInfo($4005);
+    public static property DEVICE_INTEGRATED_MEMORY_NV:                        DeviceInfo read new DeviceInfo($4006);
+    public static property DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD:               DeviceInfo read new DeviceInfo($4030);
+    public static property DEVICE_MAX_WORK_GROUP_SIZE_AMD:                     DeviceInfo read new DeviceInfo($4031);
+    public static property DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD:          DeviceInfo read new DeviceInfo($4033);
+    public static property DEVICE_PCIE_ID_AMD:                                 DeviceInfo read new DeviceInfo($4034);
+    public static property DEVICE_PROFILING_TIMER_OFFSET_AMD:                  DeviceInfo read new DeviceInfo($4036);
+    public static property DEVICE_TOPOLOGY_AMD:                                DeviceInfo read new DeviceInfo($4037);
+    public static property DEVICE_BOARD_NAME_AMD:                              DeviceInfo read new DeviceInfo($4038);
+    public static property DEVICE_GLOBAL_FREE_MEMORY_AMD:                      DeviceInfo read new DeviceInfo($4039);
+    public static property DEVICE_SIMD_PER_COMPUTE_UNIT_AMD:                   DeviceInfo read new DeviceInfo($4040);
+    public static property DEVICE_SIMD_WIDTH_AMD:                              DeviceInfo read new DeviceInfo($4041);
+    public static property DEVICE_SIMD_INSTRUCTION_WIDTH_AMD:                  DeviceInfo read new DeviceInfo($4042);
+    public static property DEVICE_WAVEFRONT_WIDTH_AMD:                         DeviceInfo read new DeviceInfo($4043);
+    public static property DEVICE_GLOBAL_MEM_CHANNELS_AMD:                     DeviceInfo read new DeviceInfo($4044);
+    public static property DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD:                DeviceInfo read new DeviceInfo($4045);
+    public static property DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD:           DeviceInfo read new DeviceInfo($4046);
+    public static property DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD:         DeviceInfo read new DeviceInfo($4047);
+    public static property DEVICE_LOCAL_MEM_BANKS_AMD:                         DeviceInfo read new DeviceInfo($4048);
+    public static property DEVICE_THREAD_TRACE_SUPPORTED_AMD:                  DeviceInfo read new DeviceInfo($4049);
+    public static property DEVICE_GFXIP_MAJOR_AMD:                             DeviceInfo read new DeviceInfo($404A);
+    public static property DEVICE_GFXIP_MINOR_AMD:                             DeviceInfo read new DeviceInfo($404B);
+    public static property DEVICE_AVAILABLE_ASYNC_QUEUES_AMD:                  DeviceInfo read new DeviceInfo($404C);
+    public static property DEVICE_PARENT_DEVICE_EXT:                           DeviceInfo read new DeviceInfo($4054);
+    public static property DEVICE_PARTITION_TYPES_EXT:                         DeviceInfo read new DeviceInfo($4055);
+    public static property DEVICE_AFFINITY_DOMAINS_EXT:                        DeviceInfo read new DeviceInfo($4056);
+    public static property DEVICE_REFERENCE_COUNT_EXT:                         DeviceInfo read new DeviceInfo($4057);
+    public static property DEVICE_PARTITION_STYLE_EXT:                         DeviceInfo read new DeviceInfo($4058);
+    public static property DEVICE_ME_VERSION_INTEL:                            DeviceInfo read new DeviceInfo($407E);
+    public static property DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM:               DeviceInfo read new DeviceInfo($40A0);
+    public static property DEVICE_PAGE_SIZE_QCOM:                              DeviceInfo read new DeviceInfo($40A1);
+    public static property DEVICE_SVM_CAPABILITIES_ARM:                        DeviceInfo read new DeviceInfo($40B6);
+    public static property DEVICE_COMPUTE_UNITS_BITFIELD_ARM:                  DeviceInfo read new DeviceInfo($40BF);
+    public static property DEVICE_SPIR_VERSIONS:                               DeviceInfo read new DeviceInfo($40E0);
+    public static property DEVICE_SIMULTANEOUS_INTEROPS_INTEL:                 DeviceInfo read new DeviceInfo($4104);
+    public static property DEVICE_NUM_SIMULTANEOUS_INTEROPS_INTEL:             DeviceInfo read new DeviceInfo($4105);
+    public static property DEVICE_SUB_GROUP_SIZES_INTEL:                       DeviceInfo read new DeviceInfo($4108);
+    public static property DEVICE_AVC_ME_VERSION_INTEL:                        DeviceInfo read new DeviceInfo($410B);
+    public static property DEVICE_AVC_ME_SUPPORTS_TEXTURE_SAMPLER_USE_INTEL:   DeviceInfo read new DeviceInfo($410C);
+    public static property DEVICE_AVC_ME_SUPPORTS_PREEMPTION_INTEL:            DeviceInfo read new DeviceInfo($410D);
+    public static property DEVICE_PLANAR_YUV_MAX_WIDTH_INTEL:                  DeviceInfo read new DeviceInfo($417E);
+    public static property DEVICE_PLANAR_YUV_MAX_HEIGHT_INTEL:                 DeviceInfo read new DeviceInfo($417F);
+    public static property DEVICE_HOST_MEM_CAPABILITIES_INTEL:                 DeviceInfo read new DeviceInfo($4190);
+    public static property DEVICE_DEVICE_MEM_CAPABILITIES_INTEL:               DeviceInfo read new DeviceInfo($4191);
+    public static property DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL: DeviceInfo read new DeviceInfo($4192);
+    public static property DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL:  DeviceInfo read new DeviceInfo($4193);
+    public static property DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL:        DeviceInfo read new DeviceInfo($4194);
+    public static property DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM:        DeviceInfo read new DeviceInfo($41E4);
+    public static property DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT:          DeviceInfo read new DeviceInfo($4230);
     
     public function ToString: string; override;
     begin
@@ -1578,11 +1187,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _LOCAL  := new DeviceLocalMemType($0001);
-    private static _GLOBAL := new DeviceLocalMemType($0002);
-    
-    public static property LOCAL:  DeviceLocalMemType read _LOCAL;
-    public static property GLOBAL: DeviceLocalMemType read _GLOBAL;
+    public static property LOCAL:  DeviceLocalMemType read new DeviceLocalMemType($0001);
+    public static property GLOBAL: DeviceLocalMemType read new DeviceLocalMemType($0002);
     
     public function ToString: string; override;
     begin
@@ -1597,13 +1203,9 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _NONE             := new DeviceMemCacheType($0000);
-    private static _READ_ONLY_CACHE  := new DeviceMemCacheType($0001);
-    private static _READ_WRITE_CACHE := new DeviceMemCacheType($0002);
-    
-    public static property NONE:             DeviceMemCacheType read _NONE;
-    public static property READ_ONLY_CACHE:  DeviceMemCacheType read _READ_ONLY_CACHE;
-    public static property READ_WRITE_CACHE: DeviceMemCacheType read _READ_WRITE_CACHE;
+    public static property NONE:             DeviceMemCacheType read new DeviceMemCacheType($0000);
+    public static property READ_ONLY_CACHE:  DeviceMemCacheType read new DeviceMemCacheType($0001);
+    public static property READ_WRITE_CACHE: DeviceMemCacheType read new DeviceMemCacheType($0002);
     
     public function ToString: string; override;
     begin
@@ -1620,15 +1222,10 @@ type
     public constructor(val: IntPtr) := self.val := val;
     public constructor(val: Int32) := self.val := new IntPtr(val);
     
-    private static _DEVICE_PARTITION_BY_COUNTS_LIST_END := new DevicePartitionProperty($0000);
-    private static _DEVICE_PARTITION_EQUALLY            := new DevicePartitionProperty($1086);
-    private static _DEVICE_PARTITION_BY_COUNTS          := new DevicePartitionProperty($1087);
-    private static _DEVICE_PARTITION_BY_AFFINITY_DOMAIN := new DevicePartitionProperty($1088);
-    
-    public static property DEVICE_PARTITION_BY_COUNTS_LIST_END: DevicePartitionProperty read _DEVICE_PARTITION_BY_COUNTS_LIST_END;
-    public static property DEVICE_PARTITION_EQUALLY:            DevicePartitionProperty read _DEVICE_PARTITION_EQUALLY;
-    public static property DEVICE_PARTITION_BY_COUNTS:          DevicePartitionProperty read _DEVICE_PARTITION_BY_COUNTS;
-    public static property DEVICE_PARTITION_BY_AFFINITY_DOMAIN: DevicePartitionProperty read _DEVICE_PARTITION_BY_AFFINITY_DOMAIN;
+    public static property DEVICE_PARTITION_BY_COUNTS_LIST_END: DevicePartitionProperty read new DevicePartitionProperty($0000);
+    public static property DEVICE_PARTITION_EQUALLY:            DevicePartitionProperty read new DevicePartitionProperty($1086);
+    public static property DEVICE_PARTITION_BY_COUNTS:          DevicePartitionProperty read new DevicePartitionProperty($1087);
+    public static property DEVICE_PARTITION_BY_AFFINITY_DOMAIN: DevicePartitionProperty read new DevicePartitionProperty($1088);
     
     public function ToString: string; override;
     begin
@@ -1645,33 +1242,19 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _PARTITION_BY_COUNTS_LIST_END_EXT        := new DevicePartitionPropertyExt($0000);
-    private static _PROPERTIES_LIST_END_EXT                 := new DevicePartitionPropertyExt($0000);
-    private static _AFFINITY_DOMAIN_L1_CACHE_EXT            := new DevicePartitionPropertyExt($0001);
-    private static _PARTITION_BY_NAMES_LIST_END_EXT         := new DevicePartitionPropertyExt(-1);
-    private static _AFFINITY_DOMAIN_L2_CACHE_EXT            := new DevicePartitionPropertyExt($0002);
-    private static _AFFINITY_DOMAIN_L3_CACHE_EXT            := new DevicePartitionPropertyExt($0003);
-    private static _AFFINITY_DOMAIN_L4_CACHE_EXT            := new DevicePartitionPropertyExt($0004);
-    private static _AFFINITY_DOMAIN_NUMA_EXT                := new DevicePartitionPropertyExt($0010);
-    private static _AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT    := new DevicePartitionPropertyExt($0100);
-    private static _DEVICE_PARTITION_EQUALLY_EXT            := new DevicePartitionPropertyExt($4050);
-    private static _DEVICE_PARTITION_BY_COUNTS_EXT          := new DevicePartitionPropertyExt($4051);
-    private static _DEVICE_PARTITION_BY_NAMES_EXT           := new DevicePartitionPropertyExt($4052);
-    private static _DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT := new DevicePartitionPropertyExt($4053);
-    
-    public static property PARTITION_BY_COUNTS_LIST_END_EXT:        DevicePartitionPropertyExt read _PARTITION_BY_COUNTS_LIST_END_EXT;
-    public static property PROPERTIES_LIST_END_EXT:                 DevicePartitionPropertyExt read _PROPERTIES_LIST_END_EXT;
-    public static property AFFINITY_DOMAIN_L1_CACHE_EXT:            DevicePartitionPropertyExt read _AFFINITY_DOMAIN_L1_CACHE_EXT;
-    public static property PARTITION_BY_NAMES_LIST_END_EXT:         DevicePartitionPropertyExt read _PARTITION_BY_NAMES_LIST_END_EXT;
-    public static property AFFINITY_DOMAIN_L2_CACHE_EXT:            DevicePartitionPropertyExt read _AFFINITY_DOMAIN_L2_CACHE_EXT;
-    public static property AFFINITY_DOMAIN_L3_CACHE_EXT:            DevicePartitionPropertyExt read _AFFINITY_DOMAIN_L3_CACHE_EXT;
-    public static property AFFINITY_DOMAIN_L4_CACHE_EXT:            DevicePartitionPropertyExt read _AFFINITY_DOMAIN_L4_CACHE_EXT;
-    public static property AFFINITY_DOMAIN_NUMA_EXT:                DevicePartitionPropertyExt read _AFFINITY_DOMAIN_NUMA_EXT;
-    public static property AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT:    DevicePartitionPropertyExt read _AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT;
-    public static property DEVICE_PARTITION_EQUALLY_EXT:            DevicePartitionPropertyExt read _DEVICE_PARTITION_EQUALLY_EXT;
-    public static property DEVICE_PARTITION_BY_COUNTS_EXT:          DevicePartitionPropertyExt read _DEVICE_PARTITION_BY_COUNTS_EXT;
-    public static property DEVICE_PARTITION_BY_NAMES_EXT:           DevicePartitionPropertyExt read _DEVICE_PARTITION_BY_NAMES_EXT;
-    public static property DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT: DevicePartitionPropertyExt read _DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT;
+    public static property PARTITION_BY_COUNTS_LIST_END_EXT:        DevicePartitionPropertyExt read new DevicePartitionPropertyExt($0000);
+    public static property PROPERTIES_LIST_END_EXT:                 DevicePartitionPropertyExt read new DevicePartitionPropertyExt($0000);
+    public static property AFFINITY_DOMAIN_L1_CACHE_EXT:            DevicePartitionPropertyExt read new DevicePartitionPropertyExt($0001);
+    public static property PARTITION_BY_NAMES_LIST_END_EXT:         DevicePartitionPropertyExt read new DevicePartitionPropertyExt(-1);
+    public static property AFFINITY_DOMAIN_L2_CACHE_EXT:            DevicePartitionPropertyExt read new DevicePartitionPropertyExt($0002);
+    public static property AFFINITY_DOMAIN_L3_CACHE_EXT:            DevicePartitionPropertyExt read new DevicePartitionPropertyExt($0003);
+    public static property AFFINITY_DOMAIN_L4_CACHE_EXT:            DevicePartitionPropertyExt read new DevicePartitionPropertyExt($0004);
+    public static property AFFINITY_DOMAIN_NUMA_EXT:                DevicePartitionPropertyExt read new DevicePartitionPropertyExt($0010);
+    public static property AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT:    DevicePartitionPropertyExt read new DevicePartitionPropertyExt($0100);
+    public static property DEVICE_PARTITION_EQUALLY_EXT:            DevicePartitionPropertyExt read new DevicePartitionPropertyExt($4050);
+    public static property DEVICE_PARTITION_BY_COUNTS_EXT:          DevicePartitionPropertyExt read new DevicePartitionPropertyExt($4051);
+    public static property DEVICE_PARTITION_BY_NAMES_EXT:           DevicePartitionPropertyExt read new DevicePartitionPropertyExt($4052);
+    public static property DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT: DevicePartitionPropertyExt read new DevicePartitionPropertyExt($4053);
     
     public function ToString: string; override;
     begin
@@ -1697,15 +1280,10 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _DEVICE_SVM_COARSE_GRAIN_BUFFER := new DeviceSVMCapabilities($0001);
-    private static _DEVICE_SVM_FINE_GRAIN_BUFFER   := new DeviceSVMCapabilities($0002);
-    private static _DEVICE_SVM_FINE_GRAIN_SYSTEM   := new DeviceSVMCapabilities($0004);
-    private static _DEVICE_SVM_ATOMICS             := new DeviceSVMCapabilities($0008);
-    
-    public static property DEVICE_SVM_COARSE_GRAIN_BUFFER: DeviceSVMCapabilities read _DEVICE_SVM_COARSE_GRAIN_BUFFER;
-    public static property DEVICE_SVM_FINE_GRAIN_BUFFER:   DeviceSVMCapabilities read _DEVICE_SVM_FINE_GRAIN_BUFFER;
-    public static property DEVICE_SVM_FINE_GRAIN_SYSTEM:   DeviceSVMCapabilities read _DEVICE_SVM_FINE_GRAIN_SYSTEM;
-    public static property DEVICE_SVM_ATOMICS:             DeviceSVMCapabilities read _DEVICE_SVM_ATOMICS;
+    public static property DEVICE_SVM_COARSE_GRAIN_BUFFER: DeviceSVMCapabilities read new DeviceSVMCapabilities($0001);
+    public static property DEVICE_SVM_FINE_GRAIN_BUFFER:   DeviceSVMCapabilities read new DeviceSVMCapabilities($0002);
+    public static property DEVICE_SVM_FINE_GRAIN_SYSTEM:   DeviceSVMCapabilities read new DeviceSVMCapabilities($0004);
+    public static property DEVICE_SVM_ATOMICS:             DeviceSVMCapabilities read new DeviceSVMCapabilities($0008);
     
     public static function operator+(f1,f2: DeviceSVMCapabilities) := new DeviceSVMCapabilities(f1.val or f2.val);
     public static function operator or(f1,f2: DeviceSVMCapabilities) := f1+f2;
@@ -1736,19 +1314,12 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _DEVICE_TYPE_DEFAULT     := new DeviceType($0001);
-    private static _DEVICE_TYPE_CPU         := new DeviceType($0002);
-    private static _DEVICE_TYPE_GPU         := new DeviceType($0004);
-    private static _DEVICE_TYPE_ACCELERATOR := new DeviceType($0008);
-    private static _DEVICE_TYPE_CUSTOM      := new DeviceType($0010);
-    private static _DEVICE_TYPE_ALL         := new DeviceType($FFFFFFFF);
-    
-    public static property DEVICE_TYPE_DEFAULT:     DeviceType read _DEVICE_TYPE_DEFAULT;
-    public static property DEVICE_TYPE_CPU:         DeviceType read _DEVICE_TYPE_CPU;
-    public static property DEVICE_TYPE_GPU:         DeviceType read _DEVICE_TYPE_GPU;
-    public static property DEVICE_TYPE_ACCELERATOR: DeviceType read _DEVICE_TYPE_ACCELERATOR;
-    public static property DEVICE_TYPE_CUSTOM:      DeviceType read _DEVICE_TYPE_CUSTOM;
-    public static property DEVICE_TYPE_ALL:         DeviceType read _DEVICE_TYPE_ALL;
+    public static property DEVICE_TYPE_DEFAULT:     DeviceType read new DeviceType($0001);
+    public static property DEVICE_TYPE_CPU:         DeviceType read new DeviceType($0002);
+    public static property DEVICE_TYPE_GPU:         DeviceType read new DeviceType($0004);
+    public static property DEVICE_TYPE_ACCELERATOR: DeviceType read new DeviceType($0008);
+    public static property DEVICE_TYPE_CUSTOM:      DeviceType read new DeviceType($0010);
+    public static property DEVICE_TYPE_ALL:         DeviceType read new DeviceType($FFFFFFFF);
     
     public static function operator+(f1,f2: DeviceType) := new DeviceType(f1.val or f2.val);
     public static function operator or(f1,f2: DeviceType) := f1+f2;
@@ -1783,11 +1354,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PREFERRED_DEVICES_FOR_DX9_INTEL := new Dx9DeviceSetIntel($4024);
-    private static _ALL_DEVICES_FOR_DX9_INTEL       := new Dx9DeviceSetIntel($4025);
-    
-    public static property PREFERRED_DEVICES_FOR_DX9_INTEL: Dx9DeviceSetIntel read _PREFERRED_DEVICES_FOR_DX9_INTEL;
-    public static property ALL_DEVICES_FOR_DX9_INTEL:       Dx9DeviceSetIntel read _ALL_DEVICES_FOR_DX9_INTEL;
+    public static property PREFERRED_DEVICES_FOR_DX9_INTEL: Dx9DeviceSetIntel read new Dx9DeviceSetIntel($4024);
+    public static property ALL_DEVICES_FOR_DX9_INTEL:       Dx9DeviceSetIntel read new Dx9DeviceSetIntel($4025);
     
     public function ToString: string; override;
     begin
@@ -1802,13 +1370,9 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _D3D9_DEVICE_INTEL   := new Dx9DeviceSourceIntel($4022);
-    private static _D3D9EX_DEVICE_INTEL := new Dx9DeviceSourceIntel($4070);
-    private static _DXVA_DEVICE_INTEL   := new Dx9DeviceSourceIntel($4071);
-    
-    public static property D3D9_DEVICE_INTEL:   Dx9DeviceSourceIntel read _D3D9_DEVICE_INTEL;
-    public static property D3D9EX_DEVICE_INTEL: Dx9DeviceSourceIntel read _D3D9EX_DEVICE_INTEL;
-    public static property DXVA_DEVICE_INTEL:   Dx9DeviceSourceIntel read _DXVA_DEVICE_INTEL;
+    public static property D3D9_DEVICE_INTEL:   Dx9DeviceSourceIntel read new Dx9DeviceSourceIntel($4022);
+    public static property D3D9EX_DEVICE_INTEL: Dx9DeviceSourceIntel read new Dx9DeviceSourceIntel($4070);
+    public static property DXVA_DEVICE_INTEL:   Dx9DeviceSourceIntel read new Dx9DeviceSourceIntel($4071);
     
     public function ToString: string; override;
     begin
@@ -1825,9 +1389,7 @@ type
     public constructor(val: IntPtr) := self.val := val;
     public constructor(val: Int32) := self.val := new IntPtr(val);
     
-    private static _EGL_YUV_PLANE_INTEL := new EglImagePropertiesKhr($4107);
-    
-    public static property EGL_YUV_PLANE_INTEL: EglImagePropertiesKhr read _EGL_YUV_PLANE_INTEL;
+    public static property EGL_YUV_PLANE_INTEL: EglImagePropertiesKhr read new EglImagePropertiesKhr($4107);
     
     public function ToString: string; override;
     begin
@@ -1841,203 +1403,104 @@ type
     public val: Int32;
     public constructor(val: Int32) := self.val := val;
     
-    private static _SUCCESS                                     := new ErrorCode($0000);
-    private static _DEVICE_NOT_FOUND                            := new ErrorCode(-1);
-    private static _DEVICE_NOT_AVAILABLE                        := new ErrorCode(-2);
-    private static _COMPILER_NOT_AVAILABLE                      := new ErrorCode(-3);
-    private static _MEM_OBJECT_ALLOCATION_FAILURE               := new ErrorCode(-4);
-    private static _OUT_OF_RESOURCES                            := new ErrorCode(-5);
-    private static _OUT_OF_HOST_MEMORY                          := new ErrorCode(-6);
-    private static _PROFILING_INFO_NOT_AVAILABLE                := new ErrorCode(-7);
-    private static _MEM_COPY_OVERLAP                            := new ErrorCode(-8);
-    private static _IMAGE_FORMAT_MISMATCH                       := new ErrorCode(-9);
-    private static _IMAGE_FORMAT_NOT_SUPPORTED                  := new ErrorCode(-10);
-    private static _BUILD_PROGRAM_FAILURE                       := new ErrorCode(-11);
-    private static _MAP_FAILURE                                 := new ErrorCode(-12);
-    private static _MISALIGNED_SUB_BUFFER_OFFSET                := new ErrorCode(-13);
-    private static _EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST   := new ErrorCode(-14);
-    private static _COMPILE_PROGRAM_FAILURE                     := new ErrorCode(-15);
-    private static _LINKER_NOT_AVAILABLE                        := new ErrorCode(-16);
-    private static _LINK_PROGRAM_FAILURE                        := new ErrorCode(-17);
-    private static _DEVICE_PARTITION_FAILED                     := new ErrorCode(-18);
-    private static _KERNEL_ARG_INFO_NOT_AVAILABLE               := new ErrorCode(-19);
-    private static _INVALID_VALUE                               := new ErrorCode(-30);
-    private static _INVALID_DEVICE_TYPE                         := new ErrorCode(-31);
-    private static _INVALID_PLATFORM                            := new ErrorCode(-32);
-    private static _INVALID_DEVICE                              := new ErrorCode(-33);
-    private static _INVALID_CONTEXT                             := new ErrorCode(-34);
-    private static _INVALID_QUEUE_PROPERTIES                    := new ErrorCode(-35);
-    private static _INVALID_COMMAND_QUEUE                       := new ErrorCode(-36);
-    private static _INVALID_HOST_PTR                            := new ErrorCode(-37);
-    private static _INVALID_MEM_OBJECT                          := new ErrorCode(-38);
-    private static _INVALID_IMAGE_FORMAT_DESCRIPTOR             := new ErrorCode(-39);
-    private static _INVALID_IMAGE_SIZE                          := new ErrorCode(-40);
-    private static _INVALID_SAMPLER                             := new ErrorCode(-41);
-    private static _INVALID_BINARY                              := new ErrorCode(-42);
-    private static _INVALID_BUILD_OPTIONS                       := new ErrorCode(-43);
-    private static _INVALID_PROGRAM                             := new ErrorCode(-44);
-    private static _INVALID_PROGRAM_EXECUTABLE                  := new ErrorCode(-45);
-    private static _INVALID_KERNEL_NAME                         := new ErrorCode(-46);
-    private static _INVALID_KERNEL_DEFINITION                   := new ErrorCode(-47);
-    private static _INVALID_KERNEL                              := new ErrorCode(-48);
-    private static _INVALID_ARG_INDEX                           := new ErrorCode(-49);
-    private static _INVALID_ARG_VALUE                           := new ErrorCode(-50);
-    private static _INVALID_ARG_SIZE                            := new ErrorCode(-51);
-    private static _INVALID_KERNEL_ARGS                         := new ErrorCode(-52);
-    private static _INVALID_WORK_DIMENSION                      := new ErrorCode(-53);
-    private static _INVALID_WORK_GROUP_SIZE                     := new ErrorCode(-54);
-    private static _INVALID_WORK_ITEM_SIZE                      := new ErrorCode(-55);
-    private static _INVALID_GLOBAL_OFFSET                       := new ErrorCode(-56);
-    private static _INVALID_EVENT_WAIT_LIST                     := new ErrorCode(-57);
-    private static _INVALID_EVENT                               := new ErrorCode(-58);
-    private static _INVALID_OPERATION                           := new ErrorCode(-59);
-    private static _INVALID_GL_OBJECT                           := new ErrorCode(-60);
-    private static _INVALID_BUFFER_SIZE                         := new ErrorCode(-61);
-    private static _INVALID_MIP_LEVEL                           := new ErrorCode(-62);
-    private static _INVALID_GLOBAL_WORK_SIZE                    := new ErrorCode(-63);
-    private static _INVALID_PROPERTY                            := new ErrorCode(-64);
-    private static _INVALID_IMAGE_DESCRIPTOR                    := new ErrorCode(-65);
-    private static _INVALID_COMPILER_OPTIONS                    := new ErrorCode(-66);
-    private static _INVALID_LINKER_OPTIONS                      := new ErrorCode(-67);
-    private static _INVALID_DEVICE_PARTITION_COUNT              := new ErrorCode(-68);
-    private static _INVALID_PIPE_SIZE                           := new ErrorCode(-69);
-    private static _INVALID_DEVICE_QUEUE                        := new ErrorCode(-70);
-    private static _INVALID_SPEC_ID                             := new ErrorCode(-71);
-    private static _MAX_SIZE_RESTRICTION_EXCEEDED               := new ErrorCode(-72);
-    private static _INVALID_GL_SHAREGROUP_REFERENCE_KHR         := new ErrorCode(-1000);
-    private static _PLATFORM_NOT_FOUND_KHR                      := new ErrorCode(-1001);
-    private static _INVALID_D3D10_DEVICE_KHR                    := new ErrorCode(-1002);
-    private static _INVALID_D3D10_RESOURCE_KHR                  := new ErrorCode(-1003);
-    private static _D3D10_RESOURCE_ALREADY_ACQUIRED_KHR         := new ErrorCode(-1004);
-    private static _D3D10_RESOURCE_NOT_ACQUIRED_KHR             := new ErrorCode(-1005);
-    private static _INVALID_D3D11_DEVICE_KHR                    := new ErrorCode(-1006);
-    private static _INVALID_D3D11_RESOURCE_KHR                  := new ErrorCode(-1007);
-    private static _D3D11_RESOURCE_ALREADY_ACQUIRED_KHR         := new ErrorCode(-1008);
-    private static _D3D11_RESOURCE_NOT_ACQUIRED_KHR             := new ErrorCode(-1009);
-    private static _INVALID_DX9_DEVICE_INTEL                    := new ErrorCode(-1010);
-    private static _INVALID_DX9_MEDIA_ADAPTER_KHR               := new ErrorCode(-1010);
-    private static _INVALID_DX9_MEDIA_SURFACE_KHR               := new ErrorCode(-1011);
-    private static _INVALID_DX9_RESOURCE_INTEL                  := new ErrorCode(-1011);
-    private static _DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR      := new ErrorCode(-1012);
-    private static _DX9_RESOURCE_ALREADY_ACQUIRED_INTEL         := new ErrorCode(-1012);
-    private static _DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR          := new ErrorCode(-1013);
-    private static _DX9_RESOURCE_NOT_ACQUIRED_INTEL             := new ErrorCode(-1013);
-    private static _DEVICE_PARTITION_FAILED_EXT                 := new ErrorCode(-1057);
-    private static _INVALID_PARTITION_COUNT_EXT                 := new ErrorCode(-1058);
-    private static _INVALID_PARTITION_NAME_EXT                  := new ErrorCode(-1059);
-    private static _EGL_RESOURCE_NOT_ACQUIRED_KHR               := new ErrorCode(-1092);
-    private static _INVALID_EGL_OBJECT_KHR                      := new ErrorCode(-1093);
-    private static _INVALID_ACCELERATOR_INTEL                   := new ErrorCode(-1094);
-    private static _INVALID_ACCELERATOR_TYPE_INTEL              := new ErrorCode(-1095);
-    private static _INVALID_ACCELERATOR_DESCRIPTOR_INTEL        := new ErrorCode(-1096);
-    private static _ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL        := new ErrorCode(-1097);
-    private static _INVALID_VA_API_MEDIA_ADAPTER_INTEL          := new ErrorCode(-1098);
-    private static _INVALID_VA_API_MEDIA_SURFACE_INTEL          := new ErrorCode(-1099);
-    private static _VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL := new ErrorCode(-1100);
-    private static _VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL     := new ErrorCode(-1101);
-    private static _PIPE_FULL_INTEL                             := new ErrorCode(-1106);
-    private static _PIPE_EMPTY_INTEL                            := new ErrorCode(-1107);
-    private static _CONTEXT_TERMINATED_KHR                      := new ErrorCode(-1121);
-    private static _NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE         := new ErrorCode(-9999);
-    
-    public static property SUCCESS:                                     ErrorCode read _SUCCESS;
-    public static property DEVICE_NOT_FOUND:                            ErrorCode read _DEVICE_NOT_FOUND;
-    public static property DEVICE_NOT_AVAILABLE:                        ErrorCode read _DEVICE_NOT_AVAILABLE;
-    public static property COMPILER_NOT_AVAILABLE:                      ErrorCode read _COMPILER_NOT_AVAILABLE;
-    public static property MEM_OBJECT_ALLOCATION_FAILURE:               ErrorCode read _MEM_OBJECT_ALLOCATION_FAILURE;
-    public static property OUT_OF_RESOURCES:                            ErrorCode read _OUT_OF_RESOURCES;
-    public static property OUT_OF_HOST_MEMORY:                          ErrorCode read _OUT_OF_HOST_MEMORY;
-    public static property PROFILING_INFO_NOT_AVAILABLE:                ErrorCode read _PROFILING_INFO_NOT_AVAILABLE;
-    public static property MEM_COPY_OVERLAP:                            ErrorCode read _MEM_COPY_OVERLAP;
-    public static property IMAGE_FORMAT_MISMATCH:                       ErrorCode read _IMAGE_FORMAT_MISMATCH;
-    public static property IMAGE_FORMAT_NOT_SUPPORTED:                  ErrorCode read _IMAGE_FORMAT_NOT_SUPPORTED;
-    public static property BUILD_PROGRAM_FAILURE:                       ErrorCode read _BUILD_PROGRAM_FAILURE;
-    public static property MAP_FAILURE:                                 ErrorCode read _MAP_FAILURE;
-    public static property MISALIGNED_SUB_BUFFER_OFFSET:                ErrorCode read _MISALIGNED_SUB_BUFFER_OFFSET;
-    public static property EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST:   ErrorCode read _EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST;
-    public static property COMPILE_PROGRAM_FAILURE:                     ErrorCode read _COMPILE_PROGRAM_FAILURE;
-    public static property LINKER_NOT_AVAILABLE:                        ErrorCode read _LINKER_NOT_AVAILABLE;
-    public static property LINK_PROGRAM_FAILURE:                        ErrorCode read _LINK_PROGRAM_FAILURE;
-    public static property DEVICE_PARTITION_FAILED:                     ErrorCode read _DEVICE_PARTITION_FAILED;
-    public static property KERNEL_ARG_INFO_NOT_AVAILABLE:               ErrorCode read _KERNEL_ARG_INFO_NOT_AVAILABLE;
-    public static property INVALID_VALUE:                               ErrorCode read _INVALID_VALUE;
-    public static property INVALID_DEVICE_TYPE:                         ErrorCode read _INVALID_DEVICE_TYPE;
-    public static property INVALID_PLATFORM:                            ErrorCode read _INVALID_PLATFORM;
-    public static property INVALID_DEVICE:                              ErrorCode read _INVALID_DEVICE;
-    public static property INVALID_CONTEXT:                             ErrorCode read _INVALID_CONTEXT;
-    public static property INVALID_QUEUE_PROPERTIES:                    ErrorCode read _INVALID_QUEUE_PROPERTIES;
-    public static property INVALID_COMMAND_QUEUE:                       ErrorCode read _INVALID_COMMAND_QUEUE;
-    public static property INVALID_HOST_PTR:                            ErrorCode read _INVALID_HOST_PTR;
-    public static property INVALID_MEM_OBJECT:                          ErrorCode read _INVALID_MEM_OBJECT;
-    public static property INVALID_IMAGE_FORMAT_DESCRIPTOR:             ErrorCode read _INVALID_IMAGE_FORMAT_DESCRIPTOR;
-    public static property INVALID_IMAGE_SIZE:                          ErrorCode read _INVALID_IMAGE_SIZE;
-    public static property INVALID_SAMPLER:                             ErrorCode read _INVALID_SAMPLER;
-    public static property INVALID_BINARY:                              ErrorCode read _INVALID_BINARY;
-    public static property INVALID_BUILD_OPTIONS:                       ErrorCode read _INVALID_BUILD_OPTIONS;
-    public static property INVALID_PROGRAM:                             ErrorCode read _INVALID_PROGRAM;
-    public static property INVALID_PROGRAM_EXECUTABLE:                  ErrorCode read _INVALID_PROGRAM_EXECUTABLE;
-    public static property INVALID_KERNEL_NAME:                         ErrorCode read _INVALID_KERNEL_NAME;
-    public static property INVALID_KERNEL_DEFINITION:                   ErrorCode read _INVALID_KERNEL_DEFINITION;
-    public static property INVALID_KERNEL:                              ErrorCode read _INVALID_KERNEL;
-    public static property INVALID_ARG_INDEX:                           ErrorCode read _INVALID_ARG_INDEX;
-    public static property INVALID_ARG_VALUE:                           ErrorCode read _INVALID_ARG_VALUE;
-    public static property INVALID_ARG_SIZE:                            ErrorCode read _INVALID_ARG_SIZE;
-    public static property INVALID_KERNEL_ARGS:                         ErrorCode read _INVALID_KERNEL_ARGS;
-    public static property INVALID_WORK_DIMENSION:                      ErrorCode read _INVALID_WORK_DIMENSION;
-    public static property INVALID_WORK_GROUP_SIZE:                     ErrorCode read _INVALID_WORK_GROUP_SIZE;
-    public static property INVALID_WORK_ITEM_SIZE:                      ErrorCode read _INVALID_WORK_ITEM_SIZE;
-    public static property INVALID_GLOBAL_OFFSET:                       ErrorCode read _INVALID_GLOBAL_OFFSET;
-    public static property INVALID_EVENT_WAIT_LIST:                     ErrorCode read _INVALID_EVENT_WAIT_LIST;
-    public static property INVALID_EVENT:                               ErrorCode read _INVALID_EVENT;
-    public static property INVALID_OPERATION:                           ErrorCode read _INVALID_OPERATION;
-    public static property INVALID_GL_OBJECT:                           ErrorCode read _INVALID_GL_OBJECT;
-    public static property INVALID_BUFFER_SIZE:                         ErrorCode read _INVALID_BUFFER_SIZE;
-    public static property INVALID_MIP_LEVEL:                           ErrorCode read _INVALID_MIP_LEVEL;
-    public static property INVALID_GLOBAL_WORK_SIZE:                    ErrorCode read _INVALID_GLOBAL_WORK_SIZE;
-    public static property INVALID_PROPERTY:                            ErrorCode read _INVALID_PROPERTY;
-    public static property INVALID_IMAGE_DESCRIPTOR:                    ErrorCode read _INVALID_IMAGE_DESCRIPTOR;
-    public static property INVALID_COMPILER_OPTIONS:                    ErrorCode read _INVALID_COMPILER_OPTIONS;
-    public static property INVALID_LINKER_OPTIONS:                      ErrorCode read _INVALID_LINKER_OPTIONS;
-    public static property INVALID_DEVICE_PARTITION_COUNT:              ErrorCode read _INVALID_DEVICE_PARTITION_COUNT;
-    public static property INVALID_PIPE_SIZE:                           ErrorCode read _INVALID_PIPE_SIZE;
-    public static property INVALID_DEVICE_QUEUE:                        ErrorCode read _INVALID_DEVICE_QUEUE;
-    public static property INVALID_SPEC_ID:                             ErrorCode read _INVALID_SPEC_ID;
-    public static property MAX_SIZE_RESTRICTION_EXCEEDED:               ErrorCode read _MAX_SIZE_RESTRICTION_EXCEEDED;
-    public static property INVALID_GL_SHAREGROUP_REFERENCE_KHR:         ErrorCode read _INVALID_GL_SHAREGROUP_REFERENCE_KHR;
-    public static property PLATFORM_NOT_FOUND_KHR:                      ErrorCode read _PLATFORM_NOT_FOUND_KHR;
-    public static property INVALID_D3D10_DEVICE_KHR:                    ErrorCode read _INVALID_D3D10_DEVICE_KHR;
-    public static property INVALID_D3D10_RESOURCE_KHR:                  ErrorCode read _INVALID_D3D10_RESOURCE_KHR;
-    public static property D3D10_RESOURCE_ALREADY_ACQUIRED_KHR:         ErrorCode read _D3D10_RESOURCE_ALREADY_ACQUIRED_KHR;
-    public static property D3D10_RESOURCE_NOT_ACQUIRED_KHR:             ErrorCode read _D3D10_RESOURCE_NOT_ACQUIRED_KHR;
-    public static property INVALID_D3D11_DEVICE_KHR:                    ErrorCode read _INVALID_D3D11_DEVICE_KHR;
-    public static property INVALID_D3D11_RESOURCE_KHR:                  ErrorCode read _INVALID_D3D11_RESOURCE_KHR;
-    public static property D3D11_RESOURCE_ALREADY_ACQUIRED_KHR:         ErrorCode read _D3D11_RESOURCE_ALREADY_ACQUIRED_KHR;
-    public static property D3D11_RESOURCE_NOT_ACQUIRED_KHR:             ErrorCode read _D3D11_RESOURCE_NOT_ACQUIRED_KHR;
-    public static property INVALID_DX9_DEVICE_INTEL:                    ErrorCode read _INVALID_DX9_DEVICE_INTEL;
-    public static property INVALID_DX9_MEDIA_ADAPTER_KHR:               ErrorCode read _INVALID_DX9_MEDIA_ADAPTER_KHR;
-    public static property INVALID_DX9_MEDIA_SURFACE_KHR:               ErrorCode read _INVALID_DX9_MEDIA_SURFACE_KHR;
-    public static property INVALID_DX9_RESOURCE_INTEL:                  ErrorCode read _INVALID_DX9_RESOURCE_INTEL;
-    public static property DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR:      ErrorCode read _DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR;
-    public static property DX9_RESOURCE_ALREADY_ACQUIRED_INTEL:         ErrorCode read _DX9_RESOURCE_ALREADY_ACQUIRED_INTEL;
-    public static property DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR:          ErrorCode read _DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR;
-    public static property DX9_RESOURCE_NOT_ACQUIRED_INTEL:             ErrorCode read _DX9_RESOURCE_NOT_ACQUIRED_INTEL;
-    public static property DEVICE_PARTITION_FAILED_EXT:                 ErrorCode read _DEVICE_PARTITION_FAILED_EXT;
-    public static property INVALID_PARTITION_COUNT_EXT:                 ErrorCode read _INVALID_PARTITION_COUNT_EXT;
-    public static property INVALID_PARTITION_NAME_EXT:                  ErrorCode read _INVALID_PARTITION_NAME_EXT;
-    public static property EGL_RESOURCE_NOT_ACQUIRED_KHR:               ErrorCode read _EGL_RESOURCE_NOT_ACQUIRED_KHR;
-    public static property INVALID_EGL_OBJECT_KHR:                      ErrorCode read _INVALID_EGL_OBJECT_KHR;
-    public static property INVALID_ACCELERATOR_INTEL:                   ErrorCode read _INVALID_ACCELERATOR_INTEL;
-    public static property INVALID_ACCELERATOR_TYPE_INTEL:              ErrorCode read _INVALID_ACCELERATOR_TYPE_INTEL;
-    public static property INVALID_ACCELERATOR_DESCRIPTOR_INTEL:        ErrorCode read _INVALID_ACCELERATOR_DESCRIPTOR_INTEL;
-    public static property ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL:        ErrorCode read _ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL;
-    public static property INVALID_VA_API_MEDIA_ADAPTER_INTEL:          ErrorCode read _INVALID_VA_API_MEDIA_ADAPTER_INTEL;
-    public static property INVALID_VA_API_MEDIA_SURFACE_INTEL:          ErrorCode read _INVALID_VA_API_MEDIA_SURFACE_INTEL;
-    public static property VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL: ErrorCode read _VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL;
-    public static property VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL:     ErrorCode read _VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL;
-    public static property PIPE_FULL_INTEL:                             ErrorCode read _PIPE_FULL_INTEL;
-    public static property PIPE_EMPTY_INTEL:                            ErrorCode read _PIPE_EMPTY_INTEL;
-    public static property CONTEXT_TERMINATED_KHR:                      ErrorCode read _CONTEXT_TERMINATED_KHR;
-    public static property NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE:         ErrorCode read _NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE;
+    public static property SUCCESS:                                     ErrorCode read new ErrorCode($0000);
+    public static property DEVICE_NOT_FOUND:                            ErrorCode read new ErrorCode(-1);
+    public static property DEVICE_NOT_AVAILABLE:                        ErrorCode read new ErrorCode(-2);
+    public static property COMPILER_NOT_AVAILABLE:                      ErrorCode read new ErrorCode(-3);
+    public static property MEM_OBJECT_ALLOCATION_FAILURE:               ErrorCode read new ErrorCode(-4);
+    public static property OUT_OF_RESOURCES:                            ErrorCode read new ErrorCode(-5);
+    public static property OUT_OF_HOST_MEMORY:                          ErrorCode read new ErrorCode(-6);
+    public static property PROFILING_INFO_NOT_AVAILABLE:                ErrorCode read new ErrorCode(-7);
+    public static property MEM_COPY_OVERLAP:                            ErrorCode read new ErrorCode(-8);
+    public static property IMAGE_FORMAT_MISMATCH:                       ErrorCode read new ErrorCode(-9);
+    public static property IMAGE_FORMAT_NOT_SUPPORTED:                  ErrorCode read new ErrorCode(-10);
+    public static property BUILD_PROGRAM_FAILURE:                       ErrorCode read new ErrorCode(-11);
+    public static property MAP_FAILURE:                                 ErrorCode read new ErrorCode(-12);
+    public static property MISALIGNED_SUB_BUFFER_OFFSET:                ErrorCode read new ErrorCode(-13);
+    public static property EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST:   ErrorCode read new ErrorCode(-14);
+    public static property COMPILE_PROGRAM_FAILURE:                     ErrorCode read new ErrorCode(-15);
+    public static property LINKER_NOT_AVAILABLE:                        ErrorCode read new ErrorCode(-16);
+    public static property LINK_PROGRAM_FAILURE:                        ErrorCode read new ErrorCode(-17);
+    public static property DEVICE_PARTITION_FAILED:                     ErrorCode read new ErrorCode(-18);
+    public static property KERNEL_ARG_INFO_NOT_AVAILABLE:               ErrorCode read new ErrorCode(-19);
+    public static property INVALID_VALUE:                               ErrorCode read new ErrorCode(-30);
+    public static property INVALID_DEVICE_TYPE:                         ErrorCode read new ErrorCode(-31);
+    public static property INVALID_PLATFORM:                            ErrorCode read new ErrorCode(-32);
+    public static property INVALID_DEVICE:                              ErrorCode read new ErrorCode(-33);
+    public static property INVALID_CONTEXT:                             ErrorCode read new ErrorCode(-34);
+    public static property INVALID_QUEUE_PROPERTIES:                    ErrorCode read new ErrorCode(-35);
+    public static property INVALID_COMMAND_QUEUE:                       ErrorCode read new ErrorCode(-36);
+    public static property INVALID_HOST_PTR:                            ErrorCode read new ErrorCode(-37);
+    public static property INVALID_MEM_OBJECT:                          ErrorCode read new ErrorCode(-38);
+    public static property INVALID_IMAGE_FORMAT_DESCRIPTOR:             ErrorCode read new ErrorCode(-39);
+    public static property INVALID_IMAGE_SIZE:                          ErrorCode read new ErrorCode(-40);
+    public static property INVALID_SAMPLER:                             ErrorCode read new ErrorCode(-41);
+    public static property INVALID_BINARY:                              ErrorCode read new ErrorCode(-42);
+    public static property INVALID_BUILD_OPTIONS:                       ErrorCode read new ErrorCode(-43);
+    public static property INVALID_PROGRAM:                             ErrorCode read new ErrorCode(-44);
+    public static property INVALID_PROGRAM_EXECUTABLE:                  ErrorCode read new ErrorCode(-45);
+    public static property INVALID_KERNEL_NAME:                         ErrorCode read new ErrorCode(-46);
+    public static property INVALID_KERNEL_DEFINITION:                   ErrorCode read new ErrorCode(-47);
+    public static property INVALID_KERNEL:                              ErrorCode read new ErrorCode(-48);
+    public static property INVALID_ARG_INDEX:                           ErrorCode read new ErrorCode(-49);
+    public static property INVALID_ARG_VALUE:                           ErrorCode read new ErrorCode(-50);
+    public static property INVALID_ARG_SIZE:                            ErrorCode read new ErrorCode(-51);
+    public static property INVALID_KERNEL_ARGS:                         ErrorCode read new ErrorCode(-52);
+    public static property INVALID_WORK_DIMENSION:                      ErrorCode read new ErrorCode(-53);
+    public static property INVALID_WORK_GROUP_SIZE:                     ErrorCode read new ErrorCode(-54);
+    public static property INVALID_WORK_ITEM_SIZE:                      ErrorCode read new ErrorCode(-55);
+    public static property INVALID_GLOBAL_OFFSET:                       ErrorCode read new ErrorCode(-56);
+    public static property INVALID_EVENT_WAIT_LIST:                     ErrorCode read new ErrorCode(-57);
+    public static property INVALID_EVENT:                               ErrorCode read new ErrorCode(-58);
+    public static property INVALID_OPERATION:                           ErrorCode read new ErrorCode(-59);
+    public static property INVALID_GL_OBJECT:                           ErrorCode read new ErrorCode(-60);
+    public static property INVALID_BUFFER_SIZE:                         ErrorCode read new ErrorCode(-61);
+    public static property INVALID_MIP_LEVEL:                           ErrorCode read new ErrorCode(-62);
+    public static property INVALID_GLOBAL_WORK_SIZE:                    ErrorCode read new ErrorCode(-63);
+    public static property INVALID_PROPERTY:                            ErrorCode read new ErrorCode(-64);
+    public static property INVALID_IMAGE_DESCRIPTOR:                    ErrorCode read new ErrorCode(-65);
+    public static property INVALID_COMPILER_OPTIONS:                    ErrorCode read new ErrorCode(-66);
+    public static property INVALID_LINKER_OPTIONS:                      ErrorCode read new ErrorCode(-67);
+    public static property INVALID_DEVICE_PARTITION_COUNT:              ErrorCode read new ErrorCode(-68);
+    public static property INVALID_PIPE_SIZE:                           ErrorCode read new ErrorCode(-69);
+    public static property INVALID_DEVICE_QUEUE:                        ErrorCode read new ErrorCode(-70);
+    public static property INVALID_SPEC_ID:                             ErrorCode read new ErrorCode(-71);
+    public static property MAX_SIZE_RESTRICTION_EXCEEDED:               ErrorCode read new ErrorCode(-72);
+    public static property INVALID_GL_SHAREGROUP_REFERENCE_KHR:         ErrorCode read new ErrorCode(-1000);
+    public static property PLATFORM_NOT_FOUND_KHR:                      ErrorCode read new ErrorCode(-1001);
+    public static property INVALID_D3D10_DEVICE_KHR:                    ErrorCode read new ErrorCode(-1002);
+    public static property INVALID_D3D10_RESOURCE_KHR:                  ErrorCode read new ErrorCode(-1003);
+    public static property D3D10_RESOURCE_ALREADY_ACQUIRED_KHR:         ErrorCode read new ErrorCode(-1004);
+    public static property D3D10_RESOURCE_NOT_ACQUIRED_KHR:             ErrorCode read new ErrorCode(-1005);
+    public static property INVALID_D3D11_DEVICE_KHR:                    ErrorCode read new ErrorCode(-1006);
+    public static property INVALID_D3D11_RESOURCE_KHR:                  ErrorCode read new ErrorCode(-1007);
+    public static property D3D11_RESOURCE_ALREADY_ACQUIRED_KHR:         ErrorCode read new ErrorCode(-1008);
+    public static property D3D11_RESOURCE_NOT_ACQUIRED_KHR:             ErrorCode read new ErrorCode(-1009);
+    public static property INVALID_DX9_DEVICE_INTEL:                    ErrorCode read new ErrorCode(-1010);
+    public static property INVALID_DX9_MEDIA_ADAPTER_KHR:               ErrorCode read new ErrorCode(-1010);
+    public static property INVALID_DX9_MEDIA_SURFACE_KHR:               ErrorCode read new ErrorCode(-1011);
+    public static property INVALID_DX9_RESOURCE_INTEL:                  ErrorCode read new ErrorCode(-1011);
+    public static property DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR:      ErrorCode read new ErrorCode(-1012);
+    public static property DX9_RESOURCE_ALREADY_ACQUIRED_INTEL:         ErrorCode read new ErrorCode(-1012);
+    public static property DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR:          ErrorCode read new ErrorCode(-1013);
+    public static property DX9_RESOURCE_NOT_ACQUIRED_INTEL:             ErrorCode read new ErrorCode(-1013);
+    public static property DEVICE_PARTITION_FAILED_EXT:                 ErrorCode read new ErrorCode(-1057);
+    public static property INVALID_PARTITION_COUNT_EXT:                 ErrorCode read new ErrorCode(-1058);
+    public static property INVALID_PARTITION_NAME_EXT:                  ErrorCode read new ErrorCode(-1059);
+    public static property EGL_RESOURCE_NOT_ACQUIRED_KHR:               ErrorCode read new ErrorCode(-1092);
+    public static property INVALID_EGL_OBJECT_KHR:                      ErrorCode read new ErrorCode(-1093);
+    public static property INVALID_ACCELERATOR_INTEL:                   ErrorCode read new ErrorCode(-1094);
+    public static property INVALID_ACCELERATOR_TYPE_INTEL:              ErrorCode read new ErrorCode(-1095);
+    public static property INVALID_ACCELERATOR_DESCRIPTOR_INTEL:        ErrorCode read new ErrorCode(-1096);
+    public static property ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL:        ErrorCode read new ErrorCode(-1097);
+    public static property INVALID_VA_API_MEDIA_ADAPTER_INTEL:          ErrorCode read new ErrorCode(-1098);
+    public static property INVALID_VA_API_MEDIA_SURFACE_INTEL:          ErrorCode read new ErrorCode(-1099);
+    public static property VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL: ErrorCode read new ErrorCode(-1100);
+    public static property VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL:     ErrorCode read new ErrorCode(-1101);
+    public static property PIPE_FULL_INTEL:                             ErrorCode read new ErrorCode(-1106);
+    public static property PIPE_EMPTY_INTEL:                            ErrorCode read new ErrorCode(-1107);
+    public static property CONTEXT_TERMINATED_KHR:                      ErrorCode read new ErrorCode(-1121);
+    public static property NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE:         ErrorCode read new ErrorCode(-9999);
     
     public function ToString: string; override;
     begin
@@ -2155,17 +1618,11 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _EVENT_COMMAND_QUEUE            := new EventInfo($11D0);
-    private static _EVENT_COMMAND_TYPE             := new EventInfo($11D1);
-    private static _EVENT_REFERENCE_COUNT          := new EventInfo($11D2);
-    private static _EVENT_COMMAND_EXECUTION_STATUS := new EventInfo($11D3);
-    private static _EVENT_CONTEXT                  := new EventInfo($11D4);
-    
-    public static property EVENT_COMMAND_QUEUE:            EventInfo read _EVENT_COMMAND_QUEUE;
-    public static property EVENT_COMMAND_TYPE:             EventInfo read _EVENT_COMMAND_TYPE;
-    public static property EVENT_REFERENCE_COUNT:          EventInfo read _EVENT_REFERENCE_COUNT;
-    public static property EVENT_COMMAND_EXECUTION_STATUS: EventInfo read _EVENT_COMMAND_EXECUTION_STATUS;
-    public static property EVENT_CONTEXT:                  EventInfo read _EVENT_CONTEXT;
+    public static property EVENT_COMMAND_QUEUE:            EventInfo read new EventInfo($11D0);
+    public static property EVENT_COMMAND_TYPE:             EventInfo read new EventInfo($11D1);
+    public static property EVENT_REFERENCE_COUNT:          EventInfo read new EventInfo($11D2);
+    public static property EVENT_COMMAND_EXECUTION_STATUS: EventInfo read new EventInfo($11D3);
+    public static property EVENT_CONTEXT:                  EventInfo read new EventInfo($11D4);
     
     public function ToString: string; override;
     begin
@@ -2183,11 +1640,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _FILTER_NEAREST := new FilterMode($1140);
-    private static _FILTER_LINEAR  := new FilterMode($1141);
-    
-    public static property FILTER_NEAREST: FilterMode read _FILTER_NEAREST;
-    public static property FILTER_LINEAR:  FilterMode read _FILTER_LINEAR;
+    public static property FILTER_NEAREST: FilterMode read new FilterMode($1140);
+    public static property FILTER_LINEAR:  FilterMode read new FilterMode($1141);
     
     public function ToString: string; override;
     begin
@@ -2202,11 +1656,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _CURRENT_DEVICE_FOR_GL_CONTEXT_KHR := new GlContextInfo($2006);
-    private static _DEVICES_FOR_GL_CONTEXT_KHR        := new GlContextInfo($2007);
-    
-    public static property CURRENT_DEVICE_FOR_GL_CONTEXT_KHR: GlContextInfo read _CURRENT_DEVICE_FOR_GL_CONTEXT_KHR;
-    public static property DEVICES_FOR_GL_CONTEXT_KHR:        GlContextInfo read _DEVICES_FOR_GL_CONTEXT_KHR;
+    public static property CURRENT_DEVICE_FOR_GL_CONTEXT_KHR: GlContextInfo read new GlContextInfo($2006);
+    public static property DEVICES_FOR_GL_CONTEXT_KHR:        GlContextInfo read new GlContextInfo($2007);
     
     public function ToString: string; override;
     begin
@@ -2221,23 +1672,14 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _GL_OBJECT_BUFFER          := new GlObjectType($2000);
-    private static _GL_OBJECT_TEXTURE2D       := new GlObjectType($2001);
-    private static _GL_OBJECT_TEXTURE3D       := new GlObjectType($2002);
-    private static _GL_OBJECT_RENDERBUFFER    := new GlObjectType($2003);
-    private static _GL_OBJECT_TEXTURE2D_ARRAY := new GlObjectType($200E);
-    private static _GL_OBJECT_TEXTURE1D       := new GlObjectType($200F);
-    private static _GL_OBJECT_TEXTURE1D_ARRAY := new GlObjectType($2010);
-    private static _GL_OBJECT_TEXTURE_BUFFER  := new GlObjectType($2011);
-    
-    public static property GL_OBJECT_BUFFER:          GlObjectType read _GL_OBJECT_BUFFER;
-    public static property GL_OBJECT_TEXTURE2D:       GlObjectType read _GL_OBJECT_TEXTURE2D;
-    public static property GL_OBJECT_TEXTURE3D:       GlObjectType read _GL_OBJECT_TEXTURE3D;
-    public static property GL_OBJECT_RENDERBUFFER:    GlObjectType read _GL_OBJECT_RENDERBUFFER;
-    public static property GL_OBJECT_TEXTURE2D_ARRAY: GlObjectType read _GL_OBJECT_TEXTURE2D_ARRAY;
-    public static property GL_OBJECT_TEXTURE1D:       GlObjectType read _GL_OBJECT_TEXTURE1D;
-    public static property GL_OBJECT_TEXTURE1D_ARRAY: GlObjectType read _GL_OBJECT_TEXTURE1D_ARRAY;
-    public static property GL_OBJECT_TEXTURE_BUFFER:  GlObjectType read _GL_OBJECT_TEXTURE_BUFFER;
+    public static property GL_OBJECT_BUFFER:          GlObjectType read new GlObjectType($2000);
+    public static property GL_OBJECT_TEXTURE2D:       GlObjectType read new GlObjectType($2001);
+    public static property GL_OBJECT_TEXTURE3D:       GlObjectType read new GlObjectType($2002);
+    public static property GL_OBJECT_RENDERBUFFER:    GlObjectType read new GlObjectType($2003);
+    public static property GL_OBJECT_TEXTURE2D_ARRAY: GlObjectType read new GlObjectType($200E);
+    public static property GL_OBJECT_TEXTURE1D:       GlObjectType read new GlObjectType($200F);
+    public static property GL_OBJECT_TEXTURE1D_ARRAY: GlObjectType read new GlObjectType($2010);
+    public static property GL_OBJECT_TEXTURE_BUFFER:  GlObjectType read new GlObjectType($2011);
     
     public function ToString: string; override;
     begin
@@ -2258,13 +1700,9 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _GL_TEXTURE_TARGET := new GlTextureInfo($2004);
-    private static _GL_MIPMAP_LEVEL   := new GlTextureInfo($2005);
-    private static _GL_NUM_SAMPLES    := new GlTextureInfo($2012);
-    
-    public static property GL_TEXTURE_TARGET: GlTextureInfo read _GL_TEXTURE_TARGET;
-    public static property GL_MIPMAP_LEVEL:   GlTextureInfo read _GL_MIPMAP_LEVEL;
-    public static property GL_NUM_SAMPLES:    GlTextureInfo read _GL_NUM_SAMPLES;
+    public static property GL_TEXTURE_TARGET: GlTextureInfo read new GlTextureInfo($2004);
+    public static property GL_MIPMAP_LEVEL:   GlTextureInfo read new GlTextureInfo($2005);
+    public static property GL_NUM_SAMPLES:    GlTextureInfo read new GlTextureInfo($2012);
     
     public function ToString: string; override;
     begin
@@ -2280,39 +1718,22 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _IMAGE_FORMAT                := new ImageInfo($1110);
-    private static _IMAGE_ELEMENT_SIZE          := new ImageInfo($1111);
-    private static _IMAGE_ROW_PITCH             := new ImageInfo($1112);
-    private static _IMAGE_SLICE_PITCH           := new ImageInfo($1113);
-    private static _IMAGE_WIDTH                 := new ImageInfo($1114);
-    private static _IMAGE_HEIGHT                := new ImageInfo($1115);
-    private static _IMAGE_DEPTH                 := new ImageInfo($1116);
-    private static _IMAGE_ARRAY_SIZE            := new ImageInfo($1117);
-    private static _IMAGE_BUFFER                := new ImageInfo($1118);
-    private static _IMAGE_NUM_MIP_LEVELS        := new ImageInfo($1119);
-    private static _IMAGE_NUM_SAMPLES           := new ImageInfo($111A);
-    private static _IMAGE_DX9_MEDIA_PLANE_KHR   := new ImageInfo($202A);
-    private static _IMAGE_D3D10_SUBRESOURCE_KHR := new ImageInfo($4016);
-    private static _IMAGE_D3D11_SUBRESOURCE_KHR := new ImageInfo($401F);
-    private static _IMAGE_DX9_PLANE_INTEL       := new ImageInfo($4075);
-    private static _IMAGE_VA_API_PLANE_INTEL    := new ImageInfo($4099);
-    
-    public static property IMAGE_FORMAT:                ImageInfo read _IMAGE_FORMAT;
-    public static property IMAGE_ELEMENT_SIZE:          ImageInfo read _IMAGE_ELEMENT_SIZE;
-    public static property IMAGE_ROW_PITCH:             ImageInfo read _IMAGE_ROW_PITCH;
-    public static property IMAGE_SLICE_PITCH:           ImageInfo read _IMAGE_SLICE_PITCH;
-    public static property IMAGE_WIDTH:                 ImageInfo read _IMAGE_WIDTH;
-    public static property IMAGE_HEIGHT:                ImageInfo read _IMAGE_HEIGHT;
-    public static property IMAGE_DEPTH:                 ImageInfo read _IMAGE_DEPTH;
-    public static property IMAGE_ARRAY_SIZE:            ImageInfo read _IMAGE_ARRAY_SIZE;
-    public static property IMAGE_BUFFER:                ImageInfo read _IMAGE_BUFFER;
-    public static property IMAGE_NUM_MIP_LEVELS:        ImageInfo read _IMAGE_NUM_MIP_LEVELS;
-    public static property IMAGE_NUM_SAMPLES:           ImageInfo read _IMAGE_NUM_SAMPLES;
-    public static property IMAGE_DX9_MEDIA_PLANE_KHR:   ImageInfo read _IMAGE_DX9_MEDIA_PLANE_KHR;
-    public static property IMAGE_D3D10_SUBRESOURCE_KHR: ImageInfo read _IMAGE_D3D10_SUBRESOURCE_KHR;
-    public static property IMAGE_D3D11_SUBRESOURCE_KHR: ImageInfo read _IMAGE_D3D11_SUBRESOURCE_KHR;
-    public static property IMAGE_DX9_PLANE_INTEL:       ImageInfo read _IMAGE_DX9_PLANE_INTEL;
-    public static property IMAGE_VA_API_PLANE_INTEL:    ImageInfo read _IMAGE_VA_API_PLANE_INTEL;
+    public static property IMAGE_FORMAT:                ImageInfo read new ImageInfo($1110);
+    public static property IMAGE_ELEMENT_SIZE:          ImageInfo read new ImageInfo($1111);
+    public static property IMAGE_ROW_PITCH:             ImageInfo read new ImageInfo($1112);
+    public static property IMAGE_SLICE_PITCH:           ImageInfo read new ImageInfo($1113);
+    public static property IMAGE_WIDTH:                 ImageInfo read new ImageInfo($1114);
+    public static property IMAGE_HEIGHT:                ImageInfo read new ImageInfo($1115);
+    public static property IMAGE_DEPTH:                 ImageInfo read new ImageInfo($1116);
+    public static property IMAGE_ARRAY_SIZE:            ImageInfo read new ImageInfo($1117);
+    public static property IMAGE_BUFFER:                ImageInfo read new ImageInfo($1118);
+    public static property IMAGE_NUM_MIP_LEVELS:        ImageInfo read new ImageInfo($1119);
+    public static property IMAGE_NUM_SAMPLES:           ImageInfo read new ImageInfo($111A);
+    public static property IMAGE_DX9_MEDIA_PLANE_KHR:   ImageInfo read new ImageInfo($202A);
+    public static property IMAGE_D3D10_SUBRESOURCE_KHR: ImageInfo read new ImageInfo($4016);
+    public static property IMAGE_D3D11_SUBRESOURCE_KHR: ImageInfo read new ImageInfo($401F);
+    public static property IMAGE_DX9_PLANE_INTEL:       ImageInfo read new ImageInfo($4075);
+    public static property IMAGE_VA_API_PLANE_INTEL:    ImageInfo read new ImageInfo($4099);
     
     public function ToString: string; override;
     begin
@@ -2341,11 +1762,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _IMAGE_ROW_ALIGNMENT_QCOM   := new ImagePitchInfoQcom($40A2);
-    private static _IMAGE_SLICE_ALIGNMENT_QCOM := new ImagePitchInfoQcom($40A3);
-    
-    public static property IMAGE_ROW_ALIGNMENT_QCOM:   ImagePitchInfoQcom read _IMAGE_ROW_ALIGNMENT_QCOM;
-    public static property IMAGE_SLICE_ALIGNMENT_QCOM: ImagePitchInfoQcom read _IMAGE_SLICE_ALIGNMENT_QCOM;
+    public static property IMAGE_ROW_ALIGNMENT_QCOM:   ImagePitchInfoQcom read new ImagePitchInfoQcom($40A2);
+    public static property IMAGE_SLICE_ALIGNMENT_QCOM: ImagePitchInfoQcom read new ImagePitchInfoQcom($40A3);
     
     public function ToString: string; override;
     begin
@@ -2361,21 +1779,13 @@ type
     public constructor(val: IntPtr) := self.val := val;
     public constructor(val: Int32) := self.val := new IntPtr(val);
     
-    private static _IMPORT_MEMORY_WHOLE_ALLOCATION_ARM            := new ImportPropertiesArm(-1);
-    private static _IMPORT_TYPE_ARM                               := new ImportPropertiesArm($40B2);
-    private static _IMPORT_TYPE_HOST_ARM                          := new ImportPropertiesArm($40B3);
-    private static _IMPORT_TYPE_DMA_BUF_ARM                       := new ImportPropertiesArm($40B4);
-    private static _IMPORT_TYPE_PROTECTED_ARM                     := new ImportPropertiesArm($40B5);
-    private static _IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM       := new ImportPropertiesArm($41E2);
-    private static _IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM := new ImportPropertiesArm($41E3);
-    
-    public static property IMPORT_MEMORY_WHOLE_ALLOCATION_ARM:            ImportPropertiesArm read _IMPORT_MEMORY_WHOLE_ALLOCATION_ARM;
-    public static property IMPORT_TYPE_ARM:                               ImportPropertiesArm read _IMPORT_TYPE_ARM;
-    public static property IMPORT_TYPE_HOST_ARM:                          ImportPropertiesArm read _IMPORT_TYPE_HOST_ARM;
-    public static property IMPORT_TYPE_DMA_BUF_ARM:                       ImportPropertiesArm read _IMPORT_TYPE_DMA_BUF_ARM;
-    public static property IMPORT_TYPE_PROTECTED_ARM:                     ImportPropertiesArm read _IMPORT_TYPE_PROTECTED_ARM;
-    public static property IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM:       ImportPropertiesArm read _IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM;
-    public static property IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM: ImportPropertiesArm read _IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM;
+    public static property IMPORT_MEMORY_WHOLE_ALLOCATION_ARM:            ImportPropertiesArm read new ImportPropertiesArm(-1);
+    public static property IMPORT_TYPE_ARM:                               ImportPropertiesArm read new ImportPropertiesArm($40B2);
+    public static property IMPORT_TYPE_HOST_ARM:                          ImportPropertiesArm read new ImportPropertiesArm($40B3);
+    public static property IMPORT_TYPE_DMA_BUF_ARM:                       ImportPropertiesArm read new ImportPropertiesArm($40B4);
+    public static property IMPORT_TYPE_PROTECTED_ARM:                     ImportPropertiesArm read new ImportPropertiesArm($40B5);
+    public static property IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM:       ImportPropertiesArm read new ImportPropertiesArm($41E2);
+    public static property IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM: ImportPropertiesArm read new ImportPropertiesArm($41E3);
     
     public function ToString: string; override;
     begin
@@ -2395,15 +1805,10 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_ARG_ACCESS_READ_ONLY  := new KernelArgAccessQualifier($11A0);
-    private static _KERNEL_ARG_ACCESS_WRITE_ONLY := new KernelArgAccessQualifier($11A1);
-    private static _KERNEL_ARG_ACCESS_READ_WRITE := new KernelArgAccessQualifier($11A2);
-    private static _KERNEL_ARG_ACCESS_NONE       := new KernelArgAccessQualifier($11A3);
-    
-    public static property KERNEL_ARG_ACCESS_READ_ONLY:  KernelArgAccessQualifier read _KERNEL_ARG_ACCESS_READ_ONLY;
-    public static property KERNEL_ARG_ACCESS_WRITE_ONLY: KernelArgAccessQualifier read _KERNEL_ARG_ACCESS_WRITE_ONLY;
-    public static property KERNEL_ARG_ACCESS_READ_WRITE: KernelArgAccessQualifier read _KERNEL_ARG_ACCESS_READ_WRITE;
-    public static property KERNEL_ARG_ACCESS_NONE:       KernelArgAccessQualifier read _KERNEL_ARG_ACCESS_NONE;
+    public static property KERNEL_ARG_ACCESS_READ_ONLY:  KernelArgAccessQualifier read new KernelArgAccessQualifier($11A0);
+    public static property KERNEL_ARG_ACCESS_WRITE_ONLY: KernelArgAccessQualifier read new KernelArgAccessQualifier($11A1);
+    public static property KERNEL_ARG_ACCESS_READ_WRITE: KernelArgAccessQualifier read new KernelArgAccessQualifier($11A2);
+    public static property KERNEL_ARG_ACCESS_NONE:       KernelArgAccessQualifier read new KernelArgAccessQualifier($11A3);
     
     public function ToString: string; override;
     begin
@@ -2420,15 +1825,10 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_ARG_ADDRESS_GLOBAL   := new KernelArgAddressQualifier($119B);
-    private static _KERNEL_ARG_ADDRESS_LOCAL    := new KernelArgAddressQualifier($119C);
-    private static _KERNEL_ARG_ADDRESS_CONSTANT := new KernelArgAddressQualifier($119D);
-    private static _KERNEL_ARG_ADDRESS_PRIVATE  := new KernelArgAddressQualifier($119E);
-    
-    public static property KERNEL_ARG_ADDRESS_GLOBAL:   KernelArgAddressQualifier read _KERNEL_ARG_ADDRESS_GLOBAL;
-    public static property KERNEL_ARG_ADDRESS_LOCAL:    KernelArgAddressQualifier read _KERNEL_ARG_ADDRESS_LOCAL;
-    public static property KERNEL_ARG_ADDRESS_CONSTANT: KernelArgAddressQualifier read _KERNEL_ARG_ADDRESS_CONSTANT;
-    public static property KERNEL_ARG_ADDRESS_PRIVATE:  KernelArgAddressQualifier read _KERNEL_ARG_ADDRESS_PRIVATE;
+    public static property KERNEL_ARG_ADDRESS_GLOBAL:   KernelArgAddressQualifier read new KernelArgAddressQualifier($119B);
+    public static property KERNEL_ARG_ADDRESS_LOCAL:    KernelArgAddressQualifier read new KernelArgAddressQualifier($119C);
+    public static property KERNEL_ARG_ADDRESS_CONSTANT: KernelArgAddressQualifier read new KernelArgAddressQualifier($119D);
+    public static property KERNEL_ARG_ADDRESS_PRIVATE:  KernelArgAddressQualifier read new KernelArgAddressQualifier($119E);
     
     public function ToString: string; override;
     begin
@@ -2445,17 +1845,11 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_ARG_ADDRESS_QUALIFIER := new KernelArgInfo($1196);
-    private static _KERNEL_ARG_ACCESS_QUALIFIER  := new KernelArgInfo($1197);
-    private static _KERNEL_ARG_TYPE_NAME         := new KernelArgInfo($1198);
-    private static _KERNEL_ARG_TYPE_QUALIFIER    := new KernelArgInfo($1199);
-    private static _KERNEL_ARG_NAME              := new KernelArgInfo($119A);
-    
-    public static property KERNEL_ARG_ADDRESS_QUALIFIER: KernelArgInfo read _KERNEL_ARG_ADDRESS_QUALIFIER;
-    public static property KERNEL_ARG_ACCESS_QUALIFIER:  KernelArgInfo read _KERNEL_ARG_ACCESS_QUALIFIER;
-    public static property KERNEL_ARG_TYPE_NAME:         KernelArgInfo read _KERNEL_ARG_TYPE_NAME;
-    public static property KERNEL_ARG_TYPE_QUALIFIER:    KernelArgInfo read _KERNEL_ARG_TYPE_QUALIFIER;
-    public static property KERNEL_ARG_NAME:              KernelArgInfo read _KERNEL_ARG_NAME;
+    public static property KERNEL_ARG_ADDRESS_QUALIFIER: KernelArgInfo read new KernelArgInfo($1196);
+    public static property KERNEL_ARG_ACCESS_QUALIFIER:  KernelArgInfo read new KernelArgInfo($1197);
+    public static property KERNEL_ARG_TYPE_NAME:         KernelArgInfo read new KernelArgInfo($1198);
+    public static property KERNEL_ARG_TYPE_QUALIFIER:    KernelArgInfo read new KernelArgInfo($1199);
+    public static property KERNEL_ARG_NAME:              KernelArgInfo read new KernelArgInfo($119A);
     
     public function ToString: string; override;
     begin
@@ -2473,17 +1867,11 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _KERNEL_ARG_TYPE_NONE     := new KernelArgTypeQualifier($0000);
-    private static _KERNEL_ARG_TYPE_CONST    := new KernelArgTypeQualifier($0001);
-    private static _KERNEL_ARG_TYPE_RESTRICT := new KernelArgTypeQualifier($0002);
-    private static _KERNEL_ARG_TYPE_VOLATILE := new KernelArgTypeQualifier($0004);
-    private static _KERNEL_ARG_TYPE_PIPE     := new KernelArgTypeQualifier($0008);
-    
-    public static property KERNEL_ARG_TYPE_NONE:     KernelArgTypeQualifier read _KERNEL_ARG_TYPE_NONE;
-    public static property KERNEL_ARG_TYPE_CONST:    KernelArgTypeQualifier read _KERNEL_ARG_TYPE_CONST;
-    public static property KERNEL_ARG_TYPE_RESTRICT: KernelArgTypeQualifier read _KERNEL_ARG_TYPE_RESTRICT;
-    public static property KERNEL_ARG_TYPE_VOLATILE: KernelArgTypeQualifier read _KERNEL_ARG_TYPE_VOLATILE;
-    public static property KERNEL_ARG_TYPE_PIPE:     KernelArgTypeQualifier read _KERNEL_ARG_TYPE_PIPE;
+    public static property KERNEL_ARG_TYPE_NONE:     KernelArgTypeQualifier read new KernelArgTypeQualifier($0000);
+    public static property KERNEL_ARG_TYPE_CONST:    KernelArgTypeQualifier read new KernelArgTypeQualifier($0001);
+    public static property KERNEL_ARG_TYPE_RESTRICT: KernelArgTypeQualifier read new KernelArgTypeQualifier($0002);
+    public static property KERNEL_ARG_TYPE_VOLATILE: KernelArgTypeQualifier read new KernelArgTypeQualifier($0004);
+    public static property KERNEL_ARG_TYPE_PIPE:     KernelArgTypeQualifier read new KernelArgTypeQualifier($0008);
     
     public function ToString: string; override;
     begin
@@ -2501,23 +1889,14 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_EXEC_INFO_SVM_PTRS                          := new KernelExecInfo($11B6);
-    private static _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM             := new KernelExecInfo($11B7);
-    private static _KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_ARM          := new KernelExecInfo($41E5);
-    private static _KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_MODIFIER_ARM := new KernelExecInfo($41E6);
-    private static _KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL        := new KernelExecInfo($4200);
-    private static _KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL      := new KernelExecInfo($4201);
-    private static _KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL      := new KernelExecInfo($4202);
-    private static _KERNEL_EXEC_INFO_USM_PTRS_INTEL                    := new KernelExecInfo($4203);
-    
-    public static property KERNEL_EXEC_INFO_SVM_PTRS:                          KernelExecInfo read _KERNEL_EXEC_INFO_SVM_PTRS;
-    public static property KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM:             KernelExecInfo read _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM;
-    public static property KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_ARM:          KernelExecInfo read _KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_ARM;
-    public static property KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_MODIFIER_ARM: KernelExecInfo read _KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_MODIFIER_ARM;
-    public static property KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL:        KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL;
-    public static property KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL:      KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL;
-    public static property KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL:      KernelExecInfo read _KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL;
-    public static property KERNEL_EXEC_INFO_USM_PTRS_INTEL:                    KernelExecInfo read _KERNEL_EXEC_INFO_USM_PTRS_INTEL;
+    public static property KERNEL_EXEC_INFO_SVM_PTRS:                          KernelExecInfo read new KernelExecInfo($11B6);
+    public static property KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM:             KernelExecInfo read new KernelExecInfo($11B7);
+    public static property KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_ARM:          KernelExecInfo read new KernelExecInfo($41E5);
+    public static property KERNEL_EXEC_INFO_WORKGROUP_BATCH_SIZE_MODIFIER_ARM: KernelExecInfo read new KernelExecInfo($41E6);
+    public static property KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL:        KernelExecInfo read new KernelExecInfo($4200);
+    public static property KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL:      KernelExecInfo read new KernelExecInfo($4201);
+    public static property KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL:      KernelExecInfo read new KernelExecInfo($4202);
+    public static property KERNEL_EXEC_INFO_USM_PTRS_INTEL:                    KernelExecInfo read new KernelExecInfo($4203);
     
     public function ToString: string; override;
     begin
@@ -2538,11 +1917,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_EXEC_INFO_SVM_PTRS_ARM              := new KernelExecInfoArm($40B8);
-    private static _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM_ARM := new KernelExecInfoArm($40B9);
-    
-    public static property KERNEL_EXEC_INFO_SVM_PTRS_ARM:              KernelExecInfoArm read _KERNEL_EXEC_INFO_SVM_PTRS_ARM;
-    public static property KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM_ARM: KernelExecInfoArm read _KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM_ARM;
+    public static property KERNEL_EXEC_INFO_SVM_PTRS_ARM:              KernelExecInfoArm read new KernelExecInfoArm($40B8);
+    public static property KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM_ARM: KernelExecInfoArm read new KernelExecInfoArm($40B9);
     
     public function ToString: string; override;
     begin
@@ -2557,19 +1933,12 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_FUNCTION_NAME   := new KernelInfo($1190);
-    private static _KERNEL_NUM_ARGS        := new KernelInfo($1191);
-    private static _KERNEL_REFERENCE_COUNT := new KernelInfo($1192);
-    private static _KERNEL_CONTEXT         := new KernelInfo($1193);
-    private static _KERNEL_PROGRAM         := new KernelInfo($1194);
-    private static _KERNEL_ATTRIBUTES      := new KernelInfo($1195);
-    
-    public static property KERNEL_FUNCTION_NAME:   KernelInfo read _KERNEL_FUNCTION_NAME;
-    public static property KERNEL_NUM_ARGS:        KernelInfo read _KERNEL_NUM_ARGS;
-    public static property KERNEL_REFERENCE_COUNT: KernelInfo read _KERNEL_REFERENCE_COUNT;
-    public static property KERNEL_CONTEXT:         KernelInfo read _KERNEL_CONTEXT;
-    public static property KERNEL_PROGRAM:         KernelInfo read _KERNEL_PROGRAM;
-    public static property KERNEL_ATTRIBUTES:      KernelInfo read _KERNEL_ATTRIBUTES;
+    public static property KERNEL_FUNCTION_NAME:   KernelInfo read new KernelInfo($1190);
+    public static property KERNEL_NUM_ARGS:        KernelInfo read new KernelInfo($1191);
+    public static property KERNEL_REFERENCE_COUNT: KernelInfo read new KernelInfo($1192);
+    public static property KERNEL_CONTEXT:         KernelInfo read new KernelInfo($1193);
+    public static property KERNEL_PROGRAM:         KernelInfo read new KernelInfo($1194);
+    public static property KERNEL_ATTRIBUTES:      KernelInfo read new KernelInfo($1195);
     
     public function ToString: string; override;
     begin
@@ -2588,23 +1957,14 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT     := new KernelSubGroupInfo($11B8);
-    private static _KERNEL_MAX_NUM_SUB_GROUPS                 := new KernelSubGroupInfo($11B9);
-    private static _KERNEL_COMPILE_NUM_SUB_GROUPS             := new KernelSubGroupInfo($11BA);
-    private static _KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE     := new KernelSubGroupInfo($2033);
-    private static _KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR := new KernelSubGroupInfo($2033);
-    private static _KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE        := new KernelSubGroupInfo($2034);
-    private static _KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR    := new KernelSubGroupInfo($2034);
-    private static _KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL       := new KernelSubGroupInfo($410A);
-    
-    public static property KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT:     KernelSubGroupInfo read _KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT;
-    public static property KERNEL_MAX_NUM_SUB_GROUPS:                 KernelSubGroupInfo read _KERNEL_MAX_NUM_SUB_GROUPS;
-    public static property KERNEL_COMPILE_NUM_SUB_GROUPS:             KernelSubGroupInfo read _KERNEL_COMPILE_NUM_SUB_GROUPS;
-    public static property KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE:     KernelSubGroupInfo read _KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE;
-    public static property KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR: KernelSubGroupInfo read _KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR;
-    public static property KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE:        KernelSubGroupInfo read _KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE;
-    public static property KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR:    KernelSubGroupInfo read _KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR;
-    public static property KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL:       KernelSubGroupInfo read _KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL;
+    public static property KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT:     KernelSubGroupInfo read new KernelSubGroupInfo($11B8);
+    public static property KERNEL_MAX_NUM_SUB_GROUPS:                 KernelSubGroupInfo read new KernelSubGroupInfo($11B9);
+    public static property KERNEL_COMPILE_NUM_SUB_GROUPS:             KernelSubGroupInfo read new KernelSubGroupInfo($11BA);
+    public static property KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE:     KernelSubGroupInfo read new KernelSubGroupInfo($2033);
+    public static property KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR: KernelSubGroupInfo read new KernelSubGroupInfo($2033);
+    public static property KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE:        KernelSubGroupInfo read new KernelSubGroupInfo($2034);
+    public static property KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR:    KernelSubGroupInfo read new KernelSubGroupInfo($2034);
+    public static property KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL:       KernelSubGroupInfo read new KernelSubGroupInfo($410A);
     
     public function ToString: string; override;
     begin
@@ -2625,21 +1985,13 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_WORK_GROUP_SIZE                    := new KernelWorkGroupInfo($11B0);
-    private static _KERNEL_COMPILE_WORK_GROUP_SIZE            := new KernelWorkGroupInfo($11B1);
-    private static _KERNEL_LOCAL_MEM_SIZE                     := new KernelWorkGroupInfo($11B2);
-    private static _KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE := new KernelWorkGroupInfo($11B3);
-    private static _KERNEL_PRIVATE_MEM_SIZE                   := new KernelWorkGroupInfo($11B4);
-    private static _KERNEL_GLOBAL_WORK_SIZE                   := new KernelWorkGroupInfo($11B5);
-    private static _KERNEL_SPILL_MEM_SIZE_INTEL               := new KernelWorkGroupInfo($4109);
-    
-    public static property KERNEL_WORK_GROUP_SIZE:                    KernelWorkGroupInfo read _KERNEL_WORK_GROUP_SIZE;
-    public static property KERNEL_COMPILE_WORK_GROUP_SIZE:            KernelWorkGroupInfo read _KERNEL_COMPILE_WORK_GROUP_SIZE;
-    public static property KERNEL_LOCAL_MEM_SIZE:                     KernelWorkGroupInfo read _KERNEL_LOCAL_MEM_SIZE;
-    public static property KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: KernelWorkGroupInfo read _KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE;
-    public static property KERNEL_PRIVATE_MEM_SIZE:                   KernelWorkGroupInfo read _KERNEL_PRIVATE_MEM_SIZE;
-    public static property KERNEL_GLOBAL_WORK_SIZE:                   KernelWorkGroupInfo read _KERNEL_GLOBAL_WORK_SIZE;
-    public static property KERNEL_SPILL_MEM_SIZE_INTEL:               KernelWorkGroupInfo read _KERNEL_SPILL_MEM_SIZE_INTEL;
+    public static property KERNEL_WORK_GROUP_SIZE:                    KernelWorkGroupInfo read new KernelWorkGroupInfo($11B0);
+    public static property KERNEL_COMPILE_WORK_GROUP_SIZE:            KernelWorkGroupInfo read new KernelWorkGroupInfo($11B1);
+    public static property KERNEL_LOCAL_MEM_SIZE:                     KernelWorkGroupInfo read new KernelWorkGroupInfo($11B2);
+    public static property KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: KernelWorkGroupInfo read new KernelWorkGroupInfo($11B3);
+    public static property KERNEL_PRIVATE_MEM_SIZE:                   KernelWorkGroupInfo read new KernelWorkGroupInfo($11B4);
+    public static property KERNEL_GLOBAL_WORK_SIZE:                   KernelWorkGroupInfo read new KernelWorkGroupInfo($11B5);
+    public static property KERNEL_SPILL_MEM_SIZE_INTEL:               KernelWorkGroupInfo read new KernelWorkGroupInfo($4109);
     
     public function ToString: string; override;
     begin
@@ -2659,13 +2011,9 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _MAP_READ                    := new MapFlags($0001);
-    private static _MAP_WRITE                   := new MapFlags($0002);
-    private static _MAP_WRITE_INVALIDATE_REGION := new MapFlags($0004);
-    
-    public static property MAP_READ:                    MapFlags read _MAP_READ;
-    public static property MAP_WRITE:                   MapFlags read _MAP_WRITE;
-    public static property MAP_WRITE_INVALIDATE_REGION: MapFlags read _MAP_WRITE_INVALIDATE_REGION;
+    public static property MAP_READ:                    MapFlags read new MapFlags($0001);
+    public static property MAP_WRITE:                   MapFlags read new MapFlags($0002);
+    public static property MAP_WRITE_INVALIDATE_REGION: MapFlags read new MapFlags($0004);
     
     public static function operator+(f1,f2: MapFlags) := new MapFlags(f1.val or f2.val);
     public static function operator or(f1,f2: MapFlags) := f1+f2;
@@ -2694,51 +2042,28 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _MEM_READ_WRITE                      := new MemFlags($0001);
-    private static _MEM_WRITE_ONLY                      := new MemFlags($0002);
-    private static _MEM_READ_ONLY                       := new MemFlags($0004);
-    private static _MEM_USE_HOST_PTR                    := new MemFlags($0008);
-    private static _MEM_ALLOC_HOST_PTR                  := new MemFlags($0010);
-    private static _MEM_COPY_HOST_PTR                   := new MemFlags($0020);
-    private static _MEM_HOST_WRITE_ONLY                 := new MemFlags($0080);
-    private static _MEM_HOST_READ_ONLY                  := new MemFlags($0100);
-    private static _MEM_HOST_NO_ACCESS                  := new MemFlags($0200);
-    private static _MEM_KERNEL_READ_AND_WRITE           := new MemFlags($1000);
-    private static _MEM_FORCE_HOST_MEMORY_INTEL         := new MemFlags($100000);
-    private static _MEM_NO_ACCESS_INTEL                 := new MemFlags($1000000);
-    private static _MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL := new MemFlags($2000000);
-    private static _MEM_USE_UNCACHED_CPU_MEMORY_IMG     := new MemFlags($4000000);
-    private static _MEM_USE_CACHED_CPU_MEMORY_IMG       := new MemFlags($8000000);
-    private static _MEM_USE_GRALLOC_PTR_IMG             := new MemFlags($10000000);
-    private static _MEM_EXT_HOST_PTR_QCOM               := new MemFlags($20000000);
-    private static _MEM_RESERVED0_ARM                   := new MemFlags($100000000);
-    private static _MEM_RESERVED1_ARM                   := new MemFlags($200000000);
-    private static _MEM_RESERVED2_ARM                   := new MemFlags($400000000);
-    private static _MEM_RESERVED3_ARM                   := new MemFlags($800000000);
-    private static _MEM_RESERVED4_ARM                   := new MemFlags($1000000000);
-    
-    public static property MEM_READ_WRITE:                      MemFlags read _MEM_READ_WRITE;
-    public static property MEM_WRITE_ONLY:                      MemFlags read _MEM_WRITE_ONLY;
-    public static property MEM_READ_ONLY:                       MemFlags read _MEM_READ_ONLY;
-    public static property MEM_USE_HOST_PTR:                    MemFlags read _MEM_USE_HOST_PTR;
-    public static property MEM_ALLOC_HOST_PTR:                  MemFlags read _MEM_ALLOC_HOST_PTR;
-    public static property MEM_COPY_HOST_PTR:                   MemFlags read _MEM_COPY_HOST_PTR;
-    public static property MEM_HOST_WRITE_ONLY:                 MemFlags read _MEM_HOST_WRITE_ONLY;
-    public static property MEM_HOST_READ_ONLY:                  MemFlags read _MEM_HOST_READ_ONLY;
-    public static property MEM_HOST_NO_ACCESS:                  MemFlags read _MEM_HOST_NO_ACCESS;
-    public static property MEM_KERNEL_READ_AND_WRITE:           MemFlags read _MEM_KERNEL_READ_AND_WRITE;
-    public static property MEM_FORCE_HOST_MEMORY_INTEL:         MemFlags read _MEM_FORCE_HOST_MEMORY_INTEL;
-    public static property MEM_NO_ACCESS_INTEL:                 MemFlags read _MEM_NO_ACCESS_INTEL;
-    public static property MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL: MemFlags read _MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL;
-    public static property MEM_USE_UNCACHED_CPU_MEMORY_IMG:     MemFlags read _MEM_USE_UNCACHED_CPU_MEMORY_IMG;
-    public static property MEM_USE_CACHED_CPU_MEMORY_IMG:       MemFlags read _MEM_USE_CACHED_CPU_MEMORY_IMG;
-    public static property MEM_USE_GRALLOC_PTR_IMG:             MemFlags read _MEM_USE_GRALLOC_PTR_IMG;
-    public static property MEM_EXT_HOST_PTR_QCOM:               MemFlags read _MEM_EXT_HOST_PTR_QCOM;
-    public static property MEM_RESERVED0_ARM:                   MemFlags read _MEM_RESERVED0_ARM;
-    public static property MEM_RESERVED1_ARM:                   MemFlags read _MEM_RESERVED1_ARM;
-    public static property MEM_RESERVED2_ARM:                   MemFlags read _MEM_RESERVED2_ARM;
-    public static property MEM_RESERVED3_ARM:                   MemFlags read _MEM_RESERVED3_ARM;
-    public static property MEM_RESERVED4_ARM:                   MemFlags read _MEM_RESERVED4_ARM;
+    public static property MEM_READ_WRITE:                      MemFlags read new MemFlags($0001);
+    public static property MEM_WRITE_ONLY:                      MemFlags read new MemFlags($0002);
+    public static property MEM_READ_ONLY:                       MemFlags read new MemFlags($0004);
+    public static property MEM_USE_HOST_PTR:                    MemFlags read new MemFlags($0008);
+    public static property MEM_ALLOC_HOST_PTR:                  MemFlags read new MemFlags($0010);
+    public static property MEM_COPY_HOST_PTR:                   MemFlags read new MemFlags($0020);
+    public static property MEM_HOST_WRITE_ONLY:                 MemFlags read new MemFlags($0080);
+    public static property MEM_HOST_READ_ONLY:                  MemFlags read new MemFlags($0100);
+    public static property MEM_HOST_NO_ACCESS:                  MemFlags read new MemFlags($0200);
+    public static property MEM_KERNEL_READ_AND_WRITE:           MemFlags read new MemFlags($1000);
+    public static property MEM_FORCE_HOST_MEMORY_INTEL:         MemFlags read new MemFlags($100000);
+    public static property MEM_NO_ACCESS_INTEL:                 MemFlags read new MemFlags($1000000);
+    public static property MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL: MemFlags read new MemFlags($2000000);
+    public static property MEM_USE_UNCACHED_CPU_MEMORY_IMG:     MemFlags read new MemFlags($4000000);
+    public static property MEM_USE_CACHED_CPU_MEMORY_IMG:       MemFlags read new MemFlags($8000000);
+    public static property MEM_USE_GRALLOC_PTR_IMG:             MemFlags read new MemFlags($10000000);
+    public static property MEM_EXT_HOST_PTR_QCOM:               MemFlags read new MemFlags($20000000);
+    public static property MEM_RESERVED0_ARM:                   MemFlags read new MemFlags($100000000);
+    public static property MEM_RESERVED1_ARM:                   MemFlags read new MemFlags($200000000);
+    public static property MEM_RESERVED2_ARM:                   MemFlags read new MemFlags($400000000);
+    public static property MEM_RESERVED3_ARM:                   MemFlags read new MemFlags($800000000);
+    public static property MEM_RESERVED4_ARM:                   MemFlags read new MemFlags($1000000000);
     
     public static function operator+(f1,f2: MemFlags) := new MemFlags(f1.val or f2.val);
     public static function operator or(f1,f2: MemFlags) := f1+f2;
@@ -2805,45 +2130,25 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _MEM_TYPE                       := new MemInfo($1100);
-    private static _MEM_FLAGS                      := new MemInfo($1101);
-    private static _MEM_SIZE                       := new MemInfo($1102);
-    private static _MEM_HOST_PTR                   := new MemInfo($1103);
-    private static _MEM_MAP_COUNT                  := new MemInfo($1104);
-    private static _MEM_REFERENCE_COUNT            := new MemInfo($1105);
-    private static _MEM_CONTEXT                    := new MemInfo($1106);
-    private static _MEM_ASSOCIATED_MEMOBJECT       := new MemInfo($1107);
-    private static _MEM_OFFSET                     := new MemInfo($1108);
-    private static _MEM_USES_SVM_POINTER           := new MemInfo($1109);
-    private static _MEM_PROPERTIES                 := new MemInfo($110A);
-    private static _MEM_DX9_MEDIA_ADAPTER_TYPE_KHR := new MemInfo($2028);
-    private static _MEM_DX9_MEDIA_SURFACE_INFO_KHR := new MemInfo($2029);
-    private static _MEM_D3D10_RESOURCE_KHR         := new MemInfo($4015);
-    private static _MEM_D3D11_RESOURCE_KHR         := new MemInfo($401E);
-    private static _MEM_DX9_RESOURCE_INTEL         := new MemInfo($4027);
-    private static _MEM_DX9_SHARED_HANDLE_INTEL    := new MemInfo($4074);
-    private static _MEM_VA_API_MEDIA_SURFACE_INTEL := new MemInfo($4098);
-    private static _MEM_USES_SVM_POINTER_ARM       := new MemInfo($40B7);
-    
-    public static property MEM_TYPE:                       MemInfo read _MEM_TYPE;
-    public static property MEM_FLAGS:                      MemInfo read _MEM_FLAGS;
-    public static property MEM_SIZE:                       MemInfo read _MEM_SIZE;
-    public static property MEM_HOST_PTR:                   MemInfo read _MEM_HOST_PTR;
-    public static property MEM_MAP_COUNT:                  MemInfo read _MEM_MAP_COUNT;
-    public static property MEM_REFERENCE_COUNT:            MemInfo read _MEM_REFERENCE_COUNT;
-    public static property MEM_CONTEXT:                    MemInfo read _MEM_CONTEXT;
-    public static property MEM_ASSOCIATED_MEMOBJECT:       MemInfo read _MEM_ASSOCIATED_MEMOBJECT;
-    public static property MEM_OFFSET:                     MemInfo read _MEM_OFFSET;
-    public static property MEM_USES_SVM_POINTER:           MemInfo read _MEM_USES_SVM_POINTER;
-    public static property MEM_PROPERTIES:                 MemInfo read _MEM_PROPERTIES;
-    public static property MEM_DX9_MEDIA_ADAPTER_TYPE_KHR: MemInfo read _MEM_DX9_MEDIA_ADAPTER_TYPE_KHR;
-    public static property MEM_DX9_MEDIA_SURFACE_INFO_KHR: MemInfo read _MEM_DX9_MEDIA_SURFACE_INFO_KHR;
-    public static property MEM_D3D10_RESOURCE_KHR:         MemInfo read _MEM_D3D10_RESOURCE_KHR;
-    public static property MEM_D3D11_RESOURCE_KHR:         MemInfo read _MEM_D3D11_RESOURCE_KHR;
-    public static property MEM_DX9_RESOURCE_INTEL:         MemInfo read _MEM_DX9_RESOURCE_INTEL;
-    public static property MEM_DX9_SHARED_HANDLE_INTEL:    MemInfo read _MEM_DX9_SHARED_HANDLE_INTEL;
-    public static property MEM_VA_API_MEDIA_SURFACE_INTEL: MemInfo read _MEM_VA_API_MEDIA_SURFACE_INTEL;
-    public static property MEM_USES_SVM_POINTER_ARM:       MemInfo read _MEM_USES_SVM_POINTER_ARM;
+    public static property MEM_TYPE:                       MemInfo read new MemInfo($1100);
+    public static property MEM_FLAGS:                      MemInfo read new MemInfo($1101);
+    public static property MEM_SIZE:                       MemInfo read new MemInfo($1102);
+    public static property MEM_HOST_PTR:                   MemInfo read new MemInfo($1103);
+    public static property MEM_MAP_COUNT:                  MemInfo read new MemInfo($1104);
+    public static property MEM_REFERENCE_COUNT:            MemInfo read new MemInfo($1105);
+    public static property MEM_CONTEXT:                    MemInfo read new MemInfo($1106);
+    public static property MEM_ASSOCIATED_MEMOBJECT:       MemInfo read new MemInfo($1107);
+    public static property MEM_OFFSET:                     MemInfo read new MemInfo($1108);
+    public static property MEM_USES_SVM_POINTER:           MemInfo read new MemInfo($1109);
+    public static property MEM_PROPERTIES:                 MemInfo read new MemInfo($110A);
+    public static property MEM_DX9_MEDIA_ADAPTER_TYPE_KHR: MemInfo read new MemInfo($2028);
+    public static property MEM_DX9_MEDIA_SURFACE_INFO_KHR: MemInfo read new MemInfo($2029);
+    public static property MEM_D3D10_RESOURCE_KHR:         MemInfo read new MemInfo($4015);
+    public static property MEM_D3D11_RESOURCE_KHR:         MemInfo read new MemInfo($401E);
+    public static property MEM_DX9_RESOURCE_INTEL:         MemInfo read new MemInfo($4027);
+    public static property MEM_DX9_SHARED_HANDLE_INTEL:    MemInfo read new MemInfo($4074);
+    public static property MEM_VA_API_MEDIA_SURFACE_INTEL: MemInfo read new MemInfo($4098);
+    public static property MEM_USES_SVM_POINTER_ARM:       MemInfo read new MemInfo($40B7);
     
     public function ToString: string; override;
     begin
@@ -2875,11 +2180,8 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _MIGRATE_MEM_OBJECT_HOST              := new MemMigrationFlags($0001);
-    private static _MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED := new MemMigrationFlags($0002);
-    
-    public static property MIGRATE_MEM_OBJECT_HOST:              MemMigrationFlags read _MIGRATE_MEM_OBJECT_HOST;
-    public static property MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED: MemMigrationFlags read _MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED;
+    public static property MIGRATE_MEM_OBJECT_HOST:              MemMigrationFlags read new MemMigrationFlags($0001);
+    public static property MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED: MemMigrationFlags read new MemMigrationFlags($0002);
     
     public static function operator+(f1,f2: MemMigrationFlags) := new MemMigrationFlags(f1.val or f2.val);
     public static function operator or(f1,f2: MemMigrationFlags) := f1+f2;
@@ -2906,9 +2208,7 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _MIGRATE_MEM_OBJECT_HOST_EXT := new MemMigrationFlagsExt($0001);
-    
-    public static property MIGRATE_MEM_OBJECT_HOST_EXT: MemMigrationFlagsExt read _MIGRATE_MEM_OBJECT_HOST_EXT;
+    public static property MIGRATE_MEM_OBJECT_HOST_EXT: MemMigrationFlagsExt read new MemMigrationFlagsExt($0001);
     
     public function ToString: string; override;
     begin
@@ -2922,23 +2222,14 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _MEM_OBJECT_BUFFER         := new MemObjectType($10F0);
-    private static _MEM_OBJECT_IMAGE2D        := new MemObjectType($10F1);
-    private static _MEM_OBJECT_IMAGE3D        := new MemObjectType($10F2);
-    private static _MEM_OBJECT_IMAGE2D_ARRAY  := new MemObjectType($10F3);
-    private static _MEM_OBJECT_IMAGE1D        := new MemObjectType($10F4);
-    private static _MEM_OBJECT_IMAGE1D_ARRAY  := new MemObjectType($10F5);
-    private static _MEM_OBJECT_IMAGE1D_BUFFER := new MemObjectType($10F6);
-    private static _MEM_OBJECT_PIPE           := new MemObjectType($10F7);
-    
-    public static property MEM_OBJECT_BUFFER:         MemObjectType read _MEM_OBJECT_BUFFER;
-    public static property MEM_OBJECT_IMAGE2D:        MemObjectType read _MEM_OBJECT_IMAGE2D;
-    public static property MEM_OBJECT_IMAGE3D:        MemObjectType read _MEM_OBJECT_IMAGE3D;
-    public static property MEM_OBJECT_IMAGE2D_ARRAY:  MemObjectType read _MEM_OBJECT_IMAGE2D_ARRAY;
-    public static property MEM_OBJECT_IMAGE1D:        MemObjectType read _MEM_OBJECT_IMAGE1D;
-    public static property MEM_OBJECT_IMAGE1D_ARRAY:  MemObjectType read _MEM_OBJECT_IMAGE1D_ARRAY;
-    public static property MEM_OBJECT_IMAGE1D_BUFFER: MemObjectType read _MEM_OBJECT_IMAGE1D_BUFFER;
-    public static property MEM_OBJECT_PIPE:           MemObjectType read _MEM_OBJECT_PIPE;
+    public static property MEM_OBJECT_BUFFER:         MemObjectType read new MemObjectType($10F0);
+    public static property MEM_OBJECT_IMAGE2D:        MemObjectType read new MemObjectType($10F1);
+    public static property MEM_OBJECT_IMAGE3D:        MemObjectType read new MemObjectType($10F2);
+    public static property MEM_OBJECT_IMAGE2D_ARRAY:  MemObjectType read new MemObjectType($10F3);
+    public static property MEM_OBJECT_IMAGE1D:        MemObjectType read new MemObjectType($10F4);
+    public static property MEM_OBJECT_IMAGE1D_ARRAY:  MemObjectType read new MemObjectType($10F5);
+    public static property MEM_OBJECT_IMAGE1D_BUFFER: MemObjectType read new MemObjectType($10F6);
+    public static property MEM_OBJECT_PIPE:           MemObjectType read new MemObjectType($10F7);
     
     public function ToString: string; override;
     begin
@@ -2959,9 +2250,7 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _MEM_ALLOC_FLAGS_IMG := new MemProperties($40D7);
-    
-    public static property MEM_ALLOC_FLAGS_IMG: MemProperties read _MEM_ALLOC_FLAGS_IMG;
+    public static property MEM_ALLOC_FLAGS_IMG: MemProperties read new MemProperties($40D7);
     
     public function ToString: string; override;
     begin
@@ -2975,11 +2264,8 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _MEM_ALLOC_FLAGS_INTEL := new MemPropertiesIntel($4195);
-    private static _MEM_CHANNEL_INTEL     := new MemPropertiesIntel($4213);
-    
-    public static property MEM_ALLOC_FLAGS_INTEL: MemPropertiesIntel read _MEM_ALLOC_FLAGS_INTEL;
-    public static property MEM_CHANNEL_INTEL:     MemPropertiesIntel read _MEM_CHANNEL_INTEL;
+    public static property MEM_ALLOC_FLAGS_INTEL: MemPropertiesIntel read new MemPropertiesIntel($4195);
+    public static property MEM_CHANNEL_INTEL:     MemPropertiesIntel read new MemPropertiesIntel($4213);
     
     public function ToString: string; override;
     begin
@@ -2994,11 +2280,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _MIPMAP_FILTER_ANY_IMG := new MipmapFilterModeImg($0000);
-    private static _MIPMAP_FILTER_BOX_IMG := new MipmapFilterModeImg($0001);
-    
-    public static property MIPMAP_FILTER_ANY_IMG: MipmapFilterModeImg read _MIPMAP_FILTER_ANY_IMG;
-    public static property MIPMAP_FILTER_BOX_IMG: MipmapFilterModeImg read _MIPMAP_FILTER_BOX_IMG;
+    public static property MIPMAP_FILTER_ANY_IMG: MipmapFilterModeImg read new MipmapFilterModeImg($0000);
+    public static property MIPMAP_FILTER_BOX_IMG: MipmapFilterModeImg read new MipmapFilterModeImg($0001);
     
     public function ToString: string; override;
     begin
@@ -3013,13 +2296,9 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PIPE_PACKET_SIZE := new PipeInfo($1120);
-    private static _PIPE_MAX_PACKETS := new PipeInfo($1121);
-    private static _PIPE_PROPERTIES  := new PipeInfo($1122);
-    
-    public static property PIPE_PACKET_SIZE: PipeInfo read _PIPE_PACKET_SIZE;
-    public static property PIPE_MAX_PACKETS: PipeInfo read _PIPE_MAX_PACKETS;
-    public static property PIPE_PROPERTIES:  PipeInfo read _PIPE_PROPERTIES;
+    public static property PIPE_PACKET_SIZE: PipeInfo read new PipeInfo($1120);
+    public static property PIPE_MAX_PACKETS: PipeInfo read new PipeInfo($1121);
+    public static property PIPE_PROPERTIES:  PipeInfo read new PipeInfo($1122);
     
     public function ToString: string; override;
     begin
@@ -3035,29 +2314,17 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PLATFORM_PROFILE                     := new PlatformInfo($0900);
-    private static _PLATFORM_VERSION                     := new PlatformInfo($0901);
-    private static _PLATFORM_NAME                        := new PlatformInfo($0902);
-    private static _PLATFORM_VENDOR                      := new PlatformInfo($0903);
-    private static _PLATFORM_EXTENSIONS                  := new PlatformInfo($0904);
-    private static _PLATFORM_HOST_TIMER_RESOLUTION       := new PlatformInfo($0905);
-    private static _PLATFORM_NUMERIC_VERSION             := new PlatformInfo($0906);
-    private static _PLATFORM_NUMERIC_VERSION_KHR         := new PlatformInfo($0906);
-    private static _PLATFORM_EXTENSIONS_WITH_VERSION     := new PlatformInfo($0907);
-    private static _PLATFORM_EXTENSIONS_WITH_VERSION_KHR := new PlatformInfo($0907);
-    private static _PLATFORM_ICD_SUFFIX_KHR              := new PlatformInfo($0920);
-    
-    public static property PLATFORM_PROFILE:                     PlatformInfo read _PLATFORM_PROFILE;
-    public static property PLATFORM_VERSION:                     PlatformInfo read _PLATFORM_VERSION;
-    public static property PLATFORM_NAME:                        PlatformInfo read _PLATFORM_NAME;
-    public static property PLATFORM_VENDOR:                      PlatformInfo read _PLATFORM_VENDOR;
-    public static property PLATFORM_EXTENSIONS:                  PlatformInfo read _PLATFORM_EXTENSIONS;
-    public static property PLATFORM_HOST_TIMER_RESOLUTION:       PlatformInfo read _PLATFORM_HOST_TIMER_RESOLUTION;
-    public static property PLATFORM_NUMERIC_VERSION:             PlatformInfo read _PLATFORM_NUMERIC_VERSION;
-    public static property PLATFORM_NUMERIC_VERSION_KHR:         PlatformInfo read _PLATFORM_NUMERIC_VERSION_KHR;
-    public static property PLATFORM_EXTENSIONS_WITH_VERSION:     PlatformInfo read _PLATFORM_EXTENSIONS_WITH_VERSION;
-    public static property PLATFORM_EXTENSIONS_WITH_VERSION_KHR: PlatformInfo read _PLATFORM_EXTENSIONS_WITH_VERSION_KHR;
-    public static property PLATFORM_ICD_SUFFIX_KHR:              PlatformInfo read _PLATFORM_ICD_SUFFIX_KHR;
+    public static property PLATFORM_PROFILE:                     PlatformInfo read new PlatformInfo($0900);
+    public static property PLATFORM_VERSION:                     PlatformInfo read new PlatformInfo($0901);
+    public static property PLATFORM_NAME:                        PlatformInfo read new PlatformInfo($0902);
+    public static property PLATFORM_VENDOR:                      PlatformInfo read new PlatformInfo($0903);
+    public static property PLATFORM_EXTENSIONS:                  PlatformInfo read new PlatformInfo($0904);
+    public static property PLATFORM_HOST_TIMER_RESOLUTION:       PlatformInfo read new PlatformInfo($0905);
+    public static property PLATFORM_NUMERIC_VERSION:             PlatformInfo read new PlatformInfo($0906);
+    public static property PLATFORM_NUMERIC_VERSION_KHR:         PlatformInfo read new PlatformInfo($0906);
+    public static property PLATFORM_EXTENSIONS_WITH_VERSION:     PlatformInfo read new PlatformInfo($0907);
+    public static property PLATFORM_EXTENSIONS_WITH_VERSION_KHR: PlatformInfo read new PlatformInfo($0907);
+    public static property PLATFORM_ICD_SUFFIX_KHR:              PlatformInfo read new PlatformInfo($0920);
     
     public function ToString: string; override;
     begin
@@ -3081,17 +2348,11 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PROFILING_COMMAND_QUEUED   := new ProfilingInfo($1280);
-    private static _PROFILING_COMMAND_SUBMIT   := new ProfilingInfo($1281);
-    private static _PROFILING_COMMAND_START    := new ProfilingInfo($1282);
-    private static _PROFILING_COMMAND_END      := new ProfilingInfo($1283);
-    private static _PROFILING_COMMAND_COMPLETE := new ProfilingInfo($1284);
-    
-    public static property PROFILING_COMMAND_QUEUED:   ProfilingInfo read _PROFILING_COMMAND_QUEUED;
-    public static property PROFILING_COMMAND_SUBMIT:   ProfilingInfo read _PROFILING_COMMAND_SUBMIT;
-    public static property PROFILING_COMMAND_START:    ProfilingInfo read _PROFILING_COMMAND_START;
-    public static property PROFILING_COMMAND_END:      ProfilingInfo read _PROFILING_COMMAND_END;
-    public static property PROFILING_COMMAND_COMPLETE: ProfilingInfo read _PROFILING_COMMAND_COMPLETE;
+    public static property PROFILING_COMMAND_QUEUED:   ProfilingInfo read new ProfilingInfo($1280);
+    public static property PROFILING_COMMAND_SUBMIT:   ProfilingInfo read new ProfilingInfo($1281);
+    public static property PROFILING_COMMAND_START:    ProfilingInfo read new ProfilingInfo($1282);
+    public static property PROFILING_COMMAND_END:      ProfilingInfo read new ProfilingInfo($1283);
+    public static property PROFILING_COMMAND_COMPLETE: ProfilingInfo read new ProfilingInfo($1284);
     
     public function ToString: string; override;
     begin
@@ -3109,17 +2370,11 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PROGRAM_BINARY_TYPE_NONE            := new ProgramBinaryType($0000);
-    private static _PROGRAM_BINARY_TYPE_COMPILED_OBJECT := new ProgramBinaryType($0001);
-    private static _PROGRAM_BINARY_TYPE_LIBRARY         := new ProgramBinaryType($0002);
-    private static _PROGRAM_BINARY_TYPE_EXECUTABLE      := new ProgramBinaryType($0004);
-    private static _PROGRAM_BINARY_TYPE_INTERMEDIATE    := new ProgramBinaryType($40E1);
-    
-    public static property PROGRAM_BINARY_TYPE_NONE:            ProgramBinaryType read _PROGRAM_BINARY_TYPE_NONE;
-    public static property PROGRAM_BINARY_TYPE_COMPILED_OBJECT: ProgramBinaryType read _PROGRAM_BINARY_TYPE_COMPILED_OBJECT;
-    public static property PROGRAM_BINARY_TYPE_LIBRARY:         ProgramBinaryType read _PROGRAM_BINARY_TYPE_LIBRARY;
-    public static property PROGRAM_BINARY_TYPE_EXECUTABLE:      ProgramBinaryType read _PROGRAM_BINARY_TYPE_EXECUTABLE;
-    public static property PROGRAM_BINARY_TYPE_INTERMEDIATE:    ProgramBinaryType read _PROGRAM_BINARY_TYPE_INTERMEDIATE;
+    public static property PROGRAM_BINARY_TYPE_NONE:            ProgramBinaryType read new ProgramBinaryType($0000);
+    public static property PROGRAM_BINARY_TYPE_COMPILED_OBJECT: ProgramBinaryType read new ProgramBinaryType($0001);
+    public static property PROGRAM_BINARY_TYPE_LIBRARY:         ProgramBinaryType read new ProgramBinaryType($0002);
+    public static property PROGRAM_BINARY_TYPE_EXECUTABLE:      ProgramBinaryType read new ProgramBinaryType($0004);
+    public static property PROGRAM_BINARY_TYPE_INTERMEDIATE:    ProgramBinaryType read new ProgramBinaryType($40E1);
     
     public function ToString: string; override;
     begin
@@ -3137,17 +2392,11 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PROGRAM_BUILD_STATUS                     := new ProgramBuildInfo($1181);
-    private static _PROGRAM_BUILD_OPTIONS                    := new ProgramBuildInfo($1182);
-    private static _PROGRAM_BUILD_LOG                        := new ProgramBuildInfo($1183);
-    private static _PROGRAM_BINARY_TYPE                      := new ProgramBuildInfo($1184);
-    private static _PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE := new ProgramBuildInfo($1185);
-    
-    public static property PROGRAM_BUILD_STATUS:                     ProgramBuildInfo read _PROGRAM_BUILD_STATUS;
-    public static property PROGRAM_BUILD_OPTIONS:                    ProgramBuildInfo read _PROGRAM_BUILD_OPTIONS;
-    public static property PROGRAM_BUILD_LOG:                        ProgramBuildInfo read _PROGRAM_BUILD_LOG;
-    public static property PROGRAM_BINARY_TYPE:                      ProgramBuildInfo read _PROGRAM_BINARY_TYPE;
-    public static property PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE: ProgramBuildInfo read _PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE;
+    public static property PROGRAM_BUILD_STATUS:                     ProgramBuildInfo read new ProgramBuildInfo($1181);
+    public static property PROGRAM_BUILD_OPTIONS:                    ProgramBuildInfo read new ProgramBuildInfo($1182);
+    public static property PROGRAM_BUILD_LOG:                        ProgramBuildInfo read new ProgramBuildInfo($1183);
+    public static property PROGRAM_BINARY_TYPE:                      ProgramBuildInfo read new ProgramBuildInfo($1184);
+    public static property PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE: ProgramBuildInfo read new ProgramBuildInfo($1185);
     
     public function ToString: string; override;
     begin
@@ -3165,33 +2414,19 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PROGRAM_REFERENCE_COUNT            := new ProgramInfo($1160);
-    private static _PROGRAM_CONTEXT                    := new ProgramInfo($1161);
-    private static _PROGRAM_NUM_DEVICES                := new ProgramInfo($1162);
-    private static _PROGRAM_DEVICES                    := new ProgramInfo($1163);
-    private static _PROGRAM_SOURCE                     := new ProgramInfo($1164);
-    private static _PROGRAM_BINARY_SIZES               := new ProgramInfo($1165);
-    private static _PROGRAM_BINARIES                   := new ProgramInfo($1166);
-    private static _PROGRAM_NUM_KERNELS                := new ProgramInfo($1167);
-    private static _PROGRAM_KERNEL_NAMES               := new ProgramInfo($1168);
-    private static _PROGRAM_IL                         := new ProgramInfo($1169);
-    private static _PROGRAM_IL_KHR                     := new ProgramInfo($1169);
-    private static _PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT := new ProgramInfo($116A);
-    private static _PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT := new ProgramInfo($116B);
-    
-    public static property PROGRAM_REFERENCE_COUNT:            ProgramInfo read _PROGRAM_REFERENCE_COUNT;
-    public static property PROGRAM_CONTEXT:                    ProgramInfo read _PROGRAM_CONTEXT;
-    public static property PROGRAM_NUM_DEVICES:                ProgramInfo read _PROGRAM_NUM_DEVICES;
-    public static property PROGRAM_DEVICES:                    ProgramInfo read _PROGRAM_DEVICES;
-    public static property PROGRAM_SOURCE:                     ProgramInfo read _PROGRAM_SOURCE;
-    public static property PROGRAM_BINARY_SIZES:               ProgramInfo read _PROGRAM_BINARY_SIZES;
-    public static property PROGRAM_BINARIES:                   ProgramInfo read _PROGRAM_BINARIES;
-    public static property PROGRAM_NUM_KERNELS:                ProgramInfo read _PROGRAM_NUM_KERNELS;
-    public static property PROGRAM_KERNEL_NAMES:               ProgramInfo read _PROGRAM_KERNEL_NAMES;
-    public static property PROGRAM_IL:                         ProgramInfo read _PROGRAM_IL;
-    public static property PROGRAM_IL_KHR:                     ProgramInfo read _PROGRAM_IL_KHR;
-    public static property PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: ProgramInfo read _PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT;
-    public static property PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: ProgramInfo read _PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT;
+    public static property PROGRAM_REFERENCE_COUNT:            ProgramInfo read new ProgramInfo($1160);
+    public static property PROGRAM_CONTEXT:                    ProgramInfo read new ProgramInfo($1161);
+    public static property PROGRAM_NUM_DEVICES:                ProgramInfo read new ProgramInfo($1162);
+    public static property PROGRAM_DEVICES:                    ProgramInfo read new ProgramInfo($1163);
+    public static property PROGRAM_SOURCE:                     ProgramInfo read new ProgramInfo($1164);
+    public static property PROGRAM_BINARY_SIZES:               ProgramInfo read new ProgramInfo($1165);
+    public static property PROGRAM_BINARIES:                   ProgramInfo read new ProgramInfo($1166);
+    public static property PROGRAM_NUM_KERNELS:                ProgramInfo read new ProgramInfo($1167);
+    public static property PROGRAM_KERNEL_NAMES:               ProgramInfo read new ProgramInfo($1168);
+    public static property PROGRAM_IL:                         ProgramInfo read new ProgramInfo($1169);
+    public static property PROGRAM_IL_KHR:                     ProgramInfo read new ProgramInfo($1169);
+    public static property PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: ProgramInfo read new ProgramInfo($116A);
+    public static property PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: ProgramInfo read new ProgramInfo($116B);
     
     public function ToString: string; override;
     begin
@@ -3217,13 +2452,9 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _QUEUE_PRIORITY_KHR        := new QueueProperties($1096);
-    private static _QUEUE_THROTTLE_KHR        := new QueueProperties($1097);
-    private static _QUEUE_KERNEL_BATCHING_ARM := new QueueProperties($41E7);
-    
-    public static property QUEUE_PRIORITY_KHR:        QueueProperties read _QUEUE_PRIORITY_KHR;
-    public static property QUEUE_THROTTLE_KHR:        QueueProperties read _QUEUE_THROTTLE_KHR;
-    public static property QUEUE_KERNEL_BATCHING_ARM: QueueProperties read _QUEUE_KERNEL_BATCHING_ARM;
+    public static property QUEUE_PRIORITY_KHR:        QueueProperties read new QueueProperties($1096);
+    public static property QUEUE_THROTTLE_KHR:        QueueProperties read new QueueProperties($1097);
+    public static property QUEUE_KERNEL_BATCHING_ARM: QueueProperties read new QueueProperties($41E7);
     
     public function ToString: string; override;
     begin
@@ -3239,25 +2470,15 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _SAMPLER_REFERENCE_COUNT   := new SamplerInfo($1150);
-    private static _SAMPLER_CONTEXT           := new SamplerInfo($1151);
-    private static _SAMPLER_NORMALIZED_COORDS := new SamplerInfo($1152);
-    private static _SAMPLER_ADDRESSING_MODE   := new SamplerInfo($1153);
-    private static _SAMPLER_FILTER_MODE       := new SamplerInfo($1154);
-    private static _SAMPLER_MIP_FILTER_MODE   := new SamplerInfo($1155);
-    private static _SAMPLER_LOD_MIN           := new SamplerInfo($1156);
-    private static _SAMPLER_LOD_MAX           := new SamplerInfo($1157);
-    private static _SAMPLER_PROPERTIES        := new SamplerInfo($1158);
-    
-    public static property SAMPLER_REFERENCE_COUNT:   SamplerInfo read _SAMPLER_REFERENCE_COUNT;
-    public static property SAMPLER_CONTEXT:           SamplerInfo read _SAMPLER_CONTEXT;
-    public static property SAMPLER_NORMALIZED_COORDS: SamplerInfo read _SAMPLER_NORMALIZED_COORDS;
-    public static property SAMPLER_ADDRESSING_MODE:   SamplerInfo read _SAMPLER_ADDRESSING_MODE;
-    public static property SAMPLER_FILTER_MODE:       SamplerInfo read _SAMPLER_FILTER_MODE;
-    public static property SAMPLER_MIP_FILTER_MODE:   SamplerInfo read _SAMPLER_MIP_FILTER_MODE;
-    public static property SAMPLER_LOD_MIN:           SamplerInfo read _SAMPLER_LOD_MIN;
-    public static property SAMPLER_LOD_MAX:           SamplerInfo read _SAMPLER_LOD_MAX;
-    public static property SAMPLER_PROPERTIES:        SamplerInfo read _SAMPLER_PROPERTIES;
+    public static property SAMPLER_REFERENCE_COUNT:   SamplerInfo read new SamplerInfo($1150);
+    public static property SAMPLER_CONTEXT:           SamplerInfo read new SamplerInfo($1151);
+    public static property SAMPLER_NORMALIZED_COORDS: SamplerInfo read new SamplerInfo($1152);
+    public static property SAMPLER_ADDRESSING_MODE:   SamplerInfo read new SamplerInfo($1153);
+    public static property SAMPLER_FILTER_MODE:       SamplerInfo read new SamplerInfo($1154);
+    public static property SAMPLER_MIP_FILTER_MODE:   SamplerInfo read new SamplerInfo($1155);
+    public static property SAMPLER_LOD_MIN:           SamplerInfo read new SamplerInfo($1156);
+    public static property SAMPLER_LOD_MAX:           SamplerInfo read new SamplerInfo($1157);
+    public static property SAMPLER_PROPERTIES:        SamplerInfo read new SamplerInfo($1158);
     
     public function ToString: string; override;
     begin
@@ -3279,13 +2500,9 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _SAMPLER_MIP_FILTER_MODE_KHR := new SamplerProperties($1155);
-    private static _SAMPLER_LOD_MIN_KHR         := new SamplerProperties($1156);
-    private static _SAMPLER_LOD_MAX_KHR         := new SamplerProperties($1157);
-    
-    public static property SAMPLER_MIP_FILTER_MODE_KHR: SamplerProperties read _SAMPLER_MIP_FILTER_MODE_KHR;
-    public static property SAMPLER_LOD_MIN_KHR:         SamplerProperties read _SAMPLER_LOD_MIN_KHR;
-    public static property SAMPLER_LOD_MAX_KHR:         SamplerProperties read _SAMPLER_LOD_MAX_KHR;
+    public static property SAMPLER_MIP_FILTER_MODE_KHR: SamplerProperties read new SamplerProperties($1155);
+    public static property SAMPLER_LOD_MIN_KHR:         SamplerProperties read new SamplerProperties($1156);
+    public static property SAMPLER_LOD_MAX_KHR:         SamplerProperties read new SamplerProperties($1157);
     
     public function ToString: string; override;
     begin
@@ -3301,31 +2518,18 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _MEM_READ_WRITE            := new SvmMemFlags($0001);
-    private static _MEM_WRITE_ONLY            := new SvmMemFlags($0002);
-    private static _MEM_READ_ONLY             := new SvmMemFlags($0004);
-    private static _MEM_USE_HOST_PTR          := new SvmMemFlags($0008);
-    private static _MEM_ALLOC_HOST_PTR        := new SvmMemFlags($0010);
-    private static _MEM_COPY_HOST_PTR         := new SvmMemFlags($0020);
-    private static _MEM_HOST_WRITE_ONLY       := new SvmMemFlags($0080);
-    private static _MEM_HOST_READ_ONLY        := new SvmMemFlags($0100);
-    private static _MEM_HOST_NO_ACCESS        := new SvmMemFlags($0200);
-    private static _MEM_SVM_FINE_GRAIN_BUFFER := new SvmMemFlags($0400);
-    private static _MEM_SVM_ATOMICS           := new SvmMemFlags($0800);
-    private static _MEM_KERNEL_READ_AND_WRITE := new SvmMemFlags($1000);
-    
-    public static property MEM_READ_WRITE:            SvmMemFlags read _MEM_READ_WRITE;
-    public static property MEM_WRITE_ONLY:            SvmMemFlags read _MEM_WRITE_ONLY;
-    public static property MEM_READ_ONLY:             SvmMemFlags read _MEM_READ_ONLY;
-    public static property MEM_USE_HOST_PTR:          SvmMemFlags read _MEM_USE_HOST_PTR;
-    public static property MEM_ALLOC_HOST_PTR:        SvmMemFlags read _MEM_ALLOC_HOST_PTR;
-    public static property MEM_COPY_HOST_PTR:         SvmMemFlags read _MEM_COPY_HOST_PTR;
-    public static property MEM_HOST_WRITE_ONLY:       SvmMemFlags read _MEM_HOST_WRITE_ONLY;
-    public static property MEM_HOST_READ_ONLY:        SvmMemFlags read _MEM_HOST_READ_ONLY;
-    public static property MEM_HOST_NO_ACCESS:        SvmMemFlags read _MEM_HOST_NO_ACCESS;
-    public static property MEM_SVM_FINE_GRAIN_BUFFER: SvmMemFlags read _MEM_SVM_FINE_GRAIN_BUFFER;
-    public static property MEM_SVM_ATOMICS:           SvmMemFlags read _MEM_SVM_ATOMICS;
-    public static property MEM_KERNEL_READ_AND_WRITE: SvmMemFlags read _MEM_KERNEL_READ_AND_WRITE;
+    public static property MEM_READ_WRITE:            SvmMemFlags read new SvmMemFlags($0001);
+    public static property MEM_WRITE_ONLY:            SvmMemFlags read new SvmMemFlags($0002);
+    public static property MEM_READ_ONLY:             SvmMemFlags read new SvmMemFlags($0004);
+    public static property MEM_USE_HOST_PTR:          SvmMemFlags read new SvmMemFlags($0008);
+    public static property MEM_ALLOC_HOST_PTR:        SvmMemFlags read new SvmMemFlags($0010);
+    public static property MEM_COPY_HOST_PTR:         SvmMemFlags read new SvmMemFlags($0020);
+    public static property MEM_HOST_WRITE_ONLY:       SvmMemFlags read new SvmMemFlags($0080);
+    public static property MEM_HOST_READ_ONLY:        SvmMemFlags read new SvmMemFlags($0100);
+    public static property MEM_HOST_NO_ACCESS:        SvmMemFlags read new SvmMemFlags($0200);
+    public static property MEM_SVM_FINE_GRAIN_BUFFER: SvmMemFlags read new SvmMemFlags($0400);
+    public static property MEM_SVM_ATOMICS:           SvmMemFlags read new SvmMemFlags($0800);
+    public static property MEM_KERNEL_READ_AND_WRITE: SvmMemFlags read new SvmMemFlags($1000);
     
     public function ToString: string; override;
     begin
@@ -3350,11 +2554,8 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _MEM_SVM_FINE_GRAIN_BUFFER_ARM := new SvmMemFlagsArm($0400);
-    private static _MEM_SVM_ATOMICS_ARM           := new SvmMemFlagsArm($0800);
-    
-    public static property MEM_SVM_FINE_GRAIN_BUFFER_ARM: SvmMemFlagsArm read _MEM_SVM_FINE_GRAIN_BUFFER_ARM;
-    public static property MEM_SVM_ATOMICS_ARM:           SvmMemFlagsArm read _MEM_SVM_ATOMICS_ARM;
+    public static property MEM_SVM_FINE_GRAIN_BUFFER_ARM: SvmMemFlagsArm read new SvmMemFlagsArm($0400);
+    public static property MEM_SVM_ATOMICS_ARM:           SvmMemFlagsArm read new SvmMemFlagsArm($0800);
     
     public function ToString: string; override;
     begin
@@ -3369,11 +2570,8 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PREFERRED_DEVICES_FOR_VA_API_INTEL := new VaApiDeviceSetIntel($4095);
-    private static _ALL_DEVICES_FOR_VA_API_INTEL       := new VaApiDeviceSetIntel($4096);
-    
-    public static property PREFERRED_DEVICES_FOR_VA_API_INTEL: VaApiDeviceSetIntel read _PREFERRED_DEVICES_FOR_VA_API_INTEL;
-    public static property ALL_DEVICES_FOR_VA_API_INTEL:       VaApiDeviceSetIntel read _ALL_DEVICES_FOR_VA_API_INTEL;
+    public static property PREFERRED_DEVICES_FOR_VA_API_INTEL: VaApiDeviceSetIntel read new VaApiDeviceSetIntel($4095);
+    public static property ALL_DEVICES_FOR_VA_API_INTEL:       VaApiDeviceSetIntel read new VaApiDeviceSetIntel($4096);
     
     public function ToString: string; override;
     begin
@@ -3388,9 +2586,7 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _VA_API_DISPLAY_INTEL := new VaApiDeviceSourceIntel($4094);
-    
-    public static property VA_API_DISPLAY_INTEL: VaApiDeviceSourceIntel read _VA_API_DISPLAY_INTEL;
+    public static property VA_API_DISPLAY_INTEL: VaApiDeviceSourceIntel read new VaApiDeviceSourceIntel($4094);
     
     public function ToString: string; override;
     begin

@@ -45,5 +45,15 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             base.visit(fe);
         }
+
+        private int countNestedLambdas = 0;
+        public override void visit(function_lambda_definition fld)
+        {
+            countNestedLambdas += 1;
+            if (countNestedLambdas>10)
+                throw new SyntaxVisitors.SyntaxVisitorError("NESTED_LAMBDAS_MAXIMUM_10", fld.source_context);
+            ProcessNode(fld.proc_body);
+            countNestedLambdas -= 1;
+        }
     }
 }
