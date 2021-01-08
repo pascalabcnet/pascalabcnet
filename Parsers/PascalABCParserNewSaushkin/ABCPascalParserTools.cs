@@ -224,6 +224,8 @@ namespace PascalABCSavParser
                 return string.Format(prefix + StringResources.Get("EXPECTEDBEGIN"), "'" + yytext + "'");
 
             var MaxTok = tokens.First();
+            if (yytext != null && yytext.ToLower() == "record" && MaxTok == "tkSealed")
+                return StringResources.Get("WRONG_ATTRIBUTE_FOR_RECORD");
 
             var ExpectedString = StringResources.Get("EXPECTED{1}");
 

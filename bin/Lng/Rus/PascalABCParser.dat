@@ -8,7 +8,7 @@ EXPECTED{1}=ожидалось {1}
 EXPECTEDR{1}=ожидался {1}
 EXPECTEDF{1}=ожидалась {1}
 EXPECTEDBEGIN=ожидался раздел описаний или begin
-
+WRONG_ATTRIBUTE_FOR_RECORD=Модификаторы abstract, sealed, auto и static недопустимы для record
 WITHOUT_INIT_AND_SIZE=Пропущен размер динамического массива
 
 OPERATOR_NOT_IMPLEMET_TO_THIS_OPEAND_TYPE=Операция не применима к операндам данного типа

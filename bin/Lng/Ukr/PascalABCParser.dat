@@ -8,6 +8,7 @@ EXPECTED{1}=очікувалося {1}
 EXPECTEDR{1}=очікувався {1}
 EXPECTEDF{1}=очікувалася {1}
 EXPECTEDBEGIN=очікувався розділ опису або begin
+WRONG_ATTRIBUTE_FOR_RECORD=Модификаторы abstract, sealed, auto и static недопустимы для record
 
 WITHOUT_INIT_AND_SIZE=Пропущений розмір динамічного масиву
 

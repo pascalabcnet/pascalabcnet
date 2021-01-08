@@ -8,6 +8,7 @@ EXPECTED{1}=expected {1}
 EXPECTEDR{1}=expected {1}
 EXPECTEDF{1}=expected {1}
 EXPECTEDBEGIN=declaration section or begin expected
+WRONG_ATTRIBUTE_FOR_RECORD=abstract, sealed, auto and static are not allowed for record
 
 WITHOUT_INIT_AND_SIZE=Size of dynamic array is passed
 
