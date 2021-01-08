@@ -2331,7 +2331,7 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 if (ctn.IsPointer)
                                     continue;
-                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), true, null);
+                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
                             }
                         }
                         return fn;
@@ -2373,7 +2373,7 @@ namespace PascalABCCompiler.TreeRealization
                                     ctn = (ctn as ref_type_node).pointed_type;
                                 if (ctn.IsPointer)
                                     continue;
-                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), true, null);
+                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
                             }
                         }
                         return fn;
