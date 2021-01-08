@@ -6,6 +6,7 @@ FOUNDEOF=Отримали кінець файлу, а
 EXPECTED{0}=Очікувалося {0}
 EXPECTED{1}=очікувалося {1}
 EXPECTEDR{1}=очікувався {1}
+EXPECTEDF{1}=очікувалася {1}
 EXPECTEDBEGIN=очікувався розділ опису або begin
 
 WITHOUT_INIT_AND_SIZE=Пропущений розмір динамічного масиву
@@ -29,6 +30,7 @@ TYPE_NAME_EXPECTED=Очікувався тип
 EOF1=кінець файлу
 EOF=(кінець файлу)
 TKIDENTIFIER=ідентифікатор
+TKSTRINGLITERAL=строкова константа
 TKINTEGER=число
 OPERATOR=оператор
 TKSEMICOLON=';'

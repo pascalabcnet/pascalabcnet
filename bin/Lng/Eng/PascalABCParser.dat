@@ -6,6 +6,7 @@ FOUNDEOF=Found end of file but
 EXPECTED{0}=Expected {0}
 EXPECTED{1}=expected {1}
 EXPECTEDR{1}=expected {1}
+EXPECTEDF{1}=expected {1}
 EXPECTEDBEGIN=declaration section or begin expected
 
 WITHOUT_INIT_AND_SIZE=Size of dynamic array is passed
@@ -29,7 +30,8 @@ TYPE_NAME_EXPECTED=Type expected
 
 EOF1=end of file
 EOF=(end of file)
-TKIDENTIFIER=identefier
+TKIDENTIFIER=identifier
+TKSTRINGLITERAL=string literal
 TKINTEGER=number
 OPERATOR=operator
 TKSEMICOLON=';'
