@@ -2387,6 +2387,8 @@ namespace PascalABCCompiler.TreeRealization
                                     continue;
                             }
                         }
+                        else if (fn.parameters[0].type.is_generic_parameter)
+                            continue;
                         return fn;
                     }
         		}
