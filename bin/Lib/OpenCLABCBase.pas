@@ -130,11 +130,9 @@ unit OpenCLABCBase;
 
 //ToDo Issue компилятора:
 //ToDo https://github.com/pascalabcnet/pascalabcnet/issues/{id}
-// - #1981
 // - #2145
 // - #2221
-// - #2289
-// - #2290
+// - #2398
 
 //ToDo Баги NVidia
 //ToDo https://developer.nvidia.com/nvidia_bug/{id}
@@ -2886,7 +2884,7 @@ type
     public function ThenConvert<TOtp>(f: (T, Context)->TOtp): CommandQueue<TOtp>;
     
     protected function ThenConvertBase<TOtp>(f: (object, Context)->TOtp): CommandQueue<TOtp>; override :=
-    ThenConvert(f as object as Func2<T, Context, TOtp>);
+    ThenConvert(f as object as Func2<T, Context, TOtp>); //ToDo #2221
     
     {$endregion ThenConvert}
     
@@ -2909,7 +2907,7 @@ type
     ///Подробнее в справке: "Очередь>>Создание очередей>>Множественное использование очереди"
     public function Multiusable: ()->CommandQueue<T>;
     
-    protected function MultiusableBase: ()->CommandQueueBase; override := Multiusable as object as Func<CommandQueueBase>; //ToDo #2221
+    protected function MultiusableBase: ()->CommandQueueBase; override := Multiusable() as object as Func<CommandQueueBase>; //ToDo #2221
     
     {$endregion Multiusable}
     
@@ -3019,7 +3017,7 @@ type
     end;
     private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
     
-    public function GetQS: sequence of CommandQueueBase := qs.Append(last as CommandQueueBase); //ToDo #? https://github.com/pascalabcnet/pascalabcnet/issues?q=extensionmethod+is%3Aclosed
+    public function GetQS: sequence of CommandQueueBase := qs.Append(last as CommandQueueBase);
     
     protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override;
     begin
@@ -3528,7 +3526,7 @@ type
         var next := enmr.MoveNext;
         
         if not (curr is IConstQueue) or not next then
-          if curr as object is T(var sqa) then //ToDo #2290
+          if curr is T(var sqa) then
             res.AddRange(sqa.GetQS) else
             res += curr;
         
@@ -4345,7 +4343,7 @@ type
     ///Создаёт аргумент kernel-а, представляющий буфер
     public static function FromBufferCQ(bq: CommandQueue<Buffer>): KernelArg;
     public static function operator implicit(bq: CommandQueue<Buffer>): KernelArg := FromBufferCQ(bq);
-    public static function operator implicit(bq: BufferCommandQueue): KernelArg := FromBufferCQ(bq as CommandQueue<Buffer>);
+    public static function operator implicit(bq: BufferCommandQueue): KernelArg := FromBufferCQ(bq);
     
     {$endregion Buffer}
     
@@ -4453,9 +4451,10 @@ end;
 
 {$region QueueRes}
 
-static function QueueResDelayedBase<T>.MakeNew(need_ptr_qr: boolean) := need_ptr_qr ?
-new QueueResDelayedPtr<T> as QueueResDelayedBase<T> :
-new QueueResDelayedObj<T> as QueueResDelayedBase<T>;
+static function QueueResDelayedBase<T>.MakeNew(need_ptr_qr: boolean) :=
+if need_ptr_qr then
+  new QueueResDelayedPtr<T> as QueueResDelayedBase<T> else
+  new QueueResDelayedObj<T> as QueueResDelayedBase<T>;
 
 {$endregion QueueRes}
 
@@ -4859,7 +4858,7 @@ type
     
   end;
   
-static function KernelArg.FromBuffer(b: Buffer) := new KernelArgBuffer(b) as KernelArg; //ToDo #1981
+static function KernelArg.FromBuffer(b: Buffer) := new KernelArgBuffer(b);
 
 {$endregion Buffer}
 
@@ -4881,7 +4880,7 @@ type
     
   end;
   
-static function KernelArg.FromRecord<TRecord>(val: TRecord) := new KernelArgRecord<TRecord>(val) as KernelArg; //ToDo #1981
+static function KernelArg.FromRecord<TRecord>(val: TRecord) := new KernelArgRecord<TRecord>(val) as KernelArg; //ToDo #2398
 
 {$endregion Record}
 
@@ -4904,7 +4903,7 @@ type
     
   end;
   
-static function KernelArg.FromPtr(ptr: IntPtr; sz: UIntPtr) := new KernelArgPtr(ptr, sz) as KernelArg; //ToDo #1981
+static function KernelArg.FromPtr(ptr: IntPtr; sz: UIntPtr) := new KernelArgPtr(ptr, sz);
 
 {$endregion Ptr}
 
@@ -4928,7 +4927,7 @@ type
     private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
     
     protected function Invoke(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id): QueueRes<ISetableKernelArg>; override :=
-    q.InvokeNewQ(tsk, c, main_dvc, false, nil).LazyQuickTransform(b->new KernelArgBuffer(b) as ConstKernelArg as ISetableKernelArg); //ToDo #2289
+    q.InvokeNewQ(tsk, c, main_dvc, false, nil).LazyQuickTransform(b->new KernelArgBuffer(b) as ISetableKernelArg);
     
     protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
     q.RegisterWaitables(tsk, prev_hubs);
@@ -4936,7 +4935,7 @@ type
   end;
   
 static function KernelArg.FromBufferCQ(bq: CommandQueue<Buffer>) :=
-new KernelArgBufferCQ(bq) as KernelArg;
+new KernelArgBufferCQ(bq);
 
 {$endregion Buffer}
 
@@ -4979,7 +4978,7 @@ type
   end;
   
 static function KernelArg.FromRecordCQ<TRecord>(valq: CommandQueue<TRecord>) :=
-new KernelArgRecordCQ<TRecord>(valq) as KernelArg;
+new KernelArgRecordCQ<TRecord>(valq) as KernelArg; //ToDo #2398
 
 {$endregion Record}
 
@@ -5012,7 +5011,7 @@ type
   end;
   
 static function KernelArg.FromPtrCQ(ptr_q: CommandQueue<IntPtr>; sz_q: CommandQueue<UIntPtr>) :=
-new KernelArgPtrCQ(ptr_q, sz_q) as KernelArg;
+new KernelArgPtrCQ(ptr_q, sz_q);
 
 {$endregion Ptr}
 

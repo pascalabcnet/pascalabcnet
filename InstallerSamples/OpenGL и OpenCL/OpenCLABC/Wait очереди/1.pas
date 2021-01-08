@@ -23,7 +23,9 @@ begin
   var F := NamedQ('F');
   
   Context.Default.SyncInvoke(
-    (A + (B+D)*(C+F) ) *
+    A +
+    (B+D) *
+    (C+F) *
     (WaitForAll(B,C) + E)
   );
   
