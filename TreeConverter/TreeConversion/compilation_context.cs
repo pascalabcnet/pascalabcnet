@@ -2758,7 +2758,13 @@ namespace PascalABCCompiler.TreeConverter
             if (meth is compiled_function_node)
                 tmp_si = cnode.find_in_type((meth as compiled_function_node).cont_type.BaseFullName + "." + meth.name, cnode.Scope);
             else if (meth is common_method_node)
-                tmp_si = cnode.find_in_type((meth as common_method_node).cont_type.BaseFullName + "." + meth.name, cnode.Scope);
+            {
+                string base_type_name = (meth as common_method_node).cont_type.BaseFullName;
+                if (base_type_name != null && (meth as common_method_node).cont_type.original_generic != null && base_type_name.IndexOf('<') != -1)
+                    base_type_name = (meth as common_method_node).cont_type.original_generic.BaseFullName;
+                tmp_si = cnode.find_in_type(base_type_name + "." + meth.name, cnode.Scope);
+            }
+                
             if (tmp_si != null)
             {
                 /*Зачем это?
