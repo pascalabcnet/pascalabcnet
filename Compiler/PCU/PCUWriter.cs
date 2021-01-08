@@ -903,6 +903,25 @@ namespace PascalABCCompiler.PCU
                 foreach (statement_node st in stmt_list.statements)
                     AddIndirectUsedUnitsInStatement(st, ns_dict, interf);
             }
+            /*else if (stmt is common_static_method_call)
+            {
+                common_static_method_call csmc = stmt as common_static_method_call;
+                AddIndirectUsedUnitsForType(csmc.common_type, ns_dict, interf);
+                
+            }
+            else if (stmt is if_node)
+            {
+                if_node node = stmt as if_node;
+                AddIndirectUsedUnitsInStatement(node.condition, ns_dict, interf);
+            }
+            if (stmt is base_function_call)
+            {
+                base_function_call bfc = stmt as base_function_call;
+                foreach (var expr in bfc.parameters)
+                {
+                    AddIndirectUsedUnitsInStatement(expr, ns_dict, interf);
+                }
+            }*/
             
         }
 
