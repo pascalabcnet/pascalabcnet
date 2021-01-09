@@ -54,9 +54,6 @@ function НОК(a, b: int64): int64;
 function НОДНОК(a, b: int64): (int64, int64);
 
 /// Разложение числа на простые множители
-function Factorize(n: int64): List<int64>;
-
-/// Разложение числа на простые множители
 function Factorize(n: integer): List<integer>;
 
 /// Простые числа на интервале [2;n] 
@@ -67,9 +64,6 @@ function FirstPrimes(n: integer): List<integer>;
 
 /// Возвращает список, содержащий цифры числа
 function Digits(n: int64): List<integer>;
-
-/// Возвращает список делителей натурального числа
-function Divizors(n: int64): List<int64>;
 
 /// Возвращает список делителей натурального числа
 function Divizors(n: integer): List<integer>;
@@ -407,27 +401,6 @@ end;
 {$region Factorize}
 
 /// Разложение числа на простые множители
-function Factorize(n: int64): List<int64>;
-begin
-  n := Abs(n);
-  var i: int64 := 2;
-  var L := new List<int64>;
-  while i * i <= n do
-    if n mod i = 0 then
-    begin
-      L.Add(i);
-      n := n div i;
-      if n < i then
-        break
-    end
-    else
-      i += i = 2 ? 1 : 2;
-  if n > 1 then
-    L.Add(n);
-  Result := L
-end;
-
-/// Разложение числа на простые множители
 function Factorize(n: integer): List<integer>;
 begin
   n := Abs(n);
@@ -447,10 +420,6 @@ begin
     L.Add(n);
   Result := L
 end;
-
-/// разложение числа на простые множители
-function Factorize(Self: int64): List<int64>; extensionmethod :=
-Factorize(Self);
 
 /// Разложение числа на простые множители
 function Factorize(Self: integer): List<integer>; extensionmethod :=
@@ -519,42 +488,22 @@ end;
 
 /// возвращает True, если число простое и False в противном случае
 function IsPrime(Self: integer): boolean; extensionmethod;
-begin
-  if Self < 2 then
-  begin
-    Result := False;
-    exit
-  end;
-  var i := 2;
-  while i * i <= Self do  
-    if Self mod i = 0 then
-    begin
-      Result := False;
-      exit
-    end
-    else
-      i += if i = 2 then 1 else 2;
-  Result := True
-end;
-
-/// возвращает True, если число простое и False в противном случае
-function IsPrime(Self: int64): boolean; extensionmethod;
-begin
-  if Self < 2 then
-  begin
-    Result := False;
-    exit
-  end;
-  var i := int64(2);
-  while i * i <= Self do  
-    if Self mod i = 0 then
-    begin
-      Result := False;
-      exit
-    end
-    else
-      i += if i = 2 then 1 else 2;
-  Result := True
+begin  
+  if Self = 2 then
+    Result := True
+  else if Self.IsEven or (Self <= 1) then
+    Result := False
+  else begin
+    var i := int64(3);
+    Result := True; 
+    while i * i <= Self do 
+      if Self mod i = 0 then begin
+        Result := False;
+        exit
+      end  
+      else
+        i += 2
+  end
 end;
 
 {$endregion}
@@ -619,38 +568,8 @@ begin
   Result := L
 end;
 
-/// возвращает список всех делителей натурального числа
-function Divizors(n: int64): List<int64>;
-begin
-  n := Abs(n); // foolproof
-  var L := new List<int64>;
-  L.Add(1);
-  L.Add(n);
-  if n > 3 then
-  begin
-    var k := int64(2);
-    while (k * k <= n) and (k < 3037000500) do
-    begin
-      if n mod k = 0 then
-      begin
-        var t := n div k;
-        L.Add(k);
-        if k < t then L.Add(t)
-        else break
-      end;  
-      Inc(k)
-    end;
-    L.Sort;
-  end;
-  Result := L
-end;
-
 /// возвращает список делителей натурального числа
 function Divizors(Self: integer): List<integer>; extensionmethod :=
-Divizors(Self);
-
-/// возвращает список делителей натурального числа
-function Divizors(Self: int64): List<int64>; extensionmethod :=
 Divizors(Self);
 
 {$endregion}
