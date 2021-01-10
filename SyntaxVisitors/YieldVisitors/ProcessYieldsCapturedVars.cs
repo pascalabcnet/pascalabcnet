@@ -347,7 +347,14 @@ namespace SyntaxVisitors
         {
             if (className is template_type_name)
             {
-                return new template_type_name(helperName, (className as template_type_name).template_args);
+                if (pd.proc_header.template_args != null)
+                {
+                    var template_args = (className as template_type_name).template_args.Clone() as ident_list;
+                    template_args.AddMany(pd.proc_header.template_args.idents.ToArray());
+                    return new template_type_name(helperName, template_args);
+                }
+                else
+                    return new template_type_name(helperName, (className as template_type_name).template_args);
             }
             else if (pd.proc_header.template_args != null)
             {
