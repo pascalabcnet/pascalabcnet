@@ -16570,6 +16570,13 @@ namespace PascalABCCompiler.TreeConverter
                 	    _var_def_statement.inital_value = get_possible_array_const(_var_def_statement.inital_value,tn);
                         var ivc = convert_strong(_var_def_statement.inital_value);
                         inital_value = convert_strong_to_constant_or_function_call_for_varinit(ivc, tn);
+                        if (!tn.IsDelegate && tn != SystemLibrary.SystemLibrary.object_type && inital_value is typed_expression && _var_def_statement.inital_value is addressed_value)
+                        {
+                            method_call mc = new method_call();
+                            mc.dereferencing_value = _var_def_statement.inital_value as addressed_value;
+                            ivc = convert_strong(mc);
+                            inital_value = convert_strong_to_constant_or_function_call_for_varinit(ivc, tn);
+                        }
                     }
             }
             else
