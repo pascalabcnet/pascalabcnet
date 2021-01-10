@@ -663,7 +663,7 @@ namespace PascalABCCompiler.TreeConverter
                 en.location = loc;
                 if (en.type is delegated_methods dm && dm.proper_methods[0].parameters.Count == 0 && dm.proper_methods[0].ret_type != null)
                 {
-                    if (to != SystemLibrary.SystemLibrary.object_type)
+                    if (to != SystemLibrary.SystemLibrary.object_type && to.IsDelegate)
                         AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
                     else
                         return en;
