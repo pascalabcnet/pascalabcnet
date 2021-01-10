@@ -17050,11 +17050,14 @@ namespace PascalABCCompiler.TreeConverter
         {
             if ((context.converting_block() == block_type.function_block) && (context.top_function.return_variable != null))
             {
-                List<SymbolInfo> sil = context.top_function.scope.FindOnlyInScope(_ident.name);//context.find_only_in_namespace(_ident.name);
+                List<SymbolInfo> sil = context.top_function.scope.FindOnlyInScope(_ident.name); // почему-то не находит локальную переменную с этим именем
+                    // тут баг #2401
+                    // context.find_only_in_namespace(_ident.name); // это было закомментировано 10.01.21
                 if (sil == null)
                 {
                     int comp = SystemLibrary.SystemLibrary.string_comparer.Compare(_ident.name, context.top_function.name);
-                    if (comp == 0)
+                    List<SymbolInfo> mysi = context.find(_ident.name);
+                    if (comp == 0 && mysi != null && mysi[0].sym_info is function_node)  // мы нашли функцию и ее имя совпадает с ident
                     {
                         local_variable lv = context.top_function.return_variable;
                         return new local_variable_reference(lv, 0, get_location(_ident));
