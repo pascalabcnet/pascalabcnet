@@ -34,7 +34,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             UnnamedRecordsCheckVisitor.New.ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
-            StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
+            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
             VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
             FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
 #if DEBUG

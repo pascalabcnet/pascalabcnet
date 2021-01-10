@@ -10,13 +10,13 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
     // Первое предназначение - вынести последовательность из заголовка в foreach до foreach как отдельное присваивание
     // Второе предназначение - переименовать все переменные, совпадающие по имени с типом T обобщенного класса, в котором находится метод, содержащий лямбду
-    public class StandOutExprWithLambdaInForeachSequenceVisitor : BaseChangeVisitor
+    public class StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor : BaseChangeVisitor
     {
-        public static StandOutExprWithLambdaInForeachSequenceVisitor New
+        public static StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor New
         {
             get
             {
-                return new StandOutExprWithLambdaInForeachSequenceVisitor();
+                return new StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor();
             }
         }
 
