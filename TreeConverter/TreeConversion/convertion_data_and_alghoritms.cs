@@ -1871,7 +1871,7 @@ namespace PascalABCCompiler.TreeConverter
                                 mc = method_compare.greater_method;
                             }
                         }
-                        if (mc == method_compare.greater_method)
+                        if (mc == method_compare.greater_method) // f[i]>f[j] - значит, удалять надо f[i], а в коде наоборот!!! Странно...
                         {
                             tcll.remove_at(j);
                             set_of_possible_functions.RemoveAt(j);

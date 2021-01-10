@@ -17056,11 +17056,14 @@ namespace PascalABCCompiler.TreeConverter
                 if (sil == null)
                 {
                     int comp = SystemLibrary.SystemLibrary.string_comparer.Compare(_ident.name, context.top_function.name);
-                    List<SymbolInfo> mysi = context.find(_ident.name);
-                    if (comp == 0 && mysi != null && mysi[0].sym_info is function_node)  // мы нашли функцию и ее имя совпадает с ident
+                    if (comp == 0)  // мы нашли функцию и ее имя совпадает с ident
                     {
-                        local_variable lv = context.top_function.return_variable;
-                        return new local_variable_reference(lv, 0, get_location(_ident));
+                        List<SymbolInfo> mysi = context.find(_ident.name);
+                        if (mysi != null && mysi[0].sym_info is function_node)
+                        {
+                            local_variable lv = context.top_function.return_variable;
+                            return new local_variable_reference(lv, 0, get_location(_ident));
+                        }
                     }
                 }
             }
