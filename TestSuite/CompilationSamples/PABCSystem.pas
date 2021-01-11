@@ -1882,10 +1882,10 @@ function Length(s: string): integer;
 procedure SetLength(var s: string; n: integer);
 ///--
 procedure SetLengthForShortString(var s: string; n, sz: integer);
-/// Вставляет подстроку source в строку s с позиции index
-procedure Insert(source: string; var s: string; index: integer);
+/// Вставляет подстроку subs в строку s с позиции index
+procedure Insert(subs: string; var s: string; index: integer);
 ///--
-procedure InsertInShortString(source: string; var s: string; index, n: integer);
+procedure InsertInShortString(subs: string; var s: string; index, n: integer);
 /// Удаляет из строки s count символов с позиции index
 procedure Delete(var s: string; index, count: integer);
 /// Возвращает подстроку строки s длины count с позиции index
@@ -8842,27 +8842,27 @@ begin
       s += new String(' ', sz - s.Length)
 end;
 
-procedure Insert(source: string; var s: string; index: integer);
+procedure Insert(subs: string; var s: string; index: integer);
 // Insert никогда не возвращает исключения
 begin
   if index < 1 then 
     index := 1;
   if index > s.Length + 1 then
     index := s.Length + 1;
-  s := s.Insert(index - 1, source);
+  s := s.Insert(index - 1, subs);
 end;
 
-procedure InsertInShortString(source: string; var s: string; index, n: integer);
+procedure InsertInShortString(subs: string; var s: string; index, n: integer);
 begin
   if index < 1 then 
     index := 1;
   if index > n then
     exit;
   try
-    s := s.Insert(index - 1, source);
+    s := s.Insert(index - 1, subs);
     if s.Length > n then s := s.Substring(0, n);
   except
-    s := s.Insert(s.Length, source);
+    s := s.Insert(s.Length, subs);
     if s.Length > n then s := s.Substring(0, n);
   end;
 end;
@@ -12414,6 +12414,21 @@ function TryToInteger(Self: string; var value: integer): boolean; extensionmetho
 /// Преобразует строку в вещественное и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryToReal(Self: string; var value: real): boolean; extensionmethod := TryStrToReal(Self,value);
+
+
+/// Возвращает True если строку можно преобразовать в вещественное
+function IsReal(Self: string): boolean; extensionmethod;
+begin
+  var r: real;
+  Result := TryStrToReal(Self, r);
+end; 
+
+/// Возвращает True если строку можно преобразовать в целое
+function IsInteger(Self: string): boolean; extensionmethod;
+begin
+  var i: integer;
+  Result := TryStrToInt(Self, i);
+end; 
 
 /// Преобразует строку в целое
 ///При невозможности преобразования возвращается defaultvalue

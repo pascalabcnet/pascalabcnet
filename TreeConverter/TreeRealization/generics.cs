@@ -1187,6 +1187,18 @@ namespace PascalABCCompiler.TreeRealization
                         if (sil != null && sil.Count > 0)
                             fact_func = sil[0].sym_info as function_node;
                     }
+                    else if (dm != null && dm.proper_methods.Count > 1 && formal_type.original_generic is compiled_type_node && (formal_type.original_generic as compiled_type_node).compiled_type.FullName.StartsWith("System.Func`"))
+                    {
+                        var ctn = formal_type.original_generic as compiled_type_node;
+                        foreach (var fc in dm.proper_methods)
+                        {
+                            if (fc.simple_function_node.parameters.Count == formal_type.instance_params.Count - 1)
+                            {
+                                fact_func = fc.simple_function_node;
+                                break;
+                            }
+                        }
+                    }
                         
                     if (fact_func != null)
                     {
