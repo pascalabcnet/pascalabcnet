@@ -168,12 +168,15 @@ namespace SyntaxVisitors
             }
 
             var GetEnumeratorBody = new statement_list();
+            var ResetBody = new statement_list();
+            var nsex = new raise_stmt(new new_expr("System.NotSupportedException"), null);
+            ResetBody.Add(nsex);
 
             // Системные поля и методы для реализации интерфейса IEnumerable
             cm.Add(new var_def_statement(YieldConsts.State, "integer"),
                 new var_def_statement(YieldConsts.Current, stels),
                 procedure_definition.EmptyDefaultConstructor,
-                new procedure_definition("Reset"),
+                new procedure_definition("Reset", ResetBody),
                 new procedure_definition("MoveNext", "boolean", pd.proc_body),
                 new procedure_definition("System.Collections.IEnumerator.get_Current", "object", new assign("Result", YieldConsts.Current)),
                 //new procedure_definition("System.Collections.IEnumerable.GetEnumerator", "System.Collections.IEnumerator", new assign("Result", "Self"))

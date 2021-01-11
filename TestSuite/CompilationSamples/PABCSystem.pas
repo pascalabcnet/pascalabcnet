@@ -12415,6 +12415,21 @@ function TryToInteger(Self: string; var value: integer): boolean; extensionmetho
 ///При невозможности преобразования возвращается False
 function TryToReal(Self: string; var value: real): boolean; extensionmethod := TryStrToReal(Self,value);
 
+
+/// Возвращает True если строку можно преобразовать в вещественное
+function IsReal(Self: string): boolean; extensionmethod;
+begin
+  var r: real;
+  Result := TryStrToReal(Self, r);
+end; 
+
+/// Возвращает True если строку можно преобразовать в целое
+function IsInteger(Self: string): boolean; extensionmethod;
+begin
+  var i: integer;
+  Result := TryStrToInt(Self, i);
+end; 
+
 /// Преобразует строку в целое
 ///При невозможности преобразования возвращается defaultvalue
 function ToInteger(Self: string; defaultvalue: integer): integer; extensionmethod;
