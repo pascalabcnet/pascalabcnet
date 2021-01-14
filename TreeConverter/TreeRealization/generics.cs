@@ -707,7 +707,7 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     else
                     {
-                        there_are_undeduced_params = true; //иначе мы не сможем вывести тип возвращаемого значения
+                        //there_are_undeduced_params = true; //иначе мы не сможем вывести тип возвращаемого значения
                         break;
                     }
                 }
