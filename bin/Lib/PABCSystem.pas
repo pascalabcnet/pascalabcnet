@@ -1421,7 +1421,7 @@ procedure RmDir(s: string);
 /// Создает каталог. Возвращает True, если каталог успешно создан
 function CreateDir(s: string): boolean;
 /// Удаляет файл. Если файл не может быть удален, то возвращает False
-function DeleteFile(s: string): boolean;
+function DeleteFile(fname: string): boolean;
 /// Возвращает текущий каталог
 function GetCurrentDir: string;
 /// Удаляет каталог. Возвращает True, если каталог успешно удален
@@ -7858,11 +7858,11 @@ begin
   end;
 end;
 
-function DeleteFile(s: string): boolean;
+function DeleteFile(fname: string): boolean;
 begin
   try
     Result := True;
-    &File.Delete(s);
+    &File.Delete(fname);
   except
     Result := False;
   end;
