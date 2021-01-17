@@ -1,5 +1,5 @@
 [=PascalABC]
 [0]
-uses PT4, ABCDatabases;
+uses PT4, PT4Databases;
 
 [1000]
