@@ -176,6 +176,10 @@ function Av(Self: sequence of real): real; extensionmethod := Self.Average;
 
 /// Возвращает количество элементов последовательности
 function Cnt<T>(Self: sequence of T): integer; extensionmethod := Self.Count;
+/// Возвращает количество элементов последовательности, удовлетворяющих условию
+function Cnt<T>(Self: sequence of T; pred: T->boolean): integer; extensionmethod := Self.Count(pred);
+/// Возвращает количество элементов последовательности, равных заданному значению
+function Cnt<T>(Self: sequence of T; elem: T): integer; extensionmethod := Self.CountOf(elem);
 
 function Ord<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Order;
 function OrdD<T>(Self: sequence of T): sequence of T; extensionmethod := Self.OrderDescending;
