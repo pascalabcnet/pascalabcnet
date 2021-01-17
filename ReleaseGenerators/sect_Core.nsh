@@ -81,6 +81,7 @@
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
     File ..\bin\Lib\ABCDatabases.pcu
+    File ..\bin\Lib\PT4Databases.pcu
     File ..\bin\Lib\Arrays.pcu
     ;File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
@@ -151,6 +152,7 @@
     ${AddFile} "ABCHouse.pcu"
     ${AddFile} "ABCObjects.pcu"
     ${AddFile} "ABCDatabases.pcu"
+    ${AddFile} "PT4Databases.pcu"
     ${AddFile} "ABCSprites.pcu"
     ${AddFile} "Arrays.pcu"
     ${AddFile} "BFSystem.pcu"
@@ -243,6 +245,7 @@
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
     File ..\bin\Lib\ABCDatabases.pas
+    File ..\bin\Lib\PT4Databases.pas
     File ..\bin\Lib\Arrays.pas
     ;File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
@@ -313,6 +316,7 @@
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
     ${AddFile} "ABCDatabases.pas"
+    ${AddFile} "PT4Databases.pas"
     ${AddFile} "Arrays.pas"
     ;${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
