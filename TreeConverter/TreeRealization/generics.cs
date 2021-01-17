@@ -681,7 +681,7 @@ namespace PascalABCCompiler.TreeRealization
             var visitor = SystemLibrary.SystemLibrary.syn_visitor;
             var result = true;
             exception_on_body_compilation = null;
-
+            int errors_count = visitor.ErrorsList.Count;
             /*if (lambda_syntax_node.formal_parameters == null
                 || lambda_syntax_node.formal_parameters.params_list == null
                 || lambda_syntax_node.formal_parameters.params_list.Count == 0)
@@ -714,8 +714,8 @@ namespace PascalABCCompiler.TreeRealization
                 param_counter += t.idents.idents.Count;
             }
 
-            if (!there_are_undeduced_params
-                && lambda_syntax_node.return_type is lambda_inferred_type
+            if (/*!there_are_undeduced_params
+                && */lambda_syntax_node.return_type is lambda_inferred_type
                 && ((lambda_inferred_type)lambda_syntax_node.return_type).real_type is lambda_any_type_node)
             {
                 var lambdaName = lambda_syntax_node.lambda_name;
@@ -730,8 +730,12 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 catch (Exception exc)
                 {
-                    exception_on_body_compilation = exc; // Если произошло исключение то запишем его в выходной параметр, оно потом будет обработано вызывающим методом
-                    result = false;
+                    if (!there_are_undeduced_params)
+                    {
+                        exception_on_body_compilation = exc; // Если произошло исключение то запишем его в выходной параметр, оно потом будет обработано вызывающим методом
+                        result = false;
+                    }
+                        
                 }
                 finally
                 {
@@ -745,23 +749,33 @@ namespace PascalABCCompiler.TreeRealization
 
                     if (result)
                     {
-                        if (formal_delegate == null) // SSM 5.12.15
+                        if (there_are_undeduced_params && visitor.ErrorsList.Count > errors_count)
                         {
-                            result = false;
+                            visitor.ErrorsList.RemoveAt(visitor.ErrorsList.Count - 1);
+                            
                         }
                         else
-                        { 
-                            if (formal_delegate.return_value_type==null) // SSM 19/04/16 - эта проверка в связи с падением при передаче функции вместо процедуры в качестве функционального параметра: a.Foreach(x->1)
+                        {
+                            if (formal_delegate == null) // SSM 5.12.15
                             {
                                 result = false;
                             }
-                            else if (!DeduceInstanceTypes(formal_delegate.return_value_type,
-                                                     (type_node)((lambda_inferred_type)lambda_syntax_node.return_type).real_type,
-                                                     deduced, nils, generic_params)) //Выводим дженерик-параметры после того как вычислили тип возвращаемого значения
+                            else
                             {
-                                result = false; 
+                                if (formal_delegate.return_value_type == null) // SSM 19/04/16 - эта проверка в связи с падением при передаче функции вместо процедуры в качестве функционального параметра: a.Foreach(x->1)
+                                {
+                                    result = false;
+                                }
+                                else if (!DeduceInstanceTypes(formal_delegate.return_value_type,
+                                                         (type_node)((lambda_inferred_type)lambda_syntax_node.return_type).real_type,
+                                                         deduced, nils, generic_params)) //Выводим дженерик-параметры после того как вычислили тип возвращаемого значения
+                                {
+                                    result = false;
+                                }
                             }
                         }
+                        
+                        
                     }
                 }
             }

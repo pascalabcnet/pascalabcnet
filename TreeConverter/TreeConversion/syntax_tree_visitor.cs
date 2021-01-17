@@ -10055,6 +10055,13 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> tmp_list = new List<SymbolInfo>(sil);
             foreach (SymbolInfo tmp_si in tmp_list)
             {
+                if (tmp_si.sym_info is function_node && !(tmp_si.sym_info as function_node).is_extension_method && (tmp_si.sym_info as function_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static
+                           && !(tmp_si.sym_info is common_method_node && (tmp_si.sym_info as common_method_node).is_constructor) && (tmp_si.sym_info as function_node).return_value_type != null
+                            && !(tmp_si.sym_info is compiled_constructor_node))
+                    return false;
+            }
+            foreach (SymbolInfo tmp_si in tmp_list)
+            {
                 if (tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method && !has_property(ref sil)
                             || tmp_si.sym_info is common_method_node && (tmp_si.sym_info as common_method_node).is_constructor
                             || tmp_si.sym_info is compiled_constructor_node)
