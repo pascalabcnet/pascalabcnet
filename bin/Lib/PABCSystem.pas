@@ -5235,27 +5235,6 @@ begin
   res := self;
 end;
 
-// -----------------------------------------------------------------------------
-//                ReadLexem
-// -----------------------------------------------------------------------------
-
-{function ReadLexem: string;
-begin
-  var c: char;
-  repeat
-    c := CurrentIOSystem.read_symbol;
-  until not char.IsWhiteSpace(c);
-  var sb := new System.Text.StringBuilder;
-  repeat
-    sb.Append(c);
-    c := char(CurrentIOSystem.peek);
-    if char.IsWhiteSpace(c) or (c = char(-1)) then // char(-1) - Ctrl-Z во входном потоке
-      break;
-    c := CurrentIOSystem.read_symbol;
-  until False; // accumulate nonspaces
-  Result := sb.ToString;
-end;}
-
 // -----------------------------------------------------
 //          IOStandardSystem: implementation
 // -----------------------------------------------------
@@ -5449,9 +5428,9 @@ end;
 
 function ReadLexem: string;
 begin
-  if input.sr <> nil then
+  {if input.sr <> nil then
     Result := ReadLexem(input)
-  else Result := CurrentIOSystem.ReadLexem; 
+  else} Result := CurrentIOSystem.ReadLexem; 
 end;
 
 function IOStandardSystem.ReadLexem: string;
@@ -6486,6 +6465,11 @@ end;
 
 function ReadLexem(f: Text): string;
 begin
+  if f = input then
+  begin  
+    Result := ReadLexem;
+    exit
+  end;
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sr = nil then 
