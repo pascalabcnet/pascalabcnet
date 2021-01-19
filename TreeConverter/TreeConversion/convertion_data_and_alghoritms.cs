@@ -2131,7 +2131,12 @@ namespace PascalABCCompiler.TreeConverter
             {
                 throw lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException.ExceptionOnCompileBody;  // Если перебрали все, но ничто не подошло, то кидаем последнее исключение
             }
-
+            else if (lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException != null
+                && set_of_possible_functions.Count > 0
+                && indefinits.Count == 0)
+            {
+                syntax_tree_visitor.RemoveLastError();
+            }
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
                 if (is_op)
