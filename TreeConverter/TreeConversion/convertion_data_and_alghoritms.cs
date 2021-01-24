@@ -1259,7 +1259,9 @@ namespace PascalABCCompiler.TreeConverter
 		{
 			if ((left.first==null)&&(right.first!=null))
 			{
-				return type_conversion_compare.greater_type_conversion;
+                if (right.from.IsDelegate && right.to.IsDelegate && left.to == SystemLibrary.SystemLibrary.object_type)
+                    return type_conversion_compare.less_type_conversion;//right.first != null из-за структурной эквивалентности процедурных типов и в силу того, что для каждого процедурного типа создается свой класс и и создается пустой метод преобразования типов
+                return type_conversion_compare.greater_type_conversion;
 			}
 			if ((left.first!=null)&&(right.first==null))
 			{
