@@ -132,7 +132,6 @@ unit OpenCLABCBase;
 //ToDo https://github.com/pascalabcnet/pascalabcnet/issues/{id}
 // - #2145
 // - #2221
-// - #2398
 
 //ToDo Баги NVidia
 //ToDo https://developer.nvidia.com/nvidia_bug/{id}
@@ -153,7 +152,7 @@ uses System.Threading;
 uses System.Runtime.InteropServices;
 uses System.Collections.ObjectModel;
 
-uses OpenCL;
+uses OpenCL in '..\OpenCL';
 
 type
   
@@ -4880,7 +4879,7 @@ type
     
   end;
   
-static function KernelArg.FromRecord<TRecord>(val: TRecord) := new KernelArgRecord<TRecord>(val) as KernelArg; //ToDo #2398
+static function KernelArg.FromRecord<TRecord>(val: TRecord) := new KernelArgRecord<TRecord>(val);
 
 {$endregion Record}
 
@@ -4978,7 +4977,7 @@ type
   end;
   
 static function KernelArg.FromRecordCQ<TRecord>(valq: CommandQueue<TRecord>) :=
-new KernelArgRecordCQ<TRecord>(valq) as KernelArg; //ToDo #2398
+new KernelArgRecordCQ<TRecord>(valq);
 
 {$endregion Record}
 

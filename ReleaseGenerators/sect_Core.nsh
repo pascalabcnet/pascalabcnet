@@ -124,16 +124,15 @@
     File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
-    File ..\bin\Lib\OpenGL.pcu
     File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\Speech.pcu
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
-    File ..\bin\Lib\OpenCLABCBase.pcu
+    File ..\bin\Lib\Internal\OpenCLABCBase.pcu
     File ..\bin\Lib\OpenCLABC.pcu
     File ..\bin\Lib\OpenGL.pcu
-    File ..\bin\Lib\OpenGLABCBase.pcu
+    File ..\bin\Lib\Internal\OpenGLABCBase.pcu
     File ..\bin\Lib\OpenGLABC.pcu
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
@@ -198,16 +197,15 @@
     ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
-    ${AddFile} "OpenGL.pcu"
     ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "Speech.pcu"
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
-    ${AddFile} "OpenCLABCBase.pas"
+    ${AddFile} "Internal\OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "OpenGL.pcu"
-    ${AddFile} "OpenGLABCBase.pas"
+    ${AddFile} "Internal\OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pcu"
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
@@ -288,16 +286,15 @@
     File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
-    File ..\bin\Lib\OpenGL.pas
     File ..\bin\Lib\PT4MakerNetX.pas
     File ..\bin\Lib\Speech.pas
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
-    File ..\bin\Lib\OpenCLABCBase.pas
+    File ..\bin\Lib\Internal\OpenCLABCBase.pas
     File ..\bin\Lib\OpenCLABC.pas
     File ..\bin\Lib\OpenGL.pas
-    File ..\bin\Lib\OpenGLABCBase.pas
+    File ..\bin\Lib\Internal\OpenGLABCBase.pas
     File ..\bin\Lib\OpenGLABC.pas
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
@@ -364,10 +361,10 @@
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
-    ${AddFile} "OpenCLABCBase.pas"
+    ${AddFile} "Internal\OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pas"
     ${AddFile} "OpenGL.pas"
-    ${AddFile} "OpenGLABCBase.pas"
+    ${AddFile} "Internal\OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pas"
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
