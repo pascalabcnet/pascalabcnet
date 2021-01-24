@@ -129,16 +129,19 @@
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
-    File ..\bin\Lib\Internal\OpenCLABCBase.pcu
     File ..\bin\Lib\OpenCLABC.pcu
     File ..\bin\Lib\OpenGL.pcu
-    File ..\bin\Lib\Internal\OpenGLABCBase.pcu
     File ..\bin\Lib\OpenGLABC.pcu
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
     File ..\bin\Lib\Turtle.pcu
     File ..\bin\Lib\TwoPanelsWindow.pcu
     File ..\bin\Lib\NUnitABC.pcu
+    
+    SetOutPath "$INSTDIR\Lib\Internal"
+    File ..\bin\Lib\Internal\OpenCLABCBase.pcu
+    File ..\bin\Lib\Internal\OpenGLABCBase.pcu
+    SetOutPath "$INSTDIR\Lib"
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -202,18 +205,20 @@
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
-    ${AddFile} "Internal\OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "OpenGL.pcu"
-    ${AddFile} "Internal\OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pcu"
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
     ${AddFile} "Turtle.pcu"
     ${AddFile} "TwoPanelsWindow.pcu"
     ${AddFile} "NUnitABC.pcu"
-
-
+    
+    SetOutPath "$INSTDIR\Lib\Internal"
+    ${AddFile} "Internal\OpenCLABCBase.pcu"
+    ${AddFile} "Internal\OpenGLABCBase.pcu"
+    SetOutPath "$INSTDIR\Lib"
+    
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
@@ -291,17 +296,20 @@
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
-    File ..\bin\Lib\Internal\OpenCLABCBase.pas
     File ..\bin\Lib\OpenCLABC.pas
     File ..\bin\Lib\OpenGL.pas
-    File ..\bin\Lib\Internal\OpenGLABCBase.pas
     File ..\bin\Lib\OpenGLABC.pas
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
     File ..\bin\Lib\Turtle.pas
     File ..\bin\Lib\TwoPanelsWindow.pas
     File ..\bin\Lib\NUnitABC.pas
-
+    
+    SetOutPath "$INSTDIR\LibSource\Internal"
+    File ..\bin\Lib\Internal\OpenCLABCBase.pas
+    File ..\bin\Lib\Internal\OpenGLABCBase.pas
+    SetOutPath "$INSTDIR\LibSource"
+    
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -361,17 +369,19 @@
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
-    ${AddFile} "Internal\OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pas"
     ${AddFile} "OpenGL.pas"
-    ${AddFile} "Internal\OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pas"
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
     ${AddFile} "Turtle.pas"
     ${AddFile} "TwoPanelsWindow.pas"
     ${AddFile} "NUnitABC.pas"
-
+    
+    SetOutPath "$INSTDIR\LibSource\Internal"
+    ${AddFile} "Internal\OpenCLABCBase.pas"
+    ${AddFile} "Internal\OpenGLABCBase.pas"
+    SetOutPath "$INSTDIR\LibSource"
 
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

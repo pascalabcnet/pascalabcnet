@@ -358,10 +358,12 @@ end;
 
 procedure CopyLibFiles;
 begin
-  var files := Directory.GetFiles(GetLibDir(), '*.pas');
-  foreach f: string in files do
+  var lib_dir := GetLibDir();
+  foreach var f in EnumerateAllFiles(lib_dir, '*.pas') do
   begin
-    &File.Copy(f, TestSuiteDir + PathSeparator + 'CompilationSamples' + PathSeparator + Path.GetFileName(f), true);
+    var f2 := Path.Combine(TestSuiteDir, 'CompilationSamples', f.Substring(lib_dir.Length+1));
+    Directory.CreateDirectory(Path.GetDirectoryName(f2));
+    &File.Copy(f, f2, true);
   end;
 end;
 
