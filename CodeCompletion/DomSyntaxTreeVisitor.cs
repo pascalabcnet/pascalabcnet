@@ -2725,9 +2725,19 @@ namespace CodeCompletion
                 }
             if (cur_scope != null && _program_module.program_block.program_code != null)
             {
-                cur_scope.body_loc = new location(_program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num,
-                                                  _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num,
-                                                  _program_module.program_block.program_code.source_context.end_position.line_num, _program_module.program_block.program_code.source_context.end_position.column_num,
+                var left_line_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num;
+                var left_column_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num;
+                var right_line_num = _program_module.program_block.program_code.source_context.end_position.line_num;
+                var right_column_num = _program_module.program_block.program_code.source_context.end_position.column_num;
+                if (_program_module.program_block.program_code.right_logical_bracket == null || _program_module.program_block.program_code.right_logical_bracket.source_context == null)
+                {
+                    right_line_num += 2;
+                    _program_module.program_block.program_code.source_context = new SourceContext(_program_module.program_block.program_code.source_context.begin_position.line_num,
+                               _program_module.program_block.program_code.source_context.begin_position.column_num, right_line_num, right_column_num);
+                }
+                cur_scope.body_loc = new location(left_line_num,
+                                                  left_column_num,
+                                                  right_line_num, right_column_num,
                                                  doc);
                 _program_module.program_block.program_code.visit(this);
             }
@@ -2905,6 +2915,13 @@ namespace CodeCompletion
                                     return;
                                 }
 
+                            }
+                            else if (returned_scope is ProcScope)
+                            {
+                                method_call mc = new method_call(_dot_node, new expression_list());
+                                search_all = true;
+                                mc.visit(this);
+                                return;
                             }
                         }
                         
@@ -5582,6 +5599,18 @@ namespace CodeCompletion
             returned_scope = new ArrayScope(element_type,null);
 
             cnst_val.prim_val = null;
+        }
+
+        public override void visit(bigint_const bi)
+        {
+            /*method_call mc = new method_call();
+            mc.parameters = new expression_list(new uint64_const(bi.val, bi.source_context),bi.source_context);
+            mc.dereferencing_value = new dot_node(new ident("System"), new ident("Numerics"), new ident("BigInteger"), new ident("Create"));
+            mc.visit(this);*/
+            var names = new List<ident> { new ident("System"), new ident("Numerics"), new ident("BigInteger") };
+            var ntr = new named_type_reference(names, bi.source_context);
+            var ne = new new_expr(ntr, new expression_list(new uint64_const(bi.val)), bi.source_context);
+            ne.visit(this);
         }
     }
 }

@@ -662,7 +662,12 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 en.location = loc;
                 if (en.type is delegated_methods dm && dm.proper_methods[0].parameters.Count == 0 && dm.proper_methods[0].ret_type != null)
-                    AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
+                {
+                    if (to != SystemLibrary.SystemLibrary.object_type && to.IsDelegate)
+                        AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
+                    else
+                        return en;
+                } 
                 else if (en.type is undefined_type && en is base_function_call bfc)
                     throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", bfc.function.name);
                 else AddError(new CanNotConvertTypes(en, en.type, to, loc));
@@ -1561,6 +1566,16 @@ namespace PascalABCCompiler.TreeConverter
             return eq_type_nodes(tn1, tn2, false);
         }
 
+        public static bool type_or_base_type_implements_interface(type_node tn, type_node interf)
+        {
+            do {
+                if (tn.ImplementingInterfaces.Contains(interf))
+                    return true;
+                tn = tn.base_type;
+            } while (tn != null);
+            return false;
+        }
+
         //Этот метод сверяет не только параметры, но и возвращаемое значение
         public static bool function_eq_params_and_result(function_node left, function_node right, bool weak = false)
         {
@@ -1652,6 +1667,8 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				if (ptc.second!=null)
 				{
+                    if (ptc.first.from is null_type_node || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
+                        continue; // SSM 9/12/20 fix 2363
 					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
 				
@@ -1854,7 +1871,7 @@ namespace PascalABCCompiler.TreeConverter
                                 mc = method_compare.greater_method;
                             }
                         }
-                        if (mc == method_compare.greater_method)
+                        if (mc == method_compare.greater_method) // f[i]>f[j] - значит, удалять надо f[i], а в коде наоборот!!! Странно...
                         {
                             tcll.remove_at(j);
                             set_of_possible_functions.RemoveAt(j);
@@ -2078,7 +2095,18 @@ namespace PascalABCCompiler.TreeConverter
                                                                                 is_alone_method_defined, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
                         if (inst == null)
                         {
-                            set_of_possible_functions.RemoveAt(i);
+                            try
+                            {
+                                inst = generic_convertions.DeduceFunction(func, parameters, true, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
+                            }
+                            catch
+                            {
+
+                            }
+                            if (inst == null)
+                                set_of_possible_functions.RemoveAt(i);
+                            else
+                                set_of_possible_functions[i] = inst;
                         }
                         else
                         {
@@ -2411,13 +2439,16 @@ namespace PascalABCCompiler.TreeConverter
 
                     //if (funcs[0].is_extension_method)
                     Type fldiResType = null;
-                    if (funcs[0].is_extension_method)
+                    if (syntax_nodes_parameters != null)
                     {
-                        fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
-                    }
-                    else
-                    {
-                        fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        if (funcs[0].is_extension_method)
+                        {
+                            fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        }
+                        else
+                        {
+                            fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        }
                     }
                         // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
 
@@ -2571,7 +2602,25 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }*/
                     }
-
+                }
+                List<function_node> to_remove = new List<function_node>();
+                foreach (function_node fn in funcs)
+                {
+                    if (fn.is_generic_function_instance)
+                    foreach (parameter p in fn.original_function.parameters)
+                    {
+                        if (p.type.is_generic_parameter)
+                        {
+                            to_remove.Add(fn);
+                            break;
+                        }
+                    }
+                }
+                if (set_of_possible_functions.Count - to_remove.Count == 1)
+                {
+                    foreach (function_node fn in to_remove)
+                        set_of_possible_functions.Remove(fn);
+                    return set_of_possible_functions[0];
                 }
             }
 

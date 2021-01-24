@@ -646,6 +646,11 @@ namespace PascalABCCompiler.SemanticTree
         {
 
         }
+
+        public virtual void visit(IDoubleQuestionColonExpressionNode value)
+        {
+		
+        }
     }
 
 }

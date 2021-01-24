@@ -2824,10 +2824,17 @@ namespace PascalABCCompiler.TreeConverter
         }
         public override string ToString()
         {
+            if (_member_name.StartsWith("get_"))
+                return string.Format(StringResources.Get("PROPERTY_{2}_OF_CLASS_{0}_FROM_INTERFACE_{1}_MUST_BE_PUBLIC_AND_NON_STATIC"), _class_name, _interface_name, _member_name.Replace("get_",""));
             if (_is_value)
+            {
                 return string.Format(StringResources.Get("MEMBER_{2}_OF_RECORD_{0}_FROM_INTERFACE_{1}_MUST_BE_PUBLIC_AND_NON_STATIC"), _class_name, _interface_name, _member_name);
+            }
             else
+            {
+                
                 return string.Format(StringResources.Get("MEMBER_{2}_OF_CLASS_{0}_FROM_INTERFACE_{1}_MUST_BE_PUBLIC_AND_NON_STATIC"), _class_name, _interface_name, _member_name);
+            }
         }
     }
 

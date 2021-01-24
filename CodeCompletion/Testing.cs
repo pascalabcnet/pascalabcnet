@@ -261,10 +261,18 @@ namespace CodeCompletion
 
         private static void assert(bool cond, string message=null)
     	{
+#if DEBUG
             if (message != null)
     		    System.Diagnostics.Debug.Assert(cond, message);
             else
                 System.Diagnostics.Debug.Assert(cond);
+#else
+            if (message != null)
+                System.Diagnostics.Trace.Assert(cond, message);
+            else
+                System.Diagnostics.Trace.Assert(cond);
+#endif
+            
         }
     	
     	private static void TestVBNETExpressionExtract()
@@ -1114,7 +1122,7 @@ namespace CodeCompletion
                 compilation_unit cu = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
                 CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
                 string Text2 = cf.FormatTree(Text, cu, 1, 1);
-                if (Text != Text2)
+                if (Text.Replace("\r\n","\n") != Text2.Replace("\r\n","\n"))
                 {
                     int line = 1;
                     for (int i = 0; i < Math.Min(Text.Length, Text2.Length); i++)
@@ -1137,7 +1145,7 @@ namespace CodeCompletion
                     sr = new StreamReader(shouldFileName, System.Text.Encoding.GetEncoding(1251));
                     string shouldText = sr.ReadToEnd();
                     sr.Close();
-                    if (Text != shouldText)
+                    if (Text.Replace("\r\n","\n") != shouldText.Replace("\r\n","\n"))
                     {
                         sr = new StreamReader(s, System.Text.Encoding.UTF8);
                         Text = sr.ReadToEnd();
@@ -1147,7 +1155,7 @@ namespace CodeCompletion
                         sr.Close();
                     }
                         
-                    if (Text != shouldText)
+                    if (Text.Replace("\r\n","\n") != shouldText.Replace("\r\n","\n"))
                         log.WriteLine("Invalid formatting of File (text not equal) " + s);
                 }
             }

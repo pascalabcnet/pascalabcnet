@@ -107,11 +107,23 @@ namespace PascalABCCompiler.TreeRealization
     {
         public Dictionary<unit_node, string> unit_uses_paths = new Dictionary<unit_node, string>();
 
-        public void AddElement(unit_node unit, string unit_uses_path)
+        public new void AddElement(unit_node unit)
         {
-            if (unit_uses_paths.ContainsKey(unit)) return;
+            throw new InvalidOperationException("Use second overload of \"unit_node_list.AddElement\"");
+        }
+
+        /// <summary>
+        /// Adds element to the "uses" list
+        /// </summary>
+        /// <param name="unit">Element to add. Can be unit, namespace, .dll reference, etc.</param>
+        /// <param name="unit_uses_path">Path to unit. Can be relative string, null for non-pascal_unit's</param>
+        /// <returns>Returns true if new pascal unit (not .dll, namespace, etc.) was added</returns>
+        public bool AddElement(unit_node unit, string unit_uses_path)
+        {
+            if (unit_uses_paths.ContainsKey(unit)) return false;
             base.AddElement(unit);
-            unit_uses_paths.Add(unit, unit_uses_path);
+            if (unit_uses_path != null) unit_uses_paths.Add(unit, unit_uses_path);
+            return true;
         }
 
     }

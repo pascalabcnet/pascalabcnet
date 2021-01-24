@@ -1,3 +1,5 @@
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit DrawManField;
 
 //#savepcu false
@@ -23,6 +25,17 @@ var
   ZazY1 := 5;
   ZazX2 := 10;
   ZazY2 := 16;
+  
+  HelpStr := 'Разработчик  исполнителя  Чертежник:  Михалкович С.С., 2002-17  '#10#13#10#13+
+    'Команды  исполнителя  Чертежник:'#10#13+
+    '    PenDown - опустить перо'#10#13+
+    '    PenUp - поднять перо'#10#13
+    '    ToPoint(x,y) - переместиться в точку с координатами (x,y)'#10#13+
+    '    OnVector(a,b) - переместиться из текущей точки на вектор (a,b)'#10#13
+    '       a>0 - вправо, a<0 - влево, b>0 - вверх, b<0 - вниз'#10#13
+    '    Task(name) - вызвать задание с указанным именем'#10#13
+    '    StandardField - вызвать стандартное поле'#10#13
+    '    Field(n,m) - вызвать поле размера n на m'#10#13#10#13;
 
 type 
   TDMField = class
@@ -42,6 +55,7 @@ type
     procedure DrawFieldOnly;
     procedure DrawXY;
   public
+    dmwidth := 2;
     // Добавил - МА
     TaskName: string;  
     //
@@ -68,6 +82,8 @@ type
     procedure MakerPenDown;
     procedure MakerToPoint(x,y: integer);
     procedure MakerOnVector(x,y: integer);
+    
+    procedure SetDrawManWidth(w: integer);
 
     // примитивы для выполнителя
     procedure DrawDM;
@@ -215,16 +231,14 @@ begin
 end;
 
 procedure TDMField.DrawDMDrawing;
-var i: integer;
 begin
-  for i:=0 to DMColl.Count-1 do
+  for var i:=0 to DMColl.Count-1 do
     DMLine(DMColl[i].p.x,DMColl[i].p.y,DMColl[i].p.x+DMColl[i].v.x,DMColl[i].p.y+DMColl[i].v.y,colorSolve);
 end;
 
 procedure TDMField.DrawDMMakerDrawing;
-var i: integer;
 begin
-  for i:=0 to DMMakerColl.Count-1 do
+  for var i:=0 to DMMakerColl.Count-1 do
     DMLine(DMMakerColl[i].p.x,DMMakerColl[i].p.y,DMMakerColl[i].p.x+DMMakerColl[i].v.x,DMMakerColl[i].p.y+DMMakerColl[i].v.y,colorTask);
 end;
 
@@ -241,17 +255,16 @@ begin
 end;
 
 procedure TDMField.DrawFieldOnly;
-var ix,iy,w,h: integer;
 begin
-  w := CellSize*DimX; 
-  h := CellSize*DimY;
+  var w := CellSize*DimX; 
+  var h := CellSize*DimY;
   Brush.Color := clWhite;
   FillRectangle(X0,Y0,X0+ZazX1+w+1+ZazX2,Y0+ZazY1+h+1+ZazY2);
   Pen.Width := 1;
   Pen.Color := RGB(191,191,191);
-  for ix:=0 to DimX do
+  for var ix:=0 to DimX do
     Line(X0+ZazX1+ix*CellSize,Y0+ZazY1,X0+ZazX1+ix*CellSize,Y0+ZazY1+h);
-  for iy:=0 to DimY do
+  for var iy:=0 to DimY do
     Line(X0+ZazX1,Y0+ZazY1+iy*CellSize,X0+ZazX1+w,Y0+ZazY1+iy*CellSize);
   Pen.Color := clGray;
   if (orx>-DimX) and (orx<0) then
@@ -264,7 +277,7 @@ begin
 end;
 
 procedure TDMField.DrawXY;
-var x,y,ww: integer;
+var ww: integer;
     s: string;
     interval: integer;
     bs: BrushStyleType;
@@ -281,7 +294,7 @@ begin
   Brush.Style := bsClear;
   Font.Name := 'MS Sans Serif';
   Font.Size := 8;
-  for x:=0 to DimX do
+  for var x:=0 to DimX do
     if (x+orx) mod interval = 0 then
     begin
       s:=IntToStr(x+orx);
@@ -289,7 +302,7 @@ begin
 //        hh:=Canvas.TextHeight(s);
       TextOut(X0+ZazX1+x*CellSize-ww div 2+1,Y0+ZazY1+DimY*CellSize+1+2,s);
     end;
-  for y:=0 to DimY do
+  for var y:=0 to DimY do
     if (y+ory) mod interval = 0 then
     begin
       s:=IntToStr(y+ory);
@@ -304,6 +317,7 @@ end;
 
 procedure TDMField.DMLine(x1,y1,x2,y2: integer; c: GraphABC.Color);
 begin
+  Pen.Width := dmwidth;
   Line(X0+ZazX1+(x1-orx)*CellSize,Y0+ZazY1+(DimY-y1+ory)*CellSize,X0+ZazX1+(x2-orx)*CellSize,Y0+ZazY1+(DimY-y2+ory)*CellSize,c);
 end;
 
@@ -362,6 +376,11 @@ begin
   MakerToPoint(MakerX+x,MakerY+y);
 end;
 
+procedure TDMField.SetDrawManWidth(w: integer);
+begin
+  dmwidth := 2;
+end;
+
 procedure TDMField.DrawDM;
 var 
   ZZ: integer;
@@ -374,6 +393,7 @@ begin
   r1 := r;
   r1.Offset(X0+ZazX1+(DMX-orx)*CellSize-4+1,Y0+ZazY1+(DimY-DMY+ory)*CellSize-4+1);
   DMPicture.CopyRect(r,GraphBufferBitmap,r1);
+  Pen.Width := 1;
   DrawRectangle(X0+ZazX1+(DMX-orx)*CellSize-ZZ+1,Y0+ZazY1+(DimY+ory-DMY)*CellSize-ZZ+1,X0+ZazX1+(DMX-orx)*CellSize+ZZ,Y0+ZazY1+(DimY+ory-DMY)*CellSize+ZZ);
 end;
 
@@ -567,6 +587,8 @@ end;
 
 procedure buttonStartClick(o: Object; e: EventArgs);
 begin
+  if t=nil then 
+    exit;
   if t.ThreadState = System.Threading.ThreadState.Suspended then
   begin
     DMField.StepFlag := False;
@@ -584,6 +606,8 @@ end;
 
 procedure buttonStepClick(o: Object; e: EventArgs);
 begin
+  if t=nil then 
+    exit;
   DMField.StepFlag := True;
   t.Resume;
   (GraphABCControl as Control).Focus;
@@ -592,18 +616,7 @@ end;
 
 procedure buttonHelpClick(o: Object; e: EventArgs);
 begin
-  MessageBox.Show('Разработчик  исполнителя  Чертежник:  Михалкович С.С., 2002-07  '#10#13#10#13+
-    'Команды  исполнителя  Чертежник:'#10#13+
-    '    PenDown - опустить перо'#10#13+
-    '    PenUp - поднять перо'#10#13
-    '    ToPoint(x,y) - переместиться в точку с координатами (x,y)'#10#13+
-    '    OnVector(a,b) - переместиться из текущей точки на вектор (a,b)'#10#13
-    '       a>0 - вправо, a<0 - влево, b>0 - вверх, b<0 - вниз'#10#13
-    '    Speed(n) - установить скорость n (n=0..10)'#10#13
-    '    Stop - остановить Чертежника'#10#13
-    '    Start - запустить Чертежника'#10#13,
-    'Исполнитель Чертежник - Справка');
-
+  MessageBox.Show(HelpStr,'Исполнитель Чертежник - Справка');
   (GraphABCControl as Control).Focus;
 end;
 
@@ -679,7 +692,7 @@ begin
   BottomPanel.Controls.Add(groupBoxExState);
   BottomPanel.Dock := DockStyle.Bottom;
   BottomPanel.Location := new Point(0, 407);
-  BottomPanel.Size := new Size(679, 83);
+  BottomPanel.Size := new Size(679, 83)*ScreenScale;
   // 
   // panelBottomLeft
   // 
@@ -690,43 +703,49 @@ begin
   panelBottomLeft.Controls.Add(buttonStart);
   panelBottomLeft.Controls.Add(tableLayoutPanelBottom);
   panelBottomLeft.Location := new Point(0, 0);
-  panelBottomLeft.Size := new Size(474, 83);
-  // 
-  // buttonHelp
-  // 
-  buttonHelp.FlatStyle := System.Windows.Forms.FlatStyle.System;
-  buttonHelp.Location := new Point(359, 18);
-  buttonHelp.Size := new Size(107, 24);
-  buttonHelp.TabStop := false;
-  buttonHelp.Text := 'Справка (F1)';
-//  buttonHelp.UseVisualStyleBackColor := true;
-  // 
-  // buttonExit
-  // 
-  buttonExit.FlatStyle := System.Windows.Forms.FlatStyle.System;
-  buttonExit.Location := new System.Drawing.Point(241, 18);
-  buttonExit.Size := new System.Drawing.Size(107, 24);
-  buttonExit.TabStop := false;
-  buttonExit.Text := 'Выход (Esc)';
-//  buttonExit.UseVisualStyleBackColor := true;
-  // 
-  // buttonStep
-  // 
-  buttonStep.FlatStyle := FlatStyle.System;
-  buttonStep.Location := new Point(123, 18);
-  buttonStep.Size := new Size(107, 24);
-  buttonStep.TabStop := false;
-  buttonStep.Text := 'Шаг (Space)';
-//  buttonStep.UseVisualStyleBackColor := true;
+  panelBottomLeft.Size := new Size(474, 83)*ScreenScale;
+  
+  var x := 10;
+  var h := 116;
   // 
   // buttonStart
   // 
-  buttonStart.FlatStyle := FlatStyle.System;
-  buttonStart.Location := new Point(5, 18);
-  buttonStart.Size := new Size(107, 24);
+  //buttonStart.FlatStyle := FlatStyle.System;
+  buttonStart.Location := new Point(x, 14)*ScreenScale;
+  buttonStart.Size := new Size(107, 24)*ScreenScale;
   buttonStart.TabStop := false;
   buttonStart.Text := 'Пуск (Enter)';
 //  buttonStart.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonStep
+  // 
+  //buttonStep.FlatStyle := FlatStyle.System;
+  buttonStep.Location := new Point(x, 14)*ScreenScale;
+  buttonStep.Size := new Size(107, 24)*ScreenScale;
+  buttonStep.TabStop := false;
+  buttonStep.Text := 'Шаг (Space)';
+//  buttonStep.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonExit
+  // 
+  //buttonExit.FlatStyle := System.Windows.Forms.FlatStyle.System;
+  buttonExit.Location := new System.Drawing.Point(x, 14)*ScreenScale;
+  buttonExit.Size := new System.Drawing.Size(107, 24)*ScreenScale;
+  buttonExit.TabStop := false;
+  buttonExit.Text := 'Выход (Esc)';
+//  buttonExit.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonHelp
+  // 
+  //buttonHelp.FlatStyle := System.Windows.Forms.FlatStyle.System;
+  buttonHelp.Location := new Point(x, 14)*ScreenScale;
+  buttonHelp.Size := new Size(107, 24)*ScreenScale;
+  buttonHelp.TabStop := false;
+  buttonHelp.Text := 'Справка (F1)';
+//  buttonHelp.UseVisualStyleBackColor := true;
   // 
   // tableLayoutPanelBottom
   // 
@@ -736,21 +755,22 @@ begin
   tableLayoutPanelBottom.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
   tableLayoutPanelBottom.Controls.Add(labelExState);
   tableLayoutPanelBottom.ForeColor := System.Drawing.Color.White;
-  tableLayoutPanelBottom.Location := new Point(4, 52);
+  tableLayoutPanelBottom.Location := new Point(9, 49)*ScreenScale;
   tableLayoutPanelBottom.RowCount := 1;
   tableLayoutPanelBottom.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
-  tableLayoutPanelBottom.Size := new Size(463, 23);
+  tableLayoutPanelBottom.Size := new Size(457, 23)*ScreenScale;
+  //tableLayoutPanelBottom.AutoSize := True;
   // 
   // labelExState
   // 
   labelExState.AutoEllipsis := true;
   labelExState.AutoSize := true;
   labelExState.Dock := DockStyle.Fill;
-  labelExState.FlatStyle := FlatStyle.System;
-  labelExState.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelExState.FlatStyle := FlatStyle.System;
+  labelExState.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
   labelExState.Location := new Point(5, 2);
-  labelExState.Margin := new Padding(3, 0, 3, 3);
-  labelExState.Size := new Size(453, 15);
+  labelExState.Margin := new Padding(3, 3, 3, 3);
+  labelExState.Size := new Size(453, 15)*ScreenScale;
   labelExState.Text := 'Чертежник: Готов';
   labelExState.TextAlign := ContentAlignment.MiddleCenter;
   // 
@@ -762,8 +782,8 @@ begin
   groupBoxExState.Controls.Add(trackBarSpeed);
   groupBoxExState.Controls.Add(labelSpeed);
   groupBoxExState.Dock := DockStyle.Right;
-  groupBoxExState.Location := new Point(475, 0);
-  groupBoxExState.Size := new Size(204, 83);
+  groupBoxExState.Location := new Point(475, 0)*ScreenScale;
+  groupBoxExState.Size := new Size(204, 83)*ScreenScale;
   groupBoxExState.TabStop := false;
   // 
   // tableLayoutPanel1
@@ -772,43 +792,43 @@ begin
   tableLayoutPanel1.CellBorderStyle := TableLayoutPanelCellBorderStyle.Outset;
   tableLayoutPanel1.ColumnCount := 1;
   tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanel1.Location := new Point(91, 52);
+  tableLayoutPanel1.Location := new Point(78, 50)*ScreenScale;
   tableLayoutPanel1.RowCount := 1;
   tableLayoutPanel1.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanel1.Size := new Size(22, 22);
+  tableLayoutPanel1.Size := new Size(22, 22)*ScreenScale;
   // 
   // labelState
   // 
   labelState.AutoSize := true;
-  labelState.Location := new Point(6, 54);
+  labelState.Location := new Point(6, 54)*ScreenScale;
   labelState.Margin := new Padding(0);
-  labelState.Size := new Size(83, 17);
+  labelState.Size := new Size(83, 17)*ScreenScale;
   labelState.Text := 'Состояние:';
   // 
   // labelStep
   // 
   labelStep.BackColor := SystemColors.Control;
-  labelStep.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelStep.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
   labelStep.ForeColor := System.Drawing.Color.Black;
-  labelStep.Location := new Point(130, 54);
-  labelStep.Size := new Size(66, 18);
+  labelStep.Location := new Point(130, 54)*ScreenScale;
+  labelStep.Size := new Size(66, 18)*ScreenScale;
   labelStep.Text := 'Шаг: 0';
-  labelStep.TextAlign := ContentAlignment.MiddleLeft;
+  //labelStep.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // trackBarSpeed
   // 
   trackBarSpeed.CausesValidation := false;
   trackBarSpeed.LargeChange := 1;
-  trackBarSpeed.Location := new Point(80, 11);
-  trackBarSpeed.Size := new Size(121, 53);
+  trackBarSpeed.Location := new Point(72, 11)*ScreenScale;
+  trackBarSpeed.Size := new Size(121, 53)*ScreenScale;
   trackBarSpeed.TabStop := false;
   // 
   // labelSpeed
   // 
   labelSpeed.AutoSize := true;
-  labelSpeed.Location := new Point(6, 16);
+  labelSpeed.Location := new Point(6, 16)*ScreenScale;
   labelSpeed.Margin := new Padding(0);
-  labelSpeed.Size := new Size(73, 17);
+  labelSpeed.Size := new Size(73, 17)*ScreenScale;
   labelSpeed.Text := 'Скорость:';
   // 
   // tableLayoutPanelTop
@@ -822,29 +842,37 @@ begin
   tableLayoutPanelTop.Location := new Point(0, 0);
   tableLayoutPanelTop.RowCount := 1;
   tableLayoutPanelTop.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanelTop.Size := new Size(679, 23);
+  tableLayoutPanelTop.AutoSize := True;
+  tableLayoutPanelTop.Size := new Size(679, 23)*ScreenScale;
   // 
   // labelZad
   // 
   labelZad.AutoEllipsis := true;
-  labelZad.AutoSize := true;
+  //labelZad.AutoSize := true;
   labelZad.Dock := DockStyle.Fill;
-  labelZad.FlatStyle := FlatStyle.System;
-  labelZad.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelZad.FlatStyle := FlatStyle.System;
+  labelZad.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
   labelZad.ForeColor := SystemColors.HotTrack;
   labelZad.Location := new Point(6, 3);
   labelZad.Margin := new Padding(4, 1, 3, 0);
-  labelZad.Size := new Size(668, 14);
+  labelZad.Size := new Size(668, 14)*ScreenScale;
   labelZad.Text := 'Задание';
   labelZad.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // ExecutorForm
   // 
   MainForm.BackColor := SystemColors.Control;
-//  MainForm.ClientSize := new Size(679, 490);
+//  MainWindow.ClientSize := new Size(679, 490);
   MainForm.Controls.Add(tableLayoutPanelTop);
   MainForm.Controls.Add(BottomPanel);
-  MainForm.MinimumSize := new Size(687, 240);
+  
+  var ssz := 692;
+  var sw := ScreenSize.Width;
+  var ww := ssz*ScreenScale;
+  if ww>sw then 
+    ssz := Round(sw/ScreenScale) - 10;
+
+  MainForm.MinimumSize := new Size(ssz, 240)*ScreenScale; // Уменьшить до размера экрана!!!
   MainForm.Text := 'Исполнитель Чертежник';
   BottomPanel.ResumeLayout(false);
   panelBottomLeft.ResumeLayout(false);
@@ -969,7 +997,8 @@ begin
   //MainForm.Bounds := new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height);
   SetSmoothingOff;
   //GraphABCControl.BackColor := MainForm.BackColor;
-  MainForm.Invoke(MainForm.Show);
+  var del : procedure := MainForm.Show;
+  MainForm.Invoke(del);
 end;
 
 procedure __InitModule__;

@@ -166,6 +166,10 @@ namespace PascalABCCompiler.TreeRealization
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.name);
                     }
                 }
+                if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type && tn.is_value && !gpe.base_class.is_value && gpe.base_class != SystemLibrary.SystemLibrary.value_type && gpe.base_class != SystemLibrary.SystemLibrary.enum_base_type)
+                {
+                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
+                }
                 foreach (type_node interf in gpe.implementing_interfaces)
                 {
                     type_node di = generic_convertions.determine_type(interf, tparams, method_param_types);
@@ -180,7 +184,11 @@ namespace PascalABCCompiler.TreeRealization
                     return new SimpleSemanticError(null, "USING_STATIC_CLASS_NOT_VALID");
                 if (gpe.has_default_ctor)
                 {
-                    if (tn.IsAbstract || tn.IsStatic || !tn.is_value && !generic_convertions.type_has_default_ctor(tn, false))
+                    if (tn.IsAbstract)
+                    {
+                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_NOT_BE_ABSTRACT", tn.PrintableName);
+                    }
+                    if (tn.IsStatic || !tn.is_value && !generic_convertions.type_has_default_ctor(tn, false))
                     {
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_HAVE_DEFAULT_CONSTRUCTOR", tn.PrintableName);
                     }
@@ -305,6 +313,8 @@ namespace PascalABCCompiler.TreeRealization
             //Определяем базовый тип
             type_node btype = determine_type(
                 original.base_type, param_types, false);
+            if (btype == null)
+                btype = SystemLibrary.SystemLibrary.object_type;
             instance.SetBaseTypeIgnoringScope(btype);
             
             //instance._scope = new SymbolTable.GenericTypeInstanceScope(instance, instance.original_generic.Scope, btype.Scope);
@@ -671,7 +681,7 @@ namespace PascalABCCompiler.TreeRealization
             var visitor = SystemLibrary.SystemLibrary.syn_visitor;
             var result = true;
             exception_on_body_compilation = null;
-
+            int errors_count = visitor.ErrorsList.Count;
             /*if (lambda_syntax_node.formal_parameters == null
                 || lambda_syntax_node.formal_parameters.params_list == null
                 || lambda_syntax_node.formal_parameters.params_list.Count == 0)
@@ -704,8 +714,8 @@ namespace PascalABCCompiler.TreeRealization
                 param_counter += t.idents.idents.Count;
             }
 
-            if (!there_are_undeduced_params
-                && lambda_syntax_node.return_type is lambda_inferred_type
+            if (/*!there_are_undeduced_params
+                && */lambda_syntax_node.return_type is lambda_inferred_type
                 && ((lambda_inferred_type)lambda_syntax_node.return_type).real_type is lambda_any_type_node)
             {
                 var lambdaName = lambda_syntax_node.lambda_name;
@@ -720,8 +730,12 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 catch (Exception exc)
                 {
-                    exception_on_body_compilation = exc; // Если произошло исключение то запишем его в выходной параметр, оно потом будет обработано вызывающим методом
-                    result = false;
+                    if (!there_are_undeduced_params)
+                    {
+                        exception_on_body_compilation = exc; // Если произошло исключение то запишем его в выходной параметр, оно потом будет обработано вызывающим методом
+                        result = false;
+                    }
+                        
                 }
                 finally
                 {
@@ -735,23 +749,33 @@ namespace PascalABCCompiler.TreeRealization
 
                     if (result)
                     {
-                        if (formal_delegate == null) // SSM 5.12.15
+                        if (there_are_undeduced_params && visitor.ErrorsList.Count > errors_count)
                         {
-                            result = false;
+                            visitor.ErrorsList.RemoveAt(visitor.ErrorsList.Count - 1);
+                            
                         }
                         else
-                        { 
-                            if (formal_delegate.return_value_type==null) // SSM 19/04/16 - эта проверка в связи с падением при передаче функции вместо процедуры в качестве функционального параметра: a.Foreach(x->1)
+                        {
+                            if (formal_delegate == null) // SSM 5.12.15
                             {
                                 result = false;
                             }
-                            else if (!DeduceInstanceTypes(formal_delegate.return_value_type,
-                                                     (type_node)((lambda_inferred_type)lambda_syntax_node.return_type).real_type,
-                                                     deduced, nils, generic_params)) //Выводим дженерик-параметры после того как вычислили тип возвращаемого значения
+                            else
                             {
-                                result = false; 
+                                if (formal_delegate.return_value_type == null) // SSM 19/04/16 - эта проверка в связи с падением при передаче функции вместо процедуры в качестве функционального параметра: a.Foreach(x->1)
+                                {
+                                    result = false;
+                                }
+                                else if (!DeduceInstanceTypes(formal_delegate.return_value_type,
+                                                         (type_node)((lambda_inferred_type)lambda_syntax_node.return_type).real_type,
+                                                         deduced, nils, generic_params)) //Выводим дженерик-параметры после того как вычислили тип возвращаемого значения
+                                {
+                                    result = false;
+                                }
                             }
                         }
+                        
+                        
                     }
                 }
             }
@@ -1176,6 +1200,18 @@ namespace PascalABCCompiler.TreeRealization
                         var sil = fact_type.find_in_type("Invoke");
                         if (sil != null && sil.Count > 0)
                             fact_func = sil[0].sym_info as function_node;
+                    }
+                    else if (dm != null && dm.proper_methods.Count > 1 && formal_type.original_generic is compiled_type_node && (formal_type.original_generic as compiled_type_node).compiled_type.FullName.StartsWith("System.Func`"))
+                    {
+                        var ctn = formal_type.original_generic as compiled_type_node;
+                        foreach (var fc in dm.proper_methods)
+                        {
+                            if (fc.simple_function_node.parameters.Count == formal_type.instance_params.Count - 1)
+                            {
+                                fact_func = fc.simple_function_node;
+                                break;
+                            }
+                        }
                     }
                         
                     if (fact_func != null)
@@ -1625,6 +1661,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 cmn.return_variable = (orig_fn as common_function_node)?.return_variable;
             }
+            cmn.IsOperator = orig_fn.IsOperator;
             return cmn;
         }
 

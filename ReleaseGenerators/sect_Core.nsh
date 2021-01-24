@@ -81,6 +81,7 @@
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
     File ..\bin\Lib\ABCDatabases.pcu
+    File ..\bin\Lib\PT4Databases.pcu
     File ..\bin\Lib\Arrays.pcu
     ;File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
@@ -129,17 +130,21 @@
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
+    File ..\bin\Lib\OpenCLABCBase.pcu
     File ..\bin\Lib\OpenCLABC.pcu
     File ..\bin\Lib\OpenGL.pcu
+    File ..\bin\Lib\OpenGLABCBase.pcu
     File ..\bin\Lib\OpenGLABC.pcu
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
     File ..\bin\Lib\Turtle.pcu
+    File ..\bin\Lib\TwoPanelsWindow.pcu
+    File ..\bin\Lib\NUnitABC.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
-
+    File ..\bin\Lib\nunit.framework.dll 
 	
     ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
@@ -147,6 +152,7 @@
     ${AddFile} "ABCHouse.pcu"
     ${AddFile} "ABCObjects.pcu"
     ${AddFile} "ABCDatabases.pcu"
+    ${AddFile} "PT4Databases.pcu"
     ${AddFile} "ABCSprites.pcu"
     ${AddFile} "Arrays.pcu"
     ${AddFile} "BFSystem.pcu"
@@ -198,16 +204,23 @@
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
+    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "OpenGL.pcu"
+    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pcu"
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
     ${AddFile} "Turtle.pcu"
+    ${AddFile} "TwoPanelsWindow.pcu"
+    ${AddFile} "NUnitABC.pcu"
+
 
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
+    ${AddFile} "nunit.framework.dll"
+    
     ${AddFile} "PABCRtl.pdb"
 
     SetOutPath "$INSTDIR\Doc"
@@ -221,6 +234,8 @@
     Call NGEN
     Push "Lib\HelixToolkit.dll"
     Call NGEN
+    Push "Lib\nunit.framework.dll"
+    Call NGEN
 	
     SetOutPath "$INSTDIR\LibSource"
     File ..\bin\Lib\__RedirectIOMode.pas
@@ -230,6 +245,7 @@
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
     File ..\bin\Lib\ABCDatabases.pas
+    File ..\bin\Lib\PT4Databases.pas
     File ..\bin\Lib\Arrays.pas
     ;File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
@@ -278,12 +294,16 @@
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
+    File ..\bin\Lib\OpenCLABCBase.pas
     File ..\bin\Lib\OpenCLABC.pas
     File ..\bin\Lib\OpenGL.pas
+    File ..\bin\Lib\OpenGLABCBase.pas
     File ..\bin\Lib\OpenGLABC.pas
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
     File ..\bin\Lib\Turtle.pas
+    File ..\bin\Lib\TwoPanelsWindow.pas
+    File ..\bin\Lib\NUnitABC.pas
 
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
@@ -296,6 +316,7 @@
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
     ${AddFile} "ABCDatabases.pas"
+    ${AddFile} "PT4Databases.pas"
     ${AddFile} "Arrays.pas"
     ;${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
@@ -338,18 +359,22 @@
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
-    ${AddFile} "OpenGL.pas"
     ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "Speech.pas"
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
+    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pas"
     ${AddFile} "OpenGL.pas"
+    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pas"
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
     ${AddFile} "Turtle.pas"
+    ${AddFile} "TwoPanelsWindow.pas"
+    ${AddFile} "NUnitABC.pas"
+
 
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

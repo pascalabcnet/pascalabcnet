@@ -32,6 +32,7 @@ NOTASCII [^\x00-x7F]
 
 CHARACTERNUM '[^'\n]'
 INTNUM {Digit}+
+BIGINTNUM {INTNUM}[bB][iI]
 FLOATNUM {INTNUM}\.{INTNUM}
 EXPNUM ({INTNUM}\.)?{INTNUM}[eE][+\-]?{INTNUM}
 STRINGNUM \'([^\'\n]|\'\')*\'
@@ -181,8 +182,8 @@ UNICODEARROW \x890
 }
 
 "|"              { return (int)Tokens.tkVertParen; }
-[#][#][ \t\r\n]  { yylval = new Union(); yylval.ti = new token_info(yytext,CurrentLexLocation);	return (int)Tokens.tkShortProgram; }
-[#][#][#][ \t\r\n] { yylval = new Union(); yylval.ti = new token_info(yytext,CurrentLexLocation); return (int)Tokens.tkShortSFProgram; 
+[#][#][ \t\r\n]+  { yylval = new Union(); yylval.ti = new token_info("##",CurrentLexLocation);	return (int)Tokens.tkShortProgram; }
+[#][#][#][ \t\r\n]+ { yylval = new Union(); yylval.ti = new token_info("###",CurrentLexLocation); return (int)Tokens.tkShortSFProgram; 
 	}
 "&"              { return (int)Tokens.tkAmpersend; }
 ","              { yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkComma; }
@@ -218,7 +219,9 @@ UNICODEARROW \x890
 "<>"            { yylval = new Union(); yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.tkNotEqual; }
 "^"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Deref); return (int)Tokens.tkDeref; }
 "->"            { yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
-\x2192 			{ yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
+
+\u2192 			{ yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
+
 \<\<expression\>\> { return (int)Tokens.tkParseModeExpression; }
 \<\<statement\>\>  { return (int)Tokens.tkParseModeStatement; }
 \<\<type\>\>  { return (int)Tokens.tkParseModeType; }
@@ -434,6 +437,14 @@ UNICODEARROW \x890
   yylval.ex = parsertools.create_int_const(yytext,currentLexLocation); 
   return (int)Tokens.tkInteger; 
 }
+
+{BIGINTNUM} { 
+  yylval = new Union();
+  currentLexLocation = CurrentLexLocation;
+  yylval.ex = parsertools.create_bigint_const(yytext,currentLexLocation); 
+  return (int)Tokens.tkBigInteger; 
+}
+
 
 {HEXNUM} { 
   yylval = new Union();

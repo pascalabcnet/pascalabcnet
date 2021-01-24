@@ -49,7 +49,7 @@ begin
   a[yy,xx] := Self;
   var dx := xx - x;
   var dy := yy - y;
-  f.MoveOn(-dx*2,-dy*2,0);
+  f.MoveBy(-dx*2,-dy*2,0);
   (x,y) := (xx,yy);
   Result := Self;
 end;
@@ -58,7 +58,7 @@ function ChessFigure.AnimMoveTo(xx,yy: integer): ChessFigure;
 begin
   var dx := xx - x;
   var dy := yy - y;
-  f.AnimMoveOn(-dx*2,-dy*2,0,delay/1000).WhenCompleted(procedure -> begin
+  f.AnimMoveBy(-dx*2,-dy*2,0,delay/1000).WhenCompleted(procedure -> begin
     a[y,x] := nil;
     if a[yy,xx]<>nil then
       a[yy,xx].Destroy;

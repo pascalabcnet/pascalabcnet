@@ -1,7 +1,9 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="AdjacentGroup">
+<param name="Keyword" value="Average">
 <param name="Keyword" value="Batch">
 <param name="Keyword" value="Cartesian">
+<param name="Keyword" value="CountOf">
 <param name="Keyword" value="ForEach">
 <param name="Keyword" value="function">
 <param name="Keyword" value="Incremental">
@@ -25,6 +27,7 @@
 <param name="Keyword" value="Sorted">
 <param name="Keyword" value="SortedDescending">
 <param name="Keyword" value="SplitAt">
+<param name="Keyword" value="Sum">
 <param name="Keyword" value="Tabulate">
 <param name="Keyword" value="TakeLast">
 <param name="Keyword" value="ToHashSet">
@@ -39,6 +42,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)</td></tr>
 <tr><td><code><b>function</b> AdjacentGroup&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует одинаковые подряд идущие элементы, получая последовательность массивов</td></tr>
+<tr><td><code><b>function</b> Average(Self: <b>sequence </b>  <b>of</b> BigInteger): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает среднее элементов последовательности</td></tr>
 <tr><td><code><b>function</b> Batch&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательность на серии длины size</td></tr>
 <tr><td><code><b>function</b> Batch&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer; proj: Func&lt;IEnumerable&lt;T&gt;, Res&gt;): <b>sequence </b>  <b>of</b> Res;</code>
@@ -47,6 +52,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декартово произведение последовательностей</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;T2): <b>sequence </b>  <b>of</b> T2;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декартово произведение последовательностей</td></tr>
+<tr><td><code><b>function</b> CountOf&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; x: T): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов, равных указанному значению</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: T -&gt; ());</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет действие к каждому элементу последовательности</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: (T,integer) -&gt; ());</code>
@@ -127,6 +134,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности, спроектированных на числовое значение</td></tr>
 <tr><td><code><b>function</b> Product&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; f: T-&gt;BigInteger): BigInteger;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности, спроектированных на числовое значение</td></tr>
+<tr><td><code><b>function</b> Product(Self: <b>sequence </b>  <b>of</b> BigInteger): BigInteger;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности</td></tr>
 <tr><td><code><b>function</b> SkipLast&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T; count: integer := 1): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность без последних count элементов</td></tr>
 <tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from, step: integer): <b>sequence </b>  <b>of</b> T;</code>
@@ -139,6 +148,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по убыванию последовательность</td></tr>
 <tr><td><code><b>function</b> SplitAt&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; ind: integer): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательность на две в позиции ind. Реализуется двухпроходным алгоритмом</td></tr>
+<tr><td><code><b>function</b> Sum(Self: <b>sequence </b>  <b>of</b> BigInteger): BigInteger;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает сумму элементов последовательности</td></tr>
 <tr><td><code><b>function</b> Tabulate&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; F: T-&gt;T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Табулирует функцию последовательностью</td></tr>
 <tr><td><code><b>function</b> TakeLast&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; count: integer): <b>sequence </b>  <b>of</b> T;</code>

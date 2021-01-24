@@ -340,7 +340,67 @@ namespace PascalABCCompiler.TreeRealization
             visitor.visit(this);
         }
     }
-	
+
+    public class double_question_colon_expression : expression_node, SemanticTree.IDoubleQuestionColonExpressionNode
+    {
+        private expression_node _condition;
+        private expression_node _ret_if_null;
+
+        public double_question_colon_expression(expression_node condition, expression_node ret_if_null,
+            location loc)
+            : base(condition is null_const_node ? ret_if_null.type : condition.type, loc)
+        {
+            this._condition = condition;
+            this._ret_if_null = ret_if_null;
+        }
+
+        public expression_node internal_condition
+        {
+            get
+            {
+                return _condition;
+            }
+        }
+        
+
+        public expression_node internal_ret_if_null
+        {
+            get
+            {
+                return _ret_if_null;
+            }
+        }
+
+        public SemanticTree.IExpressionNode condition
+        {
+            get
+            {
+                return _condition;
+            }
+        }
+
+        public SemanticTree.IExpressionNode ret_if_null
+        {
+            get
+            {
+                return _ret_if_null;
+            }
+        }
+
+        public override semantic_node_type semantic_node_type
+        {
+            get
+            {
+                return semantic_node_type.double_question_colon_expression;
+            }
+        }
+
+        public override void visit(SemanticTree.ISemanticVisitor visitor)
+        {
+            visitor.visit(this);
+        }
+    }
+
     public class array_initializer : expression_node, SemanticTree.IArrayInitializer
     {
     	private List<expression_node> _element_values;

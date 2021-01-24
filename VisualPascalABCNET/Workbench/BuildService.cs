@@ -18,7 +18,7 @@ namespace VisualPascalABC
         bool __ForRun;
         string __RuntimeServicesModule;
         bool __savePCU;
-        List<PascalABCCompiler.Errors.Error> ErrorsList = new List<PascalABCCompiler.Errors.Error>();
+        public List<PascalABCCompiler.Errors.Error> ErrorsList = new List<PascalABCCompiler.Errors.Error>();
 
         IWorkbench Workbench;
         IWorkbenchProjectService ProjectService;

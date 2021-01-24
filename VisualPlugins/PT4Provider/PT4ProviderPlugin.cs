@@ -35,7 +35,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "Copyright © 2005-2020 by Ivan Bondarev, Stanislav Mikhalkovich";
+                return "Copyright © 2005-2021 by Ivan Bondarev, Stanislav Mikhalkovich";
             }
         }
 
@@ -142,7 +142,15 @@ namespace VisualPascalABCPlugins
             pt4setup.StartInfo.FileName = PT4Dir + "\\PT4Setup.exe";
 
             if (System.IO.File.Exists(pt4setup.StartInfo.FileName))
-                pt4setup.Start();
+                try
+                {
+                    pt4setup.Start();
+                }
+                catch(Exception ex)
+                {
+                    VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.AddMessageToErrorListWindow, 
+                    new List<PascalABCCompiler.Errors.Error>(new PascalABCCompiler.Errors.Error[] { new PascalABCCompiler.Errors.Error(ex.Message) }));
+                }
         }
         public void GetGUI(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems)
         {

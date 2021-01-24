@@ -712,6 +712,10 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as is_pattern_expr, right as is_pattern_expr);
                 else if (left is if_expr_new)
                     CompareInternal(left as if_expr_new, right as if_expr_new);
+                else if (left is dot_question_node)
+                    CompareInternal(left as dot_question_node, right as dot_question_node);
+                else if (left is double_question_node)
+                    CompareInternal(left as double_question_node, right as double_question_node);
                 else
                     throw new NotImplementedException(left.GetType().ToString());
 
@@ -2360,6 +2364,28 @@ namespace PascalABCCompiler.SyntaxTree
                 CompareInternal(left.condition, right.condition);
                 CompareInternal(left.if_true, right.if_true);
                 CompareInternal(left.if_false, right.if_false);
+            }
+        }
+        
+        public void CompareInternal(dot_question_node left, dot_question_node right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.left, right.left);
+                CompareInternal(left.right, right.right);
+            }
+        }
+        
+        public void CompareInternal(double_question_node left, double_question_node right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.left, right.left);
+                CompareInternal(left.right, right.right);
             }
         }
     }

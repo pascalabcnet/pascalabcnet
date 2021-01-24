@@ -126,6 +126,7 @@ namespace PascalABCCompiler
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
+            Compiler.InternalDebug.SkipPCUErrors = false;
             StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[0];
             //Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);
             ldt = DateTime.Now;
@@ -215,6 +216,11 @@ namespace PascalABCCompiler
                         Console.WriteLine(string.Format("[{0},{1}] {2}: {3}", sl.BeginPosition.Line, sl.BeginPosition.Column, Path.GetFileName(sl.FileName), Compiler.ErrorsList[i].Message));
                     else
                         Console.WriteLine(Compiler.ErrorsList[i]);
+                }
+                else
+                {
+                    Console.WriteLine(Compiler.ErrorsList[i].Message);
+                    Console.WriteLine(Compiler.ErrorsList[i].StackTrace);
                 }
                 break; // выйти после первой же ошибки
             }

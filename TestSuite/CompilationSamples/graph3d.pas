@@ -22,6 +22,7 @@ uses System.XML;
 uses System.IO; 
 uses System.Threading;
 uses System.Windows.Input;
+uses System.Runtime.Serialization;
 
 uses HelixToolkit.Wpf;
 //uses Petzold.Media3D;
@@ -41,6 +42,8 @@ type
   GMaterial = System.Windows.Media.Media3D.Material;
   /// Тип диффузного материала
   GDiffuseMaterial = System.Windows.Media.Media3D.DiffuseMaterial;
+  /// Тип зеркальногоы материала
+  GSpecularMaterial = System.Windows.Media.Media3D.SpecularMaterial;
   /// Тип материала свечения
   GEmissiveMaterial = System.Windows.Media.Media3D.EmissiveMaterial;
   /// Тип камеры
@@ -75,8 +78,10 @@ var
 //>>     Короткие функции модуля Graph3D # Graph3D short functions
 // -----------------------------------------------------
 
+/// Процедура синхронизации операций с потоком, создающим графические элементы
+procedure Invoke(p: procedure);
 /// Процедура ускорения вывода. Обновляет экран после всех изменений
-procedure Redraw(p: ()->());
+procedure Redraw(p: procedure);
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
 function RGB(r, g, b: byte): Color;
 /// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)
@@ -230,11 +235,11 @@ type
     
     procedure SetD(d: real) := Invoke(SetDP, d);
     function GetD: real := InvokeReal(()->Cam.Position.DistanceTo(P3D(0, 0, 0)));
-    procedure MoveOnP(x,y,z: real);
+    procedure MoveByP(x,y,z: real);
     begin
       Cam.Position += V3D(x,y,z)//:= P3D(Cam.Position.
     end;
-    procedure MoveOnPV(v: Vector3D);
+    procedure MoveByPV(v: Vector3D);
     begin
       Cam.Position += v;
     end;
@@ -270,9 +275,13 @@ type
     property Distanse: real read GetD write SetD;
 
   /// Перемещает камеру на вектор (dx,dy,dz)
-    procedure MoveOn(dx,dy,dz: real) := Invoke(MoveOnP,dx,dy,dz);
+    procedure MoveBy(dx,dy,dz: real) := Invoke(MoveByP,dx,dy,dz);
   /// Перемещает камеру на вектор v
-    procedure MoveOn(v: Vector3D) := Invoke(MoveOnPV,v);
+    procedure MoveBy(v: Vector3D) := Invoke(MoveByPV,v);
+  ///--
+    procedure MoveOn(dx,dy,dz: real) := Invoke(MoveByP,dx,dy,dz);
+  ///--
+    procedure MoveOn(v: Vector3D) := Invoke(MoveByPV,v);
   /// Обеспечивает плавное движение камеры
     procedure AddMoveForce(ForwardForce,RightForce,UpForce: real) := Invoke(AddMoveForceP,RightForce,UpForce,ForwardForce);
   /// Обеспечивает плавное движение камеры вперед с некоторой силой
@@ -352,12 +361,14 @@ type
 // -----------------------------------------------------
 //>>     Graph3D: класс Object3D # Graph3D Object3D class
 // ----------------------------------------------------- 
+  [Serializable]
   ///!#
   /// Базовый класс трехмерных объектов
-  Object3D = class
-    (DependencyObject) // для генерации документации
-  private 
+  Object3D = class(ISerializable)
+    //(DependencyObject) // для генерации документации
+  public
     model: Visual3D;
+  private 
     Parent: ObjectWithChildren3D;
     transfgroup := new Transform3DGroup; 
 
@@ -368,7 +379,7 @@ type
 
     procedure AddToObject3DList;
     procedure DeleteFromObject3DList;
-    
+  protected  
     procedure CreateBase0(m: Visual3D; x, y, z: real);
     begin
       model := m;
@@ -384,7 +395,7 @@ type
       hvp.Children.Add(model);
       AddToObject3DList;
     end;
-    
+  private  
     procedure SetX(xx: real) := Invoke(()->begin transltransform.OffsetX += xx - Self.X; end); 
     function GetX: real := InvokeReal(()->transfgroup.Value.OffsetX);
     procedure SetY(yy: real) := Invoke(()->begin transltransform.OffsetY += yy - Self.Y; end);
@@ -435,6 +446,61 @@ type
     end;
   
   public
+    function CreateModel: Visual3D; virtual;
+    begin
+      Result := nil;
+    end;
+  
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      //Invoke(procedure -> begin
+        info.AddValue('rotatetransform', rotatetransform.Value, typeof(Matrix3D));
+        info.AddValue('scalex', scaletransform.ScaleX, typeof(real));
+        info.AddValue('scaley', scaletransform.ScaleY, typeof(real));
+        info.AddValue('scalez', scaletransform.ScaleZ, typeof(real));
+        info.AddValue('offsetx', transltransform.OffsetX, typeof(real));
+        info.AddValue('offsety', transltransform.OffsetY, typeof(real));
+        info.AddValue('offsetz', transltransform.OffsetZ, typeof(real));
+        info.AddValue('rotatetransform_absolute', rotatetransform_absolute.Value, typeof(Matrix3D));
+      //end);
+    end;
+
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      //Invoke(procedure -> begin
+        model := CreateModel;
+        rotatetransform := new MatrixTransform3D(Matrix3D(info.GetValue('rotatetransform', typeof(Matrix3D))));
+        var scalex := real(info.GetValue('scalex', typeof(real)));
+        var scaley := real(info.GetValue('scaley', typeof(real)));
+        var scalez := real(info.GetValue('scalez', typeof(real)));
+        scaletransform := new ScaleTransform3D(scalex,scaley,scalez);
+        
+        var offsetx := real(info.GetValue('offsetx', typeof(real)));
+        var offsety := real(info.GetValue('offsety', typeof(real)));
+        var offsetz := real(info.GetValue('offsetz', typeof(real)));
+  
+        transltransform := new TranslateTransform3D(offsetx,offsety,offsetz);
+  
+        rotatetransform_absolute := new MatrixTransform3D(Matrix3D(info.GetValue('rotatetransform_absolute', typeof(Matrix3D))));
+        transfgroup := new Transform3DGroup; 
+        transfgroup.Children.Add(rotatetransform);
+        transfgroup.Children.Add(scaletransform); 
+        transfgroup.Children.Add(transltransform);
+        transfgroup.Children.Add(rotatetransform_absolute);
+        
+        AddToObject3DList;
+        //if model<>nil then
+        begin
+          model.Transform := transfgroup;
+          hvp.Children.Add(model);
+        end;
+      //end);
+    end;
+    
+    procedure Serialize(fname: string);
+    
+    static function DeSerialize(fname: string): Object3D;
+    
     constructor(model: Visual3D) := CreateBase0(model, 0, 0, 0);
     
   /// Координата X
@@ -458,15 +524,25 @@ type
   /// Перемещает 3D-объект к точке p
     function MoveTo(p: Point3D): Object3D := MoveTo(p.X, p.y, p.z);
   /// Перемещает 3D-объект на вектор (dx,dy,dz)
-    function MoveOn(dx, dy, dz: real): Object3D := MoveTo(x + dx, y + dy, z + dz);
+    function MoveBy(dx, dy, dz: real): Object3D := MoveTo(x + dx, y + dy, z + dz);
   /// Перемещает 3D-объект на вектор v
-    function MoveOn(v: Vector3D): Object3D := MoveOn(v.X, v.Y, v.Z);
+    function MoveBy(v: Vector3D): Object3D := MoveBy(v.X, v.Y, v.Z);
   /// Перемещает x-координату 3D-объекта на dx
-    function MoveOnX(dx: real): Object3D := MoveOn(dx, 0, 0);
+    function MoveByX(dx: real): Object3D := MoveBy(dx, 0, 0);
   /// Перемещает y-координату 3D-объекта на dy
-    function MoveOnY(dy: real): Object3D := MoveOn(0, dy, 0);
+    function MoveByY(dy: real): Object3D := MoveBy(0, dy, 0);
   /// Перемещает z-координату 3D-объекта на dz
-    function MoveOnZ(dz: real): Object3D := MoveOn(0, 0, dz);
+    function MoveByZ(dz: real): Object3D := MoveBy(0, 0, dz);
+  ///--
+    function MoveOn(dx, dy, dz: real): Object3D := MoveTo(x + dx, y + dy, z + dz);
+  ///--
+    function MoveOn(v: Vector3D): Object3D := MoveBy(v.X, v.Y, v.Z);
+  ///--
+    function MoveOnX(dx: real): Object3D := MoveBy(dx, 0, 0);
+  ///--
+    function MoveOnY(dy: real): Object3D := MoveBy(0, dy, 0);
+  ///--
+    function MoveOnZ(dz: real): Object3D := MoveBy(0, 0, dz);
   /// Перемещает 3D-объект вдоль вектора Direction со скоростью Velocity за время dt
     procedure MoveTime(dt: real); virtual;
     begin
@@ -479,7 +555,7 @@ type
       var dvx := dx/len*Velocity;
       var dvy := dy/len*Velocity;
       var dvz := dz/len*Velocity;
-      MoveOn(dvx*dt,dvy*dt,dvz*dt);
+      MoveBy(dvx*dt,dvy*dt,dvz*dt);
     end;
   /// Цвет 3D-объекта
     property Color: GColor read GetColor write SetColor; virtual;
@@ -578,35 +654,35 @@ type
     function AnimMoveTrajectory(trajectory: sequence of Point3D; seconds: real := 1): AnimationBase := AnimMoveTrajectory(trajectory,seconds,nil);
 
     /// Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOn(dx, dy, dz: real; seconds: real; Completed: procedure): AnimationBase;
+    function AnimMoveBy(dx, dy, dz: real; seconds: real; Completed: procedure): AnimationBase;
     /// Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд
-    function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): AnimationBase := AnimMoveOn(dx,dy,dz,seconds,nil);
+    function AnimMoveBy(dx, dy, dz: real; seconds: real := 1): AnimationBase := AnimMoveBy(dx,dy,dz,seconds,nil);
 
     /// Возвращает анимацию перемещения объекта на вектор v за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOn(v: Vector3D; seconds: real; Completed: procedure) := AnimMoveOn(v.x, v.y, v.z, seconds, Completed);
+    function AnimMoveBy(v: Vector3D; seconds: real; Completed: procedure) := AnimMoveBy(v.x, v.y, v.z, seconds, Completed);
     /// Возвращает анимацию перемещения объекта на вектор v за seconds секунд
-    function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x, v.y, v.z, seconds, nil);
+    function AnimMoveBy(v: Vector3D; seconds: real := 1) := AnimMoveBy(v.x, v.y, v.z, seconds, nil);
 
     /// Возвращает анимацию перемещения объекта по оси OX на величину dx за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOnX(dx: real; seconds: real; Completed: procedure) := AnimMoveOn(dx, 0, 0, seconds, Completed);
+    function AnimMoveByX(dx: real; seconds: real; Completed: procedure) := AnimMoveBy(dx, 0, 0, seconds, Completed);
     /// Возвращает анимацию перемещения объекта по оси OX на величину dx за seconds секунд
-    function AnimMoveOnX(dx: real; seconds: real) := AnimMoveOnX(dx, seconds, nil);
+    function AnimMoveByX(dx: real; seconds: real) := AnimMoveByX(dx, seconds, nil);
     /// Возвращает анимацию перемещения объекта по оси OX на величину dx за 1 секунду
-    function AnimMoveOnX(dx: real) := AnimMoveOnX(dx, 1, nil);
+    function AnimMoveByX(dx: real) := AnimMoveByX(dx, 1, nil);
 
     /// Возвращает анимацию перемещения объекта по оси OY на величину dy за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOnY(dy: real; seconds: real; Completed: procedure) := AnimMoveOn(0, dy, 0, seconds, Completed);
+    function AnimMoveByY(dy: real; seconds: real; Completed: procedure) := AnimMoveBy(0, dy, 0, seconds, Completed);
     /// Возвращает анимацию перемещения объекта по оси OY на величину dy за seconds секунд
-    function AnimMoveOnY(dy: real; seconds: real) := AnimMoveOnY(dy, seconds, nil);
+    function AnimMoveByY(dy: real; seconds: real) := AnimMoveByY(dy, seconds, nil);
     /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за 1 секунду
-    function AnimMoveOnY(dy: real) := AnimMoveOnY(dy, 1, nil);
+    function AnimMoveByY(dy: real) := AnimMoveByY(dy, 1, nil);
 
     /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOnZ(dz: real; seconds: real; Completed: procedure) := AnimMoveOn(0, 0, dz, seconds, Completed);
+    function AnimMoveByZ(dz: real; seconds: real; Completed: procedure) := AnimMoveBy(0, 0, dz, seconds, Completed);
     /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за seconds секунд
-    function AnimMoveOnZ(dz: real; seconds: real) := AnimMoveOnZ(dz, seconds, nil);
+    function AnimMoveByZ(dz: real; seconds: real) := AnimMoveByZ(dz, seconds, nil);
     /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за 1 секунду
-    function AnimMoveOnZ(dz: real) := AnimMoveOnZ(dz, 1, nil);
+    function AnimMoveByZ(dz: real) := AnimMoveByZ(dz, 1, nil);
 
     /// Возвращает анимацию масштабирования объекта на величину sc за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimScale(sc: real; seconds: real; Completed: procedure): AnimationBase;
@@ -668,8 +744,9 @@ type
 // -----------------------------------------------------
 //>>     Graph3D: класс ObjectWithChildren3D # Graph3D ObjectWithChildren3D class
 // ----------------------------------------------------- 
+  [Serializable]
   /// 3D-объект с дочерними подобъектами
-  ObjectWithChildren3D = class(Object3D) // model is ModelVisual3D
+  ObjectWithChildren3D = class(Object3D,ISerializable) // model is ModelVisual3D
   private 
     l := new List<Object3D>;
     
@@ -736,6 +813,22 @@ type
       foreach var xx in ll do
         AddChild(xx.Clone);
     end;
+
+    function ColorToLongWord(c: GColor): longword;
+    begin
+      Result := ((c.A * 256 + c.R) * 256 + c.G) * 256 + c.B;
+    end;
+    
+    function LongWordToColor(w: longword): GColor;
+    begin
+      var b := w mod 256;
+      w := w div 256;
+      var g := w mod 256;
+      w := w div 256;
+      var r := w mod 256;
+      var a := w div 256;
+      Result := ARGB(a,r,g,b);
+    end;
   
   public  
   /// Добавить дочерний подобъект
@@ -771,13 +864,39 @@ type
       inherited Destroy;
       Invoke(DestroyP);
     end;
+    
+    function CreateModel: Visual3D; override;
+    begin
+      Result := nil;
+    end;
+  
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('listchildrencount',l.Count,typeof(integer));
+      for var i:=0 to l.Count -1 do
+        info.AddValue('children'+i, l[i], typeof(Object3D));
+    end;
+
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      l := new List<Object3D>;
+      var count := integer(info.GetValue('listchildrencount',typeof(integer)));
+      for var i:=0 to count-1 do
+      begin
+        var xx := info.GetValue('children'+i, typeof(Object3D)) as Object3D;
+        AddChild(xx);
+      end;
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс ObjectWithMaterial3D # Graph3D ObjectWithMaterial3D class
 // ----------------------------------------------------- 
+  [Serializable]
   /// 3D-объект с материалом
-  ObjectWithMaterial3D = class(ObjectWithChildren3D) // model is MeshElement3D
+  ObjectWithMaterial3D = class(ObjectWithChildren3D,ISerializable) // model is MeshElement3D
   private 
     procedure CreateBase(m: MeshElement3D; x, y, z: real; mat: GMaterial);
     begin
@@ -822,10 +941,133 @@ type
     property BackMaterial: GMaterial read GetBMaterial write SetBMaterial;
   /// Видим ли объект
     property Visible: boolean read GetV write SetV;
+    
+    function CreateModel: Visual3D; override;
+    begin
+      Result := nil;
+    end;
+  private
+    procedure SaveMaterialHelper(mat: GMaterial; info: SerializationInfo; i: integer; back: string := '');
+    begin
+      match mat with
+        GDiffuseMaterial(dm): 
+          begin
+            if dm.Brush is SolidColorBrush(var scb) then
+            begin  
+              info.AddValue('materialkind' + back + i, 'diffuse' + back, typeof(string));
+              info.AddValue('diffusebrushcolor' + back, ColorToLongWord(scb.Color), typeof(longword));
+            end
+            else if dm.Brush is ImageBrush(var ib) then
+            begin
+              info.AddValue('materialkind' + back + i, 'diffusetexture' + back, typeof(string));
+              var bi := (ib.ImageSource as System.Windows.Media.Imaging.BitmapImage);
+              info.AddValue('ibViewPortWidth' + back, ib.Viewport.Width, typeof(real));
+              info.AddValue('ibViewPortHeight' + back, ib.Viewport.Height, typeof(real));
+              info.AddValue('texturepath' + back, bi.UriSource.ToString, typeof(string));
+            end;
+          end;
+        GSpecularMaterial(spm): 
+          begin
+            info.AddValue('materialkind' + back + i, 'specular' + back, typeof(string));
+            if spm.Brush is SolidColorBrush(var scb) then
+              info.AddValue('specularbrushcolor' + back, ColorToLongWord(scb.Color), typeof(longword));
+          end;
+        GEmissiveMaterial(em): 
+          begin
+            info.AddValue('materialkind' + back + i, 'emissive' + back, typeof(string));
+            if em.Brush is SolidColorBrush(var scb) then
+              info.AddValue('emissivebrushcolor' + back, ColorToLongWord(scb.Color), typeof(longword));
+          end;
+      end;
+    end;
+    procedure SaveMaterial(mat: GMaterial; info: SerializationInfo; back: string := '');
+    begin
+      if mat is MaterialGroup (var mg) then
+        info.AddValue('materialscount' + back, mg.Children.Count, typeof(integer))
+      else info.AddValue('materialscount' + back, 1, typeof(integer));
+
+      if mat is MaterialGroup (var mg) then
+      begin  
+        var i := 1;
+        foreach var m in (mat as MaterialGroup).Children do
+        begin  
+          SaveMaterialHelper(m as GMaterial, info,i,back);
+          i += 1;
+        end  
+      end  
+      else SaveMaterialHelper(mat,info,1,back);
+    end;
+  public  
+///--
+    procedure GetObjectData(info: System.Runtime.Serialization.SerializationInfo; context: System.Runtime.Serialization.StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      SaveMaterial(Material,info,'');
+      SaveMaterial(BackMaterial,info,'back');
+    end;
+  private  
+    function LoadMaterialHelper(info: SerializationInfo; i: integer; back: string := ''): GMaterial;
+    begin
+      Result := nil;
+      var mk := info.GetString('materialkind'+back+i);
+      if mk = 'diffuse' + back then
+          begin
+            var w := info.GetUInt32('diffusebrushcolor'+back);
+            var c := LongWordToColor(w);
+            Result := Materials.Diffuse(c);
+          end
+       else if mk = 'diffusetexture' + back then
+          begin
+            var fname := info.GetString('texturepath'+back);
+            var width := info.GetDouble('ibViewPortWidth' + back);
+            var height := info.GetDouble('ibViewPortHeight' + back);
+            if (width<>1) or (height<>1) then
+              Result := Materials.Image(fname,width,height)
+            else Result := Materials.Image(fname);
+          end
+       else if mk =  'specular' + back then
+          begin
+            var w := info.GetUInt32('specularbrushcolor'+back);
+            var c := LongWordToColor(w);
+            Result := Materials.Specular(c);
+          end
+       else if mk = 'emissive' + back then 
+          begin
+            var w := info.GetUInt32('emissivebrushcolor'+back);
+            var c := LongWordToColor(w);
+            Result := Materials.Emissive(c);
+          end;
+    end;
+    function LoadMaterial(info: SerializationInfo; back: string := ''): GMaterial;
+    begin
+      var count := integer(info.GetValue('materialscount'+back, typeof(integer)));
+      if count = 1 then
+      begin  
+        Result := LoadMaterialHelper(info,1,back);
+      end
+      else
+        begin 
+          var mg := new MaterialGroup();
+          for var i:=1 to count do
+          begin
+            var m := LoadMaterialHelper(info,i,back);
+            mg.Children.Add(m)
+          end;
+          Result := mg;
+        end;  
+    end;
+  public
+    constructor Create(info: System.Runtime.Serialization.SerializationInfo; context: System.Runtime.Serialization.StreamingContext);
+    begin
+      inherited Create(info,context);
+      (model as MeshElement3D).Material := LoadMaterial(info);
+      (model as MeshElement3D).BackMaterial := LoadMaterial(info,'back');
+    end;
   end;
   
+  [Serializable]
   /// Группа 3D-объектов
-  Group3D = class(ObjectWithChildren3D)
+  Group3D = class(ObjectWithChildren3D,ISerializable)
   protected 
     function CreateObject: Object3D; override := new Group3D(X, Y, Z);
   //public 
@@ -846,9 +1088,22 @@ type
         RemoveChild(l[i]);
       end;  
     end;
+///--
+    function CreateModel: Visual3D; override;
+    begin
+      Result := new ModelVisual3D;
+    end;
+///--
+    procedure GetObjectData(info: System.Runtime.Serialization.SerializationInfo; context: System.Runtime.Serialization.StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+    end;
+///--
+    constructor Create(info: System.Runtime.Serialization.SerializationInfo; context: System.Runtime.Serialization.StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
     
-  /// ВОзвращает клон группы 3D-объектов
-    function Clone := (inherited Clone) as Group3D;
   end;
   
 //------------------------------ Animations -----------------------------------
@@ -1507,8 +1762,9 @@ type
 // -----------------------------------------------------
 //>>     Graph3D: класс SphereT # Graph3D SphereT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс сферы
-  SphereT = class(ObjectWithMaterial3D)
+  SphereT = class(ObjectWithMaterial3D,ISerializable)
   private 
     function Model := inherited model as SphereVisual3D;
     procedure SetRP(r: real) := Model.Radius := r;
@@ -1531,13 +1787,29 @@ type
     property Radius: real read GetR write SetR;
 /// Возвращает клон сферы
     function Clone := (inherited Clone) as SphereT;
+
+///--
+    function CreateModel: Visual3D; override := new SphereVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('radius', Radius, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Radius := info.GetDouble('radius');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс EllipsoidT # Graph3D EllipsoidT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс эллипсоида
-  EllipsoidT = class(ObjectWithMaterial3D)
+  EllipsoidT = class(ObjectWithMaterial3D,ISerializable)
   private
     function Model := inherited model as EllipsoidVisual3D;
     procedure SetRX(r: real) := Invoke(procedure(r: real)->Model.RadiusX := r, r);
@@ -1570,13 +1842,32 @@ type
     property RadiusZ: real read GetRZ write SetRZ;
 /// Возвращает клон эллипсоида
     function Clone := (inherited Clone) as EllipsoidT;
+///--
+    function CreateModel: Visual3D; override := new EllipsoidVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('RadiusX', RadiusX, typeof(real));
+      info.AddValue('RadiusY', RadiusY, typeof(real));
+      info.AddValue('RadiusZ', RadiusZ, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      RadiusX := info.GetDouble('RadiusX');
+      RadiusY := info.GetDouble('RadiusY');
+      RadiusZ := info.GetDouble('RadiusZ');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс CubeT # Graph3D CubeT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс куба
-  CubeT = class(ObjectWithMaterial3D)
+  CubeT = class(ObjectWithMaterial3D,ISerializable)
   private
     function model := inherited model as CubeVisual3D;
     procedure SetWP(r: real) := model.SideLength := r;
@@ -1600,13 +1891,28 @@ type
     property SideLength: real read GetW write SetW;
 /// Возвращает клон куба
     function Clone := (inherited Clone) as CubeT;
+///--
+    function CreateModel: Visual3D; override := new CubeVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('SideLength', SideLength, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      SideLength := info.GetDouble('SideLength');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс BoxT # Graph3D BoxT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс паралеллепипеда
-  BoxT = class(ObjectWithMaterial3D)
+  BoxT = class(ObjectWithMaterial3D,ISerializable)
   private
     function model := inherited model as BoxVisual3D;
     procedure SetWP(r: real) := model.Width := r;
@@ -1648,13 +1954,32 @@ type
     property Size: Size3D read GetSz write SetSz;
 /// Возвращает клон паралеллепипеда
     function Clone := (inherited Clone) as BoxT;
+///--
+    function CreateModel: Visual3D; override := new BoxVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Length', Length, typeof(real));
+      info.AddValue('Width', Width, typeof(real));
+      info.AddValue('Height', Height, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Length := info.GetDouble('Length');
+      Width := info.GetDouble('Width');
+      Height := info.GetDouble('Height');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс ArrowT # Graph3D ArrowT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс 3D-стрелки
-  ArrowT = class(ObjectWithMaterial3D)
+  ArrowT = class(ObjectWithMaterial3D,ISerializable)
   private
     function model := inherited model as ArrowVisual3D;
     
@@ -1697,13 +2022,37 @@ type
     property Direction: Vector3D read GetDir write SetDir;
 /// Возвращает клон 3D-стрелки
     function Clone := (inherited Clone) as ArrowT;
+///--
+    function CreateModel: Visual3D; override := new ArrowVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('HeadLength', HeadLength, typeof(real));
+      info.AddValue('Diameter', Diameter, typeof(real));
+      info.AddValue('DirectionX', Direction.X, typeof(real));
+      info.AddValue('DirectionY', Direction.Y, typeof(real));
+      info.AddValue('DirectionZ', Direction.Z, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      HeadLength := info.GetDouble('HeadLength');
+      Diameter := info.GetDouble('Diameter');
+      var dx := info.GetDouble('DirectionX');
+      var dy := info.GetDouble('DirectionY');
+      var dz := info.GetDouble('DirectionZ');
+      Direction := V3D(dx,dy,dz);
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс TruncatedConeT # Graph3D TruncatedConeT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс усеченного конуса
-  TruncatedConeT = class(ObjectWithMaterial3D)
+  TruncatedConeT = class(ObjectWithMaterial3D,ISerializable)
   private
     function model := inherited model as TruncatedConeVisual3D;
     
@@ -1754,13 +2103,34 @@ type
     property Topcap: boolean read GetTC write SetTC;
 /// Возвращает клон усеченного конуса
     function Clone := (inherited Clone) as TruncatedConeT;
+///--
+    function CreateModel: Visual3D; override := new TruncatedConeVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Height', Height, typeof(real));
+      info.AddValue('BaseRadius', BaseRadius, typeof(real));
+      info.AddValue('TopRadius', TopRadius, typeof(real));
+      info.AddValue('Topcap', Topcap, typeof(boolean));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Height := info.GetDouble('Height');
+      BaseRadius := info.GetDouble('BaseRadius');
+      TopRadius := info.GetDouble('TopRadius');
+      Topcap := info.GetBoolean('Topcap');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс CylinderT # Graph3D CylinderT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс цилиндра
-  CylinderT = class(TruncatedConeT)
+  CylinderT = class(TruncatedConeT,ISerializable)
   private 
     procedure SetR(r: real);
     begin
@@ -1782,13 +2152,21 @@ type
     property Radius: real read GetR write SetR;
 /// Возвращает клон цилиндра
     function Clone := (inherited Clone) as CylinderT;
+///--
+    function CreateModel: Visual3D; override := new TruncatedConeVisual3D;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс TeapotT # Graph3D TeapotT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс чайника
-  TeapotT = class(ObjectWithMaterial3D)
+  TeapotT = class(ObjectWithMaterial3D,ISerializable)
   private
     procedure SetVP(v: boolean) := (model as MeshElement3D).Visible := v;
     procedure SetV(v: boolean) := Invoke(SetVP, v);
@@ -1806,13 +2184,21 @@ type
     property Visible: boolean read GetV write SetV;
 /// Возвращает клон чайника
     function Clone := (inherited Clone) as TeapotT;
+///--
+    function CreateModel: Visual3D; override := new Teapot;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс CoordinateSystemT # Graph3D CoordinateSystemT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс системы координат
-  CoordinateSystemT = class(ObjectWithChildren3D)
+  CoordinateSystemT = class(ObjectWithChildren3D,ISerializable)
   private
     procedure SetALP(r: real) := (model as CoordinateSystemVisual3D).ArrowLengths := r;
     procedure SetAL(r: real) := Invoke(SetALP, r); 
@@ -1838,13 +2224,35 @@ type
     property Diameter: real read GetD;
 /// Возвращает клон системы координат
     function Clone := (inherited Clone) as CoordinateSystemT;
+///--
+    function CreateModel: Visual3D; override := new CoordinateSystemVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('ArrowLengths', ArrowLengths, typeof(real));
+      info.AddValue('Diameter', Diameter, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      ArrowLengths := info.GetDouble('ArrowLengths');
+      var d := info.GetDouble('Diameter');
+      var a := model as CoordinateSystemVisual3D;
+      (a.Children[0] as ArrowVisual3D).Diameter := d;
+      (a.Children[1] as ArrowVisual3D).Diameter := d;
+      (a.Children[2] as ArrowVisual3D).Diameter := d;
+      (a.Children[3] as CubeVisual3D).SideLength := d;
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс BillboardTextT # Graph3D BillboardTextT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс текста на билборде (всегда направлен к камере)
-  BillboardTextT = class(ObjectWithChildren3D)
+  BillboardTextT = class(ObjectWithChildren3D,ISerializable)
   private
     function model := inherited model as BillboardTextVisual3D;
     
@@ -1873,13 +2281,30 @@ type
     property FontSize: real read GetFS write SetFS;
 /// Возвращает клон билборда
     function Clone := (inherited Clone) as BillboardTextT;
+///--
+    function CreateModel: Visual3D; override := new BillboardTextVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Text', Text, typeof(string));
+      info.AddValue('FontSize', FontSize, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Text := info.GetString('Text');
+      FontSize := info.GetDouble('FontSize');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс TextT # Graph3D TextT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс 3D-текстового объекта 
-  TextT = class(ObjectWithChildren3D)
+  TextT = class(ObjectWithChildren3D,ISerializable)
   private 
     _fontname: string;
     function model := inherited model as TextVisual3D;
@@ -1897,7 +2322,7 @@ type
     function GetU: Vector3D := Invoke&<Vector3D>(()->model.UpDirection);
     
     procedure SetNP(fontname: string) := model.FontFamily := new FontFamily(fontname);
-    procedure SetN(fontname: string) := Invoke(SetTP, fontname); 
+    procedure SetN(fontname: string) := Invoke(SetNP, fontname); 
     function GetN: string := InvokeString(()->_fontname);
     
     procedure SetColorP(c: GColor) := model.Foreground := new SolidColorBrush(c);
@@ -1931,13 +2356,41 @@ type
     property Color: GColor read GetColor write SetColor; override;
 /// Возвращает клон 3D-текстового объекта
     function Clone := (inherited Clone) as TextT;
+///--
+    function CreateModel: Visual3D; override := new TextVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Text', Text, typeof(string));
+      info.AddValue('Height', Height, typeof(real));
+      info.AddValue('FontName', FontName, typeof(string));
+      info.AddValue('UpDirectionX', UpDirection.X, typeof(real));
+      info.AddValue('UpDirectionY', UpDirection.Y, typeof(real));
+      info.AddValue('UpDirectionZ', UpDirection.Z, typeof(real));
+      info.AddValue('Color', ColorToLongWord(Color), typeof(longword));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Text := info.GetString('Text');
+      model.Height := info.GetDouble('Height');
+      FontName := info.GetString('FontName');
+      var dx := info.GetDouble('UpDirectionX');
+      var dy := info.GetDouble('UpDirectionY');
+      var dz := info.GetDouble('UpDirectionZ');
+      UpDirection := V3D(dx,dy,dz);
+      Color := LongwordToColor(info.GetUInt32('Color'));
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс RectangleT # Graph3D RectangleT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс 3D-прямоугольника
-  RectangleT = class(ObjectWithMaterial3D)
+  RectangleT = class(ObjectWithMaterial3D,ISerializable)
   private
     function model := inherited model as RectangleVisual3D;
     procedure SetWP(r: real) := model.Width := r;
@@ -1979,13 +2432,44 @@ type
     property Normal: Vector3D read GetN write SetN;
 /// Возвращает клон 3D-прямоугольника
     function Clone := (inherited Clone) as RectangleT;
+///--
+    function CreateModel: Visual3D; override := new RectangleVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Width', Width, typeof(real));
+      info.AddValue('Length', Length, typeof(real));
+      info.AddValue('LengthDirectionX', LengthDirection.X, typeof(real));
+      info.AddValue('LengthDirectionY', LengthDirection.Y, typeof(real));
+      info.AddValue('LengthDirectionZ', LengthDirection.Z, typeof(real));
+      info.AddValue('NormalX', Normal.X, typeof(real));
+      info.AddValue('NormalY', Normal.Y, typeof(real));
+      info.AddValue('NormalZ', Normal.Z, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Width := info.GetDouble('Width');
+      Length := info.GetDouble('Length');
+      var dx := info.GetDouble('LengthDirectionX');
+      var dy := info.GetDouble('LengthDirectionY');
+      var dz := info.GetDouble('LengthDirectionZ');
+      LengthDirection := V3D(dx,dy,dz);
+      dx := info.GetDouble('NormalX');
+      dy := info.GetDouble('NormalY');
+      dz := info.GetDouble('NormalZ');
+      Normal := V3D(dx,dy,dz);
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс FileModelT # Graph3D FileModelT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс 3D-модели
-  FileModelT = class(ObjectWithChildren3D)
+  FileModelT = class(ObjectWithChildren3D,ISerializable)
   private 
     fn: string;
     procedure SetMP(mat: GMaterial) := (model as FileModelVisual3D).DefaultMaterial := mat;
@@ -2016,13 +2500,28 @@ type
   public 
 /// Возвращает клон 3D-модели
     function Clone := (inherited Clone) as FileModelT;
+///--
+    function CreateModel: Visual3D; override := new FileModelVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('FileName', (model as FileModelVisual3D).Source as string, typeof(string));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      (model as FileModelVisual3D).Source := info.GetString('FileName');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс PipeT # Graph3D PipeT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс трубы
-  PipeT = class(ObjectWithMaterial3D)
+  PipeT = class(ObjectWithMaterial3D,ISerializable)
   private
     function model := inherited model as PipeVisual3D;
     procedure SetDP(r: real) := model.Diameter := r * 2;
@@ -2057,13 +2556,32 @@ type
     property Height: real read GetH write SetH;
 /// Возвращает клон трубы
     function Clone := (inherited Clone) as PipeT;
+///--
+    function CreateModel: Visual3D; override := new PipeVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Radius', Radius, typeof(real));
+      info.AddValue('InnerRadius', InnerRadius, typeof(real));
+      info.AddValue('Height', Height, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Radius := info.GetDouble('Radius');
+      InnerRadius := info.GetDouble('InnerRadius');
+      Height := info.GetDouble('Height');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс LegoT # Graph3D LegoT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс лего-детали
-  LegoT = class(ObjectWithMaterial3D)
+  LegoT = class(ObjectWithMaterial3D,ISerializable)
   private
     //function model := inherited model as LegoVisual3D;
     procedure SetWP(r: integer);
@@ -2099,78 +2617,142 @@ type
     {property Size: Size3D read GetSz write SetSz;}
 /// Возвращает клон лего-детали
     function Clone := (inherited Clone) as LegoT;
+///--
+    function CreateModel: Visual3D; override;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Columns', Columns, typeof(integer));
+      info.AddValue('Rows', Rows, typeof(integer));
+      info.AddValue('Height', Height, typeof(integer));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Columns := info.GetInt32('Columns');
+      Rows := info.GetInt32('Rows');
+      Height := info.GetInt32('Height');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс PlatonicAbstractT # Graph3D PlatonicAbstractT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Абстрактный класс платоновых тел
-  PlatonicAbstractT = class(ObjectWithMaterial3D)
+  PlatonicAbstractT = class(ObjectWithMaterial3D,ISerializable)
   private
     function GetLength: real;
     procedure SetLengthP(r: real);
   public 
 /// Длина грани
     property Length: real read GetLength write Invoke(SetLengthP, value);
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Length', Length, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Length := info.GetDouble('Length');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс IcosahedronT # Graph3D IcosahedronT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс икосаэдра
-  IcosahedronT = class(PlatonicAbstractT)
+  IcosahedronT = class(PlatonicAbstractT,ISerializable)
   protected  
     function CreateObject: Object3D; override := new IcosahedronT(X, Y, Z, Length, Material);
   public 
     constructor(x, y, z, Length: real; m: GMaterial);
 /// Возвращает клон икосаэдра
     function Clone := (inherited Clone) as IcosahedronT;
+///--
+    function CreateModel: Visual3D; override;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс DodecahedronT # Graph3D DodecahedronT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс додекаэдра
-  DodecahedronT = class(PlatonicAbstractT)
+  DodecahedronT = class(PlatonicAbstractT,ISerializable)
   protected  
     function CreateObject: Object3D; override := new DodecahedronT(X, Y, Z, Length, Material);
   public 
     constructor(x, y, z, Length: real; m: GMaterial);
 /// Возвращает клон додекаэдра
     function Clone := (inherited Clone) as DodecahedronT;
+///--
+    function CreateModel: Visual3D; override;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс TetrahedronT # Graph3D TetrahedronT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс тетраэдра
-  TetrahedronT = class(PlatonicAbstractT)
+  TetrahedronT = class(PlatonicAbstractT,ISerializable)
   protected  
     function CreateObject: Object3D; override := new TetrahedronT(X, Y, Z, Length, Material);
   public 
     constructor(x, y, z, Length: real; m: GMaterial);
 /// Возвращает клон тетраэдра
     function Clone := (inherited Clone) as TetrahedronT;
+///--
+    function CreateModel: Visual3D; override;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс OctahedronT # Graph3D OctahedronT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс октаэдра
-  OctahedronT = class(PlatonicAbstractT)
+  OctahedronT = class(PlatonicAbstractT,ISerializable)
   protected  
     function CreateObject: Object3D; override := new OctahedronT(X, Y, Z, Length, Material);
   public 
     constructor(x, y, z, Length: real; m: GMaterial);
 /// Возвращает клон октаэдра
     function Clone := (inherited Clone) as OctahedronT;
+///--
+    function CreateModel: Visual3D; override;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
   end;
 
 // -----------------------------------------------------
 //>>     Graph3D: класс TriangleT # Graph3D TriangleT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс 3D-треугольника
-  TriangleT = class(ObjectWithMaterial3D)
+  TriangleT = class(ObjectWithMaterial3D,ISerializable)
   protected
     procedure SetP1(p: Point3D);
     function  GetP1: Point3D;
@@ -2191,13 +2773,38 @@ type
     property P3: Point3D read GetP3 write SetP3;
 /// Устанавливает точки 3D-треугольника
     procedure SetPoints(p1, p2, p3: Point3D);
+///--
+    function CreateModel: Visual3D; override;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('p1x', P1.X, typeof(real));
+      info.AddValue('p1y', P1.Y, typeof(real));
+      info.AddValue('p1z', P1.Z, typeof(real));
+      info.AddValue('p2x', P2.X, typeof(real));
+      info.AddValue('p2y', P2.Y, typeof(real));
+      info.AddValue('p2z', P2.Z, typeof(real));
+      info.AddValue('p3x', P3.X, typeof(real));
+      info.AddValue('p3y', P3.Y, typeof(real));
+      info.AddValue('p3z', P3.Z, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      SetPoints(P3D(info.GetDouble('p1x'),info.GetDouble('p1y'),info.GetDouble('p1z')),
+                P3D(info.GetDouble('p2x'),info.GetDouble('p2y'),info.GetDouble('p2z')),
+                P3D(info.GetDouble('p3x'),info.GetDouble('p3y'),info.GetDouble('p3z')));
+    end;
   end;
 
 // -----------------------------------------------------
 //>>     Graph3D: класс PrismT # Graph3D PrismT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс правильной призмы
-  PrismT = class(ObjectWithMaterial3D)
+  PrismT = class(ObjectWithMaterial3D,ISerializable)
   private
     procedure SetR(r: real);
     function  GetR: real;
@@ -2206,44 +2813,75 @@ type
     procedure SetN(n: integer);
     function  GetN: integer;
   protected
-    function CreateObject: Object3D; override := new PrismT(X, Y, Z, N, Radius, Height, Material.Clone);
+    function CreateObject: Object3D; override := new PrismT(X, Y, Z, Sides, Radius, Height, Material.Clone);
   public 
     constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial);
 /// Радиус правильной призмы
     property Radius: real read GetR write SetR;
 /// Высота правильной призмы
     property Height: real read GetH write SetH;
-/// Количество углов правильной призмы
-    property N: integer read GetN write SetN;
+/// Количество боковых граней правильной призмы
+    property Sides: integer read GetN write SetN;
 /// Возвращает клон правильной призмы
     function Clone := (inherited Clone) as PrismT;
+///--
+    function CreateModel: Visual3D; override;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Radius', Radius, typeof(real));
+      info.AddValue('Height', Height, typeof(real));
+      info.AddValue('Sides', Sides, typeof(integer));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Radius := info.GetDouble('Radius');
+      Height := info.GetDouble('Height');
+      Sides := info.GetInt32('Sides');
+    end;
   end;
 
 // -----------------------------------------------------
 //>>     Graph3D: класс PyramidT # Graph3D PyramidT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс правильной пирамиды
-  PyramidT = class(PrismT)
+  PyramidT = class(PrismT,ISerializable)
   private
   protected
-    function CreateObject: Object3D; override := new PyramidT(X, Y, Z, N, Radius, Height, Material.Clone);
+    function CreateObject: Object3D; override := new PyramidT(X, Y, Z, Sides, Radius, Height, Material.Clone);
   public 
     constructor(x, y, z: real; N: integer; r, h: real; m: GMaterial);
-/// Радиус правильной пирамиды
+{/// Радиус правильной пирамиды
     property Radius: real read GetR write SetR;
 /// Высота правильной пирамиды
     property Height: real read GetH write SetH;
-/// Количество углов правильной пирамиды
-    property N: integer read GetN write SetN;
+/// Количество боковых граней правильной пирамиды
+    property Sides: integer read GetN write SetN;}
 /// Возвращает клон правильной пирамиды
     function Clone := (inherited Clone) as PyramidT;
+    function CreateModel: Visual3D; override;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс PrismTWireframe # Graph3D PrismTWireframe class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс проволочной правильной призмы
-  PrismTWireframe = class(ObjectWithChildren3D)
+  PrismTWireframe = class(ObjectWithChildren3D,ISerializable)
   private 
     fn: integer;
     fh, fr: real;
@@ -2288,8 +2926,8 @@ type
     begin
       var pc := new Point3DCollection;
       
-      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
-      var b := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
+      var a := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+      var b := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
       for var i := 0 to a.High - 1 do
       begin
         pc.Add(a[i]);
@@ -2320,12 +2958,12 @@ type
     end;
   
   protected
-    function CreateObject: Object3D; override := new PrismTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
+    function CreateObject: Object3D; override := new PrismTWireframe(X, Y, Z, Sides, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
   public 
     function Points: Point3DCollection; virtual;
     begin
-      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
-      var b := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
+      var a := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
+      var b := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
       var pc := new Point3DCollection(a + b);
       
       Result := pc;
@@ -2338,27 +2976,50 @@ type
     property Radius: real read fr write SetR;
 /// Высота проволочной правильной призмы
     property Height: real read fh write SetH;
-/// Количество углов проволочной правильной призмы
-    property N: integer read fn write SetN;
+/// Количество боковых граней проволочной правильной призмы
+    property Sides: integer read fn write SetN;
 /// Цвет проволоки правильной призмы
     property Color: GColor read GetC write SetC; override;
 /// Толщина проволоки правильной призмы
     property Thickness: real read GetT write SetT;
+///--
+    function CreateModel: Visual3D; override := NewVisualObject(1,0,0,0,Colors.Transparent);
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Radius', Radius, typeof(real));
+      info.AddValue('Height', Height, typeof(real));
+      info.AddValue('Sides', Sides, typeof(integer));
+      info.AddValue('Color', ColorToLongword(Color), typeof(longword));
+      info.AddValue('Thickness', Thickness, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Radius := info.GetDouble('Radius');
+      Height := info.GetDouble('Height');
+      Sides := info.GetInt32('Sides');
+      Color := LongwordToColor(info.GetUInt32('Color'));
+      Thickness := info.GetDouble('Thickness');
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс PyramidTWireframe # Graph3D PyramidTWireframe class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс проволочной правильной пирамиды
-  PyramidTWireframe = class(PrismTWireframe)
+  PyramidTWireframe = class(PrismTWireframe,ISerializable)
   protected
-    function CreateObject: Object3D; override := new PyramidTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
+    function CreateObject: Object3D; override := new PyramidTWireframe(X, Y, Z, Sides, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
   private 
     function CreatePoints: Point3DCollection; override;
     begin
       var pc := new Point3DCollection;
       
-      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+      var a := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
       var b := P3D(0, 0, fh);
       for var i := 0 to a.High - 1 do
       begin
@@ -2377,12 +3038,27 @@ type
     property Radius: real read fr write SetR;
 /// Высота проволочной правильной пирамиды
     property Height: real read fh write SetH;
-/// Количество углов проволочной правильной пирамиды
-    property N: integer read fn write SetN;
+/// Количество боковых граней проволочной правильной пирамиды
+    property Sides: integer read fn write SetN;
 /// Цвет проволоки правильной пирамиды
     property Color: GColor read GetC write SetC; override;
 /// Толщина проволоки правильной пирамиды
     property Thickness: real read GetT write SetT;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+    end;
+    
+    constructor(x, y, z: real; N: integer; Radius, Height: real; Thickness: real; c: GColor);
+    begin
+      inherited Create(x, y, z, N, Radius, Height, Thickness, c);
+    end;  
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+    end;
   end;
   
   P3DArray = array of Point3D;
@@ -2391,8 +3067,9 @@ type
 // -----------------------------------------------------
 //>>     Graph3D: класс SegmentsT # Graph3D SegmentsT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс Набор 3D-отрезков
-  SegmentsT = class(ObjectWithChildren3D)
+  SegmentsT = class(ObjectWithChildren3D,ISerializable)
   private
     function Model := inherited model as LinesVisual3D;
     function GetTP: real := Model.Thickness;
@@ -2425,13 +3102,47 @@ type
     property Points: array of Point3D read GetP write SetP;
 /// Возвращает клон 3D-отрезков
     function Clone := (inherited Clone) as SegmentsT;
+///--
+    function CreateModel: Visual3D; override := new LinesVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Thickness', Thickness, typeof(real));
+      info.AddValue('Color', ColorToLongword(Color), typeof(longword));
+      info.AddValue('PointsCount', Points.Count, typeof(integer));
+      for var i:=0 to Points.Length-1 do
+      begin
+        info.AddValue('px'+i, Points[i].X, typeof(real));
+        info.AddValue('py'+i, Points[i].Y, typeof(real));
+        info.AddValue('pz'+i, Points[i].Z, typeof(real));
+      end;
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Thickness := info.GetDouble('Thickness');
+      Color := LongwordToColor(info.GetUInt32('Color'));
+      var count := info.GetInt32('PointsCount');
+      var ll := new List<Point3D>;
+      for var i:=0 to count-1 do
+      begin
+        var x := info.GetDouble('px'+i);
+        var y := info.GetDouble('py'+i);
+        var z := info.GetDouble('pz'+i);
+        ll.Add(P3D(x,y,z));
+      end;
+      Points := ll.ToArray;
+    end;
   end;
   
 // -----------------------------------------------------
 //>>     Graph3D: класс TorusT # Graph3D TorusT class
 // ----------------------------------------------------- 
+  [Serializable]
 /// Класс Тор (бублик)
-  TorusT = class(ObjectWithMaterial3D)
+  TorusT = class(ObjectWithMaterial3D,ISerializable)
   private
     procedure SetD(d: real) := Invoke(procedure(d: real)->(model as TorusVisual3D).TorusDiameter := d, d);
     function  GetD: real := InvokeReal(()->(model as TorusVisual3D).TorusDiameter);
@@ -2454,6 +3165,22 @@ type
     property TubeDiameter: real read GetTD write SetTD;
 /// Возвращает клон тора
     function Clone := (inherited Clone) as PrismT;
+    
+    function CreateModel: Visual3D; override := new TorusVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      info.AddValue('Diameter', Diameter, typeof(real));
+      info.AddValue('TubeDiameter', TubeDiameter, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      Diameter := info.GetDouble('Diameter');
+      TubeDiameter := info.GetDouble('TubeDiameter');
+    end;
   end;
   
   
@@ -2665,6 +3392,12 @@ procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 /// Заканчивает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
+/// Сериализует трёхмерный объект в файл
+procedure SerializeObject3D(filename: string; obj: Object3D);
+
+/// Десериализует трёхмерный объект из файла
+function DeserializeObject3D(filename: string): Object3D;
+  
 var  
 // -----------------------------------------------------
 //>>     События модуля Graph3D # Graph3D events
@@ -2737,7 +3470,77 @@ procedure __FinalizeModule__;
 
 implementation
 
-procedure Redraw(p: ()->()) := GraphWPFBase.Invoke(p);
+type 
+  CustomBinder = class(SerializationBinder)
+    public function BindToType(assemblyName, typeName: string): System.Type; override;
+    begin
+      var currentasm := System.Reflection.Assembly.GetExecutingAssembly();
+      var s := typeName + ', ' +currentasm.ToString();
+      Result := System.Type.GetType(s); // игнорировать assemblyname!!!
+    end;
+  end;  
+
+procedure SerializeObject3D(filename: string; obj: Object3D);
+begin
+  Invoke(procedure -> begin
+    var fs := new System.IO.FileStream(filename,System.IO.FileMode.Create);
+    var formatter := new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
+    formatter.Serialize(fs,obj);
+    fs.Close;
+  end);  
+end;
+
+var magiccounter := 1;
+
+function DeserializeObject3D(filename: string): Object3D;
+begin
+  if magiccounter = 0 then // никогда не выполнится
+  begin
+    var a := typeof(Object3D);
+    a := typeof(ObjectWithChildren3D);
+    a := typeof(ObjectWithMaterial3D);
+    a := typeof(Group3D);
+    a := typeof(SphereT);
+    a := typeof(EllipsoidT);
+    a := typeof(CubeT);
+    a := typeof(BoxT);
+    a := typeof(ArrowT);
+    a := typeof(TruncatedConeT);
+    a := typeof(CylinderT);
+    a := typeof(TeapotT);
+    a := typeof(CoordinateSystemT);
+    a := typeof(BillboardTextT);
+    a := typeof(TextT);
+    a := typeof(RectangleT);
+    a := typeof(FileModelT);
+    a := typeof(PipeT);
+    a := typeof(LegoT);
+    a := typeof(PlatonicAbstractT);
+    a := typeof(IcosahedronT);
+    a := typeof(DodecahedronT);
+    a := typeof(TetrahedronT);
+    a := typeof(OctahedronT);
+    a := typeof(TriangleT);
+    a := typeof(PrismT);
+    a := typeof(PyramidT);
+    a := typeof(PrismTWireframe);
+    a := typeof(PyramidTWireframe);
+    a := typeof(SegmentsT);
+    a := typeof(TorusT);
+  end;
+  var res: Object3D;
+  Invoke(procedure -> begin
+    var fs := new System.IO.FileStream(filename,System.IO.FileMode.Open);
+    var formatter := new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
+    formatter.Binder := new CustomBinder();
+    res := formatter.Deserialize(fs) as Object3D;
+    fs.Close;
+  end);
+  Result := res;
+end;  
+
+procedure Redraw(p: procedure) := GraphWPFBase.Invoke(p);
+procedure Invoke(p: procedure) := GraphWPFBase.Invoke(p);
 
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);
@@ -2791,11 +3594,15 @@ function RainbowMaterial: Material := GMaterials.Rainbow;
 
 //function hplus: real := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
 
+procedure Object3D.Serialize(fname: string) := SerializeObject3D(fname,Self);
+
+static function Object3D.DeSerialize(fname: string): Object3D := DeserializeObject3D(fname) as Object3D;
+
 function Object3D.AnimMoveTo(x, y, z, seconds: real; Completed: procedure) := new OffsetAnimation(Self, seconds, x, y, z, Completed);
 
 function Object3D.AnimMoveTrajectory(trajectory: sequence of Point3D; seconds: real; Completed: procedure) := new OffsetAnimationUsingKeyframes(Self, seconds, trajectory, Completed);
 
-function Object3D.AnimMoveOn(dx, dy, dz, seconds: real; Completed: procedure) := new OffsetAnimationOn(Self, seconds, dx, dy, dz, Completed);
+function Object3D.AnimMoveBy(dx, dy, dz, seconds: real; Completed: procedure) := new OffsetAnimationOn(Self, seconds, dx, dy, dz, Completed);
 
 function Object3D.AnimScale(sc, seconds: real; Completed: procedure) := new ScaleAnimation(Self, seconds, sc, Completed);
 
@@ -2913,6 +3720,9 @@ begin
   (bx.Rows, bx.Height, bx.Columns) := (Rows, Height, Columns);
   CreateBase(bx, x, y, z, m);
 end;
+
+function LegoT.CreateModel: Visual3D := new LegoVisual3D;
+
 
 procedure LegoT.SetWP(r: integer) := (model as LegoVisual3D).Rows := r;
 procedure LegoT.SetW(r: integer) := Invoke(SetWP, r);
@@ -3115,12 +3925,16 @@ function PlatonicAbstractT.GetLength: real := InvokeReal(()->(model as PlatonicA
 procedure PlatonicAbstractT.SetLengthP(r: real) := (model as PlatonicAbstractVisual3D).Length := r;
   
 constructor IcosahedronT.Create(x, y, z, Length: real; m: GMaterial) := CreateBase(new IcosahedronVisual3D(Length), x, y, z, m);
+function IcosahedronT.CreateModel: Visual3D := new IcosahedronVisual3D;
   
 constructor DodecahedronT.Create(x, y, z, Length: real; m: GMaterial) := CreateBase(new DodecahedronVisual3D(Length), x, y, z, m);
+function DodecahedronT.CreateModel: Visual3D := new DodecahedronVisual3D;
   
 constructor TetrahedronT.Create(x, y, z, Length: real; m: GMaterial) := CreateBase(new TetrahedronVisual3D(Length), x, y, z, m);
+function TetrahedronT.CreateModel: Visual3D := new TetrahedronVisual3D;
   
 constructor OctahedronT.Create(x, y, z, Length: real; m: GMaterial) := CreateBase(new OctahedronVisual3D(Length), x, y, z, m);
+function OctahedronT.CreateModel: Visual3D := new OctahedronVisual3D;
 
   
 type
@@ -3128,13 +3942,17 @@ type
   private 
     fn: integer;
     fh, fr: real;
-    procedure SetR(value: real);begin fr := value; OnGeometryChanged; end;
+    procedure SetR(value: real); begin fr := value; OnGeometryChanged; end;
     
-    procedure SetH(value: real);begin fh := value; OnGeometryChanged; end;
+    procedure SetH(value: real); begin fh := value; OnGeometryChanged; end;
     
-    procedure SetN(value: integer);begin fn := value; OnGeometryChanged; end;
+    procedure SetN(value: integer); begin fn := value; OnGeometryChanged; end;
   
   public 
+    constructor;
+    begin
+    end;
+
     constructor(N: integer; Radius, Height: real);
     begin
       (fn, fr, fh) := (n, Radius, Height);
@@ -3235,6 +4053,7 @@ function  TriangleT.GetP2: Point3D := Invoke&<Point3D>(()->(model as TriangleVis
 procedure TriangleT.SetP3(p: Point3D) := Invoke(procedure(p: Point3D)->(model as TriangleVisual3D).P3 := p, p);
 function  TriangleT.GetP3: Point3D := Invoke&<Point3D>(()->(model as TriangleVisual3D).P3);
 procedure TriangleT.SetPoints(p1, p2, p3: Point3D) := Invoke(procedure(p1, p2, p3: Point3D)->begin (model as TriangleVisual3D).SetPoints(p1, p2, p3); end, p1, p2, p3);
+function TriangleT.CreateModel: Visual3D := new TriangleVisual3D;
     
 function TriangleT.CreateObject: Object3D := new TriangleT((model as TriangleVisual3D).p1, (model as TriangleVisual3D).p2, (model as TriangleVisual3D).p3, Material.Clone);
 
@@ -3252,9 +4071,10 @@ procedure PrismT.SetN(n: integer) := Invoke(procedure(n: integer)->(model as Pri
 function  PrismT.GetN: integer := InvokeInteger(()->(model as PrismVisual3D).N);
 
 constructor PrismT.Create(x, y, z: real; N: integer; r, h: real; m: Gmaterial) := CreateBase(new PrismVisual3D(N, r, h), x, y, z, m);
+function PrismT.CreateModel: Visual3D := new PrismVisual3D;
   
 constructor PyramidT.Create(x, y, z: real; N: integer; r, h: real; m: GMaterial) := CreateBase(new PyramidVisual3D(N, r, h), x, y, z, m);
-
+function PyramidT.CreateModel: Visual3D := new PyramidVisual3D;
     
 
   
@@ -3373,19 +4193,19 @@ function FileModel3D(p: Point3D; fname: string; m: Material): FileModelT := File
 
 function Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material): PrismT := Inv(()->PrismT.Create(x, y, z, Sides, Radius, Height, m));
 
-function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, m);
+function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PrismT := Prism(p.X, p.Y, p.Z, Sides, Height, Radius, m);
 
 function PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame := Inv(()->PrismTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
 
-function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Height, Radius, thickness, c);
 
 function Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material): PyramidT := Inv(()->PyramidT.Create(x, y, z, Sides, Radius, Height, m));
 
-function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Radius, Height, m);
+function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Height, Radius, m);
 
 function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := Inv(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
 
-function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Height, Radius, thickness, c);
 
 function Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material): LegoT := Inv(()->LegoT.Create(x, y, z, Rows, Columns, Height, m));
 

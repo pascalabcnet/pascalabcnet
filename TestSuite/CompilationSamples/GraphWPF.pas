@@ -58,7 +58,6 @@ type
   
 //{{{--doc: Конец секции 1 }}} 
 
-function GetBrush(c: Color): GBrush;
 function GetFontFamily(name: string): FontFamily;
 
   
@@ -208,6 +207,8 @@ type
     property Width: real read GetWidth;
     /// Высота графического окна
     property Height: real read GetHeight;
+    /// Клиентский прямоугольник графического окна
+    function ClientRect: GRect;
     /// Центр графического окна
     function Center: Point;
     /// Сохраняет содержимое графического окна в файл с именем fname
@@ -375,8 +376,12 @@ procedure MoveRel(dx,dy: real);
 /// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
 procedure LineRel(dx,dy: real);
 /// Перемещает текущую позицию рисования на вектор (dx,dy)
-procedure MoveOn(dx,dy: real);
+procedure MoveBy(dx,dy: real);
 /// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
+procedure LineBy(dx,dy: real);
+///--
+procedure MoveOn(dx,dy: real);
+///--
 procedure LineOn(dx,dy: real);
 
 /// Рисует ломаную, заданную массивом точек 
@@ -628,19 +633,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-var BrushesDict := new Dictionary<Color,GBrush>;
 var FontFamiliesDict := new Dictionary<string,FontFamily>;
-
-function GetBrush(c: Color): GBrush;
-begin
-  if not (c in BrushesDict) then
-  begin
-    var b := new SolidColorBrush(c);
-    BrushesDict[c] := b;
-    Result := b
-  end
-  else Result := BrushesDict[c];
-end;
 
 function GetFontFamily(name: string): FontFamily;
 begin
@@ -1217,6 +1210,8 @@ procedure MoveRel(dx,dy: real) := (Pen.fx,Pen.fy) := (Pen.fx + dx, Pen.fy + dy);
 procedure LineRel(dx,dy: real) := LineTo(Pen.fx + dx, Pen.fy + dy);
 procedure MoveOn(dx,dy: real) := MoveRel(dx,dy);
 procedure LineOn(dx,dy: real) := LineRel(dx,dy);
+procedure MoveBy(dx,dy: real) := MoveRel(dx,dy);
+procedure LineBy(dx,dy: real) := LineRel(dx,dy);
 
 procedure PolyLine(points: array of Point) := InvokeVisual(PolyLineP,points);
 procedure PolyLine(points: array of Point; c: GColor) := InvokeVisual(PolyLinePC,points,c);
@@ -1492,6 +1487,7 @@ type
     
       Pen.Color := Colors.Black;
       var n := Round(w / 1);
+      if n<=0 then exit;
       var pp := PartitionPoints(a, b, n);
       var fff: real -> Point := xx -> Pnt(x + mx * (xx - a), y + my * (max - f(xx).Clamp(min,max)));
       //pp.Select(x->(x,f(x))).PrintLines;
@@ -1521,15 +1517,18 @@ procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string) := Dra
 procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string);
 begin
   var n := Round(w / 1);
-  var q := PartitionPoints(a, b, n);
-  DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h, title)
+  if n<=0 then exit;
+  var q := PartitionPoints(a, b, n).ToArray;
+  var mi := q.Min(f);
+  var ma := q.Max(f);
+  DrawGraph(f, a, b, mi, ma, x, y, w, h, title);
 end;
 
 procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string) := DrawGraph(f, a, b, r.X, r.Y, r.Width, r.Height, title);
 
 procedure DrawGraph(f: real -> real; r: GRect; title: string) := DrawGraph(f, -5, 5, r, title);
 
-procedure DrawGraph(f: real -> real; a, b: real; title: string) := DrawGraph(f, a, b, 0, 0, Window.Width - 1, Window.Height - 1, title);
+procedure DrawGraph(f: real -> real; a, b: real; title: string) := DrawGraph(f, a, b, 0, 0, GraphWindow.Width - 1, GraphWindow.Height - 1, title);
 
 procedure DrawGraph(f: real -> real; title: string) := DrawGraph(f, -5, 5, title);
 
@@ -1669,6 +1668,8 @@ begin
 end;
 
 function GraphWindowType.Center: Point := Pnt(Width/2,Height/2);
+
+function GraphWindowType.ClientRect: GRect := Rect(0,0,Width,Height);
 
 
 procedure WindowTypeWPF.Save(fname: string) := GraphWindow.Save(fname);
@@ -1925,15 +1926,20 @@ GraphWPFWindow = class(GMainWindow)
 public
   procedure InitMainGraphControl; override;
   begin
+    var g := Content as DockPanel;
+
     host1 := new Canvas;
     host := new MyVisualHost();
+    // Попытка отсекать рисование частей объектов за пределами host. Актуально при наличии панелей.
+    // К сожалению, почему-то при использовании WPFObjects объекты GraphWPF становятся не видны
+    // Выход - в WPFObjects host1.ClipToBounds := False
+    host1.ClipToBounds := True;
     host1.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
     end;
     // Всегда последнее
-    var g := MainPanel;
     
     var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
     var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
@@ -1947,6 +1953,8 @@ public
     RTbmap := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
     im.Source := RTbmap;
     
+    // Рисуем на host
+    // Когда накопится много объектов, переносим их на im
     host1.Children.Add(im); 
     host1.Children.Add(host);
     
@@ -1999,7 +2007,7 @@ begin
   
   app.Dispatcher.UnhandledException += (o, e) -> begin
     Println(e.Exception.Message); 
-    if e.Exception.InnerException<>nil then
+    if e.Exception.InnerException <> nil then
       Println(e.Exception.InnerException.Message); 
     halt; 
   end;

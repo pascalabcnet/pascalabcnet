@@ -6,9 +6,6 @@ const
   VecByteSize = MatrW*8;
   MatrByteSize = MatrW*MatrW*8;
   
-//ToDo issue компилятора:
-// - #1981
-
 begin
   try
     Randomize(0); // делает так, чтобы каждое выполнение давало одинаковый результат
@@ -19,9 +16,9 @@ begin
     // Вообще лучше прекомпилировать .cl файл (загружать в переменную ProgramCode)
     // И сохранять с помощью метода ProgramCode.SerializeTo
     // А полученный бинарник уже подключать через $resource
-    var code := new ProgramCode(
+    var code := new ProgramCode(Context.Default,
       System.IO.StreamReader.Create(
-        GetResourceStream('MatrMlt.cl')
+        System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceStream('MatrMlt.cl')
       ).ReadToEnd
     );
     
@@ -47,7 +44,7 @@ begin
     
     var V2 := new Buffer(VecByteSize);
     
-    var N := new Buffer(4);
+    var W := KernelArg.FromRecord(MatrW);
     
     // (запись значений в параметры - позже, в очередях)
     
@@ -55,16 +52,15 @@ begin
     
     var Calc_C_Q :=
       code['MatrMltMatr'].NewQueue.AddExec2(MatrW, MatrW, // Выделяем ядра в форме квадрата, всего MatrW*MatrW ядер
-        A.NewQueue.AddWriteArray(A_Matr) as CommandQueue<Buffer>,
-        B.NewQueue.AddWriteArray(B_Mart) as CommandQueue<Buffer>,
+        A.NewQueue.AddWriteArray2&<real>(A_Matr), // Тип в &<> надо указывать явно, потому что компилятор не может вычислить его из типа элементов массива
+        B.NewQueue.AddWriteArray2&<real>(B_Mart),
         C,
-        N.NewQueue.AddWriteValue(MatrW) as CommandQueue<Buffer>
-      ) as CommandQueue<Kernel>;
+        W
+      );
     
     var Otp_C_Q :=
-      C.NewQueue.AddReadArray(A_Matr) as CommandQueue<Buffer> +
+      C.NewQueue.AddReadArray2&<real>(A_Matr) +
       HPQ(()->
-      lock output do
       begin
         'Матрица С = A*B:'.Println;
         A_Matr.Println;
@@ -74,15 +70,14 @@ begin
     var Calc_V2_Q :=
       code['MatrMltVec'].NewQueue.AddExec1(MatrW,
         C,
-        V1.NewQueue.AddWriteArray(V1_Arr) as CommandQueue<Buffer>,
+        V1.NewQueue.AddWriteArray1&<real>(V1_Arr),
         V2,
-        N // значение записывается в Calc_C_Q, тут можно использовать уже готовое
-      ) as CommandQueue<Kernel>;
+        W
+      );
     
     var Otp_V2_Q :=
-      V2.NewQueue.AddReadArray(V1_Arr) as CommandQueue<Buffer> +
+      V2.NewQueue.AddReadArray1&<real>(V1_Arr) +
       HPQ(()->
-      lock output do
       begin
         'Вектор V2 = C*V1:'.Println;
         V1_Arr.Println;
@@ -94,13 +89,8 @@ begin
     Context.Default.SyncInvoke(
       
       Calc_C_Q +
-      (
-        Otp_C_Q * // выводить C и считать V2 можно одновременно, поэтому тут *, т.е. параллельное выполнение
-        (
-          Calc_V2_Q +
-          Otp_V2_Q
-        )
-      )
+      Calc_V2_Q * Otp_C_Q + // Считать V2 и выводить C можно одновременно, поэтому тут *, т.е. параллельное выполнение
+      Otp_V2_Q
       
     );
     

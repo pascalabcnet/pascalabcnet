@@ -388,6 +388,8 @@ namespace VisualPascalABC
 
         public void ChangedSelectedTab()
         {
+            if (HealthLabel.Text != "")
+                HealthLabel.Text = "";
             if (BrowserTabSelected)
             {
                 BottomTabsVisible = true;

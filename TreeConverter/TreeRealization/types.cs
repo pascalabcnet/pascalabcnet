@@ -2321,11 +2321,24 @@ namespace PascalABCCompiler.TreeRealization
                         {
                             if (this.instance_params != null && this.instance_params.Count > 0)
                             {
-                                fn = fn.get_instance(this.instance_params, true, null);
+                                if (fn.parameters[0].type.is_generic_parameter)
+                                    fn = fn.get_instance(new List<type_node>() { this }, false, null);
+                                else
+                                    fn = fn.get_instance(this.instance_params, false, null);
+                                if (fn == null)
+                                    continue;
                             }
                             else if (ctn.instance_params != null && ctn.instance_params.Count > 0)
                             {
                                 fn = fn.get_instance(ctn.instance_params, true, null);
+                            }
+                            else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
+                            {
+                                if (ctn.IsPointer)
+                                    continue;
+                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
+                                if (fn == null)
+                                    continue;
                             }
                         }
                         return fn;
@@ -2356,9 +2369,26 @@ namespace PascalABCCompiler.TreeRealization
                             }
                             else if (ctn.instance_params != null && ctn.instance_params.Count > 0)
                             {
-                                fn = fn.get_instance(ctn.instance_params, true, null);
+                                if (fn.parameters[0].type.is_generic_parameter)
+                                    fn = fn.get_instance(new List<type_node>() { ctn }, false, null);
+                                else
+                                    fn = fn.get_instance(ctn.instance_params, false, null);
+                                if (fn == null)
+                                    continue;
+                            }
+                            else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
+                            {
+                                if (ctn is ref_type_node && !fn.parameters[0].type.is_generic_parameter)
+                                    ctn = (ctn as ref_type_node).pointed_type;
+                                if (ctn.IsPointer)
+                                    continue;
+                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
+                                if (fn == null)
+                                    continue;
                             }
                         }
+                        else if (fn.parameters[0].type.is_generic_parameter && type_table.is_derived(ctn, this))
+                            continue;
                         return fn;
                     }
         		}
@@ -3444,7 +3474,7 @@ namespace PascalABCCompiler.TreeRealization
                 List<SymbolInfo> sil2 = find_in_additional_names(name);
                 List<SymbolInfo> sil3 = compiled_find(name);
                 bool clone = false;
-                if (!no_search_in_extension_methods || this._compiled_type.IsGenericType)
+                if (!no_search_in_extension_methods || this._compiled_type.IsGenericType || this.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 {
                     
                     if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
@@ -3570,7 +3600,7 @@ namespace PascalABCCompiler.TreeRealization
                                 start = ext.GetRange(cur_index, ext.Count() - cur_index);
                                 if (result != null)
                                 {
-                                    result.RemoveRange(1, result.Count() - 1);
+                                    //result.RemoveRange(1, result.Count() - 1);
                                     result.AddRange(start);
                                 }
                             }
@@ -3650,7 +3680,8 @@ namespace PascalABCCompiler.TreeRealization
         //TODO: Доопределить.
         public override function_node get_implicit_conversion_to(type_node ctn)
         {
-            compiled_type_node cctn = ctn as compiled_type_node;
+            // То есть получается, что конвертировать откомпилированный тип в неоткомпилированный нельзя несмотря на то что есть extension оператор
+            var cctn = ctn as compiled_type_node;
             if (cctn == null)
             {
                 return null;
@@ -3661,6 +3692,17 @@ namespace PascalABCCompiler.TreeRealization
                 fn = NetHelper.NetHelper.get_implicit_conversion(this, this, cctn, scope);
                 if (fn is compiled_function_node)
                     _implicit_convertions_to.Add(cctn, fn);
+                else if (fn == null && this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
+                {
+                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, this.base_type as compiled_type_node, cctn, this.base_type.Scope as NetHelper.NetTypeScope);
+                    if (fn != null)
+                    {
+                        List<type_node> instance_params = new List<type_node>();
+                        instance_params.Add(this.element_type);
+                        fn = fn.get_instance(instance_params, false, null);
+                        return fn;
+                    }
+                }
                 else if (fn == null && (this.is_generic_type_instance || cctn.is_generic_type_instance))
                 {
                     List<type_node> instance_params1 = this.instance_params;

@@ -7,7 +7,7 @@ begin
   assert(round(2 ** 3 * 3) = 24);
   assert(round(2.0 ** 3) = 8);
   assert(round(2 ** 3.0) = 8);
-  assert(round(-2 ** 2) = 4);
+  assert(round(-2 ** 2) = -4);
   assert(round(-(2 ** 2)) = -4);
   var b: byte := 2;
   assert(round(b ** 2) = 4);

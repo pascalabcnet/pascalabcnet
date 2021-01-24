@@ -3,11 +3,11 @@
 begin
   var c := new CircleWPF(Window.Center, 20, Colors.Green);
   
-  BeginFrameBasedAnimationTime(dt->begin
+  OnDrawFrame := dt → begin
     c.MoveTime(dt);    
-  end);
+  end;
   
-  OnKeyDown := k -> begin
+  OnKeyDown := k → begin
     case k of
       Key.Left: c.Direction := (-5, 0);
       Key.Right: c.Direction := (5, 0);
@@ -16,7 +16,7 @@ begin
     end;
   end;
   
-  OnKeyUp := k -> begin
+  OnKeyUp := k → begin
     c.Direction := (0, 0);
   end;
 end.

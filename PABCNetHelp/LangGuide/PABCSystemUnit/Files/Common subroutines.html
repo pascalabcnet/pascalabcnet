@@ -6,6 +6,8 @@
 <param name="Keyword" value="Inc">
 <param name="Keyword" value="Ord">
 <param name="Keyword" value="Pred">
+<param name="Keyword" value="SeekEof">
+<param name="Keyword" value="SeekEoln">
 <param name="Keyword" value="Succ">
 <param name="Keyword" value="Swap"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
@@ -40,6 +42,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее x значение</td></tr>
 <tr><td><code><b>function</b> Pred(x: перечислимый тип): перечислимый тип;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее x значение</td></tr>
+<tr><td><code><b>function</b> SeekEof: boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если достигнут конец потока ввода</td></tr>
+<tr><td><code><b>function</b> SeekEoln: boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если достигнут конец строки</td></tr>
 <tr><td><code><b>function</b> Succ(x: целое): целое;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за x значение</td></tr>
 <tr><td><code><b>function</b> Succ(x: перечислимый тип): перечислимый тип;</code>

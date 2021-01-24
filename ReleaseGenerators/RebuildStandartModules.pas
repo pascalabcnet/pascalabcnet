@@ -12,10 +12,10 @@
    IniFile, PointerTools, PointRect, PT4, PT4MakerNetX, Robot, RobotField,
    RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, PT4Exam, PT4TaskMakerNET, RBDMUtils,
    Collections, Arrays, Core, FormsABC, MPI, ClientServer, Speech, Sounds, Countries,
-   ABCDatabases,BlockFileOfT,Controls,
-   OpenCL, OpenCLABC,
-   OpenGL, OpenGLABC,
-   BBCMicroBit, School, SF
+   ABCDatabases,PT4Databases,BlockFileOfT,Controls,
+   OpenCLABC, OpenCL, OpenCLABCBase, 
+   OpenGLABC, OpenGL, OpenGLABCBase, 
+   BBCMicroBit, School, SF, TwoPanelsWindow, NUnitABC
    ;
    
 begin

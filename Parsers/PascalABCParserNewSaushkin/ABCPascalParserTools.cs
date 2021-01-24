@@ -65,6 +65,7 @@ namespace PascalABCSavParser
             tokenNum["tkExpression"] = StringResources.Get("EXPR");
             tokenNum["EOF"] = StringResources.Get("EOF1");
             tokenNum["tkIdentifier"] = StringResources.Get("TKIDENTIFIER");
+            tokenNum["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
             tokenNum["tkAmpersend"] = "'";
             tokenNum["tkColon"]="':'";
             tokenNum["tkDotDot"]="'..'";
@@ -223,11 +224,15 @@ namespace PascalABCSavParser
                 return string.Format(prefix + StringResources.Get("EXPECTEDBEGIN"), "'" + yytext + "'");
 
             var MaxTok = tokens.First();
+            if (yytext != null && yytext.ToLower() == "record" && MaxTok == "tkSealed")
+                return StringResources.Get("WRONG_ATTRIBUTE_FOR_RECORD");
 
             var ExpectedString = StringResources.Get("EXPECTED{1}");
 
             if (MaxTok.Equals("tkStatement") || MaxTok.Equals("tkIdentifier"))
                 ExpectedString = StringResources.Get("EXPECTEDR{1}");
+            else if (MaxTok.Equals("tkStringLiteral"))
+                ExpectedString = StringResources.Get("EXPECTEDF{1}");
             if ((MaxTok == "EOF" || MaxTok == "EOF1" || MaxTok == "FOUNDEOF") && this.build_tree_for_format_strings)
                 MaxTok = "}";
             var MaxTokHuman = ConvertToHumanName(MaxTok);
@@ -347,6 +352,22 @@ namespace PascalABCSavParser
         public const_node create_int_const(string text, SourceContext sc)
         {
             return create_int_const(text, sc, System.Globalization.NumberStyles.Integer);
+        }
+
+        public const_node create_bigint_const(string text, SourceContext sc)
+        {
+            var txt = text.Substring(0, text.Length - 2);
+            const_node cn = new bigint_const();
+            try
+            {
+                (cn as bigint_const).val = System.UInt64.Parse(txt);
+            }
+            catch (Exception)
+            {
+                errors.Add(new BadInt(CurrentFileName, sc, null));
+            }
+            cn.source_context = sc;
+            return cn;
         }
 
         public const_node create_int_const(string text, SourceContext sc, System.Globalization.NumberStyles NumberStyles)

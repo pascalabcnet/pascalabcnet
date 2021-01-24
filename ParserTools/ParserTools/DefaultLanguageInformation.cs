@@ -122,6 +122,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("overload", "overload"); keys.Add("overload");
             keywords.Add("internal", "internal"); keys.Add("internal");
             //keywords.Add("template", "template"); keys.Add("template");
+            keywords.Add("partial", "partial"); keys.Add("partial");
             keywords.Add("namespace", "namespace"); keys.Add("namespace");
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
@@ -1627,8 +1628,17 @@ namespace PascalABCCompiler.Parsers
 				Type t = (scope.Type as ICompiledTypeScope).CompiledType;
 				inst_type = get_type_instance(t,scope.GenericArgs);
 			}
-			sb.Append("property "+ GetShortTypeName(scope.CompiledProperty.DeclaringType) +"."+ scope.CompiledProperty.Name + get_indexer_for_prop(scope)+ ": "+(inst_type != null?inst_type:GetSimpleDescription(scope.Type)));
-			if (acc != null)
+			sb.Append("property "+ GetShortTypeName(scope.CompiledProperty.DeclaringType) +"."+ scope.CompiledProperty.Name + get_indexer_for_prop(scope));
+            if (inst_type == null)
+            {
+                if (scope.Type is ICompiledTypeScope)
+                    sb.Append(": " + GetFullTypeName((scope.Type as ICompiledTypeScope).CompiledType, false));
+                else
+                    sb.Append(": " + GetSimpleDescription(scope.Type));
+            }
+            else
+                sb.Append(": " + inst_type);
+            if (acc != null)
 			//if (acc.IsStatic) sb.Append("; static");
 			if (acc.IsVirtual) sb.Append("; virtual");
 			else if (acc.IsAbstract) sb.Append("; abstract");

@@ -128,6 +128,9 @@ namespace PascalABCCompiler
             }
             switch (command)
             {
+                case ConsoleCompilerConstants.PABCHealth:
+                    pABCCodeHealth = Convert.ToInt32(arg);
+                    break;
                 case ConsoleCompilerConstants.LinesCompiled:
                     linesCompiled = Convert.ToUInt32(arg);
                     break;
@@ -240,6 +243,10 @@ namespace PascalABCCompiler
                 return linesCompiled;
             }
         }
+
+        // SSM 18/09/20
+        int pABCCodeHealth = 0;
+        public int PABCCodeHealth { get { return pABCCodeHealth; } }
 
         CompilerInternalDebug internalDebug=new CompilerInternalDebug();
         public CompilerInternalDebug InternalDebug
@@ -363,6 +370,8 @@ namespace PascalABCCompiler
             //sendCommand(ConsoleCompilerConstants.CompilerOptionsOutputDirectory, dir_name);
             sendObjectAsByteArray(ConsoleCompilerConstants.CompilerOptionsOutputDirectory, compilerOptions.OutputDirectory);
             sendCommand(ConsoleCompilerConstants.CompilerOptionsClearStandartModules);
+            if (compilerOptions.Locale != null)
+                sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
             foreach (PascalABCCompiler.CompilerOptions.StandartModule sm in compilerOptions.StandartModules)
                 sendCommand(
                     ConsoleCompilerConstants.CompilerOptionsStandartModule, 
@@ -452,12 +461,6 @@ namespace PascalABCCompiler
             }
         }
 
-
-
-
-
-
-
         public SupportedSourceFile[] SupportedSourceFiles
         {
             get
@@ -527,6 +530,7 @@ namespace PascalABCCompiler
         bool compilerReloading = true;
         public void Reload()
         {
+            pABCCodeHealth = 0;
             compilerReloading = true;
             stopCompiler();
             pabcnetcProcess = new Process();

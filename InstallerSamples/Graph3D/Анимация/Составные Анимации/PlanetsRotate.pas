@@ -11,7 +11,7 @@ begin
   var ss := Sphere(0,0,0,1,Colors.Blue);
   Sphere(0,0,0,2,DiffuseMaterial(Colors.Yellow)+SpecularMaterial(32));
   var g := Group(s,ss);
-  g.MoveOn(-7,0,0);
+  g.MoveBy(-7,0,0);
   var anim := s.AnimRotateAt(OrtZ,360*100,P3D(-2,0,0),2*100)
     * g.AnimRotateAt(OrtZ,360*100,P3D(7,0,0),10*100)
   ;

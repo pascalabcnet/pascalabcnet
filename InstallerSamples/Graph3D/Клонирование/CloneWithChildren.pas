@@ -7,9 +7,9 @@ begin
   s.AddChild(c);
   c.AddChild(p);
   var s1 := s.Clone;
-  s1.MoveOnX(2);
+  s1.MoveByX(2);
   var g := Group(s,s1);
   var g1 := g.Clone;
-  g.MoveOnY(-4);
+  g.MoveByY(-4);
   s1.AnimRotateAt(OrtZ,360,P3D(-2,0,0)).Begin;
 end.
