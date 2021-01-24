@@ -947,7 +947,7 @@ window.onload = ()=>{
 <script>on_start_folder("Простые оболочки", document.getElementById("page-3"))</script>
 <div id="page-4" page_name="" hidden=true>
 <p>В списке устройств контекста могут быть только совместимые друг с другом устройства.<br />
-Совместимые устройства объединяются в общих платформах (объектах типа <code>Platform</code>).</p>
+Коллекция совместимых устройств называется платформой и хранится в объектах типа <code>Platform</code>.</p>
 <hr />
 <p>Обычно платформы получают из статического свойства <code>Platform.All</code>:</p>
 <pre><code>uses OpenCLABC;
@@ -1012,9 +1012,9 @@ end.
 Неявные очереди всегда используют <code>Context.Default</code>.</p>
 <p>Изначально этому свойству присваивается контекст, использующий GPU, если оно имеется,
 или любое другое устройство, поддерживающее OpenCL, если GPU отсутствует.</p>
-<p>Если устройств, поддерживающих <code>OpenCL</code>, нет - <code>Context.Default</code> будет <code>nil</code>.<br />
-Однако такая ситуация теоретически невозможна, потому что OpenCL поддерживается
-всеми современными устройствами, занимающимися выводом изображения на экран.<br />
+<p>Если устройств поддерживающих <code>OpenCL</code> нет - <code>Context.Default</code> будет <code>nil</code>.<br />
+Однако такая ситуация на практике невозможна, потому что OpenCL поддерживается
+практически всеми современными устройствами, занимающимися выводом изображения на экран.<br />
 Если <code>Context.Default = nil</code> - переустановите графические драйверы.</p>
 <hr />
 <p><code>Context.Default</code> можно перезаписывать.<br />
@@ -1025,8 +1025,8 @@ end.
 <script>on_start_folder("Context", document.getElementById("page-6"))</script>
 <script>on_end_folder()</script>
 <div id="page-7" page_name="" hidden=true>
-<p>Программам, выпоняемым на GPU, неудобно использовать оперативную память.
-Поэтому обычно надо выделять память на самОм GPU.<br />
+<p>Программам, выпоняемые на GPU, не удобно использовать оперативную память.
+Поэтому обычно надо выделять память на самом GPU.<br />
 Объекты типа <code>Buffer</code> представляют такую область памяти.</p>
 <hr />
 <p>Буфер создаётся конструктором (<code>new Buffer(...)</code>).</p>
@@ -1034,13 +1034,13 @@ end.
 Если вызвать <code>Buffer.Init</code> 2 раза - память освободится и выделится заново.</p>
 <p>Когда на GPU выделяется память - она <strong>НЕ</strong> очищается нулями, а значит содержит мусорные данные.</p>
 <p>Если метод <code>Buffer.Init</code> не был вызван до первой операции чтения/записи - он будет вызван автоматически.
-В таком случае в качестве контекста, в котором выделяется память, берётся тот,
+В таком случае в качестве контекста в котором выделяется память берётся тот,
 на котором вызвали <code>.BeginInvoke</code>, который запустил команду чтения/записи буфера.</p>
 <p>Память на GPU можно моментально освободить, вызвав метод <code>Buffer.Dispose</code>.
-Но если снова использовать буфер, у которого освободили память, - память выделится заново.</p>
+Но если снова использовать буфер, у которого освободили память - память выделится заново.</p>
 <p>Если сборщик мусора удаляет объект типа <code>Buffer</code> - <code>.Dispose</code> вызывается автоматически.</p>
 <hr />
-<p>Но кроме выделения памяти GPU - OpenCL также позволяет выделять память внутри другого буфера.<br />
+<p>Но кроме выделения памяти GPU - OpenCL так же позволяет выделять память внутри другого буфера.<br />
 Для этого используется тип <code>SubBuffer</code>:</p>
 <pre><code>uses OpenCLABC;
 
@@ -1074,7 +1074,7 @@ var k := code['KernelName'];
 </code></pre>
 <p>Тут <code>'KernelName'</code> — имя подпрограммы-kernel'а в исходном коде (регистр важен!).</p>
 <hr />
-<p>Также можно получить список всех kernel'ов объекта <code>ProgramCode</code>, методом <code>ProgramCode.GetAllKernels</code>:</p>
+<p>Так же можно получить список всех kernel'ов объекта <code>ProgramCode</code>, методом <code>ProgramCode.GetAllKernels</code>:</p>
 <pre><code>var code: ProgramCode;
 ...
 var ks := code.GetAllKernels;
@@ -1098,7 +1098,7 @@ begin
     // Очередь возвращающую буфер
     HFQ(()-&gt;new Buffer(1)),
     // В том числе BufferCommandQueue
-    Buffer.Create(1).NewQueue as CommandQueue&lt;Buffer&gt;,
+    Buffer.Create(1).NewQueue,
     
     // Размерное значение
     val1,
@@ -1107,7 +1107,7 @@ begin
     // И указатель на размерное значение
     // (в kernel попадёт само значение, не указатель)
     @val2,
-    // Так нельзя, потому что val1 уже захвачена лямбдой HFQ
+    // Так нельзя, потому что val1 уже захвачена лямбдой из HFQ
 //  @val1,
     // Расширенный набор параметров
     KernelArg.FromPtr(new System.IntPtr(@val2), new System.UIntPtr(sizeof(integer)))
@@ -1230,7 +1230,7 @@ end.
 Но потом вы добавите что то в совсем другой части программы, или запустите её на
 другом компьютере и она вдруг начнёт выводить мусорные значения, или падать с ошибками
 вроде <code>AccessViolationException</code>, которые совершенно не объясняют в чём проблема.</p>
-<p>Если очень интересно, откуда берутся эти ограничения, начните с применения .Net декомпилятора к .exe файлам,
+<p>Если очень интересно откуда берутся эти ограничения - начните с применения .Net декомпилятора к .exe файлам,
 получаемым при компиляции программ с данной страницы. Что останется непонятно - можете спрашивать в issue.</p>
 </div>
 <script>on_start_folder("Kernel", document.getElementById("page-8"))</script>
@@ -1314,7 +1314,7 @@ begin
   var b0 := new Buffer(1);
   
   // Тип - буфер, потому что очередь создали из буфера
-  OtpObject(  Context.Default.SyncInvoke( b0.NewQueue as CommandQueue&lt;Buffer&gt;   )  );
+  OtpObject(  Context.Default.SyncInvoke( b0.NewQueue                           )  );
   
   // Тип - Int32 (то есть integer), потому что это тип по умолчанию для выражения (5)
   OtpObject(  Context.Default.SyncInvoke( HFQ( ()-&gt;5                          ) )  );
@@ -1373,7 +1373,7 @@ except
   on e: Exception do Writeln(e);
 end;
 </code></pre>
-<p>Для этого кода есть стандартный снипет. Чтобы активировать его, напишите <code>tryo</code> и нажмите Shift+Пробел.</p>
+<p>Для этого кода есть стандартный снипет. Чтобы активировать его - напишите <code>tryo</code> и нажмите Shift+Пробел.</p>
 </div>
 <script>on_start_folder("Выполнение очередей", document.getElementById("page-14"))</script>
 <script>on_end_folder()</script>
@@ -1425,9 +1425,7 @@ begin
   q.AddWriteValue(5, 1*sizeof(integer) ).AddWriteValue(7, 2*sizeof(integer) );
   // Все команды в q будут выполняться последовательно
   
-  // В данной версии надо писать &quot;as CommandQueue&lt;...&gt;&quot; при использовании [Buffer/Kernel]CommandQueue там,
-  // где принимает CommandQueue&lt;...&gt;, из за бага компилятора #1981
-  Context.Default.SyncInvoke(q as CommandQueue&lt;Buffer&gt;);
+  Context.Default.SyncInvoke(q);
   
   // Вообще чтение тоже надо делать через очереди, но для простого примера - и неявные очереди подходят
   b.GetArray1&amp;&lt;integer&gt;(3).Println;
@@ -1447,20 +1445,18 @@ var q := new BufferCommandQueue(q0);
 </code></pre>
 <p>Этот код присваевает переменной <code>q</code> константную очередь, которая ничего не выполняет и возвращает <code>5</code>.</p>
 <p>Получить значение, из которого создали константную очередь, можно преобразовав её к <code>ConstQueue&lt;&gt;</code>:</p>
-<pre><code>var cq := q as ConstQueue&lt;integer&gt;;
-if cq=nil then
-  Writeln('Очередь не константная') else
-  Writeln($'Очередь была создана из значения ({cq.Val})');
+<pre><code>if q is ConstQueue&lt;integer&gt;(var cq) then
+  Writeln($'Очередь была создана из значения ({cq.Val})') else
+  Writeln($'Очередь не константная');
 </code></pre>
 <hr />
 <p><code>CommandQueueBase</code> также можно создать из возвращаемого значения, но для этого тип значения должен быть <code>Object</code>:</p>
 <pre><code>var q: CommandQueueBase := 5 as object;
 </code></pre>
 <p>Чтобы получить значение, из которого создали константную очередь, когда не знаете его тип - используйте интерфейс <code>IConstQueue</code>:</p>
-<pre><code>var cq := q as IConstQueue;
-if cq=nil then
-  Writeln('Очередь не константная') else
-  Writeln($'Очередь была создана из значения ({cq.GetConstVal})');
+<pre><code>if q is IConstQueue(var cq) then
+  Writeln($'Очередь была создана из значения ({cq.GetConstVal})') else
+  Writeln($'Очередь не константная');
 </code></pre>
 </div>
 <script>on_page_added(document.getElementById("page-17"))</script>
@@ -1587,7 +1583,7 @@ begin
   // А точнее их перегрузку, первый параметр которой - функция преобразования
   Context.Default.SyncInvoke(
     CombineSyncQueue(
-      results-&gt;results.JoinToString, // функция преобразования
+      results-&gt;results.JoinToString, // Функция преобразования
       q1, q2
     )
   ).Println;
@@ -1953,26 +1949,21 @@ end.
 
 begin
   var b := new Buffer( 3*sizeof(integer) );
-  var A := new integer[3];
   
   var Q_BuffWrite := b.NewQueue
     .AddWriteValue(1, 0*sizeof(integer) )
     .AddWriteValue(5, 1*sizeof(integer) )
     .AddWriteValue(7, 2*sizeof(integer) )
-    as CommandQueue&lt;Buffer&gt;
   ;
   
-  var Q_BuffRead := b.NewQueue.AddReadArray1&amp;&lt;integer&gt;(A) as CommandQueue&lt;Buffer&gt;;
-  
-  var Q_Otp := HPQ(()-&gt;
-  begin
-    A.Println;
-  end);
+  var Q_BuffRead :=
+    b.NewQueue.AddGetArray1&amp;&lt;integer&gt;
+    .ThenConvert(A-&gt;A.Println);
+  ;
   
   Context.Default.SyncInvoke(
     Q_BuffWrite +
-    Q_BuffRead +
-    Q_Otp
+    Q_BuffRead
   );
   
 end.
@@ -1982,7 +1973,6 @@ end.
 
 begin
   var b := new Buffer( 3*sizeof(integer) );
-  var A := new integer[3];
   
   // Аналог Q_BuffWrite
   b.WriteValue(1, 0*sizeof(integer) );
@@ -1990,10 +1980,7 @@ begin
   b.WriteValue(7, 2*sizeof(integer) );
   
   // Аналог Q_BuffRead
-  b.ReadArray1&amp;&lt;integer&gt;(A);
-  
-  // Аналог Q_Otp
-  A.Println;
+  b.GetArray1&amp;&lt;integer&gt;.Println;
   
 end.
 </code></pre>

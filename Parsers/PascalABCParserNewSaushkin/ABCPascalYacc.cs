@@ -2,9 +2,9 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 25.12.2020 21:59:54
+// DateTime: 17.01.2021 19:14:30
 // UserName: ?????????
-// Input file <ABCPascal.y>
+// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -59,7 +59,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from ABCPascal.y
+  // Verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
 // ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public syntax_tree_node root; // �������� ���� ��������������� ������ 
 
@@ -71,13 +71,13 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from ABCPascal.y
+  // End verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
 #pragma warning restore 649
   private static Rule[] rules = new Rule[987];
-  private static State[] states = new State[1633];
+  private static State[] states = new State[1635];
   private static string[] nonTerms = new string[] {
       "parse_goal", "unit_key_word", "class_or_static", "assignment", "optional_array_initializer", 
       "attribute_declarations", "ot_visibility_specifier", "one_attribute", "attribute_variable", 
@@ -168,7 +168,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       "tuple_pattern_item_list", "const_pattern_expr_list", "$accept", };
 
   static GPPGParser() {
-    states[0] = new State(new int[]{58,1536,11,843,85,1611,87,1616,86,1623,73,1629,75,1631,3,-27,49,-27,88,-27,56,-27,26,-27,64,-27,47,-27,50,-27,59,-27,41,-27,34,-27,25,-27,23,-27,27,-27,28,-27,102,-207,103,-207,106,-207},new int[]{-1,1,-226,3,-227,4,-297,1548,-6,1549,-242,862,-167,1610});
+    states[0] = new State(new int[]{58,1536,11,843,85,1611,87,1616,86,1623,73,1629,75,1632,3,-27,49,-27,88,-27,56,-27,26,-27,64,-27,47,-27,50,-27,59,-27,41,-27,34,-27,25,-27,23,-27,27,-27,28,-27,102,-207,103,-207,106,-207},new int[]{-1,1,-226,3,-227,4,-297,1548,-6,1549,-242,862,-167,1610});
     states[1] = new State(new int[]{2,2});
     states[2] = new State(-1);
     states[3] = new State(-2);
@@ -1797,17 +1797,19 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[1626] = new State(new int[]{107,411,108,412,109,413,110,414,111,415,135,-750,133,-750,115,-750,114,-750,128,-750,129,-750,130,-750,131,-750,127,-750,113,-750,112,-750,125,-750,126,-750,123,-750,6,-750,5,-750,117,-750,122,-750,120,-750,118,-750,121,-750,119,-750,134,-750,16,-750,2,-750,13,-750,116,-742},new int[]{-186,137});
     states[1627] = new State(-12);
     states[1628] = new State(-13);
-    states[1629] = new State(new int[]{138,380,140,23,83,25,84,26,78,28,76,255,42,387,39,597,8,598,18,275,19,280,141,161,143,162,142,164,151,651,154,167,153,168,152,169,74,482,54,624,88,129,37,630,22,637,94,653,51,658,32,663,52,673,99,679,44,686,33,689,50,697,57,745,72,750,70,737,35,759,10,-486,2,-486},new int[]{-244,1630,-253,649,-252,134,-4,135,-104,136,-123,369,-103,565,-138,650,-142,24,-143,27,-183,424,-249,458,-287,459,-15,607,-156,158,-158,159,-157,163,-16,165,-17,460,-55,608,-107,488,-204,622,-124,623,-247,628,-144,629,-33,636,-239,652,-309,657,-115,662,-310,672,-151,677,-294,678,-240,685,-114,688,-305,696,-56,741,-166,742,-165,743,-160,744,-117,749,-118,756,-116,757,-339,758,-134,1058});
-    states[1630] = new State(new int[]{10,132,2,-5});
-    states[1631] = new State(new int[]{138,380,140,23,83,25,84,26,78,28,76,255,42,387,39,597,8,598,18,275,19,280,141,161,143,162,142,164,151,651,154,167,153,168,152,169,74,482,54,624,88,129,37,630,22,637,94,653,51,658,32,663,52,673,99,679,44,686,33,689,50,697,57,745,72,750,70,737,35,759,10,-486,2,-486},new int[]{-244,1632,-253,649,-252,134,-4,135,-104,136,-123,369,-103,565,-138,650,-142,24,-143,27,-183,424,-249,458,-287,459,-15,607,-156,158,-158,159,-157,163,-16,165,-17,460,-55,608,-107,488,-204,622,-124,623,-247,628,-144,629,-33,636,-239,652,-309,657,-115,662,-310,672,-151,677,-294,678,-240,685,-114,688,-305,696,-56,741,-166,742,-165,743,-160,744,-117,749,-118,756,-116,757,-339,758,-134,1058});
-    states[1632] = new State(new int[]{10,132,2,-6});
+    states[1629] = new State(-38,new int[]{-295,1630});
+    states[1630] = new State(new int[]{49,14,138,380,140,23,83,25,84,26,78,28,76,255,42,387,39,597,8,598,18,275,19,280,141,161,143,162,142,164,151,651,154,167,153,168,152,169,74,482,54,624,88,129,37,630,22,637,94,653,51,658,32,663,52,673,99,679,44,686,33,689,50,697,57,745,72,750,70,737,35,759,10,-486,2,-486},new int[]{-244,1631,-253,649,-252,134,-4,135,-104,136,-123,369,-103,565,-138,650,-142,24,-143,27,-183,424,-249,458,-287,459,-15,607,-156,158,-158,159,-157,163,-16,165,-17,460,-55,608,-107,488,-204,622,-124,623,-247,628,-144,629,-33,636,-239,652,-309,657,-115,662,-310,672,-151,677,-294,678,-240,685,-114,688,-305,696,-56,741,-166,742,-165,743,-160,744,-117,749,-118,756,-116,757,-339,758,-134,1058});
+    states[1631] = new State(new int[]{10,132,2,-5});
+    states[1632] = new State(-38,new int[]{-295,1633});
+    states[1633] = new State(new int[]{49,14,138,380,140,23,83,25,84,26,78,28,76,255,42,387,39,597,8,598,18,275,19,280,141,161,143,162,142,164,151,651,154,167,153,168,152,169,74,482,54,624,88,129,37,630,22,637,94,653,51,658,32,663,52,673,99,679,44,686,33,689,50,697,57,745,72,750,70,737,35,759,10,-486,2,-486},new int[]{-244,1634,-253,649,-252,134,-4,135,-104,136,-123,369,-103,565,-138,650,-142,24,-143,27,-183,424,-249,458,-287,459,-15,607,-156,158,-158,159,-157,163,-16,165,-17,460,-55,608,-107,488,-204,622,-124,623,-247,628,-144,629,-33,636,-239,652,-309,657,-115,662,-310,672,-151,677,-294,678,-240,685,-114,688,-305,696,-56,741,-166,742,-165,743,-160,744,-117,749,-118,756,-116,757,-339,758,-134,1058});
+    states[1634] = new State(new int[]{10,132,2,-6});
 
     rules[1] = new Rule(-349, new int[]{-1,2});
     rules[2] = new Rule(-1, new int[]{-226});
     rules[3] = new Rule(-1, new int[]{-297});
     rules[4] = new Rule(-1, new int[]{-167});
-    rules[5] = new Rule(-1, new int[]{73,-244});
-    rules[6] = new Rule(-1, new int[]{75,-244});
+    rules[5] = new Rule(-1, new int[]{73,-295,-244});
+    rules[6] = new Rule(-1, new int[]{75,-295,-244});
     rules[7] = new Rule(-167, new int[]{85,-82});
     rules[8] = new Rule(-167, new int[]{85,47,-135});
     rules[9] = new Rule(-167, new int[]{87,-311});
@@ -2811,21 +2813,25 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 4: // parse_goal -> parts
 { root = ValueStack[ValueStack.Depth-1].stn; }
         break;
-      case 5: // parse_goal -> tkShortProgram, stmt_list
+      case 5: // parse_goal -> tkShortProgram, uses_clause, stmt_list
 { 
 			var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
-			stl.left_logical_bracket = ValueStack[ValueStack.Depth-2].ti;
+			stl.left_logical_bracket = ValueStack[ValueStack.Depth-3].ti;
 			stl.right_logical_bracket = new token_info("");
-			root = CurrentSemanticValue.stn = NewProgramModule(null, null, null, new block(null, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan); 
+			var ul = ValueStack[ValueStack.Depth-2].stn as uses_list;
+			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(null, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan); 
 		}
         break;
-      case 6: // parse_goal -> tkShortSFProgram, stmt_list
+      case 6: // parse_goal -> tkShortSFProgram, uses_clause, stmt_list
 {
 			var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
-			stl.left_logical_bracket = ValueStack[ValueStack.Depth-2].ti;
+			stl.left_logical_bracket = ValueStack[ValueStack.Depth-3].ti;
 			var un = new unit_or_namespace(new ident_list("SF"),null);
+			var ul = ValueStack[ValueStack.Depth-2].stn as uses_list;
+			if (ul == null)
 			//var un1 = new unit_or_namespace(new ident_list("School"),null);
-			var ul = new uses_list(un,null);		
+				ul = new uses_list(un,null);
+			else ul.Insert(0,un);
 			//ul.Add(un1);
 			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(null, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan); 
 		}

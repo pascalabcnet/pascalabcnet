@@ -160,6 +160,12 @@ Section $(DESC_PT4) PT4
   ${AddFile} "PT4ASeries.dll"
   File "PT4\Lib\PT4AWhile.dll"
   ${AddFile} "PT4AWhile.dll"
+  File "PT4\Lib\PT4AProc.dll"
+  ${AddFile} "PT4AProc.dll"
+  File "PT4\Lib\PT4AFunc.dll"
+  ${AddFile} "PT4AFunc.dll"
+  File "PT4\Lib\PT4AArray.dll"
+  ${AddFile} "PT4AArray.dll"
  
 
   SetOutPath "$INSTDIR\PT4\Lib\Graph"

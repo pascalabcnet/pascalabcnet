@@ -40,3 +40,4 @@ NESTED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION=Вложенные 
 NESTED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Вложенные записи не могут содержать несколько секций видимости
 NESTED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Вложенные записи не могут захватывать имена из неглобального контекста
 TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT=Слишком много элементов в левой части при присваивании кортежа
+NESTED_LAMBDAS_MAXIMUM_10=Максимальный уровень вложенности лямбд равен 10

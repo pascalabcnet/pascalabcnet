@@ -176,6 +176,10 @@ function Av(Self: sequence of real): real; extensionmethod := Self.Average;
 
 /// Возвращает количество элементов последовательности
 function Cnt<T>(Self: sequence of T): integer; extensionmethod := Self.Count;
+/// Возвращает количество элементов последовательности, удовлетворяющих условию
+function Cnt<T>(Self: sequence of T; pred: T->boolean): integer; extensionmethod := Self.Count(pred);
+/// Возвращает количество элементов последовательности, равных заданному значению
+function Cnt<T>(Self: sequence of T; elem: T): integer; extensionmethod := Self.CountOf(elem);
 
 function Ord<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Order;
 function OrdD<T>(Self: sequence of T): sequence of T; extensionmethod := Self.OrderDescending;
@@ -258,6 +262,29 @@ procedure Tr<T>(a: array of T; transform: T->T) := a.Transform(transform);
 /// Возвращает индекс последнего элемента массива
 function H<T>(Self: array of T): integer; extensionmethod := Self.High;
 
+/// Возвращает все перестановки множества элементов, заданного массивом
+function Prm<T>(Self: array of T): sequence of array of T; extensionmethod := Self.Permutations;
+
+/// Возвращает все перестановки множества элементов, заданного массивом
+function Prm<T>(Self: sequence of T): sequence of array of T; extensionmethod := Self.Permutations;
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Prm<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod := Self.Permutations(m);
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Prm<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod := Self.Permutations(m);
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cart<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cart<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
+
+/// Возвращает все сочетания по m элементов
+function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod := Self.Combinations(m);
+
+/// Возвращает все сочетания по m элементов
+function Cmb<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod := Self.Combinations(m);
 
 ///--
 procedure __InitModule__;

@@ -190,9 +190,11 @@ namespace PascalABCCompiler.SyntaxTree
                         var ts = m as procedure_definition;
                         if (!HasConstructor)
                         {
-                            if (ts != null && ts.proc_header is constructor)
+                            if (ts != null && ts.proc_header is constructor 
+                                && (ts.proc_header.parameters?.params_list.SelectMany(tp => tp.idents.idents).Count() ?? 0) == names.Count
+                                )
                             {
-                                HasConstructor = true;
+                                HasConstructor = true; // на самом деле это означает, что есть конструктор с точно таким же количеством параметров
                             }
                         }
 

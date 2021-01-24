@@ -259,6 +259,9 @@ type
   /// Указывает на возможность сериализации класса
   Serializable = System.SerializableAttribute;
   
+  /// Указывает, что поле сериализуемого класса не должно быть сериализовано
+  NonSerialized = System.NonSerializedAttribute;
+
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
@@ -617,7 +620,7 @@ type
     end;
     property Low: integer read l;
     property High: integer read h;
-    property Count: integer read GetCount;
+    //property Count: integer read GetCount;
 
     static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator in(x: real; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
@@ -660,15 +663,15 @@ type
     end;}
     function ToLinkedList: LinkedList<integer>;
     begin
-      Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
     function ToHashSet: HashSet<integer>;
     begin
-      Result := new HashSet<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new HashSet<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
     function ToSortedSet: SortedSet<integer>;
     begin
-      Result := new SortedSet<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new SortedSet<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
   end;
 
@@ -690,7 +693,7 @@ type
     end;
     property Low: char read l;
     property High: char read h;
-    property Count: integer read GetCount;
+    //property Count: integer read GetCount;
 
     static function operator in(x: char; r: CharRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
@@ -733,15 +736,15 @@ type
     end;}
     function ToLinkedList: LinkedList<char>;
     begin
-      Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
     function ToHashSet: HashSet<char>;
     begin
-      Result := new HashSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new HashSet<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
     function ToSortedSet: SortedSet<char>;
     begin
-      Result := new SortedSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new SortedSet<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
   end;
   
@@ -1418,7 +1421,7 @@ procedure RmDir(s: string);
 /// Создает каталог. Возвращает True, если каталог успешно создан
 function CreateDir(s: string): boolean;
 /// Удаляет файл. Если файл не может быть удален, то возвращает False
-function DeleteFile(s: string): boolean;
+function DeleteFile(fname: string): boolean;
 /// Возвращает текущий каталог
 function GetCurrentDir: string;
 /// Удаляет каталог. Возвращает True, если каталог успешно удален
@@ -1879,10 +1882,10 @@ function Length(s: string): integer;
 procedure SetLength(var s: string; n: integer);
 ///--
 procedure SetLengthForShortString(var s: string; n, sz: integer);
-/// Вставляет подстроку source в строку s с позиции index
-procedure Insert(source: string; var s: string; index: integer);
+/// Вставляет подстроку subs в строку s с позиции index
+procedure Insert(subs: string; var s: string; index: integer);
 ///--
-procedure InsertInShortString(source: string; var s: string; index, n: integer);
+procedure InsertInShortString(subs: string; var s: string; index, n: integer);
 /// Удаляет из строки s count символов с позиции index
 procedure Delete(var s: string; index, count: integer);
 /// Возвращает подстроку строки s длины count с позиции index
@@ -7219,7 +7222,9 @@ end;
 
 function Eof(f: Text): boolean;
 begin
-  if f.sr <> nil then
+  if f = input then
+    Result := Eof
+  else if f.sr <> nil then
     Result := f.sr.EndOfStream
   else if f.sw <> nil then
     raise new IOException(GetTranslation(EOF_FOR_TEXT_WRITEOPENED))
@@ -7228,7 +7233,9 @@ end;
 
 function Eoln(f: Text): boolean;
 begin
-  if f.sr <> nil then
+  if f = input then
+    Result := Eoln
+  else if f.sr <> nil then
     Result := f.sr.EndOfStream or (f.sr.Peek = 13) or (f.sr.Peek = 10) 
   else if f.sw <> nil then
     raise new IOException(GetTranslation(EOLN_FOR_TEXT_WRITEOPENED))
@@ -7237,6 +7244,11 @@ end;
 
 function SeekEof(f: Text): boolean;
 begin
+  if f = input then
+  begin  
+    Result := SeekEof;
+    exit;
+  end;  
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOF_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
@@ -7254,6 +7266,11 @@ end;
 
 function SeekEoln(f: Text): boolean;
 begin
+  if f = input then
+  begin  
+    Result := SeekEoln;
+    exit;
+  end;  
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOLN_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
@@ -7841,11 +7858,11 @@ begin
   end;
 end;
 
-function DeleteFile(s: string): boolean;
+function DeleteFile(fname: string): boolean;
 begin
   try
     Result := True;
-    &File.Delete(s);
+    &File.Delete(fname);
   except
     Result := False;
   end;
@@ -8825,27 +8842,27 @@ begin
       s += new String(' ', sz - s.Length)
 end;
 
-procedure Insert(source: string; var s: string; index: integer);
+procedure Insert(subs: string; var s: string; index: integer);
 // Insert никогда не возвращает исключения
 begin
   if index < 1 then 
     index := 1;
   if index > s.Length + 1 then
     index := s.Length + 1;
-  s := s.Insert(index - 1, source);
+  s := s.Insert(index - 1, subs);
 end;
 
-procedure InsertInShortString(source: string; var s: string; index, n: integer);
+procedure InsertInShortString(subs: string; var s: string; index, n: integer);
 begin
   if index < 1 then 
     index := 1;
   if index > n then
     exit;
   try
-    s := s.Insert(index - 1, source);
+    s := s.Insert(index - 1, subs);
     if s.Length > n then s := s.Substring(0, n);
   except
-    s := s.Insert(s.Length, source);
+    s := s.Insert(s.Length, subs);
     if s.Length > n then s := s.Substring(0, n);
   end;
 end;
@@ -11798,6 +11815,12 @@ begin
   until not NextCombHelper(ind,m,n);  
 end;
 
+/// Возвращает все сочетания по m элементов
+function Combinations<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Combinations(m);
+end;
+
 // Возвращает все сочетания по 2 элемента в виде кортежей
 {function Combinations2<T>(Self: array of T): sequence of (T,T); extensionmethod;
 begin
@@ -11827,7 +11850,7 @@ begin
   Result := True;
 end;
 
-/// Возвращает все перестановки
+/// Возвращает все перестановки множества элементов, заданного массивом
 function Permutations<T>(Self: array of T): sequence of array of T; extensionmethod;
 begin
   var a := Self;
@@ -11839,6 +11862,60 @@ begin
       res[i] := a[ind[i]];
     yield Arr(res);
   until not NextPermutation(ind);  
+end;
+
+/// Возвращает все перестановки множества элементов, заданного последовательностью
+function Permutations<T>(Self: sequence of T): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Permutations
+end;
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Permutations<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.Combinations(m).SelectMany(c->c.Permutations);
+end;
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Permutations<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Permutations(m);
+end;
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  var r := new integer[n];
+  var ar1 := new T[n];
+  for var i:=0 to n-1 do
+    ar1[i] := Self[r[i]];
+  yield ar1;
+  
+  var m := Self.Length;
+  while True do
+  begin
+    var i := n-1;  
+    r[i] += 1;
+    while r[i]>=m do
+    begin
+      r[i] := 0;
+      i -= 1;
+      if i<0 then
+        exit;
+      r[i] += 1;
+    end;
+    
+    var ar := new T[n];
+    for var j:=0 to n-1 do
+      ar[j] := Self[r[j]];
+    yield ar;
+  end;  
+end;
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Cartesian(n);
 end;
 
 // Внутренние функции для одномерных массивов
@@ -12337,6 +12414,21 @@ function TryToInteger(Self: string; var value: integer): boolean; extensionmetho
 /// Преобразует строку в вещественное и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryToReal(Self: string; var value: real): boolean; extensionmethod := TryStrToReal(Self,value);
+
+
+/// Возвращает True если строку можно преобразовать в вещественное
+function IsReal(Self: string): boolean; extensionmethod;
+begin
+  var r: real;
+  Result := TryStrToReal(Self, r);
+end; 
+
+/// Возвращает True если строку можно преобразовать в целое
+function IsInteger(Self: string): boolean; extensionmethod;
+begin
+  var i: integer;
+  Result := TryStrToInt(Self, i);
+end; 
 
 /// Преобразует строку в целое
 ///При невозможности преобразования возвращается defaultvalue

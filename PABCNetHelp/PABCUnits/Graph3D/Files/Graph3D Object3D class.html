@@ -1,49 +1,18 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
-<param name="Keyword" value="AnimMoveOn">
-<param name="Keyword" value="AnimMoveOnX">
-<param name="Keyword" value="AnimMoveOnY">
-<param name="Keyword" value="AnimMoveOnZ">
-<param name="Keyword" value="AnimMoveTo">
-<param name="Keyword" value="AnimMoveTrajectory">
-<param name="Keyword" value="AnimRotate">
-<param name="Keyword" value="AnimRotateAt">
-<param name="Keyword" value="AnimRotateAtAbsolute">
-<param name="Keyword" value="AnimScale">
-<param name="Keyword" value="AnimScaleX">
-<param name="Keyword" value="AnimScaleY">
-<param name="Keyword" value="AnimScaleZ">
-<param name="Keyword" value="Clone">
-<param name="Keyword" value="Color">
-<param name="Keyword" value="Destroy">
-<param name="Keyword" value="MoveOn">
-<param name="Keyword" value="MoveOnX">
-<param name="Keyword" value="MoveOnY">
-<param name="Keyword" value="MoveOnZ">
-<param name="Keyword" value="MoveTime">
+<param name="Keyword" value="MoveBy">
+<param name="Keyword" value="MoveByX">
+<param name="Keyword" value="MoveByY">
+<param name="Keyword" value="MoveByZ">
 <param name="Keyword" value="MoveTo">
 <param name="Keyword" value="Object3D">
-<param name="Keyword" value="Position">
-<param name="Keyword" value="PositionAfterTime">
-<param name="Keyword" value="Rotate">
-<param name="Keyword" value="RotateAt">
-<param name="Keyword" value="RotateAtAbsolute">
-<param name="Keyword" value="Save">
-<param name="Keyword" value="Scale">
-<param name="Keyword" value="ScaleX">
-<param name="Keyword" value="ScaleY">
-<param name="Keyword" value="ScaleZ">
 <param name="Keyword" value="X">
 <param name="Keyword" value="Y">
 <param name="Keyword" value="Z"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Graph3D: класс Object3D</H1>Базовый класс трехмерных объектов.
+</HEAD><body><H1>Graph3D: класс Object3D</H1>Базовый класс трехмерных объектов. Базовый класс - <code>ISerializable</code>.
 <table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса Object3D</font></td></tr>
 
-<tr><tr><td><code><b>property</b> Color: GColor;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет 3D-объекта</td></tr>
-<tr><td><code><b>property</b> Position: Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Позиция 3D-объекта</td></tr>
-<tr><td><code><b>property</b> X: real;</code>
+<tr><tr><td><code><b>property</b> X: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координата X</td></tr>
 <tr><td><code><b>property</b> Y: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координата Y</td></tr>
@@ -51,114 +20,19 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координата Z</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса Object3D</font></td></tr>
 
-<tr><tr><td><code><b>function</b> AnimMoveOn(dx, dy, dz: real; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimMoveOn(dx, dy, dz: real; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimMoveOn(v: Vector3D; seconds: real; Completed: <b>procedure</b>);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта на вектор v за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimMoveOn(v: Vector3D; seconds: real := 1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта на вектор v за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnX(dx: real; seconds: real; Completed: <b>procedure</b>);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OX на величину dx за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnX(dx: real; seconds: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OX на величину dx за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnX(dx: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OX на величину dx за 1 секунду</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnY(dy: real; seconds: real; Completed: <b>procedure</b>);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OY на величину dy за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnY(dy: real; seconds: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OY на величину dy за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnY(dy: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OZ на величину dz за 1 секунду</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnZ(dz: real; seconds: real; Completed: <b>procedure</b>);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OZ на величину dz за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnZ(dz: real; seconds: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OZ на величину dz за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimMoveOnZ(dz: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по оси OZ на величину dz за 1 секунду</td></tr>
-<tr><td><code><b>function</b> AnimMoveTo(x, y, z: real; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта к точке (x, y, z) за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimMoveTo(x, y, z: real; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта к точке (x, y, z) за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimMoveTo(p: Point3D; seconds: real; Completed: <b>procedure</b>);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта к точке p за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimMoveTo(p: Point3D; seconds: real := 1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта к точке p за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimMoveTrajectory(trajectory: <b>sequence </b>  <b>of</b> Point3D; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по траектории, заданной последовательностью точек trajectory за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimMoveTrajectory(trajectory: <b>sequence </b>  <b>of</b> Point3D; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию перемещения объекта по траектории, заданной последовательностью точек trajectory за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimRotate(vx, vy, vz, angle: real; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора (vx,vy,vz) на величину angle за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimRotate(vx, vy, vz, angle: real; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора (vx,vy,vz) на величину angle за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimRotate(v: Vector3D; angle: real; seconds: real; Completed: <b>procedure</b>);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора v, направленного из центра объекта, на величину angle за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimRotate(v: Vector3D; angle: real; seconds: real := 1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора v, направленного из центра объекта, на величину angle за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (её координаты задаются относительно центра объекта), на величину angle за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (её координаты задаются относительно центра объекта), на величину angle за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (в абсолютных координатах), на величину angle за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (в абсолютных координатах), на величину angle за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimScale(sc: real; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта на величину sc за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimScale(sc: real; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта на величину sc за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimScaleX(sc: real; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта по оси OX на величину sc за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimScaleX(sc: real; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта по оси OX на величину sc за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimScaleY(sc: real; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта по оси OY на величину sc за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimScaleY(sc: real; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта по оси OY на величину sc за seconds секунд</td></tr>
-<tr><td><code><b>function</b> AnimScaleZ(sc: real; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта по оси OZ на величину sc за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
-<tr><td><code><b>function</b> AnimScaleZ(sc: real; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта по оси OZ на величину sc за seconds секунд</td></tr>
-<tr><td><code><b>function</b> Clone: Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Клонирует 3D-объект</td></tr>
-<tr><td><code><b>function</b> MoveOn(dx, dy, dz: real): Object3D;</code>
+<tr><tr><td><code><b>function</b> MoveBy(dx, dy, dz: real): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект на вектор (dx,dy,dz)</td></tr>
-<tr><td><code><b>function</b> MoveOn(v: Vector3D): Object3D;</code>
+<tr><td><code><b>function</b> MoveBy(v: Vector3D): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект на вектор v</td></tr>
-<tr><td><code><b>function</b> MoveOnX(dx: real): Object3D;</code>
+<tr><td><code><b>function</b> MoveByX(dx: real): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает x-координату 3D-объекта на dx</td></tr>
-<tr><td><code><b>function</b> MoveOnY(dy: real): Object3D;</code>
+<tr><td><code><b>function</b> MoveByY(dy: real): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает y-координату 3D-объекта на dy</td></tr>
-<tr><td><code><b>function</b> MoveOnZ(dz: real): Object3D;</code>
+<tr><td><code><b>function</b> MoveByZ(dz: real): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает z-координату 3D-объекта на dz</td></tr>
 <tr><td><code><b>function</b> MoveTo(xx, yy, zz: real): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект к точке (xx,yy,zz)</td></tr>
 <tr><td><code><b>function</b> MoveTo(p: Point3D): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект к точке p</td></tr>
-<tr><td><code><b>function</b> PositionAfterTime(dt: real): Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Будущая позиция 3D-объекта по прошествии времени dt</td></tr>
-<tr><td><code><b>function</b> Rotate(axis: Vector3D; angle: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает объект на угол angle вокруг оси axis</td></tr>
-<tr><td><code><b>function</b> RotateAt(axis: Vector3D; angle: real; center: Point3D): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает объект на угол angle вокруг оси axis относительно точки center (её координаты задаются относительно центра объекта)</td></tr>
-<tr><td><code><b>function</b> RotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает объект на угол angle вокруг оси axis относительно точки center (в абсолютных координатах)</td></tr>
-<tr><td><code><b>function</b> Scale(f: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует 3D-объект в f раз</td></tr>
-<tr><td><code><b>function</b> ScaleX(f: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует 3D-объект в f раз по оси OX</td></tr>
-<tr><td><code><b>function</b> ScaleY(f: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует 3D-объект в f раз по оси OY</td></tr>
-<tr><td><code><b>function</b> ScaleZ(f: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует 3D-объект в f раз по оси OZ</td></tr>
-</tr>
-<tr><tr><td><code><b>procedure</b> Destroy(); <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет 3D-объект</td></tr>
-<tr><td><code><b>procedure</b> MoveTime(dt: real); <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект вдоль вектора Direction со скоростью Velocity за время dt</td></tr>
-<tr><td><code><b>procedure</b> Save(fname: string); <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сохраняет 3D-объект в файл</td></tr>
 </tr></table>
 </body></HTML>

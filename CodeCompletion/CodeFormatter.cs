@@ -1682,7 +1682,11 @@ namespace CodeFormatters
             if (_program_module.program_name != null)
                 visit_node(_program_module.program_name);
             if (_program_module.used_units != null && _program_module.used_units.source_context != null)
-                visit_node(_program_module.used_units);
+            {
+                if (_program_module.program_block != null && _program_module.program_block.program_code.left_logical_bracket.text.StartsWith("##"))
+                    ;
+                else visit_node(_program_module.used_units);
+            }
             if (_program_module.program_block != null)
                 visit_node(_program_module.program_block); 
             //sb.Append(".");

@@ -663,7 +663,7 @@ namespace PascalABCCompiler.TreeConverter
                 en.location = loc;
                 if (en.type is delegated_methods dm && dm.proper_methods[0].parameters.Count == 0 && dm.proper_methods[0].ret_type != null)
                 {
-                    if (to != SystemLibrary.SystemLibrary.object_type)
+                    if (to != SystemLibrary.SystemLibrary.object_type && to.IsDelegate)
                         AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
                     else
                         return en;
@@ -1667,7 +1667,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				if (ptc.second!=null)
 				{
-                    if (ptc.first.from is null_type_node || ptc.second.from is null_type_node)
+                    if (ptc.first.from is null_type_node || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
                         continue; // SSM 9/12/20 fix 2363
 					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
@@ -1871,7 +1871,7 @@ namespace PascalABCCompiler.TreeConverter
                                 mc = method_compare.greater_method;
                             }
                         }
-                        if (mc == method_compare.greater_method)
+                        if (mc == method_compare.greater_method) // f[i]>f[j] - значит, удалять надо f[i], а в коде наоборот!!! Странно...
                         {
                             tcll.remove_at(j);
                             set_of_possible_functions.RemoveAt(j);

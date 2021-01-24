@@ -175,9 +175,11 @@ namespace PascalABCCompiler.NETGenerator
         private bool has_dereferences = false;
         private bool safe_block = false;
         private int cur_line = 0;
+        private bool tried_with_unmanaged_resources = false;
         private ISymbolDocumentWriter new_doc;
         private List<LocalBuilder> pinned_variables = new List<LocalBuilder>();
         private bool pabc_rtl_converted = false;
+        bool has_unmanaged_resources = false;
 
         private void CheckLocation(SemanticTree.ILocation Location)
         {
@@ -571,18 +573,20 @@ namespace PascalABCCompiler.NETGenerator
                 ab = ad.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run, dir);//определяем сборку
             else
                 ab = ad.DefineDynamicAssembly(an, AssemblyBuilderAccess.Save, dir);//определяем сборку
-
+            
             //int nn = ad.GetAssemblies().Length;
             if (options.NeedDefineVersionInfo)
             {
                 ab.DefineVersionInfoResource(options.Product, options.ProductVersion, options.Company,
                     options.Copyright, options.TradeMark);
+                has_unmanaged_resources = true;
             }
             if (options.MainResourceFileName != null)
             {
                 try
                 {
                     ab.DefineUnmanagedResource(options.MainResourceFileName);
+                    has_unmanaged_resources = true;
                 }
                 catch
                 {
@@ -594,6 +598,7 @@ namespace PascalABCCompiler.NETGenerator
                 try
                 {
                     ab.DefineUnmanagedResource(options.MainResourceData);
+                    has_unmanaged_resources = true;
                 }
                 catch
                 {
@@ -1091,7 +1096,11 @@ namespace PascalABCCompiler.NETGenerator
                     catch (System.IO.IOException e)
                     {
                         if (tries < num_try_save)
+                        {
+                            if (has_unmanaged_resources)
+                                throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));   
                             tries++;
+                        }
                         else
                             throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
                     }
@@ -2272,7 +2281,7 @@ namespace PascalABCCompiler.NETGenerator
 
             TypeAttributes ta = (not_exist) ? ConvertAttributes(value) : TypeAttributes.NotPublic;
 
-            if (value.base_type is ICompiledTypeNode && (value.base_type as ICompiledTypeNode).compiled_type == TypeFactory.EnumType)
+            if (value.base_type is ICompiledTypeNode && (value.base_type as ICompiledTypeNode).compiled_type == TypeFactory.EnumType && gtpb == null)
             {
                 ta = TypeAttributes.Public;
                 if (value.type_access_level == type_access_level.tal_internal)
@@ -5551,7 +5560,7 @@ namespace PascalABCCompiler.NETGenerator
             //is_dot_expr = false;
             is_field_reference = true;
             value.obj.visit(this);
-            is_field_reference = false;
+            
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
 #if DEBUG
@@ -5567,7 +5576,10 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (fi_info.field_type.IsValueType || fi_info.field_type.IsGenericParameter)
                     {
-                        il.Emit(OpCodes.Ldflda, fi);
+                        if (is_field_reference && value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null)
+                            il.Emit(OpCodes.Ldfld, fi);
+                        else
+                            il.Emit(OpCodes.Ldflda, fi);
                     }
                     else
                         il.Emit(OpCodes.Ldfld, fi);
@@ -5582,6 +5594,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 is_dot_expr = false;
             }
+            is_field_reference = false;
         }
 
         public override void visit(SemanticTree.INamespaceVariableReferenceNode value)
