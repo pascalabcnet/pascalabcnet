@@ -8,6 +8,7 @@ using TreeConverter;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PascalABCCompiler.PCU
 {
@@ -213,7 +214,7 @@ namespace PascalABCCompiler.PCU
 		private List<string> ref_assemblies = new List<string>();//список подключаемых сборок, заполняется в процессе
 		private Dictionary<Assembly,int> assm_refs = new Dictionary<Assembly,int>();//таблица для привязывания сборки
         private Dictionary<definition_node, int> func_codes = new Dictionary<definition_node, int>();//таблица, хранящая смещения тел методов в PCU
-        private Dictionary<definition_node, int> used_units = new Dictionary<definition_node, int>();
+        private Dictionary<common_unit_node, int> used_units = new Dictionary<common_unit_node, int>();
 		private Dictionary<definition_node,ImportedEntity> ext_members = new Dictionary<definition_node,ImportedEntity>();//таблица, привязывающая импорт. сущность с записью в списке имп. сущ-тей 
 		private common_namespace_node cur_cnn;//текущее пространство имен
 		private bool is_interface = true;//переводим ли интерфейсную часть
@@ -876,12 +877,15 @@ namespace PascalABCCompiler.PCU
             if (tn is common_type_node)
             {
                 common_namespace_node comp_cnn = (tn as common_type_node).comprehensive_namespace;
-                if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn))
+                if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
                 {
+                    var path = Compiler.GetUnitPath(unit, compiler.UnitsSortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
+
                     if (interf)
-                        unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit);
+                        unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit, path);
                     else
-                        unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit);
+                        unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit, path);
+
                     ns_dict[comp_cnn] = true;
                 }
                 if (tn.base_type is common_type_node)
@@ -1034,79 +1038,52 @@ namespace PascalABCCompiler.PCU
         //заполнение списка подключаемых модулей
 		private void GetUsedUnits()
 		{
-			int num = 0;
-            common_unit_node unt = null;
             AddIndirectInteraceUsedUnits();
             AddIndirectImplementationUsedUnits();
-            for (int j = 0; j < unit.InterfaceUsedUnits.Count; j++)
-            {
-                unt = unit.InterfaceUsedUnits[j] as common_unit_node;
-                if (unt == null) continue;
-                if (unt.namespaces.Count != 0) 
-                	num += 1;//unt.namespaces.Count;
-            }
-            for (int j = 0; j < unit.ImplementationUsedUnits.Count; j++)
-            {
-                unt = unit.ImplementationUsedUnits[j] as common_unit_node;
-                if (unt == null) continue;
-                if (unt.namespaces.Count != 0) 
-                	num += 1;//unt.namespaces.Count;
-            }
-            
-			pcu_file.incl_modules = new string[num];
-            int i = 0; num = 0;
-			for (i=0; i<unit.InterfaceUsedUnits.Count; i++)
-			{
-                unt = unit.InterfaceUsedUnits[i] as common_unit_node;
-                if (unt == null) continue;
-                if (unt.namespaces.Count != 0)
-				{
-                    pcu_file.incl_modules[num] = unt.namespaces[0].namespace_name;
-					used_units[unt.namespaces[0]] = num;
-                    num++;
-                    /*if (unt.namespaces.Count > 1)
-                    {
-                    	pcu_file.incl_modules[num] = unt.namespaces[1].namespace_name;
-						used_units[unt.namespaces[1]] = num;
-						num++;
-                    }*/
-				}
-			}
 
-            //(ssyy) Запомнили, какие модули относятся к секции interface
-            pcu_file.interface_uses_count = num;
+            var c1 = unit.InterfaceUsedUnits.unit_uses_paths.Count;
+            var c2 = unit.ImplementationUsedUnits.unit_uses_paths.Count;
+            pcu_file.interface_uses_count = c1;
 
-			for (int j=0; j<unit.ImplementationUsedUnits.Count; j++)
-			{
-                unt = unit.ImplementationUsedUnits[j] as common_unit_node;
-                if (unt == null) continue;
-                if (unt.namespaces.Count != 0)
-				{
-					pcu_file.incl_modules[num] = unt.namespaces[0].namespace_name;
-					used_units[unt.namespaces[0]] = num;
-                    num++;
-                    /*if (unt.namespaces.Count > 1)
-                    {
-                    	pcu_file.incl_modules[num] = unt.namespaces[1].namespace_name;
-						used_units[unt.namespaces[1]] = num;
-						num++;
-                    }*/
-				}
-			}
-            
-            
-			pcu_file.used_namespaces = cun.used_namespaces.ToArray();
+            var incl_modules = new List<string>(c1 + c2);
+            foreach (var used_unit in unit.InterfaceUsedUnits.OfType<common_unit_node>())
+            {
+                // Каждый модуль, зачем то, подключён сам к себе
+                // Конечно, записи в unit_uses_paths для такого подключения - нет
+                if (unit.SemanticTree == used_unit) continue;
+
+                // AddIndirectInteraceUsedUnits может добавлять один и тот же модуль несколько раз
+                if (used_units.ContainsKey(used_unit)) continue;
+
+                // раньше вместо пути модуля - брало имя его первого пространства имён
+                // и сразу стояла эта проверка. Если будет тут вылетать - наверное надо заменить throw на continue
+                if (used_unit.namespaces.Count == 0) throw new InvalidOperationException();
+
+                this.used_units.Add(used_unit, used_units.Count);
+                incl_modules.Add(unit.InterfaceUsedUnits.unit_uses_paths[used_unit]);
+
+            }
+            foreach (var used_unit in unit.ImplementationUsedUnits.OfType<common_unit_node>())
+            {
+                if (unit.SemanticTree == used_unit) continue;
+                if (used_units.ContainsKey(used_unit)) continue;
+                if (used_unit.namespaces.Count == 0) throw new InvalidOperationException();
+
+                this.used_units.Add(used_unit, used_units.Count);
+                incl_modules.Add(unit.ImplementationUsedUnits.unit_uses_paths[used_unit]);
+
+            }
+
+            used_units.Add(unit.SemanticTree as common_unit_node, -1);
+
+            pcu_file.incl_modules = incl_modules.ToArray();
+            pcu_file.used_namespaces = cun.used_namespaces.ToArray();
 		}
 		
         //получения индекса модуля в списке подключ. модулей
 		private int GetUnitToken(common_namespace_node ns)
 		{
-			int tok = 0;
-			if (!used_units.TryGetValue(ns,out tok))
-			{
-				return used_units[(ns.cont_unit as common_unit_node).namespaces[0]];
-			}
-			return tok;
+            return used_units[ns.cont_unit as common_unit_node];
 		}
 		
         private int GetTokenForNetEntity(FieldInfo val)
@@ -1728,7 +1705,7 @@ namespace PascalABCCompiler.PCU
                 is_def = 1;
                 return off;//возвращаем его смещение
             }
-            if (!used_units.ContainsKey(nv.namespace_node))
+            if (!used_units.ContainsKey(nv.namespace_node.cont_unit as common_unit_node))
             {
                 is_def = 1;
                 return -1;
@@ -1758,7 +1735,7 @@ namespace PascalABCCompiler.PCU
                 is_def = 1;
                 return off;//возвращаем его смещение
             }
-            if (!used_units.ContainsKey(nv.comprehensive_namespace))
+            if (!used_units.ContainsKey(nv.comprehensive_namespace.cont_unit as common_unit_node))
             {
                 is_def = 1;
                 return -1;
