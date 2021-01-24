@@ -372,7 +372,7 @@ namespace CodeCompletion
             Dirs.Add(CodeCompletionController.comp.CompilerOptions.SearchDirectory);
             if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent))
                 Dirs.Add((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
-            return CodeCompletionController.comp.FindSourceFileName(unit_name, Dirs.ToArray());
+            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, Dirs.ToArray());
         }
 
         public static CodeCompletionNameHelper Helper

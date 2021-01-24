@@ -89,7 +89,7 @@ namespace PascalABCCompiler.TreeRealization
     }
 
 	[Serializable]
-    public class common_unit_node : unit_node
+    public sealed class common_unit_node : unit_node
 	{
         private readonly common_namespace_node_list _namespaces = new common_namespace_node_list();
 
@@ -100,7 +100,7 @@ namespace PascalABCCompiler.TreeRealization
 
 		private common_namespace_function_node _main_function;
         private common_namespace_function_node _finalization_method;
-        private string _unit_name;
+        public string unit_name { get; set; }
 
         internal common_parameter MainArgsParameter = null;
         internal expression_node MainArgsAssignExpr = null;
@@ -154,7 +154,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public common_unit_node(string name)
         {
-            _unit_name = name;
+            this.unit_name = name;
         }
 
         public void add_unit_name_to_namespace()
@@ -162,18 +162,6 @@ namespace PascalABCCompiler.TreeRealization
             this.scope.AddSymbol(unit_name, new TreeConverter.SymbolInfo(this));
         }
 
-        public string unit_name
-        {
-            get
-            {
-                return _unit_name;
-            }
-            set
-            {
-                _unit_name = value;
-            }
-        }
-        
 		public common_namespace_function_node main_function
 		{
 			get
