@@ -1432,6 +1432,15 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+            if (left_func.return_value_type != null && right_func.return_value_type != null && function_eq_params(left_func, right_func, true))
+            {
+                var tc = type_table.compare_types(left_func.return_value_type, right_func.return_value_type);
+                if (tc == type_compare.less_type)
+                    return method_compare.greater_method;
+                if (tc == type_compare.greater_type)
+                    return method_compare.less_method;
+            }
+                
             return method_compare.not_comparable_methods;
 		}
 
