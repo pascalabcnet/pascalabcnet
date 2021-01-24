@@ -1259,7 +1259,9 @@ namespace PascalABCCompiler.TreeConverter
 		{
 			if ((left.first==null)&&(right.first!=null))
 			{
-				return type_conversion_compare.greater_type_conversion;
+                if (right.from.IsDelegate && right.to.IsDelegate && left.to == SystemLibrary.SystemLibrary.object_type)
+                    return type_conversion_compare.less_type_conversion;//right.first != null из-за структурной эквивалентности процедурных типов и в силу того, что для каждого процедурного типа создается свой класс и и создается пустой метод преобразования типов
+                return type_conversion_compare.greater_type_conversion;
 			}
 			if ((left.first!=null)&&(right.first==null))
 			{
@@ -1432,6 +1434,15 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+            if (left_func.return_value_type != null && right_func.return_value_type != null && function_eq_params(left_func, right_func, true))
+            {
+                var tc = type_table.compare_types(left_func.return_value_type, right_func.return_value_type);
+                if (tc == type_compare.less_type)
+                    return method_compare.greater_method;
+                if (tc == type_compare.greater_type)
+                    return method_compare.less_method;
+            }
+                
             return method_compare.not_comparable_methods;
 		}
 
@@ -2131,7 +2142,12 @@ namespace PascalABCCompiler.TreeConverter
             {
                 throw lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException.ExceptionOnCompileBody;  // Если перебрали все, но ничто не подошло, то кидаем последнее исключение
             }
-
+            else if (lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException != null
+                && set_of_possible_functions.Count > 0
+                && indefinits.Count == 0)
+            {
+                syntax_tree_visitor.RemoveLastError();
+            }
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
                 if (is_op)

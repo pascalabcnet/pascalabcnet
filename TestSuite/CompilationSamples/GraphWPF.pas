@@ -1620,6 +1620,11 @@ begin
   
   var sz := Size(host.DataContext);
   
+  if sz.Width = 0 then 
+    sz.Width := GraphWindow.Width;
+  if sz.Height = 0 then 
+    sz.Height := GraphWindow.Height;
+  
   var bmp := new RenderTargetBitmap(Round(sz.Width*scalex), Round(sz.Height*scaley), dpiX, dpiY, PixelFormats.Pbgra32);
 
   var myvis := new DrawingVisual();

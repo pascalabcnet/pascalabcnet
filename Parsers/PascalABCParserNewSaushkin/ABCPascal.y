@@ -2234,6 +2234,13 @@ var_decl_part
 typed_var_init_expression
 	: typed_const_plus 
 		{ $$ = $1; }
+	| const_simple_expr tkDotDot const_term // SSM 18/01/20
+		{ 
+		if (parsertools.build_tree_for_formatter)
+			$$ = new diapason_expr($1,$3,@$);
+		else 
+			$$ = new diapason_expr_new($1,$3,@$); 
+		}
 	| expl_func_decl_lambda
 		{ $$ = $1; }
     | identifier tkArrow lambda_function_body
