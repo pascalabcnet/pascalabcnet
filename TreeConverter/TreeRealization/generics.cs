@@ -1345,7 +1345,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public static bool type_has_default_ctor(type_node tn, bool find_protected_ctors)
         {
-            if (tn.is_generic_parameter && tn.base_type != null && tn.base_type.IsAbstract)
+            if (tn.is_generic_parameter && tn.base_type != null && tn.base_type.IsAbstract && !(tn is common_type_node && (tn as common_type_node).has_default_constructor))
                 return false;
             List<SymbolInfo> sil = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
             if (sil != null)
