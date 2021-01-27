@@ -5566,7 +5566,7 @@ namespace PascalABCCompiler.NETGenerator
             //is_dot_expr = false;
             is_field_reference = true;
             value.obj.visit(this);
-            is_field_reference = false;
+            
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
 #if DEBUG
@@ -5582,7 +5582,7 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (fi_info.field_type.IsValueType || fi_info.field_type.IsGenericParameter)
                     {
-                        if (is_field_reference && (value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null
+                        if (is_field_reference && !virtual_method_call && (value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null
                             || value.conversion_type != null && value.conversion_type.is_generic_parameter && value.conversion_type.base_type != null && value.conversion_type.base_type.is_class && value.conversion_type.base_type.base_type != null))
                             il.Emit(OpCodes.Ldfld, fi);
                         else
@@ -5601,7 +5601,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 is_dot_expr = false;
             }
-            
+            is_field_reference = false;
         }
 
         public override void visit(SemanticTree.INamespaceVariableReferenceNode value)
