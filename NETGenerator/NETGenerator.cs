@@ -5386,6 +5386,12 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (!(value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null))
                         must_push_addr = true;
+                    else if (value.type.is_generic_parameter && virtual_method_call)
+                    {
+                        must_push_addr = true;
+                        virtual_method_call = false;
+                    }
+                        
                 }
                 else if (value.conversion_type != null && (value.conversion_type.is_generic_parameter))
                 {
@@ -5560,7 +5566,7 @@ namespace PascalABCCompiler.NETGenerator
             //is_dot_expr = false;
             is_field_reference = true;
             value.obj.visit(this);
-            
+            is_field_reference = false;
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
 #if DEBUG
@@ -5595,7 +5601,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 is_dot_expr = false;
             }
-            is_field_reference = false;
+            
         }
 
         public override void visit(SemanticTree.INamespaceVariableReferenceNode value)
@@ -7299,6 +7305,8 @@ namespace PascalABCCompiler.NETGenerator
             return false;
         }
 
+        bool virtual_method_call = false;
+
         //вызов нестатического метода
         public override void visit(SemanticTree.ICommonMethodCallNode value)
         {
@@ -7308,7 +7316,10 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             if (!tmp_dot)
                 is_dot_expr = true;
+            if ((value.method.polymorphic_state == polymorphic_state.ps_virtual || value.method.polymorphic_state == polymorphic_state.ps_virtual_abstract) && (value.obj is ICommonParameterReferenceNode || value.obj is ICommonClassFieldReferenceNode))
+                virtual_method_call = true;
             value.obj.visit(this);
+            virtual_method_call = false;
             if ((value.obj.type.is_value_type) && !value.method.comperehensive_type.is_value_type)
             {
                 if (!(value.obj is ICommonParameterReferenceNode && must_push_addr))
