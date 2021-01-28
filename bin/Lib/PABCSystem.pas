@@ -625,8 +625,8 @@ type
     static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator in(x: real; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: IntRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
-    
-    function IsEmpty: boolean := l<=h;
+    /// Возвращает True если диапазон пуст
+    function IsEmpty: boolean := l>h;
 
     function Step(n: integer): sequence of integer;
     function Reverse: sequence of integer;
@@ -698,7 +698,8 @@ type
     static function operator in(x: char; r: CharRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
     
-    function IsEmpty: boolean := l<=h;
+    /// Возвращает True если диапазон пуст
+    function IsEmpty: boolean := l>h;
 
     function Step(n: integer): sequence of char;
     function Reverse: sequence of char;
@@ -764,7 +765,8 @@ type
     static function operator in(x: real; r: RealRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: RealRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
     
-    function IsEmpty: boolean := l<=h;
+    /// Возвращает True если диапазон пуст
+    function IsEmpty: boolean := l>h;
 
     function ToString: string; override := $'{l}..{h}';
     function Equals(o: Object): boolean; override;
@@ -7844,6 +7846,11 @@ end;
 
 function DeleteFile(fname: string): boolean;
 begin
+  if not &File.Exists(fname) then
+  begin
+    Result := False;
+    exit
+  end;
   try
     Result := True;
     &File.Delete(fname);
