@@ -2414,7 +2414,7 @@ namespace CodeCompletion
 
         public string FindPCUFileName(string UnitName)
         {
-        	return CodeCompletionController.comp.FindPCUFileNameWithoutSources(UnitName,System.IO.Path.GetDirectoryName(doc.file_name));
+        	return CodeCompletionController.comp.FindPCUFileName(UnitName,System.IO.Path.GetDirectoryName(doc.file_name), out _);
         }
         
 		private void add_system_unit()
@@ -2612,20 +2612,9 @@ namespace CodeCompletion
                             NamespaceScope ns_scope = null;
                             if (i == 0)
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                {
-                                    string unit_in_file = (s as uses_unit_in).in_file.Value;
-                                    string unit_in_dir = null;
-                                    if (Path.IsPathRooted(unit_in_file))
-                                        unit_in_dir = Path.GetDirectoryName(unit_in_file);
-                                    else
-                                        unit_in_dir = Path.Combine(Path.GetDirectoryName(_program_module.file_name),Path.GetDirectoryName(unit_in_file));
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(Path.GetFileNameWithoutExtension(unit_in_file), unit_in_dir);
-                                }
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_program_module.file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(_program_module.file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -4370,20 +4359,9 @@ namespace CodeCompletion
                         {
                             try
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                {
-                                    string unit_in_file = (s as uses_unit_in).in_file.Value;
-                                    string unit_in_dir = null;
-                                    if (Path.IsPathRooted(unit_in_file))
-                                        unit_in_dir = Path.GetDirectoryName(unit_in_file);
-                                    else
-                                        unit_in_dir = Path.Combine(Path.GetDirectoryName(this.cur_unit_file_name),Path.GetDirectoryName(unit_in_file));
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(Path.GetFileNameWithoutExtension(unit_in_file), unit_in_dir);
-                                }
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(this.cur_unit_file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -4503,12 +4481,9 @@ namespace CodeCompletion
                         {
                             try
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                    unit_name = (s as uses_unit_in).in_file.Value;
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(this.cur_unit_file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                        && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -5162,7 +5137,7 @@ namespace CodeCompletion
                                 }
                                 else
                                 {
-                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str);
+                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.file_name), out _);
                                     if (unit_name == null)
                                     {
                                         unit_name = Path.Combine(System.IO.Path.GetDirectoryName(_c_module.file_name), str) + System.IO.Path.GetExtension(_c_module.file_name);
