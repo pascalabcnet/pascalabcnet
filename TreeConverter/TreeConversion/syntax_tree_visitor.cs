@@ -20027,9 +20027,14 @@ namespace PascalABCCompiler.TreeConverter
                         int err_cnt = ErrorsList.Count;
                         try
                         {
-                            expression_node yyy;
-                            if (ff.parameters.expressions.Count > 0)
-                                yyy = convert_strong(ff.parameters.expressions[0]);
+                            // Видимо, дело только в лямбде. Попробовать всё обойти и найти захваченные параметры
+                            // Если они есть, то ничего не делать и выйти
+
+                            var vis = HasCapturedLambdaParameterInInternalLambdaBody.New(_function_lambda_definition);
+                            vis.ProcessNode(ff.dereferencing_value);
+                            if (vis.HasCapturedParameter) // SSM 28/01/2021 считать это функцией. Будет слабый вывод в редком числе случаев
+                                return;
+
                             qq = convert_strong(ff.dereferencing_value);
                             if (qq is exit_procedure && stl.list.Count == 1 || qq is local_block_variable_reference && qq.type is compiled_type_node && (qq.type as compiled_type_node).compiled_type == typeof(Action))
                             {
