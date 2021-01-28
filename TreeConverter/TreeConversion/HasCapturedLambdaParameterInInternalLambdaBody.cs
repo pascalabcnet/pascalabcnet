@@ -37,6 +37,14 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(function_lambda_definition fld)
         {
             InLambda = true;
+            // Исключить все параметры из idents
+            foreach (var fid in fld.ident_list.idents)
+            {
+                var ind = idents.FindIndex(x => string.Compare(x.name, fid.name, true) == 0);
+                if (ind != -1)
+                    idents.RemoveAt(ind);
+            }
+
             ProcessNode(fld.proc_body);
         }
 
