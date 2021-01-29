@@ -20027,6 +20027,14 @@ namespace PascalABCCompiler.TreeConverter
                         int err_cnt = ErrorsList.Count;
                         try
                         {
+                            // Видимо, дело только в лямбде. Попробовать всё обойти и найти захваченные параметры
+                            // Если они есть, то ничего не делать и выйти
+
+                            var vis = HasCapturedLambdaParameterInInternalLambdaBody.New(_function_lambda_definition);
+                            vis.ProcessNode(ff.dereferencing_value);
+                            if (vis.HasCapturedParameter) // SSM 28/01/2021 считать это функцией. Будет слабый вывод в редком числе случаев
+                                return;
+
                             qq = convert_strong(ff.dereferencing_value);
                             if (qq is exit_procedure && stl.list.Count == 1 || qq is local_block_variable_reference && qq.type is compiled_type_node && (qq.type as compiled_type_node).compiled_type == typeof(Action))
                             {
@@ -20141,9 +20149,11 @@ namespace PascalABCCompiler.TreeConverter
                 var s = new string (' ',ccc)+"begin " + _function_lambda_definition.lambda_name + " " + _function_lambda_definition.parameters.expressions[0] + "\n";
                 ccc += 2;
                 System.IO.File.AppendAllText("d:\\bb3.txt", s);
-            }*/ 
+            }*/
 #endif
-            MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(_function_lambda_definition);
+            //stl.list[0] = new procedure_call(ff, ff.source_context); - Это надо для превращения функции в процедуру
+            //_function_lambda_definition.return_type = null;
+
 
             _function_lambda_definition.RealSemTypeOfResExpr = null; // После первого присваивания Result она будет содержать тип type_node в правой части Result
             _function_lambda_definition.RealSemTypeOfResult = null;
@@ -20166,11 +20176,29 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     return;
                 }
-
-                Func<function_lambda_definition, ident_list, where_definition_list, expression> makeProcedureForLambdaAndVisit = ProcedureForLambdaAndVisit;
+                // Внутри makeProcedureForLambdaAndVisit делается procdecl или funcdecl и обходится. 
+                // Поэтому формальный параметр обходится точно!!
+                //Func<function_lambda_definition, ident_list, where_definition_list, expression> makeProcedureForLambdaAndVisit = ProcedureForLambdaAndVisit;
 
                 switch (lambdaProcessingState)
                 {
+                    case LambdaProcessingState.TypeInferencePhase:
+                        {
+                            MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(_function_lambda_definition);
+                            if (_function_lambda_definition.lambda_visit_mode ==
+                                LambdaVisitMode.VisitForAdvancedMethodCallProcessing)
+                            {
+                                ProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                                if (!LambdaHelper.IsAuxiliaryLambdaName(_function_lambda_definition.lambda_name))
+                                {
+                                    LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
+                                }
+                            }
+
+                            ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
+
+                            break;
+                        }
                     case LambdaProcessingState.FinishPhase:
                         {
                             if (context.top_function != null && context.top_function.generic_params != null)
@@ -20205,32 +20233,16 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                 }
 
-                                var methodNameToVisit = (ident_with_templateparams)makeProcedureForLambdaAndVisit(_function_lambda_definition, new ident_list(pars), whereSection);
+                                var methodNameToVisit = (ident_with_templateparams)ProcedureForLambdaAndVisit(_function_lambda_definition, new ident_list(pars), whereSection);
                                 _function_lambda_definition.substituting_node = methodNameToVisit;
                                 visit(methodNameToVisit);
                             }
                             else
                             {
-                                var methodNameToVisit = (ident)makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                                var methodNameToVisit = (ident)ProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
                                 _function_lambda_definition.substituting_node = methodNameToVisit;
                                 visit(methodNameToVisit);
                             }
-                            break;
-                        }
-                    case LambdaProcessingState.TypeInferencePhase:
-                        {
-                            if (_function_lambda_definition.lambda_visit_mode ==
-                                LambdaVisitMode.VisitForAdvancedMethodCallProcessing)
-                            {
-                                makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
-                                if (!LambdaHelper.IsAuxiliaryLambdaName(_function_lambda_definition.lambda_name))
-                                {
-                                    LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
-                                }
-                            }
-
-                            ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
-
                             break;
                         }
                     case LambdaProcessingState.ClosuresProcessingPhase:
@@ -20239,21 +20251,21 @@ namespace PascalABCCompiler.TreeConverter
                             //var s = "begin "+_function_lambda_definition.lambda_name + " "+ _function_lambda_definition.parameters.expressions[0] + "\n";
                             //System.IO.File.AppendAllText("d:\\bb17.txt", s);
 #endif
-                            makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                            ProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
                             LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
                             ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
                             break;
                         }
                     case LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase:
                         {
-                            makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                            ProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
                             break;
                         }
                     case LambdaProcessingState.None:
                         {
                             if (context.converting_block() == block_type.namespace_block)
                             {
-                                var methodNameToVisit = (ident)makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                                var methodNameToVisit = (ident)ProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
                                 _function_lambda_definition.substituting_node = methodNameToVisit;
                                 visit(methodNameToVisit);
                             }

@@ -2253,6 +2253,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return _ctn.base_generic_instance.ConvertSymbolInfo(sil);
             }
+            
+            // для partial-классов, наследующих от интерфейса в секции Implementation
+            // Надо ещё добавить условия чтобы только для них. А то может найти не то что надо!!!
+            if (sil == null && this.converted_type != null && this.converted_type.IsPartial) 
+            {
+                sil = this.converted_namespace.scope.Find(name);
+            }
 
             return sil;
         }
