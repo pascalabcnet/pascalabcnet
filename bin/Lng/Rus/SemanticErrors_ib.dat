@@ -161,6 +161,7 @@ EXTERNAL_METHOD_CANNOT_BE_NESTED=external-подпрограммы не могу
 CANNOT_USE_RESERVED_ACCESSOR_NAMES=Нельзя опеределять член класса с таким именем, так как оно зарезервировано для акцессора свойства
 PARTIAL_CLASS_ATTRIBUTES_MISMATCH=Несоответствие атрибутов partial-класса
 PARTIAL_CLASS_PARENTS_MISMATCH=partial-класс не может иметь иметь различные базовые классы
+PARAMETER_{0}_HAS_TYPE_{1}_FROM_UNIT_{2}=Параметр {0} имеет тип {1} из неподключенного модуля {2}. Добавьте модуль {2} в секцию uses.
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'
