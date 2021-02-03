@@ -1270,6 +1270,7 @@ namespace PascalABCCompiler.TreeRealization
 		private SymbolTable.ClassScope _scope;
 
         public bool has_default_constructor = false;
+        public bool has_explicit_default_constructor = false;
         public bool has_user_defined_constructor = false;
 
         private bool _has_static_constructor = false;

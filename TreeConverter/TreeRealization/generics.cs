@@ -43,6 +43,7 @@ namespace PascalABCCompiler.TreeRealization
         public bool is_class = false;
         public bool is_value = false;
         public bool has_default_ctor = false;
+        public bool has_explicit_default_ctor = false;
         public type_node base_class = null;
         public List<type_node> implementing_interfaces = null;
 
@@ -56,6 +57,7 @@ namespace PascalABCCompiler.TreeRealization
             param.methods.AddElement(cnode);
             param.add_name(compiler_string_consts.default_constructor_name, new SymbolInfo(cnode));
             param.has_default_constructor = true;
+            param.has_explicit_default_constructor = true;
         }
 
         public static List<generic_parameter_eliminations> make_eliminations_common(List<SemanticTree.ICommonTypeNode> generic_params)
@@ -65,6 +67,8 @@ namespace PascalABCCompiler.TreeRealization
             {
                 generic_parameter_eliminations gpe = new generic_parameter_eliminations();
                 gpe.has_default_ctor = generic_convertions.type_has_default_ctor(t, false);
+                if (t is common_type_node && (t as common_type_node).has_explicit_default_constructor)
+                    gpe.has_explicit_default_ctor = true;
                 gpe.is_class = t.is_class;
                 gpe.is_value = t.is_value;
                 gpe.base_class = t.base_type;
@@ -87,6 +91,8 @@ namespace PascalABCCompiler.TreeRealization
                 gpe.has_default_ctor =
                     ((t.GenericParameterAttributes &
                     GenericParameterAttributes.DefaultConstructorConstraint) != 0);
+                if (gpe.has_default_ctor)
+                    gpe.has_explicit_default_ctor = true;
                 gpe.is_class =
                     ((t.GenericParameterAttributes &
                     GenericParameterAttributes.ReferenceTypeConstraint) != 0);
