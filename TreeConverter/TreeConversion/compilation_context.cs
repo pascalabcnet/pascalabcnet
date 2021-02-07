@@ -1353,6 +1353,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (is_partial)
                 {
+                    if (rez.ForwardDeclarationOnly)
+                        AddError(rez.loc, "PARTIAL_CLASS_PREDEFINITION_NOT_ALLOWED");
                     if ((attr & SyntaxTree.class_attribute.Static) == SyntaxTree.class_attribute.Static && !rez.IsStatic)
                         AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
                     if ((attr & SyntaxTree.class_attribute.Static) != SyntaxTree.class_attribute.Static && rez.IsStatic)
