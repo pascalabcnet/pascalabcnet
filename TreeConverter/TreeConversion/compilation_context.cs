@@ -1351,7 +1351,7 @@ namespace PascalABCCompiler.TreeConverter
             common_type_node rez = check_type_name_free_and_predop(name, def_loc, ref partial_class, is_partial);
             if (rez != null)
             {
-                if (is_partial)
+                if (is_partial && !(rez.ForwardDeclarationOnly && this.namespace_converted))
                 {
                     if (rez.ForwardDeclarationOnly)
                         AddError(rez.loc, "PARTIAL_CLASS_PREDEFINITION_NOT_ALLOWED");
