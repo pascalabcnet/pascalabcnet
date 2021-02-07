@@ -1430,7 +1430,9 @@ namespace PascalABCCompiler.PCU
 
         private void WriteTypeReferenceWithDelay(common_type_node type)
         {
-            type_references.Add((int)bw.BaseStream.Position, type);
+            if (!type_references.ContainsKey((int)bw.BaseStream.Position))
+                type_references.Add((int)bw.BaseStream.Position, type);
+            
             bw.Write((byte)0);
             bw.Write(0);
         }
@@ -2502,6 +2504,8 @@ namespace PascalABCCompiler.PCU
         private void VisitTypeDefinition(common_type_node type)
         {
             int offset = 0;
+            if (class_info.ContainsKey(type))
+                return;
             if (is_interface == true) offset = SavePositionAndConstPool(type);
             else offset = SavePositionAndImplementationPool(type);
             bw.Write((byte)type.semantic_node_type);
