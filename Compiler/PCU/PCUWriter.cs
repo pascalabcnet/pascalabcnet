@@ -2501,6 +2501,7 @@ namespace PascalABCCompiler.PCU
 
         private void VisitTypeDefinition(common_type_node type)
         {
+            if (class_info.ContainsKey(type)) return;
             int offset = 0;
             if (is_interface == true) offset = SavePositionAndConstPool(type);
             else offset = SavePositionAndImplementationPool(type);
