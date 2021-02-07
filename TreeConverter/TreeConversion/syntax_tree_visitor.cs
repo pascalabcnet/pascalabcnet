@@ -13757,9 +13757,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (cmnode != null)
                 {
                     cmnode.is_constructor = true;
-                    //context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
-                    cmnode.is_overload = true;
-                    
+                    cmnode.return_value_type = context.converted_type;
+
                 }
                 else if (context.top_function is common_namespace_function_node && (context.top_function as common_namespace_function_node).ConnectedToType != null)
                     AddError(get_location(_procedure_header), "EXTENSION_CONSTRUCTOR_NOT_ALLOWED");
@@ -19375,7 +19374,8 @@ namespace PascalABCCompiler.TreeConverter
                         gen_constr.is_overload = true;
                         gen_constr.is_constructor = true;
                         gen_constr.field_access_level = fn.field_access_level;
-                        context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
+                        if (_ctn.IsPartial)
+                            context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
                         gen_constr.return_value_type = _ctn;
 
                         foreach (parameter par in fn.parameters)
