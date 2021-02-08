@@ -19368,12 +19368,24 @@ namespace PascalABCCompiler.TreeConverter
                             context.set_field_access_level(pconstr.field_access_level);
                         else
                             context.set_field_access_level(mconstr.field_access_level);
-                        common_method_node gen_constr = context.create_function(compiler_string_consts.default_constructor_name, loc) as common_method_node;
-                        gen_constr.polymorphic_state = ps;
-                        gen_constr.is_overload = true;
-                        gen_constr.is_constructor = true;
-                        gen_constr.field_access_level = fn.field_access_level;
-                        gen_constr.return_value_type = _ctn;
+
+                        common_method_node gen_constr = null;
+
+                        if (fn.parameters.Count==0)
+                            gen_constr = _ctn.methods.FirstOrDefault(m =>
+                                m.is_constructor && m.name==compiler_string_consts.default_constructor_name && m.parameters.Count==0
+                            );
+                        if (gen_constr!=null)
+                        {
+                            context.func_stack.push(gen_constr);
+                        } else {
+                            gen_constr = context.create_function(compiler_string_consts.default_constructor_name, loc) as common_method_node;
+                            gen_constr.polymorphic_state = ps;
+                            gen_constr.is_overload = true;
+                            gen_constr.is_constructor = true;
+                            gen_constr.field_access_level = fn.field_access_level;
+                            gen_constr.return_value_type = _ctn;
+                        }
 
                         foreach (parameter par in fn.parameters)
                         {
