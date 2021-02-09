@@ -19353,8 +19353,8 @@ namespace PascalABCCompiler.TreeConverter
 
             {
                 var fn = _ctn.base_type.find_in_type(compiler_string_consts.default_constructor_name, _ctn.base_type.Scope)
-                    ?.Select(si=>si.sym_info).OfType<function_node>()
-                    .FirstOrDefault(_fn=>_fn.parameters.Count==0);
+                    ?.Select(si => si.sym_info).OfType<function_node>()
+                    .FirstOrDefault(_fn => _fn.parameters.Count == 0);
                 var base_constructor_call = make_base_constructor_call(fn, out _, out _);
                 if (base_constructor_call != null)
                     foreach (var cmn in _ctn.methods)
@@ -19365,7 +19365,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (cmn.function_code is statements_list st_lst)
                             {
                                 var param_c =
-                                    st_lst.statements[0] is   common_constructor_call mconstr ? mconstr.parameters.Count :
+                                    st_lst.statements[0] is common_constructor_call mconstr ? mconstr.parameters.Count :
                                     st_lst.statements[0] is compiled_constructor_call pconstr ? pconstr.parameters.Count :
                                 throw new NotSupportedException(); // Первый вызов это в любом случае конструктор, но если я что то не учёл - надо будет добавить ещё условия на предыдущей строчке
 
@@ -19415,8 +19415,11 @@ namespace PascalABCCompiler.TreeConverter
                             context.set_field_access_level(mconstr.field_access_level);
 
                         // Иначе partial классам генерирует кучу копий дефолтных конструкторов
-                        if (_ctn.methods.Any(m=>m.is_constructor && m.name == compiler_string_consts.default_constructor_name && m.parameters.Count == fn.parameters.Count))
-                            continue;
+                        if (_ctn.methods.Any(m =>
+                            m.is_constructor && m.name == compiler_string_consts.default_constructor_name &&
+                            m.parameters.Count == fn.parameters.Count &&
+                            m.parameters.Zip(fn.parameters, (par1, par2) => par1.type == par2.type).All(b => b)
+                        )) continue;
 
                         var gen_constr = context.create_function(compiler_string_consts.default_constructor_name, loc) as common_method_node;
                         gen_constr.polymorphic_state = ps;
