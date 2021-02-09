@@ -19324,6 +19324,22 @@ namespace PascalABCCompiler.TreeConverter
             return_value((statement_node)convert_strong(node.expr));
         }
 
+        private base_function_call make_base_constructor_call(function_node fn, out compiled_constructor_node pconstr, out common_method_node mconstr)
+        {
+            mconstr = fn as common_method_node;
+            pconstr = fn as compiled_constructor_node;
+            if (mconstr != null && mconstr.is_constructor)
+                return new common_constructor_call(mconstr, null)
+                {
+                    _new_obj_awaited = false
+                };
+            else if (pconstr != null)
+                return new compiled_constructor_call(pconstr, null)
+                {
+                    _new_obj_awaited = false
+                };
+            return null;
+        }
         //ssyy
         public void generate_inherit_constructors()
         {
@@ -19334,6 +19350,36 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (_ctn.IsStatic)
                 return;
+
+            {
+                var fn = _ctn.base_type.find_in_type(compiler_string_consts.default_constructor_name, _ctn.base_type.Scope)
+                    ?.Select(si=>si.sym_info).OfType<function_node>()
+                    .FirstOrDefault(_fn=>_fn.parameters.Count==0);
+                var base_constructor_call = make_base_constructor_call(fn, out _, out _);
+                if (base_constructor_call != null)
+                    foreach (var cmn in _ctn.methods)
+                        if (cmn.is_constructor && !cmn.IsStatic)
+                        {
+                            // Если тело есть - это значит что этот конструктор уже полностью откомпилирован, потому что объявлен в предыдущем теле partial класса
+                            // На случай если базовый класс указан только в заголовке текущего тела partial класса - надо подменить вызов базового конструктора
+                            if (cmn.function_code is statements_list st_lst)
+                            {
+                                var param_c =
+                                    st_lst.statements[0] is   common_constructor_call mconstr ? mconstr.parameters.Count :
+                                    st_lst.statements[0] is compiled_constructor_call pconstr ? pconstr.parameters.Count :
+                                throw new NotSupportedException(); // Первый вызов это в любом случае конструктор, но если я что то не учёл - надо будет добавить ещё условия на предыдущей строчке
+
+                                // Внимание: Пустым конструктором подменяем только пустой конструктор. Если был вызван конструктор с параметрами - это уже правильный конструктор правильного предка, то есть:
+                                // - Или конструктор, вызванный вручную
+                                // - Или дефолтный конструктор, копирующий конструктор предка (который должен существовать, то есть предок уже указан)
+                                if (param_c != 0) continue;
+                                st_lst.statements[0] = base_constructor_call;
+                            }
+                            else if (cmn.function_code != null)
+                                throw new NotSupportedException(); // Сомневаюсь что это возможно, но если в будущем станет возможно - надо будет обработать по-особому
+                        }
+            }
+
             if (_ctn.has_user_defined_constructor)
             {
                 //Пользователь определил хотя бы один конструктор, никакие конструкторы не наследуем.
@@ -19347,11 +19393,9 @@ namespace PascalABCCompiler.TreeConverter
                 foreach(SymbolInfo si in sil)
                 {
                     function_node fn = si.sym_info as function_node;
-                    compiled_constructor_node pconstr = fn as compiled_constructor_node;
-                    common_method_node mconstr = fn as common_method_node;
+                    var base_constructor_call = make_base_constructor_call(fn, out var pconstr, out var mconstr);
                     //Если это конструктор...
-                    if (pconstr != null ||
-                        mconstr != null && mconstr.is_constructor)
+                    if (base_constructor_call != null)
                     {
                         //Генерируем унаследованный конструктор
                         location loc = null;
@@ -19370,25 +19414,18 @@ namespace PascalABCCompiler.TreeConverter
                         else
                             context.set_field_access_level(mconstr.field_access_level);
 
-                        common_method_node gen_constr = null;
+                        // Иначе partial классам генерирует кучу копий дефолтных конструкторов
+                        if (_ctn.methods.Any(m=>m.is_constructor && m.name == compiler_string_consts.default_constructor_name && m.parameters.Count == fn.parameters.Count))
+                            continue;
 
-                        if (fn.parameters.Count==0)
-                            gen_constr = _ctn.methods.FirstOrDefault(m =>
-                                m.is_constructor && m.name==compiler_string_consts.default_constructor_name && m.parameters.Count==0
-                            );
-                        if (gen_constr!=null)
-                        {
-                            context.func_stack.push(gen_constr);
-                        } else {
-                            gen_constr = context.create_function(compiler_string_consts.default_constructor_name, loc) as common_method_node;
-                            gen_constr.polymorphic_state = ps;
-                            gen_constr.is_overload = true;
-                            gen_constr.is_constructor = true;
-                            gen_constr.field_access_level = fn.field_access_level;
-                            if (_ctn.IsPartial)
-                                context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
-                            gen_constr.return_value_type = _ctn;
-                        }
+                        var gen_constr = context.create_function(compiler_string_consts.default_constructor_name, loc) as common_method_node;
+                        gen_constr.polymorphic_state = ps;
+                        gen_constr.is_overload = true;
+                        gen_constr.is_constructor = true;
+                        gen_constr.field_access_level = fn.field_access_level;
+                        if (_ctn.IsPartial)
+                            context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
+                        gen_constr.return_value_type = _ctn;
 
                         foreach (parameter par in fn.parameters)
                         {
@@ -19406,27 +19443,13 @@ namespace PascalABCCompiler.TreeConverter
                             c_p.default_value = par.default_value;
                         }
 
-                        base_function_call bfc;
-
-                        if (mconstr != null)
-                        {
-                            common_constructor_call c1 = new common_constructor_call(mconstr, null);
-                            c1._new_obj_awaited = false;
-                            bfc = c1;
-                        }
-                        else
-                        {
-                            compiled_constructor_call c2 = new compiled_constructor_call(pconstr, null);
-                            c2._new_obj_awaited = false;
-                            bfc = c2;
-                        }
                         foreach (parameter p in gen_constr.parameters)
                         {
-                            bfc.parameters.AddElement(
+                            base_constructor_call.parameters.AddElement(
                                 create_variable_reference(p, null));
                         }
                         statements_list snlist = new statements_list(null);
-                        snlist.statements.AddElement(bfc);
+                        snlist.statements.AddElement(base_constructor_call);
                         snlist.statements.AddElement(new empty_statement(null));
                         gen_constr.function_code = snlist;
                         context.leave_block();
