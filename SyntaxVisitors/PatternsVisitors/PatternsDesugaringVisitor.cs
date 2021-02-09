@@ -329,7 +329,7 @@ namespace SyntaxVisitors.PatternsVisitors
                 var stl = stat.Parent as statement_list;
                 if (stl != null)
                     stl.ReplaceInList(stat, l);
-                else
+                else if (stat is var_statement)
                     throw new SyntaxVisitorError("EMBEDDED_STATEMENT_CANNOT_BE_A_DECLARATION", stat.source_context);
             }
             //}
