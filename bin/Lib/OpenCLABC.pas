@@ -29,8 +29,11 @@ unit OpenCLABC;
 //===================================
 // Обязательно сделать до следующего пула:
 
-//ToDo (Q1+Q2)+(Q3+Q4) почему то сейчас не инлайнится в Q1+Q2+Q3+Q4
-// - Уже инлайнится, но надо ещё добавить в тесты
+//ToDo Написать в справке:
+// - MarkerQueue
+// - Вызов .Cast может оптимизировать так, что удалит очередь, для которой вызвали .Cast
+// - Запрет ожидать ConstQueue и CastQueue
+// - Запрет на .AddQueue(ConstQueue)
 
 //===================================
 // Запланированное:
@@ -44,7 +47,7 @@ unit OpenCLABC;
 // --- В объяснении KernelArg из указателя всё уже сказано
 // --- Надо только как то объединить, чтоб текст был не только про KernelArg...
 // - FillArray отсутствует
-// --- Проблема в том, что нет блокирующего варианта FillArray
+// --- Проблема в том, что нет блокирующего варианта cl.FillArray
 // --- Вообще в теории можно написать отдельную мелкую неуправляемую .dll и $resource её
 // --- Но это жесть сколько усложнений ради 1 метода...
 
@@ -1834,8 +1837,25 @@ type
     
     {$region ToString}
     
-    private function DisplayName: string; virtual := self.GetType.Name;
+    private static function DisplayNameForType(t: System.Type): string;
+    begin
+      Result := t.Name;
+      
+      if t.IsGenericType then
+      begin
+        var ind := Result.IndexOf('`');
+        Result := Result.Remove(ind) + '<' + t.GenericTypeArguments.JoinToString(', ') + '>';
+      end;
+      
+    end;
+    private function DisplayName: string; virtual := DisplayNameForType(self.GetType);
     private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); abstract;
+    
+    private static function GetValueRuntimeType<T>(val: T) :=
+    if typeof(T).IsValueType then
+      typeof(T) else
+    if val = default(T) then
+      nil else val.GetType;
     
     private function ToStringHeader(sb: StringBuilder; index: Dictionary<CommandQueueBase,integer>): boolean;
     begin
@@ -1850,9 +1870,8 @@ type
         index[self] := ind;
       end;
       
-      sb += '[';
+      sb += '#';
       sb.Append(ind);
-      sb += ']';
       
     end;
     private procedure ToString(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>; write_tabs: boolean := true);
@@ -1878,6 +1897,19 @@ type
       var sb := new StringBuilder;
       ToString(sb, 0, new Dictionary<CommandQueueBase, integer>, new HashSet<CommandQueueBase>);
       Result := sb.ToString;
+    end;
+    
+    ///Вызывает Write(ToString) для данной очереди и возвращает её же
+    public function Print: CommandQueueBase;
+    begin
+      Write(self.ToString);
+      Result := self;
+    end;
+    ///Вызывает Writeln(ToString) для данной очереди и возвращает её же
+    public function Println: CommandQueueBase;
+    begin
+      Writeln(self.ToString);
+      Result := self;
     end;
     
     {$endregion ToString}
@@ -1971,9 +2003,14 @@ type
     
     private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
     begin
-      Writeln('ConstQueue.ToStringImpl');
-      sb += ' { ';
-      sb.Append(Val);
+      sb += ' ';
+      var rt := GetValueRuntimeType(res);
+      if typeof(T) <> rt then
+        sb.Append(rt);
+      sb += '{ ';
+      if rt<>nil then
+        sb.Append(Val) else
+        sb += 'nil';
       sb += ' }'#10;
     end;
     
@@ -1995,6 +2032,20 @@ type
   end;
   
   {$endregion Const}
+  
+  {$region Marker}
+  
+  ///Представляет очередь-маркер
+  ///Очереди-маркеры ничего не выполняют и возвращает object(nil)
+  ///Используйте такие очереди только для ожидания в Wait очередях
+  MarkerQueue = sealed partial class
+    
+    ///Создаёт новую очередь-маркер
+    public constructor := exit;
+    
+  end;
+  
+  {$endregion Marker}
   
   {$endregion CommandQueue}
   
@@ -2227,7 +2278,7 @@ type
     
     {$region ToString}
     
-    private function DisplayName: string; virtual := self.GetType.Name;
+    private function DisplayName: string; virtual := CommandQueueBase.DisplayNameForType(self.GetType);
     private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); abstract;
     
     private procedure ToString(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>; write_tabs: boolean := true);
@@ -2252,6 +2303,19 @@ type
       var sb := new StringBuilder;
       ToString(sb, 0, new Dictionary<CommandQueueBase, integer>, new HashSet<CommandQueueBase>);
       Result := sb.ToString;
+    end;
+    
+    ///Вызывает Write(ToString) для данного объекта KernelArg и возвращает его же
+    public function Print: KernelArg;
+    begin
+      Write(self.ToString);
+      Result := self;
+    end;
+    ///Вызывает Writeln(ToString) для данного объекта KernelArg и возвращает его же
+    public function Println: KernelArg;
+    begin
+      Writeln(self.ToString);
+      Result := self;
     end;
     
     {$endregion ToString}
@@ -4037,28 +4101,65 @@ type
 type
   CommandQueueBase = abstract partial class
     
-    {$region Invoke}
-    
     protected function InvokeBase(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueResBase; abstract;
     
     protected function InvokeNewQBase(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; prev_ev: EventList): QueueResBase; abstract;
     
-    {$endregion Invoke}
-    
-    {$region MW}
-    
     /// Добавление tsk в качестве ключа для всех ожидаемых очередей
     protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); abstract;
     
+  end;
+  
+  CommandQueue<T> = abstract partial class(CommandQueueBase)
+    
+    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>; abstract;
+    
+    protected function Invoke(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>; virtual :=
+    InvokeImpl(tsk, c, main_dvc, need_ptr_qr, cq, prev_ev);
+    protected function InvokeBase(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueResBase; override :=
+    Invoke(tsk, c, main_dvc, need_ptr_qr, cq, prev_ev);
+    
+    protected function InvokeNewQ(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; prev_ev: EventList): QueueRes<T>;
+    begin
+      var cq := cl_command_queue.Zero;
+      Result := Invoke(tsk, c, main_dvc, need_ptr_qr, cq, prev_ev);
+      
+      {$ifdef DEBUG}
+      if (Result.ev.count<>0) and not Result.ev.abortable then raise new System.NotSupportedException;
+      {$endif DEBUG}
+      
+      if cq<>cl_command_queue.Zero then
+        Result.ev.AttachFinallyCallback(()->
+        begin
+          System.Threading.Tasks.Task.Run(()->tsk.AddErr(cl.ReleaseCommandQueue(cq)))
+        end, tsk, c.ntv, main_dvc, cq{$ifdef EventDebug}, $'cl.ReleaseCommandQueue'{$endif});
+      
+    end;
+    protected function InvokeNewQBase(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; prev_ev: EventList): QueueResBase; override :=
+    InvokeNewQ(tsk, c, main_dvc, need_ptr_qr, prev_ev);
+    
+  end;
+  
+{$endregion Base}
+
+{$region Waitable}
+
+type
+  IWaitableCommandQueue = interface
+    procedure RegisterWaiterTask(tsk: CLTaskBase);
+    procedure AddMWHandler(tsk: CLTaskBase; handler: ()->boolean);
+  end;
+  WaitableCommandQueue<T> = abstract class(CommandQueue<T>, IWaitableCommandQueue)
     private mw_evs := new Dictionary<CLTaskBase, MWEventContainer>;
-    private procedure RegisterWaiterTask(tsk: CLTaskBase) :=
+    
+    public procedure IWaitableCommandQueue.RegisterWaiterTask(tsk: CLTaskBase) :=
     lock mw_evs do if not mw_evs.ContainsKey(tsk) then
     begin
       mw_evs[tsk] := new MWEventContainer;
       tsk.WhenDone(tsk->lock mw_evs do mw_evs.Remove(tsk));
     end;
     
-    private procedure AddMWHandler(tsk: CLTaskBase; handler: ()->boolean);
+    public procedure IWaitableCommandQueue.AddMWHandler(tsk: CLTaskBase; handler: ()->boolean);
     begin
       var cont: MWEventContainer;
       lock mw_evs do cont := mw_evs[tsk];
@@ -4073,49 +4174,15 @@ type
       for var i := 0 to conts.Length-1 do conts[i].ExecuteHandler;
     end;
     
-    {$endregion MW}
-    
-  end;
-  
-  CommandQueue<T> = abstract partial class(CommandQueueBase)
-    
-    {$region Invoke}
-    
-    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>; abstract;
-    
-    protected function Invoke(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>;
+    protected function Invoke(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>; override;
     begin
       Result := InvokeImpl(tsk, c, main_dvc, need_ptr_qr, cq, prev_ev).EnsureAbortability(tsk, c, main_dvc, cq);
       Result.ev.AttachCallback(self.ExecuteMWHandlers, tsk, c.ntv, main_dvc, cq{$ifdef EventDebug}, $'ExecuteMWHandlers'{$endif}, false);
     end;
-    protected function InvokeBase(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueResBase; override :=
-    Invoke(tsk, c, main_dvc, need_ptr_qr, cq, prev_ev);
-    
-    protected function InvokeNewQ(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; prev_ev: EventList): QueueRes<T>;
-    begin
-      var cq := cl_command_queue.Zero;
-      Result := Invoke(tsk, c, main_dvc, need_ptr_qr, cq, prev_ev);
-      
-      {$ifdef DEBUG}
-      // Result.ev.abortable уже true, потому что .EnsureAbortability в Invoke
-      if (Result.ev.count<>0) and not Result.ev.abortable then raise new System.NotSupportedException;
-      {$endif DEBUG}
-      
-      if cq<>cl_command_queue.Zero then
-        Result.ev.AttachFinallyCallback(()->
-        begin
-          System.Threading.Tasks.Task.Run(()->tsk.AddErr(cl.ReleaseCommandQueue(cq)))
-        end, tsk, c.ntv, main_dvc, cq{$ifdef EventDebug}, $'cl.ReleaseCommandQueue'{$endif});
-      
-    end;
-    protected function InvokeNewQBase(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; prev_ev: EventList): QueueResBase; override :=
-    InvokeNewQ(tsk, c, main_dvc, need_ptr_qr, prev_ev);
-    
-    {$endregion Invoke}
     
   end;
   
-{$endregion Base}
+{$endregion Waitable}
 
 {$region Const}
 
@@ -4138,11 +4205,33 @@ type
   
 {$endregion Const}
 
+{$region Marker}
+
+type
+  MarkerQueue = sealed partial class(WaitableCommandQueue<object>)
+    
+    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<object>; override;
+    begin
+      if prev_ev=nil then prev_ev := new EventList;
+      {$ifdef DEBUG}
+      if need_ptr_qr then raise new System.InvalidOperationException;
+      {$endif DEBUG}
+      Result := new QueueResConst<object>(nil, prev_ev ?? new EventList);
+    end;
+    
+    protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override := exit;
+    
+    private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override := sb += #10;
+    
+  end;
+  
+{$endregion Marker}
+
 {$region Host}
 
 type
   /// очередь, выполняющая какую то работу на CPU, всегда в отдельном потоке
-  HostQueue<TInp,TRes> = abstract class(CommandQueue<TRes>)
+  HostQueue<TInp,TRes> = abstract class(WaitableCommandQueue<TRes>)
     
     protected function InvokeSubQs(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; var cq: cl_command_queue; prev_ev: EventList): QueueRes<TInp>; abstract;
     
@@ -4172,7 +4261,7 @@ type
   ISimpleQueueArray = interface
     function GetQS: sequence of CommandQueueBase;
   end;
-  SimpleQueueArray<T> = abstract class(CommandQueue<T>, ISimpleQueueArray)
+  SimpleQueueArray<T> = abstract class(WaitableCommandQueue<T>, ISimpleQueueArray)
     protected qs: array of CommandQueueBase;
     protected last: CommandQueue<T>;
     
@@ -4758,40 +4847,6 @@ type
 
 {$endregion Conv}
 
-{$region Utils}
-
-type
-  QueueArrayUtils = static class
-    
-    public static function FlattenQueueArray<T>(inp: sequence of CommandQueueBase): array of CommandQueueBase; where T: ISimpleQueueArray;
-    begin
-      var enmr := inp.GetEnumerator;
-      if not enmr.MoveNext then raise new InvalidOperationException('Функции CombineSyncQueue/CombineAsyncQueue не могут принимать 0 очередей');
-      
-      var res := new List<CommandQueueBase>;
-      while true do
-      begin
-        var curr := enmr.Current;
-        var next := enmr.MoveNext;
-        
-        if not (curr is IConstQueue) or not next then
-          if curr is T(var sqa) then
-            res.AddRange(sqa.GetQS) else
-            res += curr;
-        
-        if not next then break;
-      end;
-      
-      Result := res.ToArray;
-    end;
-    
-    public static function  FlattenSyncQueueArray(inp: sequence of CommandQueueBase) := FlattenQueueArray&< ISimpleSyncQueueArray>(inp);
-    public static function FlattenAsyncQueueArray(inp: sequence of CommandQueueBase) := FlattenQueueArray&<ISimpleAsyncQueueArray>(inp);
-    
-  end;
-  
-{$endregion Utils}
-
 {$endregion Array}
 
 {$endregion CommandQueue}
@@ -4839,7 +4894,6 @@ type
       mu_res := nil;
       
       {$ifdef DEBUG}
-      //CQ.Invoke всегда выполняет UserEvent.EnsureAbortability, поэтому тут оно не нужно
       if (qr.ev.count<>0) and not qr.ev.abortable then raise new NotSupportedException;
       {$endif DEBUG}
       
@@ -4928,7 +4982,6 @@ type
       mu_res := nil;
       
       {$ifdef DEBUG}
-      //CQ.Invoke всегда выполняет UserEvent.EnsureAbortability, поэтому тут оно не нужно
       if (qr.ev.count<>0) and not qr.ev.abortable then raise new NotSupportedException;
       {$endif DEBUG}
       
@@ -5040,13 +5093,213 @@ static function UserEvent.MakeUserEvent(tsk: CLTaskBase; c: cl_context{$ifdef Ev
 
 {$endregion CLTask}
 
+{$region Queue converter's}
+
+{$region Cast}
+
+type
+  ICastQueue = interface
+    function GetQ: CommandQueueBase;
+  end;
+  CastQueue<T> = sealed class(CommandQueue<T>, ICastQueue)
+    private q: CommandQueueBase;
+    public function ICastQueue.GetQ := q;
+    
+    public constructor(q: CommandQueueBase) := self.q := q;
+    
+    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>; override :=
+    q.InvokeBase(tsk, c, main_dvc, false, cq, prev_ev).LazyQuickTransformBase(o->
+    try
+      Result := T(o);
+    except
+      on e: Exception do
+        tsk.AddErr(e);
+    end);
+    
+    protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
+    q.RegisterWaitables(tsk, prev_hubs);
+    
+    private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
+    begin
+      sb += #10;
+      q.ToString(sb, tabs, index, delayed);
+    end;
+    
+  end;
+  
+function CommandQueueBase.Cast<T>: CommandQueue<T>;
+begin
+  var q := self;
+  if q is ICastQueue(var cq) then q := cq.GetQ;
+  Result :=
+    if q is IConstQueue(var cq) then
+      new ConstQueue<T>(T(cq.GetConstVal)) else
+    if q is CommandQueue<T>(var tcq) then
+      tcq else
+      new CastQueue<T>(q);
+end;
+
+{$endregion Cast}
+
+{$region ThenConvert}
+
+type
+  CommandQueueThenConvert<TInp, TRes> = sealed class(HostQueue<TInp, TRes>)
+    protected q: CommandQueue<TInp>;
+    protected f: (TInp, Context)->TRes;
+    
+    public constructor(q: CommandQueue<TInp>; f: (TInp, Context)->TRes);
+    begin
+      self.q := q;
+      self.f := f;
+    end;
+    private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
+    
+    protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
+    q.RegisterWaitables(tsk, prev_hubs);
+    
+    protected function InvokeSubQs(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; var cq: cl_command_queue; prev_ev: EventList): QueueRes<TInp>; override :=
+    q.Invoke(tsk, c, main_dvc, false, cq, prev_ev);
+    
+    protected function ExecFunc(o: TInp; c: Context): TRes; override := f(o, c);
+    
+    private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
+    begin
+      sb += ' => ';
+      sb.Append(f);
+      sb += #10;
+      q.ToString(sb, tabs, index, delayed);
+    end;
+    
+  end;
+  
+function CommandQueue<T>.ThenConvert<TOtp>(f: (T, Context)->TOtp) :=
+new CommandQueueThenConvert<T, TOtp>(self, f);
+
+{$endregion ThenConvert}
+
+{$region QueueArray}
+
+type
+  QueueArrayUtils = static class
+    
+    public static function FlattenQueueArray<T>(inp: sequence of CommandQueueBase): array of CommandQueueBase; where T: ISimpleQueueArray;
+    begin
+      var enmr := inp.GetEnumerator;
+      if not enmr.MoveNext then raise new InvalidOperationException('Функции CombineSyncQueue/CombineAsyncQueue не могут принимать 0 очередей');
+      
+      var res := new List<CommandQueueBase>;
+      while true do
+      begin
+        var curr := enmr.Current;
+        var next := enmr.MoveNext;
+        
+        if next then
+        begin
+          if curr is IConstQueue then continue;
+          if curr is ICastQueue(var cq) then curr := cq.GetQ;
+        end;
+        
+        if curr is T(var sqa) then
+          res.AddRange(sqa.GetQS) else
+          res += curr;
+        
+        if not next then break;
+      end;
+      
+      Result := res.ToArray;
+    end;
+    
+    public static function  FlattenSyncQueueArray(inp: sequence of CommandQueueBase) := FlattenQueueArray&< ISimpleSyncQueueArray>(inp);
+    public static function FlattenAsyncQueueArray(inp: sequence of CommandQueueBase) := FlattenQueueArray&<ISimpleAsyncQueueArray>(inp);
+    
+  end;
+  
+static function CommandQueue<T>.operator+(q1: CommandQueueBase; q2: CommandQueue<T>) := new  SimpleSyncQueueArray<T>(QueueArrayUtils. FlattenSyncQueueArray(|q1, q2|));
+static function CommandQueue<T>.operator*(q1: CommandQueueBase; q2: CommandQueue<T>) := new SimpleAsyncQueueArray<T>(QueueArrayUtils.FlattenAsyncQueueArray(|q1, q2|));
+
+{$endregion QueueArray}
+
+{$region Multiusable}
+
+type
+  MultiusableCommandQueueHub<T> = sealed class(MultiusableCommandQueueHubBase)
+    public q: CommandQueue<T>;
+    public constructor(q: CommandQueue<T>) := self.q := q;
+    private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
+    
+    public function OnNodeInvoked(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean): QueueRes<T>;
+    begin
+      
+      var res_o: QueueResBase;
+      if tsk.mu_res.TryGetValue(self, res_o) then
+        Result := QueueRes&<T>( res_o ) else
+      begin
+        Result := self.q.InvokeNewQ(tsk, c, main_dvc, need_ptr_qr, nil);
+        Result.can_set_ev := false;
+        tsk.mu_res[self] := Result;
+      end;
+      
+      Result.ev.Retain({$ifdef EventDebug}$'for all mu branches'{$endif});
+    end;
+    
+    public function MakeNode: CommandQueue<T>;
+    
+  end;
+  
+  MultiusableCommandQueueNode<T> = sealed class(WaitableCommandQueue<T>)
+    public hub: MultiusableCommandQueueHub<T>;
+    public constructor(hub: MultiusableCommandQueueHub<T>) := self.hub := hub;
+    
+    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>; override;
+    begin
+      Result := hub.OnNodeInvoked(tsk, c, main_dvc, need_ptr_qr);
+      if prev_ev<>nil then Result := Result.TrySetEv( prev_ev + Result.ev );
+    end;
+    
+    protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
+    if prev_hubs.Add(hub) then hub.q.RegisterWaitables(tsk, prev_hubs);
+    
+    private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
+    begin
+      sb += ' => ';
+      if hub.q.ToStringHeader(sb, index) then
+        delayed.Add(hub.q);
+      sb += #10;
+    end;
+    
+  end;
+  
+function MultiusableCommandQueueHub<T>.MakeNode :=
+new MultiusableCommandQueueNode<T>(self);
+
+function CommandQueue<T>.Multiusable: ()->CommandQueue<T> := MultiusableCommandQueueHub&<T>.Create(self).MakeNode;
+
+{$endregion Multiusable}
+
+{$endregion Queue converter's}
+
+{$region Wait}
+
 {$region WCQWaiter}
 
 type
   WCQWaiter = abstract class
-    private waitables: array of CommandQueueBase;
+    private waitables: array of IWaitableCommandQueue;
     
-    public constructor(waitables: array of CommandQueueBase) := self.waitables := waitables;
+    public constructor(waitables: array of CommandQueueBase);
+    begin
+      if waitables.Length = 0 then raise new System.ArgumentException($'Wait очереди должны ожидать хотя бы одну очередь');
+      self.waitables := new IWaitableCommandQueue[waitables.Length];
+      for var i := 0 to waitables.Length-1 do
+      begin
+        if waitables[i] is IWaitableCommandQueue(var wcq) then
+          self.waitables[i] := wcq else
+        if waitables[i] = nil then
+          raise new ArgumentNullException($'Очередь [{i}] очереди из списка ожидаемых была nil') else
+          raise new ArgumentException($'Wait очереди не поддерживают ожидание [{i}] очереди из списка ожидаемых, имеющей тип {waitables[i].GetType}');
+      end;
+    end;
     private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
     
     public procedure RegisterWaitables(tsk: CLTaskBase) :=
@@ -5058,13 +5311,30 @@ type
     begin
       sb.Append(#9, tabs);
       sb += self.GetType.Name;
-      sb += #10;
-      foreach var q in waitables do
+      
+      if waitables.Length=1 then
       begin
-        sb.Append(#9, tabs+1);
+        sb += ' => ';
+        
+        var q := waitables[0] as CommandQueueBase;
         if q.ToStringHeader(sb, index) then
           delayed += q;
+        
+        sb += #10;
+      end else
+      begin
+        sb += #10;
+        
+        foreach var q in waitables.Cast&<CommandQueueBase> do
+        begin
+          sb.Append(#9, tabs+1);
+          if q.ToStringHeader(sb, index) then
+            delayed += q;
+          sb += #10;
+        end;
+        
       end;
+      
     end;
     
   end;
@@ -5120,137 +5390,44 @@ type
   
 {$endregion WCQWaiter}
 
-{$region Queue converter's}
-
-{$region Cast}
+{$region WaitFor}
 
 type
-  CastQueue<T> = sealed class(CommandQueue<T>)
-    private q: CommandQueueBase;
+  CommandQueueWaitFor = sealed class(CommandQueue<object>)
+    public waiter: WCQWaiter;
     
-    public constructor(q: CommandQueueBase) := self.q := q;
+    public constructor(waiter: WCQWaiter) :=
+    self.waiter := waiter;
     
-    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>; override :=
-    q.InvokeBase(tsk, c, main_dvc, false, cq, prev_ev).LazyQuickTransformBase(o->T(o));
-    
-    protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
-    q.RegisterWaitables(tsk, prev_hubs);
-    
-    private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
+    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<object>; override;
     begin
-      sb += ' => ';
-      sb.Append(typeof(T));
-      sb += #10;
-      q.ToString(sb, tabs, index, delayed);
-    end;
-    
-  end;
-  
-function CommandQueueBase.Cast<T>: CommandQueue<T> :=
-if self is CommandQueue<T>(var cq) then cq else new CastQueue<T>(self);
-
-{$endregion Cast}
-
-{$region ThenConvert}
-
-type
-  CommandQueueThenConvert<TInp, TRes> = sealed class(HostQueue<TInp, TRes>)
-    protected q: CommandQueue<TInp>;
-    protected f: (TInp, Context)->TRes;
-    
-    public constructor(q: CommandQueue<TInp>; f: (TInp, Context)->TRes);
-    begin
-      self.q := q;
-      self.f := f;
-    end;
-    private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
-    
-    protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
-    q.RegisterWaitables(tsk, prev_hubs);
-    
-    protected function InvokeSubQs(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; var cq: cl_command_queue; prev_ev: EventList): QueueRes<TInp>; override :=
-    q.Invoke(tsk, c, main_dvc, false, cq, prev_ev);
-    
-    protected function ExecFunc(o: TInp; c: Context): TRes; override := f(o, c);
-    
-    private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
-    begin
-      sb += ' => ';
-      sb.Append(f);
-      sb += #10;
-      q.ToString(sb, tabs, index, delayed);
-    end;
-    
-  end;
-  
-function CommandQueue<T>.ThenConvert<TOtp>(f: (T, Context)->TOtp) :=
-new CommandQueueThenConvert<T, TOtp>(self, f);
-
-{$endregion ThenConvert}
-
-{$region QueueArray}
-
-static function CommandQueue<T>.operator+(q1: CommandQueueBase; q2: CommandQueue<T>) := new  SimpleSyncQueueArray<T>(QueueArrayUtils. FlattenSyncQueueArray(|q1, q2|));
-static function CommandQueue<T>.operator*(q1: CommandQueueBase; q2: CommandQueue<T>) := new SimpleAsyncQueueArray<T>(QueueArrayUtils.FlattenAsyncQueueArray(|q1, q2|));
-
-{$endregion QueueArray}
-
-{$region Multiusable}
-
-type
-  MultiusableCommandQueueHub<T> = sealed class(MultiusableCommandQueueHubBase)
-    public q: CommandQueue<T>;
-    public constructor(q: CommandQueue<T>) := self.q := q;
-    private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
-    
-    public function OnNodeInvoked(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean): QueueRes<T>;
-    begin
-      
-      var res_o: QueueResBase;
-      if tsk.mu_res.TryGetValue(self, res_o) then
-        Result := QueueRes&<T>( res_o ) else
-      begin
-        Result := self.q.InvokeNewQ(tsk, c, main_dvc, need_ptr_qr, nil);
-        Result.can_set_ev := false;
-        tsk.mu_res[self] := Result;
-      end;
-      
-      Result.ev.Retain({$ifdef EventDebug}$'for all mu branches'{$endif});
-    end;
-    
-    public function MakeNode: CommandQueue<T>;
-    
-  end;
-  
-  MultiusableCommandQueueNode<T> = sealed class(CommandQueue<T>)
-    public hub: MultiusableCommandQueueHub<T>;
-    public constructor(hub: MultiusableCommandQueueHub<T>) := self.hub := hub;
-    
-    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<T>; override;
-    begin
-      Result := hub.OnNodeInvoked(tsk, c, main_dvc, need_ptr_qr);
-      if prev_ev<>nil then Result := Result.TrySetEv( prev_ev + Result.ev );
+      {$ifdef DEBUG}
+      if need_ptr_qr then raise new System.InvalidOperationException;
+      {$endif DEBUG}
+      var wait_ev := waiter.GetWaitEv(tsk, c);
+      Result := new QueueResConst<object>(nil, prev_ev=nil ? wait_ev : prev_ev+wait_ev);
     end;
     
     protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
-    if prev_hubs.Add(hub) then hub.q.RegisterWaitables(tsk, prev_hubs);
+    waiter.RegisterWaitables(tsk);
     
     private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
     begin
-      sb += ' => ';
-      if hub.q.ToStringHeader(sb, index) then
-        delayed.Add(hub.q);
       sb += #10;
+      waiter.ToString(sb, tabs, index, delayed);
     end;
     
   end;
   
-function MultiusableCommandQueueHub<T>.MakeNode :=
-new MultiusableCommandQueueNode<T>(self);
+function WaitForAll(params qs: array of CommandQueueBase) := WaitForAll(qs.AsEnumerable);
+function WaitForAll(qs: sequence of CommandQueueBase) := new CommandQueueWaitFor(new WCQWaiterAll(qs.ToArray));
 
-function CommandQueue<T>.Multiusable: ()->CommandQueue<T> := MultiusableCommandQueueHub&<T>.Create(self).MakeNode;
+function WaitForAny(params qs: array of CommandQueueBase) := WaitForAny(qs.AsEnumerable);
+function WaitForAny(qs: sequence of CommandQueueBase) := new CommandQueueWaitFor(new WCQWaiterAny(qs.ToArray));
 
-{$endregion Multiusable}
+function WaitFor(q: CommandQueueBase) := WaitForAll(q);
+
+{$endregion WaitFor}
 
 {$region ThenWait}
 
@@ -5279,6 +5456,7 @@ type
     
     private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
     begin
+      sb += #10;
       q.ToString(sb, tabs, index, delayed);
       waiter.ToString(sb, tabs, index, delayed);
     end;
@@ -5293,7 +5471,7 @@ new CommandQueueThenWaitFor<T>(self, new WCQWaiterAny(qs.ToArray));
 
 {$endregion ThenWait}
 
-{$endregion Queue converter's}
+{$endregion Wait}
 
 {$region KernelArg}
 
@@ -5375,7 +5553,6 @@ type
     public procedure SetArg(k: cl_kernel; ind: UInt32; c: Context); override :=
     cl.SetKernelArg(k, ind, new UIntPtr(Marshal.SizeOf&<TRecord>), pointer(self.val)).RaiseIfError; 
     
-    private function DisplayName: string; override := $'KernelArgRecord<{typeof(TRecord)}>';
     private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
     begin
       sb += ' => ';
@@ -5564,12 +5741,24 @@ type
     
     protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); abstract;
     
+    private function DisplayName: string; virtual := CommandQueueBase.DisplayNameForType(self.GetType);
     private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); abstract;
+    
     private procedure ToString(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>);
     begin
       sb.Append(#9, tabs);
-      sb += self.GetType.Name;
+      sb += DisplayName;
       self.ToStringImpl(sb, tabs+1, index, delayed);
+    end;
+    
+  end;
+  
+  BasicGPUCommand<T> = abstract class(GPUCommand<T>)
+    
+    private function DisplayName: string; override;
+    begin
+      Result := self.GetType.Name;
+      Result := Result.Remove(Result.IndexOf('`'));
     end;
     
   end;
@@ -5579,7 +5768,7 @@ type
 {$region Queue}
 
 type
-  QueueCommand<T> = sealed class(GPUCommand<T>)
+  QueueCommand<T> = sealed class(BasicGPUCommand<T>)
     public q: CommandQueueBase;
     
     public constructor(q: CommandQueueBase) := self.q := q;
@@ -5606,7 +5795,7 @@ type
 {$region Proc}
 
 type
-  ProcCommand<T> = sealed class(GPUCommand<T>)
+  ProcCommand<T> = sealed class(BasicGPUCommand<T>)
     public p: (T,Context)->();
     
     public constructor(p: (T,Context)->()) := self.p := p;
@@ -5641,7 +5830,7 @@ type
 {$region Wait}
 
 type
-  WaitCommand<T> = sealed class(GPUCommand<T>)
+  WaitCommand<T> = sealed class(BasicGPUCommand<T>)
     public waiter: WCQWaiter;
     
     public constructor(waiter: WCQWaiter) := self.waiter := waiter;
@@ -5677,7 +5866,7 @@ type
 {$region Base}
 
 type
-  GPUCommandContainer<T> = abstract partial class(CommandQueue<T>)
+  GPUCommandContainer<T> = abstract partial class
     private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
   end;
   GPUCommandContainerCore<T> = abstract class
@@ -5693,13 +5882,16 @@ type
     private procedure ToString(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>);
     begin
       sb.Append(#9, tabs);
-      sb += self.GetType.Name;
+      
+      var tn := self.GetType.Name;
+      sb += tn.Remove(tn.IndexOf('`'));
+      
       self.ToStringImpl(sb, tabs+1, index, delayed);
     end;
     
   end;
   
-  GPUCommandContainer<T> = abstract partial class(CommandQueue<T>)
+  GPUCommandContainer<T> = abstract partial class(WaitableCommandQueue<T>)
     protected core: GPUCommandContainerCore<T>;
     protected commands := new List<GPUCommand<T>>;
     
@@ -5799,7 +5991,7 @@ type
     
   end;
   
-  GPUCommandContainer<T> = abstract partial class(CommandQueue<T>)
+  GPUCommandContainer<T> = abstract partial class
     
     protected constructor(o: T) :=
     self.core := new CCCObj<T>(self, o);
@@ -5837,7 +6029,13 @@ constructor BufferCommandQueue.Create := inherited;
 
 {$region Special .Add's}
 
-function BufferCommandQueue.AddQueue(q: CommandQueueBase) := AddCommand(self, new QueueCommand<Buffer>(q));
+function BufferCommandQueue.AddQueue(q: CommandQueueBase): BufferCommandQueue;
+begin
+  Result := self;
+  if q is IConstQueue then raise new System.ArgumentException($'В .AddQueue нельзя передавать константные очереди. Если вам надо выполнить очередь для Wait - используйте MarkerQueue');
+  if q is ICastQueue(var cq) then q := cq.GetQ;
+  commands.Add( new QueueCommand<Buffer>(q) );
+end;
 
 function BufferCommandQueue.AddProc(p: Buffer->()) := AddCommand(self, new ProcCommand<Buffer>((o,c)->p(o)));
 function BufferCommandQueue.AddProc(p: (Buffer, Context)->()) := AddCommand(self, new ProcCommand<Buffer>(p));
@@ -5867,7 +6065,13 @@ constructor KernelCommandQueue.Create := inherited;
 
 {$region Special .Add's}
 
-function KernelCommandQueue.AddQueue(q: CommandQueueBase) := AddCommand(self, new QueueCommand<Kernel>(q));
+function KernelCommandQueue.AddQueue(q: CommandQueueBase): KernelCommandQueue;
+begin
+  Result := self;
+  if q is IConstQueue then raise new System.ArgumentException($'В .AddQueue нельзя передавать константные очереди. Если вам надо выполнить очередь для Wait - используйте MarkerQueue');
+  if q is ICastQueue(var cq) then q := cq.GetQ;
+  commands.Add( new QueueCommand<Kernel>(q) );
+end;
 
 function KernelCommandQueue.AddProc(p: Kernel->()) := AddCommand(self, new ProcCommand<Kernel>((o,c)->p(o)));
 function KernelCommandQueue.AddProc(p: (Kernel, Context)->()) := AddCommand(self, new ProcCommand<Kernel>(p));
@@ -6034,7 +6238,7 @@ type
     tsk: CLTaskBase;
     res_qr: QueueResDelayedBase<TRes>;
   end;
-  EnqueueableGetCommand<TObj, TRes> = abstract class(CommandQueue<TRes>, IEnqueueable<EnqueueableGetCommandInvData<TObj, TRes>>)
+  EnqueueableGetCommand<TObj, TRes> = abstract class(WaitableCommandQueue<TRes>, IEnqueueable<EnqueueableGetCommandInvData<TObj, TRes>>)
     protected prev_commands: GPUCommandContainer<TObj>;
     
     public constructor(prev_commands: GPUCommandContainer<TObj>) :=
@@ -6270,6 +6474,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'ptr: ';
       ptr.ToString(sb, tabs, index, delayed, false);
       
@@ -6327,6 +6532,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'ptr: ';
       ptr.ToString(sb, tabs, index, delayed, false);
       
@@ -6394,12 +6600,15 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'ptr: ';
       ptr.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -6467,12 +6676,15 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'ptr: ';
       ptr.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -6553,9 +6765,11 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'val: ';
       sb.Append(val^);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -6629,9 +6843,11 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'val: ';
       val.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -6691,6 +6907,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
@@ -6750,6 +6967,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
@@ -6809,6 +7027,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
@@ -6868,6 +7087,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
@@ -6927,6 +7147,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
@@ -6986,6 +7207,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
@@ -7060,15 +7282,19 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset: ';
       a_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -7148,18 +7374,23 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset1: ';
       a_offset1.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset2: ';
       a_offset2.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -7244,21 +7475,27 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset1: ';
       a_offset1.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset2: ';
       a_offset2.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset3: ';
       a_offset3.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -7333,15 +7570,19 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset: ';
       a_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -7421,18 +7662,23 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset1: ';
       a_offset1.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset2: ';
       a_offset2.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -7517,21 +7763,27 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'a: ';
       a.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset1: ';
       a_offset1.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset2: ';
       a_offset2.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'a_offset3: ';
       a_offset3.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -7598,9 +7850,11 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'ptr: ';
       ptr.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'pattern_len: ';
       pattern_len.ToString(sb, tabs, index, delayed, false);
       
@@ -7673,15 +7927,19 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'ptr: ';
       ptr.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'pattern_len: ';
       pattern_len.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -7742,6 +8000,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'val: ';
       sb.Append(val^);
       
@@ -7812,12 +8071,15 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'val: ';
       sb.Append(val^);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -7883,6 +8145,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'val: ';
       val.ToString(sb, tabs, index, delayed, false);
       
@@ -7958,12 +8221,15 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'val: ';
       val.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -8025,6 +8291,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'b: ';
       b.ToString(sb, tabs, index, delayed, false);
       
@@ -8082,6 +8349,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'b: ';
       b.ToString(sb, tabs, index, delayed, false);
       
@@ -8154,15 +8422,19 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'b: ';
       b.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'from_pos: ';
       from_pos.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'to_pos: ';
       to_pos.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -8235,15 +8507,19 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'b: ';
       b.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'from_pos: ';
       from_pos.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'to_pos: ';
       to_pos.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -8361,9 +8637,11 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -8435,6 +8713,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'buff_offset: ';
       buff_offset.ToString(sb, tabs, index, delayed, false);
       
@@ -8544,6 +8823,7 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'len: ';
       len.ToString(sb, tabs, index, delayed, false);
       
@@ -8610,9 +8890,11 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'len1: ';
       len1.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len2: ';
       len2.ToString(sb, tabs, index, delayed, false);
       
@@ -8684,12 +8966,15 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'len1: ';
       len1.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len2: ';
       len2.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'len3: ';
       len3.ToString(sb, tabs, index, delayed, false);
       
@@ -8801,11 +9086,13 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'sz1: ';
       sz1.ToString(sb, tabs, index, delayed, false);
       
       for var i := 0 to args.Length-1 do 
       begin
+        sb.Append(#9, tabs);
         sb += 'args[';
         sb.Append(i);
         sb += ']: ';
@@ -8893,14 +9180,17 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'sz1: ';
       sz1.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'sz2: ';
       sz2.ToString(sb, tabs, index, delayed, false);
       
       for var i := 0 to args.Length-1 do 
       begin
+        sb.Append(#9, tabs);
         sb += 'args[';
         sb.Append(i);
         sb += ']: ';
@@ -8993,17 +9283,21 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'sz1: ';
       sz1.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'sz2: ';
       sz2.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'sz3: ';
       sz3.ToString(sb, tabs, index, delayed, false);
       
       for var i := 0 to args.Length-1 do 
       begin
+        sb.Append(#9, tabs);
         sb += 'args[';
         sb.Append(i);
         sb += ']: ';
@@ -9096,17 +9390,21 @@ type
     begin
       sb += #10;
       
+      sb.Append(#9, tabs);
       sb += 'global_work_offset: ';
       global_work_offset.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'global_work_size: ';
       global_work_size.ToString(sb, tabs, index, delayed, false);
       
+      sb.Append(#9, tabs);
       sb += 'local_work_size: ';
       local_work_size.ToString(sb, tabs, index, delayed, false);
       
       for var i := 0 to args.Length-1 do 
       begin
+        sb.Append(#9, tabs);
         sb += 'args[';
         sb.Append(i);
         sb += ']: ';
@@ -9182,43 +9480,6 @@ function HPQ(p: Context->()) :=
 new CommandQueueHostProc(p);
 
 {$endregion HFQ/HPQ}
-
-{$region WaitFor}
-
-type
-  CommandQueueWaitFor = sealed class(CommandQueue<object>)
-    public waiter: WCQWaiter;
-    
-    public constructor(waiter: WCQWaiter) :=
-    self.waiter := waiter;
-    
-    protected function InvokeImpl(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id; need_ptr_qr: boolean; var cq: cl_command_queue; prev_ev: EventList): QueueRes<object>; override;
-    begin
-      if need_ptr_qr then new System.InvalidOperationException;
-      var wait_ev := waiter.GetWaitEv(tsk, c);
-      Result := new QueueResConst<object>(nil, prev_ev=nil ? wait_ev : prev_ev+wait_ev);
-    end;
-    
-    protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
-    waiter.RegisterWaitables(tsk);
-    
-    private procedure ToStringImpl(sb: StringBuilder; tabs: integer; index: Dictionary<CommandQueueBase,integer>; delayed: HashSet<CommandQueueBase>); override;
-    begin
-      sb += #10;
-      waiter.ToString(sb, tabs, index, delayed);
-    end;
-    
-  end;
-  
-function WaitForAll(params qs: array of CommandQueueBase) := WaitForAll(qs.AsEnumerable);
-function WaitForAll(qs: sequence of CommandQueueBase) := new CommandQueueWaitFor(new WCQWaiterAll(qs.ToArray));
-
-function WaitForAny(params qs: array of CommandQueueBase) := WaitForAny(qs.AsEnumerable);
-function WaitForAny(qs: sequence of CommandQueueBase) := new CommandQueueWaitFor(new WCQWaiterAny(qs.ToArray));
-
-function WaitFor(q: CommandQueueBase) := WaitForAll(q);
-
-{$endregion WaitFor}
 
 {$region CombineQueue's}
 
