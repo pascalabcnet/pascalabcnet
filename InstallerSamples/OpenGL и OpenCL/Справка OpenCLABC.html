@@ -1766,67 +1766,127 @@ q.AddQueue(q);
 </div>
 <script>on_page_added(document.getElementById("page-23"))</script>
 <div id="page-24" page_name="Из ожидания очередей" hidden=true>
-<p>Есть всего 3 группы подпрограмм, создающих очереди для ожидания других очередей:</p>
+<p>Большинство деревьев выполнения очередей можно реализовать используя только сложение и умножение очередей. Но есть несколько проблем:</p>
+<ul>
+<li><p>Большинство но не все. Пример дерева которое нельзя реализовать через сложение и умножение можно найти в файле:<br />
+C:\PABCWork.NET\Samples\OpenGL и OpenCL\OpenCLABC\Wait очереди\1.pas</p>
+</li>
+<li><p>Даже если дерево реализуется сложением+умножением - такая реализация может выглядеть запутано и не похоже на график дерева выполнения:<br />
+C:\PABCWork.NET\Samples\OpenGL и OpenCL\OpenCLABC\Wait очереди\2.pas</p>
+</li>
+<li><p>Очереди, выполняемые на разных контекстах не могут эффективно взаимодействовать.</p>
+</li>
+</ul>
+<p>Эти проблемы решают <code>Wait</code>-очереди:</p>
+<pre><code>uses OpenCLABC;
+
+begin
+  var M := new WaitMarker;
+  
+  var t := Context.Default.BeginInvoke(
+    HPQ(()-&gt;Writeln('Начало .BeginInvoke')) +
+    WaitFor(M) +
+    HPQ(()-&gt;Writeln('Конец .BeginInvoke'))
+  );
+  
+  Sleep(2000);
+  Writeln('Посылаем сигнал маркера M');
+  M.SendSignal;
+  
+  t.Wait;
+end.
+</code></pre>
+<p><code>WaitFor(M)</code> создаёт очень простую <code>Wait</code>-очередь.</p>
+<p>Внутри вызова <code>.BeginInvoke</code> (до его завершения) эта очередь
+входит в режим ожидания сигналов от маркера <code>M</code>.<br />
+В этом режиме она <strong>Не</strong> тратит время процессора, но готова возобновить выполнение в любой момент.</p>
+<p>Далее, вызов <code>M.SendSignal</code> посылает сигнал всем <code>Wait</code> очередям,
+которые в данный момент находятся в режиме ожидания маркера <code>M</code>.</p>
+<p><code>WaitMarker</code>, так же, является своеобразной очередью, то есть
+его можно складывать с другими очередями и передавать в <code>.BeginInvoke</code></p>
+<p>При выполнении в качестве очереди маркер вызывает свой метод <code>.SendSignal</code> и сразу возвращает <code>object(nil)</code>.<br />
+То есть как очередь он равноценен <code>HPQ(M.SendSignal)</code>, но немного более эффективен.</p>
+<p>Но стоит так же сказать, прямой вызов <code>M.SendSignal</code> всё равно всегда эффективнее чем <code>Context.Default.SyncInvoke(M)</code>.<br />
+Используйте выполнение маркеров внутри <code>.BeginInvoke</code> только если вам надо активировать его сразу после других очередей:</p>
+<pre><code>  var M := new WaitMarker;
+  
+  Context.Default.SyncInvoke(
+    HFQ(()-&gt;5) + M
+  );
+</code></pre>
+<p>Но в этом же коде видно ещё одну проблему - сложение очередей возвращает последний результат,
+то есть результат маркера (который <code>object(nil)</code>).</p>
+<p>Если нужно иметь сразу и маркер и возвращаемое значение предыдущей очереди,
+можно создать псевдо-маркер методом <code>.ThenWaitMarker</code>:</p>
+<pre><code>uses OpenCLABC;
+
+begin
+  var Q := HFQ(()-&gt;5).ThenWaitMarker;
+  
+  var t := Context.Default.BeginInvoke( WaitFor(Q) );
+  Context.Default.SyncInvoke( Q ).Println;
+  
+  t.Wait;
+end.
+</code></pre>
+<p>Псевдо-маркеры разлагаются в настоящие маркеры при передаче в <code>Wait</code> очереди,
+но при этом сохраняют результат оригинальной очереди при выполнении в <code>.BeginInvoke</code>.</p>
+<p>Точнее <code>Q</code> в последнем коде сначала выполнит <code>HFQ</code>, затем пошлёт сигнал в
+<code>Wait</code> очередь <code>WaitFor(Q)</code> и в конце вернёт то, что вернула <code>HFQ</code>.</p>
+<hr />
+<p>Есть всего 3 группы подпрограмм, создающих <code>Wait</code> очереди:</p>
 <ol>
 <li><p>Глобальные, <code>WaitFor*</code>:<br />
-Ничего не делают сами, но блокируют выполнение пока указанные очереди не выполнятся.</p>
+Ничего не делают сами, но блокируют выполнение ожидая сигналов указанных маркеров.</p>
 </li>
 <li><p>Особые методы <code>.Add*</code> - <code>.AddWait*</code>:<br />
 Как и <code>.AddQueue</code> и <code>.AddProc</code>, <code>.AddWait(...)</code> это всего лишь аналог
 <code>.AddQueue(WaitFor(...))</code>, существующий только ради простоты кода.</p>
 </li>
 <li><p>Методы очередей, <code>.ThenWaitFor*</code>:<br />
-Так же не имеет незаменимых применений, но ещё полезнее.<br />
-<code>Q.ThenWaitFor(...)</code> работает как <code>Q + WaitFor(...)</code>, за исключением того, что возвращает результат <code>Q</code>.<br />
-То есть, правильнее будет:</p>
-<pre><code>var Qs := Q.Multiusable;
-Result := Qs() + WaitFor(...) + Qs();
-</code></pre>
-<p>Но это уже даже в одну строчку не напишешь.</p>
+Как и <code>.ThenWaitMarker</code>, сначала выполняет исходную очередь, потом ожидает и в конце возвращает результат исходной очереди.</p>
 </li>
 </ol>
-<p>В каждой из групп Wait очередей - <code>*</code> можно заменить:</p>
+<p>В каждой из групп <code>Wait</code> очередей <code>*</code> можно заменить:</p>
 <ol>
 <li>Ничем: Ожидание одной очереди.</li>
 <li>На <code>All</code>: Ожидание всех указанных очередей.</li>
 <li>На <code>Any</code>: Ожидание любой из указанных очередей (какая раньше выполнится).</li>
 </ol>
-<p>То есть, к примеру, <code>WaitForAny</code> создаёт очередь, которая сама ничего не выполняет, но ожидает выполнения любой из указанных очередей.</p>
+<p>То есть, к примеру, <code>WaitForAny</code> создаёт <code>Wait</code> очередь, которая сама ничего не выполняет, но ожидает сигнала от любого из указанных маркеров.</p>
 <hr />
-<p><code>Wait</code> очереди делают реализацию некоторых сложных деревьев выполнения очередей возможными.<br />
-Примеры можно найти в папке <code>PABCWork.NET\Samples\OpenCLABC\Wait очереди</code>.</p>
-<p>Но они наиболее полезны благодаря одному особенному свойству:<br />
-<code>Wait</code> очереди работают даже между вызовами <code>Context.BeginInvoke</code>, в отличии от всего остального в <code>OpenCLABC</code>.</p>
+<h3><code>Wait</code> очереди между вызовами <code>Context.BeginInvoke</code></h3>
+<p><code>Wait</code> очереди работают даже между вызовами <code>Context.BeginInvoke</code>, в отличии от всего остального в <code>OpenCLABC</code>.</p>
 <p>Это не всегда безопастно:</p>
 <pre><code>Context.Default.BeginInvoke(Q1);
 Context.Default.BeginInvoke(WaitFor(Q1) + Q2);
 </code></pre>
-<p>Проблема этого кода в том, что <code>Q1</code> может закончить выполняться ещё до того как <code>WaitFor(Q1)</code> начнёт ожидать.</p>
-<p>Чтоб такое не происходило - надо всегда запускать ожидающую очередь раньше ожидаемой:</p>
+<p>Проблема этого кода в том, что <code>Q1</code> может послать сигнал ещё до того как <code>WaitFor(Q1)</code> начнёт ждать.</p>
+<p>Чтоб такое не происходило - надо всегда запускать <code>Wait</code> очередь раньше маркера:</p>
 <pre><code>Context.Default.BeginInvoke(WaitFor(Q1) + Q2);
 Context.Default.BeginInvoke(Q1);
 </code></pre>
-<p>Но, как всегда, лучше, по возможности, объединять вызовы <code>Context.BeginInvoke</code>:</p>
+<p>Но, как всегда, лучше объединять вызовы <code>Context.BeginInvoke</code>:</p>
 <pre><code>Context.Default.BeginInvoke(
   ( Q1 ) *
   ( WaitFor(Q1) + Q2 )
 );
 </code></pre>
-<p>Все ожидающие очереди начинают ожидать в самом начале вызова <code>Context.BeginInvoke</code>, перед тем как очередь начнёт выполнятся.
-Поэтому если ожидающая и ожидаемая очереди находятся в общем <code>Context.BeginInvoke</code> - о их порядке можно не волноваться.</p>
+<p>Все <code>Wait</code> очереди начинают ждать в самом начале вызова <code>Context.BeginInvoke</code>, перед началом выполнения очереди.
+Поэтому если <code>Wait</code> очередь и маркер находятся в общем <code>Context.BeginInvoke</code> - маркер никогда не активируется.</p>
 <hr />
-<h3>Множественное ожидание несколько раз выполнившейся очереди</h3>
-<p>Когда начинает выполняться <code>Context.BeginInvoke</code> - для каждой ожидающей очереди в соответствующей
-ожидаемой очереди создаётся новый счётчик для того, сколько раз ожидаемая очередь была выполнена.</p>
+<h3>Множественное ожидание одних и тех же маркеров</h3>
+<p>Когда начинает выполняться <code>Context.BeginInvoke</code> - для каждой <code>Wait</code> очереди в соответствующем маркере
+создаётся новый счётчик для того, сколько раз маркер был активирован.</p>
 <p>Поэтому можно делать так:</p>
 <pre><code>uses OpenCLABC;
 
 begin
   var Q1 := HPQ(()-&gt;
   begin
-    Sleep(1000);
+    Sleep(10);
     lock output do Writeln('Выполнилась Q1');
-  end);
+  end).ThenWaitMarker;
   
   var Q2 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q2'));
   var Q3 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q3'));
@@ -1846,9 +1906,9 @@ end.
 begin
   var Q1 := HPQ(()-&gt;
   begin
-    Sleep(1000);
+    Sleep(10);
     lock output do Writeln('Выполнилась Q1');
-  end);
+  end).ThenWaitMarker;
   
   var Q2 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q2'));
   var Q3 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q3'));
@@ -1861,13 +1921,13 @@ begin
   
 end.
 </code></pre>
-<p>Каждое окончание выполнения <code>Q1</code> добавляет 1 в счётчик внутри <code>Q1</code>.<br />
-Каждое окончание ожидания <code>WaitFor(Q1)</code> отнимание 1 от того же счётчика.</p>
+<p>Каждое окончание выполнения <code>Q1</code> добавляет 1 в счётчик внутри маркера.<br />
+Каждое окончание ожидания <code>WaitFor(Q1)</code> отнимает 1 от того же счётчика.</p>
 <p>Будьте осторожны, лишняя <code>Wait</code> очередь вызовет зависание:</p>
 <pre><code>uses OpenCLABC;
 
 begin
-  var Q1 := HFQ(()-&gt;0);
+  var Q1 := HFQ(()-&gt;0).ThenWaitMarker;
   
   var t1 := Context.Default.BeginInvoke(
     WaitFor(Q1) +
@@ -1879,7 +1939,7 @@ begin
 end.
 </code></pre>
 <hr />
-<p>Cчётчик создаётся для каждой пары [ожидаемой очереди] и [вызова <code>Context.BeginInvoke</code> с ожидающей очередью].
+<p>Cчётчик создаётся для каждой пары [маркера] и [вызова <code>Context.BeginInvoke</code> с <code>Wait</code> очередью].
 То есть это тоже сработает:</p>
 <pre><code>uses OpenCLABC;
 
@@ -1888,7 +1948,7 @@ begin
   begin
     Sleep(1000);
     lock output do Writeln('Выполнилась Q1');
-  end);
+  end).ThenWaitMarker;
   
   var Q2 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q2'));
   var Q3 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q3'));
@@ -1904,14 +1964,14 @@ begin
     ( WaitFor(Q1)+Q4 ) *
     ( WaitFor(Q1)+Q5 )
   );
-  // Каждый вызов Q1 тут - активирует по 1 WaitFor(Q1) в каждом CLTask
+  // Каждый вызов Q1 тут - активирует по одному WaitFor(Q1) в каждом .BeginInvoke
   Context.Default.SyncInvoke(Q1+Q1);
   
   t1.Wait;
   t2.Wait;
 end.
 </code></pre>
-<p>Но каждый <code>Context.BeginInvoke</code> для ожидаемой очереди - добавляет в уже существующий счётчик:</p>
+<p>Но каждая активация маркера добавляет 1 в уже существующий счётчик:</p>
 <pre><code>uses OpenCLABC;
 
 begin
@@ -1919,21 +1979,20 @@ begin
   begin
     Sleep(1000);
     lock output do Writeln('Выполнилась Q1');
-  end);
+  end).ThenWaitMarker;
   
   var Q2 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q2'));
   var Q3 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q3'));
   var Q4 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q4'));
   
-  var t1 := Context.Default.BeginInvoke(
+  var t := Context.Default.BeginInvoke(
     ( WaitFor(Q1)+Q3 ) *
     ( WaitFor(Q1)+Q4 )
   );
-  var t2 := Context.Default.BeginInvoke(WaitFor(Q1)+Q2+Q1);
+  Q1.SendSignal;
   Context.Default.SyncInvoke(Q1);
   
-  t1.Wait;
-  t2.Wait;
+  t.Wait;
 end.
 </code></pre>
 </div>
