@@ -142,6 +142,17 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public class statement_node_list : extendable_collection<statement_node>
     {
+        public new statement_node this[int num]
+        {
+            get
+            {
+                return _elements[num];
+            }
+            set
+            {
+                _elements[num] = value;
+            }
+        }
     }
 
     /// <summary>
