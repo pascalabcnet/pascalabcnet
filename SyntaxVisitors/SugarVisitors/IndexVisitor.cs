@@ -37,14 +37,26 @@ namespace SyntaxVisitors.SugarVisitors
             var possibleIndexer = ind.Parent?.Parent;
             if (possibleIndexer != null && possibleIndexer is indexer indexer)
             {
-                var reverseIndexMethodParams = new expression_list(indexer.dereferencing_value, ind.source_context);
-                mc = 
-                    new method_call(
+                // Надо подняться до узла indexer и запомнить индекс, под которым данный index входит
+                // Идём по Parent - и смотрим, когда Parent = indexer
+                // Находим у него expressions и ищем, под каким индексом в нем содержится текущий. 
+                // Запоминаем это целое число и передаем его последним параметром в Reverse если expressions.Count > 1
+                expression_list reverseIndexMethodParams = null;
+                if (indexer.indexes.expressions.Count == 1)
+                    reverseIndexMethodParams = new expression_list(indexer.dereferencing_value, ind.source_context);
+                else
+                {
+                    var i = indexer.indexes.expressions.FindIndex(x => x == ind);
+                    if (i >= 0) 
+                        reverseIndexMethodParams = new expression_list(new List<expression> { indexer.dereferencing_value, new int32_const(i) }, ind.source_context);
+                }
+                    
+                mc = new method_call(
                         new dot_node(indexCreation, new ident("Reverse", ind.source_context)),
                         reverseIndexMethodParams,
                         ind.source_context);
             }
-            else
+            else // Это непонятная ветка. Она наступает в частности если индексер не находится на 2 уровня выше, что бывает в случае индекса вида a[1..^1]
             {
                 mc = indexCreation;
             }
