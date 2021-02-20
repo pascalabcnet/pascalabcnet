@@ -11,15 +11,15 @@ namespace ScintillaNET
 {
     public partial class IncrementalSearcher : UserControl
     {
-        #region Fields
+        #region?Fields
 
         private Scintilla _scintilla;
         private bool _toolItem = false;
 
-        #endregion Fields
+        #endregion?Fields
 
 
-        #region Methods
+        #region?Methods
 
         private void brnPrevious_Click(object sender, EventArgs e)
         {
@@ -187,10 +187,10 @@ namespace ScintillaNET
             moveFormAwayFromSelection();
         }
 
-        #endregion Methods
+        #endregion?Methods
 
 
-        #region Properties
+        #region?Properties
 
         public Scintilla Scintilla
         {
@@ -204,7 +204,7 @@ namespace ScintillaNET
             }
         }
 
-        #endregion Properties
+        #endregion?Properties
 
 
         #region Constructors
