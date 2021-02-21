@@ -301,6 +301,8 @@ namespace PascalABCCompiler.SemanticTree
         void visit(IDefaultOperatorNodeAsConstant value);
 
 		void visit(IDoubleQuestionColonExpressionNode value);
+
+		void visit(ITypeOfOperatorAsConstant value);
 	}
 
 }

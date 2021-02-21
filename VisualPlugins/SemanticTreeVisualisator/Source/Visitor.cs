@@ -2565,5 +2565,10 @@ namespace VisualPascalABCPlugins
         {
             throw new System.NotImplementedException();
         }
+
+        public void visit(ITypeOfOperatorAsConstant value)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
