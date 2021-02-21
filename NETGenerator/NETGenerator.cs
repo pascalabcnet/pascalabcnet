@@ -1190,6 +1190,7 @@ namespace PascalABCCompiler.NETGenerator
                 else
                 fb.SetConstant(constant_value.value);
             }
+            
         }
 
         private void PushConstantValue(IConstantNode cnst)
@@ -1801,6 +1802,8 @@ namespace PascalABCCompiler.NETGenerator
                         lst.Add(cn.value);
                     objs[i] = lst.ToArray();
                 }
+                else if (cnsts[i] is ITypeOfOperatorAsConstant)
+                    objs[i] = helper.GetTypeReference((cnsts[i] as ITypeOfOperatorAsConstant).TypeOfOperator.oftype).tp;
                 else
                     objs[i] = cnsts[i].value;
             }
@@ -11159,6 +11162,11 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(IDefaultOperatorNodeAsConstant value)
         {
             value.DefaultOperator.visit(this);
+        }
+
+        public override void visit(ITypeOfOperatorAsConstant value)
+        {
+            value.TypeOfOperator.visit(this);
         }
 
         public override void visit(ICommonConstructorCallAsConstant value)

@@ -12512,6 +12512,7 @@ namespace PascalABCCompiler.TreeConverter
         		case semantic_node_type.string_const_node :
         		case semantic_node_type.enum_const :
         		case semantic_node_type.null_const_node :
+                case semantic_node_type.typeof_operator_as_constant:
         			return;
         		default:
                     AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
@@ -14948,6 +14949,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (expr is default_operator_node)
                 constant = new default_operator_node_as_constant(expr as default_operator_node, null);
+            else if (expr is typeof_operator && !is_const_section)
+                constant = new typeof_operator_as_constant(expr as typeof_operator, null);
             else
             {
                 constant = expr as constant_node;
