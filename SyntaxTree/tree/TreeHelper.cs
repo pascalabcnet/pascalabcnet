@@ -1769,6 +1769,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class slice_expr
     {
+        public List<System.Tuple<expression, expression, expression>> slices = new List<Tuple<expression, expression, expression>>();
         public override string ToString() => this.v + "[" + this.from + ":" + this.to + ":" + this.step + "]";
     }
     

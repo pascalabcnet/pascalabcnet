@@ -2773,6 +2773,9 @@ function InternalRange(l,r: real): RealRange;
   
 ///--
 function IsInputPipedOrRedirectedFromFile: boolean;
+
+///--
+function CheckAndCorrectFromToAndCalcCountForSystemSlice(situation: integer; Len: integer; var from, &to: integer; step: integer): integer;
   
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
