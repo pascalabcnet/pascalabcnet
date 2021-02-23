@@ -12042,6 +12042,264 @@ begin
   Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, step);
 end;
 
+// Срезы многомерных массивов - вспомогательные типы и функции
+type
+  SliceType = class
+    situation,from, &to, step, count: integer;
+    oneelem: boolean;
+    constructor (sit,f,t: integer; st: integer := 1; oneel: boolean := false);
+    begin
+      situation := sit;
+      from := f;
+      &to := t;
+      step := st;
+      count := -1; // заполняется во внешней функции
+      oneelem := oneel;
+      if step = integer.MaxValue then
+        oneelem := True;
+    end;
+    procedure CorrectSliceAndCalcCount(len: integer);
+    begin
+      if oneelem then
+        count := 1 
+      else count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, len, from, &to, step);
+    end;
+    static function operator implicit(i: integer): SliceType;
+    static function operator implicit(ir: IntRange): SliceType;
+    static function operator implicit(sl: (integer,integer,integer)): SliceType;
+  end;
+
+function Diap(f, t: integer) := new SliceType(0, f, t, 1, false);
+function Elem(ind: integer) := new SliceType(0, ind, ind+1, 1, true);
+function Slice(f, t: integer; st: integer := 1; oneel: boolean := false): SliceType;
+begin
+  var sit := 0;
+  if f = integer.MaxValue then
+    sit += 1;
+  if t = integer.MaxValue then
+    sit += 2;
+  if st = integer.MaxValue then
+    oneel := True;
+  Result := new SliceType(sit, f, t, st, oneel);
+end; 
+
+static function SliceType.operator implicit(i: integer): SliceType;
+begin
+  Result := Elem(i);
+end;
+
+static function SliceType.operator implicit(ir: IntRange): SliceType;
+begin
+  Result := Diap(ir.Low,ir.High);
+end;
+
+static function SliceType.operator implicit(sl: (integer,integer,integer)): SliceType;
+begin
+  Result := Slice(sl[0],sl[1],sl[2]);
+end;
+
+
+function ToOneDim<T>(a: array [,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        res[cur] := a[i0,i1];
+        cur += 1;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function ToOneDim<T>(a: array [,,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count * l[2].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        var i2 := l[2].from;
+        loop l[2].count do
+        begin
+          res[cur] := a[i0,i1,i2];
+          cur += 1;
+          i2 += l[2].step;
+        end;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function ToOneDim<T>(a: array [,,,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count * l[2].count * l[3].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        var i2 := l[2].from;
+        loop l[2].count do
+        begin
+          var i3 := l[3].from;
+          loop l[3].count do
+          begin
+            res[cur] := a[i0,i1,i2,i3];
+            cur += 1;
+            i3 += l[3].step;
+          end;  
+          i2 += l[2].step;
+        end;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function FromOneDim2<T>(r: array of T; l: array of SliceType): array [,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  Assert(dims.Length = 2);
+  var cur := 0;
+  var res := new T[dims[0],dims[1]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  begin
+    res[i0,i1] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDim3<T>(r: array of T; l: array of SliceType): array [,,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  Assert(dims.Length = 3);
+  var cur := 0;
+  var res := new T[dims[0],dims[1],dims[2]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  for var i2:=0 to dims[2]-1 do
+  begin
+    res[i0,i1,i2] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDim4<T>(r: array of T; l: array of SliceType): array [,,,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  Assert(dims.Length = 4);
+  var cur := 0;
+  var res := new T[dims[0],dims[1],dims[2],dims[3]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  for var i2:=0 to dims[2]-1 do
+  for var i3:=0 to dims[3]-1 do
+  begin
+    res[i0,i1,i2,i3] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDimN<T>(r: array of T; l: array of SliceType): System.Array;
+begin
+  var rank := l.Count(x -> x.oneelem = False);
+  case rank of
+    1: Result := r;
+    2: Result := FromOneDim2(r,l);
+    3: Result := FromOneDim3(r,l);
+    4: Result := FromOneDim4(r,l);
+  end;  
+end;
+
+function SliceN<T>(a: array[,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+function SliceN<T>(a: array[,,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+function SliceN<T>(a: array[,,,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+{type 
+  ArrT<T> = array of T;
+  Arr2T<T> = array [,] of T;
+  Arr3T<T> = array [,,] of T;
+  Arr4T<T> = array [,,,] of T;}
+
+///--
+function SystemSliceN1<T>(Self: array[,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN1<T>(Self: array[,,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN1<T>(Self: array[,,,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN2<T>(Self: array[,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN2<T>(Self: array[,,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN2<T>(Self: array[,,,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN3<T>(Self: array[,,] of T; params l: array of SliceType): array[,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,] of T;
+///--
+function SystemSliceN3<T>(Self: array[,,,] of T; params l: array of SliceType): array[,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,] of T;
+///--
+function SystemSliceN4<T>(Self: array[,,,] of T; params l: array of SliceType): array[,,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,,] of T;
+
 // -----------------------------------------------------
 //>>     Методы расширения типа integer # Extension methods for integer
 // -----------------------------------------------------

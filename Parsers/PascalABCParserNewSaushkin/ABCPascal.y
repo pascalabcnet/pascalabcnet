@@ -3907,6 +3907,10 @@ as_expr
         {
             $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
         }
+    | term tkAs array_type
+	    {
+            $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
+	    }
     ;
     
 is_type_expr
@@ -3914,6 +3918,10 @@ is_type_expr
         {
             $$ = NewAsIsExpr($1, op_typecast.is_op, $3, @$);
         }
+    | term tkIs array_type
+	    {
+            $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
+	    }
     ;
     
 power_expr
@@ -4159,6 +4167,31 @@ variable
                 }
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
+			// многомерные срезы
+            else if (el.expressions.Any(e => e is format_expr))
+            {
+                var ll = new List<Tuple<expression, expression, expression>>();
+                foreach (var ex in el.expressions)
+                {
+                    if (ex is format_expr fe)
+                    {
+                        if (fe.expr == null)
+                            fe.expr = new int32_const(int.MaxValue, fe.source_context);
+                        if (fe.format1 == null)
+                            fe.format1 = new int32_const(int.MaxValue, fe.source_context);
+                        if (fe.format2 == null)
+                            fe.format2 = new int32_const(1, fe.source_context);
+                        ll.Add(Tuple.Create(fe.expr, fe.format1, fe.format2));
+                    }
+                    else
+                    {
+                    	ll.Add(Tuple.Create(ex, ex, (expression)new int32_const(int.MaxValue, ex.source_context))); // скал€рное значение вместо среза
+                    }
+				}
+				var sle = new slice_expr($1 as addressed_value,null,null,null,@$);
+				sle.slices = ll;
+				$$ = sle;
+            }
 			else $$ = new indexer($1 as addressed_value, el, @$);
         }
     | variable_or_literal_or_number tkQuestionSquareOpen format_expr tkSquareClose                

@@ -16,6 +16,26 @@ namespace SyntaxVisitors.SugarVisitors
             get { return new SliceDesugarVisitor(); }
         }
 
+        expression_list construct_expression_list_for_slice_expr_multi(slice_expr sl)
+        {
+            if (sl.slices == null)
+                return null; // упадёт - это ошибка компилятора
+            var el = new expression_list(); // будем наполнять кортежами - самое простое
+            var sc = sl.source_context;
+            foreach (var slice in sl.slices)
+            {
+                var tup = new dot_node(new dot_node(new ident("?System",sc), new ident("Tuple",sc), sc), new ident("Create",sc), sc);
+                // пока без ^1
+                var eel = new expression_list();
+                eel.Add(slice.Item1);
+                eel.Add(slice.Item2);
+                eel.Add(slice.Item3);
+                var mc = new method_call(tup, eel, sc); // sc - не очень хорошо - ошибка будет в общем месте
+                el.Add(mc);
+                // по идее все параметры готовы. Надо только проверить, что они целые
+            }
+            return el;
+        }
         expression_list construct_expression_list_for_slice_expr(slice_expr sl)
         {
             // situation = 0 - ничего не пропущено
@@ -80,9 +100,19 @@ namespace SyntaxVisitors.SugarVisitors
         
         public override void visit(slice_expr sl)
         {
-            var el = construct_expression_list_for_slice_expr(sl);
+            expression_list el = null;
+            if (sl.slices == null)
+                el = construct_expression_list_for_slice_expr(sl);
+            else el = construct_expression_list_for_slice_expr_multi(sl); // то это многомерный массив
+            // надо как-то запретить многомерные слайсы в левой части присваивания
             if (sl.Parent is assign parent_assign && parent_assign.to == sl)
             {
+                // если это многомерный слайс - кинуть ошибку
+                if (sl.slices != null)
+                {
+                    // запретим пока или вовсе
+                    throw new SyntaxVisitorError("MULTIDIMENSIONAL_SLICES_FORBIDDEN_IN_LEFT_SIDE_OF_ASSIGNMENT", sl.source_context);
+                }
                 el.Insert(0, parent_assign.from);
                 var mc = method_call.NewP(
                         dot_node.NewP(
@@ -99,10 +129,23 @@ namespace SyntaxVisitors.SugarVisitors
             }
             else
             {
-                var mc = method_call.NewP(dot_node.NewP(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
-                var sug = sugared_addressed_value.NewP(sl, mc, sl.source_context);
-                ReplaceUsingParent(sl, sug);
-                visit(mc); // обойти заменённое на предмет наличия такого же синтаксического сахара
+                if (sl.slices == null) // значит, это одномерный слайс - вызываем старый код
+                {
+                    var mc = method_call.NewP(dot_node.NewP(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+                    var sug = sugared_addressed_value.NewP(sl, mc, sl.source_context);
+                    ReplaceUsingParent(sl, sug);
+                    visit(mc); // обойти заменённое на предмет наличия такого же синтаксического сахара
+                }
+                else // многомерный слайс на чтение - вызываем груду новых функций
+                {
+                    // Определим, сколько размерностей надо оставлять в многомерном слайсе
+                    // Столько - сколько в sl.slices кортежей с шагом int.MaxValue. Считаем:
+                    var N = sl.slices.Count(s => { var u = s.Item3 as int32_const; return u == null || u.val != int.MaxValue; });
+                    var mc = method_call.NewP(dot_node.NewP(sl.v, new ident("SystemSliceN"+N, sl.v.source_context), sl.v.source_context), el, sl.source_context);
+                    // пока без семантической проверки
+                    ReplaceUsingParent(sl, mc);
+                    visit(mc);
+                }
             }
         }
 
