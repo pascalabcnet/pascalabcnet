@@ -4185,7 +4185,7 @@ variable
                     }
                     else
                     {
-                    	ll.Add(Tuple.Create(ex, ex, (expression)new int32_const(int.MaxValue, ex.source_context))); // скал€рное значение вместо среза
+                    	ll.Add(Tuple.Create(ex, (expression)new int32_const(0, ex.source_context), (expression)new int32_const(int.MaxValue, ex.source_context))); // скал€рное значение вместо среза
                     }
 				}
 				var sle = new slice_expr($1 as addressed_value,null,null,null,@$);

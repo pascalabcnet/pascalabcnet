@@ -21019,9 +21019,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 semantic_check_method_call_as_diapason_expr(av.new_addr_value as SyntaxTree.method_call);
             }
-            else if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
+            else if (av.sugared_expr is SyntaxTree.slice_expr slex) // и slice_expr_question
             {
-                semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
+                if (slex.slices == null)
+                    semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
+                else semantic_check_method_call_as_slice_expr_multi(av.new_addr_value as SyntaxTree.method_call);
             }
             else if (av.sugared_expr is SyntaxTree.dot_question_node)
             {

@@ -61,7 +61,7 @@ namespace SyntaxVisitors.SugarVisitors
                 mc = indexCreation;
             }
             //var sug = new sugared_expression(ind, mc, ind.source_context);
-            Replace(ind, mc);
+            ReplaceUsingParent(ind, mc);
             visit(mc);
         }
 

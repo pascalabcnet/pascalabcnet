@@ -136,6 +136,12 @@ namespace PascalABCCompiler.TreeConverter
             }
 
         }
+
+        void semantic_check_method_call_as_slice_expr_multi(SyntaxTree.method_call mc)
+        {
+
+        }
+
         /*void semantic_check_tuple(SyntaxTree.tuple_node tup)
         {
             //if (tup.el.expressions.Count > 7) 

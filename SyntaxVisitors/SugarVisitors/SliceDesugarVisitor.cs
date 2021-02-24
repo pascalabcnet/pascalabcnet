@@ -25,10 +25,16 @@ namespace SyntaxVisitors.SugarVisitors
             foreach (var slice in sl.slices)
             {
                 var tup = new dot_node(new dot_node(new ident("?System",sc), new ident("Tuple",sc), sc), new ident("Create",sc), sc);
-                // пока без ^1
                 var eel = new expression_list();
-                eel.Add(slice.Item1);
+                // пытаемся разобраться с ^1
+
+                var sl1 = slice.Item1;
+                eel.Add(sl1);
+                IndexVisitor.New.ProcessNode(sl1); // индексный визитор сам не вызывается поскольку в многомерных срезах хранится List кортежей троек expression, который сам не обходится
+                var sl2 = slice.Item2;
                 eel.Add(slice.Item2);
+                IndexVisitor.New.ProcessNode(sl2);
+
                 eel.Add(slice.Item3);
                 var mc = new method_call(tup, eel, sc); // sc - не очень хорошо - ошибка будет в общем месте
                 el.Add(mc);
@@ -51,7 +57,7 @@ namespace SyntaxVisitors.SugarVisitors
 
             if (sl.from is index fromInd)
             {
-                fromInverted = fromInd.inverted;
+                fromInverted = fromInd.inverted; // странно, но не используется
                 fromExpr = fromInd.index_expr;
             }
 
@@ -59,7 +65,7 @@ namespace SyntaxVisitors.SugarVisitors
             var toExpr = sl.to;
             if (sl.to is index toInd)
             {
-                toInverted = toInd.inverted;
+                toInverted = toInd.inverted; // странно, но не используется
                 toExpr = toInd.index_expr;
             }
 
@@ -142,8 +148,9 @@ namespace SyntaxVisitors.SugarVisitors
                     // Столько - сколько в sl.slices кортежей с шагом int.MaxValue. Считаем:
                     var N = sl.slices.Count(s => { var u = s.Item3 as int32_const; return u == null || u.val != int.MaxValue; });
                     var mc = method_call.NewP(dot_node.NewP(sl.v, new ident("SystemSliceN"+N, sl.v.source_context), sl.v.source_context), el, sl.source_context);
+                    var sug = sugared_addressed_value.NewP(sl, mc, sl.source_context);
                     // пока без семантической проверки
-                    ReplaceUsingParent(sl, mc);
+                    ReplaceUsingParent(sl, sug);
                     visit(mc);
                 }
             }

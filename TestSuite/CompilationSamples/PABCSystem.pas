@@ -12046,20 +12046,26 @@ end;
 type
   SliceType = class
     situation,from, &to, step, count: integer;
-    oneelem: boolean;
-    constructor (sit,f,t: integer; st: integer := 1; oneel: boolean := false);
+    fromInverted, toInverted: boolean;
+    function oneelem: boolean := step = integer.MaxValue; // если шаг = integer.MaxValue, то это один элемент, а не срез (договорённость)
+    constructor (sit,f,t: integer; st: integer := 1);
     begin
       situation := sit;
       from := f;
       &to := t;
+      fromInverted := False;
+      toInverted := False;
       step := st;
-      count := -1; // заполняется во внешней функции
-      oneelem := oneel;
-      if step = integer.MaxValue then
-        oneelem := True;
+      count := -1; // заполняется во внешней функции CorrectSliceAndCalcCount при известной длине по данной размерности
+      //oneelem := step = integer.MaxValue; // если шаг = integer.MaxValue, то это один элемент, а не срез (договорённость)
     end;
     procedure CorrectSliceAndCalcCount(len: integer);
     begin
+      if fromInverted then // Надеюсь, что ровно здесь. Это означает, что эти значения точно не пропущены
+        from := len - from;
+      if toInverted then
+        &to := len - &to;
+
       if oneelem then
         count := 1 
       else count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, len, from, &to, step);
@@ -12067,21 +12073,28 @@ type
     static function operator implicit(i: integer): SliceType;
     static function operator implicit(ir: IntRange): SliceType;
     static function operator implicit(sl: (integer,integer,integer)): SliceType;
+    static function operator implicit(sl: (SystemIndex,SystemIndex,integer)): SliceType; // a[^1:,^2]
+    static function operator implicit(sl: (integer,SystemIndex,integer)): SliceType; // a[^1:,^2]
+    static function operator implicit(sl: (SystemIndex,integer,integer)): SliceType; // a[^1:,^2]
   end;
 
-function Diap(f, t: integer) := new SliceType(0, f, t, 1, false);
-function Elem(ind: integer) := new SliceType(0, ind, ind+1, 1, true);
-function Slice(f, t: integer; st: integer := 1; oneel: boolean := false): SliceType;
+function Diap(f, t: integer) := new SliceType(0, f, t, 1);
+function Elem(ind: integer) := new SliceType(0, ind, ind+1, integer.MaxValue);
+function Slice(f, t: integer; st: integer := 1): SliceType;
 begin
   var sit := 0;
   if f = integer.MaxValue then
     sit += 1;
   if t = integer.MaxValue then
     sit += 2;
-  if st = integer.MaxValue then
-    oneel := True;
-  Result := new SliceType(sit, f, t, st, oneel);
+  Result := new SliceType(sit, f, t, st);
 end; 
+{function Slice(f, t: SystemIndex; st: integer := 1): SliceType;
+begin
+  Result := Slice(f.IndexValue, t.IndexValue, st);
+  Result.fromInverted := f.IsInverted;
+  Result.toInverted := t.IsInverted;
+end;}
 
 static function SliceType.operator implicit(i: integer): SliceType;
 begin
@@ -12098,6 +12111,24 @@ begin
   Result := Slice(sl[0],sl[1],sl[2]);
 end;
 
+static function SliceType.operator implicit(sl: (SystemIndex,SystemIndex,integer)): SliceType;
+begin
+  Result := Slice(sl[0].IndexValue,sl[1].IndexValue,sl[2]);
+  Result.fromInverted := sl[0].IsInverted;
+  Result.toInverted := sl[1].IsInverted;
+end;
+
+static function SliceType.operator implicit(sl: (integer,SystemIndex,integer)): SliceType;
+begin
+  Result := Slice(sl[0],sl[1].IndexValue,sl[2]);
+  Result.toInverted := sl[1].IsInverted;
+end;
+
+static function SliceType.operator implicit(sl: (SystemIndex,integer,integer)): SliceType;
+begin
+  Result := Slice(sl[0].IndexValue,sl[1],sl[2]);
+  Result.fromInverted := sl[0].IsInverted;
+end;
 
 function ToOneDim<T>(a: array [,] of T; l: array of SliceType): array of T;
 begin
@@ -12192,7 +12223,6 @@ end;
 function FromOneDim2<T>(r: array of T; l: array of SliceType): array [,] of T;
 begin
   var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
-  Assert(dims.Length = 2);
   var cur := 0;
   var res := new T[dims[0],dims[1]];
   for var i0:=0 to dims[0]-1 do
@@ -12207,7 +12237,6 @@ end;
 function FromOneDim3<T>(r: array of T; l: array of SliceType): array [,,] of T;
 begin
   var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
-  Assert(dims.Length = 3);
   var cur := 0;
   var res := new T[dims[0],dims[1],dims[2]];
   for var i0:=0 to dims[0]-1 do
@@ -12223,7 +12252,6 @@ end;
 function FromOneDim4<T>(r: array of T; l: array of SliceType): array [,,,] of T;
 begin
   var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
-  Assert(dims.Length = 4);
   var cur := 0;
   var res := new T[dims[0],dims[1],dims[2],dims[3]];
   for var i0:=0 to dims[0]-1 do
@@ -12266,7 +12294,7 @@ begin
   Result := FromOneDimN(r,l);
 end;
 
-{type 
+{type // это не компилируется в PABCSystem
   ArrT<T> = array of T;
   Arr2T<T> = array [,] of T;
   Arr3T<T> = array [,,] of T;
