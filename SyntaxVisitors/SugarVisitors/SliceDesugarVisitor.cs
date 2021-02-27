@@ -32,10 +32,12 @@ namespace SyntaxVisitors.SugarVisitors
                 eel.Add(sl1);
                 IndexVisitor.New.ProcessNode(sl1); // индексный визитор сам не вызывается поскольку в многомерных срезах хранится List кортежей троек expression, который сам не обходится
                 var sl2 = slice.Item2;
-                eel.Add(slice.Item2);
+                eel.Add(sl2);
                 IndexVisitor.New.ProcessNode(sl2);
+                var sl3 = slice.Item3; // и step тоже надо обходить!!!
+                eel.Add(sl3);
+                IndexVisitor.New.ProcessNode(sl3);
 
-                eel.Add(slice.Item3);
                 var mc = new method_call(tup, eel, sc); // sc - не очень хорошо - ошибка будет в общем месте
                 el.Add(mc);
                 // по идее все параметры готовы. Надо только проверить, что они целые

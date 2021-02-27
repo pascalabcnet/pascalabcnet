@@ -70,6 +70,7 @@
 %type <stn> case_stmt    
 %type <stn> case_list  
 %type <stn> program_decl_sect_list int_decl_sect_list1 inclass_decl_sect_list1 interface_decl_sect_list decl_sect_list decl_sect_list1 inclass_decl_sect_list 
+%type <stn> decl_sect_list_proc_func_only
 %type <stn> field_or_const_definition abc_decl_sect decl_sect int_decl_sect type_decl simple_type_decl simple_field_or_const_definition res_str_decl_sect 
 %type <stn> method_decl_withattr method_or_property_decl property_definition fp_sect 
 %type <ex> default_expr tuple 
@@ -159,7 +160,7 @@
 %type <stn> template_param_list template_empty_param_list template_type_params template_type_empty_params
 %type <td> template_type
 %type <stn> try_stmt  
-%type <stn> uses_clause used_units_list  
+%type <stn> uses_clause used_units_list uses_clause_one uses_clause_one_or_empty 
 %type <stn> unit_file  
 %type <stn> used_unit_name
 %type <stn> unit_header  
@@ -188,15 +189,17 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
-	| tkShortProgram uses_clause stmt_list	
+	| tkShortProgram uses_clause_one_or_empty decl_sect_list_proc_func_only stmt_list	
 		{ 
-			var stl = $3 as statement_list;
+			var stl = $4 as statement_list;
 			stl.left_logical_bracket = $1;
 			stl.right_logical_bracket = new token_info("");
 			var ul = $2 as uses_list;
-			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
+			SourceContext sc3 = @3;
+			SourceContext sc4 = @4;
+			root = $$ = NewProgramModule(null, null, ul, new block($3 as declarations, stl, @4), new token_info(""), @$); 
 		}
-	| tkShortSFProgram uses_clause stmt_list	
+	| tkShortSFProgram uses_clause_one stmt_list	
 		{
 			var stl = $3 as statement_list;
 			stl.left_logical_bracket = $1;
@@ -330,21 +333,43 @@ ident_or_keyword_pointseparator_list
 		}
     ;
 
+
+uses_clause_one
+	: tkUses used_units_list tkSemiColon
+		{
+			$$ = $2;
+			$$.source_context = @$;
+		}
+	;
+	
+uses_clause_one_or_empty
+	: 
+		{ 
+			$$ = null; 
+		}
+	| uses_clause_one
+		{
+			if (parsertools.build_tree_for_formatter)
+				$$ = new uses_closure($1 as uses_list,@$);
+			$$ = $1;
+		}
+	;
+
 uses_clause
     :
 		{ 
 			$$ = null; 
 		}
-    | uses_clause tkUses used_units_list tkSemiColon            
+    | uses_clause uses_clause_one            
         { 
    			if (parsertools.build_tree_for_formatter)
    			{
 	        	if ($1 == null)
                 {
-	        		$$ = new uses_closure($3 as uses_list,@$);
+	        		$$ = new uses_closure($2 as uses_list,@$);
                 }
 	        	else {
-                    ($1 as uses_closure).AddUsesList($3 as uses_list,@$);
+                    ($1 as uses_closure).AddUsesList($2 as uses_list,@$);
                     $$ = $1;
                 }
    			}
@@ -352,12 +377,12 @@ uses_clause
    			{
 	        	if ($1 == null)
                 {
-                    $$ = $3;
+                    $$ = $2;
                     $$.source_context = @$;
                 }
 	        	else 
                 {
-                    ($1 as uses_list).AddUsesList($3 as uses_list,@$);
+                    ($1 as uses_list).AddUsesList($2 as uses_list,@$);
                     $$ = $1;
                     $$.source_context = @$;
                 }
@@ -495,6 +520,28 @@ decl_sect_list
 			else 
 				$$ = $1;
 		}
+	;
+	
+decl_sect_list_proc_func_only
+	:
+        { 
+			$$ = new declarations(); 
+			if (GlobalDecls==null) 
+				GlobalDecls = $$ as declarations;
+		}
+	| decl_sect_list_proc_func_only proc_func_decl_noclass
+		{
+			var dcl = $1 as declarations;
+			if (dcl.Count == 0)			
+				$$ = dcl.Add($2 as declaration, @2);
+			else
+			{
+				var sc = dcl.source_context;
+				sc = sc.Merge($2.source_context);
+				$$ = dcl.Add($2 as declaration, @2);
+				$$.source_context = sc;			
+			}
+		}		
 	;
 	
 decl_sect_list1

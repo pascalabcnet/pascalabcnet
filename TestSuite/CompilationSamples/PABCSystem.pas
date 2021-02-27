@@ -10026,7 +10026,7 @@ begin
   Result := Self.Reverse.Skip(count).Reverse;
 end;
 
-/// Декартово произведение последовательностей
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
 function Cartesian<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod;
 begin
   if b = nil then
@@ -10037,7 +10037,7 @@ begin
       yield (x, y)
 end;
 
-/// Декартово произведение последовательностей
+/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
 function Cartesian<T, T1, T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod;
 begin
   if b = nil then

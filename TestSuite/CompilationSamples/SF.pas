@@ -24,6 +24,7 @@ type
   ProcI = int -> ();
   ProcR = real -> ();
   ProcS = string -> ();
+  HS<T> = HashSet<T>;
 
 procedure Pr(params a: array of object) := Print(a);
 procedure Pr(o: object) := Print(o);
@@ -216,6 +217,10 @@ function Agr<T,TAcc>(Self: sequence of T; seed: TAcc; func: (TAcc,T)->TAcc): TAc
 /// Фильтрует последовательность по условию cond
 function Wh<T>(Self: sequence of T; cond: T->boolean): sequence of T; extensionmethod := Self.Where(cond);
 
+/// Группирует элементы последовательности в соответствии с заданной функцией проекции на ключ группы
+function GrBy<T,TKey>(Self: sequence of T; selector: T->TKey): sequence of System.Linq.IGrouping<TKey,T>; extensionmethod := Self.GroupBy(selector);
+
+
 /// Преобразует последовательность в массив
 function ToA<T>(Self: sequence of T): array of T; extensionmethod := Self.ToArray;
 
@@ -227,10 +232,6 @@ function ToHS<T>(Self: sequence of T): HashSet<T>; extensionmethod := Self.ToHas
 /// Преобразует последовательность в SortedSet
 function ToSS<T>(Self: sequence of T): SortedSet<T>; extensionmethod := Self.ToSortedSet;
 
-/// Преобразует последовательность в HashSet 
-function HS<T>(s: sequence of T): HashSet<T> := s.ToHashSet;
-/// Преобразует последовательность в SortedSet
-function SS<T>(s: sequence of T): SortedSet<T> := s.ToSortedSet;
 
 /// Инвертирует последовательность
 procedure Rev<T>(a: array of T) := Reverse(a);
@@ -279,6 +280,15 @@ function Cart<T>(Self: array of T; n: integer): sequence of array of T; extensio
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
 function Cart<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
+
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
+function Cart<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod := Self.Cartesian(b);
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
+function Cart<T, T1, T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod := Self.Cartesian(b,func);
+
+/// Возвращает исходную последовательность или одноэлементную последовательность если исходная последовательность пуста
+function DefIfE<T>(Self: sequence of T; def: T): sequence of T; extensionmethod := Self.DefaultIfEmpty(def);
 
 /// Возвращает все сочетания по m элементов
 function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod := Self.Combinations(m);

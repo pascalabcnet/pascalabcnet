@@ -26,5 +26,5 @@ begin
   AssertEq(m[1,:],|5,6,7,8|);
   AssertEq(m[^1,:],|9,10,11,12|);
   AssertEq(m[:,^1],|4,8,12|);
-  Print(m[:,^1]);
+  //Print(m[:,^1]);
 end.
