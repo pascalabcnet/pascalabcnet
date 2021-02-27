@@ -192,17 +192,16 @@ parse_goal
 	| tkShortProgram uses_clause_one_or_empty decl_sect_list_proc_func_only stmt_list	
 		{ 
 			var stl = $4 as statement_list;
-			stl.left_logical_bracket = $1;
+			stl.left_logical_bracket = new token_info("");
 			stl.right_logical_bracket = new token_info("");
 			var ul = $2 as uses_list;
-			SourceContext sc3 = @3;
-			SourceContext sc4 = @4;
-			root = $$ = NewProgramModule(null, null, ul, new block($3 as declarations, stl, @4), new token_info(""), @$); 
+			root = $$ = NewProgramModule(null, null, ul, new block($3 as declarations, stl, @4), new token_info(""), LexLocation.MergeAll(@2,@3,@4)); 
 		}
-	| tkShortSFProgram uses_clause_one stmt_list	
+	| tkShortSFProgram uses_clause_one_or_empty decl_sect_list_proc_func_only stmt_list	
 		{
-			var stl = $3 as statement_list;
-			stl.left_logical_bracket = $1;
+			var stl = $4 as statement_list;
+			stl.left_logical_bracket = new token_info("");
+			stl.right_logical_bracket = new token_info("");
 			var un = new unit_or_namespace(new ident_list("SF"),null);
 			var ul = $2 as uses_list;
 			if (ul == null)
@@ -210,7 +209,7 @@ parse_goal
 				ul = new uses_list(un,null);
 			else ul.Insert(0,un);
 			//ul.Add(un1);
-			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
+			root = $$ = NewProgramModule(null, null, ul, new block($3 as declarations, stl, @$), new token_info(""), LexLocation.MergeAll(@2,@3,@4)); 
 		}
     ;
 

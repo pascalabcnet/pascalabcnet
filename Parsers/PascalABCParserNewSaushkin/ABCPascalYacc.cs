@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 27.02.2021 21:02:16
+// DateTime: 28.02.2021 0:47:41
 // UserName: ?????????
 // Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -77,7 +77,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
   private static Dictionary<int, string> aliasses;
 #pragma warning restore 649
   private static Rule[] rules = new Rule[995];
-  private static State[] states = new State[1644];
+  private static State[] states = new State[1645];
   private static string[] nonTerms = new string[] {
       "parse_goal", "unit_key_word", "class_or_static", "assignment", "optional_array_initializer", 
       "attribute_declarations", "ot_visibility_specifier", "one_attribute", "attribute_variable", 
@@ -1811,16 +1811,17 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[1638] = new State(new int[]{10,20,2,-5});
     states[1639] = new State(-66);
     states[1640] = new State(-40);
-    states[1641] = new State(new int[]{49,1524},new int[]{-298,1642});
-    states[1642] = new State(new int[]{138,378,140,47,83,49,84,50,78,52,76,244,42,385,39,679,8,680,18,264,19,269,141,150,143,151,142,153,151,716,154,156,153,157,152,158,74,526,54,695,88,17,37,673,22,702,94,718,51,723,32,728,52,738,99,744,44,751,33,754,50,762,57,832,72,837,70,824,35,846,10,-492,2,-492},new int[]{-245,1643,-254,714,-253,22,-4,23,-105,24,-124,367,-104,496,-139,715,-143,48,-144,51,-184,422,-250,502,-288,503,-15,666,-157,147,-159,148,-158,152,-16,154,-17,504,-56,667,-108,532,-205,693,-125,694,-248,699,-145,700,-33,701,-240,717,-312,722,-116,727,-313,737,-152,742,-295,743,-241,750,-115,753,-308,761,-57,828,-167,829,-166,830,-161,831,-118,836,-119,843,-117,844,-342,845,-135,1001});
-    states[1643] = new State(new int[]{10,20,2,-6});
+    states[1641] = new State(new int[]{49,1524,138,-39,140,-39,83,-39,84,-39,78,-39,76,-39,42,-39,39,-39,8,-39,18,-39,19,-39,141,-39,143,-39,142,-39,151,-39,154,-39,153,-39,152,-39,74,-39,54,-39,88,-39,37,-39,22,-39,94,-39,51,-39,32,-39,52,-39,99,-39,44,-39,33,-39,50,-39,57,-39,72,-39,70,-39,35,-39,41,-39,34,-39,10,-39,2,-39},new int[]{-299,1642,-298,1640});
+    states[1642] = new State(-65,new int[]{-42,1643});
+    states[1643] = new State(new int[]{138,378,140,47,83,49,84,50,78,52,76,244,42,385,39,679,8,680,18,264,19,269,141,150,143,151,142,153,151,716,154,156,153,157,152,158,74,526,54,695,88,17,37,673,22,702,94,718,51,723,32,728,52,738,99,744,44,751,33,754,50,762,57,832,72,837,70,824,35,846,41,1483,34,1490,10,-492,2,-492},new int[]{-245,1644,-214,1639,-254,714,-253,22,-4,23,-105,24,-124,367,-104,496,-139,715,-143,48,-144,51,-184,422,-250,502,-288,503,-15,666,-157,147,-159,148,-158,152,-16,154,-17,504,-56,667,-108,532,-205,693,-125,694,-248,699,-145,700,-33,701,-240,717,-312,722,-116,727,-313,737,-152,742,-295,743,-241,750,-115,753,-308,761,-57,828,-167,829,-166,830,-161,831,-118,836,-119,843,-117,844,-342,845,-135,1001,-221,1474,-218,1274,-222,1309});
+    states[1644] = new State(new int[]{10,20,2,-6});
 
     rules[1] = new Rule(-352, new int[]{-1,2});
     rules[2] = new Rule(-1, new int[]{-227});
     rules[3] = new Rule(-1, new int[]{-300});
     rules[4] = new Rule(-1, new int[]{-168});
     rules[5] = new Rule(-1, new int[]{73,-299,-42,-245});
-    rules[6] = new Rule(-1, new int[]{75,-298,-245});
+    rules[6] = new Rule(-1, new int[]{75,-299,-42,-245});
     rules[7] = new Rule(-168, new int[]{85,-83});
     rules[8] = new Rule(-168, new int[]{85,47,-136});
     rules[9] = new Rule(-168, new int[]{87,-314});
@@ -2836,26 +2837,26 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
               //               decl_sect_list_proc_func_only, stmt_list
 { 
 			var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
-			stl.left_logical_bracket = ValueStack[ValueStack.Depth-4].ti;
+			stl.left_logical_bracket = new token_info("");
 			stl.right_logical_bracket = new token_info("");
 			var ul = ValueStack[ValueStack.Depth-3].stn as uses_list;
-			SourceContext sc3 = LocationStack[LocationStack.Depth-2];
-			SourceContext sc4 = LocationStack[LocationStack.Depth-1];
-			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(ValueStack[ValueStack.Depth-2].stn as declarations, stl, LocationStack[LocationStack.Depth-1]), new token_info(""), CurrentLocationSpan); 
+			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(ValueStack[ValueStack.Depth-2].stn as declarations, stl, LocationStack[LocationStack.Depth-1]), new token_info(""), LexLocation.MergeAll(LocationStack[LocationStack.Depth-3],LocationStack[LocationStack.Depth-2],LocationStack[LocationStack.Depth-1])); 
 		}
         break;
-      case 6: // parse_goal -> tkShortSFProgram, uses_clause_one, stmt_list
+      case 6: // parse_goal -> tkShortSFProgram, uses_clause_one_or_empty, 
+              //               decl_sect_list_proc_func_only, stmt_list
 {
 			var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
-			stl.left_logical_bracket = ValueStack[ValueStack.Depth-3].ti;
+			stl.left_logical_bracket = new token_info("");
+			stl.right_logical_bracket = new token_info("");
 			var un = new unit_or_namespace(new ident_list("SF"),null);
-			var ul = ValueStack[ValueStack.Depth-2].stn as uses_list;
+			var ul = ValueStack[ValueStack.Depth-3].stn as uses_list;
 			if (ul == null)
 			//var un1 = new unit_or_namespace(new ident_list("School"),null);
 				ul = new uses_list(un,null);
 			else ul.Insert(0,un);
 			//ul.Add(un1);
-			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(null, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan); 
+			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(ValueStack[ValueStack.Depth-2].stn as declarations, stl, CurrentLocationSpan), new token_info(""), LexLocation.MergeAll(LocationStack[LocationStack.Depth-3],LocationStack[LocationStack.Depth-2],LocationStack[LocationStack.Depth-1])); 
 		}
         break;
       case 7: // parts -> tkParseModeExpression, expr
