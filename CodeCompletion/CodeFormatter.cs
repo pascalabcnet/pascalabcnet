@@ -684,6 +684,11 @@ namespace CodeFormatters
                     sb.Append("()");
                 cur_src_off = pos;
             }
+            else if (sn is program_module && (sn as program_module).program_block.program_code.right_logical_bracket.source_context == null)
+            {
+                string comm = Text.Substring(prev_pos).Trim();
+                sb.Append(comm);
+            }
         }
 
         private void IncOffset()
@@ -881,6 +886,7 @@ namespace CodeFormatters
                         WritePossibleCommentAfter(sn);
                     if (sn.source_context != null /*&& !(sn is exception_handler)*/)
                         prev_sn = sn;
+                    
                 }
             }
         }
