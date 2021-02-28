@@ -1639,7 +1639,8 @@ namespace CodeFormatters
             {
                 if (i > 0)
                     add_space_after = true;
-                visit_node(_uses_list.units[i]);
+                if (_uses_list.units[i].source_context != null)
+                    visit_node(_uses_list.units[i]);
             }
             insert_newline_after_prev = true;
             DecOffset(tab);
