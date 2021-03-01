@@ -5,6 +5,7 @@ using PascalABCCompiler.Errors;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace PascalABCCompiler
 {
@@ -132,7 +133,12 @@ namespace PascalABCCompiler
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
             Compiler.InternalDebug.SkipPCUErrors = false;
-            StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[0];
+            CultureInfo ci = CultureInfo.InstalledUICulture;
+            if (StringResourcesLanguage.CurrentTwoLetterISO == "ru" && ci.TwoLetterISOLanguageName != "ru")
+                StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[StringResourcesLanguage.TwoLetterISOLanguages.IndexOf("en")];
+            else
+                StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[StringResourcesLanguage.TwoLetterISOLanguages.IndexOf(StringResourcesLanguage.CurrentTwoLetterISO)];
+
             //Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);
             ldt = DateTime.Now;
 
