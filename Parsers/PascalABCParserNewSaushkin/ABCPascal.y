@@ -33,6 +33,7 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkUnderscore tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
+%token <ti> tkBackSlashRoundOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -4840,6 +4841,9 @@ func_decl_lambda
 				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, pair.exprs, @$);
 			}
 		}
+    | tkBackSlashRoundOpen ident tkComma ident_list tkRoundClose rem_lambda // лямбда с распаковкой
+    	{
+    	}
 	| expl_func_decl_lambda
 		{
 			$$ = $1; 

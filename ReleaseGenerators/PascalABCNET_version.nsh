@@ -1,1 +1,1 @@
-!define VERSION '3.7.2.2841'
+!define VERSION '3.7.2.2842'
