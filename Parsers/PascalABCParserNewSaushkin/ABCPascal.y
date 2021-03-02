@@ -4216,6 +4216,8 @@ variable
 			// многомерные срезы
             else if (el.expressions.Any(e => e is format_expr))
             {
+            	if (el.expressions.Count > 4)
+            		parsertools.AddErrorFromResource("SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5",@$); // Срезы многомерных массивов разрешены только для массивов размерности < 5  
                 var ll = new List<Tuple<expression, expression, expression>>();
                 foreach (var ex in el.expressions)
                 {

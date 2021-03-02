@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 28.02.2021 0:47:41
+// DateTime: 01.03.2021 9:06:40
 // UserName: ?????????
 // Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -6649,6 +6649,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			// ����������� �����
             else if (el.expressions.Any(e => e is format_expr))
             {
+            	if (el.expressions.Count > 4)
+            		parsertools.AddErrorFromResource("SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5",CurrentLocationSpan); // ����� ����������� �������� ��������� ������ ��� �������� ����������� < 5  
                 var ll = new List<Tuple<expression, expression, expression>>();
                 foreach (var ex in el.expressions)
                 {
