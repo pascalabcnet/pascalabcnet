@@ -318,6 +318,5 @@
     <name value="var_decl_part" />
     <name value="typed_const" />
     <name value="var_stmt" />
-    <name value="func_decl_lambda" />
   </tag>
 </tags>

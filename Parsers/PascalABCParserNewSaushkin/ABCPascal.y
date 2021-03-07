@@ -63,6 +63,7 @@
 %type <ex> const_factor const_factor_without_unary_op const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
+%type <ob> lambda_unpacked_params lambda_unpacked_params_or_id lambda_list_of_unpacked_params_or_id
 %type <stn> member_list_section optional_component_list_seq_end  
 %type <stn> const_decl only_const_decl  
 %type <stn> const_decl_sect  
@@ -4723,6 +4724,40 @@ assign_operator
 		{ $$ = $1; }
     ;
 
+lambda_unpacked_params
+	: tkBackSlashRoundOpen lambda_list_of_unpacked_params_or_id tkComma lambda_unpacked_params_or_id tkRoundClose
+		{
+			// результат надо присвоить какому то сахарному полю в function_lambda_definition
+			$$ = $2;
+			($$ as List<ident_or_list>).Add($4 as ident_or_list);
+		}
+	;
+	
+lambda_unpacked_params_or_id
+	: lambda_unpacked_params
+		{
+			$$ = new List<ident_or_list>($1 as List<ident_or_list>);
+		}
+	| identifier
+		{
+			$$ = new ident_or_list($1 as ident);
+		}
+	;
+	
+lambda_list_of_unpacked_params_or_id
+	: lambda_unpacked_params_or_id
+		{
+			$$ = new List<ident_or_list>();
+			($$ as List<ident_or_list>).Add($1 as ident_or_list);  
+		}
+	| lambda_list_of_unpacked_params_or_id tkComma lambda_unpacked_params_or_id
+		{
+			$$ = $1;
+			($$ as List<ident_or_list>).Add($3 as ident_or_list);
+		}
+	;
+
+	
 func_decl_lambda
 	: identifier tkArrow lambda_function_body
 		{
@@ -4841,8 +4876,12 @@ func_decl_lambda
 				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, pair.exprs, @$);
 			}
 		}
-    | tkBackSlashRoundOpen ident tkComma ident_list tkRoundClose rem_lambda // лямбда с распаковкой
+    | lambda_unpacked_params rem_lambda // лямбда с распаковкой
     	{
+    		var pair = $2 as pair_type_stlist;
+    		$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
+    			new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), pair.exprs, @$);
+    		($$ as function_lambda_definition).unpacked_params = $1 as List<ident_or_list>;
     	}
 	| expl_func_decl_lambda
 		{

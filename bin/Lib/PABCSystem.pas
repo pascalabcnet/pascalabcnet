@@ -12663,19 +12663,25 @@ end;
 /// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadInteger(Self: string; var from: integer): integer; extensionmethod;
 begin
-  Result := ReadIntegerFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadIntegerFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadReal(Self: string; var from: integer): real; extensionmethod;
 begin
-  Result := ReadRealFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadRealFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Считывает слово из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadWord(Self: string; var from: integer): string; extensionmethod;
 begin
-  Result := ReadwordFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadwordFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Преобразует строку в целое
