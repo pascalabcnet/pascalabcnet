@@ -4734,11 +4734,11 @@ lambda_unpacked_params
 	;
 	
 lambda_unpacked_params_or_id
-	: lambda_unpacked_params
+	: lambda_unpacked_params // ident_or_list
 		{
-			$$ = new List<ident_or_list>($1 as List<ident_or_list>);
+			$$ = new ident_or_list($1 as List<ident_or_list>);
 		}
-	| identifier
+	| identifier // ident_or_list
 		{
 			$$ = new ident_or_list($1 as ident);
 		}

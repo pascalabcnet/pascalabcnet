@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 06.03.2021 10:59:03
+// DateTime: 07.03.2021 18:27:22
 // UserName: ?????????
 // Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -7280,7 +7280,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 956: // lambda_unpacked_params_or_id -> lambda_unpacked_params
 {
-			CurrentSemanticValue.ob = new List<ident_or_list>(ValueStack[ValueStack.Depth-1].ob as List<ident_or_list>);
+			CurrentSemanticValue.ob = new ident_or_list(ValueStack[ValueStack.Depth-1].ob as List<ident_or_list>);
 		}
         break;
       case 957: // lambda_unpacked_params_or_id -> identifier
