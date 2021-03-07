@@ -1689,7 +1689,11 @@ namespace CodeFormatters
 
         public override void visit(program_module _program_module)
         {
-            // Где-то хранить и добавить ##
+            // Хак
+            var s = sb.ToString();
+            if (s.Equals("###") || s.Equals("##"))
+                sb.Append(" ");
+
             if (_program_module.program_name != null)
                 visit_node(_program_module.program_name);
             if (_program_module.used_units != null && _program_module.used_units.source_context != null)
