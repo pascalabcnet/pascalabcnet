@@ -1282,14 +1282,36 @@ namespace PascalABCCompiler.TreeRealization
                         base_type = base_type.base_type;
                     }
                     if (fact_type.ImplementingInterfaces != null && fact_type_converted == null)
-                    foreach (type_node ti in fact_type.ImplementingInterfaces)
                     {
-                        if (ti.original_generic == formal_type.original_generic)
+                        foreach (type_node ti in fact_type.ImplementingInterfaces)
                         {
-                            fact_type_converted = ti;
-                            break;
+                            if (ti.original_generic == formal_type.original_generic)
+                            {
+                                fact_type_converted = ti;
+                                break;
+                            }
+                        }
+                        if (fact_type_converted == null)
+                        {
+                            base_type = fact_type.base_type;
+                            while (base_type != null)
+                            {
+                                if (base_type.ImplementingInterfaces != null)
+                                foreach (type_node ti in base_type.ImplementingInterfaces)
+                                {
+                                    if (ti.original_generic == formal_type.original_generic)
+                                    {
+                                        fact_type_converted = ti;
+                                        break;
+                                    }
+                                }
+                                if (fact_type_converted != null)
+                                    break;
+                                base_type = base_type.base_type;
+                            }
                         }
                     }
+                    
                     if (fact_type_converted == null) goto eq_cmp;
                 }
                 else
