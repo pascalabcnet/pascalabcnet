@@ -2725,8 +2725,8 @@ namespace CodeCompletion
                 }
             if (cur_scope != null && _program_module.program_block.program_code != null)
             {
-                var left_line_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num;
-                var left_column_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num;
+                var left_line_num = _program_module.program_block.program_code.left_logical_bracket.source_context != null ? _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num : 1;
+                var left_column_num = _program_module.program_block.program_code.left_logical_bracket.source_context != null ? _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num : 1;
                 var right_line_num = _program_module.program_block.program_code.source_context.end_position.line_num;
                 var right_column_num = _program_module.program_block.program_code.source_context.end_position.column_num;
                 if (_program_module.program_block.program_code.right_logical_bracket == null || _program_module.program_block.program_code.right_logical_bracket.source_context == null)
