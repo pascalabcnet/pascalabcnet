@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 07.03.2021 18:27:22
+// DateTime: 14.03.2021 20:13:22
 // UserName: ?????????
 // Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 

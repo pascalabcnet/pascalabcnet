@@ -542,7 +542,26 @@ namespace PascalABCCompiler.TreeRealization
                 type_node tnode = derived_class;
                 while (!implements && tnode != null && tnode.ImplementingInterfaces != null)
                 {
-                    implements = tnode.ImplementingInterfaces.Contains(base_class);
+                    //implements = tnode.ImplementingInterfaces.Contains(base_class);
+
+                    implements = false;
+                    foreach (var interf in tnode.ImplementingInterfaces)
+                    {
+                        if (interf == base_class)
+                        {
+                            implements = true;
+                            break;
+                        }
+                        else if (interf is compiled_type_node ictn && base_class is compiled_type_node bctn)
+                        {
+                            if (ictn.compiled_type.AssemblyQualifiedName != null &&  ictn.compiled_type.AssemblyQualifiedName == bctn.compiled_type.AssemblyQualifiedName)
+                            {
+                                implements = true;
+                                break;
+                            }
+                        }
+                    }
+
                     tnode = tnode.base_type;
                 }
                 return implements;
