@@ -1140,8 +1140,8 @@ namespace PascalABCCompiler.TreeRealization
             {
                 //Если текущий параметр - лямбда, то просто выводим дженерик-параметры из типов, которые уже известны. Не трогаем lambda_any_type_node. Остальное выведется в цикле выше 
                 var lambda_func = fact_type as delegated_methods;
-                if (lambda_func != null 
-                    && lambda_func.proper_methods.Count == 1 
+                if (lambda_func != null
+                    && lambda_func.proper_methods.Count == 1
                     && LambdaHelper.IsLambdaName(lambda_func.proper_methods[0].simple_function_node.name))
                 {
                     var dii = formal_type.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
@@ -1187,7 +1187,7 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     // 07.04.15 - SSM поменял местами первые 2 параметра - видимо, была ошибка
                     else if (fact_func.return_value_type == null || !DeduceInstanceTypes(dii.return_value_type, fact_func.return_value_type, deduced, nils, generic_params)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
-//                    else if (fact_func.return_value_type == null || !DeduceInstanceTypes(fact_func.return_value_type, dii.return_value_type, deduced, nils)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
+                                                                                                                                                                             //                    else if (fact_func.return_value_type == null || !DeduceInstanceTypes(fact_func.return_value_type, dii.return_value_type, deduced, nils)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
                     {
                         goto eq_cmp;
                     }
@@ -1199,13 +1199,19 @@ namespace PascalABCCompiler.TreeRealization
                     delegate_internal_interface dii = formal_type.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
                     delegated_methods dm = fact_type as delegated_methods;
                     function_node fact_func = null;
+                    List<function_node> fact_funcs = new List<function_node>();
                     if (dm != null && dm.proper_methods.Count == 1)
-                        fact_func = dm.proper_methods[0].simple_function_node;
+                    {
+                        fact_funcs.Add(dm.proper_methods[0].simple_function_node);
+                    }
                     else if (fact_type.IsDelegate)
                     {
                         var sil = fact_type.find_in_type("Invoke");
                         if (sil != null && sil.Count > 0)
-                            fact_func = sil[0].sym_info as function_node;
+                        {
+                            fact_funcs.Add(sil[0].sym_info as function_node);
+                        }
+                            
                     }
                     else if (dm != null && dm.proper_methods.Count > 1 && formal_type.original_generic is compiled_type_node && (formal_type.original_generic as compiled_type_node).compiled_type.FullName.StartsWith("System.Func`"))
                     {
@@ -1214,16 +1220,28 @@ namespace PascalABCCompiler.TreeRealization
                         {
                             if (fc.simple_function_node.parameters.Count == formal_type.instance_params.Count - 1)
                             {
-                                fact_func = fc.simple_function_node;
-                                break;
+                                fact_funcs.Add(fc.simple_function_node);
                             }
                         }
                     }
-                        
-                    if (fact_func != null)
+                    else if (dm != null && dm.proper_methods.Count > 1 && formal_type.original_generic is compiled_type_node && (formal_type.original_generic as compiled_type_node).compiled_type.FullName.StartsWith("System.Action`"))
                     {
+                        var ctn = formal_type.original_generic as compiled_type_node;
+                        foreach (var fc in dm.proper_methods)
+                        {
+                            if (fc.simple_function_node.parameters.Count == formal_type.instance_params.Count)
+                            {
+                                fact_funcs.Add(fc.simple_function_node);
+                            }
+                        }
+                    }    
+                    for (int j = 0; j < fact_funcs.Count; j++)
+                    {
+                        fact_func = fact_funcs[j];
                         if (fact_func.parameters.Count != dii.parameters.Count)
                         {
+                            if (j < fact_funcs.Count - 1)
+                                continue;
                             goto eq_cmp;
                         }
                         int param_count = fact_func.parameters.Count;
@@ -1231,13 +1249,19 @@ namespace PascalABCCompiler.TreeRealization
                         {
                             if (fact_func.parameters[i].parameter_type != dii.parameters[i].parameter_type ||
                                 fact_func.parameters[i].is_params != dii.parameters[i].is_params)
+                            {
+                                if (j < fact_funcs.Count - 1)
+                                    continue;
                                 goto eq_cmp;
+                            }
+                                
                         }
                         for (int i = 0; i < param_count; i++)
                         {
                             if (!DeduceInstanceTypes(dii.parameters[i].type, fact_func.parameters[i].type, deduced, nils, generic_params))      // 07.04.15 - SSM поменял местами первые 2 параметра - видимо, была ошибка
-                            //if (!DeduceInstanceTypes(fact_func.parameters[i].type, dii.parameters[i].type, deduced, nils))
                             {
+                                if (j < fact_funcs.Count - 1)
+                                    continue;
                                 goto eq_cmp;
                             }
                         }
@@ -1247,12 +1271,16 @@ namespace PascalABCCompiler.TreeRealization
                         }
                         else if (fact_func.return_value_type is lambda_any_type_node && dii.return_value_type == null) //lroman//
                         {
+                            if (j < fact_funcs.Count - 1)
+                                continue;
                             goto eq_cmp;
                         }
                         // 07.04.15 - SSM поменял местами первые 2 параметра - видимо, была ошибка
                         else if (fact_func.return_value_type == null || !DeduceInstanceTypes(dii.return_value_type, fact_func.return_value_type, deduced, nils, generic_params)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
-//                        else if (fact_func.return_value_type == null || !DeduceInstanceTypes(fact_func.return_value_type, dii.return_value_type, deduced, nils)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
+                                                                                                                                                                                 //                        else if (fact_func.return_value_type == null || !DeduceInstanceTypes(fact_func.return_value_type, dii.return_value_type, deduced, nils)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
                         {
+                            if (j < fact_funcs.Count - 1)
+                                continue;
                             goto eq_cmp;
                         }
                         return true;
