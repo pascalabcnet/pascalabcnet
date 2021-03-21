@@ -1070,7 +1070,7 @@ namespace PascalABCCompiler.NetHelper
         }
 
         private static function_node get_conversion(compiled_type_node in_type,compiled_type_node from,
-            compiled_type_node to,string op_name, NetTypeScope scope)
+            type_node to, string op_name, NetTypeScope scope)
         {
             //MethodInfo[] mia = in_type.compiled_type.GetMethods();
             List<MemberInfo> mia = GetMembers(in_type.compiled_type, op_name);
@@ -1079,8 +1079,10 @@ namespace PascalABCCompiler.NetHelper
             {
                 if (!(mbi is MethodInfo))
                     continue;
+                if (!(to is compiled_type_node))
+                    continue;
                 MethodInfo mi = mbi as MethodInfo;
-                if (mi.ReturnType != to.compiled_type)
+                if (mi.ReturnType != (to as compiled_type_node).compiled_type)
                 {
                     continue;
                 }
@@ -1118,7 +1120,7 @@ namespace PascalABCCompiler.NetHelper
         }
 
         public static function_node get_implicit_conversion(compiled_type_node in_type, compiled_type_node from,
-            compiled_type_node to, NetTypeScope scope)
+            type_node to, NetTypeScope scope)
         {
             return get_conversion(in_type, from, to, compiler_string_consts.implicit_operator_name, scope);
         }

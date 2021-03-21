@@ -3683,19 +3683,16 @@ namespace PascalABCCompiler.TreeRealization
         {
             // То есть получается, что конвертировать откомпилированный тип в неоткомпилированный нельзя несмотря на то что есть extension оператор
             var cctn = ctn as compiled_type_node;
-            if (cctn == null)
-            {
-                return null;
-            }
+            
             function_node fn = null;
-            if (!_implicit_convertions_to.TryGetValue(cctn, out fn))
+            if (!_implicit_convertions_to.TryGetValue(ctn, out fn))
             {
-                fn = NetHelper.NetHelper.get_implicit_conversion(this, this, cctn, scope);
+                fn = NetHelper.NetHelper.get_implicit_conversion(this, this, ctn, scope);
                 if (fn is compiled_function_node)
-                    _implicit_convertions_to.Add(cctn, fn);
+                    _implicit_convertions_to.Add(ctn, fn);
                 else if (fn == null && this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
                 {
-                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, this.base_type as compiled_type_node, cctn, this.base_type.Scope as NetHelper.NetTypeScope);
+                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, this.base_type as compiled_type_node, ctn, this.base_type.Scope as NetHelper.NetTypeScope);
                     if (fn != null)
                     {
                         List<type_node> instance_params = new List<type_node>();
@@ -3704,7 +3701,7 @@ namespace PascalABCCompiler.TreeRealization
                         return fn;
                     }
                 }
-                else if (fn == null && (this.is_generic_type_instance || cctn.is_generic_type_instance))
+                else if (fn == null && cctn != null && (this.is_generic_type_instance || cctn.is_generic_type_instance))
                 {
                     List<type_node> instance_params1 = this.instance_params;
                     List<type_node> instance_params2 = cctn.instance_params;
