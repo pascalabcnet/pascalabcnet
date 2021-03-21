@@ -941,6 +941,9 @@ namespace PascalABCCompiler.SyntaxTree
         {
             this.name = new ident_list(name, sc);
         }
+        // имя модуля в случае обычного uses
+        // или путь к модулю в случае uses-in
+        public virtual string UsesPath() => name.idents[0].name;
     }
 
     public partial class uses_list
@@ -2033,6 +2036,11 @@ namespace PascalABCCompiler.SyntaxTree
         public object ext = null;
     }
 
+    public partial class uses_unit_in
+    {
+        public override string UsesPath() => in_file.Value;
+    }
+
     public class ident_or_list // Это для распаковки параметров в лямбдах \(x,y)
     {
         // только одно поле - ненулевое!
@@ -2047,5 +2055,7 @@ namespace PascalABCCompiler.SyntaxTree
             this.lst = lst;
         }
     }
+
+
 
 }
