@@ -2041,7 +2041,7 @@ namespace PascalABCCompiler.SyntaxTree
         public override string UsesPath() => in_file.Value;
     }
 
-    public class ident_or_list // Это для распаковки параметров в лямбдах \(x,y)
+    public class ident_or_list: expression // Это для распаковки параметров в лямбдах \(x,y)
     {
         // только одно поле - ненулевое!
         public ident id;

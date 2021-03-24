@@ -4810,12 +4810,14 @@ func_decl_lambda
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, sl, @$);
 			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);
 		}
-    | tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda
+    | tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda // optional_full_lambda_fp_list - так сделано из-за конфликтов в граматике
 		{ 
 			var pair = $8 as pair_type_stlist;
 			
 			if ($5 is lambda_inferred_type)
 			{
+				// добавим сюда \(x,y)
+				
 				var formal_pars = new formal_parameters();
 				var idd = $2 as ident;
 				if (idd==null)
@@ -4879,6 +4881,7 @@ func_decl_lambda
     | lambda_unpacked_params rem_lambda // лямбда с распаковкой
     	{
     		var pair = $2 as pair_type_stlist;
+    		// пока формальные параметры - null. Раскроем их сахарным визитором
     		$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
     			new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), pair.exprs, @$);
     		($$ as function_lambda_definition).unpacked_params = $1 as List<ident_or_list>;
