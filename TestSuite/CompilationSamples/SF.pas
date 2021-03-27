@@ -296,6 +296,118 @@ function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extension
 /// Возвращает все сочетания по m элементов
 function Cmb<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod := Self.Combinations(m);
 
+/// Выводит кортеж
+function Pr<T1,T2>(Self: (T1,T2)): (T1,T2); extensionmethod;
+begin 
+  Result := Self; 
+  Self.Print; 
+end;
+
+/// Выводит кортеж
+function Pr<T1,T2,T3>(Self: (T1,T2,T3)): (T1,T2,T3); extensionmethod;
+begin 
+  Result := Self; 
+  Self.Print; 
+end;
+
+/// Выводит кортеж
+function Pr<T1,T2,T3,T4>(Self: (T1,T2,T3,T4)): (T1,T2,T3,T4); extensionmethod;
+begin 
+  Result := Self; 
+  Self.Print; 
+end;
+
+/// Выводит кортеж
+function Pr<T1,T2,T3,T4,T5>(Self: (T1,T2,T3,T4,T5)): (T1,T2,T3,T4,T5); extensionmethod;
+begin 
+  Result := Self; 
+  Self.Print; 
+end;
+
+/// Выводит кортеж
+function Prln<T1,T2>(Self: (T1,T2)): (T1,T2); extensionmethod;
+begin 
+  Result := Self; 
+  Self.Println; 
+end;
+
+/// Выводит кортеж
+function Prln<T1,T2,T3>(Self: (T1,T2,T3)): (T1,T2,T3); extensionmethod;
+begin 
+  Result := Self; 
+  Self.Println; 
+end;
+
+/// Выводит кортеж
+function Prln<T1,T2,T3,T4>(Self: (T1,T2,T3,T4)): (T1,T2,T3,T4); extensionmethod;
+begin 
+  Result := Self; 
+  Self.Println; 
+end;
+
+/// Выводит кортеж
+function Prln<T1,T2,T3,T4,T5>(Self: (T1,T2,T3,T4,T5)): (T1,T2,T3,T4,T5); extensionmethod;
+begin 
+  Result := Self; 
+  Self.Println; 
+end;
+
+/// Возвращает минимальный элемент кортежа
+function Min<T>(Self: (T,T)): T; extensionmethod;
+where T: IComparable<T>;
+begin
+  Result := Min(Self[0],Self[1]);
+end;
+
+/// Возвращает максимальный элемент кортежа
+function Max<T>(Self: (T,T)): T; extensionmethod;
+where T: IComparable<T>;
+begin
+  Result := Max(Self[0],Self[1]);
+end;
+
+/// Возвращает минимальный элемент кортежа
+function Min<T>(Self: (T,T,T)): T; extensionmethod;
+where T: IComparable<T>; 
+begin
+  Result := Min(Self[0],Self[1],Self[2]);
+end;
+
+/// Возвращает максимальный элемент кортежа
+function Max<T>(Self: (T,T,T)): T; extensionmethod;
+where T: IComparable<T>;
+begin
+  Result := Max(Self[0],Self[1],Self[2]);
+end;
+
+/// Возвращает минимальный элемент кортежа
+function Min<T>(Self: (T,T,T,T)): T; extensionmethod;
+where T: IComparable<T>;
+begin
+  Result := Min(Self[0],Self[1],Self[2],Self[3]);
+end;
+
+/// Возвращает максимальный элемент кортежа
+function Max<T>(Self: (T,T,T,T)): T; extensionmethod;
+where T: IComparable<T>; 
+begin
+  Result := Max(Self[0],Self[1],Self[2],Self[3]);
+end;
+
+/// Возвращает минимальный элемент кортежа
+function Min<T>(Self: (T,T,T,T,T)): T; extensionmethod;
+where T: IComparable<T>; 
+begin
+  Result := Min(Self[0],Self[1],Self[2],Self[3],Self[4]);
+end;
+
+/// Возвращает максимальный элемент кортежа
+function Max<T>(Self: (T,T,T,T,T)): T; extensionmethod;
+where T: IComparable<T>; 
+begin
+  Result := Max(Self[0],Self[1],Self[2],Self[3],Self[4]);
+end;
+
 ///--
 procedure __InitModule__;
 begin
