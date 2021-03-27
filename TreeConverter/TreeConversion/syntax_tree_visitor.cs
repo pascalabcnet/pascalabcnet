@@ -3676,7 +3676,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (_class_definition.keyword != SyntaxTree.class_keyword.Class)
                     AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
-                context.converted_type.SetIsAbstract(true);
+                context.converted_type.SetIsAbstract(true, null); // Причина null, в ошибке и так будет видно что abstract и sealed стоят рядом
             }
             if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
             {
@@ -3692,7 +3692,7 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_BE_GENERIC");
                 context.converted_type.SetIsStatic(true);
                 context.converted_type.SetIsSealed(true);
-                context.converted_type.SetIsAbstract(true);
+                context.converted_type.SetIsAbstract(true, null); // Причина null, потому что причины нет, класс статический а не абстрактный
             }
             switch (_class_definition.keyword)
             {
@@ -3868,7 +3868,10 @@ namespace PascalABCCompiler.TreeConverter
                     common_type_node converted_type = context.converted_type;
                     context.leave_block();
                     if (converted_type.IsSealed && converted_type.IsAbstract && !converted_type.IsStatic)
-                        AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
+                        if (converted_type.AbstractReason == null)
+                            AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
+                        else
+                            AddError(get_location(_class_definition), converted_type.AbstractReason.Explanation, converted_type.name, converted_type.AbstractReason.ObjName);
                     return;
                 case PascalABCCompiler.SyntaxTree.class_keyword.Record:
                     common_type_node ctn;
@@ -4278,7 +4281,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (context.converted_type.IsInterface)
                     AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
-                context.converted_type.SetIsAbstract(true);
+                context.converted_type.SetIsAbstract(true, new CARAbstractPropertie(_simple_property));
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
             }
             if (context.converted_type.is_value_type)
@@ -14065,7 +14068,7 @@ namespace PascalABCCompiler.TreeConverter
                             cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
                             if (context.converted_type.IsSealed)
                                 AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ABSTRACT_METHOD_IN_SEALED_CLASS");
-                            context.converted_type.SetIsAbstract(true);
+                            context.converted_type.SetIsAbstract(true, null); // Причина null, потому что предыдущая строчка уже даёт ошибку раньше, чем та - для которой понадобится эта причина
                             if (cmn.IsReintroduce)
                                 cmn.newslot_awaited = true;
                             break;
@@ -19065,7 +19068,9 @@ namespace PascalABCCompiler.TreeConverter
         {
             type_node tn = ret.visit(_new_expr.type);
             if (tn is generic_instance_type_node gitn) // SSM 07/08/19 #2070
-                gitn._is_abstract = gitn.original_generic.IsAbstract;
+            {
+                gitn.SetIsAbstract(gitn.original_generic.IsAbstract, gitn.original_generic.AbstractReason);
+            }
             //if (tn == SystemLibrary.SystemLibrary.void_type)
             //	AddError(new VoidNotValid(get_location(_new_expr.type)));
             if (tn.IsDelegate && !_new_expr.new_array)

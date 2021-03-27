@@ -2726,7 +2726,11 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (sil == null)
             {
-                cnode.SetIsAbstract(true);
+                cnode.SetIsAbstract(true,
+                    (meth is common_method_node cmn) && (cmn.cont_type.properties.FirstOrDefault(cpn=> meth.name == "get_" + cpn.name || meth.name == "set_" + cpn.name) is common_property_node prop)?
+                        new CARPropertieNotImplemented(prop) :
+                        new CARMethodNotImplemented(meth) as ClassAbstractReason
+                );
                 return;
                 //Нет функции с таким именем, набором параметров и возвращаемым значением
                 //AddError(new AbstractMemberNotImplemented(cnode.name, interf.name, Tools.GetFullMethodHeaderString(meth), cnode.is_value_type, cnode.loc));
