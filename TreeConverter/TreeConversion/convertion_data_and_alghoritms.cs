@@ -637,6 +637,13 @@ namespace PascalABCCompiler.TreeConverter
 				return en;
 			}
 
+            if (to == SystemLibrary.SystemLibrary.system_delegate_type && en is typed_expression)
+            {
+                delegated_methods dm = (en as typed_expression).type as delegated_methods;
+                if (dm.proper_methods.Count > 1)
+                    AddError(loc, "AMBIGUOUS_DELEGATES");
+            }
+
             if (en.type is compiled_type_node comptn1 && to is compiled_type_node comptn2) // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные
             {
                 if (comptn1.compiled_type == comptn2.compiled_type 
@@ -1727,10 +1734,10 @@ namespace PascalABCCompiler.TreeConverter
                     exprs[i].type = fn.parameters[fn.parameters.Count - 1].type;
                     break;
                 }
-                if ((ptcal[i]==null)||(ptcal[i].first==null)||exprs[i] is null_const_node)
-				{
-					continue;
-				}
+                if ((ptcal[i] == null) || (ptcal[i].first == null) || (exprs[i] is null_const_node && exprs[i].conversion_type == null))
+                {
+                    continue;
+                }
                 expression_node[] temp_arr = new expression_node[1];
                 temp_arr[0] = exprs[i];
                 if (ptcal[i].first.convertion_method is compiled_constructor_node)

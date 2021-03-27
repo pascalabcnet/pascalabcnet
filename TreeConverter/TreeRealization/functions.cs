@@ -1751,7 +1751,7 @@ namespace PascalABCCompiler.TreeRealization
                     compiled_parameter crpar = new compiled_parameter(pi);
                     crpar.SetParameterType(pt);
                     pal.AddElement(crpar);
-                    if (pi.IsOptional && pi.DefaultValue != null)
+                    if (pi.IsOptional /*&& pi.DefaultValue != null*/) // SSM 18/03/21 - DefaultValue и так есть
                         _num_of_default_parameters++;
                     i++;
                 }
@@ -2230,7 +2230,7 @@ namespace PascalABCCompiler.TreeRealization
 				compiled_parameter crpar=new compiled_parameter(pi);
 				crpar.SetParameterType(pt);
 				pal.AddElement(crpar);
-                if (pi.IsOptional && pi.DefaultValue != null)
+                if (pi.IsOptional /*&& pi.DefaultValue != null*/)
                     _num_of_default_parameters++;
 			}
 			this.return_value_type=compiled_type_node.get_type_node(_con_info.DeclaringType);

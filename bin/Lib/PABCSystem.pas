@@ -2773,6 +2773,9 @@ function InternalRange(l,r: real): RealRange;
   
 ///--
 function IsInputPipedOrRedirectedFromFile: boolean;
+
+///--
+function CheckAndCorrectFromToAndCalcCountForSystemSlice(situation: integer; Len: integer; var from, &to: integer; step: integer): integer;
   
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
@@ -8921,7 +8924,7 @@ end;
 function ReverseString(s: string; index,length: integer): string;
 begin
   var ca := s.ToCharArray;
-  &Array.Reverse(ca,index+1,length);
+  &Array.Reverse(ca,index-1,length);
   Result := new string(ca);
 end;
 
@@ -10023,7 +10026,7 @@ begin
   Result := Self.Reverse.Skip(count).Reverse;
 end;
 
-/// Декартово произведение последовательностей
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
 function Cartesian<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod;
 begin
   if b = nil then
@@ -10034,7 +10037,7 @@ begin
       yield (x, y)
 end;
 
-/// Декартово произведение последовательностей
+/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
 function Cartesian<T, T1, T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod;
 begin
   if b = nil then
@@ -10188,6 +10191,21 @@ begin
     yield (previous, it.Current);
     previous := it.Current;
   end
+end;
+
+/// Превращает последовательность в последовательность n-ок соседних элементов
+function Nwise<T>(Self: sequence of T; n: integer):sequence of array of T; extensionmethod;
+begin 
+  var chunk := new Queue<T>(n);
+  foreach var x in Self do 
+  begin
+    chunk.Enqueue(x);
+    if chunk.Count = n then 
+    begin
+      yield chunk.ToArray;
+      chunk.Dequeue;
+    end;
+  end;   
 end;
 
 /// Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность 
@@ -12039,6 +12057,292 @@ begin
   Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, step);
 end;
 
+// Срезы многомерных массивов - вспомогательные типы и функции
+type
+  SliceType = class
+    situation,from, &to, step, count: integer;
+    fromInverted, toInverted: boolean;
+    function oneelem: boolean := step = integer.MaxValue; // если шаг = integer.MaxValue, то это один элемент, а не срез (договорённость)
+    constructor (sit,f,t: integer; st: integer := 1);
+    begin
+      situation := sit;
+      from := f;
+      &to := t;
+      fromInverted := False;
+      toInverted := False;
+      step := st;
+      count := -1; // заполняется во внешней функции CorrectSliceAndCalcCount при известной длине по данной размерности
+      //oneelem := step = integer.MaxValue; // если шаг = integer.MaxValue, то это один элемент, а не срез (договорённость)
+    end;
+    procedure CorrectSliceAndCalcCount(len: integer);
+    begin
+      if fromInverted then // Надеюсь, что ровно здесь. Это означает, что эти значения точно не пропущены
+        from := len - from;
+      if toInverted then
+        &to := len - &to;
+
+      if oneelem then
+        count := 1 
+      else count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, len, from, &to, step);
+    end;
+    static function operator implicit(i: integer): SliceType;
+    static function operator implicit(ir: IntRange): SliceType;
+    static function operator implicit(sl: (integer,integer,integer)): SliceType;
+    static function operator implicit(sl: (SystemIndex,SystemIndex,integer)): SliceType; // a[^1:,^2]
+    static function operator implicit(sl: (integer,SystemIndex,integer)): SliceType; // a[^1:,^2]
+    static function operator implicit(sl: (SystemIndex,integer,integer)): SliceType; // a[^1:,^2]
+  end;
+
+function Diap(f, t: integer) := new SliceType(0, f, t, 1);
+function Elem(ind: integer) := new SliceType(0, ind, ind+1, integer.MaxValue);
+function Slice(f, t: integer; st: integer := 1): SliceType;
+begin
+  var sit := 0;
+  if f = integer.MaxValue then
+    sit += 1;
+  if t = integer.MaxValue then
+    sit += 2;
+  Result := new SliceType(sit, f, t, st);
+end; 
+{function Slice(f, t: SystemIndex; st: integer := 1): SliceType;
+begin
+  Result := Slice(f.IndexValue, t.IndexValue, st);
+  Result.fromInverted := f.IsInverted;
+  Result.toInverted := t.IsInverted;
+end;}
+
+static function SliceType.operator implicit(i: integer): SliceType;
+begin
+  Result := Elem(i);
+end;
+
+static function SliceType.operator implicit(ir: IntRange): SliceType;
+begin
+  Result := Diap(ir.Low,ir.High);
+end;
+
+static function SliceType.operator implicit(sl: (integer,integer,integer)): SliceType;
+begin
+  Result := Slice(sl[0],sl[1],sl[2]);
+end;
+
+static function SliceType.operator implicit(sl: (SystemIndex,SystemIndex,integer)): SliceType;
+begin
+  Result := Slice(sl[0].IndexValue,sl[1].IndexValue,sl[2]);
+  Result.fromInverted := sl[0].IsInverted;
+  Result.toInverted := sl[1].IsInverted;
+end;
+
+static function SliceType.operator implicit(sl: (integer,SystemIndex,integer)): SliceType;
+begin
+  Result := Slice(sl[0],sl[1].IndexValue,sl[2]);
+  Result.toInverted := sl[1].IsInverted;
+end;
+
+static function SliceType.operator implicit(sl: (SystemIndex,integer,integer)): SliceType;
+begin
+  Result := Slice(sl[0].IndexValue,sl[1],sl[2]);
+  Result.fromInverted := sl[0].IsInverted;
+end;
+
+function ToOneDim<T>(a: array [,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        res[cur] := a[i0,i1];
+        cur += 1;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function ToOneDim<T>(a: array [,,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count * l[2].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        var i2 := l[2].from;
+        loop l[2].count do
+        begin
+          res[cur] := a[i0,i1,i2];
+          cur += 1;
+          i2 += l[2].step;
+        end;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function ToOneDim<T>(a: array [,,,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count * l[2].count * l[3].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        var i2 := l[2].from;
+        loop l[2].count do
+        begin
+          var i3 := l[3].from;
+          loop l[3].count do
+          begin
+            res[cur] := a[i0,i1,i2,i3];
+            cur += 1;
+            i3 += l[3].step;
+          end;  
+          i2 += l[2].step;
+        end;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function FromOneDim2<T>(r: array of T; l: array of SliceType): array [,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  var cur := 0;
+  var res := new T[dims[0],dims[1]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  begin
+    res[i0,i1] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDim3<T>(r: array of T; l: array of SliceType): array [,,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  var cur := 0;
+  var res := new T[dims[0],dims[1],dims[2]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  for var i2:=0 to dims[2]-1 do
+  begin
+    res[i0,i1,i2] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDim4<T>(r: array of T; l: array of SliceType): array [,,,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  var cur := 0;
+  var res := new T[dims[0],dims[1],dims[2],dims[3]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  for var i2:=0 to dims[2]-1 do
+  for var i3:=0 to dims[3]-1 do
+  begin
+    res[i0,i1,i2,i3] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDimN<T>(r: array of T; l: array of SliceType): System.Array;
+begin
+  var rank := l.Count(x -> x.oneelem = False);
+  case rank of
+    1: Result := r;
+    2: Result := FromOneDim2(r,l);
+    3: Result := FromOneDim3(r,l);
+    4: Result := FromOneDim4(r,l);
+  end;  
+end;
+
+function SliceN<T>(a: array[,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+function SliceN<T>(a: array[,,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+function SliceN<T>(a: array[,,,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+{type // это не компилируется в PABCSystem
+  ArrT<T> = array of T;
+  Arr2T<T> = array [,] of T;
+  Arr3T<T> = array [,,] of T;
+  Arr4T<T> = array [,,,] of T;}
+
+///--
+function SystemSliceN1<T>(Self: array[,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN1<T>(Self: array[,,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN1<T>(Self: array[,,,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN2<T>(Self: array[,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN2<T>(Self: array[,,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN2<T>(Self: array[,,,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN3<T>(Self: array[,,] of T; params l: array of SliceType): array[,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,] of T;
+///--
+function SystemSliceN3<T>(Self: array[,,,] of T; params l: array of SliceType): array[,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,] of T;
+///--
+function SystemSliceN4<T>(Self: array[,,,] of T; params l: array of SliceType): array[,,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,,] of T;
+
 // -----------------------------------------------------
 //>>     Методы расширения типа integer # Extension methods for integer
 // -----------------------------------------------------
@@ -12374,19 +12678,25 @@ end;
 /// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadInteger(Self: string; var from: integer): integer; extensionmethod;
 begin
-  Result := ReadIntegerFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadIntegerFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadReal(Self: string; var from: integer): real; extensionmethod;
 begin
-  Result := ReadRealFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadRealFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Считывает слово из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadWord(Self: string; var from: integer): string; extensionmethod;
 begin
-  Result := ReadwordFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadwordFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Преобразует строку в целое

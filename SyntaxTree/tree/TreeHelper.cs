@@ -941,6 +941,9 @@ namespace PascalABCCompiler.SyntaxTree
         {
             this.name = new ident_list(name, sc);
         }
+        // имя модуля в случае обычного uses
+        // или путь к модулю в случае uses-in
+        public virtual string UsesPath() => name.idents[0].name;
     }
 
     public partial class uses_list
@@ -1434,6 +1437,7 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучшего выбора среди перегруженных методов с параметрами-лямбдами
         public object RealSemTypeOfResult = null;
+        public List<expression> unpacked_params = null; // SSM 04/03/21 - сахарный узел, содержащий параметры, которые необходимо распаковать: (\(x,y,z),\(a,b)))
 
         public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, int usedkw, SourceContext sc)
         {
@@ -1769,6 +1773,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class slice_expr
     {
+        public List<System.Tuple<expression, expression, expression>> slices; // = new List<Tuple<expression, expression, expression>>();
         public override string ToString() => this.v + "[" + this.from + ":" + this.to + ":" + this.step + "]";
     }
     
@@ -2029,6 +2034,50 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class foreach_stmt
     {
         public object ext = null;
+    }
+
+    public partial class uses_unit_in
+    {
+        public override string UsesPath() => in_file.Value;
+    }
+
+    public class ident_or_list : expression // Это для распаковки параметров в лямбдах \(x,y)
+    {
+        // только одно поле - ненулевое!
+        public ident id;
+        public unpacked_list_of_ident_or_list lst;
+        public ident_or_list(ident id)
+        {
+            this.id = id;
+            this.source_context = id.source_context;
+        }
+        public ident_or_list(unpacked_list_of_ident_or_list lst)
+        {
+            this.lst = lst;
+            this.source_context = lst.source_context;
+        }
+    }
+
+    public class unpacked_list_of_ident_or_list: expression // это для самого верхнего уровня
+    {
+        public List<ident_or_list> lst;
+        public unpacked_list_of_ident_or_list(List<ident_or_list> lst)
+        {
+            this.lst = lst;
+            if (lst != null && lst.Count > 0)
+                this.source_context = lst[0].source_context;
+        }
+        public unpacked_list_of_ident_or_list()
+        {
+            lst = new List<ident_or_list>();
+        }
+        public void Add(ident_or_list il)
+        {
+            lst.Add(il);
+            if (source_context == null)
+                source_context = il.source_context;
+            else source_context = source_context.Merge(il.source_context);
+        }
     }
 
 }

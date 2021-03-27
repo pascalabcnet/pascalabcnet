@@ -684,6 +684,11 @@ namespace CodeFormatters
                     sb.Append("()");
                 cur_src_off = pos;
             }
+            else if (sn is program_module && (sn as program_module).program_block.program_code.right_logical_bracket.source_context == null)
+            {
+                string comm = Text.Substring(prev_pos).Trim();
+                sb.Append(comm);
+            }
         }
 
         private void IncOffset()
@@ -881,6 +886,7 @@ namespace CodeFormatters
                         WritePossibleCommentAfter(sn);
                     if (sn.source_context != null /*&& !(sn is exception_handler)*/)
                         prev_sn = sn;
+                    
                 }
             }
         }
@@ -911,7 +917,10 @@ namespace CodeFormatters
                 //add_space_before = true;
             }
             
-            if (!in_one_row(_statement_list) && _statement_list.left_logical_bracket != null && _statement_list.subnodes.Count > 0 && _statement_list.subnodes[0].source_context != null && _statement_list.left_logical_bracket.source_context.end_position.line_num == _statement_list.subnodes[0].source_context.begin_position.line_num 
+            if (!in_one_row(_statement_list) && _statement_list.left_logical_bracket != null && _statement_list.subnodes.Count > 0 
+                && _statement_list.subnodes[0].source_context != null
+                && _statement_list.left_logical_bracket.source_context != null
+                && _statement_list.left_logical_bracket.source_context.end_position.line_num == _statement_list.subnodes[0].source_context.begin_position.line_num 
                 && !_statement_list.left_logical_bracket.text.StartsWith("##"))
                 add_newline_after = true;
             else
@@ -1639,7 +1648,8 @@ namespace CodeFormatters
             {
                 if (i > 0)
                     add_space_after = true;
-                visit_node(_uses_list.units[i]);
+                if (_uses_list.units[i].source_context != null)
+                    visit_node(_uses_list.units[i]);
             }
             insert_newline_after_prev = true;
             DecOffset(tab);
@@ -1679,13 +1689,18 @@ namespace CodeFormatters
 
         public override void visit(program_module _program_module)
         {
+            // Хак
+            var s = sb.ToString();
+            if (s.Equals("###") || s.Equals("##"))
+                sb.Append(" ");
+
             if (_program_module.program_name != null)
                 visit_node(_program_module.program_name);
             if (_program_module.used_units != null && _program_module.used_units.source_context != null)
             {
-                if (_program_module.program_block != null && _program_module.program_block.program_code.left_logical_bracket.text.StartsWith("##"))
+                /*if (_program_module.program_block != null && _program_module.program_block.program_code.left_logical_bracket.text.StartsWith("##"))
                     ;
-                else visit_node(_program_module.used_units);
+                else*/ visit_node(_program_module.used_units);
             }
             if (_program_module.program_block != null)
                 visit_node(_program_module.program_block); 

@@ -66,6 +66,9 @@ function FirstPrimes(n: integer): List<integer>;
 function Digits(n: int64): List<integer>;
 
 /// Возвращает список делителей натурального числа
+function Divisors(n: integer): List<integer>;
+
+///--
 function Divizors(n: integer): List<integer>;
 
 /// Возвращает Sin угла, заданного в градусах
@@ -543,7 +546,7 @@ Digits(Self);
 {$region Divisors}
 
 /// возвращает список всех делителей натурального числа
-function Divizors(n: integer): List<integer>;
+function Divisors(n: integer): List<integer>;
 begin
   n := Abs(n); // foolproof
   var L := new List<integer>;
@@ -568,9 +571,17 @@ begin
   Result := L
 end;
 
-/// возвращает список делителей натурального числа
+///--
+function Divizors(n: integer) := Divisors(n);
+
+
+/// Возвращает список делителей натурального числа
+function Divisors(Self: integer): List<integer>; extensionmethod :=
+  Divisors(Self);
+
+///--
 function Divizors(Self: integer): List<integer>; extensionmethod :=
-Divizors(Self);
+  Divisors(Self);
 
 {$endregion}
 

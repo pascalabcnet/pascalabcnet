@@ -33,6 +33,7 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkUnderscore tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
+%token <ti> tkBackSlashRoundOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -62,6 +63,7 @@
 %type <ex> const_factor const_factor_without_unary_op const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
+%type <ob>  lambda_unpacked_params_or_id lambda_list_of_unpacked_params_or_id
 %type <stn> member_list_section optional_component_list_seq_end  
 %type <stn> const_decl only_const_decl  
 %type <stn> const_decl_sect  
@@ -70,6 +72,7 @@
 %type <stn> case_stmt    
 %type <stn> case_list  
 %type <stn> program_decl_sect_list int_decl_sect_list1 inclass_decl_sect_list1 interface_decl_sect_list decl_sect_list decl_sect_list1 inclass_decl_sect_list 
+%type <stn> decl_sect_list_proc_func_only
 %type <stn> field_or_const_definition abc_decl_sect decl_sect int_decl_sect type_decl simple_type_decl simple_field_or_const_definition res_str_decl_sect 
 %type <stn> method_decl_withattr method_or_property_decl property_definition fp_sect 
 %type <ex> default_expr tuple 
@@ -80,9 +83,11 @@
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
-%type <stn> enumeration_id expr_l1_list 
+%type <stn> enumeration_id expr_l1_or_unpacked_list
+// %type <stn> expr_l1_list
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr const_relop_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
+%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr const_relop_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq 
+%type <ex> lambda_unpacked_params expr_l1 expr_l1_or_unpacked expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
 %type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
@@ -159,7 +164,7 @@
 %type <stn> template_param_list template_empty_param_list template_type_params template_type_empty_params
 %type <td> template_type
 %type <stn> try_stmt  
-%type <stn> uses_clause used_units_list  
+%type <stn> uses_clause used_units_list uses_clause_one uses_clause_one_or_empty 
 %type <stn> unit_file  
 %type <stn> used_unit_name
 %type <stn> unit_header  
@@ -188,18 +193,19 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
-	| tkShortProgram uses_clause stmt_list	
+	| tkShortProgram uses_clause_one_or_empty decl_sect_list_proc_func_only stmt_list	
 		{ 
-			var stl = $3 as statement_list;
-			stl.left_logical_bracket = $1;
+			var stl = $4 as statement_list;
+			stl.left_logical_bracket = new token_info("");
 			stl.right_logical_bracket = new token_info("");
 			var ul = $2 as uses_list;
-			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
+			root = $$ = NewProgramModule(null, null, ul, new block($3 as declarations, stl, @4), new token_info(""), LexLocation.MergeAll(@2,@3,@4)); 
 		}
-	| tkShortSFProgram uses_clause stmt_list	
+	| tkShortSFProgram uses_clause_one_or_empty decl_sect_list_proc_func_only stmt_list	
 		{
-			var stl = $3 as statement_list;
-			stl.left_logical_bracket = $1;
+			var stl = $4 as statement_list;
+			stl.left_logical_bracket = new token_info("");
+			stl.right_logical_bracket = new token_info("");
 			var un = new unit_or_namespace(new ident_list("SF"),null);
 			var ul = $2 as uses_list;
 			if (ul == null)
@@ -207,7 +213,7 @@ parse_goal
 				ul = new uses_list(un,null);
 			else ul.Insert(0,un);
 			//ul.Add(un1);
-			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
+			root = $$ = NewProgramModule(null, null, ul, new block($3 as declarations, stl, @$), new token_info(""), LexLocation.MergeAll(@2,@3,@4)); 
 		}
     ;
 
@@ -330,21 +336,43 @@ ident_or_keyword_pointseparator_list
 		}
     ;
 
+
+uses_clause_one
+	: tkUses used_units_list tkSemiColon
+		{
+			$$ = $2;
+			$$.source_context = @$;
+		}
+	;
+	
+uses_clause_one_or_empty
+	: 
+		{ 
+			$$ = null; 
+		}
+	| uses_clause_one
+		{
+			if (parsertools.build_tree_for_formatter)
+				$$ = new uses_closure($1 as uses_list,@$);
+			$$ = $1;
+		}
+	;
+
 uses_clause
     :
 		{ 
 			$$ = null; 
 		}
-    | uses_clause tkUses used_units_list tkSemiColon            
+    | uses_clause uses_clause_one            
         { 
    			if (parsertools.build_tree_for_formatter)
    			{
 	        	if ($1 == null)
                 {
-	        		$$ = new uses_closure($3 as uses_list,@$);
+	        		$$ = new uses_closure($2 as uses_list,@$);
                 }
 	        	else {
-                    ($1 as uses_closure).AddUsesList($3 as uses_list,@$);
+                    ($1 as uses_closure).AddUsesList($2 as uses_list,@$);
                     $$ = $1;
                 }
    			}
@@ -352,12 +380,12 @@ uses_clause
    			{
 	        	if ($1 == null)
                 {
-                    $$ = $3;
+                    $$ = $2;
                     $$.source_context = @$;
                 }
 	        	else 
                 {
-                    ($1 as uses_list).AddUsesList($3 as uses_list,@$);
+                    ($1 as uses_list).AddUsesList($2 as uses_list,@$);
                     $$ = $1;
                     $$.source_context = @$;
                 }
@@ -495,6 +523,28 @@ decl_sect_list
 			else 
 				$$ = $1;
 		}
+	;
+	
+decl_sect_list_proc_func_only
+	:
+        { 
+			$$ = new declarations(); 
+			if (GlobalDecls==null) 
+				GlobalDecls = $$ as declarations;
+		}
+	| decl_sect_list_proc_func_only proc_func_decl_noclass
+		{
+			var dcl = $1 as declarations;
+			if (dcl.Count == 0)			
+				$$ = dcl.Add($2 as declaration, @2);
+			else
+			{
+				var sc = dcl.source_context;
+				sc = sc.Merge($2.source_context);
+				$$ = dcl.Add($2 as declaration, @2);
+				$$.source_context = sc;			
+			}
+		}		
 	;
 	
 decl_sect_list1
@@ -739,16 +789,16 @@ const_name
 		{ $$ = $1; }
     ;
 
-expr_l1_list
-    : expr_l1                                
-        { 
-			$$ = new expression_list($1, @$); 
-		}
-    | expr_l1_list tkComma expr_l1               
-		{
-			$$ = ($1 as expression_list).Add($3, @$); 
-		}
-    ;
+//expr_l1_list
+//    : expr_l1                                
+//        { 
+//			$$ = new expression_list($1, @$); 
+//		}
+//    | expr_l1_list tkComma expr_l1               
+//		{
+//			$$ = ($1 as expression_list).Add($3, @$); 
+//		}
+//    ;
 
 const_relop_expr
     : const_simple_expr
@@ -3907,6 +3957,10 @@ as_expr
         {
             $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
         }
+    | term tkAs array_type
+	    {
+            $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
+	    }
     ;
     
 is_type_expr
@@ -3914,6 +3968,10 @@ is_type_expr
         {
             $$ = NewAsIsExpr($1, op_typecast.is_op, $3, @$);
         }
+    | term tkIs array_type
+	    {
+            $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
+	    }
     ;
     
 power_expr
@@ -3967,8 +4025,13 @@ default_expr
     ;
 
 tuple
-	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
+	 : tkRoundOpen expr_l1_or_unpacked tkComma expr_l1_or_unpacked_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
 		{
+			if ($2 is unpacked_list_of_ident_or_list) 
+				parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",@2);
+			foreach (var ex in ($4 as expression_list).expressions)
+				if (ex is unpacked_list_of_ident_or_list)
+					parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",ex.source_context);
 			/*if ($5 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
 			if ($6 != null) 
@@ -4159,6 +4222,33 @@ variable
                 }
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
+			// многомерные срезы
+            else if (el.expressions.Any(e => e is format_expr))
+            {
+            	if (el.expressions.Count > 4)
+            		parsertools.AddErrorFromResource("SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5",@$); // Срезы многомерных массивов разрешены только для массивов размерности < 5  
+                var ll = new List<Tuple<expression, expression, expression>>();
+                foreach (var ex in el.expressions)
+                {
+                    if (ex is format_expr fe)
+                    {
+                        if (fe.expr == null)
+                            fe.expr = new int32_const(int.MaxValue, fe.source_context);
+                        if (fe.format1 == null)
+                            fe.format1 = new int32_const(int.MaxValue, fe.source_context);
+                        if (fe.format2 == null)
+                            fe.format2 = new int32_const(1, fe.source_context);
+                        ll.Add(Tuple.Create(fe.expr, fe.format1, fe.format2));
+                    }
+                    else
+                    {
+                    	ll.Add(Tuple.Create(ex, (expression)new int32_const(0, ex.source_context), (expression)new int32_const(int.MaxValue, ex.source_context))); // скалярное значение вместо среза
+                    }
+				}
+				var sle = new slice_expr($1 as addressed_value,null,null,null,@$);
+				sle.slices = ll;
+				$$ = sle;
+            }
 			else $$ = new indexer($1 as addressed_value, el, @$);
         }
     | variable_or_literal_or_number tkQuestionSquareOpen format_expr tkSquareClose                
@@ -4641,6 +4731,61 @@ assign_operator
 		{ $$ = $1; }
     ;
 
+lambda_unpacked_params
+	: tkBackSlashRoundOpen lambda_list_of_unpacked_params_or_id tkComma lambda_unpacked_params_or_id tkRoundClose
+		{
+			// результат надо присвоить какому то сахарному полю в function_lambda_definition
+			($2 as unpacked_list_of_ident_or_list).Add($4 as ident_or_list);
+			$$ = $2 as unpacked_list_of_ident_or_list;
+		}
+	;
+	
+lambda_unpacked_params_or_id
+	: lambda_unpacked_params // ident_or_list
+		{
+			$$ = new ident_or_list($1 as unpacked_list_of_ident_or_list);
+		}
+	| identifier // ident_or_list
+		{
+			$$ = new ident_or_list($1 as ident);
+		}
+	;
+	
+lambda_list_of_unpacked_params_or_id
+	: lambda_unpacked_params_or_id
+		{
+			$$ = new unpacked_list_of_ident_or_list();
+			($$ as unpacked_list_of_ident_or_list).Add($1 as ident_or_list);
+			($$ as unpacked_list_of_ident_or_list).source_context = @1;
+		}
+	| lambda_list_of_unpacked_params_or_id tkComma lambda_unpacked_params_or_id
+		{
+			$$ = $1;
+			($$ as unpacked_list_of_ident_or_list).Add($3 as ident_or_list);
+			($$ as unpacked_list_of_ident_or_list).source_context = LexLocation.MergeAll(@1,@3);
+		}
+	;
+
+	
+expr_l1_or_unpacked
+	: expr_l1 
+		{ $$ = $1; }
+	| lambda_unpacked_params 
+		{ $$ = $1; }
+	;
+	
+
+expr_l1_or_unpacked_list
+	: expr_l1_or_unpacked
+        { 
+			$$ = new expression_list($1, @$); 
+		}
+	| expr_l1_or_unpacked_list tkComma expr_l1_or_unpacked
+		{
+			$$ = ($1 as expression_list).Add($3, @$); 
+		}
+	;	
+	
 func_decl_lambda
 	: identifier tkArrow lambda_function_body
 		{
@@ -4693,12 +4838,53 @@ func_decl_lambda
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, sl, @$);
 			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);
 		}
-    | tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda
+    | tkRoundOpen expr_l1_or_unpacked tkComma expr_l1_or_unpacked_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda // optional_full_lambda_fp_list - так сделано из-за конфликтов в граматике
 		{ 
 			var pair = $8 as pair_type_stlist;
 			
 			if ($5 is lambda_inferred_type)
 			{
+				// добавим сюда \(x,y)
+				// Пройтись по всем expr_list1. Если хотя бы одна - типа ident_or_list то пойти по этой ветке и выйти
+				// убедиться, что $6 = null
+				// сформировать List<expression> для unpacked_params и присвоить
+				var has_unpacked = false;
+				if ($2 is unpacked_list_of_ident_or_list)
+					has_unpacked = true;
+				if (!has_unpacked)
+					foreach (var x in ($4 as expression_list).expressions)
+					{
+						if (x is unpacked_list_of_ident_or_list)
+						{
+							has_unpacked = true;
+							break;
+						}
+					}
+				if (has_unpacked) // тут новая ветка
+				{
+					if ($6 != null)
+					{
+						parsertools.AddErrorFromResource("SEMICOLON_IN_PARAMS",@6);
+					}
+				
+					var lst_ex = new List<expression>();
+					lst_ex.Add($2 as expression);
+					foreach (var x in ($4 as expression_list).expressions)
+						lst_ex.Add(x);
+					
+					function_lambda_definition fld = null; //= new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
+    					//new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @2), pair.exprs, @$);
+
+					var sl1 = pair.exprs;
+			    	if (sl1.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl1, "result") != null) // то надо выводить
+						fld = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, pair.tn, pair.exprs, @$);
+					else fld = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, pair.exprs, @$);	
+
+					fld.unpacked_params = lst_ex;
+					$$ = fld;					
+					return;
+				}
+				
 				var formal_pars = new formal_parameters();
 				var idd = $2 as ident;
 				if (idd==null)
@@ -4759,6 +4945,17 @@ func_decl_lambda
 				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, pair.exprs, @$);
 			}
 		}
+    | lambda_unpacked_params rem_lambda // лямбда с распаковкой
+    	{
+    		var pair = $2 as pair_type_stlist;
+    		// пока формальные параметры - null. Раскроем их сахарным визитором
+    		$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
+    			new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), pair.exprs, @$);
+    		// unpacked_params - это для одного параметра. Для нескольких - надо другую структуру. Возможно, список списков
+    		var lst_ex = new List<expression>();
+    		lst_ex.Add($1 as unpacked_list_of_ident_or_list);
+    		($$ as function_lambda_definition).unpacked_params = lst_ex;  
+    	}
 	| expl_func_decl_lambda
 		{
 			$$ = $1; 

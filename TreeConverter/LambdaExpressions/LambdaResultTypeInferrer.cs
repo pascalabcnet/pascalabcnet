@@ -118,5 +118,17 @@ namespace TreeConverter.LambdaExpressions
         public override void visit(function_lambda_definition funcLamDef)
         {
         }
+
+        public override void visit(semantic_check_sugared_statement_node st)
+        {
+            // Это единственная семантическая проверка в сахарной конструкции где порождаются новые переменные
+            // В остальных случаях семантические проверки в этом визиторе пропускаются
+            if (st.typ as System.Type == typeof(assign_var_tuple))
+            {
+                var idents = st.lst[0] as ident_list;
+                var expr = st.lst[1] as expression;
+                syntaxTreeVisitor.semantic_check_assign_var_tuple(idents, expr);
+            }
+        }
     }
 }

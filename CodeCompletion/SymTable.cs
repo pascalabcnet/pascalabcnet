@@ -695,6 +695,8 @@ namespace CodeCompletion
                 {
                     if (IsInScope(ss.loc, line, column))
                     {
+                        if (this is TypeScope && ss.loc.end_line_num > loc.end_line_num)
+                            continue;
                         res = ss;
                         SymScope tmp = ss.FindScopeByLocation(line, column);
                         if (tmp != null)

@@ -1190,6 +1190,7 @@ namespace PascalABCCompiler.NETGenerator
                 else
                 fb.SetConstant(constant_value.value);
             }
+            
         }
 
         private void PushConstantValue(IConstantNode cnst)
@@ -1801,6 +1802,8 @@ namespace PascalABCCompiler.NETGenerator
                         lst.Add(cn.value);
                     objs[i] = lst.ToArray();
                 }
+                else if (cnsts[i] is ITypeOfOperatorAsConstant)
+                    objs[i] = helper.GetTypeReference((cnsts[i] as ITypeOfOperatorAsConstant).TypeOfOperator.oftype).tp;
                 else
                     objs[i] = cnsts[i].value;
             }
@@ -8932,7 +8935,7 @@ namespace PascalABCCompiler.NETGenerator
                             il.Emit(OpCodes.Ldc_I4_0);
                             il.Emit(OpCodes.Ceq);
                         }
-                            
+
                         return;
                     }
                     else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
@@ -8982,6 +8985,22 @@ namespace PascalABCCompiler.NETGenerator
                             is_dot_expr = tmp_dot;
                             NETGeneratorTools.CreateLocalAndLoad(il, helper.GetTypeReference(value.type).tp);
                         }
+                        return;
+                    }
+                    else if (real_parameters[0].type.is_generic_parameter && real_parameters[1] is INullConstantNode)
+                    { 
+                        real_parameters[0].visit(this);
+                        il.Emit(OpCodes.Box, helper.GetTypeReference(real_parameters[0].type).tp);
+                        il.Emit(OpCodes.Ldnull);
+                        EmitOperator(value);
+                        return;
+                    }
+                    else if (real_parameters[1].type.is_generic_parameter && real_parameters[0] is INullConstantNode)
+                    {
+                        il.Emit(OpCodes.Ldnull);
+                        real_parameters[1].visit(this);
+                        il.Emit(OpCodes.Box, helper.GetTypeReference(real_parameters[1].type).tp);
+                        EmitOperator(value);
                         return;
                     }
                 }
@@ -11143,6 +11162,11 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(IDefaultOperatorNodeAsConstant value)
         {
             value.DefaultOperator.visit(this);
+        }
+
+        public override void visit(ITypeOfOperatorAsConstant value)
+        {
+            value.TypeOfOperator.visit(this);
         }
 
         public override void visit(ICommonConstructorCallAsConstant value)

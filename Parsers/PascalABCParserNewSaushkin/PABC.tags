@@ -232,7 +232,6 @@
     <name value="const_decl_sect" />
     <name value="res_str_decl_sect" />
     <name value="type_decl_sect" />
-    <name value="uses_clause" />
     <name value="interface_part" />
     <name value="implementation_part" />
     <name value="abc_interface_part" />
@@ -319,6 +318,5 @@
     <name value="var_decl_part" />
     <name value="typed_const" />
     <name value="var_stmt" />
-    <name value="func_decl_lambda" />
   </tag>
 </tags>

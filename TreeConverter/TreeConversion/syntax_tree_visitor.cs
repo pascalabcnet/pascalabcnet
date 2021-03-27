@@ -12512,6 +12512,7 @@ namespace PascalABCCompiler.TreeConverter
         		case semantic_node_type.string_const_node :
         		case semantic_node_type.enum_const :
         		case semantic_node_type.null_const_node :
+                case semantic_node_type.typeof_operator_as_constant:
         			return;
         		default:
                     AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
@@ -14948,6 +14949,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (expr is default_operator_node)
                 constant = new default_operator_node_as_constant(expr as default_operator_node, null);
+            else if (expr is typeof_operator && !is_const_section)
+                constant = new typeof_operator_as_constant(expr as typeof_operator, null);
             else
             {
                 constant = expr as constant_node;
@@ -21016,9 +21019,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 semantic_check_method_call_as_diapason_expr(av.new_addr_value as SyntaxTree.method_call);
             }
-            else if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
+            else if (av.sugared_expr is SyntaxTree.slice_expr slex) // и slice_expr_question
             {
-                semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
+                if (slex.slices == null)
+                    semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
+                else semantic_check_method_call_as_slice_expr_multi(av.new_addr_value as SyntaxTree.method_call);
             }
             else if (av.sugared_expr is SyntaxTree.dot_question_node)
             {
