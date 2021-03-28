@@ -4275,9 +4275,14 @@ namespace PascalABCCompiler.TreeConverter
 
                 List<SymbolInfo> sil = context.find_definition_node(ntr, get_location(_simple_property.property_name), true);
                 if (!(sil[0].sym_info as type_node).IsInterface)
-                    AddError(get_location(_simple_property.property_name), "INTERFACE_AWAITED");
+                    AddError(get_location(_simple_property.property_name), "EXPECTED_INTERFACE");
                 name = (sil[0].sym_info as type_node).BaseFullName + "." + name;
                 expl_interface = sil[0].sym_info as type_node;
+                sil = expl_interface.find_in_type(_simple_property.property_name.name);
+                if (sil == null)
+                    AddError(new MemberIsNotDeclaredInType(_simple_property.property_name, get_location(_simple_property.property_name), expl_interface));
+                if (!(sil[0].sym_info is property_node))
+                    AddError(get_location(_simple_property.property_name), "EXPECTED_PROPERTY");
             }
             common_property_node pn = context.add_property(name, get_location(_simple_property.property_name));
             assign_doc_info(pn, _simple_property);
