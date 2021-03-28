@@ -3471,6 +3471,7 @@ namespace CodeFormatters
             {
                 foreach (ident id in _property_ident.ln)
                     visit_node(id);
+                return;
             }
             WriteAmpersandIfNeed(_property_ident);
             sb.Append(prepare_ident(_property_ident.name));
