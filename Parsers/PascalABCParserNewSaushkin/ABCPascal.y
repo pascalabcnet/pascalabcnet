@@ -63,7 +63,7 @@
 %type <ex> const_factor const_factor_without_unary_op const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
-%type <ob> lambda_unpacked_params lambda_unpacked_params_or_id lambda_list_of_unpacked_params_or_id
+%type <ob>  lambda_unpacked_params_or_id lambda_list_of_unpacked_params_or_id
 %type <stn> member_list_section optional_component_list_seq_end  
 %type <stn> const_decl only_const_decl  
 %type <stn> const_decl_sect  
@@ -83,9 +83,11 @@
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
-%type <stn> enumeration_id expr_l1_list 
+%type <stn> enumeration_id expr_l1_or_unpacked_list
+// %type <stn> expr_l1_list
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr const_relop_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
+%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr const_relop_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq 
+%type <ex> lambda_unpacked_params expr_l1 expr_l1_or_unpacked expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
 %type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
@@ -787,16 +789,16 @@ const_name
 		{ $$ = $1; }
     ;
 
-expr_l1_list
-    : expr_l1                                
-        { 
-			$$ = new expression_list($1, @$); 
-		}
-    | expr_l1_list tkComma expr_l1               
-		{
-			$$ = ($1 as expression_list).Add($3, @$); 
-		}
-    ;
+//expr_l1_list
+//    : expr_l1                                
+//        { 
+//			$$ = new expression_list($1, @$); 
+//		}
+//    | expr_l1_list tkComma expr_l1               
+//		{
+//			$$ = ($1 as expression_list).Add($3, @$); 
+//		}
+//    ;
 
 const_relop_expr
     : const_simple_expr
@@ -4023,8 +4025,13 @@ default_expr
     ;
 
 tuple
-	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
+	 : tkRoundOpen expr_l1_or_unpacked tkComma expr_l1_or_unpacked_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
 		{
+			if ($2 is unpacked_list_of_ident_or_list) 
+				parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",@2);
+			foreach (var ex in ($4 as expression_list).expressions)
+				if (ex is unpacked_list_of_ident_or_list)
+					parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",ex.source_context);
 			/*if ($5 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
 			if ($6 != null) 
@@ -4728,15 +4735,15 @@ lambda_unpacked_params
 	: tkBackSlashRoundOpen lambda_list_of_unpacked_params_or_id tkComma lambda_unpacked_params_or_id tkRoundClose
 		{
 			// результат надо присвоить какому то сахарному полю в function_lambda_definition
-			$$ = $2;
-			($$ as List<ident_or_list>).Add($4 as ident_or_list);
+			($2 as unpacked_list_of_ident_or_list).Add($4 as ident_or_list);
+			$$ = $2 as unpacked_list_of_ident_or_list;
 		}
 	;
 	
 lambda_unpacked_params_or_id
 	: lambda_unpacked_params // ident_or_list
 		{
-			$$ = new ident_or_list($1 as List<ident_or_list>);
+			$$ = new ident_or_list($1 as unpacked_list_of_ident_or_list);
 		}
 	| identifier // ident_or_list
 		{
@@ -4747,16 +4754,37 @@ lambda_unpacked_params_or_id
 lambda_list_of_unpacked_params_or_id
 	: lambda_unpacked_params_or_id
 		{
-			$$ = new List<ident_or_list>();
-			($$ as List<ident_or_list>).Add($1 as ident_or_list);  
+			$$ = new unpacked_list_of_ident_or_list();
+			($$ as unpacked_list_of_ident_or_list).Add($1 as ident_or_list);
+			($$ as unpacked_list_of_ident_or_list).source_context = @1;
 		}
 	| lambda_list_of_unpacked_params_or_id tkComma lambda_unpacked_params_or_id
 		{
 			$$ = $1;
-			($$ as List<ident_or_list>).Add($3 as ident_or_list);
+			($$ as unpacked_list_of_ident_or_list).Add($3 as ident_or_list);
+			($$ as unpacked_list_of_ident_or_list).source_context = LexLocation.MergeAll(@1,@3);
 		}
 	;
 
+	
+expr_l1_or_unpacked
+	: expr_l1 
+		{ $$ = $1; }
+	| lambda_unpacked_params 
+		{ $$ = $1; }
+	;
+	
+
+expr_l1_or_unpacked_list
+	: expr_l1_or_unpacked
+        { 
+			$$ = new expression_list($1, @$); 
+		}
+	| expr_l1_or_unpacked_list tkComma expr_l1_or_unpacked
+		{
+			$$ = ($1 as expression_list).Add($3, @$); 
+		}
+	;	
 	
 func_decl_lambda
 	: identifier tkArrow lambda_function_body
@@ -4810,12 +4838,53 @@ func_decl_lambda
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, sl, @$);
 			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);
 		}
-    | tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda
+    | tkRoundOpen expr_l1_or_unpacked tkComma expr_l1_or_unpacked_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda // optional_full_lambda_fp_list - так сделано из-за конфликтов в граматике
 		{ 
 			var pair = $8 as pair_type_stlist;
 			
 			if ($5 is lambda_inferred_type)
 			{
+				// добавим сюда \(x,y)
+				// Пройтись по всем expr_list1. Если хотя бы одна - типа ident_or_list то пойти по этой ветке и выйти
+				// убедиться, что $6 = null
+				// сформировать List<expression> для unpacked_params и присвоить
+				var has_unpacked = false;
+				if ($2 is unpacked_list_of_ident_or_list)
+					has_unpacked = true;
+				if (!has_unpacked)
+					foreach (var x in ($4 as expression_list).expressions)
+					{
+						if (x is unpacked_list_of_ident_or_list)
+						{
+							has_unpacked = true;
+							break;
+						}
+					}
+				if (has_unpacked) // тут новая ветка
+				{
+					if ($6 != null)
+					{
+						parsertools.AddErrorFromResource("SEMICOLON_IN_PARAMS",@6);
+					}
+				
+					var lst_ex = new List<expression>();
+					lst_ex.Add($2 as expression);
+					foreach (var x in ($4 as expression_list).expressions)
+						lst_ex.Add(x);
+					
+					function_lambda_definition fld = null; //= new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
+    					//new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @2), pair.exprs, @$);
+
+					var sl1 = pair.exprs;
+			    	if (sl1.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl1, "result") != null) // то надо выводить
+						fld = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, pair.tn, pair.exprs, @$);
+					else fld = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, pair.exprs, @$);	
+
+					fld.unpacked_params = lst_ex;
+					$$ = fld;					
+					return;
+				}
+				
 				var formal_pars = new formal_parameters();
 				var idd = $2 as ident;
 				if (idd==null)
@@ -4879,9 +4948,13 @@ func_decl_lambda
     | lambda_unpacked_params rem_lambda // лямбда с распаковкой
     	{
     		var pair = $2 as pair_type_stlist;
+    		// пока формальные параметры - null. Раскроем их сахарным визитором
     		$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
     			new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), pair.exprs, @$);
-    		($$ as function_lambda_definition).unpacked_params = $1 as List<ident_or_list>;
+    		// unpacked_params - это для одного параметра. Для нескольких - надо другую структуру. Возможно, список списков
+    		var lst_ex = new List<expression>();
+    		lst_ex.Add($1 as unpacked_list_of_ident_or_list);
+    		($$ as function_lambda_definition).unpacked_params = lst_ex;  
     	}
 	| expl_func_decl_lambda
 		{

@@ -10193,6 +10193,21 @@ begin
   end
 end;
 
+/// Превращает последовательность в последовательность n-ок соседних элементов
+function Nwise<T>(Self: sequence of T; n: integer):sequence of array of T; extensionmethod;
+begin 
+  var chunk := new Queue<T>(n);
+  foreach var x in Self do 
+  begin
+    chunk.Enqueue(x);
+    if chunk.Count = n then 
+    begin
+      yield chunk.ToArray;
+      chunk.Dequeue;
+    end;
+  end;   
+end;
+
 /// Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность 
 function Pairwise<T, Res>(Self: sequence of T; func: (T,T)->Res): sequence of Res; extensionmethod;
 begin

@@ -54,6 +54,7 @@ ONE_OPERATOR=Expected operator
 ONE_STMT=Expected statement
 BAD_TUPLE=Badly formed Tuple
 EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION=Statement expected
+EXPRESSION_EXPECTED=Expression expected
 
 
 DUPLICATE_NAMES_IN_ANON_TYPE=Duplicate field names in anonymous type

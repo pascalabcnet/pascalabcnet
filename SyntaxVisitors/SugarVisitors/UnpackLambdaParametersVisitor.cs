@@ -30,10 +30,10 @@ namespace SyntaxVisitors.SugarVisitors
             return new ident("#fpl" + UniqueNumStr(), sc);
         }
 
-        public void CreateUnpackedListOfAssignments(List<ident_or_list> ll, List<statement> res, ident prevname, SourceContext sc)
+        public void CreateUnpackedListOfAssignments(unpacked_list_of_ident_or_list ll, List<statement> res, ident prevname, SourceContext sc)
         {
             var idlist = new ident_list();
-            foreach (var llelem in ll)
+            foreach (var llelem in ll.lst)
             {
                 if (llelem.lst != null)
                 {
@@ -54,21 +54,44 @@ namespace SyntaxVisitors.SugarVisitors
             if (fld.unpacked_params == null)
             {
                 return;
-            } 
-                
-            var main_param_id = CreateIdent(fld.source_context);
-            var idlist = new ident_list(main_param_id);
-            var lam_inft = new lambda_inferred_type(new lambda_any_type_node());
-            var typp = new typed_parameters(idlist, lam_inft);
-            fld.formal_parameters = new formal_parameters(typp, fld.source_context);
+            }
+
+            fld.formal_parameters = new formal_parameters();
+            fld.formal_parameters.source_context = fld.source_context;
 
             // Пусть параметр имеет вид \(x,y)
             // Тогда в начало тела лямбды надо добавить var (x,y) = #fpl1; 
             //var idl = new ident_list(fld.unpacked_params.Select(p => p.id).ToList(),fld.source_context); // 
 
             //var ass = new assign_var_tuple(idl, main_param_id, fld.source_context);
+
             List<statement> res = new List<statement>();
-            CreateUnpackedListOfAssignments(fld.unpacked_params, res, main_param_id, fld.source_context);
+
+            foreach (var param in fld.unpacked_params)
+            {
+                if (param is unpacked_list_of_ident_or_list unpacked_param)
+                {
+                    var lam_inft = new lambda_inferred_type(new lambda_any_type_node());
+                    var param_id = CreateIdent(fld.source_context);
+                    var idlist = new ident_list(param_id, unpacked_param.source_context);
+                    var typed_pars = new typed_parameters(idlist, lam_inft, parametr_kind.none, null, unpacked_param.source_context);
+                    fld.formal_parameters.Add(typed_pars, unpacked_param.source_context);
+                    fld.ident_list.Add(param_id);
+                    fld.parameters.Add(param_id);
+
+                    CreateUnpackedListOfAssignments(unpacked_param, res, param_id, unpacked_param.source_context);
+                }
+                else if (param is ident id)
+                {
+                    var lam_inft = new lambda_inferred_type(new lambda_any_type_node());
+                    var idlist = new ident_list(id,id.source_context);
+                    var typed_pars = new typed_parameters(idlist, lam_inft);
+                    fld.formal_parameters.Add(typed_pars, fld.source_context);
+                    fld.ident_list.Add(id);
+                    fld.parameters.Add(id);
+                }
+            }
+
 
             var stl = fld.proc_body as statement_list;
             res.Reverse();
