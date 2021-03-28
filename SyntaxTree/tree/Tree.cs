@@ -16294,7 +16294,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value)
+		public simple_property(property_ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16312,7 +16312,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,SourceContext sc)
+		public simple_property(property_ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,SourceContext sc)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16327,7 +16327,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
-		protected ident _property_name;
+		protected property_ident _property_name;
 		protected type_definition _property_type;
 		protected expression _index_expression;
 		protected property_accessors _accessors;
@@ -16341,7 +16341,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public ident property_name
+		public property_ident property_name
 		{
 			get
 			{
@@ -16517,7 +16517,7 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			if (property_name != null)
 			{
-				copy.property_name = (ident)property_name.Clone();
+				copy.property_name = (property_ident)property_name.Clone();
 				copy.property_name.Parent = copy;
 			}
 			if (property_type != null)
@@ -16652,7 +16652,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						property_name = (ident)value;
+						property_name = (property_ident)value;
 						break;
 					case 1:
 						property_type = (type_definition)value;
@@ -16727,7 +16727,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,formal_parameters _property_parametres,default_indexer_property_node _is_default)
+		public index_property(property_ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,formal_parameters _property_parametres,default_indexer_property_node _is_default)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16747,7 +16747,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,formal_parameters _property_parametres,default_indexer_property_node _is_default,SourceContext sc)
+		public index_property(property_ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,formal_parameters _property_parametres,default_indexer_property_node _is_default,SourceContext sc)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16816,7 +16816,7 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			if (property_name != null)
 			{
-				copy.property_name = (ident)property_name.Clone();
+				copy.property_name = (property_ident)property_name.Clone();
 				copy.property_name.Parent = copy;
 			}
 			if (property_type != null)
@@ -16971,7 +16971,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						property_name = (ident)value;
+						property_name = (property_ident)value;
 						break;
 					case 1:
 						property_type = (type_definition)value;
@@ -54724,6 +54724,359 @@ namespace PascalABCCompiler.SyntaxTree
 					case 2:
 						stmt = (statement)value;
 						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class property_ident : ident
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public property_ident()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public property_ident(List<ident> _ln)
+		{
+			this._ln=_ln;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public property_ident(List<ident> _ln,SourceContext sc)
+		{
+			this._ln=_ln;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public property_ident(string _name,List<ident> _ln)
+		{
+			this._name=_name;
+			this._ln=_ln;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public property_ident(string _name,List<ident> _ln,SourceContext sc)
+		{
+			this._name=_name;
+			this._ln=_ln;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public property_ident(ident elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		    FillParentsInDirectChilds();
+		}
+		
+		protected List<ident> _ln;
+
+		///<summary>
+		///
+		///</summary>
+		public List<ident> ln
+		{
+			get
+			{
+				return _ln;
+			}
+			set
+			{
+				_ln=value;
+			}
+		}
+
+
+		public property_ident Add(ident elem, SourceContext sc = null)
+		{
+			ln.Add(elem);
+			if (elem != null)
+				elem.Parent = this;
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(ident el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			ln.Insert(0, el);
+			FillParentsInDirectChilds();
+		}
+		
+		public void AddFirst(IEnumerable<ident> els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			ln.InsertRange(0, els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		public void AddMany(params ident[] els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			ln.AddRange(els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		private int FindIndexInList(ident el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			var ind = ln.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(ident el, ident newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			ln.Insert(FindIndexInList(el) + 1, newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertAfter(ident el, IEnumerable<ident> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			ln.InsertRange(FindIndexInList(el) + 1, newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public void InsertBefore(ident el, ident newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			ln.Insert(FindIndexInList(el), newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertBefore(ident el, IEnumerable<ident> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			ln.InsertRange(FindIndexInList(el), newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public bool Remove(ident el)
+		{
+			return ln.Remove(el);
+		}
+		
+		public void ReplaceInList(ident el, ident newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			ln[FindIndexInList(el)] = newel;
+			newel.Parent = this;
+		}
+		
+		public void ReplaceInList(ident el, IEnumerable<ident> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			var ind = FindIndexInList(el);
+			ln.RemoveAt(ind);
+			ln.InsertRange(ind, newels);
+		    foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public int RemoveAll(Predicate<ident> match)
+		{
+			return ln.RemoveAll(match);
+		}
+		
+		public ident Last()
+		{
+			if (ln.Count > 0)
+		        return ln[ln.Count - 1];
+			throw new InvalidOperationException("Список пуст");
+		}
+		
+		public int Count
+		{
+		    get { return ln.Count; }
+		}
+		
+		public void Insert(int pos, ident el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			ln.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
+		}
+		
+		
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			property_ident copy = new property_ident();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			copy.name = name;
+			if (ln != null)
+			{
+				foreach (ident elem in ln)
+				{
+					if (elem != null)
+					{
+						copy.Add((ident)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new property_ident TypedClone()
+		{
+			return Clone() as property_ident;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (ln != null)
+			{
+				foreach (var child in ln)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (ln != null)
+			{
+				foreach (var child in ln)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0 + (ln == null ? 0 : ln.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(ln != null)
+				{
+					if(index_counter < ln.Count)
+					{
+						return ln[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(ln != null)
+				{
+					if(index_counter < ln.Count)
+					{
+						ln[index_counter]= (ident)value;
+						return;
+					}
 				}
 			}
 		}

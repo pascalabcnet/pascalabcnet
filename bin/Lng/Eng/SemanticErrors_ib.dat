@@ -169,6 +169,7 @@ PARTIAL_CLASS_PARENTS_MISMATCH=Partial declarations must not specify different b
 PARAMETER_{0}_HAS_TYPE_{1}_FROM_UNIT_{2}=Parameter {0} has type {1} from unit {2}. Add unit {2} to uses section.
 PARTIAL_CLASS_PREDEFINITION_NOT_ALLOWED=Predefinitions of partial classes are not allowed
 AMBIGUOUS_DELEGATES=Ambiguous delegates detected
+INTERFACE_AWAITED=Interface expected
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

@@ -174,7 +174,7 @@ namespace GPPGParserScanner
         public method_name NewQualifiedIdentifier(method_name qualified_identifier, ident identifier, LexLocation loc)
         {
             var nqi = qualified_identifier;
-			nqi.class_name = nqi.meth_name;
+            nqi.class_name = nqi.meth_name;
 			nqi.meth_name = identifier;
 			nqi.source_context = loc;
             return nqi;
@@ -200,8 +200,15 @@ namespace GPPGParserScanner
         {
             var nnspd = new simple_property();
             nnspd.virt_over_none_attr = virt_over_none_attr;
-
-            nnspd.property_name = qualified_identifier.meth_name;
+            List<ident> ln = null;
+            if (qualified_identifier.ln != null)
+                ln = qualified_identifier.ln;
+            else if (qualified_identifier.class_name != null)
+            {
+                ln = new List<ident>();
+                ln.Add(qualified_identifier.class_name);
+            }
+            nnspd.property_name = new property_ident(qualified_identifier.meth_name.name, ln, qualified_identifier.source_context);
 			if (property_interface != null)
 			{
 				nnspd.parameter_list = property_interface.parameter_list;

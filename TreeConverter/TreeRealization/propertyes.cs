@@ -204,7 +204,9 @@ namespace PascalABCCompiler.TreeRealization
         /// </summary>
 		private location _loc;
 
-        public common_property_node(string name, common_type_node comprehensive_type, location loc,
+		private type_node _explicit_interface;
+
+		public common_property_node(string name, common_type_node comprehensive_type, location loc,
             SemanticTree.field_access_level field_access_level, SemanticTree.polymorphic_state polymorphic_state)
         {
             _name = name;
@@ -318,7 +320,19 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
-        public function_node internal_get_function
+		public type_node explicit_interface
+		{
+			get
+			{
+				return _explicit_interface;
+			}
+			set
+			{
+				_explicit_interface = value;
+			}
+		}
+
+		public function_node internal_get_function
         {
             get
             {

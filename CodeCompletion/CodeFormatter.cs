@@ -3464,6 +3464,18 @@ namespace CodeFormatters
             visit(new uint64_const(bi.val, bi.source_context));
             //sb.Append("bi");
         }
+
+        public override void visit(property_ident _property_ident)
+        {
+            if (_property_ident.ln != null)
+            {
+                foreach (ident id in _property_ident.ln)
+                    visit_node(id);
+            }
+            WriteAmpersandIfNeed(_property_ident);
+            sb.Append(prepare_ident(_property_ident.name));
+        }
+
         public override void visit(foreach_stmt_formatting fe)
         {
             WriteKeyword("foreach");
@@ -3485,4 +3497,6 @@ namespace CodeFormatters
         }
         #endregion
     }
+
+   
 }

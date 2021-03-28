@@ -1013,7 +1013,7 @@
     </SyntaxNode>
     <SyntaxNode Name="simple_property" BaseName="declaration">
       <Fields>
-        <SyntaxField Name="property_name" SyntaxType="ident" />
+        <SyntaxField Name="property_name" SyntaxType="property_ident" />
         <SyntaxField Name="property_type" SyntaxType="type_definition" />
         <SyntaxField Name="index_expression" SyntaxType="expression" />
         <SyntaxField Name="accessors" SyntaxType="property_accessors" />
@@ -3313,6 +3313,16 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="property_ident" BaseName="ident">
+      <Fields>
+        <ExtendedField Name="ln" Type="List&lt;ident&gt;" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3391,6 +3401,7 @@
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
       <HelpData Key=".listunitsections" Value="" />
+      <HelpData Key=".ln" Value="" />
       <HelpData Key=".mark" Value="" />
       <HelpData Key=".name" Value="" />
       <HelpData Key=".name_expr" Value="" />
@@ -4336,11 +4347,15 @@
       <HelpData Key="program_tree.program_tree Add(compilation_unit _compilation_unit)" Value="" />
       <HelpData Key="program_tree.program_tree Add(compilation_unit _compilation_unit, SourceContext sc)" Value="" />
       <HelpData Key="program_tree.program_tree(compilation_unit _compilation_unit, SourceContext sc)" Value="" />
+      <HelpData Key="properpty_ident" Value="" />
+      <HelpData Key="properpty_ident.ln" Value="" />
       <HelpData Key="property_accessors" Value="" />
       <HelpData Key="property_accessors.property_accessors(ident read_accessor, ident write_accessor): this(new read_accessor_name(read_accessor), new write_accessor_name(write_accessor))" Value="" />
       <HelpData Key="property_accessors.read_accessor" Value="" />
       <HelpData Key="property_accessors.write_accessor" Value="" />
       <HelpData Key="property_array_default" Value="" />
+      <HelpData Key="property_ident" Value="" />
+      <HelpData Key="property_ident.ln" Value="" />
       <HelpData Key="property_interface" Value="" />
       <HelpData Key="property_interface." Value="" />
       <HelpData Key="property_interface.index_expression" Value="" />

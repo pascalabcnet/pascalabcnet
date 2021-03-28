@@ -2040,11 +2040,11 @@ property_definition
     ;
     
 simple_property_definition
-    : tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
+    : tkProperty func_name property_interface property_specifiers tkSemiColon array_defaultproperty
         { 
 			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, proc_attribute.attr_none, $6 as property_array_default, @$);
         }
-    | tkProperty qualified_identifier property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
+    | tkProperty func_name property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
         { 
             proc_attribute pa = proc_attribute.attr_none;
             if ($6.name.ToLower() == "virtual")
@@ -2055,22 +2055,22 @@ simple_property_definition
  			    pa = proc_attribute.attr_abstract;
 			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, pa, $8 as property_array_default, @$);
         }
-    | class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
+    | class_or_static tkProperty func_name property_interface property_specifiers tkSemiColon array_defaultproperty
         { 
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, $5 as property_accessors, proc_attribute.attr_none, $7 as property_array_default, @$);
         	($$ as simple_property).attr = definition_attribute.Static;
         }
-    | class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
+    | class_or_static tkProperty func_name property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
         { 
 			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",@7,$7.name);        	
         }
-	| tkAuto tkProperty qualified_identifier property_interface optional_property_initialization tkSemiColon
+	| tkAuto tkProperty func_name property_interface optional_property_initialization tkSemiColon
 		{
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
 			($$ as simple_property).initial_value = $5;
 		}
-	| class_or_static tkAuto tkProperty qualified_identifier property_interface optional_property_initialization tkSemiColon
+	| class_or_static tkAuto tkProperty func_name property_interface optional_property_initialization tkSemiColon
 		{
 			$$ = NewSimplePropertyDefinition($4 as method_name, $5 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;

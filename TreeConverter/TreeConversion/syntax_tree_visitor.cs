@@ -4257,9 +4257,29 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", compiler_string_consts.PascalReadAccessorName, compiler_string_consts.PascalWriteAccessorName);
             if (_simple_property.property_type == null)
                 AddError(get_location(_simple_property.property_name), "TYPE_NAME_EXPECTED");
-            
-            common_property_node pn = context.add_property(_simple_property.property_name.name,
-                get_location(_simple_property.property_name));
+            string name = _simple_property.property_name.name;
+            type_node expl_interface = null;
+            if (_simple_property.property_name.ln != null)
+            {
+                for (var i = 0; i < _simple_property.property_name.ln.Count - 1; i++)
+                    if (_simple_property.property_name.ln[i] is SyntaxTree.template_type_name)
+                        AddError(new NameCannotHaveGenericParameters(_simple_property.property_name.ln[i].name, get_location(_simple_property.property_name.ln[i])));
+
+                var ntr = new SyntaxTree.named_type_reference();
+                for (var i = 0; i < _simple_property.property_name.ln.Count; i++)
+                {
+                    ntr.Add(new ident(_simple_property.property_name.ln[i].name+
+                        (_simple_property.property_name.ln[i] is template_type_name ? "`"+(_simple_property.property_name.ln[i] as template_type_name).template_args.Count :""), _simple_property.property_name.ln[i].source_context));
+                    
+                }
+
+                List<SymbolInfo> sil = context.find_definition_node(ntr, get_location(_simple_property.property_name), true);
+                if (!(sil[0].sym_info as type_node).IsInterface)
+                    AddError(get_location(_simple_property.property_name), "INTERFACE_AWAITED");
+                name = (sil[0].sym_info as type_node).BaseFullName + "." + name;
+                expl_interface = sil[0].sym_info as type_node;
+            }
+            common_property_node pn = context.add_property(name, get_location(_simple_property.property_name));
             assign_doc_info(pn, _simple_property);
             //pn.polymorphic_state=SemanticTree.polymorphic_state.ps_common;
             //pn.loc=get_location(_simple_property.property_name);
@@ -4605,6 +4625,11 @@ namespace PascalABCCompiler.TreeConverter
             make_attributes_for_declaration(_simple_property,pn);
             if (_simple_property.virt_over_none_attr == proc_attribute.attr_override)
                 context.set_override(pn);
+            else if (expl_interface != null)
+            {
+                context.set_implement(pn, _simple_property.property_name.name, expl_interface);
+            }
+
             //TODO: Можно сделать множество свойств по умолчанию.
             if (_simple_property.array_default != null)
             {
@@ -4622,8 +4647,14 @@ namespace PascalABCCompiler.TreeConverter
 
         private function_node GenerateGetMethod(common_property_node cpn, common_method_node accessor, location loc)
         {
+            string getter_name = "get_" + cpn.name;
+            if (cpn.name.IndexOf('.') != -1)
+            {
+                string[] names = cpn.name.Split('.');
+                getter_name = names.Take(names.Length - 1).ToArray().JoinIntoString(".") + "get_" + names[names.Length - 1];
+            }
             common_method_node cmn = new common_method_node(
-                "get_"+cpn.name, loc, cpn.common_comprehensive_type,
+                getter_name, loc, cpn.common_comprehensive_type,
                 cpn.polymorphic_state, cpn.field_access_level, null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             cmn.return_value_type = cpn.property_type;
@@ -4651,14 +4682,20 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             cmn.function_code = new return_node(meth_call, loc);
-            cpn.common_comprehensive_type.scope.AddSymbol("get_" + cpn.name, new SymbolInfo(cmn));
+            cpn.common_comprehensive_type.scope.AddSymbol(getter_name, new SymbolInfo(cmn));
             return cmn;
         }
 
         private function_node GenerateSetMethod(common_property_node cpn, common_method_node accessor, location loc)
         {
+            string setter_name = "set_" + cpn.name;
+            if (cpn.name.IndexOf('.') != -1)
+            {
+                string[] names = cpn.name.Split('.');
+                setter_name = names.Take(names.Length - 1).ToArray().JoinIntoString(".") + "set_" + names[names.Length - 1];
+            }
             common_method_node cmn = new common_method_node(
-                "set_" + cpn.name, loc, cpn.common_comprehensive_type,
+                setter_name, loc, cpn.common_comprehensive_type,
                 cpn.polymorphic_state, cpn.field_access_level, null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             //cmn.return_value_type = cpn.property_type;
@@ -4686,7 +4723,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             cmn.function_code = meth_call;
-            cpn.common_comprehensive_type.scope.AddSymbol("set_" + cpn.name, new SymbolInfo(cmn));
+            cpn.common_comprehensive_type.scope.AddSymbol(setter_name, new SymbolInfo(cmn));
             return cmn;
         }
 
