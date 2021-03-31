@@ -2075,7 +2075,7 @@ namespace PascalABCCompiler.PCU
             SemanticTree.type_access_level tal = (SemanticTree.type_access_level)br.ReadByte();
             SemanticTree.type_special_kind tsk = (SemanticTree.type_special_kind)br.ReadByte();
             ctn.SetIsSealed(br.ReadBoolean());
-            ctn.SetIsAbstract(br.ReadBoolean());
+            ctn.SetIsAbstract(br.ReadBoolean(), null); // Причина null, потому что проблема пересечения sealed и abstract не может произойти после загрузки из .pcu
             ctn.SetIsStatic(br.ReadBoolean());
             ctn.IsPartial = br.ReadBoolean();
 
