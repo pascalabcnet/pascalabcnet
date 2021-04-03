@@ -3676,7 +3676,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (_class_definition.keyword != SyntaxTree.class_keyword.Class)
                     AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
-                context.converted_type.SetIsAbstract(true);
+                context.converted_type.SetIsAbstract(true, null); // Причина null, в ошибке и так будет видно что abstract и sealed стоят рядом
             }
             if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
             {
@@ -3692,7 +3692,7 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_BE_GENERIC");
                 context.converted_type.SetIsStatic(true);
                 context.converted_type.SetIsSealed(true);
-                context.converted_type.SetIsAbstract(true);
+                context.converted_type.SetIsAbstract(true, null); // Причина null, потому что причины нет, класс статический а не абстрактный
             }
             switch (_class_definition.keyword)
             {
@@ -3868,7 +3868,10 @@ namespace PascalABCCompiler.TreeConverter
                     common_type_node converted_type = context.converted_type;
                     context.leave_block();
                     if (converted_type.IsSealed && converted_type.IsAbstract && !converted_type.IsStatic)
-                        AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
+                        if (converted_type.AbstractReason == null)
+                            AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
+                        else
+                            AddError(get_location(_class_definition), converted_type.AbstractReason.Explanation, converted_type.name, converted_type.AbstractReason.ObjName);
                     return;
                 case PascalABCCompiler.SyntaxTree.class_keyword.Record:
                     common_type_node ctn;
@@ -4257,9 +4260,34 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", compiler_string_consts.PascalReadAccessorName, compiler_string_consts.PascalWriteAccessorName);
             if (_simple_property.property_type == null)
                 AddError(get_location(_simple_property.property_name), "TYPE_NAME_EXPECTED");
-            
-            common_property_node pn = context.add_property(_simple_property.property_name.name,
-                get_location(_simple_property.property_name));
+            string name = _simple_property.property_name.name;
+            type_node expl_interface = null;
+            if (_simple_property.property_name.ln != null)
+            {
+                for (var i = 0; i < _simple_property.property_name.ln.Count - 1; i++)
+                    if (_simple_property.property_name.ln[i] is SyntaxTree.template_type_name)
+                        AddError(new NameCannotHaveGenericParameters(_simple_property.property_name.ln[i].name, get_location(_simple_property.property_name.ln[i])));
+
+                var ntr = new SyntaxTree.named_type_reference();
+                for (var i = 0; i < _simple_property.property_name.ln.Count; i++)
+                {
+                    ntr.Add(new ident(_simple_property.property_name.ln[i].name+
+                        (_simple_property.property_name.ln[i] is template_type_name ? "`"+(_simple_property.property_name.ln[i] as template_type_name).template_args.Count :""), _simple_property.property_name.ln[i].source_context));
+                    
+                }
+
+                List<SymbolInfo> sil = context.find_definition_node(ntr, get_location(_simple_property.property_name), true);
+                if (!(sil[0].sym_info as type_node).IsInterface)
+                    AddError(get_location(_simple_property.property_name), "EXPECTED_INTERFACE");
+                name = (sil[0].sym_info as type_node).BaseFullName + "." + name;
+                expl_interface = sil[0].sym_info as type_node;
+                sil = expl_interface.find_in_type(_simple_property.property_name.name);
+                if (sil == null)
+                    AddError(new MemberIsNotDeclaredInType(_simple_property.property_name, get_location(_simple_property.property_name), expl_interface));
+                if (!(sil[0].sym_info is property_node))
+                    AddError(get_location(_simple_property.property_name), "EXPECTED_PROPERTY");
+            }
+            common_property_node pn = context.add_property(name, get_location(_simple_property.property_name));
             assign_doc_info(pn, _simple_property);
             //pn.polymorphic_state=SemanticTree.polymorphic_state.ps_common;
             //pn.loc=get_location(_simple_property.property_name);
@@ -4278,7 +4306,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (context.converted_type.IsInterface)
                     AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
-                context.converted_type.SetIsAbstract(true);
+                context.converted_type.SetIsAbstract(true, new CARAbstractPropertie(_simple_property));
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
             }
             if (context.converted_type.is_value_type)
@@ -4605,6 +4633,11 @@ namespace PascalABCCompiler.TreeConverter
             make_attributes_for_declaration(_simple_property,pn);
             if (_simple_property.virt_over_none_attr == proc_attribute.attr_override)
                 context.set_override(pn);
+            else if (expl_interface != null)
+            {
+                context.set_implement(pn, _simple_property.property_name.name, expl_interface);
+            }
+
             //TODO: Можно сделать множество свойств по умолчанию.
             if (_simple_property.array_default != null)
             {
@@ -4622,8 +4655,14 @@ namespace PascalABCCompiler.TreeConverter
 
         private function_node GenerateGetMethod(common_property_node cpn, common_method_node accessor, location loc)
         {
+            string getter_name = "get_" + cpn.name;
+            if (cpn.name.IndexOf('.') != -1)
+            {
+                string[] names = cpn.name.Split('.');
+                getter_name = names.Take(names.Length - 1).ToArray().JoinIntoString(".") + "get_" + names[names.Length - 1];
+            }
             common_method_node cmn = new common_method_node(
-                "get_"+cpn.name, loc, cpn.common_comprehensive_type,
+                getter_name, loc, cpn.common_comprehensive_type,
                 cpn.polymorphic_state, cpn.field_access_level, null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             cmn.return_value_type = cpn.property_type;
@@ -4651,14 +4690,20 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             cmn.function_code = new return_node(meth_call, loc);
-            cpn.common_comprehensive_type.scope.AddSymbol("get_" + cpn.name, new SymbolInfo(cmn));
+            cpn.common_comprehensive_type.scope.AddSymbol(getter_name, new SymbolInfo(cmn));
             return cmn;
         }
 
         private function_node GenerateSetMethod(common_property_node cpn, common_method_node accessor, location loc)
         {
+            string setter_name = "set_" + cpn.name;
+            if (cpn.name.IndexOf('.') != -1)
+            {
+                string[] names = cpn.name.Split('.');
+                setter_name = names.Take(names.Length - 1).ToArray().JoinIntoString(".") + "set_" + names[names.Length - 1];
+            }
             common_method_node cmn = new common_method_node(
-                "set_" + cpn.name, loc, cpn.common_comprehensive_type,
+                setter_name, loc, cpn.common_comprehensive_type,
                 cpn.polymorphic_state, cpn.field_access_level, null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             //cmn.return_value_type = cpn.property_type;
@@ -4686,7 +4731,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             cmn.function_code = meth_call;
-            cpn.common_comprehensive_type.scope.AddSymbol("set_" + cpn.name, new SymbolInfo(cmn));
+            cpn.common_comprehensive_type.scope.AddSymbol(setter_name, new SymbolInfo(cmn));
             return cmn;
         }
 
@@ -14066,7 +14111,7 @@ namespace PascalABCCompiler.TreeConverter
                             cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
                             if (context.converted_type.IsSealed)
                                 AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ABSTRACT_METHOD_IN_SEALED_CLASS");
-                            context.converted_type.SetIsAbstract(true);
+                            context.converted_type.SetIsAbstract(true, null); // Причина null, потому что предыдущая строчка уже даёт ошибку раньше, чем та - для которой понадобится эта причина
                             if (cmn.IsReintroduce)
                                 cmn.newslot_awaited = true;
                             break;
@@ -19068,7 +19113,9 @@ namespace PascalABCCompiler.TreeConverter
         {
             type_node tn = ret.visit(_new_expr.type);
             if (tn is generic_instance_type_node gitn) // SSM 07/08/19 #2070
-                gitn._is_abstract = gitn.original_generic.IsAbstract;
+            {
+                gitn.SetIsAbstract(gitn.original_generic.IsAbstract, gitn.original_generic.AbstractReason);
+            }
             //if (tn == SystemLibrary.SystemLibrary.void_type)
             //	AddError(new VoidNotValid(get_location(_new_expr.type)));
             if (tn.IsDelegate && !_new_expr.new_array)

@@ -534,6 +534,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new bigint_const();
 				case 256:
 					return new foreach_stmt_formatting();
+				case 257:
+					return new property_ident();
 			}
 			return null;
 		}
@@ -1724,7 +1726,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_simple_property(simple_property _simple_property)
 		{
 			read_declaration(_simple_property);
-			_simple_property.property_name = _read_node() as ident;
+			_simple_property.property_name = _read_node() as property_ident;
 			_simple_property.property_type = _read_node() as type_definition;
 			_simple_property.index_expression = _read_node() as expression;
 			_simple_property.accessors = _read_node() as property_accessors;
@@ -4473,6 +4475,30 @@ namespace PascalABCCompiler.SyntaxTree
 			_foreach_stmt_formatting.il = _read_node() as ident_list;
 			_foreach_stmt_formatting.in_what = _read_node() as expression;
 			_foreach_stmt_formatting.stmt = _read_node() as statement;
+		}
+
+
+		public void visit(property_ident _property_ident)
+		{
+			read_property_ident(_property_ident);
+		}
+
+		public void read_property_ident(property_ident _property_ident)
+		{
+			read_ident(_property_ident);
+			if (br.ReadByte() == 0)
+			{
+				_property_ident.ln = null;
+			}
+			else
+			{
+				_property_ident.ln = new List<ident>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_property_ident.ln.Add(_read_node() as ident);
+				}
+			}
 		}
 
 	}
