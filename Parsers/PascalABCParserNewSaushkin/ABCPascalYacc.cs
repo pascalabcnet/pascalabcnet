@@ -1,17 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-<<<<<<< HEAD
 // Machine:  DESKTOP-2BJCJ7I
-// DateTime: 03.04.2021 16:57:11
+// DateTime: 03.04.2021 17:04:10
 // UserName: ibond
 // Input file <ABCPascal.y>
-=======
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 03.04.2021 6:32:31
-// UserName: ?????????
-// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
->>>>>>> e8a2eb27fd41e7541b25a2811d8d787fd312c080
 
 // options: no-lines gplex
 
@@ -66,7 +59,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // Verbatim content from ABCPascal.y
 // ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public syntax_tree_node root; // �������� ���� ��������������� ������ 
 
@@ -78,7 +71,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
