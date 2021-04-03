@@ -111,7 +111,11 @@
 %type <stn> literal_list  
 %type <stn> label_decl_sect  
 %type <stn> lock_stmt  
+<<<<<<< HEAD
 %type <stn> func_name proc_name optional_proc_name
+=======
+%type <stn> func_name proc_name optional_proc_name //qualified_identifier 
+>>>>>>> e8a2eb27fd41e7541b25a2811d8d787fd312c080
 %type <ex> new_expr allowable_expr_as_stmt  
 %type <stn> parse_goal parts inclass_block block proc_func_external_block
 %type <td> exception_class_type_identifier simple_type_identifier //idp  
@@ -2019,6 +2023,23 @@ optional_proc_name
 		{ $$ = null; }
     ;
 
+<<<<<<< HEAD
+=======
+//qualified_identifier
+//    : identifier                                       
+//        { $$ = new method_name(null,null,$1,null,@$); }
+//    | visibility_specifier                             
+//        { $$ = new method_name(null,null,$1,null,@$); }
+//    | qualified_identifier tkPoint identifier                   
+//        {
+//			$$ = NewQualifiedIdentifier($1 as method_name, $3, @$);
+//        }
+//    | qualified_identifier tkPoint visibility_specifier         
+//        {
+//			$$ = NewQualifiedIdentifier($1 as method_name, $3, @$);
+//        }
+//    ;
+>>>>>>> e8a2eb27fd41e7541b25a2811d8d787fd312c080
 
 property_definition
     : attribute_declarations simple_property_definition
