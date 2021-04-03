@@ -71,6 +71,10 @@ function Divisors(n: integer): List<integer>;
 ///--
 function Divizors(n: integer): List<integer>;
 
+/// Возвращает список всех k делителей натурального числа n.
+/// Если делителей не ровно k, возвращает пустой список
+function Divisors(n, k: integer): List<integer>;
+
 /// Возвращает Sin угла, заданного в градусах
 function SinDegrees(x: real): real;
 
@@ -582,6 +586,58 @@ function Divisors(Self: integer): List<integer>; extensionmethod :=
 ///--
 function Divizors(Self: integer): List<integer>; extensionmethod :=
   Divisors(Self);
+  
+/// Возвращает список всех k делителей натурального числа n.
+/// Если делителей не ровно k, возвращает пустой список
+function Divisors(n, k: integer): List<integer>;
+begin
+  n := Abs(n); // foolproof
+  var L := new List<integer>;
+  case n of
+    0, 1: if k = 1 then L.Add(n);
+    2: if k = 2 then L.AddRange(|1, n|);
+  else
+    begin
+      var t := Trunc(Sqrt(n));
+      if (t * t <> n) and k.IsOdd or (t * t = n) and k.IsEven then
+      begin
+        Result := new List<integer>;
+        exit
+      end;
+      L.AddRange(|1, n|);
+      var (p, m) := (2, 2);
+      while m <= t do
+      begin
+        if n mod m = 0 then
+        begin
+          var r := n div m;
+          L.Add(m);
+          Inc(p);
+          if m < r then
+          begin
+            L.Add(r);
+            Inc(p)
+          end  
+          else break
+        end;
+        if p > k then
+        begin
+          Result := new List<integer>;
+          exit
+        end;
+        Inc(m)
+      end;
+      if k = p then L.Sort
+      else L.Clear
+    end
+  end;
+  Result := L
+end;
+
+/// Возвращает список всех k делителей натурального числа n.
+/// Если делителей не ровно k, возвращает пустой список
+function Divisors(Self, k: integer): List<integer>; extensionmethod :=
+  Divisors(Self, k);  
 
 {$endregion}
 
@@ -727,7 +783,7 @@ begin
         Write(if a[i, j] then ' 1' else ' 0');
       Writeln
     end
-end;  
+end;
 
 {$endregion}
 

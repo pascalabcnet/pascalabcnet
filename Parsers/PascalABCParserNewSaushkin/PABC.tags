@@ -210,7 +210,6 @@
     <name value="type_decl_identifier" />
     <name value="template_identifier_with_equal" />
     <name value="simple_type_identifier" />
-    <name value="qualified_identifier" />
     <name value="proc_name" />
     <name value="func_name" />
     <name value="func_class_name_ident" />
@@ -301,7 +300,6 @@
   </tag>
   <tag value="FuncName">
     <name value="func_name" />
-    <name value="qualified_identifier" />
     <name value="simple_type_identifier" />
     <name value="simple_or_template_type_reference" />
   </tag>
