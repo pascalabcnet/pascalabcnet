@@ -9022,6 +9022,11 @@ namespace PascalABCCompiler.TreeConverter
             foreach (expression_node vr in VarRefs)
             {
                 context.WithVariables.Remove(vr.type.Scope);
+                if (!context.WithVariables.ContainsKey(vr.type.Scope) && OldWithVariables.ContainsKey(vr.type.Scope))
+                {
+                    context.WithVariables.Add(vr.type.Scope, OldWithVariables[vr.type.Scope]);
+                    OldWithVariables.Remove(vr.type.Scope);
+                }
                 type_node tn = vr.type.base_type;
                 while (tn != null)
                 {
