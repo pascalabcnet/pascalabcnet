@@ -11474,7 +11474,7 @@ namespace PascalABCCompiler.TreeConverter
             cdn.const_value = convert_strong_to_constant_node(_typed_const_definition.const_value, tn);
             const_def_type = null;
             is_typed_const_def = false;
-            if (cdn is class_constant_definition && cdn.constant_value.value == null)
+            if (cdn is class_constant_definition && (cdn.constant_value.value == null && !(cdn.constant_value is array_const)))
                 AddError(new NotSupportedError(cons_loc));
         }
 
