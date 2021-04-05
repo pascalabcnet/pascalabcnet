@@ -3228,6 +3228,8 @@ expr_with_func_decl_lambda
 		{ $$ = $1; }
     | func_decl_lambda
         { $$ = $1; }
+	| tkInherited
+		{ $$ = new inherited_ident("", @$); }
     ;
 
 expr
@@ -4175,6 +4177,7 @@ variable
         { 
 			$$ = new inherited_ident($2.name, @$);
 		}
+	
     | tkRoundOpen expr tkRoundClose         
         {
 		    if (!parsertools.build_tree_for_formatter) 

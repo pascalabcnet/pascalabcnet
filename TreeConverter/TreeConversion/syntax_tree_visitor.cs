@@ -2508,7 +2508,17 @@ namespace PascalABCCompiler.TreeConverter
             switch (mot)
             {
                 case motivation.address_receiving: return_addressed_value(inherited_ident_address_reciving(_inherited_ident)); break;
-                case motivation.expression_evaluation: return_value(inherited_ident_value_reciving(_inherited_ident)); break;
+                case motivation.expression_evaluation: 
+                    if (string.IsNullOrEmpty(_inherited_ident.name))
+                    {
+                        inherited_message msg = new inherited_message();
+                        msg.source_context = _inherited_ident.source_context;
+                        return_value(inherited_message_value_reciving(new inherited_message()));
+                    }
+                        
+                    else
+                        return_value(inherited_ident_value_reciving(_inherited_ident)); 
+                    break;
                 //case motivation.symbol_info_reciving: return_symbol_value(blocks.find(_ident.name));break;
                 case motivation.semantic_node_reciving: return_semantic_value(inherited_ident_semantic_reciving(_inherited_ident)); break;
             }
@@ -17096,14 +17106,17 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(get_location(ident), "NO_BASE_CLASS_DEFINED_BUT_INHERITED_MEET");
             }
-            List<SymbolInfo> sil = context.converted_type.base_type.find_in_type(ident.name, context.CurrentScope);
+            string name = ident.name;
+            if (string.IsNullOrEmpty(name))
+                name = context.converted_func_stack.first().name;
+            List<SymbolInfo> sil = context.converted_type.base_type.find_in_type(name, context.CurrentScope);
             if (sil == null)
             {
-            	sil = context.converted_namespace.find(ident.name);
+            	sil = context.converted_namespace.find(name);
             	if (sil != null)
-            	    AddError(get_location(ident), "CLASS_MEMBER_{0}_EXPECTED", ident.name);
+            	    AddError(get_location(ident), "CLASS_MEMBER_{0}_EXPECTED", name);
             	else
-            	    AddError(new UndefinedNameReference(ident.name, get_location(ident)));
+            	    AddError(new UndefinedNameReference(name, get_location(ident)));
             }
             return sil;
         }
