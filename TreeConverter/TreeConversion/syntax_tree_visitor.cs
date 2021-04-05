@@ -14378,14 +14378,7 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_typed_parametres.idents.idents[1]), "ONLY_ONE_PARAMS_PARAMETER_ALLOWED");
                 }
             }
-            foreach (SyntaxTree.ident id in _typed_parametres.idents.idents)
-            {
-                com_par = context.add_parameter(id.name, par_type, cpt, get_location(id));
-                if (is_params)
-                {
-                    com_par.intrenal_is_params = true;
-                }
-            }
+            
 
             if (_typed_parametres.vars_type == null)
                 throw new NotSupportedError(get_location(_typed_parametres));
@@ -14399,6 +14392,14 @@ namespace PascalABCCompiler.TreeConverter
                 check_delegate_on_generic_parameters(tn as common_type_node, get_location(_typed_parametres.vars_type));
             }
 			check_for_type_allowed(tn,get_location(_typed_parametres.vars_type));
+            foreach (SyntaxTree.ident id in _typed_parametres.idents.idents)
+            {
+                com_par = context.add_parameter(id.name, par_type, cpt, get_location(id));
+                if (is_params)
+                {
+                    com_par.intrenal_is_params = true;
+                }
+            }
             if (is_params)
             {
                 internal_interface ii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface);
