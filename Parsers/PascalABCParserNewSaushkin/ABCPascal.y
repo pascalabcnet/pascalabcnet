@@ -967,6 +967,8 @@ const_factor
 		}
     | new_expr
 		{ $$ = $1; }
+	 | default_expr
+		{ $$ = $1; }
 //    | tkDeref const_factor              
 //        { 
 //			$$ = new roof_dereference($2 as addressed_value, @$);
@@ -2315,8 +2317,6 @@ typed_const_plus
 		{ $$ = $1; }
     /*| new_expr
 		{ $$ = $1; }*/
-    | default_expr
-		{ $$ = $1; }
     ;
 
 constr_destr_decl

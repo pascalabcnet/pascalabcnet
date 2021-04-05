@@ -1181,7 +1181,7 @@ namespace PascalABCCompiler.NETGenerator
                 else
                     fb.SetConstant(constant_value.value);
             }
-            else if (!(constant_value is INullConstantNode))
+            else if (!(constant_value is INullConstantNode) && constant_value.value != null)
             {
                 if (constant_value.value.GetType() != t)
                 {
