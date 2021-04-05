@@ -2091,7 +2091,14 @@ namespace PascalABCCompiler.TreeRealization
 
         private void conform_basic_function(string name, int base_func_num)
         {
-            SymbolInfo si1 = _original_generic.find_first_in_type(name, true);
+            SymbolInfo si1 = null;
+            List<SymbolInfo> sil = _original_generic.find_in_type(name, true);
+            foreach (SymbolInfo si in sil)
+                if (si.sym_info is function_node && !(si.sym_info as function_node).is_extension_method)
+                {
+                    si1 = si;
+                    break;
+                }
             AddMember(si1.sym_info, temp_names[base_func_num].sym_info);
         }
 
