@@ -217,6 +217,10 @@ type
     procedure Load(fname: string);
     /// Заполняет содержимое графического окна обоями из файла с именем fname
     procedure Fill(fname: string);
+    /// Возвращает случайную точку в границах экрана. Необязательный параметр margin задаёт минимальный отступ от границы 
+    function RandomPoint(margin: real := 0): Point;
+    /// Очищает графическое окно белым цветом
+    procedure Clear; 
   end;
   
   // Специфический тип окна для модуля GraphWPF
@@ -1671,6 +1675,14 @@ procedure GraphWindowType.Fill(fname: string);
 begin
   //FillWindow(fname);
 end;
+
+procedure GraphWindowType.Clear;
+begin
+  Window.Clear;
+end;
+
+
+function GraphWindowType.RandomPoint(margin: real): Point := Pnt(Random(margin,Width-margin),Random(margin,Height-margin));
 
 function GraphWindowType.Center: Point := Pnt(Width/2,Height/2);
 

@@ -1238,6 +1238,27 @@ procedure __FinalizeModule__;
 
 //procedure BeginFrameBasedAnimationTime(DrawT: procedure(dt: real));
 
+/// Класс, содержащий константы направления
+type Direction = class
+  /// Направление "Влево"
+  static property Left: (real,real) read (-1.0,0.0);
+  /// Направление "Вправо"
+  static property Right: (real,real) read (1.0,0.0);
+  /// Направление "Вверх"
+  static property Up: (real,real) read (0.0,-1.0);
+  /// Направление "Вниз"
+  static property Down: (real,real) read (0.0,1.0);
+  /// Направление "Влево вверх"
+  static property LeftUp: (real,real) read (-1.0,-1.0);
+  /// Направление "Влево вниз"
+  static property LeftDown: (real,real) read (-1.0,1.0);
+  /// Направление "Вправо вверх"
+  static property RightUp: (real,real) read (1.0,-1.0);
+  /// Направление "Вправо вниз"
+  static property RightDown: (real,real) read (1.0,1.0);
+  /// Нулевое направление (объект неподвижен)
+  static property Zero: (real,real) read (0.0,0.0);
+end;
 
 implementation
 
@@ -1508,6 +1529,7 @@ end;
 function ObjectsIntersect(o1,o2: ObjectWPF) 
   := Invoke&<boolean>(ObHelper.Create(o1,o2).IntersectP);
   
+/// Возвращает список объектов, пересекающихся с данным
 function IntersectionList(Self: ObjectWPF): List<ObjectWPF>; extensionmethod
   := Invoke&<List<ObjectWPF>>(OLHelper.Create(Self).f);
 
@@ -1515,8 +1537,10 @@ procedure ToFront(o: ObjectWPF) := Objects.ToFront(o);
 
 procedure ToBack(o: ObjectWPF) := Objects.ToBack(o);
 
+/// Перемещает объект на передний план
 procedure ToFront(Self: ObjectWPF); extensionmethod := Objects.ToFront(Self);
 
+/// Перемещает объект на задний план
 procedure ToBack(Self: ObjectWPF); extensionmethod := Objects.ToBack(Self);
 
 function operator implicit (t: (integer,integer)): (real,real); extensionmethod := (real(t[0]),real(t[1])); 
