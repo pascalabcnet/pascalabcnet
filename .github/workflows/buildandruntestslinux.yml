@@ -7,10 +7,6 @@ on:
     types:
       - created
 
-defaults:
-  run:
-    shell: cmd
-
 jobs:
   build:
 
