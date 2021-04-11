@@ -1,0 +1,35 @@
+name: Build & Run all tests on Ubuntu (release)
+
+on:
+  workflow_dispatch:
+
+  release:
+    types:
+      - created
+
+defaults:
+  run:
+    shell: cmd
+
+jobs:
+  build:
+
+    name: Prepare and build on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build project in Release-mode, compile Pas-units, run tests
+      run: _RebuildReleaseAndRunTests.sh
+      timeout-minutes: 40
+      env:
+        PABCNET_BUILD_MODE: Release
+        PABCNET_RUN_TESTS:  false
+        PABCNET_INC_BUILD:  false
+        PABCNET_VERBOSE:    false
+
+    #- name: Publish artifacts (5/5)...
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: All_distros
+    #    path: Release
