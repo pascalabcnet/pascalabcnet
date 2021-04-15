@@ -112,23 +112,23 @@ type
       Invoke(DeleteP,ob);
     end;  
   public
-    /// Перемещает объект на задний план
+    /// Перемещает графический объект на задний план
     procedure ToBack(ob: ObjectWPF);
     begin
       if not l.Contains(ob) then
         raise new Exception('На задний план нельзя переносить дочерние объекты');
       Invoke(ToBackP,ob);
     end;
-    /// Перемещает объект на передний план
+    /// Перемещает графический объект на передний план
     procedure ToFront(ob: ObjectWPF);
     begin
       if not l.Contains(ob) then
         raise new Exception('На передний план нельзя переносить дочерние объекты');
       Invoke(ToFrontP,ob);
     end;
-    /// Возвращает количество объектов ObjectWPF
+    /// Возвращает количество графических объектов 
     property Count: integer read l.Count;
-    /// Возвращает или устанавливает i-тый объект ObjectWPF
+    /// Возвращает или устанавливает i-тый графический объект 
     property Items[i: integer]: ObjectWPF read GetItem write SetItem; default;
   
     function Seq: sequence of ObjectWPF := l;
@@ -140,19 +140,21 @@ type
     begin
       Result := l.GetEnumerator;
     end;
-    /// Очистить список игровых объектов 
+    /// Очистить список графических объектов 
     procedure Clear;
     begin
       for var i:=Count-1 downto 0 do
         Destroy(Items[i]);
     end;
-    /// Удалить все игровые объекты, удовлетворяющие условию
+    /// Удалить все графические объекты, удовлетворяющие условию
     procedure DestroyAll(condition: ObjectWPF -> boolean);
     begin
       for var i := Count - 1 downto 0 do
         if condition(Items[i]) then
           Destroy(Items[i]);
     end;
+    /// Возвращает инвертированный список графических объектов
+    function Reverse: IEnumerable<ObjectWPF> := (Self as IEnumerable<ObjectWPF>).Reverse;
   end;
 
 
@@ -173,7 +175,7 @@ type
     transl: TranslateTransform;
 
     ChildrenWPF := new List<ObjectWPF>;
-    procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True);
+    procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True; Hidden: boolean := False);
   public
     /// Направление движения по оси X. Используется методом Move
     auto property Dx: real;
@@ -1157,13 +1159,26 @@ type
       var b := CreateBitmapImage(fname);
       Rest(x,y,b.PixelWidth,b.PixelHeight,b);
     end;
+
+    procedure InitObHidden(x,y: real; fname: string);
+    begin
+      var b := CreateBitmapImage(fname);
+      var im := new System.Windows.Controls.Image();
+      im.Source := b;
+      im.Width := b.PixelWidth;
+      im.Height := b.PixelHeight;
+      InitOb(x,y,b.PixelWidth,b.PixelHeight,im,True,True);
+    end;
     function GetInternalGeometry: Geometry; override;
     begin
       var r := Rect(0,0,Width,Height);
       Result := new RectangleGeometry(r);
     end;  
+    ///
+    constructor Create(Hidden: boolean; x,y: real; fname: string) := Invoke(InitObHidden,x,y,fname);
   public
     function Element := ob as System.Windows.Controls.Image;
+    static function CreateInvisible(x,y: real; fname: string): PictureWPF := new PictureWPF(False,x,y,fname);
     /// Создает рисунок из файла fname с координатами левого верхнего угла (x,y)
     constructor (x,y: real; fname: string) := Invoke(InitOb2,x,y,fname);
     /// Создает рисунок из файла fname с координатами левого верхнего угла (x,y) и размерами (w,h)
@@ -1238,8 +1253,57 @@ procedure __FinalizeModule__;
 
 //procedure BeginFrameBasedAnimationTime(DrawT: procedure(dt: real));
 
+/// Класс, содержащий константы направления
+type Direction = class
+  /// Направление "Влево"
+  static property Left: (real,real) read (-1.0,0.0);
+  /// Направление "Вправо"
+  static property Right: (real,real) read (1.0,0.0);
+  /// Направление "Вверх"
+  static property Up: (real,real) read (0.0,-1.0);
+  /// Направление "Вниз"
+  static property Down: (real,real) read (0.0,1.0);
+  /// Направление "Влево вверх"
+  static property LeftUp: (real,real) read (-1.0,-1.0);
+  /// Направление "Влево вниз"
+  static property LeftDown: (real,real) read (-1.0,1.0);
+  /// Направление "Вправо вверх"
+  static property RightUp: (real,real) read (1.0,-1.0);
+  /// Направление "Вправо вниз"
+  static property RightDown: (real,real) read (1.0,1.0);
+  /// Нулевое направление (объект неподвижен)
+  static property Zero: (real,real) read (0.0,0.0);
+  /// Направление "Вперёд" для объекта
+  static function &Forward(obj: ObjectWPF): (real,real) 
+    := (sin(Pi/180*obj.RotateAngle),-cos(Pi/180*obj.RotateAngle));
+  /// Направление "Назад" для объекта
+  static function &Backward(obj: ObjectWPF): (real,real) 
+    := (-sin(Pi/180*obj.RotateAngle),cos(Pi/180*obj.RotateAngle));
+  /// Направление "Влево" для объекта
+  static function LeftSide(obj: ObjectWPF): (real,real) 
+    := (-cos(Pi/180*obj.RotateAngle),-sin(Pi/180*obj.RotateAngle));
+  /// Направление "Вправо" для объекта
+  static function RightSide(obj: ObjectWPF): (real,real) 
+    := (cos(Pi/180*obj.RotateAngle),sin(Pi/180*obj.RotateAngle));
+end;
+
+/// Не отображать слой графических объектов (обычно вызывается в начале до создания графических объектов)
+procedure HideObjects;
+
+/// Отображать слой графических объектов (вызывается после HideObjects и создания начальной сцены графических объектов)
+procedure ShowObjects;
 
 implementation
+
+procedure HideObjects;
+begin
+  Invoke(()->begin host.Visibility := Visibility.Hidden end);
+end;
+
+procedure ShowObjects;
+begin
+  Invoke(()->begin host.Visibility := Visibility.Visible end);
+end;
 
 //procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer) := GraphWPF.BeginFrameBasedAnimation(Draw,frate);
 
@@ -1329,7 +1393,7 @@ begin
   Result := ObjectsIntersect(Self,ob);
 end;
 
-procedure ObjectWPF.InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean);
+procedure ObjectWPF.InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean; Hidden: boolean);
 begin
   can := new Canvas;
   gr := new Grid;
@@ -1359,10 +1423,11 @@ begin
   gr.Children.Add(t);
   can.Children.Add(gr);
 
-  Objects.Add(Self);  
-  //host.Children.Add(can);
-  
   FontSize := 16;      
+
+  if Hidden then
+    Visible := False;
+  Objects.Add(Self);  
 end;
 
 procedure ObjectWPF.AddChildP(ch: ObjectWPF; al: Alignment);
@@ -1508,6 +1573,7 @@ end;
 function ObjectsIntersect(o1,o2: ObjectWPF) 
   := Invoke&<boolean>(ObHelper.Create(o1,o2).IntersectP);
   
+/// Возвращает список объектов, пересекающихся с данным
 function IntersectionList(Self: ObjectWPF): List<ObjectWPF>; extensionmethod
   := Invoke&<List<ObjectWPF>>(OLHelper.Create(Self).f);
 
@@ -1515,8 +1581,10 @@ procedure ToFront(o: ObjectWPF) := Objects.ToFront(o);
 
 procedure ToBack(o: ObjectWPF) := Objects.ToBack(o);
 
+/// Перемещает объект на передний план
 procedure ToFront(Self: ObjectWPF); extensionmethod := Objects.ToFront(Self);
 
+/// Перемещает объект на задний план
 procedure ToBack(Self: ObjectWPF); extensionmethod := Objects.ToBack(Self);
 
 function operator implicit (t: (integer,integer)): (real,real); extensionmethod := (real(t[0]),real(t[1])); 

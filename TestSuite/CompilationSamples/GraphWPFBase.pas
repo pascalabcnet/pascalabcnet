@@ -143,8 +143,8 @@ type
     function Center: Point;
     /// Возвращает прямоугольник клиентской области окна
     function ClientRect: GRect;
-    /// Возвращает случайную точку в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы 
-    function RandomPoint(w: real := 0): Point;
+    /// Возвращает случайную точку в границах экрана. Необязательный параметр margin задаёт минимальный отступ от границы 
+    function RandomPoint(margin: real := 0): Point;
     private procedure CenterOnScreenP;
   end;
 //{{{--doc: Конец секции 1 }}} 
@@ -237,7 +237,7 @@ procedure WindowType.Clear := Invoke(WindowTypeClearP);
 
 procedure WindowType.Clear(c: GColor);
 begin
-  raise new System.NotImplementedException('WindowType.Clear(c) пока не реализовано. Честное слово - в будущем!')
+  raise new System.NotImplementedException('WindowType.Clear(color) не реализовано')
 end;
 
 procedure WindowTypeSetSizeP(w, h: real);
@@ -281,7 +281,7 @@ function WindowType.Center := Pnt(Width/2,Height/2);
 
 function WindowType.ClientRect := Rect(0,0,Width,Height);
 
-function WindowType.RandomPoint(w: real): Point := Pnt(Random(w,Width-w),Random(w,Height-w));
+function WindowType.RandomPoint(margin: real): Point := Pnt(Random(margin,Width-margin),Random(margin,Height-margin));
 
 function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);

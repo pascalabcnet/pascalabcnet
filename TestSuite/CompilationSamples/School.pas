@@ -71,8 +71,7 @@ function Divisors(n: integer): List<integer>;
 ///--
 function Divizors(n: integer): List<integer>;
 
-/// Возвращает список всех k делителей натурального числа n.
-/// Если делителей не ровно k, возвращает пустой список
+///--
 function Divisors(n, k: integer): List<integer>;
 
 /// Возвращает Sin угла, заданного в градусах
@@ -587,8 +586,7 @@ function Divisors(Self: integer): List<integer>; extensionmethod :=
 function Divizors(Self: integer): List<integer>; extensionmethod :=
   Divisors(Self);
   
-/// Возвращает список всех k делителей натурального числа n.
-/// Если делителей не ровно k, возвращает пустой список
+///--
 function Divisors(n, k: integer): List<integer>;
 begin
   n := Abs(n); // foolproof
@@ -634,8 +632,7 @@ begin
   Result := L
 end;
 
-/// Возвращает список всех k делителей натурального числа n.
-/// Если делителей не ровно k, возвращает пустой список
+///--
 function Divisors(Self, k: integer): List<integer>; extensionmethod :=
   Divisors(Self, k);  
 
