@@ -14,7 +14,7 @@ mono --aot bin/OptimizerConversion.dll
 mono --aot bin/Errors.dll
 export MONO_IOMAP=all
 cd ReleaseGenerators
-mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas /rebuild
+mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
 if [ $? -eq 0 ]; then
     cd PABCRtl
     mono ../../bin/pabcnetc.exe PABCRtl.pas /rebuild
