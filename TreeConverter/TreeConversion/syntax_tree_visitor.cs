@@ -4279,19 +4279,34 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(new NameCannotHaveGenericParameters(_simple_property.property_name.ln[i].name, get_location(_simple_property.property_name.ln[i])));
 
                 var ntr = new SyntaxTree.named_type_reference();
+                if (_simple_property.property_name.ln[_simple_property.property_name.ln.Count - 1] is template_type_name)
+                {
+                    template_type_reference ttr = new template_type_reference();
+                    ttr.params_list = new template_param_list();
+                    ttr.params_list.source_context = _simple_property.property_name.ln[_simple_property.property_name.ln.Count - 1].source_context;
+                    foreach (ident id in (_simple_property.property_name.ln[_simple_property.property_name.ln.Count - 1] as template_type_name).template_args.idents)
+                        ttr.params_list.params_list.Add(new named_type_reference(id.name, id.source_context));
+                    for (var i = 0; i < _simple_property.property_name.ln.Count; i++)
+                    {
+                        ntr.Add(_simple_property.property_name.ln[i]);
+                    }
+                    ttr.name = ntr;
+                    ttr.source_context = _simple_property.property_name.source_context;
+                    ntr = ttr;
+                }
+                else
                 for (var i = 0; i < _simple_property.property_name.ln.Count; i++)
                 {
-                    ntr.Add(new ident(_simple_property.property_name.ln[i].name+
-                        (_simple_property.property_name.ln[i] is template_type_name ? "`"+(_simple_property.property_name.ln[i] as template_type_name).template_args.Count :""), _simple_property.property_name.ln[i].source_context));
-                    
+                    ntr.Add(_simple_property.property_name.ln[i]);
                 }
+                
+                type_node tn = find_type(ntr, get_location(_simple_property.property_name));
 
-                List<SymbolInfo> sil = context.find_definition_node(ntr, get_location(_simple_property.property_name), true);
-                if (!(sil[0].sym_info as type_node).IsInterface)
+                if (!tn.IsInterface)
                     AddError(get_location(_simple_property.property_name), "EXPECTED_INTERFACE");
-                name = (sil[0].sym_info as type_node).BaseFullName + "." + name;
-                expl_interface = sil[0].sym_info as type_node;
-                sil = expl_interface.find_in_type(_simple_property.property_name.name);
+                name = tn.BaseFullName + "." + name;
+                expl_interface = tn;
+                List<SymbolInfo> sil = expl_interface.find_in_type(_simple_property.property_name.name);
                 if (sil == null)
                     AddError(new MemberIsNotDeclaredInType(_simple_property.property_name, get_location(_simple_property.property_name), expl_interface));
                 if (!(sil[0].sym_info is property_node))
