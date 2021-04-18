@@ -1,4 +1,5 @@
-﻿type
+﻿//winonly
+type
   I1 = interface
     property X: integer read write;
   end;
