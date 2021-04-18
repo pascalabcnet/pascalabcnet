@@ -16344,7 +16344,7 @@ namespace PascalABCCompiler.TreeConverter
                                     indexer_as_property_indexes(nspr, _indexer.indexes, mot, lloc11);
                                     return;
                                 }
-                                expression_node en2 = expression_value_reciving(id, sil, ex, false);
+                                expression_node en2 = convert_strong(_indexer.dereferencing_value);//expression_value_reciving(id, sil, ex, false);
                                 indexer_as_expression_index(en2, _indexer.indexes, mot, get_location(id));
                                 return;
                             }
