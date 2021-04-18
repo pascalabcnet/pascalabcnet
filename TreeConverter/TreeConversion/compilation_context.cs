@@ -1038,9 +1038,11 @@ namespace PascalABCCompiler.TreeConverter
                 if (si2.sym_info is common_method_node)
                 {
                     cmn = si2.sym_info as common_method_node;
-                    if (cmn.function_code != null)
+                    if (cmn.function_code != null && cmn.parameters.Count == 2 && cmn.parameters[0].type == cmn.parameters[1].type)
                         return;
                 }
+            if (cmn != null && cmn.function_code != null)
+                cmn = null;
             SymbolInfo si = si_list[0];
             SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
             if (cmn == null)
@@ -1092,10 +1094,11 @@ namespace PascalABCCompiler.TreeConverter
         	    if (si2.sym_info is common_method_node)
                 {
                     cmn = si2.sym_info as common_method_node;
-                    if (cmn.function_code != null)
+                    if (cmn.function_code != null && cmn.parameters.Count == 2 && cmn.parameters[0].type == cmn.parameters[1].type)
                         return;
                 }
-        		    
+            if (cmn != null && cmn.function_code != null)
+                cmn = null;
             SymbolInfo si = si_list[0];
             SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
             if (cmn == null)
