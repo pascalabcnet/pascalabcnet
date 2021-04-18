@@ -4780,7 +4780,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             common_method_node cmn = new common_method_node(
                 AcessorName, loc, /*cf.cont_type,*/ cpn.comprehensive_type as common_type_node,
-                cf.polymorphic_state, context.get_field_access_level(), null);
+                cpn.polymorphic_state, context.get_field_access_level(), null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             common_parameter cp = new common_parameter(
                 compiler_string_consts.value, cf.type, SemanticTree.parameter_type.value,
@@ -4826,7 +4826,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             common_method_node cmn = new common_method_node(
                 AcessorName, loc, /*cf.cont_type,*/  cpn.comprehensive_type as common_type_node,
-                cf.polymorphic_state, context.get_field_access_level(), null);
+                cpn.polymorphic_state, context.get_field_access_level(), null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             cmn.return_value_type = cf.type;
             cmn.is_overload = true;
