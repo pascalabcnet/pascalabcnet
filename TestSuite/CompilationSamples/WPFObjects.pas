@@ -373,7 +373,7 @@ type
     /// Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд
     procedure AnimMoveBy(a,b: real; sec: real := 1) := Invoke(AnimMoveByP,a,b,sec);
     ///--
-    procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveByP,a,b,sec);
+    procedure AnimMoveOn(a,b: real; sec: real := 1) := AnimMoveOn(a,b,sec);
     /// Анимирует перемещение графического объекта в направлении RotateAngle (вверх при RotateAngle=0)
     procedure AnimMoveForward(r: real);
     begin

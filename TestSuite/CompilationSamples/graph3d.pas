@@ -3199,6 +3199,10 @@ function Group: Group3D;
 function Group(params lst: array of Object3D): Group3D;
 /// Возвращает группу объектов из последовательности en
 function Group(en: sequence of Object3D): Group3D;
+/// Не отображать слой графических объектов (обычно вызывается в начале до создания графических объектов)
+procedure HideObjects;
+/// Отображать слой графических объектов (вызывается после HideObjects и создания начальной сцены графических объектов)
+procedure ShowObjects;
 
 // -----------------------------------------------------
 //>>     Graph3D: функции для создания 3D-объектов # Graph3D functions for creation 3D-objects
@@ -3463,12 +3467,25 @@ var
 
 //{{{--doc: Конец секции 1 }}} 
 
+
+
 ///--
 procedure __InitModule__;
 ///--
 procedure __FinalizeModule__;
 
 implementation
+
+procedure HideObjects;
+begin
+  Invoke(()->begin hvp.Visibility := Visibility.Hidden end);
+end;
+
+procedure ShowObjects;
+begin
+  Invoke(()->begin hvp.Visibility := Visibility.Visible end);
+end;
+
 
 type 
   CustomBinder = class(SerializationBinder)
