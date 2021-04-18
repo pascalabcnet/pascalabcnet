@@ -10292,8 +10292,7 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(new UndefinedNameReference(_method_name.meth_name.name, get_location(_method_name.meth_name)));
                     }
                     else
-                        AddError(new OnlyProcedureNameAllowedInClassFunctionDefinition(_method_name.class_name.name,
-                            get_location(_method_name.class_name)));
+                        AddError(get_location(_method_name.class_name), "EXPECTED_INTERFACE");
                 }
                 tp = def_temp as common_type_node;
                 template_class tc = def_temp as template_class;
