@@ -85,6 +85,8 @@ begin
   var files := Directory.GetFiles(TestSuiteDir, '*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    if IsUnix then
+      writeln('Compile file '+files[i]);
     var content := &File.ReadAllText(files[i]);
     if content.StartsWith('//winonly') and IsUnix then
       continue;
