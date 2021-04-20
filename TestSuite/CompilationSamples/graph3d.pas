@@ -101,7 +101,7 @@ function P3D(x, y, z: real): Point3D;
 /// Возвращает 3D-вектор с координатами (x,y,z)
 function V3D(x, y, z: real): Vector3D;
 /// Возвращает 3D-размер с координатами (x,y,z)
-function Sz3D(x, y, z: real): Size3D;
+function Sz3D(x, y, z: real): Size3D; 
 
 // -----------------------------------------------------
 //>>     Graph3D: функции для создания материалов Materials # Graph3D Materials functions
@@ -118,6 +118,9 @@ function EmissiveMaterial(c: Color): Material;
 function ImageMaterial(fname: string; M: real := 1; N: real := 1): Material;
 /// Радужный материал
 function RainbowMaterial: Material;
+/// Возвращает материал по умолчанию
+function DefaultMaterial: Material;
+
 
 type
 // -----------------------------------------------------
@@ -901,6 +904,8 @@ type
     procedure CreateBase(m: MeshElement3D; x, y, z: real; mat: GMaterial);
     begin
       CreateBase0(m, x, y, z);
+      if mat = nil then
+        mat := DefaultMaterial;
       m.Material := mat;
       //MaterialHelper.ChangeOpacity(mat,0.1);
       //MaterialHelper.ChangeOpacity(BackMaterial,0.1);
@@ -3187,8 +3192,6 @@ type
 // -----------------------------------------------------
 //>>     Graph3D: сервисные функции # Graph3D service functions
 // ----------------------------------------------------- 
-/// Возвращает материал по умолчанию
-function DefaultMaterial: Material;
 /// Возвращает пустую группу объектов в точке (x, y, z)
 function Group(x, y, z: integer): Group3D;
 /// Возвращает пустую группу объектов в точке p
@@ -3208,9 +3211,11 @@ procedure ShowObjects;
 //>>     Graph3D: функции для создания 3D-объектов # Graph3D functions for creation 3D-objects
 // ----------------------------------------------------- 
 /// Возвращает сферу с центром в точке (x, y, z) радиуса Radius
-function Sphere(x, y, z, Radius: real; m: Material := DefaultMaterial): SphereT;
+function Sphere(x, y, z, Radius: real; m: Material): SphereT;
+/// Возвращает сферу с центром в точке (x, y, z) радиуса Radius
+function Sphere(x, y, z, Radius: real): SphereT;
 /// Возвращает сферу с центром в точке center радиуса Radius
-function Sphere(center: Point3D; Radius: real; m: Material := DefaultMaterial): SphereT;
+function Sphere(center: Point3D; Radius: real; m: Material := nil): SphereT;
 /// Возвращает эллипсоид с центром в точке (x, y, z) и радиусами RadiusX, RadiusY, RadiusZ
 function Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT;
 /// Возвращает эллипсоид с центром в точке center и радиусами RadiusX, RadiusY, RadiusZ
@@ -4110,6 +4115,8 @@ function Group(params lst: array of Object3D): Group3D := Inv(()->Group3D.Create
 function Group(en: sequence of Object3D): Group3D := Inv(()->Group3D.Create(0, 0, 0, en));
 
 function Sphere(x, y, z, Radius: real; m: Material): SphereT := Inv(()->SphereT.Create(x, y, z, Radius, m));
+
+function Sphere(x, y, z, Radius: real): SphereT := Sphere(x, y, z, Radius, DefaultMaterial);
 
 function Sphere(center: Point3D; Radius: real; m: Material) := Sphere(center.x, center.y, center.z, Radius, m);
 
