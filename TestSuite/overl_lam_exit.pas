@@ -10,5 +10,5 @@ begin
 end;
 
 begin
-  p1(()-> exit());
+  p1(procedure-> exit());
 end.

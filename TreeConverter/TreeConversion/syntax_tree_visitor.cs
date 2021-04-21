@@ -16978,8 +16978,8 @@ namespace PascalABCCompiler.TreeConverter
                         if (!(sil.FirstOrDefault().sym_info is common_in_function_function_node))
                         {
                             var ex = sil.FirstOrDefault().sym_info as basic_function_node;
-                            if (ex != null && ex.name.ToLower() == "exit")  
-                                return new basic_function_call(ex, ex.location);
+                            //if (ex != null && ex.name.ToLower() == "exit")  
+                            //    return new basic_function_call(ex, ex.location);
                             return make_delegate_wrapper(null, sil, lloc, ((sil.FirstOrDefault().sym_info is common_method_node) && ((common_method_node)sil.FirstOrDefault().sym_info).IsStatic));
                         }
                         return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
