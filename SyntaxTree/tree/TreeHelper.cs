@@ -627,6 +627,7 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return "'" + Value + "'";
         }
+        public bool IsInterpolated = false;
     }
 
     public partial class expression_list

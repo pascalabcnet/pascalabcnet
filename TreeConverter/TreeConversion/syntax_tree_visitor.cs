@@ -16409,7 +16409,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.string_const _string_const)
         {
             expression_node en = null;
-            if (_string_const.Value.Length != 1)
+            if (_string_const.Value.Length != 1 || _string_const.IsInterpolated)
             {
                 en = new string_const_node(_string_const.Value, get_location(_string_const));
                 if (SemanticRules.GenerateNativeCode && SemanticRules.StringType != null)
