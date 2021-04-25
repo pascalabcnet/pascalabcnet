@@ -13481,6 +13481,15 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return;
             }
+            if (!_function_header.is_extension() && !(context.top_function is common_namespace_function_node) && !_function_header.class_keyword)
+            {
+                var q = _function_header.parameters?.params_list?.SelectMany(p => p.idents.idents).Where(id => id.name.ToLower() == "self");
+                if (q != null && q.Count() > 0)
+                {
+                    var sid = q.First();
+                    AddError(get_location(sid), "SELF_NOT_ALLOWED_IN_METHOD_PARAMS");
+                }
+            }
             if (_function_header.template_args != null)
             {
                 visit_generic_params(context.top_function, _function_header.template_args.idents);
@@ -13526,6 +13535,7 @@ namespace PascalABCCompiler.TreeConverter
                 _function_header.proc_attributes.proc_attributes.Add(pa);
             }
             weak_node_test_and_visit(_function_header.proc_attributes);
+
             if (context.top_function.IsOperator)
             {
                 if (context.top_function is common_method_node)
@@ -13766,7 +13776,7 @@ namespace PascalABCCompiler.TreeConverter
             current_function_header = _procedure_header;
             hard_node_test_and_visit(_procedure_header.name);
 
-            if (!_procedure_header.is_extension() && !(context.top_function is common_namespace_function_node))
+            if (!_procedure_header.is_extension() && !(context.top_function is common_namespace_function_node) && !_procedure_header.class_keyword)
             {
                 var q = _procedure_header.parameters?.params_list?.SelectMany(p => p.idents.idents).Where(id => id.name.ToLower() == "self");
                 if (q != null && q.Count() > 0)
