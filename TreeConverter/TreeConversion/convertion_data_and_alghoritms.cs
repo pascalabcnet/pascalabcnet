@@ -1404,7 +1404,26 @@ namespace PascalABCCompiler.TreeConverter
                 if (left_func is basic_function_node)
                     return method_compare.less_method;
                 else
-                    return method_compare.greater_method;
+                {
+                    if (left.Count > 0 && right.Count > 0 && left[0].from is delegated_methods && right[0].from is delegated_methods && right[0].to.is_generic_type_instance
+                        && (left[0].from as delegated_methods).proper_methods[0].ret_type is lambda_any_type_node && (right[0].from as delegated_methods).proper_methods[0].ret_type is lambda_any_type_node)
+                    {
+                        var llist = right_func.get_generic_params_list();
+                        var rlist = right[0].to.instance_params;
+                        
+                        if (llist.Count == rlist.Count)
+                        {
+                            for (int i=0; i<llist.Count; i++)
+                                if (llist[i] != rlist[i])
+                                    return method_compare.greater_method;
+                            return method_compare.less_method;
+                        }
+                        else
+                            return method_compare.greater_method;
+                    }
+                    else
+                        return method_compare.greater_method;
+                }
             }
             if (left_func.is_generic_function_instance && !right_func.is_generic_function_instance)
             {
