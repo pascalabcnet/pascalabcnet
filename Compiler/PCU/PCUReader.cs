@@ -841,7 +841,6 @@ namespace PascalABCCompiler.PCU
                 MethodInfo mi = mis[i] as MethodInfo;
                 if (mi == null) continue;
                 ParameterInfo[] prms = mi.GetParameters();
-                
                 bool eq = true;
                 if (prms.Length != param_types.Length) continue;
                 for (int j=0; j<prms.Length; j++)
@@ -853,10 +852,17 @@ namespace PascalABCCompiler.PCU
                         }
                     }
                     else
+                    {
                         if (prms[j].ParameterType.Name != param_types[j].name)
                         {
                             eq = false; break;
                         }
+                        if (prms[j].ParameterType.IsGenericType && !prms[j].ParameterType.GetGenericArguments()[0].IsGenericParameter)
+                        {
+                            eq = false; break;
+                        }
+                    }
+                        
                 if (eq && mi.DeclaringType == t) res_mi = mi;
             }
             return res_mi;
