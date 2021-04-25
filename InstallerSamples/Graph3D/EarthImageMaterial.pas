@@ -1,7 +1,8 @@
-uses Graph3D;
+п»їuses Graph3D;
 
 begin
-  View3D.Title := 'Вращение Земли';
+  HideObjects;
+  View3D.Title := 'Р’СЂР°С‰РµРЅРёРµ Р—РµРјР»Рё';
   View3D.CameraMode := CameraMode.Inspect;
   View3D.ShowCoordinateSystem := False;
   View3D.ShowGridLines := False;
@@ -11,6 +12,8 @@ begin
   
   var c := Sphere(0,0,0,5,Colors.Wheat);
   c.Material := ImageMaterial('Earth.jpg');
+  ShowObjects;
+
   var gr := 0;
   var dgr := 1;
   while True do

@@ -1181,7 +1181,7 @@ namespace PascalABCCompiler.NETGenerator
                 else
                     fb.SetConstant(constant_value.value);
             }
-            else if (!(constant_value is INullConstantNode))
+            else if (!(constant_value is INullConstantNode) && constant_value.value != null)
             {
                 if (constant_value.value.GetType() != t)
                 {
@@ -2639,7 +2639,9 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum && (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX))
                         default_value = Enum.ToObject(param_types[i + num], default_value);
-                    pb.SetConstant(default_value);
+                    if (default_value is TreeRealization.null_const_node) // SSM 20/04/21
+                        pb.SetConstant(null);
+                    else pb.SetConstant(default_value);
                 }
                 if (func.functions_nodes.Length > 0)
                 {
@@ -6995,7 +6997,9 @@ namespace PascalABCCompiler.NETGenerator
                     pa |= ParameterAttributes.Optional;
                 pb = methb.DefineParameter(i + 1, pa, parameters[i].name);
                 if (default_value != null)
-                    pb.SetConstant(default_value);
+                    if (default_value is TreeRealization.null_const_node) // SSM 20/04/21
+                        pb.SetConstant(null);
+                    else pb.SetConstant(default_value);
                 helper.AddParameter(parameters[i], pb);
                 if (parameters[i].is_params)
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });
@@ -7019,7 +7023,9 @@ namespace PascalABCCompiler.NETGenerator
                     pa |= ParameterAttributes.Optional;
                 pb = methb.DefineParameter(i + 1, pa, parameters[i].name);
                 if (default_value != null)
-                    pb.SetConstant(default_value);
+                    if (default_value is TreeRealization.null_const_node) // SSM 20/04/21
+                        pb.SetConstant(null);
+                    else pb.SetConstant(default_value);
                 helper.AddParameter(parameters[i], pb);
                 if (parameters[i].is_params)
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });

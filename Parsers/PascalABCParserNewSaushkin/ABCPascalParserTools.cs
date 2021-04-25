@@ -446,6 +446,7 @@ namespace PascalABCSavParser
             literal lt;
             text = ReplaceSpecialSymbols(text.Substring(2, text.Length - 3));
             lt = new string_const(text);
+            (lt as string_const).IsInterpolated = true;
             lt.source_context = sc;
             return lt;
         }

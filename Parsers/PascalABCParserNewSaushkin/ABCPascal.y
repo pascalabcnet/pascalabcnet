@@ -111,7 +111,7 @@
 %type <stn> literal_list  
 %type <stn> label_decl_sect  
 %type <stn> lock_stmt  
-%type <stn> func_name proc_name optional_proc_name qualified_identifier 
+%type <stn> func_name proc_name optional_proc_name
 %type <ex> new_expr allowable_expr_as_stmt  
 %type <stn> parse_goal parts inclass_block block proc_func_external_block
 %type <td> exception_class_type_identifier simple_type_identifier //idp  
@@ -966,6 +966,8 @@ const_factor
 			$$ = new un_expr($2, $1.type, @$); 
 		}
     | new_expr
+		{ $$ = $1; }
+	 | default_expr
 		{ $$ = $1; }
 //    | tkDeref const_factor              
 //        { 
@@ -2019,21 +2021,6 @@ optional_proc_name
 		{ $$ = null; }
     ;
 
-qualified_identifier
-    : identifier                                       
-        { $$ = new method_name(null,null,$1,null,@$); }
-    | visibility_specifier                             
-        { $$ = new method_name(null,null,$1,null,@$); }
-    | qualified_identifier tkPoint identifier                   
-        {
-			$$ = NewQualifiedIdentifier($1 as method_name, $3, @$);
-        }
-    | qualified_identifier tkPoint visibility_specifier         
-        {
-			$$ = NewQualifiedIdentifier($1 as method_name, $3, @$);
-        }
-    ;
-
 property_definition
     : attribute_declarations simple_property_definition
         {  
@@ -2042,11 +2029,11 @@ property_definition
     ;
     
 simple_property_definition
-    : tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
+    : tkProperty func_name property_interface property_specifiers tkSemiColon array_defaultproperty
         { 
 			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, proc_attribute.attr_none, $6 as property_array_default, @$);
         }
-    | tkProperty qualified_identifier property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
+    | tkProperty func_name property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
         { 
             proc_attribute pa = proc_attribute.attr_none;
             if ($6.name.ToLower() == "virtual")
@@ -2057,22 +2044,22 @@ simple_property_definition
  			    pa = proc_attribute.attr_abstract;
 			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, pa, $8 as property_array_default, @$);
         }
-    | class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
+    | class_or_static tkProperty func_name property_interface property_specifiers tkSemiColon array_defaultproperty
         { 
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, $5 as property_accessors, proc_attribute.attr_none, $7 as property_array_default, @$);
         	($$ as simple_property).attr = definition_attribute.Static;
         }
-    | class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
+    | class_or_static tkProperty func_name property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
         { 
 			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",@7,$7.name);        	
         }
-	| tkAuto tkProperty qualified_identifier property_interface optional_property_initialization tkSemiColon
+	| tkAuto tkProperty func_name property_interface optional_property_initialization tkSemiColon
 		{
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
 			($$ as simple_property).initial_value = $5;
 		}
-	| class_or_static tkAuto tkProperty qualified_identifier property_interface optional_property_initialization tkSemiColon
+	| class_or_static tkAuto tkProperty func_name property_interface optional_property_initialization tkSemiColon
 		{
 			$$ = NewSimplePropertyDefinition($4 as method_name, $5 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
@@ -2330,8 +2317,6 @@ typed_const_plus
 		{ $$ = $1; }
     /*| new_expr
 		{ $$ = $1; }*/
-    | default_expr
-		{ $$ = $1; }
     ;
 
 constr_destr_decl
@@ -3243,6 +3228,8 @@ expr_with_func_decl_lambda
 		{ $$ = $1; }
     | func_decl_lambda
         { $$ = $1; }
+	| tkInherited
+		{ $$ = new inherited_ident("", @$); }
     ;
 
 expr
@@ -4190,6 +4177,7 @@ variable
         { 
 			$$ = new inherited_ident($2.name, @$);
 		}
+	
     | tkRoundOpen expr tkRoundClose         
         {
 		    if (!parsertools.build_tree_for_formatter) 

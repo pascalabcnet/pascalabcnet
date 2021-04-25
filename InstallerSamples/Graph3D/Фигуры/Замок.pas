@@ -15,6 +15,7 @@ begin
 end;
 
 begin
+  HideObjects;
   var b := Box(0,0,2,14.5,1,4,Colors.Orange);
   var c := Cube(6.75,0,4.5,1,RandomColor);
   var c1 := Cone(6.75,0,5,1.5,0.4,RandomColor);
@@ -27,6 +28,8 @@ begin
   var g3 := gg.Clone.MoveByX(-6);
   gg.MoveByX(6);
   var ggg := Group(gg,g1,g2,g3);
+  ShowObjects;
+
   ggg.Save('Замок.xaml');
   //ggg.AnimRotate(OrtZ,360,10).Forever.begin;
 end.

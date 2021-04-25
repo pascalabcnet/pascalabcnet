@@ -376,8 +376,12 @@ procedure MoveRel(dx,dy: real);
 /// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
 procedure LineRel(dx,dy: real);
 /// Перемещает текущую позицию рисования на вектор (dx,dy)
-procedure MoveOn(dx,dy: real);
+procedure MoveBy(dx,dy: real);
 /// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
+procedure LineBy(dx,dy: real);
+///--
+procedure MoveOn(dx,dy: real);
+///--
 procedure LineOn(dx,dy: real);
 
 /// Рисует ломаную, заданную массивом точек 
@@ -1206,6 +1210,8 @@ procedure MoveRel(dx,dy: real) := (Pen.fx,Pen.fy) := (Pen.fx + dx, Pen.fy + dy);
 procedure LineRel(dx,dy: real) := LineTo(Pen.fx + dx, Pen.fy + dy);
 procedure MoveOn(dx,dy: real) := MoveRel(dx,dy);
 procedure LineOn(dx,dy: real) := LineRel(dx,dy);
+procedure MoveBy(dx,dy: real) := MoveRel(dx,dy);
+procedure LineBy(dx,dy: real) := LineRel(dx,dy);
 
 procedure PolyLine(points: array of Point) := InvokeVisual(PolyLineP,points);
 procedure PolyLine(points: array of Point; c: GColor) := InvokeVisual(PolyLinePC,points,c);
@@ -1613,6 +1619,11 @@ begin
   var (dpiX,dpiY) := (scalex * 96, scaley * 96);
   
   var sz := Size(host.DataContext);
+  
+  if sz.Width = 0 then 
+    sz.Width := GraphWindow.Width;
+  if sz.Height = 0 then 
+    sz.Height := GraphWindow.Height;
   
   var bmp := new RenderTargetBitmap(Round(sz.Width*scalex), Round(sz.Height*scaley), dpiX, dpiY, PixelFormats.Pbgra32);
 

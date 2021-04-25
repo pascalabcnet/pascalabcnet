@@ -5,11 +5,12 @@ uses WPFObjects;
 procedure MoveAll(a,b: integer);
 begin
   for var j:=0 to Objects.Count-1 do
-    Objects[j].moveBy(a,b);
+    Objects[j].moveOn(a,b);
 end;
 
 begin
   Window.Title := 'Броуновское движение объектов';
+  HideObjects;
   var sq := new SquareWPF(30,5,90,Colors.SkyBlue,1);
   var r := new RectangleWPF(10,10,100,180,RGB(255,100,100),1);
   var rr := new RoundRectWPF(200,180,180,50,20,RandomColor,1);
@@ -29,11 +30,12 @@ begin
   c.Height := 50;
   c.Scale(2);
   MoveAll(160,110);
+  ShowObjects;
   
   while True do
   begin
     for var j:=0 to Objects.Count-1 do
-      Objects[j].MoveBy(Random(-1,1),Random(-1,1));
+      Objects[j].MoveOn(Random(-1,1),Random(-1,1));
     Sleep(10);
   end;
 end.

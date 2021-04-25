@@ -217,6 +217,10 @@ type
     procedure Load(fname: string);
     /// Заполняет содержимое графического окна обоями из файла с именем fname
     procedure Fill(fname: string);
+    /// Возвращает случайную точку в границах экрана. Необязательный параметр margin задаёт минимальный отступ от границы 
+    function RandomPoint(margin: real := 0): Point;
+    /// Очищает графическое окно белым цветом
+    procedure Clear; 
   end;
   
   // Специфический тип окна для модуля GraphWPF
@@ -403,12 +407,42 @@ procedure DrawPolygon(points: array of Point; c: GColor);
 procedure FillPolygon(points: array of Point; c: GColor);
 
 // -----------------------------------------------------
+//>>     Класс Bitmap
+// -----------------------------------------------------
+///!#
+/// Класс битового образа
+type Bitmap = class
+private 
+  bsource: TransformedBitmap;
+  procedure SetScaleX(scx: real);
+  function GetScaleX: real;
+  procedure SetScaleY(scy: real);
+  function GetScaleY: real;
+public
+  constructor Create(fname: string);
+/// Отразить битовый образ относительно горизонтальной оси
+  procedure FlipHorizontal;
+/// Отразить битовый образ относительно вертикальной оси
+  procedure FlipVertical;
+/// Коэффициент масштабирования по оси X
+  property ScaleX: real read GetScaleX write SetScaleX;
+/// Коэффициент масштабирования по оси Y
+  property ScaleY: real read GetScaleY write SetScaleY;
+/// Возвращает клон битового образа
+  function Clone: Bitmap;
+end;
+
+// -----------------------------------------------------
 //>>     Функции для вывода изображений и видео # GraphWPF functions for images and video
 // -----------------------------------------------------
 /// Рисует изображение из файла fname в позиции (x,y)
 procedure DrawImage(x,y: real; fname: string);
 /// Рисует изображение из файла fname в позиции (x,y) размера w на h
 procedure DrawImage(x,y,w,h: real; fname: string);
+/// Рисует изображение из битмапа в позиции (x,y)
+procedure DrawImage(x,y: real; b: Bitmap);
+/// Рисует изображение из битмапа в позиции (x,y) размера w на h
+procedure DrawImage(x,y,w,h: real; b: Bitmap);
 /// Рисует немасштабированное изображение из файла fname в позиции (x,y)
 procedure DrawImageUnscaled(x,y: real; fname: string);
 /// Выводит видеоиз файла fname в позицию (x,y)
@@ -615,13 +649,6 @@ var OnDrawFrame: procedure(dt: real);
 // Для WPFObjects
 var AdditionalInit: procedure;
 function GetMouseArgs(e: MouseEventArgs): (Point,integer);
-
-{procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray);
-procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray);
-procedure AddTopPanel(Height: real := 100; c: Color := Colors.LightGray);
-procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
-
-procedure AddStatusBar(Height: real := 24);}
 
 {function GetDC: DrawingContext;
 procedure ReleaseDC(dc: DrawingContext);
@@ -928,6 +955,60 @@ begin
   Result := dpic[fname];
 end;
 
+// -----------------------------------------------------
+//>>     Класс Bitmap
+// -----------------------------------------------------
+///!#
+constructor Bitmap.Create(fname: string);
+begin
+  Invoke(()->begin
+    bsource := new TransformedBitmap(GetBitmapImage(fname),new ScaleTransform());
+  end);
+end;
+
+function Bitmap.Clone: Bitmap;
+begin
+  Result := Invoke&<Bitmap>(()->
+  begin
+    var b := new Bitmap();
+    b.bsource := new TransformedBitmap(bsource.Source,bsource.Transform);
+    Result := b;
+  end);  
+end;
+
+procedure Bitmap.FlipHorizontal := ScaleY := -ScaleY;
+
+procedure Bitmap.FlipVertical := ScaleX := -ScaleX;
+
+procedure Bitmap.SetScaleX(scx: real);
+begin
+  Invoke(()->begin
+    var sct := bsource.Transform as ScaleTransform;
+    sct.ScaleX := scx;
+    bsource := new TransformedBitmap(bsource.Source,sct);
+  end);
+end;
+
+function Bitmap.GetScaleX: real;
+begin
+  Result := InvokeReal(()->(bsource.Transform as ScaleTransform).ScaleX);
+end;
+
+function Bitmap.GetScaleY: real;
+begin
+  Result := InvokeReal(()->(bsource.Transform as ScaleTransform).ScaleY);
+end;
+
+procedure Bitmap.SetScaleY(scy: real);
+begin
+  Invoke(()->begin
+    var sct := bsource.Transform as ScaleTransform;
+    sct.ScaleY := scy;
+    bsource := new TransformedBitmap(bsource.Source,sct);
+  end);
+end;
+
+
 procedure DrawPixelsP(x,y:real; px,py,pw,ph: integer; a: array [,] of Color);
 begin
   var (scalex,scaley) := ScaleToDevice;
@@ -970,11 +1051,27 @@ begin
   ReleaseDC(dc);
 end;
 
+procedure DrawImagePB(x,y: real; b: Bitmap);
+begin
+  var dc := GetDC();
+  var img := b.bsource;
+  dc.DrawImage(img, Rect(x, y, img.PixelWidth, img.PixelHeight));
+  ReleaseDC(dc);
+end;
+
 procedure DrawImageP(x,y: real; fname: string);
 begin
   var dc := GetDC();
   var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, img.PixelWidth, img.PixelHeight));
+  ReleaseDC(dc);
+end;
+
+procedure DrawImageWHPB(x,y,w,h: real; b: Bitmap);
+begin
+  var dc := GetDC();
+  var img := b.bsource;
+  dc.DrawImage(img, Rect(x, y, w, h));
   ReleaseDC(dc);
 end;
 
@@ -1226,6 +1323,10 @@ procedure FillPolygon(points: array of Point; c: GColor) := InvokeVisual(FillPol
 
 procedure DrawImage(x,y: real; fname: string) := InvokeVisual(DrawImageP,x,y,fname);
 procedure DrawImage(x,y,w,h: real; fname: string) := InvokeVisual(DrawImageWHP,x,y,w,h,fname);
+
+procedure DrawImage(x,y: real; b: Bitmap) := InvokeVisual(DrawImagePB,x,y,b);
+procedure DrawImage(x,y,w,h: real; b: Bitmap) := InvokeVisual(DrawImageWHPB,x,y,w,h,b);
+
 procedure DrawImageUnscaled(x,y: real; fname: string) := InvokeVisual(DrawImageUnscaledP,x,y,fname);
 procedure DrawVideo(x,y: real; fname: string) := InvokeVisual(DrawVideoP,x,y,fname);
 
@@ -1671,6 +1772,14 @@ procedure GraphWindowType.Fill(fname: string);
 begin
   //FillWindow(fname);
 end;
+
+procedure GraphWindowType.Clear;
+begin
+  Window.Clear;
+end;
+
+
+function GraphWindowType.RandomPoint(margin: real): Point := Pnt(Random(margin,Width-margin),Random(margin,Height-margin));
 
 function GraphWindowType.Center: Point := Pnt(Width/2,Height/2);
 

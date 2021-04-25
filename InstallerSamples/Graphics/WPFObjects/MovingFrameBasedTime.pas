@@ -3,20 +3,20 @@
 begin
   var c := new CircleWPF(Window.Center, 20, Colors.Green);
   
-  OnDrawFrame := dt → begin
+  OnDrawFrame := dt -> begin
     c.MoveTime(dt);    
   end;
   
-  OnKeyDown := k → begin
+  OnKeyDown := k -> begin
     case k of
-      Key.Left: c.Direction := (-5, 0);
-      Key.Right: c.Direction := (5, 0);
-      Key.Up: c.Direction := (0, -5);
-      Key.Down: c.Direction := (0, 5);
+      Key.Left: c.Direction := Direction.Left;
+      Key.Right: c.Direction := Direction.Right;
+      Key.Up: c.Direction := Direction.Up;
+      Key.Down: c.Direction := Direction.Down;
     end;
   end;
   
-  OnKeyUp := k → begin
-    c.Direction := (0, 0);
+  OnKeyUp := k -> begin
+    c.Direction := Direction.Zero;
   end;
 end.

@@ -7011,6 +7011,39 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(property_ident _property_ident)
+		{
+			bw.Write((Int16)257);
+			write_property_ident(_property_ident);
+		}
+
+		public void write_property_ident(property_ident _property_ident)
+		{
+			write_ident(_property_ident);
+			if (_property_ident.ln == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_property_ident.ln.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _property_ident.ln.Count; ssyy_i++)
+				{
+					if (_property_ident.ln[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_property_ident.ln[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
 	}
 
 
