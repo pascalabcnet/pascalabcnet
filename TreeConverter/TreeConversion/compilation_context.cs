@@ -2117,8 +2117,18 @@ namespace PascalABCCompiler.TreeConverter
             	if (CurrentStatementList != null)
                 {
                     //Инициализировать надо в текущем стейтменте
-                    location lid = ((local_block_variable)vdn).loc;
-                    local_block_variable_reference lbvr = new local_block_variable_reference((local_block_variable)vdn, lid);
+                    expression_node expr = null;
+                    location lid = null;
+                    if (vdn is local_block_variable)
+                    {
+                        lid = ((local_block_variable)vdn).loc;
+                        expr = new local_block_variable_reference((local_block_variable)vdn, lid);
+                    }
+                    else if (vdn is class_field)
+                    {
+                        lid = vdn.location;
+                        expr = new class_field_reference(vdn as class_field, new this_node((vdn as class_field).cont_type, lid), lid);
+                    }
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
                     {
                         userInitalValue = syntax_tree_visitor.get_init_call_for_set_as_constr(vdn, userInitalValue);
@@ -2140,12 +2150,12 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }
                     }
-                    CurrentStatementList.statements.AddElement(syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, lbvr, userInitalValue, lid));
+                    CurrentStatementList.statements.AddElement(syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, expr, userInitalValue, lid));
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
                 	{
-                 		lbvr.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
+                 		expr.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
                 	}
-                    if (vdn.type.is_value_type /*&& userInitalValue is common_constructor_call*/)
+                    if (vdn.type.is_value_type /*&& userInitalValue is common_constructor_call*/ && !(expr is class_field_reference))
                     {
                         return new default_operator_node(vdn.type, lid);
                     }
