@@ -21298,7 +21298,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             var IsTuple = false;
             var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple"))
+            if (t.FullName.StartsWith("System.Tuple") && !(t.IsArray)) // ошибка - не проходит, когда есть System.Tuple[,][] т.е. массив туплов!!!
                 IsTuple = true;
             if (!IsTuple)
             {

@@ -554,7 +554,8 @@ begin
   n := Abs(n); // foolproof
   var L := new List<integer>;
   L.Add(1);
-  L.Add(n);
+  if n > 1 then
+    L.Add(n);
   if n > 3 then
   begin
     var k := 2;
