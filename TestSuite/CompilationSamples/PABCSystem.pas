@@ -7112,8 +7112,10 @@ begin
   end
   else 
   begin
-    f.sr.BaseStream.Position := 0;
-    f.sr.DiscardBufferedData;
+    f.sr.Close;
+    f.sr := new StreamReader(f.fi.FullName, en);
+    //f.sr.BaseStream.Position := 0;
+    //f.sr.DiscardBufferedData;
   end;
   if f = input then
   begin  
