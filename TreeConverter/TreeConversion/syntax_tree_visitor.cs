@@ -3277,6 +3277,8 @@ namespace PascalABCCompiler.TreeConverter
 
             context.allow_inherited_ctor_call = true;
             cmn.is_constructor = true;
+            if (cmn.cont_type.is_value_type && cmn.parameters.Count == 0 && cmn.field_access_level != SemanticTree.field_access_level.fal_public)
+                AddError(cmn.loc, "NON_PUBLIC_RECORD_CONSTRUCTORS_NOT_ALLOWED");
             cmn.return_value_type = context.converted_type;
         }
 
