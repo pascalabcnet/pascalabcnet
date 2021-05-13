@@ -4175,7 +4175,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             SyntaxTree.class_members clmem = new SyntaxTree.class_members();
-            if (context.converted_type.has_user_defined_constructor)
+            if (context.converted_type.has_user_defined_constructor && !context.converted_type.is_value_type)
             {
                 clmem.access_mod = new SyntaxTree.access_modifer_node(SyntaxTree.access_modifer.protected_modifer);
             }
