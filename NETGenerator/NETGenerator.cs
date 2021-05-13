@@ -6721,6 +6721,8 @@ namespace PascalABCCompiler.NETGenerator
             MethodAttributes attrs = ConvertFALToMethodAttributes(value.field_access_level);
             if (is_accessor)
                 attrs = MethodAttributes.Public;
+            if (value.overrided_method != null && value.name.IndexOf(".") != -1)
+                attrs = MethodAttributes.Private;
             switch (value.polymorphic_state)
             {
                 case polymorphic_state.ps_static: attrs |= MethodAttributes.Static; break;
