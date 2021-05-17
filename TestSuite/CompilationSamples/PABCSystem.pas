@@ -5583,6 +5583,8 @@ begin
     if (c <> #13) and (c <> #10) then // SSM 13.12.13
       sb.Append(c);
     c := char(peek);
+    if c = char(-1) then
+      break;
   end;
   x := sb.ToString;
 end;
@@ -6305,7 +6307,7 @@ begin
   if f.sr = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_READING));
   try
-    x := Convert.ToChar(f.sr.Read());
+    x := char(f.sr.Read());
   except
     on e: Exception do
       raise e;
