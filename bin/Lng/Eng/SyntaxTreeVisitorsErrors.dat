@@ -36,3 +36,5 @@ NESTED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION=Nested records can 
 NESTED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Nested records can not contain several visibility section
 UNNAMED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Nested records cannot catch names from nonglobal context
 TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT=Too many elements on the left side of tuple assignment
+NESTED_LAMBDAS_MAXIMUM_10=Maximum number of nested lambdas = 10
+EMBEDDED_STATEMENT_CANNOT_BE_A_DECLARATION=Embedded statement cannot be a declaration or labeled statement

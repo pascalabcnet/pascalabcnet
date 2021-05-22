@@ -637,6 +637,13 @@ namespace PascalABCCompiler.TreeConverter
 				return en;
 			}
 
+            if (to == SystemLibrary.SystemLibrary.system_delegate_type && en is typed_expression)
+            {
+                delegated_methods dm = (en as typed_expression).type as delegated_methods;
+                if (dm.proper_methods.Count > 1)
+                    AddError(loc, "AMBIGUOUS_DELEGATES");
+            }
+
             if (en.type is compiled_type_node comptn1 && to is compiled_type_node comptn2) // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные
             {
                 if (comptn1.compiled_type == comptn2.compiled_type 
@@ -663,7 +670,7 @@ namespace PascalABCCompiler.TreeConverter
                 en.location = loc;
                 if (en.type is delegated_methods dm && dm.proper_methods[0].parameters.Count == 0 && dm.proper_methods[0].ret_type != null)
                 {
-                    if (to != SystemLibrary.SystemLibrary.object_type)
+                    if (to != SystemLibrary.SystemLibrary.object_type && to.IsDelegate)
                         AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
                     else
                         return en;
@@ -1259,7 +1266,9 @@ namespace PascalABCCompiler.TreeConverter
 		{
 			if ((left.first==null)&&(right.first!=null))
 			{
-				return type_conversion_compare.greater_type_conversion;
+                if (right.from.IsDelegate && right.to.IsDelegate && left.to == SystemLibrary.SystemLibrary.object_type)
+                    return type_conversion_compare.less_type_conversion;//right.first != null из-за структурной эквивалентности процедурных типов и в силу того, что для каждого процедурного типа создается свой класс и и создается пустой метод преобразования типов
+                return type_conversion_compare.greater_type_conversion;
 			}
 			if ((left.first!=null)&&(right.first==null))
 			{
@@ -1395,7 +1404,26 @@ namespace PascalABCCompiler.TreeConverter
                 if (left_func is basic_function_node)
                     return method_compare.less_method;
                 else
-                    return method_compare.greater_method;
+                {
+                    if (left.Count > 0 && right.Count > 0 && left[0].from is delegated_methods && right[0].from is delegated_methods && right[0].to.is_generic_type_instance
+                        && (left[0].from as delegated_methods).proper_methods[0].ret_type is lambda_any_type_node && (right[0].from as delegated_methods).proper_methods[0].ret_type is lambda_any_type_node)
+                    {
+                        var llist = right_func.get_generic_params_list();
+                        var rlist = right[0].to.instance_params;
+                        
+                        if (llist.Count == rlist.Count)
+                        {
+                            for (int i=0; i<llist.Count; i++)
+                                if (llist[i] != rlist[i])
+                                    return method_compare.greater_method;
+                            return method_compare.less_method;
+                        }
+                        else
+                            return method_compare.greater_method;
+                    }
+                    else
+                        return method_compare.greater_method;
+                }
             }
             if (left_func.is_generic_function_instance && !right_func.is_generic_function_instance)
             {
@@ -1432,6 +1460,15 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+            if (left_func.return_value_type != null && right_func.return_value_type != null && function_eq_params(left_func, right_func, true))
+            {
+                var tc = type_table.compare_types(left_func.return_value_type, right_func.return_value_type);
+                if (tc == type_compare.less_type)
+                    return method_compare.greater_method;
+                if (tc == type_compare.greater_type)
+                    return method_compare.less_method;
+            }
+                
             return method_compare.not_comparable_methods;
 		}
 
@@ -1667,6 +1704,8 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				if (ptc.second!=null)
 				{
+                    if (ptc.first.from is null_type_node || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
+                        continue; // SSM 9/12/20 fix 2363
 					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
 				
@@ -1714,10 +1753,10 @@ namespace PascalABCCompiler.TreeConverter
                     exprs[i].type = fn.parameters[fn.parameters.Count - 1].type;
                     break;
                 }
-                if ((ptcal[i]==null)||(ptcal[i].first==null)||exprs[i] is null_const_node)
-				{
-					continue;
-				}
+                if ((ptcal[i] == null) || (ptcal[i].first == null) || (exprs[i] is null_const_node && exprs[i].conversion_type == null))
+                {
+                    continue;
+                }
                 expression_node[] temp_arr = new expression_node[1];
                 temp_arr[0] = exprs[i];
                 if (ptcal[i].first.convertion_method is compiled_constructor_node)
@@ -1869,7 +1908,7 @@ namespace PascalABCCompiler.TreeConverter
                                 mc = method_compare.greater_method;
                             }
                         }
-                        if (mc == method_compare.greater_method)
+                        if (mc == method_compare.greater_method) // f[i]>f[j] - значит, удалять надо f[i], а в коде наоборот!!! Странно...
                         {
                             tcll.remove_at(j);
                             set_of_possible_functions.RemoveAt(j);
@@ -2129,7 +2168,12 @@ namespace PascalABCCompiler.TreeConverter
             {
                 throw lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException.ExceptionOnCompileBody;  // Если перебрали все, но ничто не подошло, то кидаем последнее исключение
             }
-
+            else if (lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException != null
+                && set_of_possible_functions.Count > 0
+                && indefinits.Count == 0)
+            {
+                syntax_tree_visitor.RemoveLastError();
+            }
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
                 if (is_op)
@@ -2437,13 +2481,16 @@ namespace PascalABCCompiler.TreeConverter
 
                     //if (funcs[0].is_extension_method)
                     Type fldiResType = null;
-                    if (funcs[0].is_extension_method)
+                    if (syntax_nodes_parameters != null)
                     {
-                        fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
-                    }
-                    else
-                    {
-                        fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        if (funcs[0].is_extension_method)
+                        {
+                            fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        }
+                        else
+                        {
+                            fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        }
                     }
                         // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
 
@@ -2597,7 +2644,25 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }*/
                     }
-
+                }
+                List<function_node> to_remove = new List<function_node>();
+                foreach (function_node fn in funcs)
+                {
+                    if (fn.is_generic_function_instance)
+                    foreach (parameter p in fn.original_function.parameters)
+                    {
+                        if (p.type.is_generic_parameter)
+                        {
+                            to_remove.Add(fn);
+                            break;
+                        }
+                    }
+                }
+                if (set_of_possible_functions.Count - to_remove.Count == 1)
+                {
+                    foreach (function_node fn in to_remove)
+                        set_of_possible_functions.Remove(fn);
+                    return set_of_possible_functions[0];
                 }
             }
 

@@ -81,6 +81,7 @@
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
     File ..\bin\Lib\ABCDatabases.pcu
+    File ..\bin\Lib\PT4Databases.pcu
     File ..\bin\Lib\Arrays.pcu
     ;File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
@@ -129,10 +130,8 @@
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
-    File ..\bin\Lib\OpenCLABCBase.pcu
     File ..\bin\Lib\OpenCLABC.pcu
     File ..\bin\Lib\OpenGL.pcu
-    File ..\bin\Lib\OpenGLABCBase.pcu
     File ..\bin\Lib\OpenGLABC.pcu
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
@@ -151,6 +150,7 @@
     ${AddFile} "ABCHouse.pcu"
     ${AddFile} "ABCObjects.pcu"
     ${AddFile} "ABCDatabases.pcu"
+    ${AddFile} "PT4Databases.pcu"
     ${AddFile} "ABCSprites.pcu"
     ${AddFile} "Arrays.pcu"
     ${AddFile} "BFSystem.pcu"
@@ -202,10 +202,8 @@
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
-    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "OpenGL.pcu"
-    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pcu"
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
@@ -243,6 +241,7 @@
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
     File ..\bin\Lib\ABCDatabases.pas
+    File ..\bin\Lib\PT4Databases.pas
     File ..\bin\Lib\Arrays.pas
     ;File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
@@ -291,10 +290,8 @@
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
-    File ..\bin\Lib\OpenCLABCBase.pas
     File ..\bin\Lib\OpenCLABC.pas
     File ..\bin\Lib\OpenGL.pas
-    File ..\bin\Lib\OpenGLABCBase.pas
     File ..\bin\Lib\OpenGLABC.pas
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
@@ -313,6 +310,7 @@
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
     ${AddFile} "ABCDatabases.pas"
+    ${AddFile} "PT4Databases.pas"
     ${AddFile} "Arrays.pas"
     ;${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
@@ -360,10 +358,8 @@
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
-    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pas"
     ${AddFile} "OpenGL.pas"
-    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pas"
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"

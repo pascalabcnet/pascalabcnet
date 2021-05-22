@@ -32,6 +32,7 @@ NOTASCII [^\x00-x7F]
 
 CHARACTERNUM '[^'\n]'
 INTNUM {Digit}+
+BIGINTNUM {INTNUM}[bB][iI]
 FLOATNUM {INTNUM}\.{INTNUM}
 EXPNUM ({INTNUM}\.)?{INTNUM}[eE][+\-]?{INTNUM}
 STRINGNUM \'([^\'\n]|\'\')*\'
@@ -218,6 +219,8 @@ UNICODEARROW \x890
 "<>"            { yylval = new Union(); yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.tkNotEqual; }
 "^"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Deref); return (int)Tokens.tkDeref; }
 "->"            { yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
+\\[(]           { yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkBackSlashRoundOpen; }
+
 
 \u2192 			{ yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
 
@@ -436,6 +439,14 @@ UNICODEARROW \x890
   yylval.ex = parsertools.create_int_const(yytext,currentLexLocation); 
   return (int)Tokens.tkInteger; 
 }
+
+{BIGINTNUM} { 
+  yylval = new Union();
+  currentLexLocation = CurrentLexLocation;
+  yylval.ex = parsertools.create_bigint_const(yytext,currentLexLocation); 
+  return (int)Tokens.tkBigInteger; 
+}
+
 
 {HEXNUM} { 
   yylval = new Union();

@@ -74,14 +74,37 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        void CheckInteger(expression ex)
+        {
+            if (ex == null)
+                return;
+            var semex = convert_strong(ex);
+            var b = convertion_data_and_alghoritms.can_convert_type(semex, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(ex), "INTEGER_VALUE_EXPECTED");
+        }
+
+        void CheckIntegerOrIndex(expression ex)
+        {
+            var semex = convert_strong(ex);
+            var b = convertion_data_and_alghoritms.can_convert_type(semex, SystemLibrary.SystemLibrary.integer_type);
+            var toIsIndex = (semex is common_constructor_call toCall) &&
+                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                toCall.common_type.PrintableName.Equals("SystemIndex");
+
+            var toIsIndex1 = (semex is compiled_constructor_call toCall1) &&
+                toCall1.compiled_type.compiled_type.FullName.Equals("PABCSystem.SystemIndex");
+
+            if (!b && !toIsIndex && !toIsIndex1)
+            {
+                AddError(get_location(ex), "INTEGER_VALUE_EXPECTED" + semex);
+            }
+        }
+
         void semantic_check_method_call_as_slice_expr(SyntaxTree.method_call mc)
         // нельзя проверять сахарный узел, т.к.могут быть вложенные сахарные expression!!
         {
             var v = (mc.dereferencing_value as dot_node).left;
-            var from = mc.parameters.expressions[1] as expression;
-            var to = mc.parameters.expressions[2] as expression;
-            expression step = mc.parameters.expressions.Count > 3 ? mc.parameters.expressions[3] : null;
-
             var semvar = convert_strong(v);
             if (semvar is typed_expression)
                 semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
@@ -108,34 +131,51 @@ namespace PascalABCCompiler.TreeConverter
             if (IsSlicedType == 0)
                 AddError(get_location(v), "BAD_SLICE_OBJECT");
 
-            var semfrom = convert_strong(from);
-            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
-            var fromIsIndex = (semfrom is common_constructor_call fromCall) &&
-                fromCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
-                fromCall.common_type.PrintableName.Equals("SystemIndex");
-            if (!b && !fromIsIndex)
-                AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
+            var from = mc.parameters.expressions[1];
+            var to = mc.parameters.expressions[2];
+            expression step = mc.parameters.expressions.Count > 3 ? mc.parameters.expressions[3] : null;
 
-            // semantic tree - type special kind
-            // staticSystemLib посмотреть.
-            // SystemIndex - переименовать.
-            var semto = convert_strong(to);
-            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
-            var toIsIndex = (semto is common_constructor_call toCall) &&
-                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
-                toCall.common_type.PrintableName.Equals("SystemIndex");
-            if (!b && !toIsIndex)
-                AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
-
-            if (step != null)
-            {
-                var semstep = convert_strong(step);
-                b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
-                if (!b)
-                    AddError(get_location(step), "INTEGER_VALUE_EXPECTED");
-            }
-
+            CheckIntegerOrIndex(from);
+            CheckIntegerOrIndex(to);
+            CheckInteger(step);
         }
+
+        void semantic_check_method_call_as_slice_expr_multi(SyntaxTree.method_call mc)
+        {
+            var v = (mc.dereferencing_value as dot_node).left;
+
+            var semvar = convert_strong(v);
+            if (semvar is typed_expression)
+                semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
+
+            if (semvar.type.type_special_kind != SemanticTree.type_special_kind.array_kind)
+                AddError(semvar.location, "SLICES_MULTI_DIMENSIONAL_ARRAY_EXPECTED");
+
+            // Теперь с размерностями разберёмся
+            int rank = 0;
+            if (semvar.type is compiled_type_node)
+                rank = (semvar.type as compiled_type_node).rank;
+            else if (semvar.type is common_type_node)
+                rank = (semvar.type as common_type_node).rank;
+            if (rank != mc.parameters.Count)
+                AddError(semvar.location, "NUMBER_OF_SLICES_IN_MULTIDIMENSIONAL_ARRAY_SHOULD_BE_EQUAL_TO_ARRAY_RANK");
+
+            foreach (var param in mc.parameters.expressions)
+            {
+                var p = param as method_call; // Tuple.Create
+                if (p == null)
+                    AddError(semvar.location, "_Compiler_error_param_must_be_Tuple");
+
+                var from = p.parameters.expressions[0];
+                var to = p.parameters.expressions[1];
+                var step = p.parameters.expressions[2];
+
+                CheckIntegerOrIndex(from);
+                CheckIntegerOrIndex(to);
+                CheckInteger(step);
+            }
+        }
+
         /*void semantic_check_tuple(SyntaxTree.tuple_node tup)
         {
             //if (tup.el.expressions.Count > 7) 
@@ -152,7 +192,7 @@ namespace PascalABCCompiler.TreeConverter
                 t = ctn1.compiled_type;
             if (av.type.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 return;
-            if (!av.type.is_class && !av.type.IsInterface && !(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)))
+            if (!av.type.is_class && !av.type.IsInterface && !(t != null && t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)) && !av.type.is_generic_parameter)
                 AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
         }
 

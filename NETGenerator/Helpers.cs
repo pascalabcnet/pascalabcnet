@@ -657,6 +657,8 @@ namespace PascalABCCompiler.NETGenerator {
 
         public object GetConstantForExpression(IExpressionNode expr)
         {
+            if (expr is PascalABCCompiler.TreeRealization.null_const_node) // SSM 20/04/21
+                return expr;
             if (expr is IConstantNode)
                 return (expr as IConstantNode).value;
             return null;

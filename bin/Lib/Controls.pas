@@ -107,10 +107,12 @@ type
       SetFSzPP(Self.p,value);
     end;
   public 
-    constructor Create(wh: real := 150; d: Dock := Dock.Left; c: Color := PanelsColor; internalMargin: real := 10);
+    constructor Create(wh: real; d: Dock; c: Color; internalMargin: real);
     begin
       Invoke(CreateP,wh,d,c,internalMargin);
     end;
+    constructor Create(wh: real; d: Dock; c: Color) := Create(wh,d,c,10);
+    constructor Create(wh: real := 150; d: Dock := Dock.Left) := Create(wh,d,PanelsColor,10);
     /// Цвет
     property Color: GColor read Invoke&<GColor>(GetColorP) write Invoke(SetColorP, value);
     /// Ширина внутренней границы
@@ -128,19 +130,23 @@ type
   /// Класс левой панели
   LeftPanelWPF = class(PanelWPF)
   public
-    constructor Create(width: real := 150; c: GColor := PanelsColor; internalMargin: real := 10);
+    constructor Create(width: real; c: GColor; internalMargin: real);
     begin
       inherited Create(width, Dock.Left,c,internalMargin)
     end;
+    constructor Create(width: real; c: GColor) := Create(width,c,10);
+    constructor Create(width: real := 150) := Create(width,PanelsColor,10);
   end;
 
   /// Класс правой панели
   RightPanelWPF = class(PanelWPF)
   public
-    constructor Create(width: real := 150; c: GColor := PanelsColor; internalMargin: real := 10);
+    constructor Create(width: real; c: GColor; internalMargin: real);
     begin
       inherited Create(width, Dock.Right,c,internalMargin)
     end;
+    constructor Create(width: real; c: GColor) := Create(width,c,10);
+    constructor Create(width: real := 150) := Create(width,PanelsColor,10);
   end;
 
   ///!#
@@ -1221,9 +1227,13 @@ function OpenFileDialog(initDirectory: string := ''; filter: string := ''): Open
 function SaveFileDialog(initDirectory: string := ''; filter: string := ''): SaveFileDialogWPF;
 
 /// Элемент управления "Левая панель"
-function LeftPanel(width: real := 150; c: Color := PanelsColor; InternalMargin: real := 10): PanelWPF;
+function LeftPanel(width: real; c: Color; InternalMargin: real := 10): PanelWPF;
+/// Элемент управления "Левая панель"
+function LeftPanel(width: real := 150): PanelWPF;
 /// Элемент управления "Правая панель"
-function RightPanel(width: real := 150; c: Color := PanelsColor; InternalMargin: real := 10): PanelWPF;
+function RightPanel(width: real; c: Color; InternalMargin: real := 10): PanelWPF;
+/// Элемент управления "Правая панель"
+function RightPanel(width: real := 150): PanelWPF;
 
 /// Элемент управления "Строка статуса"
 function StatusBar(height: real := 24; itemWidth: real := 0): StatusBarWPF;
@@ -1238,6 +1248,11 @@ procedure SetActivePanel(p: PanelWPF);
 
 /// Графическое окно
 //function Window: WindowType;
+
+///--
+procedure __InitModule__;
+///--
+procedure __FinalizeModule__;
 
 implementation
 
@@ -1318,7 +1333,11 @@ function OpenFileDialog(initDirectory: string; filter: string) := new OpenFileDi
 function SaveFileDialog(initDirectory: string; filter: string) := new SaveFileDialogWPF(initDirectory,filter);
 
 function LeftPanel(width: real; c: Color; internalMargin: real) := new LeftPanelWPF(width,c,internalMargin);
+function LeftPanel(width: real): PanelWPF := new LeftPanelWPF(width,PanelsColor,10);
+
 function RightPanel(width: real; c: Color; internalMargin: real) := new RightPanelWPF(width,c,internalMargin);
+function RightPanel(width: real): PanelWPF := new RightPanelWPF(width,PanelsColor,10);
+
 
 function StatusBar(height: real; itemWidth: real): StatusBarWPF := new StatusBarWPF(height,itemWidth);
 
@@ -1391,6 +1410,33 @@ begin
   Result := _ActivePanel;
 end;
 
+var
+  ///--
+  __initialized := false;
+
+var
+  ///--
+  __finalized := false;
+
+///--
+procedure __InitModule__;
+begin
+  if not __initialized then
+  begin
+    __initialized := true;
+    
+  end;
+end;
+
+///--
+procedure __FinalizeModule__;
+begin
+  if not __finalized then
+  begin
+    __finalized := true;
+  end;
+end;
+  
 initialization
 finalization  
 end.

@@ -8,7 +8,7 @@ namespace PascalABCCompiler
 {
     public class ConsoleCompilerConstants
     {
-        public const int MaxProcessMemoryMB = 150;
+        public const int MaxProcessMemoryMB = 500;
         
         public const string DataSeparator = "]\r\n[";
         //public const string MessageSeparator = "***";

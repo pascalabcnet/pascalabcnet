@@ -1534,6 +1534,24 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_semantic_ith_element_of">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(semantic_ith_element_of _semantic_ith_element_of);
+		///<summary>
+		///Method to visit bigint_const.
+		///</summary>
+		///<param name="_bigint_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(bigint_const _bigint_const);
+		///<summary>
+		///Method to visit foreach_stmt_formatting.
+		///</summary>
+		///<param name="_foreach_stmt_formatting">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(foreach_stmt_formatting _foreach_stmt_formatting);
+		///<summary>
+		///Method to visit property_ident.
+		///</summary>
+		///<param name="_property_ident">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(property_ident _property_ident);
 	}
 
 

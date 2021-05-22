@@ -60,10 +60,8 @@ begin
     for var i:=Objects.Count-1 downto 0 do
     begin
       var o := Objects[i];
-      if (o.Center.X < 0) or (o.Center.X > Window.Width) or
-         (o.Center.Y < 0) or (o.Center.Y > Window.Height) then
-        if not (o is PlayerWPF) then 
-          o.Destroy;   
+      if o.OutOfGraphWindow and not (o is PlayerWPF) then 
+        o.Destroy;   
       if o is BulletWPF then
         foreach var x in o.IntersectionList do
           if x is MonsterWPF then
@@ -78,12 +76,11 @@ begin
   
   CreateTimerAndStart(1000,procedure -> // Таймер рождения монстров
   begin
-    var x := Random(2)=0 ? 750 : 50;
+    var x := if Random(2)=0 then 750 else 50;
     var m := new MonsterWPF(x,Random(10,550),30,RandomColor);
     m.Velocity := 50;
   end);
   
-
   OnKeyDown := k ->
   begin
     case k of
@@ -93,6 +90,7 @@ begin
       Key.d,Key.Right: begin kr := true; kl := false end;
     end;  
   end;
+
   OnKeyUp := k ->
   begin
     case k of

@@ -278,7 +278,12 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     if (tn.is_generic_parameter)
                     {
-                        return (tn.is_class || tn.base_type != SystemLibrary.SystemLibrary.object_type && tn.base_type.is_class);
+                        if (tn.is_class)
+                            return true;
+                        if (tn.base_type.is_value || tn.is_value_type)
+                            return false;
+                        return true;
+                        //return (tn.is_class || tn.base_type != SystemLibrary.SystemLibrary.object_type && tn.base_type.is_class);
                     }
                     else if (tn is ref_type_node)
                     {
@@ -537,7 +542,26 @@ namespace PascalABCCompiler.TreeRealization
                 type_node tnode = derived_class;
                 while (!implements && tnode != null && tnode.ImplementingInterfaces != null)
                 {
-                    implements = tnode.ImplementingInterfaces.Contains(base_class);
+                    //implements = tnode.ImplementingInterfaces.Contains(base_class);
+
+                    implements = false;
+                    foreach (var interf in tnode.ImplementingInterfaces)
+                    {
+                        if (interf == base_class)
+                        {
+                            implements = true;
+                            break;
+                        }
+                        else if (interf is compiled_type_node ictn && base_class is compiled_type_node bctn)
+                        {
+                            if (ictn.compiled_type.AssemblyQualifiedName != null &&  ictn.compiled_type.AssemblyQualifiedName == bctn.compiled_type.AssemblyQualifiedName)
+                            {
+                                implements = true;
+                                break;
+                            }
+                        }
+                    }
+
                     tnode = tnode.base_type;
                 }
                 return implements;
@@ -846,6 +870,8 @@ namespace PascalABCCompiler.TreeRealization
             if (left.type_special_kind == SemanticTree.type_special_kind.set_type && right == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info
                 || right.type_special_kind == SemanticTree.type_special_kind.set_type && left == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info)
                 return true;
+            if (left is ref_type_node && right is ref_type_node)
+                return is_type_or_original_generics_equal((left as ref_type_node).pointed_type, (right as ref_type_node).pointed_type);
             return left == right;
         }
 

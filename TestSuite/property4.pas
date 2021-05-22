@@ -1,3 +1,4 @@
+//winonly
 {$reference 'PresentationFramework.dll'}
 {$reference 'WindowsBase.dll'}
 {$reference 'PresentationCore.dll'}

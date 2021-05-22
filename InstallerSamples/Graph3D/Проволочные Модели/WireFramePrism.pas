@@ -1,6 +1,7 @@
 ﻿uses Graph3D;
 
 begin
+  HideObjects;
   var p := PrismWireFrame(Origin,13,3,5);
   var pp := p.Points;
   foreach var x in pp do
@@ -13,6 +14,7 @@ begin
     Inc(m);
   end;
   var p1 := p.Clone;
-  p1.MoveOnX(-5);
+  p1.MoveByX(-5);
+  ShowObjects;
   p1.AnimRotate(OrtZ,360,10).Forever.Begin;
 end.

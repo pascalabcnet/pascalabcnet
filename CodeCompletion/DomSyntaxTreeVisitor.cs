@@ -2414,7 +2414,7 @@ namespace CodeCompletion
 
         public string FindPCUFileName(string UnitName)
         {
-        	return CodeCompletionController.comp.FindPCUFileNameWithoutSources(UnitName,System.IO.Path.GetDirectoryName(doc.file_name));
+        	return CodeCompletionController.comp.FindPCUFileName(UnitName,System.IO.Path.GetDirectoryName(doc.file_name), out _);
         }
         
 		private void add_system_unit()
@@ -2612,20 +2612,9 @@ namespace CodeCompletion
                             NamespaceScope ns_scope = null;
                             if (i == 0)
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                {
-                                    string unit_in_file = (s as uses_unit_in).in_file.Value;
-                                    string unit_in_dir = null;
-                                    if (Path.IsPathRooted(unit_in_file))
-                                        unit_in_dir = Path.GetDirectoryName(unit_in_file);
-                                    else
-                                        unit_in_dir = Path.Combine(Path.GetDirectoryName(_program_module.file_name),Path.GetDirectoryName(unit_in_file));
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(Path.GetFileNameWithoutExtension(unit_in_file), unit_in_dir);
-                                }
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_program_module.file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(_program_module.file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -2736,10 +2725,16 @@ namespace CodeCompletion
                 }
             if (cur_scope != null && _program_module.program_block.program_code != null)
             {
-                var left_line_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num;
-                var left_column_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num;
+                var left_line_num = _program_module.program_block.program_code.left_logical_bracket.source_context != null ? _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num : 1;
+                var left_column_num = _program_module.program_block.program_code.left_logical_bracket.source_context != null ? _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num : 1;
                 var right_line_num = _program_module.program_block.program_code.source_context.end_position.line_num;
                 var right_column_num = _program_module.program_block.program_code.source_context.end_position.column_num;
+                if (_program_module.program_block.program_code.right_logical_bracket == null || _program_module.program_block.program_code.right_logical_bracket.source_context == null)
+                {
+                    right_line_num += 2;
+                    _program_module.program_block.program_code.source_context = new SourceContext(_program_module.program_block.program_code.source_context.begin_position.line_num,
+                               _program_module.program_block.program_code.source_context.begin_position.column_num, right_line_num, right_column_num);
+                }
                 cur_scope.body_loc = new location(left_line_num,
                                                   left_column_num,
                                                   right_line_num, right_column_num,
@@ -2920,6 +2915,13 @@ namespace CodeCompletion
                                     return;
                                 }
 
+                            }
+                            else if (returned_scope is ProcScope)
+                            {
+                                method_call mc = new method_call(_dot_node, new expression_list());
+                                search_all = true;
+                                mc.visit(this);
+                                return;
                             }
                         }
                         
@@ -4357,20 +4359,9 @@ namespace CodeCompletion
                         {
                             try
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                {
-                                    string unit_in_file = (s as uses_unit_in).in_file.Value;
-                                    string unit_in_dir = null;
-                                    if (Path.IsPathRooted(unit_in_file))
-                                        unit_in_dir = Path.GetDirectoryName(unit_in_file);
-                                    else
-                                        unit_in_dir = Path.Combine(Path.GetDirectoryName(this.cur_unit_file_name),Path.GetDirectoryName(unit_in_file));
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(Path.GetFileNameWithoutExtension(unit_in_file), unit_in_dir);
-                                }
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(this.cur_unit_file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -4490,12 +4481,9 @@ namespace CodeCompletion
                         {
                             try
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                    unit_name = (s as uses_unit_in).in_file.Value;
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(this.cur_unit_file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                        && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -5149,7 +5137,7 @@ namespace CodeCompletion
                                 }
                                 else
                                 {
-                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str);
+                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.file_name), out _);
                                     if (unit_name == null)
                                     {
                                         unit_name = Path.Combine(System.IO.Path.GetDirectoryName(_c_module.file_name), str) + System.IO.Path.GetExtension(_c_module.file_name);
@@ -5611,6 +5599,18 @@ namespace CodeCompletion
             returned_scope = new ArrayScope(element_type,null);
 
             cnst_val.prim_val = null;
+        }
+
+        public override void visit(bigint_const bi)
+        {
+            /*method_call mc = new method_call();
+            mc.parameters = new expression_list(new uint64_const(bi.val, bi.source_context),bi.source_context);
+            mc.dereferencing_value = new dot_node(new ident("System"), new ident("Numerics"), new ident("BigInteger"), new ident("Create"));
+            mc.visit(this);*/
+            var names = new List<ident> { new ident("System"), new ident("Numerics"), new ident("BigInteger") };
+            var ntr = new named_type_reference(names, bi.source_context);
+            var ne = new new_expr(ntr, new expression_list(new uint64_const(bi.val)), bi.source_context);
+            ne.visit(this);
         }
     }
 }

@@ -2,6 +2,7 @@
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
 using TreeConverter.LambdaExpressions;
+using System.Linq;
 using for_node = PascalABCCompiler.SyntaxTree.for_node;
 
 namespace PascalABCCompiler.TreeConverter
@@ -70,6 +71,34 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 
+        public void semantic_check_extended_foreach(ident_list vars, type_node elem_type, location inwhatloc)
+        {
+            var t = ConvertSemanticTypeNodeToNETType(elem_type);
+            if (t == null)
+                AddError(inwhatloc, "TUPLE_OR_SEQUENCE_EXPECTED_FOREACH");
+
+            var IsTuple = false;
+            var IsSequence = false;
+            if (t.FullName.StartsWith("System.Tuple"))
+                IsTuple = true;
+            if (!IsTuple)
+            {
+                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
+                    IsSequence = true;
+            }
+            if (!IsTuple && !IsSequence)
+            {
+                AddError(inwhatloc, "TUPLE_OR_SEQUENCE_EXPECTED_FOREACH");
+            }
+
+            if (IsTuple)
+            {
+                var n = vars.idents.Count();
+                if (n > t.GetGenericArguments().Count())
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            }
+        }
+
 
         private void ForeachCheckAndConvert(foreach_stmt _foreach_stmt, out expression_node foreachCollection,
             out var_definition_node foreachVariable)
@@ -90,6 +119,12 @@ namespace PascalABCCompiler.TreeConverter
             type_node elem_type = null;
             if (!FindIEnumerableElementType(foreachCollection.type, ref elem_type, out sys_coll_ienum))
                 AddError(foreachCollection.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", foreachCollection.type.name);
+
+            var vars = _foreach_stmt.ext as ident_list;
+            if (vars != null)
+            {
+                semantic_check_extended_foreach(vars, elem_type, foreachCollection.location);
+            }
 
             CheckToEmbeddedStatementCannotBeADeclaration(_foreach_stmt.stmt);
 
@@ -126,8 +161,10 @@ namespace PascalABCCompiler.TreeConverter
                     check_for_type_allowed(tn, get_location(_foreach_stmt.type_name));
                     check_using_static_class(tn, get_location(_foreach_stmt.type_name));
                 }
-
-                context.close_var_definition_list(tn, null);
+                if (tn.is_value_type && !tn.is_standard_type)
+                    context.close_var_definition_list(tn, new default_operator_node(tn, foreachVariable.location));
+                else
+                    context.close_var_definition_list(tn, null);
             }
 
             if (/*!(foreachVariable.type is compiled_generic_instance_type_node) &&*/ !sys_coll_ienum) // SSM 16.09.18 - закомментировал это ограничение для фиксации бага #1184

@@ -48,7 +48,7 @@ namespace CodeCompletion
         {
             try
             {
-                string[] files = Directory.GetFiles(CodeCompletionController.comp.CompilerOptions.SearchDirectory, "*.pas");
+                string[] files = Directory.GetFiles(Path.Combine(CodeCompletionController.comp.CompilerOptions.SystemDirectory, "Lib"), "*.pas");
                 standard_units = new SymInfo[files.Length];
                 int i = 0;
                 foreach (string s in files)

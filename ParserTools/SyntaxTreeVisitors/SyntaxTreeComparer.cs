@@ -143,7 +143,7 @@ namespace PascalABCCompiler.SyntaxTree
                 CompareInternal(left.expr, right.expr);
             }
         }
-        
+
         public void CompareInternal(assign_var_tuple left, assign_var_tuple right)
         {
             if (left == null && right != null || left != null && right == null)
@@ -154,7 +154,7 @@ namespace PascalABCCompiler.SyntaxTree
                 CompareInternal(left.expr, right.expr);
             }
         }
-        
+
         public void CompareInternal(loop_stmt left, loop_stmt right)
         {
             if (left == null && right != null || left != null && right == null)
@@ -452,7 +452,7 @@ namespace PascalABCCompiler.SyntaxTree
                 throw_not_equal(left, right);
             if (left != null && right != null)
             {
-                
+
             }
         }
 
@@ -544,7 +544,7 @@ namespace PascalABCCompiler.SyntaxTree
                 throw_not_equal(left, right);
             if (left != null && right != null)
             {
-               
+
             }
         }
 
@@ -716,6 +716,10 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as dot_question_node, right as dot_question_node);
                 else if (left is double_question_node)
                     CompareInternal(left as double_question_node, right as double_question_node);
+                else if (left is bigint_const)
+                    CompareInternal(left as bigint_const, right as bigint_const);
+                else if (left is array_const_new)
+                    CompareInternal(left as array_const_new, right as array_const_new);
                 else
                     throw new NotImplementedException(left.GetType().ToString());
 
@@ -1022,7 +1026,7 @@ namespace PascalABCCompiler.SyntaxTree
                 throw_not_equal(left, right);
             if (left != null && right != null)
             {
-                
+
             }
         }
 
@@ -1435,7 +1439,7 @@ namespace PascalABCCompiler.SyntaxTree
                 throw_not_equal(left, right);
             if (left != null && right != null)
             {
-               
+
             }
         }
 
@@ -1711,6 +1715,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as assign_tuple, right as assign_tuple);
                 else if (left is assign_var_tuple)
                     CompareInternal(left as assign_var_tuple, right as assign_var_tuple);
+                else if (left is match_with)
+                    CompareInternal(left as match_with, right as match_with);
                 //else if (left is expression) // SSM 12/06/15
                 //    CompareInternal(left as expression, right as expression);
 
@@ -1951,7 +1957,7 @@ namespace PascalABCCompiler.SyntaxTree
                 throw_not_equal(left, right);
             if (left != null && right != null)
             {
-                
+
             }
         }
 
@@ -2366,7 +2372,7 @@ namespace PascalABCCompiler.SyntaxTree
                 CompareInternal(left.if_false, right.if_false);
             }
         }
-        
+
         public void CompareInternal(dot_question_node left, dot_question_node right)
         {
             if (left == null && right != null || left != null && right == null)
@@ -2377,7 +2383,7 @@ namespace PascalABCCompiler.SyntaxTree
                 CompareInternal(left.right, right.right);
             }
         }
-        
+
         public void CompareInternal(double_question_node left, double_question_node right)
         {
             if (left == null && right != null || left != null && right == null)
@@ -2386,6 +2392,90 @@ namespace PascalABCCompiler.SyntaxTree
             {
                 CompareInternal(left.left, right.left);
                 CompareInternal(left.right, right.right);
+            }
+        }
+
+        public void CompareInternal(property_ident left, property_ident right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                if (left.ln != null && right.ln == null)
+                    throw_not_equal(left, right);
+                if (left.ln == null && right.ln != null)
+                    throw_not_equal(left, right);
+                if (left.ln != null && right.ln != null)
+                {
+                    if (left.ln.Count != right.ln.Count)
+                        throw_not_equal(left, right);
+                    for (int i = 0; i < left.ln.Count; i++)
+                    {
+                        CompareInternal(left.ln[i], right.ln[i]);
+                    }
+                }
+                if (string.Compare(left.name, right.name, true) != 0)
+                    throw_not_equal(left, right);
+            }
+        }
+
+        public void CompareInternal(bigint_const left, bigint_const right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                if (left.val != right.val)
+                    throw_not_equal(left, right);
+            }
+        }
+
+        public void CompareInternal(match_with left, match_with right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.expr, right.expr);
+                CompareInternal(left.defaultAction, right.defaultAction);
+                CompareInternal(left.case_list, right.case_list);
+            }
+        }
+
+        public void CompareInternal(pattern_cases left, pattern_cases right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                if (left.Count != right.Count)
+                    throw_not_equal(left, right);
+                for (int i = 0; i < left.Count; i++)
+                    CompareInternal(left.elements[i], right.elements[i]);
+            }
+        }
+
+        public void CompareInternal(pattern_case left, pattern_case right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.case_action, right.case_action);
+                CompareInternal(left.condition, right.condition);
+            }
+        }
+
+        public void CompareInternal(array_const_new left, array_const_new right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                if (left.elements.Count != right.elements.Count)
+                    throw_not_equal(left, right);
+                for (int i = 0; i < left.elements.Count; i++)
+                    CompareInternal(left.elements.expressions[i], right.elements.expressions[i]);
             }
         }
     }

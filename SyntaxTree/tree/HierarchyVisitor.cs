@@ -2045,6 +2045,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(bigint_const _bigint_const)
+		{
+		}
+
+		public virtual void post_do_visit(bigint_const _bigint_const)
+		{
+		}
+
+		public virtual void pre_do_visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+		}
+
+		public virtual void post_do_visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+		}
+
+		public virtual void pre_do_visit(property_ident _property_ident)
+		{
+		}
+
+		public virtual void post_do_visit(property_ident _property_ident)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4222,6 +4246,32 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(semantic_ith_element_of.id);
 			visit(semantic_ith_element_of.index);
 			post_do_visit(_semantic_ith_element_of);
+		}
+
+		public override void visit(bigint_const _bigint_const)
+		{
+			DefaultVisit(_bigint_const);
+			pre_do_visit(_bigint_const);
+			post_do_visit(_bigint_const);
+		}
+
+		public override void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			DefaultVisit(_foreach_stmt_formatting);
+			pre_do_visit(_foreach_stmt_formatting);
+			visit(foreach_stmt_formatting.il);
+			visit(foreach_stmt_formatting.in_what);
+			visit(foreach_stmt_formatting.stmt);
+			post_do_visit(_foreach_stmt_formatting);
+		}
+
+		public override void visit(property_ident _property_ident)
+		{
+			DefaultVisit(_property_ident);
+			pre_do_visit(_property_ident);
+			for (int i = 0; i < ln.Count; i++)
+				visit(property_ident.ln[i]);
+			post_do_visit(_property_ident);
 		}
 	}
 

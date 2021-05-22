@@ -39,6 +39,15 @@ namespace SyntaxVisitors.SugarVisitors
             DefaultVisit(ne);
         }
 
+        public override void visit(labeled_statement ls)
+        {
+            var sl = new List<statement>();
+            sl.Add(new labeled_statement(ls.label_name, new empty_statement(), ls.source_context));
+            sl.Add(ls.to_statement);
+            ReplaceStatementUsingParent(ls, sl);
+            ProcessNode(ls.to_statement);
+        }
+
         public override void visit(assign_var_tuple assvartup)
         {
             if (assvartup.expr is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))

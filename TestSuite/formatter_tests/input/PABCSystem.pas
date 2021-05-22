@@ -67,6 +67,9 @@ const
   /// Константа перехода на новую строку
   /// !! The newline string defined for this environment.
   NewLine = System.Environment.NewLine;
+  /// Константа - символы-разделители слов
+  /// !! symbols - word delimiters
+  AllDelimiters = ' <>=^`|~$№§!"#%&''()*,+-./:;?@[\]_{}«­·»'#9#10#13;
 //{{{--doc: Конец секции стандартных констант для документации }}} 
 
 
@@ -253,6 +256,12 @@ type
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
+  /// Указывает на возможность сериализации класса
+  Serializable = System.SerializableAttribute;
+  
+  /// Указывает, что поле сериализуемого класса не должно быть сериализовано
+  NonSerialized = System.NonSerializedAttribute;
+
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
@@ -492,6 +501,7 @@ type
     function ToString: string; override;
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
+    //class function operator implicit<T>(a: array of T): TypedSet;
     function Count: integer := ht.Count;
     procedure Print(delim: string := ' ');
     procedure Println(delim: string := ' ');
@@ -585,6 +595,10 @@ type
     function ReadReal: real;
     /// Считывает строку из бестипового файла
     function ReadString: string;
+    /// Сериализует объект в файл (объект должен иметь атрибут [Serializable])
+    procedure Serialize(obj: object);
+    /// Десериализует объект из файла 
+    function Deserialize: object;
   end;
   
 type 
@@ -606,13 +620,13 @@ type
     end;
     property Low: integer read l;
     property High: integer read h;
-    property Count: integer read GetCount;
+    //property Count: integer read GetCount;
 
     static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator in(x: real; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: IntRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
-    
-    function IsEmpty: boolean := l<=h;
+    /// Возвращает True если диапазон пуст
+    function IsEmpty: boolean := l>h;
 
     function Step(n: integer): sequence of integer;
     function Reverse: sequence of integer;
@@ -627,7 +641,7 @@ type
       Result := (l = r2.l) and (h = r2.h);
     end;
     function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
-    function ToArray: array of integer;
+    {function ToArray: array of integer;
     begin
       Result := new integer[Count];
       var x := l;
@@ -639,25 +653,25 @@ type
     end;
     function ToList: List<integer>;
     begin
-      Result := new List<integer>;
+      Result := new List<integer>(Count);
       var x := l;
       loop Count do
       begin
         Result.Add(x);
         x += 1;
       end;  
-    end;
+    end;}
     function ToLinkedList: LinkedList<integer>;
     begin
-      Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
     function ToHashSet: HashSet<integer>;
     begin
-      Result := new HashSet<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new HashSet<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
     function ToSortedSet: SortedSet<integer>;
     begin
-      Result := new SortedSet<integer>(System.Linq.Enumerable.Range(l,Count));
+      Result := new SortedSet<integer>(System.Linq.Enumerable.Range(l,GetCount));
     end;
   end;
 
@@ -679,12 +693,13 @@ type
     end;
     property Low: char read l;
     property High: char read h;
-    property Count: integer read GetCount;
+    //property Count: integer read GetCount;
 
     static function operator in(x: char; r: CharRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
     
-    function IsEmpty: boolean := l<=h;
+    /// Возвращает True если диапазон пуст
+    function IsEmpty: boolean := l>h;
 
     function Step(n: integer): sequence of char;
     function Reverse: sequence of char;
@@ -700,7 +715,7 @@ type
     end;
     function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
     
-    function ToArray: array of char;
+    {function ToArray: array of char;
     begin
       Result := new char[Count];
       var x := l;
@@ -719,18 +734,18 @@ type
         Result.Add(x);
         x := char(integer(x) + 1);
       end;  
-    end;
+    end;}
     function ToLinkedList: LinkedList<char>;
     begin
-      Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
     function ToHashSet: HashSet<char>;
     begin
-      Result := new HashSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new HashSet<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
     function ToSortedSet: SortedSet<char>;
     begin
-      Result := new SortedSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+      Result := new SortedSet<char>(System.Linq.Enumerable.Range(integer(l),GetCount).Select(i -> char(i)));
     end;
   end;
   
@@ -750,7 +765,8 @@ type
     static function operator in(x: real; r: RealRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: RealRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
     
-    function IsEmpty: boolean := l<=h;
+    /// Возвращает True если диапазон пуст
+    function IsEmpty: boolean := l>h;
 
     function ToString: string; override := $'{l}..{h}';
     function Equals(o: Object): boolean; override;
@@ -1182,6 +1198,12 @@ procedure Println(params args: array of object);
 /// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел и переходит на новую строку
 procedure Println(f: Text; params args: array of object);
 
+/// Сериализует объект в файл (объект должен иметь атрибут [Serializable])
+procedure Serialize(filename: string; obj: object);
+/// Десериализует объект из файла 
+function Deserialize(filename: string): object;
+
+
 // -----------------------------------------------------
 //>>     Общие подпрограммы для работы с файлами # Common subroutines for files
 // -----------------------------------------------------
@@ -1401,7 +1423,7 @@ procedure RmDir(s: string);
 /// Создает каталог. Возвращает True, если каталог успешно создан
 function CreateDir(s: string): boolean;
 /// Удаляет файл. Если файл не может быть удален, то возвращает False
-function DeleteFile(s: string): boolean;
+function DeleteFile(fname: string): boolean;
 /// Возвращает текущий каталог
 function GetCurrentDir: string;
 /// Удаляет каталог. Возвращает True, если каталог успешно удален
@@ -1862,10 +1884,10 @@ function Length(s: string): integer;
 procedure SetLength(var s: string; n: integer);
 ///--
 procedure SetLengthForShortString(var s: string; n, sz: integer);
-/// Вставляет подстроку source в строку s с позиции index
-procedure Insert(source: string; var s: string; index: integer);
+/// Вставляет подстроку subs в строку s с позиции index
+procedure Insert(subs: string; var s: string; index: integer);
 ///--
-procedure InsertInShortString(source: string; var s: string; index, n: integer);
+procedure InsertInShortString(subs: string; var s: string; index, n: integer);
 /// Удаляет из строки s count символов с позиции index
 procedure Delete(var s: string; index, count: integer);
 /// Возвращает подстроку строки s длины count с позиции index
@@ -2130,6 +2152,9 @@ function MatrEqual<T>(a, b: array [,] of T): boolean;
 /// Перемешивает список случайным образом
 procedure Shuffle<T>(l: List<T>);
 
+/// Возвращает следующую перестановку в массиве 
+function NextPermutation(a: array of integer): boolean;
+
 
 // -----------------------------------------------------
 //>>     Подпрограммы для генерации последовательностей # Subroutines for sequence generation
@@ -2138,6 +2163,10 @@ procedure Shuffle<T>(l: List<T>);
 function Range(a, b: integer): sequence of integer;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
+/// Возвращает последовательность длинных целых от a до b
+function Range(a, b: BigInteger): sequence of BigInteger;
+/// Возвращает последовательность длинных целых от a до b с шагом step
+function Range(a, b, step: BigInteger): sequence of BigInteger;
 /// Возвращает последовательность символов от c1 до c2
 function Range(c1, c2: char): sequence of char;
 /// Возвращает последовательность символов от c1 до c2 с шагом step
@@ -2744,6 +2773,9 @@ function InternalRange(l,r: real): RealRange;
   
 ///--
 function IsInputPipedOrRedirectedFromFile: boolean;
+
+///--
+function CheckAndCorrectFromToAndCalcCountForSystemSlice(situation: integer; Len: integer; var from, &to: integer; step: integer): integer;
   
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
@@ -2810,6 +2842,9 @@ function WINAPI_AllocConsole: longword; external 'kernel32.dll' name 'AllocConso
 
 var
   console_alloc: boolean := false;
+  
+type 
+  BinaryFormatter = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
 
 // -----------------------------------------------------
 //                  Internal functions
@@ -3365,6 +3400,17 @@ begin
   end;
   Result := ts; 
 end;
+
+///--
+{class function TypedSet.operator implicit<T>(a: array of T): TypedSet;
+begin
+  var ts := new TypedSet();
+  foreach key: T in a do
+  begin
+    ts.ht[key] := key;  
+  end;
+  Result := ts; 
+end;}
 
 ///--
 function TypedSet.ToString: string;
@@ -4029,20 +4075,25 @@ function CharRange.Reverse: sequence of char := Range(l,h).Reverse;
 //------------------------------------------------------------------------------
 //          Операции для string и char
 //------------------------------------------------------------------------------
+///--
 procedure string.operator+=(var left: string; right: string);
 begin
   left := left + right;
 end;
 
+///--
 function string.operator<(left, right: string) := string.CompareOrdinal(left, right) < 0;
 
+///--
 function string.operator<=(left, right: string) := string.CompareOrdinal(left, right) <= 0;
 
+///--
 function string.operator>(left, right: string) := string.CompareOrdinal(left, right) > 0;
 
+///--
 function string.operator>=(left, right: string) := string.CompareOrdinal(left, right) >= 0;
 
-/// Повторяет строку str n раз
+///--
 function string.operator*(str: string; n: integer): string;
 begin
   var sb := new StringBuilder;
@@ -4051,7 +4102,7 @@ begin
   Result := sb.ToString;
 end;
 
-/// Повторяет строку str n раз
+///--
 function string.operator*(n: integer; str: string): string;
 begin
   var sb := new StringBuilder;
@@ -4060,7 +4111,7 @@ begin
   Result := sb.ToString;
 end;
 
-/// Повторяет символ c n раз
+///--
 function char.operator*(c: char; n: integer): string;
 begin
   if n <= 0 then
@@ -4074,7 +4125,7 @@ begin
   Result := sb.ToString;
 end;
 
-/// Повторяет символ c n раз
+///--
 function char.operator*(n: integer; c: char): string;
 begin
   if n <= 0 then
@@ -4088,18 +4139,23 @@ begin
   Result := sb.ToString;
 end;
 
-/// Добавляет к строке str строковое представление числа n
+// Добавляет к строке str строковое представление числа n
+///--
 function string.operator+(str: string; n: integer) := str + n.ToString;
 
-/// Добавляет к строке str строковое представление числа n
+// Добавляет к строке str строковое представление числа n
+///--
 function string.operator+(n: integer; str: string) := n.ToString + str;
 
-/// Добавляет к строке str строковое представление числа r
+// Добавляет к строке str строковое представление числа r
+///--
 function string.operator+(str: string; r: real) := str + r.ToString(nfi);
 
-/// Добавляет к строке str строковое представление числа r
+// Добавляет к строке str строковое представление числа r
+///--
 function string.operator+(r: real; str: string) := r.ToString(nfi) + str;
 
+///--
 procedure string.operator+=(var left: string; right: integer);
 begin
   left := left + right.ToString;
@@ -4542,7 +4598,7 @@ begin
   else Result := System.Linq.Enumerable.Range(a, b - a + 1);
 end;
 
-function Range(a, b: real; n: integer): sequence of real;
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
     raise new System.ArgumentException('Range: n=0');
@@ -4567,10 +4623,25 @@ begin
   Result := Range(integer(c1), integer(c2), step).Select(x -> Chr(x));
 end;
 
-function PartitionPoints(a, b: real; n: integer): sequence of real;
+function Range(a, b, step: BigInteger): sequence of BigInteger;
 begin
-  Result := Range(a, b, n)
+  if step = 0 then
+    raise new System.ArgumentException('step=0');
+  if step > 0 then
+    while a<=b do
+    begin
+      yield a;
+      a += step;
+    end
+  else  
+    while a>=b do
+    begin
+      yield a;
+      a += step;
+    end
 end;
+
+function Range(a, b: BigInteger): sequence of BigInteger := Range(a,b,1);
 
 type
   ArithmSeq = auto class
@@ -5169,54 +5240,6 @@ begin
   res := self;
 end;
 
-// -----------------------------------------------------------------------------
-//                ReadLexem
-// -----------------------------------------------------------------------------
-
-{function ReadLexem: string;
-begin
-  var c: char;
-  repeat
-    c := CurrentIOSystem.read_symbol;
-  until not char.IsWhiteSpace(c);
-  var sb := new System.Text.StringBuilder;
-  repeat
-    sb.Append(c);
-    c := char(CurrentIOSystem.peek);
-    if char.IsWhiteSpace(c) or (c = char(-1)) then // char(-1) - Ctrl-Z во входном потоке
-      break;
-    c := CurrentIOSystem.read_symbol;
-  until False; // accumulate nonspaces
-  Result := sb.ToString;
-end;}
-
-function ReadLexem(f: Text): string;
-begin
-  if f.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
-  if f.sr = nil then 
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_READING));
-  var i: integer;
-  repeat
-    i := f.sr.Read();
-  until not char.IsWhiteSpace(char(i)); // pass spaces
-  if i=-1 then 
-    raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_TEXT_FILE));
-  var c := char(i);
-  var sb := System.Text.StringBuilder.Create;
-  repeat
-    sb.Append(c);
-    i := f.sr.Peek();
-    if i = -1 then
-      break;
-    c := char(i);
-    if char.IsWhiteSpace(c) then
-      break;
-    f.sr.Read();
-  until False; // accumulate nonspaces
-  Result := sb.ToString;
-end;
-
 // -----------------------------------------------------
 //          IOStandardSystem: implementation
 // -----------------------------------------------------
@@ -5410,9 +5433,9 @@ end;
 
 function ReadLexem: string;
 begin
-  if input.sr <> nil then
+  {if input.sr <> nil then
     Result := ReadLexem(input)
-  else Result := CurrentIOSystem.ReadLexem; 
+  else} Result := CurrentIOSystem.ReadLexem; 
 end;
 
 function IOStandardSystem.ReadLexem: string;
@@ -6444,6 +6467,39 @@ begin
   Result := ReadBoolean(f);
   Readln(f);
 end;
+
+function ReadLexem(f: Text): string;
+begin
+  if f = input then
+  begin  
+    Result := ReadLexem;
+    exit
+  end;
+  if f.fi = nil then
+    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  if f.sr = nil then 
+    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_READING));
+  var i: integer;
+  repeat
+    i := f.sr.Read();
+  until not char.IsWhiteSpace(char(i)); // pass spaces
+  if i=-1 then 
+    raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_TEXT_FILE));
+  var c := char(i);
+  var sb := System.Text.StringBuilder.Create;
+  repeat
+    sb.Append(c);
+    i := f.sr.Peek();
+    if i = -1 then
+      break;
+    c := char(i);
+    if char.IsWhiteSpace(c) then
+      break;
+    f.sr.Read();
+  until False; // accumulate nonspaces
+  Result := sb.ToString;
+end;
+
 // -----------------------------------------------------
 //                   TextFile methods
 // -----------------------------------------------------
@@ -6640,6 +6696,18 @@ function BinaryFile.ReadString: string;
 begin
   InternalCheck;
   Result := Self.br.ReadString;  
+end;
+
+procedure BinaryFile.Serialize(obj: object);
+begin
+  var formatter := new BinaryFormatter;
+  formatter.Serialize(fs,obj);
+end;
+
+function BinaryFile.Deserialize: object;
+begin
+  var formatter := new BinaryFormatter;
+  Result := formatter.Deserialize(fs);
 end;
 
 // -----------------------------------------------------
@@ -6962,6 +7030,23 @@ begin
   Print(f, args);
   Writeln(f);
 end;
+
+procedure Serialize(filename: string; obj: object);
+begin
+  var fs := new System.IO.FileStream(filename,System.IO.FileMode.Create);
+  var formatter := new BinaryFormatter;
+  formatter.Serialize(fs,obj);
+  fs.Close;
+end;
+
+function Deserialize(filename: string): object;
+begin
+  var fs := new System.IO.FileStream(filename,System.IO.FileMode.Open);
+  var formatter := new BinaryFormatter;
+  Result := formatter.Deserialize(fs);
+  fs.Close;
+end;
+
 // -----------------------------------------------------
 //                  Text files
 // -----------------------------------------------------
@@ -6979,6 +7064,7 @@ begin
   begin  
     f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
     (CurrentIOSystem as IOStandardSystem).tr := f.sr;
+    (CurrentIOSystem as IOStandardSystem).realbuflen := -1;
     _IsPipedRedirected := True;
     _IsPipedRedirectedQuery := True;
   end;  
@@ -7029,6 +7115,11 @@ begin
     f.sr.BaseStream.Position := 0;
     f.sr.DiscardBufferedData;
   end;
+  if f = input then
+  begin  
+    (CurrentIOSystem as IOStandardSystem).tr := f.sr;
+    (CurrentIOSystem as IOStandardSystem).realbuflen := -1;
+  end;  
 end;
 
 procedure Reset(f: Text; name: string) := Reset(f, name, DefaultEncoding);
@@ -7120,7 +7211,9 @@ end;
 
 function Eof(f: Text): boolean;
 begin
-  if f.sr <> nil then
+  if f = input then
+    Result := Eof
+  else if f.sr <> nil then
     Result := f.sr.EndOfStream
   else if f.sw <> nil then
     raise new IOException(GetTranslation(EOF_FOR_TEXT_WRITEOPENED))
@@ -7129,7 +7222,9 @@ end;
 
 function Eoln(f: Text): boolean;
 begin
-  if f.sr <> nil then
+  if f = input then
+    Result := Eoln
+  else if f.sr <> nil then
     Result := f.sr.EndOfStream or (f.sr.Peek = 13) or (f.sr.Peek = 10) 
   else if f.sw <> nil then
     raise new IOException(GetTranslation(EOLN_FOR_TEXT_WRITEOPENED))
@@ -7138,6 +7233,11 @@ end;
 
 function SeekEof(f: Text): boolean;
 begin
+  if f = input then
+  begin  
+    Result := SeekEof;
+    exit;
+  end;  
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOF_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
@@ -7155,6 +7255,11 @@ end;
 
 function SeekEoln(f: Text): boolean;
 begin
+  if f = input then
+  begin  
+    Result := SeekEoln;
+    exit;
+  end;  
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOLN_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
@@ -7742,11 +7847,16 @@ begin
   end;
 end;
 
-function DeleteFile(s: string): boolean;
+function DeleteFile(fname: string): boolean;
 begin
+  if not &File.Exists(fname) then
+  begin
+    Result := False;
+    exit
+  end;
   try
     Result := True;
-    &File.Delete(s);
+    &File.Delete(fname);
   except
     Result := False;
   end;
@@ -8113,7 +8223,7 @@ function LogN(base, x: real) := Math.Log(x) / Math.Log(base);
 
 function Sqrt(x: real) := Math.Sqrt(x);
 
-function Sqr(x: integer): int64 := x * x;
+function Sqr(x: integer): int64 := int64(x) * int64(x);
 
 function Sqr(x: shortint): integer := x * x;
 
@@ -8123,11 +8233,11 @@ function Sqr(x: BigInteger): BigInteger := x * x;
 
 function Sqr(x: byte): integer := x * x;
 
-function Sqr(x: word): uint64 := x * x;
+function Sqr(x: word): uint64 := uint64(x) * uint64(x);
 
-function Sqr(x: longword): uint64 := x * x;
+function Sqr(x: longword): uint64 := uint64(x) * uint64(x);
 
-function Sqr(x: int64): int64 := x * x;
+function Sqr(x: int64): int64 := int64(x) * int64(x);
 
 function Sqr(x: uint64): uint64 := x * x;
 
@@ -8726,27 +8836,27 @@ begin
       s += new String(' ', sz - s.Length)
 end;
 
-procedure Insert(source: string; var s: string; index: integer);
+procedure Insert(subs: string; var s: string; index: integer);
 // Insert никогда не возвращает исключения
 begin
   if index < 1 then 
     index := 1;
   if index > s.Length + 1 then
     index := s.Length + 1;
-  s := s.Insert(index - 1, source);
+  s := s.Insert(index - 1, subs);
 end;
 
-procedure InsertInShortString(source: string; var s: string; index, n: integer);
+procedure InsertInShortString(subs: string; var s: string; index, n: integer);
 begin
   if index < 1 then 
     index := 1;
   if index > n then
     exit;
   try
-    s := s.Insert(index - 1, source);
+    s := s.Insert(index - 1, subs);
     if s.Length > n then s := s.Substring(0, n);
   except
-    s := s.Insert(s.Length, source);
+    s := s.Insert(s.Length, subs);
     if s.Length > n then s := s.Substring(0, n);
   end;
 end;
@@ -8814,7 +8924,7 @@ end;
 function ReverseString(s: string; index,length: integer): string;
 begin
   var ca := s.ToCharArray;
-  &Array.Reverse(ca,index+1,length);
+  &Array.Reverse(ca,index-1,length);
   Result := new string(ca);
 end;
 
@@ -9723,6 +9833,39 @@ begin
     Result += f(x);
 end;}
 
+// SSM 23/11/2020 - Sum Average Product for sequence of BigInteger
+
+/// Возвращает сумму элементов последовательности
+function Sum(Self: sequence of BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 0bi;
+  foreach var a in Self do
+    Result += a
+end;
+
+/// Возвращает среднее элементов последовательности
+function Average(Self: sequence of BigInteger): real; extensionmethod;
+begin
+  var cnt := 0;
+  var sum := 0bi;
+  foreach var a in Self do
+  begin
+    sum += a;
+    cnt += 1;
+  end;  
+  if cnt <> 0 then 
+    Result := sum/cnt
+  else Result := 0
+end;
+
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 1bi;
+  foreach var a in Self do
+    Result *= a
+end;
+
 
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
@@ -9883,7 +10026,7 @@ begin
   Result := Self.Reverse.Skip(count).Reverse;
 end;
 
-/// Декартово произведение последовательностей
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
 function Cartesian<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod;
 begin
   if b = nil then
@@ -9894,7 +10037,7 @@ begin
       yield (x, y)
 end;
 
-/// Декартово произведение последовательностей
+/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
 function Cartesian<T, T1, T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod;
 begin
   if b = nil then
@@ -10238,6 +10381,15 @@ begin
 end;
 
 // ToDo Сделать AdjacentGroup с функцией сравнения
+
+/// Возвращает количество элементов, равных указанному значению
+function CountOf<T>(Self: sequence of T; x: T): integer; extensionmethod;
+begin
+  Result := 0;
+  foreach var y in Self do
+    if y = x then
+      Result += 1;
+end;
 
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
@@ -11657,6 +11809,12 @@ begin
   until not NextCombHelper(ind,m,n);  
 end;
 
+/// Возвращает все сочетания по m элементов
+function Combinations<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Combinations(m);
+end;
+
 // Возвращает все сочетания по 2 элемента в виде кортежей
 {function Combinations2<T>(Self: array of T): sequence of (T,T); extensionmethod;
 begin
@@ -11686,7 +11844,7 @@ begin
   Result := True;
 end;
 
-/// Возвращает все перестановки
+/// Возвращает все перестановки множества элементов, заданного массивом
 function Permutations<T>(Self: array of T): sequence of array of T; extensionmethod;
 begin
   var a := Self;
@@ -11696,8 +11854,62 @@ begin
   repeat
     for var i:=0 to n-1 do
       res[i] := a[ind[i]];
-    yield res;
+    yield Arr(res);
   until not NextPermutation(ind);  
+end;
+
+/// Возвращает все перестановки множества элементов, заданного последовательностью
+function Permutations<T>(Self: sequence of T): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Permutations
+end;
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Permutations<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.Combinations(m).SelectMany(c->c.Permutations);
+end;
+
+/// Возвращает все частичные перестановки из n элементов по m 
+function Permutations<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Permutations(m);
+end;
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  var r := new integer[n];
+  var ar1 := new T[n];
+  for var i:=0 to n-1 do
+    ar1[i] := Self[r[i]];
+  yield ar1;
+  
+  var m := Self.Length;
+  while True do
+  begin
+    var i := n-1;  
+    r[i] += 1;
+    while r[i]>=m do
+    begin
+      r[i] := 0;
+      i -= 1;
+      if i<0 then
+        exit;
+      r[i] += 1;
+    end;
+    
+    var ar := new T[n];
+    for var j:=0 to n-1 do
+      ar[j] := Self[r[j]];
+    yield ar;
+  end;  
+end;
+
+/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Cartesian(n);
 end;
 
 // Внутренние функции для одномерных массивов
@@ -11829,6 +12041,292 @@ function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to:
 begin
   Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, step);
 end;
+
+// Срезы многомерных массивов - вспомогательные типы и функции
+type
+  SliceType = class
+    situation,from, &to, step, count: integer;
+    fromInverted, toInverted: boolean;
+    function oneelem: boolean := step = integer.MaxValue; // если шаг = integer.MaxValue, то это один элемент, а не срез (договорённость)
+    constructor (sit,f,t: integer; st: integer := 1);
+    begin
+      situation := sit;
+      from := f;
+      &to := t;
+      fromInverted := False;
+      toInverted := False;
+      step := st;
+      count := -1; // заполняется во внешней функции CorrectSliceAndCalcCount при известной длине по данной размерности
+      //oneelem := step = integer.MaxValue; // если шаг = integer.MaxValue, то это один элемент, а не срез (договорённость)
+    end;
+    procedure CorrectSliceAndCalcCount(len: integer);
+    begin
+      if fromInverted then // Надеюсь, что ровно здесь. Это означает, что эти значения точно не пропущены
+        from := len - from;
+      if toInverted then
+        &to := len - &to;
+
+      if oneelem then
+        count := 1 
+      else count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, len, from, &to, step);
+    end;
+    static function operator implicit(i: integer): SliceType;
+    static function operator implicit(ir: IntRange): SliceType;
+    static function operator implicit(sl: (integer,integer,integer)): SliceType;
+    static function operator implicit(sl: (SystemIndex,SystemIndex,integer)): SliceType; // a[^1:,^2]
+    static function operator implicit(sl: (integer,SystemIndex,integer)): SliceType; // a[^1:,^2]
+    static function operator implicit(sl: (SystemIndex,integer,integer)): SliceType; // a[^1:,^2]
+  end;
+
+function Diap(f, t: integer) := new SliceType(0, f, t, 1);
+function Elem(ind: integer) := new SliceType(0, ind, ind+1, integer.MaxValue);
+function Slice(f, t: integer; st: integer := 1): SliceType;
+begin
+  var sit := 0;
+  if f = integer.MaxValue then
+    sit += 1;
+  if t = integer.MaxValue then
+    sit += 2;
+  Result := new SliceType(sit, f, t, st);
+end; 
+{function Slice(f, t: SystemIndex; st: integer := 1): SliceType;
+begin
+  Result := Slice(f.IndexValue, t.IndexValue, st);
+  Result.fromInverted := f.IsInverted;
+  Result.toInverted := t.IsInverted;
+end;}
+
+static function SliceType.operator implicit(i: integer): SliceType;
+begin
+  Result := Elem(i);
+end;
+
+static function SliceType.operator implicit(ir: IntRange): SliceType;
+begin
+  Result := Diap(ir.Low,ir.High);
+end;
+
+static function SliceType.operator implicit(sl: (integer,integer,integer)): SliceType;
+begin
+  Result := Slice(sl[0],sl[1],sl[2]);
+end;
+
+static function SliceType.operator implicit(sl: (SystemIndex,SystemIndex,integer)): SliceType;
+begin
+  Result := Slice(sl[0].IndexValue,sl[1].IndexValue,sl[2]);
+  Result.fromInverted := sl[0].IsInverted;
+  Result.toInverted := sl[1].IsInverted;
+end;
+
+static function SliceType.operator implicit(sl: (integer,SystemIndex,integer)): SliceType;
+begin
+  Result := Slice(sl[0],sl[1].IndexValue,sl[2]);
+  Result.toInverted := sl[1].IsInverted;
+end;
+
+static function SliceType.operator implicit(sl: (SystemIndex,integer,integer)): SliceType;
+begin
+  Result := Slice(sl[0].IndexValue,sl[1],sl[2]);
+  Result.fromInverted := sl[0].IsInverted;
+end;
+
+function ToOneDim<T>(a: array [,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        res[cur] := a[i0,i1];
+        cur += 1;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function ToOneDim<T>(a: array [,,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count * l[2].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        var i2 := l[2].from;
+        loop l[2].count do
+        begin
+          res[cur] := a[i0,i1,i2];
+          cur += 1;
+          i2 += l[2].step;
+        end;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function ToOneDim<T>(a: array [,,,] of T; l: array of SliceType): array of T;
+begin
+  for var i:=0 to l.Length-1 do
+    l[i].CorrectSliceAndCalcCount(a.GetLength(i));
+  var onedimsz := l[0].count * l[1].count * l[2].count * l[3].count;
+  var res := new T[onedimsz];
+  if onedimsz>0 then
+  begin
+    var cur := 0;
+    var i0 := l[0].from;
+    loop l[0].count do
+    begin
+      var i1:=l[1].from;
+      loop l[1].count do
+      begin
+        var i2 := l[2].from;
+        loop l[2].count do
+        begin
+          var i3 := l[3].from;
+          loop l[3].count do
+          begin
+            res[cur] := a[i0,i1,i2,i3];
+            cur += 1;
+            i3 += l[3].step;
+          end;  
+          i2 += l[2].step;
+        end;
+        i1 += l[1].step;
+      end;
+      i0 += l[0].step;
+    end;
+  end;
+  Result := res;
+end;
+
+function FromOneDim2<T>(r: array of T; l: array of SliceType): array [,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  var cur := 0;
+  var res := new T[dims[0],dims[1]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  begin
+    res[i0,i1] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDim3<T>(r: array of T; l: array of SliceType): array [,,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  var cur := 0;
+  var res := new T[dims[0],dims[1],dims[2]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  for var i2:=0 to dims[2]-1 do
+  begin
+    res[i0,i1,i2] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDim4<T>(r: array of T; l: array of SliceType): array [,,,] of T;
+begin
+  var dims := l.FindAll(x -> x.oneelem = False).ConvertAll(x -> x.count);
+  var cur := 0;
+  var res := new T[dims[0],dims[1],dims[2],dims[3]];
+  for var i0:=0 to dims[0]-1 do
+  for var i1:=0 to dims[1]-1 do
+  for var i2:=0 to dims[2]-1 do
+  for var i3:=0 to dims[3]-1 do
+  begin
+    res[i0,i1,i2,i3] := r[cur];
+    cur += 1;
+  end;
+  Result := res;
+end;
+
+function FromOneDimN<T>(r: array of T; l: array of SliceType): System.Array;
+begin
+  var rank := l.Count(x -> x.oneelem = False);
+  case rank of
+    1: Result := r;
+    2: Result := FromOneDim2(r,l);
+    3: Result := FromOneDim3(r,l);
+    4: Result := FromOneDim4(r,l);
+  end;  
+end;
+
+function SliceN<T>(a: array[,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+function SliceN<T>(a: array[,,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+function SliceN<T>(a: array[,,,] of T; l: array of SliceType): System.Array;
+begin
+  var r := ToOneDim(a,l);
+  Result := FromOneDimN(r,l);
+end;
+
+{type // это не компилируется в PABCSystem
+  ArrT<T> = array of T;
+  Arr2T<T> = array [,] of T;
+  Arr3T<T> = array [,,] of T;
+  Arr4T<T> = array [,,,] of T;}
+
+///--
+function SystemSliceN1<T>(Self: array[,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN1<T>(Self: array[,,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN1<T>(Self: array[,,,] of T; params l: array of SliceType): array of T; extensionmethod 
+  := SliceN(Self,l) as array of T;
+///--
+function SystemSliceN2<T>(Self: array[,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN2<T>(Self: array[,,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN2<T>(Self: array[,,,] of T; params l: array of SliceType): array[,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,] of T;
+///--
+function SystemSliceN3<T>(Self: array[,,] of T; params l: array of SliceType): array[,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,] of T;
+///--
+function SystemSliceN3<T>(Self: array[,,,] of T; params l: array of SliceType): array[,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,] of T;
+///--
+function SystemSliceN4<T>(Self: array[,,,] of T; params l: array of SliceType): array[,,,] of T; extensionmethod 
+  := SliceN(Self,l) as array [,,,] of T;
 
 // -----------------------------------------------------
 //>>     Методы расширения типа integer # Extension methods for integer
@@ -12165,19 +12663,25 @@ end;
 /// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadInteger(Self: string; var from: integer): integer; extensionmethod;
 begin
-  Result := ReadIntegerFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadIntegerFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadReal(Self: string; var from: integer): real; extensionmethod;
 begin
-  Result := ReadRealFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadRealFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Считывает слово из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadWord(Self: string; var from: integer): string; extensionmethod;
 begin
-  Result := ReadwordFromString(Self, from);
+  var from1 := from + 1;
+  Result := ReadwordFromString(Self, from1);
+  from := from1 - 1;
 end;
 
 /// Преобразует строку в целое
@@ -12196,6 +12700,21 @@ function TryToInteger(Self: string; var value: integer): boolean; extensionmetho
 /// Преобразует строку в вещественное и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryToReal(Self: string; var value: real): boolean; extensionmethod := TryStrToReal(Self,value);
+
+
+/// Возвращает True если строку можно преобразовать в вещественное
+function IsReal(Self: string): boolean; extensionmethod;
+begin
+  var r: real;
+  Result := TryStrToReal(Self, r);
+end; 
+
+/// Возвращает True если строку можно преобразовать в целое
+function IsInteger(Self: string): boolean; extensionmethod;
+begin
+  var i: integer;
+  Result := TryStrToInt(Self, i);
+end; 
 
 /// Преобразует строку в целое
 ///При невозможности преобразования возвращается defaultvalue
@@ -12219,6 +12738,12 @@ end;
 function ToWords(Self: string; params delim: array of char): array of string; extensionmethod;
 begin
   Result := Self.Split(delim, System.StringSplitOptions.RemoveEmptyEntries);
+end;
+
+/// Преобразует строку в массив слов, используя в качестве разделителей символы из строки delims
+function ToWords(Self: string; delims: string := ' '): array of string; extensionmethod;
+begin
+  Result := Self.Split(delims.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
 procedure PassSpaces(var s: string; var from: integer); 
@@ -12723,59 +13248,59 @@ function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T
 // -------------------------------------------
 // Дополнения февраль 2016
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3>(Self: (T1, T2); v: T3): (T1, T2, T3); extensionmethod;
 begin
   Result := (Self[0], Self[1], v);
 end;
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3, T4>(Self: (T1, T2, T3); v: T4): (T1, T2, T3, T4); extensionmethod;
 begin
   Result := (Self[0], Self[1], Self[2], v);
 end;
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4); v: T5): (T1, T2, T3, T4, T5); extensionmethod;
 begin
   Result := (Self[0], Self[1], Self[2], Self[3], v);
 end;
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5); v: T6): (T1, T2, T3, T4, T5, T6); extensionmethod;
 begin
   Result := (Self[0], Self[1], Self[2], Self[3], Self[4], v);
 end;
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6); v: T7): (T1, T2, T3, T4, T5, T6, T7); extensionmethod;
 begin
   Result := (Self[0], Self[1], Self[2], Self[3], Self[4], Self[5], v);
 end;
 
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2>(Self: (T1, T2)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Print(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2>(Self: (T1, T2)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Println(Self);
 
 
@@ -13385,7 +13910,11 @@ end;
 
 procedure __InitModule;
 begin
-  DefaultEncoding := Encoding.GetEncoding(1251);
+  try
+    DefaultEncoding := Encoding.GetEncoding(1251);
+  except
+    DefaultEncoding := Encoding.UTF8;
+  end;
   rnd := new System.Random;
   
   CurrentIOSystem := new IOStandardSystem;

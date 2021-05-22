@@ -38,7 +38,8 @@ namespace PascalABCCompiler.TreeRealization
         common_constructor_call_as_constant, array_initializer, record_initializer, default_operator, attribute_node,
         pinvoke_node, basic_function_call_node_as_constant, compiled_static_field_reference_as_constant,
         common_namespace_event, indefinite_definition_node, indefinite_type, indefinite_function_call, indefinite_reference,
-        wrapped_statement, wrapped_expression, default_operator_node_as_constant
+        wrapped_statement, wrapped_expression, default_operator_node_as_constant, double_question_colon_expression,
+        typeof_operator_as_constant
     };
 
     /// <summary>

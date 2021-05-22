@@ -6959,6 +6959,91 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(bigint_const _bigint_const)
+		{
+			bw.Write((Int16)255);
+			write_bigint_const(_bigint_const);
+		}
+
+		public void write_bigint_const(bigint_const _bigint_const)
+		{
+			write_const_node(_bigint_const);
+			bw.Write(_bigint_const.val);
+		}
+
+
+		public void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			bw.Write((Int16)256);
+			write_foreach_stmt_formatting(_foreach_stmt_formatting);
+		}
+
+		public void write_foreach_stmt_formatting(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			write_statement(_foreach_stmt_formatting);
+			if (_foreach_stmt_formatting.il == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.il.visit(this);
+			}
+			if (_foreach_stmt_formatting.in_what == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.in_what.visit(this);
+			}
+			if (_foreach_stmt_formatting.stmt == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.stmt.visit(this);
+			}
+		}
+
+
+		public void visit(property_ident _property_ident)
+		{
+			bw.Write((Int16)257);
+			write_property_ident(_property_ident);
+		}
+
+		public void write_property_ident(property_ident _property_ident)
+		{
+			write_ident(_property_ident);
+			if (_property_ident.ln == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_property_ident.ln.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _property_ident.ln.Count; ssyy_i++)
+				{
+					if (_property_ident.ln[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_property_ident.ln[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
 	}
 
 

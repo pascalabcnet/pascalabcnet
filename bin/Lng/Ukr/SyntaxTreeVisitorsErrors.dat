@@ -12,6 +12,7 @@ FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Функції з yield 
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Функції з yield не можуть містити локальні визначення типів
 YIELDS_INSIDE_WITH_ARE_ILLEGAL=Оператор yield заборонений всередині with
 LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Лямбда-вирази не можуть містити yield
+EMBEDDED_STATEMENT_CANNOT_BE_A_DECLARATION=Вложенная инструкция не может быть объявлением, используйте операторные скобки
 
 Var_{0}_is_already_defined=Змінна {0} уже визначена
 

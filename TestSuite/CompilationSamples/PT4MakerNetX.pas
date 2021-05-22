@@ -1,9 +1,9 @@
 ﻿/// Конструктор учебных заданий для задачника Programming Taskbook.
-/// Версия 1.6 от 28.07.2018 (С) М. Э. Абрамян, 2016-2018.
+/// Версия 1.7 от 28.10.2020 (С) М. Э. Абрамян, 2016-2020.
 /// Все компоненты конструктора могут вызываться либо как классовые методы класса pt, 
 /// либо как обычные константы и процедуры.
 unit PT4MakerNetX;
-
+   
 interface
 
 const
@@ -659,7 +659,7 @@ var
   yd, yr, ye, nd, nr, pr, wd: integer;
   nt, ut, fd, fr: boolean;
   fmt: string;
-  tasks := new List<MethodInfo>(100);
+  tasks := new List<MethodInfo>(200);
 
 procedure Show(s: string);
 begin
@@ -1213,7 +1213,8 @@ begin
     begin
       tasks.Add(e);
       GroupKey := GroupKey + Copy(e.Name, 5, 100);
-    end;  
+    end; 
+  tasks := tasks.OrderBy(e -> e.Name).ToList;  // Сортировка задач! 
   if tasks.Count = 0 then
   begin
     Show('Группа ' + GroupName + ' не содержит заданий'#13#10+

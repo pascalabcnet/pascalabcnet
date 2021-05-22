@@ -858,9 +858,10 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Нахождение узла по имени либо точечному имени (напр. Unit1.type1)
-        public List<SymbolInfo> find_definition_node(SyntaxTree.named_type_reference names, location loc)  // SSM перебросил сюда из syntax_tree_visitor 3.04.14
+        public List<SymbolInfo> find_definition_node(SyntaxTree.named_type_reference names, location loc, bool throw_error = false)  // SSM перебросил сюда из syntax_tree_visitor 3.04.14
         {
             definition_node di = null;
+            List<SymbolInfo> si = null;
             if (names.names.Count > 1)
             {
                 di = convert_names_to_namespace(names, loc);
@@ -870,18 +871,28 @@ namespace PascalABCCompiler.TreeConverter
                 int num = names.names.Count - 1;
                 if (di is namespace_node)
                 {
-                    return (di as namespace_node).find(names.names[num].name);
+                    si = (di as namespace_node).find(names.names[num].name);
+                    if (si == null && throw_error)
+                        AddError(new UndefinedNameReference(names.names[num].name, syntax_tree_visitor.get_location(names.names[num])));
                 }
                 else if (di is type_node)
                 {
-                    return (di as type_node).find_in_type(names.names[num].name);
+                    si = (di as type_node).find_in_type(names.names[num].name);
+                    if (si == null && throw_error)
+                        AddError(new UndefinedNameReference(names.names[num].name, syntax_tree_visitor.get_location(names.names[num])));
                 }
                 else
                 {
-                    return (di as unit_node).find_only_in_namespace(names.names[num].name);
+                    si = (di as unit_node).find_only_in_namespace(names.names[num].name);
+                    if (si == null && throw_error)
+                        AddError(new UndefinedNameReference(names.names[num].name, syntax_tree_visitor.get_location(names.names[num])));
                 }
+                return si;
             }
-            return find(names.names[0].name);
+            si = find(names.names[0].name);
+            if (si == null && throw_error)
+                AddError(new UndefinedNameReference(names.names[0].name, syntax_tree_visitor.get_location(names.names[0])));
+            return si;
         }
         //\ssyy
 
@@ -1017,22 +1028,44 @@ namespace PascalABCCompiler.TreeConverter
 
         private readonly System.Collections.Generic.Stack<common_type_node> type_stack = new System.Collections.Generic.Stack<common_type_node>();
         
-        private void add_notequal_operator_if_need()
+        internal void add_notequal_operator_if_need(bool not_add_body= false)
         {
             List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.noteq_name);
+            common_method_node cmn = null;
+            common_parameter prm1 = null;
+            common_parameter prm2 = null;
             foreach (SymbolInfo si2 in si_list)
                 if (si2.sym_info is common_method_node)
-                    return;
+                {
+                    cmn = si2.sym_info as common_method_node;
+                    if (cmn.function_code != null && cmn.parameters.Count == 2 && cmn.parameters[0].type == cmn.parameters[1].type)
+                        return;
+                }
+            if (cmn != null && cmn.function_code != null)
+                cmn = null;
             SymbolInfo si = si_list[0];
             SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
-        	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
-        	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
-        	cmn.IsOperator = true;
-        	common_parameter prm1 = new common_parameter("a",_ctn,SemanticTree.parameter_type.value,cmn,concrete_parameter_type.cpt_none,null,null);
-        	common_parameter prm2 = new common_parameter("b",_ctn,SemanticTree.parameter_type.value,cmn,concrete_parameter_type.cpt_none,null,null);
-        	cmn.parameters.AddElement(prm1);
-        	cmn.parameters.AddElement(prm2);
-        	statements_list body = new statements_list(null);
+            if (cmn == null)
+            {
+                cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name), SystemLibrary.SystemLibrary.bool_type, null, _ctn,
+                                                            SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_public, scope);
+                cmn.IsOperator = true;
+                prm1 = new common_parameter("a", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
+                prm2 = new common_parameter("b", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
+                cmn.parameters.AddElement(prm1);
+                cmn.parameters.AddElement(prm2);
+                cmn.is_overload = true;
+                _ctn.methods.AddElement(cmn);
+                _ctn.Scope.AddSymbol(compiler_string_consts.noteq_name, new SymbolInfo(cmn));
+            }
+            else
+            {
+                prm1 = cmn.parameters[0] as common_parameter;
+                prm2 = cmn.parameters[1] as common_parameter;
+            }
+            if (not_add_body)
+                return;
+            statements_list body = new statements_list(null);
         	foreach (class_field cf in _ctn.fields)
         	{
                 if (cf.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
@@ -1048,26 +1081,46 @@ namespace PascalABCCompiler.TreeConverter
         	}
         	body.statements.AddElement(new return_node(new bool_const_node(false,null),null));
         	cmn.function_code = body;
-        	cmn.is_overload = true;
-        	_ctn.methods.AddElement(cmn);
-        	_ctn.Scope.AddSymbol(compiler_string_consts.noteq_name,new SymbolInfo(cmn));
+        	
         }
         
-        private void add_equal_operator_if_need()
+        internal void add_equal_operator_if_need(bool not_add_body=false)
         {
         	List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.eq_name);
+            common_method_node cmn = null;
+            common_parameter prm1 = null;
+            common_parameter prm2 = null;
             foreach (SymbolInfo si2 in si_list)
         	    if (si2.sym_info is common_method_node)
-        		    return;
+                {
+                    cmn = si2.sym_info as common_method_node;
+                    if (cmn.function_code != null && cmn.parameters.Count == 2 && cmn.parameters[0].type == cmn.parameters[1].type)
+                        return;
+                }
+            if (cmn != null && cmn.function_code != null)
+                cmn = null;
             SymbolInfo si = si_list[0];
             SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
-        	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
-        	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
-        	cmn.IsOperator = true;
-        	common_parameter prm1 = new common_parameter("a",_ctn,SemanticTree.parameter_type.value,cmn,concrete_parameter_type.cpt_none,null,null);
-        	common_parameter prm2 = new common_parameter("b",_ctn,SemanticTree.parameter_type.value,cmn,concrete_parameter_type.cpt_none,null,null);
-        	cmn.parameters.AddElement(prm1);
-        	cmn.parameters.AddElement(prm2);
+            if (cmn == null)
+            {
+                cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name), SystemLibrary.SystemLibrary.bool_type, null, _ctn,
+                                                            SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_public, scope);
+                cmn.IsOperator = true;
+                prm1 = new common_parameter("a", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
+                prm2 = new common_parameter("b", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
+                cmn.parameters.AddElement(prm1);
+                cmn.parameters.AddElement(prm2);
+                cmn.is_overload = true;
+                _ctn.methods.AddElement(cmn);
+                _ctn.Scope.AddSymbol(compiler_string_consts.eq_name, new SymbolInfo(cmn));
+            }
+        	else
+            {
+                prm1 = cmn.parameters[0] as common_parameter;
+                prm2 = cmn.parameters[1] as common_parameter;
+            }
+            if (not_add_body)
+                return;
         	statements_list body = new statements_list(null);
         	foreach (class_field cf in _ctn.fields)
         	{
@@ -1084,9 +1137,7 @@ namespace PascalABCCompiler.TreeConverter
         	}
         	body.statements.AddElement(new return_node(new bool_const_node(true,null),null));
         	cmn.function_code = body;
-        	cmn.is_overload = true;
-        	_ctn.methods.AddElement(cmn);
-        	_ctn.Scope.AddSymbol(compiler_string_consts.eq_name,new SymbolInfo(cmn));
+        	
         }
         
         public void leave_record()
@@ -1094,8 +1145,8 @@ namespace PascalABCCompiler.TreeConverter
             check_implement_interfaces();
             if (!_ctn.IsEnum)
             {
-            	add_equal_operator_if_need();
-            	add_notequal_operator_if_need();
+            	//add_equal_operator_if_need();
+            	//add_notequal_operator_if_need();
             }
             if (type_stack.Count != 0)
             {
@@ -1307,13 +1358,30 @@ namespace PascalABCCompiler.TreeConverter
 			return cfn;
 		}
 
-		public common_type_node advanced_create_type(string name,location def_loc, bool type_is_interface, bool is_partial=false)
+		public common_type_node advanced_create_type(string name,location def_loc, bool type_is_interface, bool is_partial=false, SyntaxTree.class_attribute attr = SyntaxTree.class_attribute.None)
         {
 			//check_name_free(name,def_loc);
             common_type_node partial_class = null;
             common_type_node rez = check_type_name_free_and_predop(name, def_loc, ref partial_class, is_partial);
             if (rez != null)
             {
+                if (is_partial && !(rez.ForwardDeclarationOnly && this.namespace_converted))
+                {
+                    if (rez.ForwardDeclarationOnly)
+                        AddError(rez.loc, "PARTIAL_CLASS_PREDEFINITION_NOT_ALLOWED");
+                    if ((attr & SyntaxTree.class_attribute.Static) == SyntaxTree.class_attribute.Static && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Static) != SyntaxTree.class_attribute.Static && rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract && !rez.IsAbstract)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Abstract) != SyntaxTree.class_attribute.Abstract && rez.IsAbstract && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed && !rez.IsSealed)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Sealed) != SyntaxTree.class_attribute.Sealed && rez.IsSealed && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                }
                 _ctn = rez;
                 if (def_loc != null)
                     _ctn.loc = def_loc;
@@ -2032,39 +2100,65 @@ namespace PascalABCCompiler.TreeConverter
         
         internal expression_node GetInitalValueForVariable(var_definition_node vdn, expression_node userInitalValue)
         {
+            if (userInitalValue == null && CurrentStatementList != null && vdn.type.is_value_type && vdn.type is common_type_node)
+            {
+                common_type_node ctn = vdn.type as common_type_node;
+                foreach (var meth in ctn.methods)
+                {
+                    if (meth.is_constructor && meth.parameters.Count == 0)
+                    {
+                        userInitalValue = new common_constructor_call(meth, vdn.location);
+                        break;
+                    }
+                }
+            }
             if (userInitalValue != null)
             {
             	if (CurrentStatementList != null)
                 {
                     //Инициализировать надо в текущем стейтменте
-                    location lid = ((local_block_variable)vdn).loc;
-                    local_block_variable_reference lbvr = new local_block_variable_reference((local_block_variable)vdn, lid);
+                    expression_node expr = null;
+                    location lid = null;
+                    if (vdn is local_block_variable)
+                    {
+                        lid = ((local_block_variable)vdn).loc;
+                        expr = new local_block_variable_reference((local_block_variable)vdn, lid);
+                    }
+                    else if (vdn is class_field)
+                    {
+                        lid = vdn.location;
+                        expr = new class_field_reference(vdn as class_field, new this_node((vdn as class_field).cont_type, lid), lid);
+                    }
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
-                	{
-                		userInitalValue = syntax_tree_visitor.get_init_call_for_set_as_constr(vdn,userInitalValue);
-                	//userInitalValue.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
-                	}
+                    {
+                        userInitalValue = syntax_tree_visitor.get_init_call_for_set_as_constr(vdn, userInitalValue);
+                        //userInitalValue.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
+                    }
                     else if (vdn.type.type_special_kind == SemanticTree.type_special_kind.short_string)
                     {
                         userInitalValue = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, null, convertion_data_and_alghoritms.convert_type(userInitalValue, SystemLibrary.SystemLibrary.string_type), new int_const_node((vdn.type as short_string_type_node).Length, null));
                     }
                     else if (userInitalValue is array_initializer)
-                	{
-                		array_initializer arr = userInitalValue as array_initializer;
-                		if (vdn.type.element_type.type_special_kind == SemanticTree.type_special_kind.short_string)
-                		{
-                			for (int i=0; i<arr.element_values.Count; i++)
-                			{
-                				//arr.element_values[i] = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, arr.element_values[i], null);
-                				arr.element_values[i] = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node,null,convertion_data_and_alghoritms.convert_type(arr.element_values[i],SystemLibrary.SystemLibrary.string_type),new int_const_node((vdn.type.element_type as short_string_type_node).Length,null));
-                			}
-                		}
-                	}
-                    CurrentStatementList.statements.AddElement(syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, lbvr, userInitalValue, lid));
+                    {
+                        array_initializer arr = userInitalValue as array_initializer;
+                        if (vdn.type.element_type.type_special_kind == SemanticTree.type_special_kind.short_string)
+                        {
+                            for (int i = 0; i < arr.element_values.Count; i++)
+                            {
+                                //arr.element_values[i] = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, arr.element_values[i], null);
+                                arr.element_values[i] = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, null, convertion_data_and_alghoritms.convert_type(arr.element_values[i], SystemLibrary.SystemLibrary.string_type), new int_const_node((vdn.type.element_type as short_string_type_node).Length, null));
+                            }
+                        }
+                    }
+                    CurrentStatementList.statements.AddElement(syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, expr, userInitalValue, lid));
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
                 	{
-                 		lbvr.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
+                 		expr.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
                 	}
+                    if (vdn.type.is_value_type /*&& userInitalValue is common_constructor_call*/ && !(expr is class_field_reference))
+                    {
+                        return new default_operator_node(vdn.type, lid);
+                    }
                     return null;
                 }
                 if (userInitalValue is constant_node)
@@ -2181,11 +2275,18 @@ namespace PascalABCCompiler.TreeConverter
                     tmp = tmp.TopScope;
                 }
             }
+
+            // для partial-классов, наследующих от интерфейса в секции Implementation
+            // Надо ещё добавить условия чтобы только для них. А то может найти не то что надо!!!
+            if (sil == null && this.converted_type != null && this.converted_type.IsPartial) 
+            {
+                sil = this.converted_namespace.scope.Find(name);
+            }
+
             if (_ctn != null && _ctn.base_generic_instance != null)
             {
                 return _ctn.base_generic_instance.ConvertSymbolInfo(sil);
             }
-
             return sil;
         }
 
@@ -2648,7 +2749,11 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (sil == null)
             {
-                cnode.SetIsAbstract(true);
+                cnode.SetIsAbstract(true,
+                    (meth is common_method_node cmn) && (cmn.cont_type.properties.FirstOrDefault(cpn=> meth.name == "get_" + cpn.name || meth.name == "set_" + cpn.name) is common_property_node prop)?
+                        new CARPropertieNotImplemented(prop) :
+                        new CARMethodNotImplemented(meth) as ClassAbstractReason
+                );
                 return;
                 //Нет функции с таким именем, набором параметров и возвращаемым значением
                 //AddError(new AbstractMemberNotImplemented(cnode.name, interf.name, Tools.GetFullMethodHeaderString(meth), cnode.is_value_type, cnode.loc));
@@ -2690,7 +2795,13 @@ namespace PascalABCCompiler.TreeConverter
             if (meth is compiled_function_node)
                 tmp_si = cnode.find_in_type((meth as compiled_function_node).cont_type.BaseFullName + "." + meth.name, cnode.Scope);
             else if (meth is common_method_node)
-                tmp_si = cnode.find_in_type((meth as common_method_node).cont_type.BaseFullName + "." + meth.name, cnode.Scope);
+            {
+                string base_type_name = (meth as common_method_node).cont_type.BaseFullName;
+                if (base_type_name != null && (meth as common_method_node).cont_type.original_generic != null && base_type_name.IndexOf('<') != -1)
+                    base_type_name = (meth as common_method_node).cont_type.original_generic.BaseFullName;
+                tmp_si = cnode.find_in_type(base_type_name + "." + meth.name, cnode.Scope);
+            }
+                
             if (tmp_si != null)
             {
                 /*Зачем это?
@@ -3440,7 +3551,7 @@ namespace PascalABCCompiler.TreeConverter
 			}
 		}
 
-		public common_property_node add_property(string property_name,location loc)
+		public common_property_node add_property(string property_name, location loc)
 		{
 			if (_ctn==null)
 			{
@@ -3647,6 +3758,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         return null;
                     }
+                    else if (cfn_sec.IsFinal)
+                        return null;
                 }
                 else
                 {
@@ -3654,6 +3767,40 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             return fn;
+        }
+
+        public property_node FindPropertyToImplement(common_property_node cpn, string pure_name, type_node interf)
+        {
+            List<SymbolInfo> sil = interf.find_in_type(pure_name, CurrentScope);
+            property_node pn = null;
+            SymbolInfo find_property = null;
+            if (sil != null)
+            {
+                foreach (SymbolInfo si in sil)
+                {
+                    if (si.sym_info.general_node_type != general_node_type.property_node)
+                    {
+                        return null;
+                    }
+                    pn = si.sym_info as property_node;
+                    //(ssyy) Сверяем как параметры функций, так и типы возвращаемых значений
+                    if (cpn.get_function == null && pn.get_function == null && pn.property_type == cpn.property_type)
+                    {
+                        find_property = si;
+                        break;
+                    }
+                    else if (cpn.get_function != null && pn.get_function != null && convertion_data_and_alghoritms.function_eq_params_and_result(cpn.get_function, pn.get_function))
+                    {
+                        find_property = si;
+                        break;
+                    }
+                }
+            }
+            if (find_property == null)
+            {
+                return null;
+            }
+            return pn;
         }
 
         public property_node FindPropertyToOverride(common_property_node cpn)
@@ -3730,11 +3877,33 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     (cpn.get_function as common_method_node).overrided_method = overrided_property.get_function;
                     (cpn.get_function as common_method_node).polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
-                } 
+                }
                 if (cpn.set_function is common_method_node)
                 {
                     (cpn.set_function as common_method_node).overrided_method = overrided_property.set_function;
                     (cpn.set_function as common_method_node).polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+                }
+            }
+        }
+
+        public void set_implement(common_property_node cpn, string pure_name, type_node interf)
+        {
+            property_node overrided_property = FindPropertyToImplement(cpn, pure_name, interf);
+            if (overrided_property == null)
+                AddError(cpn.loc, "NO_PROPERTY_TO_OVERRIDE");
+            else
+            {
+                if (cpn.get_function is common_method_node)
+                {
+                    (cpn.get_function as common_method_node).overrided_method = overrided_property.get_function;
+                    (cpn.get_function as common_method_node).is_final = true;
+                    (cpn.get_function as common_method_node).newslot_awaited = true;
+                }
+                if (cpn.set_function is common_method_node)
+                {
+                    (cpn.set_function as common_method_node).overrided_method = overrided_property.set_function;
+                    (cpn.set_function as common_method_node).is_final = true;
+                    (cpn.set_function as common_method_node).newslot_awaited = true;
                 }
             }
         }

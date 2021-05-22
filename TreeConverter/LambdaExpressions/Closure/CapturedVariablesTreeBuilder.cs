@@ -262,6 +262,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                     dn = new dot_node(getClassIdent(commonMethodNode.cont_type),
                         new ident(id.name, id.source_context), id.source_context);
                 }
+                else if (si.sym_info is common_event commonEvent && commonEvent.is_static)
+                {
+                    dn = new dot_node(getClassIdent(commonEvent.cont_type),
+                        new ident(id.name, id.source_context), id.source_context);
+                }
                 else
                 {
                     dn = new dot_node(new ident("self", id.source_context), new ident(id.name, id.source_context), id.source_context);
@@ -755,6 +760,23 @@ namespace TreeConverter.LambdaExpressions.Closure
                 var varDefsList = new List<statement>();
                 for (var i = 0; i < lambdaDefinition.formal_parameters.params_list.Count; i++)
                 {
+                    if (lambdaDefinition.formal_parameters.params_list[i].vars_type is lambda_inferred_type)
+                    {
+                        type_node tn = (type_node)((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type;
+                        common_type_node ctn = tn as common_type_node;
+                        if (ctn != null && ctn.comprehensive_namespace != null && ctn.comprehensive_namespace.cont_unit != _visitor.context.converted_namespace.cont_unit)
+                        {
+                            var si = _visitor.context.find(ctn.name);
+                            if (si == null)
+                            {
+                                si = _visitor.context.find(ctn.comprehensive_namespace.namespace_name);
+                                if (si == null)
+                                {
+                                    _visitor.AddError(_visitor.get_location(lambdaDefinition), "PARAMETER_{0}_HAS_TYPE_{1}_FROM_UNIT_{2}", lambdaDefinition.formal_parameters.params_list[i].idents.idents[0].name, ctn.name, ctn.comprehensive_namespace.namespace_name);
+                                }
+                            }
+                        }
+                    }
                     var varType = lambdaDefinition.formal_parameters.params_list[i].vars_type is lambda_inferred_type ?
                         LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type) :
                         //new semantic_type_node(((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type): // SSM 29/12/18 поменял - пробую - не получилось

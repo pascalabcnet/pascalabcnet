@@ -260,7 +260,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <summary>
         /// Вывод типа параметров лямбд и типа возвращаемого значения при присваивании лямбды переменной 
         /// </summary>
-        public static void InferTypesFromVarStmt(type_node leftType, function_lambda_definition lambdaDef, syntax_tree_visitor visitor)
+        public static void InferTypesFromVarStmt(type_node leftType, function_lambda_definition lambdaDef, syntax_tree_visitor visitor, Operators op = Operators.Undefined)
         {
             if (lambdaDef == null)
                 return;
@@ -271,7 +271,47 @@ namespace PascalABCCompiler.TreeConverter
                 if (dii_left == null)
                 {
                     if (leftType != SystemLibrary.SystemLibrary.system_delegate_type)
-                        visitor.AddError(visitor.get_location(lambdaDef), "ILLEGAL_LAMBDA_VARIABLE_TYPE");
+                    {
+                        if (op != Operators.Undefined)
+                        {
+                            var sil = leftType.find_in_type(name_reflector.get_name(op));
+                            if (sil != null && sil.Count > 0)
+                            {
+                                foreach (SymbolInfo si in sil)
+                                {
+                                    if (si.sym_info is function_node)
+                                    {
+                                        function_node fn = si.sym_info as function_node;
+                                        if (fn.parameters.Count == 2)
+                                        {
+                                            dii_left = (delegate_internal_interface)fn.parameters[1].type.get_internal_interface(internal_interface_kind.delegate_interface);
+                                            if (dii_left != null)
+                                                break;
+                                            if (fn.parameters[1].type.is_generic_parameter)
+                                            {
+                                                compiled_type_node ctn = leftType as compiled_type_node;
+                                                common_type_node ctn2 = leftType as common_type_node;
+                                                if (ctn != null && ctn.is_generic_type_instance && fn.parameters[0].type.is_generic_type_instance && ctn.original_generic == fn.parameters[0].type.original_generic)
+                                                {
+                                                    dii_left = (delegate_internal_interface)ctn.generic_params[0].get_internal_interface(internal_interface_kind.delegate_interface);
+                                                    if (dii_left != null)
+                                                        break;
+                                                }
+                                                if (ctn2 != null && ctn2.is_generic_type_instance && ctn2.instance_params.Count > 0 && fn.parameters[0].type.is_generic_type_instance && ctn2.original_generic == fn.parameters[0].type.original_generic)
+                                                {
+                                                    dii_left = (delegate_internal_interface)ctn2.instance_params[0].get_internal_interface(internal_interface_kind.delegate_interface);
+                                                    if (dii_left != null)
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (dii_left == null)
+                            visitor.AddError(visitor.get_location(lambdaDef), "ILLEGAL_LAMBDA_VARIABLE_TYPE");
+                    } 
                     else
                         return;
                 }

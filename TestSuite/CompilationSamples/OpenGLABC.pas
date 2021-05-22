@@ -6,7 +6,6 @@ unit OpenGLABC;
 interface
 
 uses OpenGL;
-uses OpenGLABCBase;
 
 implementation
 

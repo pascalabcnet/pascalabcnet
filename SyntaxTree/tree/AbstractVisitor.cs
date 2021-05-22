@@ -1282,6 +1282,21 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_semantic_ith_element_of);
 		}
+
+		public virtual void visit(bigint_const _bigint_const)
+		{
+			DefaultVisit(_bigint_const);
+		}
+
+		public virtual void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			DefaultVisit(_foreach_stmt_formatting);
+		}
+
+		public virtual void visit(property_ident _property_ident)
+		{
+			DefaultVisit(_property_ident);
+		}
 	}
 
 
