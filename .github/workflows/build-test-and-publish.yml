@@ -1,11 +1,11 @@
-name: Build & Test (CI)
+name: Build & Test (Debug)
 
 on: #[push, pull_request]
   workflow_dispatch:
 
-  #push:
-  #  branches:
-  #    - master
+  push:
+    branches:
+      - test
 
   #pull_request:
   #  branches:
@@ -20,9 +20,10 @@ jobs:
 
     name: Prepare and build on Windows Server 2016 VM
     runs-on: windows-2016
+    timeout-minutes: 40
     #continue-on-error: true
     steps:
-    - run: git config --global core.autocrlf true
+    #- run: git config --global core.autocrlf true
 
     - uses: actions/checkout@v2
 
@@ -65,8 +66,8 @@ jobs:
         name: PascalABCNET_Win_Mac_Linux_console
         path: Release/PABCNETC.zip
 
-    #- name: Publish artifacts (5/5)...
-    #  uses: actions/upload-artifact@v2.1.0
-    #  with:
-    #    name: All_distros
-    #    path: Release
+#    - name: Publish artifacts (5/5)...
+#      uses: actions/upload-artifact@v2.1.0
+#      with:
+#        name: All_distros
+#        path: Release
