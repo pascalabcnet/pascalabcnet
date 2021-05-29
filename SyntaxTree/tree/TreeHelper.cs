@@ -2081,4 +2081,9 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class class_definition
+    {
+        public bool IsDataClass { get ; set; }
+    }
+
 }
