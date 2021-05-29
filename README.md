@@ -1,4 +1,4 @@
-[![Build & Test (Debug)](https://github.com/spectatorBH/pascalabcnet/actions/workflows/build-test-and-publish.yml/badge.svg)](https://github.com/spectatorBH/pascalabcnet/actions/workflows/build-test-and-publish.yml)
+[![Build & Test (Debug)](https://github.com/spectatorBH/pascalabcnet/actions/workflows/build-test-and-publish.yml/badge.svg)](https://github.com/spectatorBH/pascalabcnet/actions/workflows/build-test-and-publish.yml) [![Build & Publish (release)](https://github.com/spectatorBH/pascalabcnet/actions/workflows/build-and-publish.yml/badge.svg)](https://github.com/spectatorBH/pascalabcnet/actions/workflows/build-and-publish.yml)
 
 ## Building PascalABC.NET in Windows
 ***Run _RegisterHelix.bat on first use to install the HelixToolkit.dll and HelixToolkit.Wpf.dll in GAC***
