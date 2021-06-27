@@ -11305,7 +11305,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
 
                     }
-                    else if (decl is procedure_definition && get_location(decl) == null)
+                    else if (decl is procedure_definition /*&& get_location(decl) == null*/)
                     {
                         //yield 
                     }
