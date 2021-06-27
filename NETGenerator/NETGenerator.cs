@@ -7136,9 +7136,9 @@ namespace PascalABCCompiler.NETGenerator
                 ICompiledTypeNode ctn2 = parameters[i].type as ICompiledTypeNode;
                 ITypeNode ctn3 = real_parameters[i].type;
                 ITypeNode ctn4 = real_parameters[i].conversion_type;
-                if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && (ctn3.is_value_type || ctn3.is_generic_parameter) && ctn2.compiled_type == TypeFactory.ObjectType)
+                if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && (ctn3.is_value_type || ctn3.is_generic_parameter) && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
                     il.Emit(OpCodes.Box, helper.GetTypeReference(ctn3).tp);
-                else if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && ctn4 != null && (ctn4.is_value_type || ctn4.is_generic_parameter) && ctn2.compiled_type == TypeFactory.ObjectType)
+                else if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && ctn4 != null && (ctn4.is_value_type || ctn4.is_generic_parameter) && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
                     il.Emit(OpCodes.Box, helper.GetTypeReference(ctn4).tp);
                 is_addr = false;
             }
