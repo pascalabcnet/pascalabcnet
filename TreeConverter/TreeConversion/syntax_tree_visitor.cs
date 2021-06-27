@@ -11361,6 +11361,11 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }
                     }
+                    else if (decl is procedure_definition)
+                    {
+                        SemanticRules.OrderIndependedFunctionNames = true;
+                        hard_node_test_and_visit(decl);
+                    }
                     
                 }
                 context.leave_scope();
@@ -11373,7 +11378,19 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (decl is procedure_definition)
                     {
-                        hard_node_test_and_visit(decl);
+                        common_function_node cfn = context.get_method_to_realize(decl);
+
+                        if (cfn != null)
+                        {
+                            context.push_function(cfn);
+                            
+                            if ((decl as SyntaxTree.procedure_definition).proc_body != null)
+                            {
+                                hard_node_test_and_visit((decl as SyntaxTree.procedure_definition).proc_body);
+                                add_clip_for_set(context.top_function);
+                                context.leave_block();
+                            }
+                        }
                     }
                 }
                 context.leave_scope();
