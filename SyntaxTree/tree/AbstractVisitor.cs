@@ -1297,6 +1297,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_property_ident);
 		}
+
+		public virtual void visit(expression_with_let _expression_with_let)
+		{
+			DefaultVisit(_expression_with_let);
+		}
 	}
 
 

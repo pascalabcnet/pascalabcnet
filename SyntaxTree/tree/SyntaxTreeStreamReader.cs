@@ -536,6 +536,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new foreach_stmt_formatting();
 				case 257:
 					return new property_ident();
+				case 258:
+					return new expression_with_let();
 			}
 			return null;
 		}
@@ -4499,6 +4501,19 @@ namespace PascalABCCompiler.SyntaxTree
 					_property_ident.ln.Add(_read_node() as ident);
 				}
 			}
+		}
+
+
+		public void visit(expression_with_let _expression_with_let)
+		{
+			read_expression_with_let(_expression_with_let);
+		}
+
+		public void read_expression_with_let(expression_with_let _expression_with_let)
+		{
+			read_addressed_value(_expression_with_let);
+			_expression_with_let.stat = _read_node() as statement_list;
+			_expression_with_let.expr = _read_node() as expression;
 		}
 
 	}

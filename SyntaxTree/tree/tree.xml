@@ -3323,6 +3323,17 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="expression_with_let" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="stat" SyntaxType="statement_list" />
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3422,6 +3433,7 @@
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
       <HelpData Key=".simple_expr" Value="" />
       <HelpData Key=".specificator" Value="" />
+      <HelpData Key=".st" Value="" />
       <HelpData Key=".stat" Value="" />
       <HelpData Key=".statements" Value="" />
       <HelpData Key=".step" Value="" />
@@ -3827,6 +3839,7 @@
       <HelpData Key="exit_directive" Value="" />
       <HelpData Key="expr_collection_pattern_item" Value="" />
       <HelpData Key="expr_collection_pattern_item.item_expression" Value="" />
+      <HelpData Key="expr_with_let" Value="" />
       <HelpData Key="expression" Value="Выражение" />
       <HelpData Key="expression." Value="" />
       <HelpData Key="expression_as_statement" Value="" />
@@ -3844,6 +3857,9 @@
       <HelpData Key="expression_list.override string ToString()" Value="" />
       <HelpData Key="expression_list.void Add(expression ex)" Value="" />
       <HelpData Key="expression_list.void Add(expression ex, SourceContext sc)" Value="" />
+      <HelpData Key="expression_with_let" Value="" />
+      <HelpData Key="expression_with_let.expr" Value="" />
+      <HelpData Key="expression_with_let.stat" Value="" />
       <HelpData Key="external_directive" Value="expression может быть literal или ident" />
       <HelpData Key="external_directive.modulename" Value="" />
       <HelpData Key="external_directive.name" Value="" />
