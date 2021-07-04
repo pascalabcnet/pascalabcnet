@@ -1,11 +1,13 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Center">
+<param name="Keyword" value="Clear">
 <param name="Keyword" value="ClientRect">
 <param name="Keyword" value="Fill">
 <param name="Keyword" value="GraphWindowType">
 <param name="Keyword" value="Height">
 <param name="Keyword" value="Left">
 <param name="Keyword" value="Load">
+<param name="Keyword" value="RandomPoint">
 <param name="Keyword" value="Save">
 <param name="Keyword" value="Top">
 <param name="Keyword" value="Width"></object>
@@ -27,8 +29,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр графического окна</td></tr>
 <tr><td><code><b>function</b> ClientRect: GRect;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Клиентский прямоугольник графического окна</td></tr>
+<tr><td><code><b>function</b> RandomPoint(margin: real := 0): Point;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайную точку в границах экрана. Необязательный параметр margin задаёт минимальный отступ от границы</td></tr>
 </tr>
-<tr><tr><td><code><b>procedure</b> Fill(fname: string);</code>
+<tr><tr><td><code><b>procedure</b> Clear;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно белым цветом</td></tr>
+<tr><td><code><b>procedure</b> Fill(fname: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет содержимое графического окна обоями из файла с именем fname</td></tr>
 <tr><td><code><b>procedure</b> Load(fname: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Восстанавливает содержимое графического окна из файла с именем fname</td></tr>

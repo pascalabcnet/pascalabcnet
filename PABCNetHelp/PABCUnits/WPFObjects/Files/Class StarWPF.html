@@ -15,10 +15,14 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает звезду заданного цвета с координатами центра (x,y), радиусом описанной окружности r и внутренним радиусом rinternal</td></tr>
 <tr><td><code><b>constructor</b> (p: Point; r,rinternal: real; n: integer; c: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает звезду заданного цвета c центром в точке p, радиусом описанной окружности r и внутренним радиусом rinternal</td></tr>
-<tr><td><code><b>constructor</b> (x,y,r,rinternal: real; n: integer; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);</code>
+<tr><td><code><b>constructor</b> (x,y,r,rinternal: real; n: integer; c: GColor; borderWidth: real; borderColor: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает звезду заданного цвета с координатами центра (x,y), радиусом описанной окружности r и внутренним радиусом rinternal, с границей ширины borderWidth и цвета borderColor</td></tr>
-<tr><td><code><b>constructor</b> (p: Point; r,rinternal: real; n: integer; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);</code>
+<tr><td><code><b>constructor</b> (x,y,r,rinternal: real; n: integer; c: GColor; borderWidth: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает звезду заданного цвета с координатами центра (x,y), радиусом описанной окружности r и внутренним радиусом rinternal, с границей ширины borderWidth</td></tr>
+<tr><td><code><b>constructor</b> (p: Point; r,rinternal: real; n: integer; c: GColor; borderWidth: real; borderColor: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает звезду заданного цвета c центром в точке p, радиусом описанной окружности r и внутренним радиусом rinternal, с границей ширины borderWidth и цвета borderColor</td></tr>
+<tr><td><code><b>constructor</b> (p: Point; r,rinternal: real; n: integer; c: GColor; borderWidth: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает звезду заданного цвета c центром в точке p, радиусом описанной окружности r и внутренним радиусом rinternal, с границей ширины borderWidth</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса StarWPF</font></td></tr>
 
 <tr><tr><td><code><b>property</b> Count: integer;</code>
@@ -31,11 +35,15 @@
 
 <tr><tr><td><code><b>function</b> RemoveBorder: StarWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): StarWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real; c: GColor): StarWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1): StarWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 <tr><td><code><b>function</b> SetRotate(da: real): StarWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): StarWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real; fontname: string; c: GColor): StarWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'): StarWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса RegularPolygonWPF</font></td></tr>
 
@@ -51,11 +59,15 @@
 
 <tr><tr><td><code><b>function</b> RemoveBorder: RegularPolygonWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): RegularPolygonWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real; c: GColor): RegularPolygonWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1): RegularPolygonWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 <tr><td><code><b>function</b> SetRotate(da: real): RegularPolygonWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RegularPolygonWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real; fontname: string; c: GColor): RegularPolygonWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'): RegularPolygonWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса BoundedObjectWPF</font></td></tr>
 
@@ -69,7 +81,9 @@
 
 <tr><tr><td><code><b>function</b> RemoveBorder: BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): BoundedObjectWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real; c: GColor): BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1): BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 

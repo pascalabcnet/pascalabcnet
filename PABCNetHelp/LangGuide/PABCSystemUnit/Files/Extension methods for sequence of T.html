@@ -14,6 +14,7 @@
 <param name="Keyword" value="MaxBy">
 <param name="Keyword" value="MinBy">
 <param name="Keyword" value="Numerate">
+<param name="Keyword" value="Nwise">
 <param name="Keyword" value="Order">
 <param name="Keyword" value="OrderDescending">
 <param name="Keyword" value="Pairwise">
@@ -49,9 +50,9 @@
 <tr><td><code><b>function</b> Batch&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer; proj: Func&lt;IEnumerable&lt;T&gt;, Res&gt;): <b>sequence </b>  <b>of</b> Res;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательность на серии длины size и применяет проекцию к каждой серии</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декартово произведение последовательностей</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности пар</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;T2): <b>sequence </b>  <b>of</b> T2;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декартово произведение последовательностей</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую пару на значение</td></tr>
 <tr><td><code><b>function</b> CountOf&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов, равных указанному значению</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: T -&gt; ());</code>
@@ -100,6 +101,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Нумерует последовательность с единицы</td></tr>
 <tr><td><code><b>function</b> Numerate&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from: integer): <b>sequence </b>  <b>of</b> (integer, T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Нумерует последовательность с номера from</td></tr>
+<tr><td><code><b>function</b> Nwise&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; n: integer):<b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Превращает последовательность в последовательность n-ок соседних элементов</td></tr>
 <tr><td><code><b>function</b> Order&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по возрастанию последовательность</td></tr>
 <tr><td><code><b>function</b> OrderDescending&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>

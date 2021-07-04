@@ -10,12 +10,16 @@
 
 <tr><tr><td><code><b>constructor</b> (x,y,w,h: real; c: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла (x,y)</td></tr>
+<tr><td><code><b>constructor</b> (x,y,w,h: real; c: GColor; borderWidth: real; borderColor: GColor);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла (x,y), с границей ширины borderWidth и цвета borderColor</td></tr>
+<tr><td><code><b>constructor</b> (x,y,w,h: real; c: GColor; borderWidth: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла (x,y), с границей ширины borderWidth</td></tr>
 <tr><td><code><b>constructor</b> (p: Point; w,h: real; c: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла, задаваемыми точкой p</td></tr>
-<tr><td><code><b>constructor</b> (x,y,w,h: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла (x,y), с границей ширины borderWidth и цвета borderColor</td></tr>
-<tr><td><code><b>constructor</b> (p: Point; w,h: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);</code>
+<tr><td><code><b>constructor</b> (p: Point; w,h: real; c: GColor; borderWidth: real; borderColor: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла, задаваемыми точкой p, с границей ширины borderWidth и цвета borderColor</td></tr>
+<tr><td><code><b>constructor</b> (p: Point; w,h: real; c: GColor; borderWidth: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла, задаваемыми точкой p, с границей ширины borderWidth</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса RectangleWPF</font></td></tr>
 
 <tr><tr><td><code><b>function</b> RemoveBorder;</code>
@@ -24,7 +28,9 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 <tr><td><code><b>function</b> SetRotate(da: real): RectangleWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RectangleWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real; fontname: string; c: GColor): RectangleWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'): RectangleWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса BoundedObjectWPF</font></td></tr>
 
@@ -38,7 +44,9 @@
 
 <tr><tr><td><code><b>function</b> RemoveBorder: BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): BoundedObjectWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real; c: GColor): BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1): BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 
