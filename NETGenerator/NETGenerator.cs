@@ -9629,7 +9629,7 @@ namespace PascalABCCompiler.NETGenerator
                             il.Emit(OpCodes.Stloc, vi.lb);
                             il.Emit(OpCodes.Ldloc, vi.lb);
                         }
-                        AssignToField((value.array as ICommonClassFieldReferenceNode));
+                        
                     }
                          
                     copy_string = false;
