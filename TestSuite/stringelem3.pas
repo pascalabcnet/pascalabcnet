@@ -8,4 +8,5 @@ begin
   p1(s1[2]);
   Assert(s<>s1);
   Assert(s2<>s1);
+  assert(s1='1_3');
 end.

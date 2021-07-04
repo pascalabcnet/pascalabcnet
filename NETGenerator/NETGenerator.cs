@@ -9608,6 +9608,9 @@ namespace PascalABCCompiler.NETGenerator
                 Label false_lbl = il.DefineLabel();
                 if (copy_string)
                 {
+                    /*var mcall = new TreeRealization.compiled_static_method_call(TreeRealization.compiled_function_node.get_compiled_method(TypeFactory.StringCopyMethod), null);
+                    mcall.parameters.AddElement(value.array as TreeRealization.expression_node);
+                    ConvertAssignExpr(value.array, mcall);*/
                     if (value.array is ILocalBlockVariableReferenceNode || value.array is ILocalVariableReferenceNode || value.array is INamespaceVariableReferenceNode)
                     {
                         il.Emit(OpCodes.Call, TypeFactory.StringCopyMethod);
@@ -9625,9 +9628,14 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else if (value.array is INamespaceVariableReferenceNode)
                         {
-                            var vi = helper.GetVariable((value.array as ILocalBlockVariableReferenceNode).Variable);
-                            il.Emit(OpCodes.Stloc, vi.lb);
-                            il.Emit(OpCodes.Ldloc, vi.lb);
+                            VarInfo vi = helper.GetVariable((value.array as INamespaceVariableReferenceNode).Variable);
+                            if (vi == null)
+                            {
+                                ConvertGlobalVariable((value.array as INamespaceVariableReferenceNode).variable);
+                                vi = helper.GetVariable((value.array as INamespaceVariableReferenceNode).Variable);
+                            }
+                            il.Emit(OpCodes.Stsfld, vi.fb);
+                            il.Emit(OpCodes.Ldsfld, vi.fb);
                         }
                         
                     }
