@@ -21423,5 +21423,11 @@ namespace PascalABCCompiler.TreeConverter
 
             visit(mc);*/
         }
+
+        public override void visit(SyntaxTree.expression_with_let _ex_with_let)
+        {
+
+        }
+
     }
 }

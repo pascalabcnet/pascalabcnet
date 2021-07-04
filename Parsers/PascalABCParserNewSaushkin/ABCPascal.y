@@ -183,6 +183,7 @@
 %type <ti> tkAssignOrEqual
 %type <stn> const_pattern_expression pattern deconstruction_or_const_pattern pattern_optional_var collection_pattern tuple_pattern collection_pattern_list_item tuple_pattern_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list const_pattern_expr_list
+%type <stn> var_with_init_for_expr_with_let var_with_init_for_expr_with_let_list
 
 %%
 
@@ -3238,13 +3239,6 @@ expr
     | format_expr
 		{ $$ = $1; }
     ;
-    /*
-expr_l1_for_indexer
-    : expr_l1 
-        { $$ = $1; }
-    | format_expr
-		{ $$ = $1; }
-    ;*/
 
 expr_l1
     : expr_dq
@@ -4168,6 +4162,25 @@ variable_or_literal_or_number
 		{ $$ = $1; }
 	;
 	
+var_with_init_for_expr_with_let
+	: tkVar identifier tkAssign expr tkSemiColon
+		{
+			$$ = new assign($2 as addressed_value, $4, Operators.Assignment, @$);
+		}
+	;
+	
+var_with_init_for_expr_with_let_list
+	: var_with_init_for_expr_with_let 
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| var_with_init_for_expr_with_let_list var_with_init_for_expr_with_let
+		{
+			$1 = new statement_list($2 as statement, @$);
+			$$ = $1;
+		}
+	;
+	
 variable
     : identifier 
 		{ $$ = $1; }
@@ -4177,7 +4190,6 @@ variable
         { 
 			$$ = new inherited_ident($2.name, @$);
 		}
-	
     | tkRoundOpen expr tkRoundClose         
         {
 		    if (!parsertools.build_tree_for_formatter) 
@@ -4187,6 +4199,15 @@ variable
             } 
 			else $$ = new bracket_expr($2, @$);
         }
+    | tkRoundOpen var_with_init_for_expr_with_let_list expr tkRoundClose
+		{
+		    if (!parsertools.build_tree_for_formatter) 
+            {
+                $3.source_context = @$;
+                $$ = $3;
+            } 
+			else $$ = new expression_with_let($2 as statement_list, $2 as expression, @$);
+		}		
     | sizeof_expr
 		{ $$ = $1; }
     | typeof_expr
