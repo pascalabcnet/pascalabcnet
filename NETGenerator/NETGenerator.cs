@@ -137,6 +137,7 @@ namespace PascalABCCompiler.NETGenerator
         protected int uid = 1;//счетчик для задания уникальных имен (исп. при именовании классов-оболочек над влож. ф-ми)
         protected List<ICommonFunctionNode> funcs = new List<ICommonFunctionNode>();//
         protected bool is_addr = false;//флаг, передается ли значение как факт. var-параметр
+        protected bool copy_string = false;
         protected string cur_unit;//имя текущего модуля
         protected ConstructorBuilder cur_cnstr;//текущий конструктор - тоже нужен (ssyy)
         protected bool is_dot_expr = false;//флаг, стоит ли после выражения точка (нужно для упаковки размерных типов)
@@ -7783,7 +7784,11 @@ namespace PascalABCCompiler.NETGenerator
                     is_addr = true;
                 ITypeNode ctn = real_parameters[i].type;
                 TypeInfo ti = null;
-
+                if (parameters[i].type is ICompiledTypeNode && (parameters[i].type as ICompiledTypeNode).compiled_type == TypeFactory.CharType && parameters[i].parameter_type == parameter_type.var
+                    && real_parameters[i] is ISimpleArrayIndexingNode && helper.GetTypeReference((real_parameters[i] as ISimpleArrayIndexingNode).array.type).tp == TypeFactory.StringType)
+                {
+                    copy_string = true;
+                }
                 //(ssyy) moved up
                 ITypeNode tn2 = parameters[i].type;
                 ICompiledTypeNode ctn2 = tn2 as ICompiledTypeNode;
@@ -9601,6 +9606,34 @@ namespace PascalABCCompiler.NETGenerator
                 LocalBuilder chr_ptr_lb = il.DeclareLocal(TypeFactory.CharType.MakePointerType());
                 //pinned_handle = il.DeclareLocal(TypeFactory.GCHandleType);
                 Label false_lbl = il.DefineLabel();
+                if (copy_string)
+                {
+                    if (value.array is ILocalBlockVariableReferenceNode || value.array is ILocalVariableReferenceNode || value.array is INamespaceVariableReferenceNode)
+                    {
+                        il.Emit(OpCodes.Call, TypeFactory.StringCopyMethod);
+                        if (value.array is ILocalVariableReferenceNode)
+                        {
+                            var vi = helper.GetVariable((value.array as ILocalVariableReferenceNode).Variable);
+                            il.Emit(OpCodes.Stloc, vi.lb);
+                            il.Emit(OpCodes.Ldloc, vi.lb);
+                        }
+                        else if (value.array is ILocalBlockVariableReferenceNode)
+                        {
+                            var vi = helper.GetVariable((value.array as ILocalBlockVariableReferenceNode).Variable);
+                            il.Emit(OpCodes.Stloc, vi.lb);
+                            il.Emit(OpCodes.Ldloc, vi.lb);
+                        }
+                        else if (value.array is INamespaceVariableReferenceNode)
+                        {
+                            var vi = helper.GetVariable((value.array as ILocalBlockVariableReferenceNode).Variable);
+                            il.Emit(OpCodes.Stloc, vi.lb);
+                            il.Emit(OpCodes.Ldloc, vi.lb);
+                        }
+                        AssignToField((value.array as ICommonClassFieldReferenceNode));
+                    }
+                         
+                    copy_string = false;
+                }
                 il.Emit(OpCodes.Stloc, pin_lb);
                 /*il.Emit(OpCodes.Ldloc, pin_lb);
                 il.Emit(OpCodes.Ldc_I4, (int)GCHandleType.Pinned);
