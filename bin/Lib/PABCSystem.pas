@@ -8687,14 +8687,14 @@ begin
   Result := integer(a);
 end;
 
-function Chr(a: word): char;
-begin
-  Result := Convert.ToChar(a);
-end;
-
 function Ord(a: char): word;
 begin
   Result := word(a);
+end;
+
+function Chr(a: word): char;
+begin
+  Result := Convert.ToChar(a);
 end;
 
 function ChrUnicode(a: word): char;

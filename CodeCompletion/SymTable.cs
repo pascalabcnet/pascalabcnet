@@ -3543,7 +3543,20 @@ namespace CodeCompletion
 
         public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
         {
+            if (is_dynamic_arr || IsMultiDynArray)
+            {
+                List<SymInfo> syms = new List<SymInfo>();
+                syms.AddRange(base.GetNames(ev, keyword, called_in_base));
+                if (!IsMultiDynArray && implemented_interfaces != null)
+                {
+                    foreach (TypeScope ts in implemented_interfaces)
+                        syms.AddRange(ts.GetNamesAsInObject(ev));
+                }
+                return syms.ToArray();
+            }
             return new SymInfo[0];
+            //return new SymInfo[0];
+            //return base.GetNames(ev, keyword, called_in_base);
         }
 
         //u staticheskogo massiva prinimaem, chto net metodov i sv-v, u dinam. est

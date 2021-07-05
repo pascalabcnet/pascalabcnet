@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
@@ -2023,7 +2024,14 @@ namespace CodeCompletion
 
         public override void visit(array_const_new acn)
         {
-
+            acn.elements.expressions[0].visit(this);
+            var rr = this.returned_scope;
+            //var nn = new new_expr((syntax_type, plist, true, new SyntaxTree.array_const(acn.elements, acn.elements.source_context), acn.source_context);
+            //var nn = new new_expr($2, el, true, $6 as array_const, @$);
+            var dn = new dot_node(new ident("PABCSystem"), new ident("Arr"), acn.source_context);
+            var el = new expression_list(acn.elements.expressions[0], acn.source_context);
+            var nn = new method_call(dn, el, acn.source_context);
+            visit(nn);
         }
     }
 }

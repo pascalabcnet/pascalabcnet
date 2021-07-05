@@ -1348,6 +1348,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public enum MoreSpecific { Left, Right, None}
 
+        // SSM 04/07/2021
         public MoreSpecific compare_more_specific(function_node left_func, function_node right_func)
         {
             bool LeftIsMoreSpecific = false;
