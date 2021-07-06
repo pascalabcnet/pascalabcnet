@@ -5798,7 +5798,9 @@ namespace PascalABCCompiler.TreeConverter
 
                                         function_node fn = null;
                                         if (!skip_first_parameter || sil.Count() == 1)
+                                        {
                                             fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
+                                        }
                                         else
                                         {
                                             try

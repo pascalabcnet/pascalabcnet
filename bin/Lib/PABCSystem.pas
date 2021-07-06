@@ -12554,6 +12554,21 @@ begin
   Result := TruncBigInteger(Self);
 end;
 
+/// Возвращает наибольшее целое, меньшее или равное вещественному числу
+function Floor(Self: real): integer; extensionmethod;
+begin
+  Result := Floor(Self);
+end;
+
+/// Возвращает наменьшее целое, большее или равное вещественному числу
+function Ceil(Self: real): integer; extensionmethod;
+begin
+  Result := Ceil(Self);
+end;
+
+
+
+
 /// Возвращает вещественное, отформатированное к строке с frac цифрами после десятичной точки
 function ToString(Self: real; frac: integer): string; extensionmethod;
 begin
