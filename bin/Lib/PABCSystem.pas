@@ -13063,6 +13063,12 @@ begin
   Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
 end;
 
+/// Возвращает частотный словарь объектов последовательности
+function EachCount<T>(Self: sequence of T): Dictionary<T,integer>; extensionmethod;
+begin
+  Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> g.Count);
+end;
+
 /// Возвращает словарь, сопоставляющий ключу группы результат групповой операции
 function Each<Key,Source,Res>(Self: sequence of System.Linq.IGrouping<Key,Source>; grOperation: System.Linq.IGrouping<Key,Source> -> Res): Dictionary<Key,Res>; extensionmethod;
 begin
