@@ -370,7 +370,7 @@ type
   private 
     fi: FileInfo;
     sr: StreamReader;
-    sw: StreamWriter;
+    sw: TextWriter;
   public 
     /// Возвращает значение типа integer, введенное из текстового файла
     function ReadInteger: integer;
@@ -2502,6 +2502,8 @@ var
   output: TextFile;
   /// Стандартный текстовый файл для ввода. Связывается процедурой Assign с файлом на диске, после чего весь ввод с консоли перенаправляется из этого файла
   input: TextFile;
+  /// Стандартный текстовый файл ошибок. Связывается процедурой Assign с файлом на диске, после чего весь вывод с использованием ErrOutput перенаправляется в этот файл
+  ErrOutput: TextFile;
   /// Определяет текущую систему ввода-вывода
   CurrentIOSystem: IOSystem;
   /// Принимает значение True, если приложение имеет консольное окно
@@ -6807,7 +6809,7 @@ end;
 
 procedure Write(obj: object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
     write_in_output(obj)
   else CurrentIOSystem.Write(obj);
 end;
@@ -6819,7 +6821,7 @@ end;
 
 procedure Write(obj1, obj2: object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
   begin
     write_in_output(obj1);
     write_in_output(obj2);
@@ -6834,7 +6836,7 @@ end;
 procedure Write(params args: array of object);
 begin
   for var i := 0 to args.length - 1 do
-    if output.sw <> nil then
+    if output.sw is StreamWriter then
       write_in_output(args[i])
     else
       CurrentIOSystem.Write(args[i]);
@@ -6842,7 +6844,7 @@ end;
 
 procedure Writeln(obj: object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
   begin
     write_in_output(obj);
     writeln_in_output;
@@ -6862,7 +6864,7 @@ end;
 
 procedure Writeln(obj1, obj2: object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
   begin
     write_in_output(obj1);
     write_in_output(obj2);
@@ -6878,14 +6880,14 @@ end;
 
 procedure Writeln;
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
     writeln_in_output
   else CurrentIOSystem.Writeln;
 end;
 
 procedure Writeln(params args: array of object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
   begin
     for var i := 0 to args.length - 1 do
       write_in_output(args[i]);
@@ -6905,7 +6907,7 @@ end;
 
 procedure Write(f: Text; val: object);
 begin
-  if f.fi = nil then
+  if (f.fi = nil) and (f<>output) and (f<>ErrOutput) then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
@@ -6934,7 +6936,7 @@ end;
 
 procedure Writeln(f: Text);
 begin
-  if f.fi = nil then
+  if (f.fi = nil) and (f<>output) and (f<>ErrOutput) then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
@@ -7154,7 +7156,8 @@ begin
   end
   else 
   begin
-    f.sw.BaseStream.Position := 0;
+    if f.sw is StreamWriter then
+      (f.sw as StreamWriter).BaseStream.Position := 0;
   end;
 end;
 
@@ -13982,8 +13985,11 @@ begin
   // SSM 10/11/18 восстановил эту строку чтобы в главном потоке в вещественных была точка
   System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
 
-  output := new TextFile();
   input := new TextFile();
+  output := new TextFile();
+  output.sw := Console.Out;
+  ErrOutput := new TextFile();
+  ErrOutput.sw := Console.Error;
 
   {if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
     foreach var listener in System.Diagnostics.Trace.Listeners do
@@ -14010,7 +14016,7 @@ end;
 
 procedure __FinalizeModule__;
 begin
-  if (output.sw <> nil) and (output.sw.BaseStream <> nil) then
+  if (output.sw <> nil) and (output.sw is StreamWriter) and ((output.sw as StreamWriter).BaseStream <> nil) then
     output.sw.Close;
   if (input.sr <> nil) and (input.sr.BaseStream <> nil) then
     input.sr.Close;

@@ -901,6 +901,15 @@ namespace PascalABCCompiler.TreeRealization
                         .Select(t => t.Index)
                         .ToArray();
 
+                // SSM 08/07/21 попытаться вывести нефункциональные параметры первыми
+                /*for (int i = 0; i < count_params_to_see; ++i)
+                    if (!(fact[i].type is delegated_methods))
+                    {
+                        bool b = DeduceInstanceTypes(formal[i].type, fact[i].type, deduced, nils, generic_params);
+                        b = b;
+                    }*/
+                        
+
                 for (int i = 0; i < count_params_to_see; ++i)
                 {
                     if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null && DeduceInstanceTypes(formal[i].type, (fact[i].type as delegated_methods).empty_param_method.type, deduced, nils, generic_params))
@@ -1213,6 +1222,8 @@ namespace PascalABCCompiler.TreeRealization
                         }
                             
                     }
+                    // SSM 09.07 - My(f: T->T1) при наличии двух f - следующие 2 else дают пропуск этой ошибки!! Она внесена 10.01 в 20:54 при исправлении 1093
+                    // Видимо, это улучшило ситуацию - просто надо точнее отбрасывать часть fact_funcs
                     else if (dm != null && dm.proper_methods.Count > 1 && formal_type.original_generic is compiled_type_node && (formal_type.original_generic as compiled_type_node).compiled_type.FullName.StartsWith("System.Func`"))
                     {
                         var ctn = formal_type.original_generic as compiled_type_node;
@@ -1234,7 +1245,8 @@ namespace PascalABCCompiler.TreeRealization
                                 fact_funcs.Add(fc.simple_function_node);
                             }
                         }
-                    }    
+                    }
+                    // end SSM 09.07 - конец кода, который был написан раньше IB. Здесь поясняется его влияние на ошибки
                     for (int j = 0; j < fact_funcs.Count; j++)
                     {
                         fact_func = fact_funcs[j];
