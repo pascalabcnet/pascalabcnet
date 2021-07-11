@@ -7062,7 +7062,7 @@ begin
     on e: Exception do
       raise e;
   end;
-  if f = output then
+  if (f = output) or (f = ErrOutput) then
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
   begin  
@@ -14018,6 +14018,8 @@ procedure __FinalizeModule__;
 begin
   if (output.sw <> nil) and (output.sw is StreamWriter) and ((output.sw as StreamWriter).BaseStream <> nil) then
     output.sw.Close;
+  if (ErrOutput.sw <> nil) and (ErrOutput.sw is StreamWriter) and ((ErrOutput.sw as StreamWriter).BaseStream <> nil) then
+    ErrOutput.sw.Close;
   if (input.sr <> nil) and (input.sr.BaseStream <> nil) then
     input.sr.Close;
 end;

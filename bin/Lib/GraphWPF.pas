@@ -703,6 +703,7 @@ function TextHeightPFont(text: string; f: FontOptions): real;
 /// Размер текста (совместно с FastDraw)
 function TextSizePFont(text: string; f: FontOptions): Size;
 
+procedure AddToHost(v: Visual);
 
 {function GetDC: DrawingContext;
 procedure ReleaseDC(dc: DrawingContext);
@@ -788,6 +789,11 @@ var
   YOrigin := 0.0;
   GlobalScale := 1.0;
   CurrentCoordType: CoordType := StandardCoords;
+
+procedure AddToHost(v: Visual);
+begin
+  Host.children.Add(v);
+end;
 
 function GetDC: DrawingContext;
 begin
