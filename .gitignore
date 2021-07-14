@@ -50,3 +50,8 @@ bin/System.dll.txt
 bin/mscorlib.txt
 bin/pabcnetc.exe
 bin/pabcnetcclear.exe
+*.exe
+*.pdb
+*.dll
+*.pcu
+*.user
