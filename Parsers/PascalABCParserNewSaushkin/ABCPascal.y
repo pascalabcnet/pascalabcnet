@@ -5121,6 +5121,10 @@ common_lambda_body
 		{
 			parsertools.AddErrorFromResource("YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY", @$);
 		}
+	| tkRoundOpen assignment tkRoundClose
+		{
+			$$ = new statement_list($2 as statement, @$);
+		}
 	;
 
 
