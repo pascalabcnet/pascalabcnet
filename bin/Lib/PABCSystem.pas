@@ -13020,10 +13020,10 @@ end;
 function SystemSlice0(Self: string; situation: integer; from, &to: SystemIndex; step: integer := 1): string; extensionmethod;
 begin
   if from.IsInverted then
-    from.IndexValue := Self.Count - from.IndexValue + 1;
+    from.IndexValue := Self.Count - from.IndexValue;
   if &to.IsInverted then
-    &to.IndexValue := Self.Count - &to.IndexValue + 1;
-  Result := SystemSliceStringImpl(Self, situation, from.IndexValue-1, &to.IndexValue-1, step, 0);
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceStringImpl(Self, situation, from.IndexValue, &to.IndexValue, step, 0);
 end;
 
 ///-- 
