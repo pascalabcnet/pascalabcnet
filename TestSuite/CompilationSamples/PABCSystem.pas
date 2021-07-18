@@ -5,6 +5,8 @@
 /// !! System unit
 unit PABCSystem;
 
+{$string_nullbased-}
+
 {$gendoc true}
 
 // Default Application type
@@ -12981,10 +12983,10 @@ begin
 end;
 
 ///-- 
-function SystemSliceStringImpl(Self: string; situation: integer; from, &to: integer; step: integer := 1): string;
+function SystemSliceStringImpl(Self: string; situation: integer; from, &to: integer; step: integer := 1; baseIndex: integer := 1): string;
 begin
-  var fromv := from - 1;
-  var tov := &to - 1;
+  var fromv := from - baseIndex;
+  var tov := &to - baseIndex;
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, fromv, tov, step);
   
   if step = 1 then // Opt s[a:b]
@@ -12999,6 +13001,12 @@ begin
 end;
 
 ///--
+function SystemSlice0(Self: string; situation: integer; from, &to: integer; step: integer := 1): string; extensionmethod;
+begin
+  Result := SystemSliceStringImpl(Self, situation, from, &to, step, 0); // 0 - NullBased
+end;
+
+///--
 function SystemSlice(Self: string; situation: integer; from, &to: SystemIndex; step: integer := 1): string; extensionmethod;
 begin
   if from.IsInverted then
@@ -13008,11 +13016,21 @@ begin
   Result := SystemSliceStringImpl(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
-///-- 
-function SystemSliceStringImplQuestion(Self: string; situation: integer; from, &to: integer; step: integer := 1): string;
+///--
+function SystemSlice0(Self: string; situation: integer; from, &to: SystemIndex; step: integer := 1): string; extensionmethod;
 begin
-  var fromv := from - 1;
-  var tov := &to - 1;
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
+  Result := SystemSliceStringImpl(Self, situation, from.IndexValue-1, &to.IndexValue-1, step, 0);
+end;
+
+///-- 
+function SystemSliceStringImplQuestion(Self: string; situation: integer; from, &to: integer; step: integer := 1; baseIndex: integer := 1): string;
+begin
+  var fromv := from - baseIndex;
+  var tov := &to - baseIndex;
   
   var count := CorrectFromToAndCalcCountForSystemSliceQuestion(situation, Self.Length, fromv, tov, step);
   
@@ -13027,6 +13045,16 @@ begin
   if &to.IsInverted then
     &to.IndexValue := Self.Count - &to.IndexValue + 1;
   Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
+end;
+
+///--
+function SystemSliceQuestion0(Self: string; situation: integer; from, &to: SystemIndex; step: integer := 1): string; extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
+  Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step, 0);
 end;
 //--------------------------------------------
 //>>     Методы расширения типа Func # Extension methods for Func

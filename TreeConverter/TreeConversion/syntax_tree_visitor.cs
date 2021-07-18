@@ -5404,6 +5404,20 @@ namespace PascalABCCompiler.TreeConverter
                         bool has_extension_overload = false;
                         semantic_node sn = convert_semantic_strong(_dot_node.left);
 
+                        // SSM 17/07/21 учёт NullBasedStrings в семантике срезов строк
+                        // Пока не получилось
+                        if (SemanticRules.NullBasedStrings
+                            && (sn as expression_node)?.type is compiled_type_node ctn && ctn.compiled_type == typeof(string)
+                            && _dot_node.right is ident id0 
+                            )
+                        {
+                            if (id0.name.ToLower() == "systemslice" 
+                                || id0.name.ToLower() == "systemslicequestion"
+                                || id0.name.ToLower() == "systemsliceassignment"
+                                )
+                              id0.name += "0";
+                        }
+
                         //SyntaxTree.ident id_right = ConvertOperatorNameToIdent(_dot_node.right as SyntaxTree.ident);
                         SyntaxTree.ident id_right = _dot_node.right as SyntaxTree.ident;
                         switch (sn.general_node_type)
