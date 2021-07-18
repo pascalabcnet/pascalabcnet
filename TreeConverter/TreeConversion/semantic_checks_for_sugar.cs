@@ -54,7 +54,7 @@ namespace PascalABCCompiler.TreeConverter
 
             var IsTuple = false;
             var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple"))
+            if (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"))
                 IsTuple = true;
             if (!IsTuple)
             {
