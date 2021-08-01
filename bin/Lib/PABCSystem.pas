@@ -2838,7 +2838,8 @@ const
   BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range of 2-dim array column indexes';
   SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size and assigned expression size must be equal';
   MATR_DIMENSIONS_MUST_BE_EQUAL = 'Размеры матриц должны совпадать!!Matrix dimensions must be equal';
-
+  COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1 = 'Количество параметров функции Max должно быть > 1!!The number of parameters of the Max function must be > 1';
+  COUNT_PARAMS_MINFUN_MUSTBE_GREATER1 = 'Количество параметров функции Min должно быть > 1!!The number of parameters of the Min function must be > 1';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -8474,8 +8475,19 @@ begin
   if d < Result then Result := d;
 end;
 
-function Min<T>(params a: array of T): T := a.Min;
-function Max<T>(params a: array of T): T := a.Max;
+function Min<T>(params a: array of T): T;
+begin
+  if a.Length<2 then
+    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MINFUN_MUSTBE_GREATER1));
+  Result := a.Min;
+end;
+  
+function Max<T>(params a: array of T): T;
+begin
+  if a.Length<2 then
+    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1));
+  Result := a.Max;
+end;
 
 {function Min(params a: array of real): real := a.Min;}
 
