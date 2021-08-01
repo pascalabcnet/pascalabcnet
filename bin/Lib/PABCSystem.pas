@@ -503,6 +503,7 @@ type
     function ToString: string; override;
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
+    class function InitBy<T>(s: sequence of T): TypedSet;
     //class function operator implicit<T>(a: array of T): TypedSet;
     function Count: integer := ht.Count;
     procedure Print(delim: string := ' ');
@@ -2849,7 +2850,7 @@ var
   
 type 
   BinaryFormatter = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
-
+  
 // -----------------------------------------------------
 //                  Internal functions
 // -----------------------------------------------------
@@ -3392,6 +3393,16 @@ begin
     hs.Add(T(key));  
   end;
   Result := hs; 
+end;
+
+class function TypedSet.InitBy<T>(s: sequence of T): TypedSet;
+begin
+  var ts := new TypedSet();
+  foreach key: T in s do
+  begin
+    ts.ht[key] := key;  
+  end;
+  Result := ts; 
 end;
 
 ///--

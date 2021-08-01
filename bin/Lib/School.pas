@@ -798,6 +798,22 @@ begin
   end  
 end;
 
+/// Возвращает все перестановки букв в строке в виде последовательности строк
+function Permutations(Self: string): sequence of string; extensionmethod 
+  := Self.ToCharArray.Permutations.Select(p->new string(p));
+
+/// Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк
+function Permutations(Self: string; m: integer): sequence of string; extensionmethod 
+  := Self.ToCharArray.Permutations(m).Select(p->new string(p));
+
+/// Возвращает n-тую декартову степень множества символов, заданного строкой
+function Cartesian(Self: string; n: integer): sequence of string; extensionmethod
+  := Self.ToCharArray.Cartesian(n).Select(p->new string(p));
+
+/// Возвращает все сочетания по m элементов
+function Combinations(Self: string; m: integer): sequence of string; extensionmethod
+  := Self.ToCharArray.Combinations(m).Select(p->new string(p));
+
 {$endregion}
 
 end.
