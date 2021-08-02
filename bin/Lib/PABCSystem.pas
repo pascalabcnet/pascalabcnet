@@ -11825,10 +11825,31 @@ begin
   System.Array.Sort(Self);  
 end;
 
+/// Сортирует массив по убыванию
+procedure SortDescending<T>(Self: array of T); extensionmethod;
+begin
+  System.Array.Sort(Self);
+  Reverse(Self);
+end;
+
 /// Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов
 procedure Sort<T>(Self: array of T; cmp: (T,T) ->integer); extensionmethod;
 begin
   System.Array.Sort(Self, cmp);  
+end;
+
+/// Сортирует массив по возрастанию по ключу
+procedure Sort<T,T1>(Self: array of T; keySelector: T -> T1); extensionmethod;
+begin
+  var a := Self.OrderBy(keySelector).ToArray;
+  System.Array.Copy(a,Self,a.Length);
+end;
+
+/// Сортирует массив по убыванию по ключу
+procedure SortDescending<T,T1>(Self: array of T; keySelector: T -> T1); extensionmethod;
+begin
+  var a := Self.OrderByDescending(keySelector).ToArray;
+  System.Array.Copy(a,Self,a.Length);
 end;
 
 /// Возвращает индекс последнего элемента массива
