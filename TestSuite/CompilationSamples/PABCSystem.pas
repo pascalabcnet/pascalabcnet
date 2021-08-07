@@ -2123,16 +2123,24 @@ procedure Sort<T>(a: array of T);
 procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(a: array of T; less: (T,T)->boolean);
+/// Сортирует динамический массив по ключу
+procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+/// Сортирует список по возрастанию по ключу
+procedure Sort<T,T1>(var l: List<T>; keySelector: T->T1);
 /// Сортирует динамический массив по убыванию
 procedure SortDescending<T>(a: array of T);
+/// Сортирует динамический массив по убыванию по ключу
+procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
 /// Сортирует список по убыванию
 procedure SortDescending<T>(l: List<T>);
+/// Сортирует список по убыванию по ключу
+procedure SortDescending<T,T1>(var l: List<T>; keySelector: T->T1);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
@@ -8585,9 +8593,19 @@ begin
   System.Array.Sort(a, (x, y)-> less(x, y) ? -1 : (less(y, x) ? 1 : 0));
 end;
 
+procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
+begin
+  a := a.OrderBy(x->keySelector(x)).ToArray;
+end;
+
 procedure Sort<T>(l: List<T>);
 begin
   l.Sort();
+end;
+
+procedure Sort<T,T1>(var l: List<T>; keySelector: T->T1);
+begin
+  l := l.OrderBy(x->keySelector(x)).ToList;
 end;
 
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
@@ -8606,10 +8624,20 @@ begin
   Reverse(a);
 end;
 
+procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
+begin
+  a := a.OrderByDescending(x->keySelector(x)).ToArray;
+end;
+
 procedure SortDescending<T>(l: List<T>);
 begin
   Sort(l);
   Reverse(l);
+end;
+
+procedure SortDescending<T,T1>(var l: List<T>; keySelector: T->T1);
+begin
+  l := l.OrderByDescending(x->keySelector(x)).ToList;
 end;
 
 procedure Reverse<T>(a: array of T);
@@ -11797,10 +11825,31 @@ begin
   System.Array.Sort(Self);  
 end;
 
+/// Сортирует массив по убыванию
+procedure SortDescending<T>(Self: array of T); extensionmethod;
+begin
+  System.Array.Sort(Self);
+  Reverse(Self);
+end;
+
 /// Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов
 procedure Sort<T>(Self: array of T; cmp: (T,T) ->integer); extensionmethod;
 begin
   System.Array.Sort(Self, cmp);  
+end;
+
+/// Сортирует массив по возрастанию по ключу
+procedure Sort<T,T1>(Self: array of T; keySelector: T -> T1); extensionmethod;
+begin
+  var a := Self.OrderBy(keySelector).ToArray;
+  System.Array.Copy(a,Self,a.Length);
+end;
+
+/// Сортирует массив по убыванию по ключу
+procedure SortDescending<T,T1>(Self: array of T; keySelector: T -> T1); extensionmethod;
+begin
+  var a := Self.OrderByDescending(keySelector).ToArray;
+  System.Array.Copy(a,Self,a.Length);
 end;
 
 /// Возвращает индекс последнего элемента массива

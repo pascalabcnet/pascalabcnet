@@ -286,7 +286,6 @@
   <tag value="ShortFuncDefinition">
     <name value="proc_func_decl_noclass" />
     <name value="inclass_proc_func_decl_noclass" />
-    <name value="proc_func_constr_destr_decl_with_attr" />
   </tag>
   <tag value="new_expr">
     <name value="new_expr" />
@@ -306,7 +305,6 @@
   <tag value="Проблема с атрибутами">
     <name value="decl_sect" />
     <name value="type_decl_sect" />
-    <name value="proc_func_constr_destr_decl_with_attr" />
     <name value="type_decl" />
     <name value="attribute_declarations" />
     <name value="simple_type_decl" />
