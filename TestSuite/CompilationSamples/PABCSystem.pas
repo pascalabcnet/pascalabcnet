@@ -14055,6 +14055,7 @@ procedure __InitModule;
 begin
   try
     DefaultEncoding := Encoding.GetEncoding(1251);
+    System.Console.OutputEncoding := Encoding.UTF8;
   except
     DefaultEncoding := Encoding.UTF8;
   end;

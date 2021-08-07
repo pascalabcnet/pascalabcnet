@@ -87,7 +87,6 @@
     <name value="one_compiler_directive" />
     <name value="program_param" />
     <name value="used_unit_name" />
-    <name value="decl_sect" />
     <name value="abc_decl_sect" />
     <name value="template_param" />
     <name value="one_attribute" />
@@ -236,7 +235,6 @@
     <name value="abc_interface_part" />
     <name value="initialization_part" />
     <name value="int_decl_sect" />
-    <name value="decl_sect" />
     <name value="optional_where_section" />
     <name value="member_list_section" />
     <name value="decl_sect_list" />
@@ -303,7 +301,6 @@
     <name value="simple_or_template_type_reference" />
   </tag>
   <tag value="Проблема с атрибутами">
-    <name value="decl_sect" />
     <name value="type_decl_sect" />
     <name value="type_decl" />
     <name value="attribute_declarations" />

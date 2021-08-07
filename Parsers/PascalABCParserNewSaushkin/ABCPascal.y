@@ -419,13 +419,19 @@ used_unit_name
     ;
 
 unit_file
-    : attribute_declarations unit_header interface_part implementation_part initialization_part tkPoint
+    : 
+    //attribute_declarations 
+    unit_header interface_part implementation_part initialization_part tkPoint
         { 
-			$$ = new unit_module($2 as unit_name, $3 as interface_node, $4 as implementation_node, ($5 as initfinal_part).initialization_sect, ($5 as initfinal_part).finalization_sect, $1 as attribute_list, @$);                    
+			$$ = new unit_module($1 as unit_name, $2 as interface_node, $3 as implementation_node, 
+			  ($4 as initfinal_part).initialization_sect, ($4 as initfinal_part).finalization_sect, /*$1 as attribute_list*/ null, @$);                    
 		}
-    | attribute_declarations unit_header abc_interface_part initialization_part tkPoint
+    | 
+    //attribute_declarations 
+    unit_header abc_interface_part initialization_part tkPoint
         { 
-			$$ = new unit_module($2 as unit_name, $3 as interface_node, null, ($4 as initfinal_part).initialization_sect, ($4 as initfinal_part).finalization_sect, $1 as attribute_list, @$);
+			$$ = new unit_module($1 as unit_name, $2 as interface_node, null, 
+			  ($3 as initfinal_part).initialization_sect, ($3 as initfinal_part).finalization_sect, /*$1 as attribute_list*/ null, @$);
         }
     ;
 
