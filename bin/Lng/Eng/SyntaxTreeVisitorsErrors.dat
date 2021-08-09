@@ -38,3 +38,12 @@ UNNAMED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Nested records cannot c
 TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT=Too many elements on the left side of tuple assignment
 NESTED_LAMBDAS_MAXIMUM_10=Maximum number of nested lambdas = 10
 EMBEDDED_STATEMENT_CANNOT_BE_A_DECLARATION=Embedded statement cannot be a declaration or labeled statement
+
+ONLY_FUNCTION_SHOULD_HAVE_CACHE_ATTRIBUTE=Only functions must have [Cache] attribute
+EXTENSION_FUNCTIONS_SHOULD_NOT_HAVE_CACHE_ATTRIBUTE=Extension methods shouldn't have [Cache] attribute
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_PARAMETERS=Functions with [Cache] attribute must have at least 1 parameter
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_LESSTHEN8_PARAMETERS=Functions with [Cache] attribute must have less then 8 parameters
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_EXPLICIT_RETURN_TYPE=Functions with [Cache] attribute must have explicitely specified return type
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_COMPOUND_NAME=Functions with [Cache] should not have compound name
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_VAR_CONST_PARAMS_MODIFIERS=Functions with [Cache] should not have var, const or params modifier
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_BE_DEFINED_GLOBALLY=Functions with [Cache] attribute must be defined globally

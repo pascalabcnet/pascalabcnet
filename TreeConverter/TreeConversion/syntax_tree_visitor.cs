@@ -21111,6 +21111,20 @@ namespace PascalABCCompiler.TreeConverter
                 var mc = st.lst[2] as method_call;
                 semantic_check_slice_assignment_types(to, from, mc);
             }
+            else if (st.typ as System.Type == typeof(semantic_check_delegates_pointers_in_cached_function))
+            {
+                var parameters = st.lst[0] as formal_parameters;
+                var types = parameters.params_list.Select(p => p.vars_type);
+                foreach (var tp in types)
+                {
+                    var sem_type = convert_strong(tp);
+                    if (sem_type.IsDelegate)
+                    {
+                        AddError(sem_type.location, "FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_DELEGATES_AS_PARAMETERS");
+                        break;
+                    }
+                }
+            }
             // !Slices
             else
             {
@@ -21137,11 +21151,19 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.sugared_expression ex)
         {
-            /*if (ex.sugared_expr is SyntaxTree.tuple_node) 
+            if (ex.sugared_expr is SyntaxTree.template_param_list tpl) // это в [Cache]
             {
-                semantic_check_tuple(ex.sugared_expr as SyntaxTree.tuple_node);
+                foreach (var tp in tpl.params_list)
+                {
+                    var sem_type = convert_strong(tp);
+                    if (sem_type.IsPointer)
+                    {
+                        AddError(sem_type.location, "FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_POINTERS_AS_PARAMETERS");
+                        break;
+                    }
+                }
             }
-            else*/
+            else
             {
                 AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.sugared_expr.GetType().Name);
             }
