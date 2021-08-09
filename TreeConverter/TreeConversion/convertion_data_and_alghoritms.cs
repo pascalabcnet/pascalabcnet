@@ -2118,12 +2118,13 @@ namespace PascalABCCompiler.TreeConverter
                 // В режиме only_from_not_extensions пропускать все extensions
                 if (only_from_not_extensions && (function.sym_info is function_node) && (function.sym_info as function_node).is_extension_method)
                     continue;
-#if (DEBUG)
+
                 if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
                 {
-                    throw new CompilerInternalError("Function name is used to define another kind of object.");
+                    continue;
+                    //throw new CompilerInternalError("Function name is used to define another kind of object.");
                 }
-#endif
+                
                 function_node fn = null;
                 if (function.sym_info.general_node_type == general_node_type.property_node)
                 {

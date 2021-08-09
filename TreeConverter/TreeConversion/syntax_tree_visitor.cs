@@ -1567,7 +1567,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     fn = (si.sym_info as common_property_node).get_function;
                 }
-                if (convertion_data_and_alghoritms.find_eq_method_in_list(fn, fnl) == null)
+                if (fn != null && convertion_data_and_alghoritms.find_eq_method_in_list(fn, fnl) == null)
                 {
                     if (!(obj != null && fn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && !fn.is_extension_method))
                     {
@@ -9352,6 +9352,17 @@ namespace PascalABCCompiler.TreeConverter
             else
                 dn = context.check_name_node_type(id_right.name, si_right?.FirstOrDefault(), get_location(id_right), general_node_type.variable_node,
                     general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition);
+            if (si_right != null && si_right.Count > 1 && dn is function_node)
+                foreach (SymbolInfo si in si_right)
+                {
+                    if (si.sym_info is var_definition_node)
+                    {
+                        dn = context.check_name_node_type(id_right.name, si, get_location(id_right), general_node_type.variable_node,
+                            general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition);
+                        break;
+                    }
+                        
+                }
             switch (dn.general_node_type)
             {
                 case general_node_type.variable_node:
