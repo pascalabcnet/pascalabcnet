@@ -9603,14 +9603,14 @@ namespace PascalABCCompiler.TreeConverter
             return;
         }
 
-        private expression_node convert_if_typed_expression_to_function_call(expression_node expr)
+        private expression_node convert_if_typed_expression_to_function_call(expression_node expr, bool force = false)
         {
             if (expr is typed_expression)
-                return convert_typed_expression_to_function_call(expr as typed_expression);
+                return convert_typed_expression_to_function_call(expr as typed_expression, force);
             return expr;
         }
 
-        internal expression_node convert_typed_expression_to_function_call(typed_expression te)
+        internal expression_node convert_typed_expression_to_function_call(typed_expression te, bool force=false)
         {
             delegated_methods dm = te.type as delegated_methods;
             if (dm == null)
@@ -9620,6 +9620,8 @@ namespace PascalABCCompiler.TreeConverter
             base_function_call bfc = dm.empty_param_method;
             if (bfc == null)
             {
+                if (force)
+                    AddError(new NoFunctionWithSameParametresNum(dm.proper_methods[0].location, true, dm.proper_methods[0].simple_function_node));
                 return te;
             }
             if (bfc.type == null) 
@@ -9678,11 +9680,11 @@ namespace PascalABCCompiler.TreeConverter
             return bfc;
         }
 
-        public void try_convert_typed_expression_to_function_call(ref expression_node en)
+        public void try_convert_typed_expression_to_function_call(ref expression_node en, bool force = false)
         {
             if (en.semantic_node_type == semantic_node_type.typed_expression)
             {
-                en = convert_typed_expression_to_function_call((typed_expression)en);
+                en = convert_typed_expression_to_function_call((typed_expression)en, force);
             }
         }
 
@@ -15831,6 +15833,7 @@ namespace PascalABCCompiler.TreeConverter
                 //TODO: Многомерные массивы.
                 expression_node ind_expr = convert_strong(parameters.expressions[0]);
                 ind_expr = additional_indexer_convertion(ind_expr, expr.type);
+                try_convert_typed_expression_to_function_call(ref ind_expr, true);
                 simple_array_indexing sai = new simple_array_indexing(expr, ind_expr, aii.element_type, loc);
                 if (rank == 1)
                 for (int i = 1; i < parameters.expressions.Count; i++)
@@ -15844,6 +15847,7 @@ namespace PascalABCCompiler.TreeConverter
                     aii = (array_internal_interface)ii;
                     ind_expr = convert_strong(parameters.expressions[i]);
                     ind_expr = additional_indexer_convertion(ind_expr, sai.type);
+                    try_convert_typed_expression_to_function_call(ref ind_expr, true);
                     sai = new simple_array_indexing(sai, ind_expr, aii.element_type, lloc);
                 }
                 else
@@ -15856,7 +15860,8 @@ namespace PascalABCCompiler.TreeConverter
                     	location lloc = get_location(parameters.expressions[i]);
                     	ind_expr = convert_strong(parameters.expressions[i]);
                     	ind_expr = additional_indexer_convertion(ind_expr, sai.type);
-                    	lst.Add(ind_expr);
+                        try_convert_typed_expression_to_function_call(ref ind_expr, true);
+                        lst.Add(ind_expr);
                 	}
                 	sai = new simple_array_indexing(expr, lst[0], aii.element_type, get_location(parameters));
                 	sai.expr_indices = lst.ToArray();
@@ -15887,8 +15892,9 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(loc, "INVALID_PARAMETER_COUNT_IN_INDEXER");
             	expression_node ind_expr = convert_strong(parameters.expressions[0]);
             	ind_expr = additional_indexer_convertion(ind_expr, expr.type);
-            	//expression_node en = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.GetCharInShortStringProcedure.sym_info as function_node,loc,ind_expr,new int_const_node((expr.type as short_string_type_node).Length,null));
-            	switch (mot)
+                try_convert_typed_expression_to_function_call(ref ind_expr, true);
+                //expression_node en = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.GetCharInShortStringProcedure.sym_info as function_node,loc,ind_expr,new int_const_node((expr.type as short_string_type_node).Length,null));
+                switch (mot)
                 {
                     case motivation.address_receiving:
                         {
