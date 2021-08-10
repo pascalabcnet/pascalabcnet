@@ -539,16 +539,17 @@ decl_sect_list_proc_func_only
 			if (GlobalDecls==null) 
 				GlobalDecls = $$ as declarations;
 		}
-	| decl_sect_list_proc_func_only proc_func_decl_noclass
+	| decl_sect_list_proc_func_only attribute_declarations proc_func_decl_noclass
 		{
 			var dcl = $1 as declarations;
+			($3 as procedure_definition).AssignAttrList($2 as attribute_list);
 			if (dcl.Count == 0)			
-				$$ = dcl.Add($2 as declaration, @2);
+				$$ = dcl.Add($3 as declaration, @3);
 			else
 			{
 				var sc = dcl.source_context;
-				sc = sc.Merge($2.source_context);
-				$$ = dcl.Add($2 as declaration, @2);
+				sc = sc.Merge($3.source_context);
+				$$ = dcl.Add($3 as declaration, @3);
 				$$.source_context = sc;			
 			}
 		}		
