@@ -79,6 +79,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
+            CacheFunctionVisitor.New.ProcessNode(root);
+
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:\\Tree.txt").ProcessNode(root);
             //FillParentNodeVisitor.New.ProcessNode(root);

@@ -42,3 +42,12 @@ NESTED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Вложенные за�
 TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT=Слишком много элементов в левой части при присваивании кортежа
 NESTED_LAMBDAS_MAXIMUM_10=Максимальный уровень вложенности лямбд равен 10
 EMBEDDED_STATEMENT_CANNOT_BE_A_DECLARATION=Вложенная инструкция не может быть объявлением, используйте операторные скобки
+
+ONLY_FUNCTION_SHOULD_HAVE_CACHE_ATTRIBUTE=Только функции могут иметь атрибут [Cache]
+EXTENSION_FUNCTIONS_SHOULD_NOT_HAVE_CACHE_ATTRIBUTE=Методы расширения не могут иметь атрибут [Cache]
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_PARAMETERS=Функции с атрибутом [Cache] должны иметь хотя бы 1 параметр
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_LESSTHEN8_PARAMETERS=Функции с атрибутом [Cache] должны иметь не более 7 параметров
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_EXPLICIT_RETURN_TYPE=Функции с атрибутом [Cache] должны иметь явно указанный возвращаемый тип
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_COMPOUND_NAME=Функции с атрибутом [Cache] не должны иметь составное имя
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_VAR_CONST_PARAMS_MODIFIERS=Функции с атрибутом [Cache] не должны иметь var, const и params-параметры
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_BE_DEFINED_GLOBALLY=Функции с атрибутом [Cache] должны быть определены глобально

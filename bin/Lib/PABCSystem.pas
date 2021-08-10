@@ -267,6 +267,12 @@ type
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
+  // Атрибут для кеширования результатов функции
+  CacheAttribute = class(System.Attribute) 
+    public constructor Create; 
+    begin end;
+  end;
+  
 //{{{--doc: Конец секции стандартных типов для документации }}} 
   
   //------------------------------------------------------------------------------
@@ -7936,6 +7942,7 @@ begin
   Result := System.IO.File.Exists(name);
 end;
 
+[System.Diagnostics.Conditional('DEBUG')]
 procedure Assert(cond: boolean; sourceFile: string; line: integer);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
@@ -7961,6 +7968,7 @@ begin
     System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
 end;
 
+[System.Diagnostics.Conditional('DEBUG')]
 procedure Assert(cond: boolean; message: string; sourceFile: string; line: integer);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
