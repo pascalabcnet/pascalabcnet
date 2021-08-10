@@ -7262,6 +7262,8 @@ namespace PascalABCCompiler.NETGenerator
         //вызов статического метода
         public override void visit(SemanticTree.ICommonStaticMethodCallNode value)
         {
+            if (comp_opt.dbg_attrs == DebugAttributes.Release && has_debug_conditional_attr(helper.GetMethod(value.static_method).mi))
+                return;
             //if (save_debug_info)
             //MarkSequencePoint(value.Location);
             IExpressionNode[] real_parameters = value.real_parameters;

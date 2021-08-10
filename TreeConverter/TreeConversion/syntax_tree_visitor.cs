@@ -15666,7 +15666,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             expression_node condition = convert_strong(_if_node.condition);
             condition = convertion_data_and_alghoritms.convert_type(condition, SystemLibrary.SystemLibrary.bool_type);
-
+            try_convert_typed_expression_to_function_call(ref condition, true);
             // SSM 29/08/16
             /*var cc = condition as bool_const_node;
             if (cc != null && cc.constant_value == false && _if_node.else_body == null)
@@ -15722,7 +15722,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             expression_node expr = convert_strong(_while_node.expr);
             expr = convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.bool_type);
-
+            try_convert_typed_expression_to_function_call(ref expr, true);
             CheckToEmbeddedStatementCannotBeADeclaration(_while_node.statements);
 
             while_node wn = new while_node(expr, get_location(_while_node));
@@ -15770,6 +15770,7 @@ namespace PascalABCCompiler.TreeConverter
             rep.body = st;
             expression_node expr = convert_strong(_repeat_node.expr);
             expr = convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.bool_type);
+            try_convert_typed_expression_to_function_call(ref expr, true);
             rep.condition = expr;
             context.cycle_stack.pop();
             return_value(rep);
