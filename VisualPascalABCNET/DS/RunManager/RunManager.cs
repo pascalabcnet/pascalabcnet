@@ -279,11 +279,12 @@ namespace VisualPascalABC
             StartedProcesses.Add(fileName, PRunner);
             StartedFiles.Add(PRunner, fileName);
             string ReadSignalName=null;
-            if (Starting != null)
-                Starting(fileName);
+            
             try
             {
                 PRunner.Start(fileName, args, redirectIO, redirectErrors, RunWithPause, attachDebugger, fictive_attach);
+                if (Starting != null)
+                    Starting(fileName);
                 if ((PRunner.TempBatFile != null) && !TempBatFiles.ContainsKey(fileName))
                     TempBatFiles.Add(fileName, PRunner.TempBatFile);
                 if (redirectIO)
@@ -301,7 +302,11 @@ namespace VisualPascalABC
 #if DEBUG
                 File.AppendAllText("logRun.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
+                if (!WorkbenchServiceFactory.Workbench.UserOptions.AlwaysAttachDebuggerAtStart)
+                    WorkbenchServiceFactory.Workbench.DebuggerManager.NullProcessHandleIfNeed(fileName);
                 RemoveFromTables(fileName);
+                if (Exited != null)
+                    Exited(fileName);
                 throw; // Это не перехватывается и приводит к вылету оболочки - SSM 22/04/19
             }
         }
