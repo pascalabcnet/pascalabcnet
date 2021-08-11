@@ -7181,9 +7181,24 @@ namespace PascalABCCompiler.NETGenerator
 
         private bool has_debug_conditional_attr(MethodInfo mi)
         {
+            
             var attrs = mi.GetCustomAttributes(typeof(System.Diagnostics.ConditionalAttribute), true);
             if (attrs != null && attrs.Length > 0 && (attrs[0] as System.Diagnostics.ConditionalAttribute).ConditionString == "DEBUG")
                 return true;
+            return false;
+        }
+
+        private bool has_debug_conditional_attr(IAttributeNode[] attrs)
+        {
+            foreach (IAttributeNode attr in attrs)
+            {
+                if (attr.AttributeType is ICompiledTypeNode && (attr.AttributeType as ICompiledTypeNode).compiled_type == typeof(System.Diagnostics.ConditionalAttribute))
+                {
+                    if ((string)attr.Arguments[0].value == "DEBUG")
+                        return true;
+                    return false;
+                }
+            }
             return false;
         }
 
@@ -7262,8 +7277,6 @@ namespace PascalABCCompiler.NETGenerator
         //вызов статического метода
         public override void visit(SemanticTree.ICommonStaticMethodCallNode value)
         {
-            if (comp_opt.dbg_attrs == DebugAttributes.Release && has_debug_conditional_attr(helper.GetMethod(value.static_method).mi))
-                return;
             //if (save_debug_info)
             //MarkSequencePoint(value.Location);
             IExpressionNode[] real_parameters = value.real_parameters;
@@ -7641,8 +7654,11 @@ namespace PascalABCCompiler.NETGenerator
         //вызов глобальной процедуры
         public override void visit(SemanticTree.ICommonNamespaceFunctionCallNode value)
         {
+            
             MethInfo meth = helper.GetMethod(value.namespace_function);
             IExpressionNode[] real_parameters = value.real_parameters;
+            if (comp_opt.dbg_attrs == DebugAttributes.Release && meth != null && has_debug_conditional_attr(value.namespace_function.Attributes))
+                return;
             //если это стандартная (New или Dispose)
             if (meth == null || meth.stand)
             {
