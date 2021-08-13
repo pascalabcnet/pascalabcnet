@@ -581,6 +581,26 @@ namespace CodeCompletion
                     {
                         out_si = elem_si;
                         //out_si = new SymInfo(elems[i].name,elems[i].kind,elems[i].describe);
+                        if ((si as ElementScope).sc is CompiledScope)
+                        {
+                            Type t = ((si as ElementScope).sc as CompiledScope).ctn;
+                            expression name_expr = new ident(out_si.name);
+                            if (out_si.name.IndexOf("<") != -1)
+                            {
+                                template_param_list tpl = new template_param_list();
+                                int num_params = out_si.name.Split(',').Length;
+                                for (var j=0; j<num_params; j++)
+                                    tpl.Add(new named_type_reference("T"));
+                                name_expr = new ident_with_templateparams(new ident(out_si.name.Substring(0, out_si.name.IndexOf("<"))), tpl);
+                            }
+                                
+                            ExpressionVisitor ev = new ExpressionVisitor(name_expr, visitor.FindScopeByLocation(line + 1, col + 1), visitor);
+                            if (ev.GetScopeOfExpression() == null)
+                            {
+                                out_si.name = t.Namespace + "." + out_si.name;
+                            }
+
+                        }
                         string s = CodeCompletionController.CurrentParser.LanguageInformation.GetSimpleDescriptionWithoutNamespace((si as ElementScope).sc as PascalABCCompiler.Parsers.ITypeScope);
                         if (s != out_si.name)
                             out_si.addit_name = s;
@@ -594,6 +614,25 @@ namespace CodeCompletion
                 if (!out_si.name.StartsWith("$") && out_si.kind != SymbolKind.Interface)
                 {
                     out_si.name = (si as ElementScope).sc.GetFullName();
+                    if ((si as ElementScope).sc is CompiledScope)
+                    {
+                        Type t = ((si as ElementScope).sc as CompiledScope).ctn;
+                        expression name_expr = new ident(out_si.name);
+                        if (out_si.name.IndexOf("<") != -1)
+                        {
+                            template_param_list tpl = new template_param_list();
+                            int num_params = out_si.name.Split(',').Length;
+                            for (var j = 0; j < num_params; j++)
+                                tpl.Add(new named_type_reference("T"));
+                            name_expr = new ident_with_templateparams(new ident(out_si.name.Substring(0, out_si.name.IndexOf("<"))), tpl);
+                        }
+                        ExpressionVisitor ev = new ExpressionVisitor(name_expr, visitor.FindScopeByLocation(line + 1, col + 1), visitor);
+                        if (ev.GetScopeOfExpression() == null)
+                        {
+                            out_si.name = t.Namespace + "." + out_si.name;
+                        }
+
+                    }
                     result_names.Add(out_si);
                 }
                 else
