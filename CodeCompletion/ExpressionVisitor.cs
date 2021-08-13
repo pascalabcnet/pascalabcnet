@@ -1025,13 +1025,13 @@ namespace CodeCompletion
                 if (meths[i] is ProcScope)
                 {
                     if (DomSyntaxTreeVisitor.is_good_overload(meths[i] as ProcScope, arg_types))
-                        if (!meths[i].si.not_include || by_dot || mouse_hover)
+                        if (!meths[i].si.not_include || by_dot || mouse_hover && meths[i].loc == null)
                             good_procs.Add(meths[i] as ProcScope);
                 }
                 else if (meths[i] is ProcType)
                 {
                     if (DomSyntaxTreeVisitor.is_good_overload((meths[i] as ProcType).target, arg_types))
-                        if (!meths[i].si.not_include || by_dot || mouse_hover)
+                        if (!meths[i].si.not_include || by_dot || mouse_hover && meths[i].loc == null)
                             good_procs.Add((meths[i] as ProcType).target);
                 }
             }
