@@ -2422,10 +2422,10 @@ proc_func_decl_noclass
 			$$ = new procedure_definition($1 as procedure_header, null, @$);
             ($$ as procedure_definition).proc_header.proc_attributes.Add((procedure_attribute)$2, $2.source_context);
 		}
-	| tkConst const_decl                       
-        { 
-			$$ = new consts_definitions_list($2 as const_definition, @$);
-		}
+	//| tkConst const_decl                       
+    //    { 
+	//		$$ = new consts_definitions_list($2 as const_definition, @$);
+	//	}
     ;
 
 inclass_proc_func_decl
