@@ -1346,9 +1346,72 @@ namespace PascalABCCompiler.TreeConverter
 			return type_conversion_compare.equal_type_conversions;
 		}
 
-		private method_compare compare_methods(function_node left_func, function_node right_func,
+        public enum MoreSpecific { Left, Right, None}
+
+        // SSM 04/07/2021
+        public MoreSpecific compare_more_specific(function_node left_func, function_node right_func)
+        {
+            bool LeftIsMoreSpecific = false;
+            bool RightIsMoreSpecific = false;
+            var left_original = left_func.original_function;
+            var right_original = right_func.original_function;
+            if (left_original != null && right_original != null)
+            {
+                for (var i = 0; i < left_original.parameters.Count; i++)
+                {
+                    if (left_original.parameters[i].is_params || right_original.parameters[i].is_params)
+                    {
+                        return MoreSpecific.None;
+                    }
+                    var ltt = left_original.parameters[i].type;
+                    var rtt = right_original.parameters[i].type;
+                    if (ltt.is_generic_parameter && !rtt.is_generic_parameter)
+                    {
+                        RightIsMoreSpecific = true;
+                        continue;
+                    }
+                    if (rtt.is_generic_parameter && !ltt.is_generic_parameter)
+                    {
+                        LeftIsMoreSpecific = true;
+                        continue;
+                    }
+                    var lt = ltt as generic_instance_type_node;
+                    var rt = rtt as generic_instance_type_node;
+                    if (lt == null || rt == null)
+                        continue;
+                    if (lt.original_generic == rt.original_generic)
+                    {
+                        var lins = lt.instance_params;
+                        var rins = rt.instance_params;
+                        for (int j = 0; j < rins.Count; j++)
+                        {
+                            if (lins[j].is_generic_parameter && !rins[j].is_generic_parameter)
+                                RightIsMoreSpecific = true;
+                            else if (rins[j].is_generic_parameter && !lins[j].is_generic_parameter)
+                                LeftIsMoreSpecific = true;
+                        }
+                    }
+                }
+            }
+            if (RightIsMoreSpecific && !LeftIsMoreSpecific)
+                return MoreSpecific.Right;
+            if (LeftIsMoreSpecific && !RightIsMoreSpecific)
+                return MoreSpecific.Left;
+            return MoreSpecific.None;
+
+        }
+
+        private method_compare compare_methods(function_node left_func, function_node right_func,
             possible_type_convertions_list left,possible_type_convertions_list right)
 		{
+            // Нет распознавания глубоко вложенных типов на IsMoreSpecific - только на глубину 1 или 2
+            var moreSpec = compare_more_specific(left_func, right_func);
+            if (moreSpec == MoreSpecific.Left)
+                return method_compare.greater_method;
+            if (moreSpec == MoreSpecific.Right)
+                return method_compare.less_method;
+            // а иначе пока ничего не возвращать
+
             function_compare fc = function_node.compare_functions(left_func, right_func);
             if (fc == function_compare.less)
             {
@@ -1448,8 +1511,57 @@ namespace PascalABCCompiler.TreeConverter
                             eq = false;
                             break;
                         }
+                    
                     if (eq)
                     {
+                        // SSM 03/07/2021 - в связи с EachCount с GroupBy и без
+
+                        /*bool LeftIsMoreSpecific = false;
+                        bool RightIsMoreSpecific = false;
+                        var left_original = left_func.original_function;
+                        var right_original = right_func.original_function;
+                        if (left_original != null && right_original != null)
+                        {
+                            for (var i = 0; i < left_original.parameters.Count; i++)
+                            {
+                                var ltt = left_original.parameters[i].type;
+                                var rtt = right_original.parameters[i].type;
+                                if (ltt.is_generic_parameter && !rtt.is_generic_parameter)
+                                {
+                                    RightIsMoreSpecific = true;
+                                    continue;
+                                }
+                                if (rtt.is_generic_parameter && !ltt.is_generic_parameter)
+                                {
+                                    LeftIsMoreSpecific = true;
+                                    continue;
+                                }
+                                var lt = ltt as generic_instance_type_node;
+                                var rt = rtt as generic_instance_type_node;
+                                if (lt == null || rt == null)
+                                    continue;
+                                if (lt.original_generic == rt.original_generic)
+                                {
+                                    var lins = lt.instance_params;
+                                    var rins = rt.instance_params;
+                                    for (int j = 0; j < rins.Count; j++)
+                                    {
+                                        if (lins[j].is_generic_parameter && !rins[j].is_generic_parameter)
+                                            RightIsMoreSpecific = true;
+                                        else if (rins[j].is_generic_parameter && !lins[j].is_generic_parameter)
+                                            LeftIsMoreSpecific = true;
+                                    }
+                                }
+                            }
+                        }
+                        if (RightIsMoreSpecific && !LeftIsMoreSpecific)
+                            return method_compare.less_method;
+                        if (LeftIsMoreSpecific && !RightIsMoreSpecific)
+                            return method_compare.greater_method;*/
+
+                        // end SSM 03/07/2021
+
+                        // Это не всегда правильно срабатывает
                         var lc = left_func.get_generic_params_list().Count;
                         var rc = right_func.get_generic_params_list().Count;
                         if (lc < rc)
@@ -2006,12 +2118,13 @@ namespace PascalABCCompiler.TreeConverter
                 // В режиме only_from_not_extensions пропускать все extensions
                 if (only_from_not_extensions && (function.sym_info is function_node) && (function.sym_info as function_node).is_extension_method)
                     continue;
-#if (DEBUG)
+
                 if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
                 {
-                    throw new CompilerInternalError("Function name is used to define another kind of object.");
+                    continue;
+                    //throw new CompilerInternalError("Function name is used to define another kind of object.");
                 }
-#endif
+                
                 function_node fn = null;
                 if (function.sym_info.general_node_type == general_node_type.property_node)
                 {

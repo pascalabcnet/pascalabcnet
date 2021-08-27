@@ -137,6 +137,7 @@ namespace PascalABCCompiler.NETGenerator
         protected int uid = 1;//счетчик для задания уникальных имен (исп. при именовании классов-оболочек над влож. ф-ми)
         protected List<ICommonFunctionNode> funcs = new List<ICommonFunctionNode>();//
         protected bool is_addr = false;//флаг, передается ли значение как факт. var-параметр
+        protected bool copy_string = false;
         protected string cur_unit;//имя текущего модуля
         protected ConstructorBuilder cur_cnstr;//текущий конструктор - тоже нужен (ssyy)
         protected bool is_dot_expr = false;//флаг, стоит ли после выражения точка (нужно для упаковки размерных типов)
@@ -7136,9 +7137,9 @@ namespace PascalABCCompiler.NETGenerator
                 ICompiledTypeNode ctn2 = parameters[i].type as ICompiledTypeNode;
                 ITypeNode ctn3 = real_parameters[i].type;
                 ITypeNode ctn4 = real_parameters[i].conversion_type;
-                if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && (ctn3.is_value_type || ctn3.is_generic_parameter) && ctn2.compiled_type == TypeFactory.ObjectType)
+                if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && (ctn3.is_value_type || ctn3.is_generic_parameter) && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
                     il.Emit(OpCodes.Box, helper.GetTypeReference(ctn3).tp);
-                else if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && ctn4 != null && (ctn4.is_value_type || ctn4.is_generic_parameter) && ctn2.compiled_type == TypeFactory.ObjectType)
+                else if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && ctn4 != null && (ctn4.is_value_type || ctn4.is_generic_parameter) && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
                     il.Emit(OpCodes.Box, helper.GetTypeReference(ctn4).tp);
                 is_addr = false;
             }
@@ -7180,9 +7181,24 @@ namespace PascalABCCompiler.NETGenerator
 
         private bool has_debug_conditional_attr(MethodInfo mi)
         {
+            
             var attrs = mi.GetCustomAttributes(typeof(System.Diagnostics.ConditionalAttribute), true);
             if (attrs != null && attrs.Length > 0 && (attrs[0] as System.Diagnostics.ConditionalAttribute).ConditionString == "DEBUG")
                 return true;
+            return false;
+        }
+
+        private bool has_debug_conditional_attr(IAttributeNode[] attrs)
+        {
+            foreach (IAttributeNode attr in attrs)
+            {
+                if (attr.AttributeType is ICompiledTypeNode && (attr.AttributeType as ICompiledTypeNode).compiled_type == typeof(System.Diagnostics.ConditionalAttribute))
+                {
+                    if ((string)attr.Arguments[0].value == "DEBUG")
+                        return true;
+                    return false;
+                }
+            }
             return false;
         }
 
@@ -7638,8 +7654,11 @@ namespace PascalABCCompiler.NETGenerator
         //вызов глобальной процедуры
         public override void visit(SemanticTree.ICommonNamespaceFunctionCallNode value)
         {
+            
             MethInfo meth = helper.GetMethod(value.namespace_function);
             IExpressionNode[] real_parameters = value.real_parameters;
+            if (comp_opt.dbg_attrs == DebugAttributes.Release && meth != null && has_debug_conditional_attr(value.namespace_function.Attributes))
+                return;
             //если это стандартная (New или Dispose)
             if (meth == null || meth.stand)
             {
@@ -7783,7 +7802,11 @@ namespace PascalABCCompiler.NETGenerator
                     is_addr = true;
                 ITypeNode ctn = real_parameters[i].type;
                 TypeInfo ti = null;
-
+                if (parameters[i].type is ICompiledTypeNode && (parameters[i].type as ICompiledTypeNode).compiled_type == TypeFactory.CharType && parameters[i].parameter_type == parameter_type.var
+                    && real_parameters[i] is ISimpleArrayIndexingNode && helper.GetTypeReference((real_parameters[i] as ISimpleArrayIndexingNode).array.type).tp == TypeFactory.StringType)
+                {
+                    copy_string = true;
+                }
                 //(ssyy) moved up
                 ITypeNode tn2 = parameters[i].type;
                 ICompiledTypeNode ctn2 = tn2 as ICompiledTypeNode;
@@ -9601,6 +9624,42 @@ namespace PascalABCCompiler.NETGenerator
                 LocalBuilder chr_ptr_lb = il.DeclareLocal(TypeFactory.CharType.MakePointerType());
                 //pinned_handle = il.DeclareLocal(TypeFactory.GCHandleType);
                 Label false_lbl = il.DefineLabel();
+                if (copy_string)
+                {
+                    /*var mcall = new TreeRealization.compiled_static_method_call(TreeRealization.compiled_function_node.get_compiled_method(TypeFactory.StringCopyMethod), null);
+                    mcall.parameters.AddElement(value.array as TreeRealization.expression_node);
+                    ConvertAssignExpr(value.array, mcall);*/
+                    if (value.array is ILocalBlockVariableReferenceNode || value.array is ILocalVariableReferenceNode || value.array is INamespaceVariableReferenceNode)
+                    {
+                        il.Emit(OpCodes.Call, TypeFactory.StringCopyMethod);
+                        if (value.array is ILocalVariableReferenceNode)
+                        {
+                            var vi = helper.GetVariable((value.array as ILocalVariableReferenceNode).Variable);
+                            il.Emit(OpCodes.Stloc, vi.lb);
+                            il.Emit(OpCodes.Ldloc, vi.lb);
+                        }
+                        else if (value.array is ILocalBlockVariableReferenceNode)
+                        {
+                            var vi = helper.GetVariable((value.array as ILocalBlockVariableReferenceNode).Variable);
+                            il.Emit(OpCodes.Stloc, vi.lb);
+                            il.Emit(OpCodes.Ldloc, vi.lb);
+                        }
+                        else if (value.array is INamespaceVariableReferenceNode)
+                        {
+                            VarInfo vi = helper.GetVariable((value.array as INamespaceVariableReferenceNode).Variable);
+                            if (vi == null)
+                            {
+                                ConvertGlobalVariable((value.array as INamespaceVariableReferenceNode).variable);
+                                vi = helper.GetVariable((value.array as INamespaceVariableReferenceNode).Variable);
+                            }
+                            il.Emit(OpCodes.Stsfld, vi.fb);
+                            il.Emit(OpCodes.Ldsfld, vi.fb);
+                        }
+                        
+                    }
+                         
+                    copy_string = false;
+                }
                 il.Emit(OpCodes.Stloc, pin_lb);
                 /*il.Emit(OpCodes.Ldloc, pin_lb);
                 il.Emit(OpCodes.Ldc_I4, (int)GCHandleType.Pinned);

@@ -12,7 +12,9 @@
 
 <tr><tr><td><code><b>constructor</b> (x,y,rx,ry: real; c: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает эллипс с центром в точке (x,y), радиусами (rx,ry) и цветом внутренности с</td></tr>
-<tr><td><code><b>constructor</b> (x,y,rx,ry: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);</code>
+<tr><td><code><b>constructor</b> (x,y,rx,ry: real; c: GColor; borderWidth: real; borderColor: GColor);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает эллипс с центром в точке (x,y), радиусами (rx,ry) и цветом внутренности с, с границей ширины borderWidth и цвета borderColor</td></tr>
+<tr><td><code><b>constructor</b> (x,y,rx,ry: real; c: GColor; borderWidth: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает эллипс с центром в точке (x,y), радиусами (rx,ry) и цветом внутренности с, с границей ширины borderWidth и цвета borderColor</td></tr>
 <tr><td><code><b>constructor</b> (p: Point; rx,ry: real; c: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает эллипс с центром в точке p, радиусами (rx,ry) и цветом внутренности с</td></tr>
@@ -28,11 +30,15 @@
 
 <tr><tr><td><code><b>function</b> RemoveBorder;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black);</code>
+<tr><td><code><b>function</b> SetBorder(w: real; c: GColor);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 <tr><td><code><b>function</b> SetRotate(da: real): EllipseWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): EllipseWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real; fontname: string; c: GColor): EllipseWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'): EllipseWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса BoundedObjectWPF</font></td></tr>
 
@@ -46,7 +52,9 @@
 
 <tr><tr><td><code><b>function</b> RemoveBorder: BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): BoundedObjectWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real; c: GColor): BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1): BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 

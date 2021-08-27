@@ -6,7 +6,9 @@
 </HEAD><body><H1>Класс PictureWPF</H1>Класс графических объектов "Рисунок". Базовый класс - <code>ObjectWPF</code>.
 <table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Конструкторы класса PictureWPF</font></td></tr>
 
-<tr><tr><td><code><b>constructor</b> (x,y: real; fname: string);</code>
+<tr><tr><td><code><b>constructor</b> Create(Hidden: boolean; x,y: real; fname: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr><td><code><b>constructor</b> (x,y: real; fname: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает рисунок из файла fname с координатами левого верхнего угла (x,y)</td></tr>
 <tr><td><code><b>constructor</b> (x,y,w,h: real; fname: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает рисунок из файла fname с координатами левого верхнего угла (x,y) и размерами (w,h)</td></tr>
@@ -18,7 +20,9 @@
 
 <tr><tr><td><code><b>function</b> SetRotate(da: real): PictureWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PictureWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real; fontname: string; c: GColor): PictureWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'): PictureWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 

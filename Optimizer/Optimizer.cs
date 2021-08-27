@@ -558,12 +558,14 @@ namespace PascalABCCompiler
         private void VisitStatementList(statements_list stmt)
         {
             statement_node sn = null;
-            
+            bool tuple_decomp = false;
             foreach (local_block_variable lbv in stmt.local_variables)
             {
-            	helper.AddVariable(lbv);
-                if(lbv.inital_value!=null)
-            	    VisitExpression(lbv.inital_value);
+                if (lbv.name.StartsWith("#fpl"))
+                    tuple_decomp = true;
+                helper.AddVariable(lbv);
+                if (lbv.inital_value != null)
+                    VisitExpression(lbv.inital_value);
                 CheckType(lbv.type, lbv.inital_value, lbv.loc);
             }
             for (int i = 0; i < stmt.statements.Count; i++)
@@ -571,26 +573,27 @@ namespace PascalABCCompiler
                 if (is_break_stmt && !has_goto && stmt.statements[i].semantic_node_type != semantic_node_type.empty_statement)
                     warns.Add(new UnreachableCodeDetected(stmt.statements[i].location));
                 if (stmt.statements[i].semantic_node_type != semantic_node_type.empty_statement)
-                	is_break_stmt = false;
+                    is_break_stmt = false;
                 sn = stmt.statements[i];
                 VisitStatement(sn);
                 if (is_break_stmt && !has_goto && i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type != semantic_node_type.empty_statement && stmt.statements[i + 1].location != null)
-                {   
+                {
                     if (stmt.statements[i].location == null || stmt.statements[i + 1].location.ToString() != stmt.statements[i].location.ToString())
                         warns.Add(new UnreachableCodeDetected(stmt.statements[i + 1].location));
                 }
                 if (!(i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type == semantic_node_type.empty_statement))
-                	is_break_stmt = false;
+                    is_break_stmt = false;
             }
-            foreach (local_block_variable vdn in stmt.local_variables)
-            {
-            	VarInfo vi = helper.GetVariable(vdn);
-                if (isUnused(vi, vdn))
-                    warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                	
-                if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
-                    AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
-            }
+            if (!tuple_decomp)
+                foreach (local_block_variable vdn in stmt.local_variables)
+                {
+                    VarInfo vi = helper.GetVariable(vdn);
+                    if (isUnused(vi, vdn))
+                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+
+                    if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
+                        AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
+                }
         }
 
         private void VisitExternalStatementNode(external_statement sn)

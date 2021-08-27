@@ -138,11 +138,14 @@
     File ..\bin\Lib\Turtle.pcu
     File ..\bin\Lib\TwoPanelsWindow.pcu
     File ..\bin\Lib\NUnitABC.pcu
+    File ..\bin\Lib\PlotWPF.pcu
+
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
     File ..\bin\Lib\nunit.framework.dll 
+    File ..\bin\Lib\InteractiveDataDisplay.WPF.dll 
 	
     ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
@@ -210,12 +213,14 @@
     ${AddFile} "Turtle.pcu"
     ${AddFile} "TwoPanelsWindow.pcu"
     ${AddFile} "NUnitABC.pcu"
+    ${AddFile} "PlotWPF.pcu"
 
 
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
     ${AddFile} "nunit.framework.dll"
+    ${AddFile} "InteractiveDataDisplay.WPF.dll"
     
     ${AddFile} "PABCRtl.pdb"
 
@@ -232,6 +237,9 @@
     Call NGEN
     Push "Lib\nunit.framework.dll"
     Call NGEN
+    Push "Lib\InteractiveDataDisplay.WPF.dll"
+    Call NGEN
+    
 	
     SetOutPath "$INSTDIR\LibSource"
     File ..\bin\Lib\__RedirectIOMode.pas
@@ -298,6 +306,7 @@
     File ..\bin\Lib\Turtle.pas
     File ..\bin\Lib\TwoPanelsWindow.pas
     File ..\bin\Lib\NUnitABC.pas
+    File ..\bin\Lib\PlotWPF.pas
 
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
@@ -366,6 +375,7 @@
     ${AddFile} "Turtle.pas"
     ${AddFile} "TwoPanelsWindow.pas"
     ${AddFile} "NUnitABC.pas"
+    ${AddFile} "PlotWPF.pas"
 
 
 	${AddFile} "__RedirectIOMode.vb"

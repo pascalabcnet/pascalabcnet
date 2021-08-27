@@ -61,6 +61,8 @@ namespace VisualPascalABC
                 if (body_pos.file_name != null)
                 {
                     FoldMarker newFoldMarker = null;
+                    if (body_pos.line < pos.line && foldMarkers.Count > 0)
+                        foldMarkers.RemoveAt(foldMarkers.Count - 1);
                     newFoldMarker = new FoldMarker(doc, body_pos.line - 1, body_pos.column - 1, body_pos.end_line - 1, body_pos.end_column, FoldType.MemberBody);
                     if (newFoldMarker.Length > 0)
                     {

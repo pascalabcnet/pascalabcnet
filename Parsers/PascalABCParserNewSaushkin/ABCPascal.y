@@ -183,6 +183,7 @@
 %type <ti> tkAssignOrEqual
 %type <stn> const_pattern_expression pattern deconstruction_or_const_pattern pattern_optional_var collection_pattern tuple_pattern collection_pattern_list_item tuple_pattern_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list const_pattern_expr_list
+%type <stn> var_with_init_for_expr_with_let var_with_init_for_expr_with_let_list
 
 %%
 
@@ -418,13 +419,19 @@ used_unit_name
     ;
 
 unit_file
-    : attribute_declarations unit_header interface_part implementation_part initialization_part tkPoint
+    : 
+    //attribute_declarations 
+    unit_header interface_part implementation_part initialization_part tkPoint
         { 
-			$$ = new unit_module($2 as unit_name, $3 as interface_node, $4 as implementation_node, ($5 as initfinal_part).initialization_sect, ($5 as initfinal_part).finalization_sect, $1 as attribute_list, @$);                    
+			$$ = new unit_module($1 as unit_name, $2 as interface_node, $3 as implementation_node, 
+			  ($4 as initfinal_part).initialization_sect, ($4 as initfinal_part).finalization_sect, /*$1 as attribute_list*/ null, @$);                    
 		}
-    | attribute_declarations unit_header abc_interface_part initialization_part tkPoint
+    | 
+    //attribute_declarations 
+    unit_header abc_interface_part initialization_part tkPoint
         { 
-			$$ = new unit_module($2 as unit_name, $3 as interface_node, null, ($4 as initfinal_part).initialization_sect, ($4 as initfinal_part).finalization_sect, $1 as attribute_list, @$);
+			$$ = new unit_module($1 as unit_name, $2 as interface_node, null, 
+			  ($3 as initfinal_part).initialization_sect, ($3 as initfinal_part).finalization_sect, /*$1 as attribute_list*/ null, @$);
         }
     ;
 
@@ -532,16 +539,17 @@ decl_sect_list_proc_func_only
 			if (GlobalDecls==null) 
 				GlobalDecls = $$ as declarations;
 		}
-	| decl_sect_list_proc_func_only proc_func_decl_noclass
+	| decl_sect_list_proc_func_only attribute_declarations proc_func_decl_noclass
 		{
 			var dcl = $1 as declarations;
+			($3 as procedure_definition).AssignAttrList($2 as attribute_list);
 			if (dcl.Count == 0)			
-				$$ = dcl.Add($2 as declaration, @2);
+				$$ = dcl.Add($3 as declaration, @3);
 			else
 			{
 				var sc = dcl.source_context;
-				sc = sc.Merge($2.source_context);
-				$$ = dcl.Add($2 as declaration, @2);
+				sc = sc.Merge($3.source_context);
+				$$ = dcl.Add($3 as declaration, @3);
 				$$.source_context = sc;			
 			}
 		}		
@@ -2414,6 +2422,10 @@ proc_func_decl_noclass
 			$$ = new procedure_definition($1 as procedure_header, null, @$);
             ($$ as procedure_definition).proc_header.proc_attributes.Add((procedure_attribute)$2, $2.source_context);
 		}
+	//| tkConst const_decl                       
+    //    { 
+	//		$$ = new consts_definitions_list($2 as const_definition, @$);
+	//	}
     ;
 
 inclass_proc_func_decl
@@ -3238,13 +3250,6 @@ expr
     | format_expr
 		{ $$ = $1; }
     ;
-    /*
-expr_l1_for_indexer
-    : expr_l1 
-        { $$ = $1; }
-    | format_expr
-		{ $$ = $1; }
-    ;*/
 
 expr_l1
     : expr_dq
@@ -4168,6 +4173,25 @@ variable_or_literal_or_number
 		{ $$ = $1; }
 	;
 	
+var_with_init_for_expr_with_let
+	: tkVar identifier tkAssign expr tkSemiColon
+		{
+			$$ = new assign($2 as addressed_value, $4, Operators.Assignment, @$);
+		}
+	;
+	
+var_with_init_for_expr_with_let_list
+	: var_with_init_for_expr_with_let 
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| var_with_init_for_expr_with_let_list var_with_init_for_expr_with_let
+		{
+			$1 = new statement_list($2 as statement, @$);
+			$$ = $1;
+		}
+	;
+	
 variable
     : identifier 
 		{ $$ = $1; }
@@ -4177,7 +4201,6 @@ variable
         { 
 			$$ = new inherited_ident($2.name, @$);
 		}
-	
     | tkRoundOpen expr tkRoundClose         
         {
 		    if (!parsertools.build_tree_for_formatter) 
@@ -4187,6 +4210,15 @@ variable
             } 
 			else $$ = new bracket_expr($2, @$);
         }
+    | tkRoundOpen var_with_init_for_expr_with_let_list expr tkRoundClose
+		{
+		    if (!parsertools.build_tree_for_formatter) 
+            {
+                $3.source_context = @$;
+                $$ = $3;
+            } 
+			else $$ = new expression_with_let($2 as statement_list, $2 as expression, @$);
+		}		
     | sizeof_expr
 		{ $$ = $1; }
     | typeof_expr
@@ -5095,6 +5127,10 @@ common_lambda_body
 	| yield_stmt
 		{
 			parsertools.AddErrorFromResource("YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY", @$);
+		}
+	| tkRoundOpen assignment tkRoundClose
+		{
+			$$ = new statement_list($2 as statement, @$);
 		}
 	;
 

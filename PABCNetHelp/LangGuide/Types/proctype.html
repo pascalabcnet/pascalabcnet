@@ -2,6 +2,8 @@
 
 <head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Процедурный тип и процедурные переменные">
+<param name="Keyword" value="Операции с процедурными переменными">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -149,6 +151,31 @@
 	&nbsp;
 	p;<br><b>end</b>.</code></p>
 </blockquote>
+<h2>Операции + и * для процедурных переменных</h2>
+<p>Процедурные переменные типа procedure, а также имена процедур без параметров, 
+можно складывать:</p>
+<blockquote>
+	<p><code><strong>var</strong> p := p1 + p2;<br>
+	p;</code></p>
+</blockquote>
+<p>Вызов через такую процедурную переменную состоит в последовательном вызове 
+процедур p1 и p2.</p>
+<p>Процедурные переменные типа procedure а также имена процедур без параметров, 
+можно умножать на число:</p>
+<blockquote>
+	<p><code><strong>var</strong> p := p1 * 5;<br>
+	p;</code></p>
+</blockquote>
+<p>Вызов через такую процедурную переменную состоит в последовательном вызове 
+процедуры p1 указанное количество раз.</p>
+<p>Можно вызывать выражение, состоящее из сумм процедур и произведения процедур 
+на число, не используя промежуточную переменную - для этого достаточно взять 
+такое выражение в скобки:</p>
+<blockquote>
+	<p><code>(p1 * 5 + p2 * 5);<br>
+	(5 * (p1 * p2));</code></p>
+</blockquote>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

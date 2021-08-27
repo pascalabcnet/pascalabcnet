@@ -2086,4 +2086,6 @@ namespace PascalABCCompiler.SyntaxTree
         public bool IsDataClass { get ; set; }
     }
 
+    public class semantic_check_delegates_pointers_in_cached_function // класс - маркер семантической проверки
+    { }
 }

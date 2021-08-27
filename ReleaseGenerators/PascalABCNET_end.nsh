@@ -12,6 +12,10 @@
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "nunit.framework"'
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\nunit.framework.dll"'
 
+  ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "InteractiveDataDisplay.WPF"'
+  ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\InteractiveDataDisplay.WPF.dll"'
+  
+
   ;\MikhailoMMX
   Delete "$INSTDIR\gacutil.exe"
   Delete "$INSTDIR\gacutil.exe.config"

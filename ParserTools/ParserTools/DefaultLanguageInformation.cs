@@ -2923,57 +2923,78 @@ namespace PascalABCCompiler.Parsers
                             break;
                         case '[':
                         case '(':
-                            if (kav.Count == 0)
+                        case '|':
+                            if (ch == '|' && ((tokens.Count == 0) || (tokens.Peek()==']') || (tokens.Peek() == ')') || (tokens.Peek() == ','))) 
+                                // Закрывающий | - после него (tokens.Pop()) - пусто или ] ) ,
                             {
-                                if (tokens.Count > 0)
+                                if (kav.Count == 0)
                                 {
-                                    tokens.Pop();
-                                    punkt_sym = true;
+                                    string tmps = sb.ToString().Trim(' ', '\r', '\t', '\n');
+                                    if (tmps.Length >= 1 && (char.IsLetter(tmps[0]) || tmps[0] == '_' || tmps[0] == '&' || tmps[0] == '?') && tokens.Count == 0)
+                                        end = true;
+                                    else
+                                        tokens.Push(ch);
+                                }
+                                if (!end)
+                                {
                                     sb.Insert(0, ch);
-                                    if (ch == '(')
-                                    {
-                                        int tmp = i--;
-                                        /*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-                                        {
-                                            i--;
-                                        }*/
-                                        while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i] == '}'))
-                                        {
-                                            if (Text[i] != '}')
-                                                i--;
-                                            else
-                                            {
-                                                while (i >= 0 && Text[i] != '{') //propusk kommentariev
-                                                    i--;
-                                                if (i >= 0)
-                                                    i--;
-                                            }
-                                        }
-                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i+1)))
-                                        {
-                                            bound = i + 1;
-                                            TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
-                                            if (keyw != KeywordKind.None && tokens.Count == 0)
-                                            {
-                                                end = true;
-                                            }
-                                            else bound = 0;
-                                        }
-                                        else if (i >= 0 && Text[i] == '\'') return "";
-                                        i = tmp;
-                                    }
+                                    punkt_sym = true;
                                 }
-                                else
-                                {
-                                    end = true;
-                                    if (ch == '[')
-                                    {
-                                        keyw = KeywordKind.SquareBracket;
-                                    }
-                                }
-                                    
                             }
-                            else sb.Insert(0, ch); punkt_sym = true;
+                            else 
+                            {
+                                if (kav.Count == 0) // в т.ч. открывающий |
+                                {
+                                    if (tokens.Count > 0)
+                                    {
+                                        tokens.Pop();
+                                        punkt_sym = true;
+                                        sb.Insert(0, ch);
+                                        if (ch == '(')
+                                        {
+                                            int tmp = i--;
+                                            /*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                                            {
+                                                i--;
+                                            }*/
+                                            while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i] == '}'))
+                                            {
+                                                if (Text[i] != '}')
+                                                    i--;
+                                                else
+                                                {
+                                                    while (i >= 0 && Text[i] != '{') //propusk kommentariev
+                                                        i--;
+                                                    if (i >= 0)
+                                                        i--;
+                                                }
+                                            }
+                                            if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i+1)))
+                                            {
+                                                bound = i + 1;
+                                                TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
+                                                if (keyw != KeywordKind.None && tokens.Count == 0)
+                                                {
+                                                    end = true;
+                                                }
+                                                else bound = 0;
+                                            }
+                                            else if (i >= 0 && Text[i] == '\'') return "";
+                                            i = tmp;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        end = true;
+                                        if (ch == '[')
+                                        {
+                                            keyw = KeywordKind.SquareBracket;
+                                        }
+                                    }
+                                    
+                                }
+                                else sb.Insert(0, ch); punkt_sym = true;
+                            }
                             break;
                         case '\'':
                             if (kav.Count == 0) kav.Push(ch); else kav.Pop();

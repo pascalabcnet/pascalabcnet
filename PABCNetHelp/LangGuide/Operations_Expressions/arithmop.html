@@ -2,6 +2,7 @@
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="div">
 <param name="Keyword" value="mod">
+<param name="Keyword" value="Возведение в степень">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -258,5 +259,12 @@ longword</code> и <code>int64</code>
 single</code> и <code>real</code>. То есть так же 
 результатом является самый короткий тип, требуемый для представления всех 
 получаемых значений.</p>
+<p>К <i>арифметическим</i> относится также операция возведения в степень **. 
+Выражение x ** y возвращает:</p>
+<ul>
+	<li>&nbsp;вещественное значение если операнды - целые или вещественные</li>
+	<li>тип Complex если один из операндов имеет тип Complex</li>
+	<li>тип BigInteger если x имеет тип BigInteger, а y - целый тип. </li>
+</ul>
 
 </body></html>

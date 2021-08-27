@@ -67,6 +67,7 @@ namespace PascalABCCompiler.NETGenerator
         public static MethodInfo StringLengthMethod;
         public static ConstructorInfo IndexOutOfRangeConstructor;
         public static ConstructorInfo ParamArrayAttributeConstructor;
+        public static MethodInfo StringCopyMethod;
 
         public static MethodInfo GetUnsizedArrayCreateMethod(TypeInfo ti)
         {
@@ -124,6 +125,7 @@ namespace PascalABCCompiler.NETGenerator
             ParamArrayAttributeConstructor = typeof(ParamArrayAttribute).GetConstructor(Type.EmptyTypes);
             GCHandleFreeMethod = typeof(GCHandle).GetMethod("Free");
             GetTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle");
+            StringCopyMethod = typeof(string).GetMethod("Copy");
         }
 
         public static bool IsStandType(Type t)
