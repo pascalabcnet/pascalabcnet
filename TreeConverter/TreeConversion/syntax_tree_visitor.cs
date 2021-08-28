@@ -5404,9 +5404,9 @@ namespace PascalABCCompiler.TreeConverter
                         bool has_extension_overload = false;
                         semantic_node sn = convert_semantic_strong(_dot_node.left);
 
-                        // SSM 17/07/21 учёт NullBasedStrings в семантике срезов строк
+                        // SSM 17/07/21 учёт ZeroBasedStrings в семантике срезов строк
                         // Пока не получилось
-                        if (SemanticRules.NullBasedStrings
+                        if (SemanticRules.ZeroBasedStrings
                             && (sn as expression_node)?.type is compiled_type_node ctn && ctn.compiled_type == typeof(string)
                             && _dot_node.right is ident id0 
                             )
@@ -16202,7 +16202,7 @@ namespace PascalABCCompiler.TreeConverter
                     //String 1 based
                     if (parameters.expressions.Count == 1 &&
                        nspr.property.comprehensive_type == SystemLibrary.SystemLibrary.string_type &&
-                       !SemanticRules.NullBasedStrings && (lbvr == null || !lbvr.var.name.StartsWith("<>match")))
+                       !SemanticRules.ZeroBasedStrings && (lbvr == null || !lbvr.var.name.StartsWith("<>match")))
                     {
                         nspr.fact_parametres.AddElement(
                             ConstructDecExpr(
@@ -19420,19 +19420,34 @@ namespace PascalABCCompiler.TreeConverter
                 SemanticRules.FastStrings = true;
                 return;
             }
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_nullbasedstrings)
+            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_zerobasedstrings)
             {
-                SemanticRules.NullBasedStrings = node.Directive.text.ToLower() == compiler_string_consts.true_const_name;
+                var paramOnOff = node.Directive.text.ToLower();
+                if (paramOnOff == "on" || paramOnOff == "")
+                    SemanticRules.ZeroBasedStrings = true;
+                else if (paramOnOff == "off")
+                    SemanticRules.ZeroBasedStrings = false;
+                //SemanticRules.ZeroBasedStrings = node.Directive.text.ToLower() == compiler_string_consts.true_const_name;
+                return;
+            }
+            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_zerobasedstrings_ON)
+            {
+                SemanticRules.ZeroBasedStrings = true;
+                return;
+            }
+            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_zerobasedstrings_OFF)
+            {
+                SemanticRules.ZeroBasedStrings = false;
                 return;
             }
             if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_nullbasedstrings_ON)
             {
-                SemanticRules.NullBasedStrings = true;
+                SemanticRules.ZeroBasedStrings = true;
                 return;
             }
             if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_nullbasedstrings_OFF)
             {
-                SemanticRules.NullBasedStrings = false;
+                SemanticRules.ZeroBasedStrings = false;
                 return;
             }
             if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_initstring_as_empty_ON)

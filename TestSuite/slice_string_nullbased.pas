@@ -1,4 +1,4 @@
-﻿{$string_nullbased+}
+﻿{$zerobasedstrings}
 
 uses PABCExtensions;
 

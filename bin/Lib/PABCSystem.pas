@@ -5,7 +5,7 @@
 /// !! System unit
 unit PABCSystem;
 
-{$string_nullbased-}
+{$zerobasedstrings off}
 
 {$gendoc true}
 
@@ -12867,7 +12867,7 @@ end;
 
 procedure PassSpaces(var s: string; var from: integer); 
 begin
-  while (from <= s.Length) and (s[from]=' ') do
+  while (from <= s.Length) and char.IsWhiteSpace(s[from]) do
     from += 1;
 end;
 
@@ -13083,7 +13083,7 @@ end;
 ///--
 function SystemSlice0(Self: string; situation: integer; from, &to: integer; step: integer := 1): string; extensionmethod;
 begin
-  Result := SystemSliceStringImpl(Self, situation, from, &to, step, 0); // 0 - NullBased
+  Result := SystemSliceStringImpl(Self, situation, from, &to, step, 0); // 0 - ZeroBased
 end;
 
 ///--

@@ -3,7 +3,7 @@
 ///--
 unit PABCExtensions;
 
-{$string_nullbased-}
+{$zerobasedstrings off}
 
 uses PABCSystem;
 
