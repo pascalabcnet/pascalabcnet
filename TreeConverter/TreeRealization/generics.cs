@@ -901,6 +901,15 @@ namespace PascalABCCompiler.TreeRealization
                         .Select(t => t.Index)
                         .ToArray();
 
+                // SSM 08/07/21 попытаться вывести нефункциональные параметры первыми
+                /*for (int i = 0; i < count_params_to_see; ++i)
+                    if (!(fact[i].type is delegated_methods))
+                    {
+                        bool b = DeduceInstanceTypes(formal[i].type, fact[i].type, deduced, nils, generic_params);
+                        b = b;
+                    }*/
+                        
+
                 for (int i = 0; i < count_params_to_see; ++i)
                 {
                     if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null && DeduceInstanceTypes(formal[i].type, (fact[i].type as delegated_methods).empty_param_method.type, deduced, nils, generic_params))
@@ -1139,7 +1148,7 @@ namespace PascalABCCompiler.TreeRealization
             if (formal_type.IsDelegate)
             {
                 //Если текущий параметр - лямбда, то просто выводим дженерик-параметры из типов, которые уже известны. Не трогаем lambda_any_type_node. Остальное выведется в цикле выше 
-                var lambda_func = fact_type as delegated_methods;
+                var lambda_func = fact_type as delegated_methods; // Возвр true не только если fact_type - лямбда, но и если это имя функции
                 if (lambda_func != null
                     && lambda_func.proper_methods.Count == 1
                     && LambdaHelper.IsLambdaName(lambda_func.proper_methods[0].simple_function_node.name))
@@ -1213,6 +1222,8 @@ namespace PascalABCCompiler.TreeRealization
                         }
                             
                     }
+                    // SSM 09.07 - My(f: T->T1) при наличии двух f - следующие 2 else дают пропуск этой ошибки!! Она внесена 10.01 в 20:54 при исправлении 1093
+                    // Видимо, это улучшило ситуацию - просто надо точнее отбрасывать часть fact_funcs
                     else if (dm != null && dm.proper_methods.Count > 1 && formal_type.original_generic is compiled_type_node && (formal_type.original_generic as compiled_type_node).compiled_type.FullName.StartsWith("System.Func`"))
                     {
                         var ctn = formal_type.original_generic as compiled_type_node;
@@ -1234,7 +1245,8 @@ namespace PascalABCCompiler.TreeRealization
                                 fact_funcs.Add(fc.simple_function_node);
                             }
                         }
-                    }    
+                    }
+                    // end SSM 09.07 - конец кода, который был написан раньше IB. Здесь поясняется его влияние на ошибки
                     for (int j = 0; j < fact_funcs.Count; j++)
                     {
                         fact_func = fact_funcs[j];
@@ -1256,15 +1268,22 @@ namespace PascalABCCompiler.TreeRealization
                             }
                                 
                         }
+                        bool skip_j = false; // SSM 06/07/21
                         for (int i = 0; i < param_count; i++)
                         {
                             if (!DeduceInstanceTypes(dii.parameters[i].type, fact_func.parameters[i].type, deduced, nils, generic_params))      // 07.04.15 - SSM поменял местами первые 2 параметра - видимо, была ошибка
                             {
                                 if (j < fact_funcs.Count - 1)
-                                    continue;
+                                {
+                                    skip_j = true; // SSM 06/07/21
+                                    break;
+                                    //continue; // тут надо завершать итерацию по j, а не по i !!!
+                                }
                                 goto eq_cmp;
                             }
                         }
+                        if (skip_j) // // SSM 06/07/21 пропустить текущую итерацию по j !!
+                            continue;
                         if (fact_func.return_value_type == null && dii.return_value_type == null)
                         {
                             //ok
@@ -1283,7 +1302,7 @@ namespace PascalABCCompiler.TreeRealization
                                 continue;
                             goto eq_cmp;
                         }
-                        return true;
+                        return true; // SSM 06/07/21 тут сбита логика. Мы рассматриваем получается только первую fact_func[0] и выходим
                     }
                 }
                 if (fact_type.IsDelegate && fact_type.semantic_node_type == semantic_node_type.delegated_method)

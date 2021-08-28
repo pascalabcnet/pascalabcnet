@@ -220,10 +220,10 @@ namespace PascalABCCompiler
                 for (int i = 0; i < GlobalErrorsList.Count; i++)
                 {
                     if (GlobalErrorsList[i] is ProgramModuleExpected || GlobalErrorsList[i] is ParserBadFileExtension)
-                        WriteColorText("[" + i + "]", ConsoleColor.DarkGreen, ConsoleColor.White);
+                        WriteColorText("[" + i + "]", ConsoleColor.Green);
                     else
                         if (GlobalErrorsList[i] is SemanticError)
-                            WriteColorText("[" + i + "]", ConsoleColor.DarkRed, ConsoleColor.White);
+                            WriteColorText("[" + i + "]", ConsoleColor.Red);
                         else
                             WriteErrorText("[" + i + "]");
                     Console.ForegroundColor = ConsoleColor.Gray;
@@ -356,17 +356,15 @@ namespace PascalABCCompiler
                 }
             }
         }
-        public static void WriteColorText(string Text, ConsoleColor BKColor, ConsoleColor FGColor)
+        public static void WriteColorText(string Text, ConsoleColor FGColor)
         {
-            ConsoleColor FGC = Console.ForegroundColor, BKC = Console.BackgroundColor;
             Console.ForegroundColor = FGColor;
-            Console.BackgroundColor = BKColor;
             Console.Write(Text);
-            Console.ForegroundColor = FGC; Console.BackgroundColor = BKC;
+            Console.ResetColor();
         }
         public static void WriteErrorText(string Text)
         {
-            WriteColorText(Text, ConsoleColor.Red, ConsoleColor.White);
+            WriteColorText(Text, ConsoleColor.Red);
         }
         public static void Reset()
         {
@@ -376,10 +374,10 @@ namespace PascalABCCompiler
             DateTime ldt = DateTime.Now;
             Compiler = new PascalABCCompiler.Compiler(null,ChangeCompilerState);
             //GC.Collect();
-            WriteColorText(Compiler.Banner + "\nCopyright (c) 2005-2021 by Ivan Bondarev, Stanislav Mikhalkovich\n", ConsoleColor.Black, ConsoleColor.Green);
+            WriteColorText(Compiler.Banner + "\nCopyright (c) 2005-2021 by Ivan Bondarev, Stanislav Mikhalkovich\n", ConsoleColor.Green);
             Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);
             if (Compiler.SupportedSourceFiles.Length == 0)
-                WriteColorText(StringResourcesGet("ERROR_PARSERS_NOT_FOUND")+Environment.NewLine,ConsoleColor.Black,ConsoleColor.Red);
+                WriteColorText(StringResourcesGet("ERROR_PARSERS_NOT_FOUND")+Environment.NewLine, ConsoleColor.Red);
             Compiler.InternalDebug.SkipPCUErrors = false;
         }
         public static void ShowConnectedParsers()
@@ -505,7 +503,6 @@ namespace PascalABCCompiler
                 if (!ExecuteCommand(Console.ReadLine()))
                 {
                     Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.BackgroundColor = ConsoleColor.Black;
                     return 0;
                 }
             }

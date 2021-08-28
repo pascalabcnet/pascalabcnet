@@ -58,18 +58,18 @@ var
   app: Application;
   MainWindow: GMainWindow;
 
-var BrushesDict := new Dictionary<GColor,GBrush>;
+//var BrushesDict := new Dictionary<GColor,GBrush>;
 
-function GetBrush(c: GColor): GBrush;
-begin
+function GetBrush(c: GColor): GBrush := new SolidColorBrush(c);
+{begin
   if not (c in BrushesDict) then
   begin
     var b := new SolidColorBrush(c);
-    BrushesDict[c] := b;
+    //BrushesDict[c] := b;
     Result := b
   end
-  else Result := BrushesDict[c];
-end;
+  //else Result := BrushesDict[c];
+end;}
 
 procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d, args);
 procedure InvokeP(p: procedure(r: real); r: real) := Invoke(p,r); 

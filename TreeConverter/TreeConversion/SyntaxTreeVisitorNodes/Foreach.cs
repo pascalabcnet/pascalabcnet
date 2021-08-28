@@ -161,8 +161,10 @@ namespace PascalABCCompiler.TreeConverter
                     check_for_type_allowed(tn, get_location(_foreach_stmt.type_name));
                     check_using_static_class(tn, get_location(_foreach_stmt.type_name));
                 }
-
-                context.close_var_definition_list(tn, null);
+                if (tn.is_value_type && !tn.is_standard_type)
+                    context.close_var_definition_list(tn, new default_operator_node(tn, foreachVariable.location));
+                else
+                    context.close_var_definition_list(tn, null);
             }
 
             if (/*!(foreachVariable.type is compiled_generic_instance_type_node) &&*/ !sys_coll_ienum) // SSM 16.09.18 - закомментировал это ограничение для фиксации бага #1184

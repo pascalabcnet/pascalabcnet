@@ -445,7 +445,6 @@ type
       //BorderColor := Colors.Black;
     end;
     procedure EF(value: GColor) := Element.Fill := ColorBrush(Value);
-    procedure ES(value: GColor) := Element.Stroke := ColorBrush(Value);
     procedure EST(value: real);
     begin
       Element.StrokeThickness := Value;
@@ -468,7 +467,7 @@ type
         var scb := Element.Stroke as SolidColorBrush;
         Result := scb<>nil ? scb.Color : ARGB(255,0,0,0);
       end)
-      write Invoke(ES,value);
+      write Invoke(()->(Element.Stroke := ColorBrush(Value)));
     /// Ширина границы графического объекта
     property BorderWidth: real 
       read InvokeReal(()->Element.StrokeThickness)

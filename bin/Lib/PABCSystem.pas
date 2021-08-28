@@ -5,6 +5,8 @@
 /// !! System unit
 unit PABCSystem;
 
+{$string_nullbased-}
+
 {$gendoc true}
 
 // Default Application type
@@ -265,6 +267,12 @@ type
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
+  // Атрибут для кеширования результатов функции
+  CacheAttribute = class(System.Attribute) 
+    public constructor Create; 
+    begin end;
+  end;
+  
 //{{{--doc: Конец секции стандартных типов для документации }}} 
   
   //------------------------------------------------------------------------------
@@ -370,7 +378,7 @@ type
   private 
     fi: FileInfo;
     sr: StreamReader;
-    sw: StreamWriter;
+    sw: TextWriter;
   public 
     /// Возвращает значение типа integer, введенное из текстового файла
     function ReadInteger: integer;
@@ -501,6 +509,7 @@ type
     function ToString: string; override;
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
+    class function InitBy<T>(s: sequence of T): TypedSet;
     //class function operator implicit<T>(a: array of T): TypedSet;
     function Count: integer := ht.Count;
     procedure Print(delim: string := ' ');
@@ -2120,16 +2129,24 @@ procedure Sort<T>(a: array of T);
 procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(a: array of T; less: (T,T)->boolean);
+/// Сортирует динамический массив по ключу
+procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+/// Сортирует список по возрастанию по ключу
+procedure Sort<T,T1>(var l: List<T>; keySelector: T->T1);
 /// Сортирует динамический массив по убыванию
 procedure SortDescending<T>(a: array of T);
+/// Сортирует динамический массив по убыванию по ключу
+procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
 /// Сортирует список по убыванию
 procedure SortDescending<T>(l: List<T>);
+/// Сортирует список по убыванию по ключу
+procedure SortDescending<T,T1>(var l: List<T>; keySelector: T->T1);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
@@ -2502,6 +2519,8 @@ var
   output: TextFile;
   /// Стандартный текстовый файл для ввода. Связывается процедурой Assign с файлом на диске, после чего весь ввод с консоли перенаправляется из этого файла
   input: TextFile;
+  /// Стандартный текстовый файл ошибок. Связывается процедурой Assign с файлом на диске, после чего весь вывод с использованием ErrOutput перенаправляется в этот файл
+  ErrOutput: TextFile;
   /// Определяет текущую систему ввода-вывода
   CurrentIOSystem: IOSystem;
   /// Принимает значение True, если приложение имеет консольное окно
@@ -2833,7 +2852,8 @@ const
   BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range of 2-dim array column indexes';
   SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size and assigned expression size must be equal';
   MATR_DIMENSIONS_MUST_BE_EQUAL = 'Размеры матриц должны совпадать!!Matrix dimensions must be equal';
-
+  COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1 = 'Количество параметров функции Max должно быть > 1!!The number of parameters of the Max function must be > 1';
+  COUNT_PARAMS_MINFUN_MUSTBE_GREATER1 = 'Количество параметров функции Min должно быть > 1!!The number of parameters of the Min function must be > 1';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -2845,7 +2865,7 @@ var
   
 type 
   BinaryFormatter = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
-
+  
 // -----------------------------------------------------
 //                  Internal functions
 // -----------------------------------------------------
@@ -3388,6 +3408,16 @@ begin
     hs.Add(T(key));  
   end;
   Result := hs; 
+end;
+
+class function TypedSet.InitBy<T>(s: sequence of T): TypedSet;
+begin
+  var ts := new TypedSet();
+  foreach key: T in s do
+  begin
+    ts.ht[key] := key;  
+  end;
+  Result := ts; 
 end;
 
 ///--
@@ -5583,6 +5613,8 @@ begin
     if (c <> #13) and (c <> #10) then // SSM 13.12.13
       sb.Append(c);
     c := char(peek);
+    if c = char(-1) then
+      break;
   end;
   x := sb.ToString;
 end;
@@ -6305,7 +6337,7 @@ begin
   if f.sr = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_READING));
   try
-    x := Convert.ToChar(f.sr.Read());
+    x := char(f.sr.Read());
   except
     on e: Exception do
       raise e;
@@ -6805,7 +6837,7 @@ end;
 
 procedure Write(obj: object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
     write_in_output(obj)
   else CurrentIOSystem.Write(obj);
 end;
@@ -6817,7 +6849,7 @@ end;
 
 procedure Write(obj1, obj2: object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
   begin
     write_in_output(obj1);
     write_in_output(obj2);
@@ -6832,7 +6864,7 @@ end;
 procedure Write(params args: array of object);
 begin
   for var i := 0 to args.length - 1 do
-    if output.sw <> nil then
+    if output.sw is StreamWriter then
       write_in_output(args[i])
     else
       CurrentIOSystem.Write(args[i]);
@@ -6840,7 +6872,7 @@ end;
 
 procedure Writeln(obj: object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
   begin
     write_in_output(obj);
     writeln_in_output;
@@ -6860,7 +6892,7 @@ end;
 
 procedure Writeln(obj1, obj2: object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
   begin
     write_in_output(obj1);
     write_in_output(obj2);
@@ -6876,14 +6908,14 @@ end;
 
 procedure Writeln;
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
     writeln_in_output
   else CurrentIOSystem.Writeln;
 end;
 
 procedure Writeln(params args: array of object);
 begin
-  if output.sw <> nil then
+  if output.sw is StreamWriter then
   begin
     for var i := 0 to args.length - 1 do
       write_in_output(args[i]);
@@ -6903,7 +6935,7 @@ end;
 
 procedure Write(f: Text; val: object);
 begin
-  if f.fi = nil then
+  if (f.fi = nil) and (f<>output) and (f<>ErrOutput) then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
@@ -6932,7 +6964,7 @@ end;
 
 procedure Writeln(f: Text);
 begin
-  if f.fi = nil then
+  if (f.fi = nil) and (f<>output) and (f<>ErrOutput) then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
@@ -7058,7 +7090,7 @@ begin
     on e: Exception do
       raise e;
   end;
-  if f = output then
+  if (f = output) or (f = ErrOutput) then
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
   begin  
@@ -7112,8 +7144,10 @@ begin
   end
   else 
   begin
-    f.sr.BaseStream.Position := 0;
-    f.sr.DiscardBufferedData;
+    f.sr.Close;
+    f.sr := new StreamReader(f.fi.FullName, en);
+    //f.sr.BaseStream.Position := 0;
+    //f.sr.DiscardBufferedData;
   end;
   if f = input then
   begin  
@@ -7150,7 +7184,8 @@ begin
   end
   else 
   begin
-    f.sw.BaseStream.Position := 0;
+    if f.sw is StreamWriter then
+      (f.sw as StreamWriter).BaseStream.Position := 0;
   end;
 end;
 
@@ -7907,6 +7942,7 @@ begin
   Result := System.IO.File.Exists(name);
 end;
 
+[System.Diagnostics.Conditional('DEBUG')]
 procedure Assert(cond: boolean; sourceFile: string; line: integer);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
@@ -7932,6 +7968,7 @@ begin
     System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
 end;
 
+[System.Diagnostics.Conditional('DEBUG')]
 procedure Assert(cond: boolean; message: string; sourceFile: string; line: integer);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
@@ -8454,8 +8491,19 @@ begin
   if d < Result then Result := d;
 end;
 
-function Min<T>(params a: array of T): T := a.Min;
-function Max<T>(params a: array of T): T := a.Max;
+function Min<T>(params a: array of T): T;
+begin
+  if a.Length<2 then
+    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MINFUN_MUSTBE_GREATER1));
+  Result := a.Min;
+end;
+  
+function Max<T>(params a: array of T): T;
+begin
+  if a.Length<2 then
+    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1));
+  Result := a.Max;
+end;
 
 {function Min(params a: array of real): real := a.Min;}
 
@@ -8553,9 +8601,19 @@ begin
   System.Array.Sort(a, (x, y)-> less(x, y) ? -1 : (less(y, x) ? 1 : 0));
 end;
 
+procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
+begin
+  a := a.OrderBy(x->keySelector(x)).ToArray;
+end;
+
 procedure Sort<T>(l: List<T>);
 begin
   l.Sort();
+end;
+
+procedure Sort<T,T1>(var l: List<T>; keySelector: T->T1);
+begin
+  l := l.OrderBy(x->keySelector(x)).ToList;
 end;
 
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
@@ -8574,10 +8632,20 @@ begin
   Reverse(a);
 end;
 
+procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
+begin
+  a := a.OrderByDescending(x->keySelector(x)).ToArray;
+end;
+
 procedure SortDescending<T>(l: List<T>);
 begin
   Sort(l);
   Reverse(l);
+end;
+
+procedure SortDescending<T,T1>(var l: List<T>; keySelector: T->T1);
+begin
+  l := l.OrderByDescending(x->keySelector(x)).ToList;
 end;
 
 procedure Reverse<T>(a: array of T);
@@ -8683,14 +8751,14 @@ begin
   Result := integer(a);
 end;
 
-function Chr(a: word): char;
-begin
-  Result := Convert.ToChar(a);
-end;
-
 function Ord(a: char): word;
 begin
   Result := word(a);
+end;
+
+function Chr(a: word): char;
+begin
+  Result := Convert.ToChar(a);
 end;
 
 function ChrUnicode(a: word): char;
@@ -11765,10 +11833,31 @@ begin
   System.Array.Sort(Self);  
 end;
 
+/// Сортирует массив по убыванию
+procedure SortDescending<T>(Self: array of T); extensionmethod;
+begin
+  System.Array.Sort(Self);
+  Reverse(Self);
+end;
+
 /// Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов
 procedure Sort<T>(Self: array of T; cmp: (T,T) ->integer); extensionmethod;
 begin
   System.Array.Sort(Self, cmp);  
+end;
+
+/// Сортирует массив по возрастанию по ключу
+procedure Sort<T,T1>(Self: array of T; keySelector: T -> T1); extensionmethod;
+begin
+  var a := Self.OrderBy(keySelector).ToArray;
+  System.Array.Copy(a,Self,a.Length);
+end;
+
+/// Сортирует массив по убыванию по ключу
+procedure SortDescending<T,T1>(Self: array of T; keySelector: T -> T1); extensionmethod;
+begin
+  var a := Self.OrderByDescending(keySelector).ToArray;
+  System.Array.Copy(a,Self,a.Length);
 end;
 
 /// Возвращает индекс последнего элемента массива
@@ -12550,6 +12639,21 @@ begin
   Result := TruncBigInteger(Self);
 end;
 
+/// Возвращает наибольшее целое, меньшее или равное вещественному числу
+function Floor(Self: real): integer; extensionmethod;
+begin
+  Result := Floor(Self);
+end;
+
+/// Возвращает наменьшее целое, большее или равное вещественному числу
+function Ceil(Self: real): integer; extensionmethod;
+begin
+  Result := Ceil(Self);
+end;
+
+
+
+
 /// Возвращает вещественное, отформатированное к строке с frac цифрами после десятичной точки
 function ToString(Self: real; frac: integer): string; extensionmethod;
 begin
@@ -12959,10 +13063,10 @@ begin
 end;
 
 ///-- 
-function SystemSliceStringImpl(Self: string; situation: integer; from, &to: integer; step: integer := 1): string;
+function SystemSliceStringImpl(Self: string; situation: integer; from, &to: integer; step: integer := 1; baseIndex: integer := 1): string;
 begin
-  var fromv := from - 1;
-  var tov := &to - 1;
+  var fromv := from - baseIndex;
+  var tov := &to - baseIndex;
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, fromv, tov, step);
   
   if step = 1 then // Opt s[a:b]
@@ -12977,6 +13081,12 @@ begin
 end;
 
 ///--
+function SystemSlice0(Self: string; situation: integer; from, &to: integer; step: integer := 1): string; extensionmethod;
+begin
+  Result := SystemSliceStringImpl(Self, situation, from, &to, step, 0); // 0 - NullBased
+end;
+
+///--
 function SystemSlice(Self: string; situation: integer; from, &to: SystemIndex; step: integer := 1): string; extensionmethod;
 begin
   if from.IsInverted then
@@ -12986,11 +13096,21 @@ begin
   Result := SystemSliceStringImpl(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
-///-- 
-function SystemSliceStringImplQuestion(Self: string; situation: integer; from, &to: integer; step: integer := 1): string;
+///--
+function SystemSlice0(Self: string; situation: integer; from, &to: SystemIndex; step: integer := 1): string; extensionmethod;
 begin
-  var fromv := from - 1;
-  var tov := &to - 1;
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceStringImpl(Self, situation, from.IndexValue, &to.IndexValue, step, 0);
+end;
+
+///-- 
+function SystemSliceStringImplQuestion(Self: string; situation: integer; from, &to: integer; step: integer := 1; baseIndex: integer := 1): string;
+begin
+  var fromv := from - baseIndex;
+  var tov := &to - baseIndex;
   
   var count := CorrectFromToAndCalcCountForSystemSliceQuestion(situation, Self.Length, fromv, tov, step);
   
@@ -13005,6 +13125,16 @@ begin
   if &to.IsInverted then
     &to.IndexValue := Self.Count - &to.IndexValue + 1;
   Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
+end;
+
+///--
+function SystemSliceQuestion0(Self: string; situation: integer; from, &to: SystemIndex; step: integer := 1): string; extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
+  Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step, 0);
 end;
 //--------------------------------------------
 //>>     Методы расширения типа Func # Extension methods for Func
@@ -13042,6 +13172,12 @@ end;
 function EachCount<Key,Source>(Self: sequence of System.Linq.IGrouping<Key,Source>): Dictionary<Key,integer>; extensionmethod;
 begin
   Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
+end;
+
+/// Возвращает частотный словарь объектов последовательности
+function EachCount<T>(Self: sequence of T): Dictionary<T,integer>; extensionmethod;
+begin
+  Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> g.Count);
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы результат групповой операции
@@ -13927,6 +14063,7 @@ procedure __InitModule;
 begin
   try
     DefaultEncoding := Encoding.GetEncoding(1251);
+    System.Console.OutputEncoding := Encoding.UTF8;
   except
     DefaultEncoding := Encoding.UTF8;
   end;
@@ -13957,8 +14094,11 @@ begin
   // SSM 10/11/18 восстановил эту строку чтобы в главном потоке в вещественных была точка
   System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
 
-  output := new TextFile();
   input := new TextFile();
+  output := new TextFile();
+  output.sw := Console.Out;
+  ErrOutput := new TextFile();
+  ErrOutput.sw := Console.Error;
 
   {if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
     foreach var listener in System.Diagnostics.Trace.Listeners do
@@ -13985,8 +14125,10 @@ end;
 
 procedure __FinalizeModule__;
 begin
-  if (output.sw <> nil) and (output.sw.BaseStream <> nil) then
+  if (output.sw <> nil) and (output.sw is StreamWriter) and ((output.sw as StreamWriter).BaseStream <> nil) then
     output.sw.Close;
+  if (ErrOutput.sw <> nil) and (ErrOutput.sw is StreamWriter) and ((ErrOutput.sw as StreamWriter).BaseStream <> nil) then
+    ErrOutput.sw.Close;
   if (input.sr <> nil) and (input.sr.BaseStream <> nil) then
     input.sr.Close;
 end;

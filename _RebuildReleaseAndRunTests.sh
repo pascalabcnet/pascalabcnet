@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 MONO_IOMAP=case msbuild /p:Configuration=release pabcnetc.sln
 MONO_IOMAP=case msbuild /p:Configuration=release CodeCompletion/CodeCompletion.csproj
 mono --aot bin/pabcnetc.exe

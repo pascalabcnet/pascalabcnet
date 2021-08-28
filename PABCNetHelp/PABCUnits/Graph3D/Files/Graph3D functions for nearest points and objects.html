@@ -7,7 +7,9 @@
 <param name="Keyword" value="NearestPointOnLine">
 <param name="Keyword" value="ParametricTrajectory">
 <param name="Keyword" value="PointOnPlane">
-<param name="Keyword" value="SerializeObject3D"></object>
+<param name="Keyword" value="SerializeObject3D">
+<param name="Keyword" value="SystemMouseEventsOff">
+<param name="Keyword" value="SystemMouseEventsOn"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Graph3D: функции для определения ближайших точек и объектов</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> BeginFrameBasedAnimationTime(Draw: <b>procedure</b>(dt: real));</code>
@@ -28,5 +30,9 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку на плоскости Plane, которую пересекает невизуальный луч, выпущенный из камеры и проходящий через точку (x,y) экрана</td></tr>
 <tr><td><code><b>procedure</b> SerializeObject3D(filename: string; obj: Object3D);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сериализует трёхмерный объект в файл</td></tr>
+<tr><td><code><b>procedure</b> SystemMouseEventsOff;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отключить стандартные обработчики событий мыши</td></tr>
+<tr><td><code><b>procedure</b> SystemMouseEventsOn;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Включить стандартные обработчики событий мыши</td></tr>
 </table>
 </body></HTML>

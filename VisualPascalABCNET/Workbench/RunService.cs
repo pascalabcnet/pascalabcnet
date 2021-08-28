@@ -206,8 +206,10 @@ namespace VisualPascalABC
                             {
                                 // SSM 22/04/19 - исправляю вылет оболочки при отсутствии exe файла
                                 // this.RunnerManager_Exited(OutputFileName); // - это всё равно не срабатывает. Кнопки оказываются в заблокированном состоянии
+                                
                                 WorkbenchServiceFactory.OperationsService.AddTextToOutputWindowSync(OutputFileName, "Произошла непредвиденная ошибка. Вероятно, на диске отсутствует .exe-файл. Повторите запуск");
                                 //throw;
+                                return false;
                             }
                             if (!ProjectFactory.Instance.ProjectLoaded)
                                 DocumentService.ActiveCodeFileDocument = tabPage;

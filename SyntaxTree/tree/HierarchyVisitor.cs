@@ -2069,6 +2069,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(expression_with_let _expression_with_let)
+		{
+		}
+
+		public virtual void post_do_visit(expression_with_let _expression_with_let)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4272,6 +4280,15 @@ namespace PascalABCCompiler.SyntaxTree
 			for (int i = 0; i < ln.Count; i++)
 				visit(property_ident.ln[i]);
 			post_do_visit(_property_ident);
+		}
+
+		public override void visit(expression_with_let _expression_with_let)
+		{
+			DefaultVisit(_expression_with_let);
+			pre_do_visit(_expression_with_let);
+			visit(expression_with_let.stat);
+			visit(expression_with_let.expr);
+			post_do_visit(_expression_with_let);
 		}
 	}
 

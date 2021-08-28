@@ -3424,6 +3424,12 @@ procedure SerializeObject3D(filename: string; obj: Object3D);
 
 /// Десериализует трёхмерный объект из файла
 function DeserializeObject3D(filename: string): Object3D;
+
+/// Отключить стандартные обработчики событий мыши
+procedure SystemMouseEventsOff;
+
+/// Включить стандартные обработчики событий мыши
+procedure SystemMouseEventsOn;
   
 var  
 // -----------------------------------------------------
@@ -3435,6 +3441,8 @@ var
   OnMouseUp: procedure(x, y: real; mousebutton: integer);
   /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
   OnMouseMove: procedure(x, y: real; mousebutton: integer);
+  /// Событие вращения колёсика мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши; delta<0 - колесо мыши вниз, delta>0 - колесо мыши вверх
+  OnMouseWheel: procedure(x, y: real; mousebutton,delta: integer);
   /// Событие нажатия клавиши
   OnKeyDown: procedure(k: Key);
   /// Событие отжатия клавиши
@@ -4673,6 +4681,19 @@ begin
   OnDrawFrame := nil;
 end;  
 
+var _SystemMouseEventsEnabled := True;
+
+procedure SystemMouseEventsOff;
+begin
+  _SystemMouseEventsEnabled := False;
+end;
+
+procedure SystemMouseEventsOn;
+begin
+  _SystemMouseEventsEnabled := True;
+end;
+
+
 
 type
   Graph3DWindow = class(GMainWindow)
@@ -4756,6 +4777,8 @@ type
         mb := 2;
       if Graph3D.OnMouseDown <> nil then  
         Graph3D.OnMouseDown(p.x, p.y, mb);
+      if not _SystemMouseEventsEnabled then
+        e.Handled := True;
     end;
     
     procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
@@ -4768,6 +4791,8 @@ type
         mb := 2;
       if Graph3D.OnMouseUp <> nil then  
         Graph3D.OnMouseUp(p.x, p.y, mb);
+      if not _SystemMouseEventsEnabled then
+        e.Handled := True;
     end;
     
     procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
@@ -4780,13 +4805,31 @@ type
         mb := 2;
       if Graph3D.OnMouseMove <> nil then  
         Graph3D.OnMouseMove(p.x, p.y, mb);
+      if not _SystemMouseEventsEnabled then
+        e.Handled := True;
     end;
+    
+    procedure SystemOnMouseWheel(sender: Object; e: MouseWheelEventArgs);
+    begin
+      var mb := 0;
+      var p := e.GetPosition(hvp);
+      if e.LeftButton = MouseButtonState.Pressed then
+        mb := 1
+      else if e.RightButton = MouseButtonState.Pressed then
+        mb := 2;
+      if Graph3D.OnMouseWheel <> nil then  
+        Graph3D.OnMouseWheel(p.x, p.y, mb, e.Delta);
+      if not _SystemMouseEventsEnabled then
+        e.Handled := True;
+    end;
+
     
     procedure InitHandlers; override;
     begin
       hvp.PreviewMouseDown += (o, e) -> SystemOnMouseDown(o, e);  
       hvp.PreviewMouseUp += (o, e) -> SystemOnMouseUp(o, e);  
       hvp.PreviewMouseMove += (o, e) -> SystemOnMouseMove(o, e);  
+      hvp.PreviewMouseWheel += (o, e) -> SystemOnMouseWheel(o, e);  
       
       hvp.PreviewKeyDown += (o, e)-> SystemOnKeyDown(o, e);
       hvp.PreviewKeyUp += (o, e)-> SystemOnKeyUp(o, e);

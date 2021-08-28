@@ -907,16 +907,60 @@ namespace PascalABCCompiler.PCU
                 foreach (statement_node st in stmt_list.statements)
                     AddIndirectUsedUnitsInStatement(st, ns_dict, interf);
             }
-            /*else if (stmt is common_static_method_call)
+            else if (stmt is common_static_method_call)
             {
                 common_static_method_call csmc = stmt as common_static_method_call;
                 AddIndirectUsedUnitsForType(csmc.common_type, ns_dict, interf);
-                
             }
             else if (stmt is if_node)
             {
                 if_node node = stmt as if_node;
                 AddIndirectUsedUnitsInStatement(node.condition, ns_dict, interf);
+                AddIndirectUsedUnitsInStatement(node.then_body, ns_dict, interf);
+                AddIndirectUsedUnitsInStatement(node.else_body, ns_dict, interf);
+            }
+            else if (stmt is while_node)
+            {
+                while_node node = stmt as while_node;
+                AddIndirectUsedUnitsInStatement(node.condition, ns_dict, interf);
+                AddIndirectUsedUnitsInStatement(node.body, ns_dict, interf);
+            }
+            else if (stmt is repeat_node)
+            {
+                repeat_node node = stmt as repeat_node;
+                AddIndirectUsedUnitsInStatement(node.condition, ns_dict, interf);
+                AddIndirectUsedUnitsInStatement(node.body, ns_dict, interf);
+            }
+            else if (stmt is lock_statement)
+            {
+                lock_statement node = stmt as lock_statement;
+                AddIndirectUsedUnitsInStatement(node.lock_object, ns_dict, interf);
+                AddIndirectUsedUnitsInStatement(node.body, ns_dict, interf);
+            }
+            else if (stmt is foreach_node)
+            {
+                foreach_node node = stmt as foreach_node;
+                AddIndirectUsedUnitsInStatement(node.in_what, ns_dict, interf);
+                AddIndirectUsedUnitsInStatement(node.what_do, ns_dict, interf);
+            }
+            else if (stmt is for_node)
+            {
+                for_node node = stmt as for_node;
+                AddIndirectUsedUnitsInStatement(node.init_while_expr, ns_dict, interf);
+                AddIndirectUsedUnitsInStatement(node.while_expr, ns_dict, interf);
+            }
+            else if (stmt is try_block)
+            {
+                try_block node = stmt as try_block;
+                AddIndirectUsedUnitsInStatement(node.try_statements, ns_dict, interf);
+                foreach (var eh in node.filters)
+                    AddIndirectUsedUnitsInStatement(eh.exception_handler, ns_dict, interf);
+                AddIndirectUsedUnitsInStatement(node.finally_statements, ns_dict, interf);
+            }
+            else if (stmt is throw_statement_node)
+            {
+                throw_statement_node node = stmt as throw_statement_node;
+                AddIndirectUsedUnitsInStatement(node.excpetion, ns_dict, interf);
             }
             if (stmt is base_function_call)
             {
@@ -925,7 +969,7 @@ namespace PascalABCCompiler.PCU
                 {
                     AddIndirectUsedUnitsInStatement(expr, ns_dict, interf);
                 }
-            }*/
+            }
             
         }
 

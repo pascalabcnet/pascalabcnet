@@ -577,4 +577,23 @@ namespace PascalABCCompiler.TreeRealization
 			visitor.visit(this);
 		}
 	}
+
+    [Serializable]
+    public class expression_with_let_semantic : expression_node
+    {
+        public expression_with_let_semantic(type_node type, location loc)
+            : base(type, loc)
+        {
+        }
+
+        public override semantic_node_type semantic_node_type
+        {
+            get
+            {
+                return semantic_node_type.typed_expression;
+            }
+        }
+        public override string ToString() => type.ToString();
+    }
+
 }

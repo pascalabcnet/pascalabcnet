@@ -2824,8 +2824,56 @@ namespace CodeCompletion
        		ps.AddParameter(prm);
        		ps.Complete();
        		cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.dispose_procedure_name,ps);
-       }
-        
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int16_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint16_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.sbyte_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int64_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint64_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint32_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+        }
+
         public override void visit(hex_constant _hex_constant)
         {
             //throw new Exception("The method or operation is not implemented.");

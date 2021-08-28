@@ -11,8 +11,10 @@
 
 <tr><tr><td><code><b>constructor</b> (pp: <b>array</b>  <b>of</b> Point; c: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает многоугольник заданного цвета с координатами вершин, заданными массивом точек pp</td></tr>
-<tr><td><code><b>constructor</b> (pp: <b>array</b>  <b>of</b> Point; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);</code>
+<tr><td><code><b>constructor</b> (pp: <b>array</b>  <b>of</b> Point; c: GColor; borderWidth: real; borderColor: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает многоугольник заданного цвета с координатами вершин, заданными массивом точек pp, с границей ширины borderWidth и цвета borderColor</td></tr>
+<tr><td><code><b>constructor</b> (pp: <b>array</b>  <b>of</b> Point; c: GColor; borderWidth: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает многоугольник заданного цвета с координатами вершин, заданными массивом точек pp, с границей ширины borderWidth</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса PolygonWPF</font></td></tr>
 
 <tr><tr><td><code><b>property</b> Points: <b>array</b>  <b>of</b> Point;</code>
@@ -21,11 +23,15 @@
 
 <tr><tr><td><code><b>function</b> RemoveBorder: PolygonWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): PolygonWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real; c: GColor): PolygonWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1): PolygonWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 <tr><td><code><b>function</b> SetRotate(da: real): PolygonWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PolygonWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real; fontname: string; c: GColor): PolygonWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'): PolygonWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса BoundedObjectWPF</font></td></tr>
 
@@ -39,7 +45,9 @@
 
 <tr><tr><td><code><b>function</b> RemoveBorder: BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): BoundedObjectWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real; c: GColor): BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1): BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 

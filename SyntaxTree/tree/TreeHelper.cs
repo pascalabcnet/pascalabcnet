@@ -1362,26 +1362,26 @@ namespace PascalABCCompiler.SyntaxTree
         {
         }
 
-        public var_statement(ident id, type_definition type, expression iv) : this(new var_def_statement(new ident_list(id), type, iv))
+        public var_statement(ident id, type_definition type, expression iv) : this(new var_def_statement(new ident_list(id, id.source_context), type, iv))
         {
         }
 
-        public var_statement(ident id, type_definition type) : this(new var_def_statement(new ident_list(id), type))
+        public var_statement(ident id, type_definition type) : this(new var_def_statement(new ident_list(id, id.source_context), type))
         {
         }
-        public var_statement(ident id, type_definition type, SourceContext sc) : this(new var_def_statement(new ident_list(id), type, sc))
-        {
-        }
-
-        public var_statement(ident id, string type) : this(new var_def_statement(new ident_list(id), new named_type_reference(type)))
+        public var_statement(ident id, type_definition type, SourceContext sc) : this(new var_def_statement(new ident_list(id, id.source_context), type, sc),sc)
         {
         }
 
-        public var_statement(ident id, expression iv) : this(new var_def_statement(new ident_list(id), null, iv))
+        public var_statement(ident id, string type) : this(new var_def_statement(new ident_list(id, id.source_context), new named_type_reference(type)))
         {
         }
 
-        public var_statement(ident id, expression iv, SourceContext sc) : this(new var_def_statement(new ident_list(id), null, iv, sc))
+        public var_statement(ident id, expression iv) : this(new var_def_statement(new ident_list(id,id.source_context), null, iv))
+        {
+        }
+
+        public var_statement(ident id, expression iv, SourceContext sc) : this(new var_def_statement(new ident_list(id,id.source_context), null, iv, sc),sc)
         {
         }
 
@@ -2081,4 +2081,11 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class class_definition
+    {
+        public bool IsDataClass { get ; set; }
+    }
+
+    public class semantic_check_delegates_pointers_in_cached_function // класс - маркер семантической проверки
+    { }
 }

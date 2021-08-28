@@ -1,4 +1,5 @@
-﻿var i: integer;
+﻿//winonly
+var i: integer;
 
 type
   I1<T>=interface

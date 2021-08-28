@@ -6,7 +6,8 @@
 <param name="Keyword" value="OnKeyUp">
 <param name="Keyword" value="OnMouseDown">
 <param name="Keyword" value="OnMouseMove">
-<param name="Keyword" value="OnMouseUp"></object>
+<param name="Keyword" value="OnMouseUp">
+<param name="Keyword" value="OnMouseWheel"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>События модуля Graph3D</H1>
 <table border=0 cellpadding=5><tr><td><code>OnDrawFrame: <b>procedure</b>(dt: real);</code>
@@ -23,6 +24,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши</td></tr>
 <tr><td><code>OnMouseUp: <b>procedure</b>(x, y: real; mousebutton: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши</td></tr>
+<tr><td><code>OnMouseWheel: <b>procedure</b>(x, y: real; mousebutton,delta: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие вращения колёсика мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши; delta&lt;0 - колесо мыши вниз, delta&gt;0 - колесо мыши вверх</td></tr>
 <tr><td><code>OnClose: <b>procedure</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие, происходящее при закрытии основного окна</td></tr>
 </table>
