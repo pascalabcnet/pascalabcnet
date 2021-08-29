@@ -1345,7 +1345,10 @@ namespace PascalABCCompiler.PCU
             //    parameters.Add(GetTypeReference());
             //}
             List<type_node> parameters = GetTypesList();
-            return compn.get_instance(parameters) as generic_instance_type_node;
+            int tmp = (int)br.BaseStream.Position;
+            generic_instance_type_node tn = compn.get_instance(parameters) as generic_instance_type_node;
+            br.BaseStream.Seek(tmp, SeekOrigin.Begin);
+            return tn;
         }
 
         private generic_namespace_function_instance_node GetGenericNamespaceFunctionReference()
@@ -3040,7 +3043,7 @@ namespace PascalABCCompiler.PCU
 			int offset = (int)br.BaseStream.Position-start_pos;
             br.ReadByte();
 			string s = br.ReadString();
-			type_node tn = GetTypeReference();
+            type_node tn = GetTypeReference();
 			concrete_parameter_type cpt = (concrete_parameter_type)br.ReadByte();
             SemanticTree.parameter_type pt = SemanticTree.parameter_type.value;
             switch (cpt)

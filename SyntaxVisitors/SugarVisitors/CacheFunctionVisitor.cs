@@ -19,6 +19,11 @@ namespace SyntaxVisitors.SugarVisitors
         {
             get { return new CacheFunctionVisitor(); }
         }
+
+        public override void visit(simple_attribute_list al)
+        {
+            base.visit(al);
+        }
         public override void visit(procedure_definition pd)
         {
             var attrs = pd.proc_header.attributes;
@@ -36,7 +41,7 @@ namespace SyntaxVisitors.SugarVisitors
             //if (attrs?.attributes?[0].attributes?[0]?.type?.names?[0]?.name?.ToLower()=="cache") // слишком быстро
             if (qq != null && qq.Any(nm=>nm.name.ToLower()=="cache"))
             {
-            // проверить, что 
+                // проверить, что 
                 // это функция +
                 // это не метод расширения +
                 // параметры есть (хоть один) +
@@ -46,15 +51,17 @@ namespace SyntaxVisitors.SugarVisitors
                 // отсутствие var и const в параметрах +
                 // функция определена глобально
 
+                if (pd.DescendantNodes().OfType<yield_node>().Count() > 0)
+                    throw new SyntaxVisitorError("FUNCTIONS_WITH_CACHE_ATTRIBUTE_CANNOT_HAVE_YIELD", pd.proc_header);
                 var fh = pd.proc_header as function_header;
                 if (fh == null)
                     throw new SyntaxVisitorError("ONLY_FUNCTION_SHOULD_HAVE_CACHE_ATTRIBUTE",pd.proc_header);
                 var isExtension = fh.proc_attributes.proc_attributes.Any(attr => attr.name == "extensionmethod");
                 if (isExtension)
                     throw new SyntaxVisitorError("EXTENSION_FUNCTIONS_SHOULD_NOT_HAVE_CACHE_ATTRIBUTE", fh);
-                if (fh.parameters != null && fh.parameters.Count == 0)
+                if (fh.parameters == null || fh.parameters != null && fh.parameters.Count == 0)
                     throw new SyntaxVisitorError("FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_PARAMETERS", fh);
-                if (fh.parameters != null && fh.parameters.Count > 7)
+                if (fh.parameters != null && fh.parameters.params_list.Sum(tp => tp.idents.idents.Count) > 7)
                     throw new SyntaxVisitorError("FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_LESSTHEN8_PARAMETERS", fh);
                 if (fh.return_type == null)
                     throw new SyntaxVisitorError("FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_EXPLICIT_RETURN_TYPE", fh);
@@ -74,7 +81,10 @@ namespace SyntaxVisitors.SugarVisitors
                       new expression_list(pp.Select(pair => pair.Item1 as expression).ToList())
                   )
                 );
-                (pd.proc_body as block).program_code.list.Insert(0, vs);
+                var proc_code = (pd.proc_body as block).program_code;
+                proc_code.list.Insert(0, vs);
+                if (proc_code.list[proc_code.list.Count - 1] is empty_statement)
+                    proc_code.list.RemoveAt(proc_code.list.Count - 1);
 
                 // var @ИмяФункцииDict := new Dictionary<типTuple, тип возвр значения функции>
                 // var d := new PABCSystem.Dictionary<System.Tuple<integer,integer,real>,integer>;
@@ -103,17 +113,39 @@ namespace SyntaxVisitors.SugarVisitors
                 //     Result := d[tup];
                 //     exit;
                 //   end;
-                var indr = new indexer(dictIdent, new expression_list(tupleIdent));
+                // а надо другой код
+
+                /*var indr = new indexer(dictIdent, new expression_list(tupleIdent));
                 var assRes = new assign("Result", indr);
                 var exitst = new procedure_call(new ident("exit"));
                 var stlst = new statement_list(assRes, exitst);
                 var cond = new method_call(new dot_node(dictIdent, new ident("ContainsKey")),
                     new expression_list(tupleIdent));
-                var ifstatement = new if_node(cond, stlst);
-                (pd.proc_body as block).program_code.list.Insert(1, ifstatement);
-                // В конец: d[tup] := Result
+                var ifstatement = new if_node(cond, stlst);*/
+
+                // if d.TryGetValue(tup,Result) then exit;
+
+                var indr = new indexer(dictIdent, new expression_list(tupleIdent));
+                var exitst = new procedure_call(new ident("exit"));
+                var cond = new method_call(new dot_node(dictIdent, new ident("TryGetValue")),
+                    new expression_list(new List<expression> { tupleIdent, new ident("Result") }));
+                var ifstatement = new if_node(cond, exitst);
+                proc_code.list.Insert(1, ifstatement);
+
+                // В конец: d[tup] := Result. И надо то же после каждого exit
                 var assEnd = new assign(indr, new ident("Result"));
-                (pd.proc_body as block).program_code.list.Add(assEnd);
+                // Вставить d[tup] := Result перед каждым exit начиная с конца
+                var pcc = pd.DescendantNodes().OfType<procedure_call>().Where(pc => pc.func_name is ident id && id.name.ToLower() == "exit" && pc.source_context != null).ToArray();
+                foreach (var p in pcc.Reverse())
+                {
+                    var ae = assEnd.Clone() as assign;
+                    if (p.Parent is statement_list sl)
+                        sl.ReplaceInList(p, new List<statement> { ae, p});
+                    else p.Parent.ReplaceDescendant(p as statement, new statement_list(new List<statement> { ae, p }));
+                }
+                if (proc_code.list[proc_code.list.Count - 1] is procedure_call pcall && pcall.func_name is ident idd && idd.name.ToLower() == "exit")
+                    ; // ничего не добавлять - т.к. перед exit всё добавлено
+                else proc_code.list.Add(assEnd);
 
                 // Добавить в начало функции семантические проверки:
                 // отсутствие делегатов и pointer в параметрах

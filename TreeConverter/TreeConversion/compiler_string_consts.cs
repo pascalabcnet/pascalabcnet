@@ -322,9 +322,11 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_reference = "reference";
         public static string include_namespace_directive = "includenamespace";
         public static string compiler_savepcu = "savepcu";
-        public static string compiler_directive_nullbasedstrings = "nullbasedstrings";
-        public static string compiler_directive_nullbasedstrings_ON = "string_nullbased+";
-        public static string compiler_directive_nullbasedstrings_OFF = "string_nullbased-";
+        public static string compiler_directive_zerobasedstrings = "zerobasedstrings";
+        public static string compiler_directive_zerobasedstrings_ON = "string_zerobased+";
+        public static string compiler_directive_zerobasedstrings_OFF = "string_zerobased-";
+        public static string compiler_directive_nullbasedstrings_ON = "string_nullbased+"; // для совместимости. Deprecated
+        public static string compiler_directive_nullbasedstrings_OFF = "string_nullbased-"; // для совместимости. Deprecated
         public static string compiler_directive_initstring_as_empty_ON = "string_initempty+";
         public static string compiler_directive_initstring_as_empty_OFF = "string_initempty-";
         public static string compiler_directive_resource = "resource";
