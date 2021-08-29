@@ -47,3 +47,4 @@ FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_EXPLICIT_RETURN_TYPE=Functions with [
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_COMPOUND_NAME=Functions with [Cache] should not have compound name
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_VAR_CONST_PARAMS_MODIFIERS=Functions with [Cache] should not have var, const or params modifier
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_BE_DEFINED_GLOBALLY=Functions with [Cache] attribute must be defined globally
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_CANNOT_HAVE_YIELD=Functions with [Cache] attribute must not contain yield statements

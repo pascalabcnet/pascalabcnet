@@ -40,7 +40,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 case PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET:
                     SemanticRules.AddResultVariable = true;
-                    SemanticRules.NullBasedStrings = false;
+                    SemanticRules.ZeroBasedStrings = false;
                     SemanticRules.FastStrings = false;
                     SemanticRules.InitStringAsEmptyString = true;
                     SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes = false;
@@ -55,7 +55,7 @@ namespace PascalABCCompiler.TreeConverter
                     break;
                 case PascalABCCompiler.SyntaxTree.LanguageId.C:
                     SemanticRules.AddResultVariable = false;
-                    SemanticRules.NullBasedStrings = true;
+                    SemanticRules.ZeroBasedStrings = true;
                     SemanticRules.InitStringAsEmptyString = false;
                     SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes = true;
                     SemanticRules.ManyVariablesOneInitializator = false;

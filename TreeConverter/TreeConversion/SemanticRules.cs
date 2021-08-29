@@ -30,7 +30,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <summary>
         /// Индексировать строки с 0
         /// </summary>
-        public static bool NullBasedStrings = false;
+        public static bool ZeroBasedStrings = false;
         
         /// <summary>
         /// Строгая проверка типа указателя

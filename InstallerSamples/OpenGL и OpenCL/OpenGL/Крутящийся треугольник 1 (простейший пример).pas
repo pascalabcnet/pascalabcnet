@@ -25,7 +25,7 @@ begin
   
   gl.ShaderSource(Result, 1,
     new string[](source),
-    new integer[](source.Length)
+    nil
   );
   
   gl.CompileShader(Result);
@@ -51,8 +51,11 @@ begin
     var log := System.Runtime.InteropServices.Marshal.PtrToStringAnsi(ptr);
     Writeln(log);
     
-    // и в конце обязательно освобождаем памяти, чтобы не было утечек памяти
+    // и в конце обязательно освобождаем, чтобы не было утечек памяти
     System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr);
+    gl.DeleteShader(Result);
+    
+    Result := gl_shader.Zero;
   end;
   
 end;
@@ -84,6 +87,9 @@ begin
     Writeln(log);
     
     System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr);
+    gl.DeleteProgram(Result);
+    
+    Result := gl_program.Zero;
   end;
   
 end;
@@ -171,7 +177,7 @@ begin
     var attribute_position := gl.GetAttribLocation(sprog, 'position');
     var attribute_color :=    gl.GetAttribLocation(sprog, 'color');
     
-    var t := new System.Diagnostics.Stopwatch;
+    var t := new Stopwatch;
     t.Start;
     
     {$endregion Инициализация переменных}

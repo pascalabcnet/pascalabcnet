@@ -42,7 +42,7 @@ $ sh _RebuildReleaseAndRunTests.sh
 ```bash
 $ cd bin
 $ mono pabcnetc.exe
-или $ mono --debug pabcnetc.exe
+or $ mono --debug pabcnetc.exe
 ```
 
 ## Tests
