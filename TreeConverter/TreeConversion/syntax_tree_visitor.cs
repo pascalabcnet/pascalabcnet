@@ -1249,10 +1249,20 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     List<SymbolInfo> saved_sil = sil;
                     List<SymbolInfo> saved_sil2 = sil2;
-                    if (!(left is typed_expression))
-                        AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
-                    base_function_call bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
-                    left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
+                    base_function_call bfc = null;
+                    if (!(left is typed_expression) && left.type is delegated_methods && name == ":=" && left is local_variable_reference && (left as local_variable_reference).var.type is undefined_type)
+                    {
+                        //left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate((left.type as delegated_methods).proper_methods[0].simple_function_node));
+                        left.type = CreateDelegate((left.type as delegated_methods).proper_methods[0].simple_function_node);
+                    }
+                    else
+                    {
+                        if (!(left is typed_expression))
+                            AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                        bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
+                        left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
+                    }
+                    
                     sil = left.type.find_in_type(name);
                     if (!(right is typed_expression) && right.type is delegated_methods)
                         bfc = (right.type as delegated_methods).proper_methods[0];
