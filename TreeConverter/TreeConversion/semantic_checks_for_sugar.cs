@@ -192,7 +192,7 @@ namespace PascalABCCompiler.TreeConverter
                 t = ctn1.compiled_type;
             if (av.type.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 return;
-            if (!av.type.is_class && !av.type.IsInterface && !(t != null && t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)) && !av.type.is_generic_parameter)
+            if (!av.type.is_class && !av.type.IsInterface && !(t != null && t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)) && !av.type.is_generic_parameter && !av.type.IsDelegate)
                 AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
         }
 
