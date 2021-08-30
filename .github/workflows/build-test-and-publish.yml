@@ -31,7 +31,8 @@ jobs:
       run: _RegisterHelixNUnit.bat
 
     - name: Build project in Debug-mode, compile Pas-units, run tests, create install packages...
-      run: _GenerateAllSetups2.bat
+      run: _GenerateAllSetups.bat
+      #run: _RebuildReleaseAndRunTestsForGitHub
       timeout-minutes: 35
       env:
         PABCNET_BUILD_MODE: Debug
