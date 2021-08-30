@@ -1,4 +1,4 @@
-name: Build & Test (Debug)
+name: Build & Test (CI)
 
 on: #[push, pull_request]
   workflow_dispatch:
@@ -18,8 +18,8 @@ defaults:
 jobs:
   build_and_test:
 
-    name: Prepare and build on Windows Server 2016 VM
-    runs-on: windows-2016
+    name: Prepare and build on Windows Server VM (latest)
+    runs-on: windows-latest
     timeout-minutes: 40
     #continue-on-error: true
     steps:
@@ -31,7 +31,7 @@ jobs:
       run: _RegisterHelixNUnit.bat
 
     - name: Build project in Debug-mode, compile Pas-units, run tests, create install packages...
-      run: _GenerateAllSetups.bat
+      run: _GenerateAllSetups2.bat
       timeout-minutes: 35
       env:
         PABCNET_BUILD_MODE: Debug
