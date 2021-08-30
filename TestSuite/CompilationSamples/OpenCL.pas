@@ -940,6 +940,7 @@ type
     public static property DEVICE_DEVICE_ENQUEUE_CAPABILITIES:                 DeviceInfo read new DeviceInfo($1070);
     public static property DEVICE_PIPE_SUPPORT:                                DeviceInfo read new DeviceInfo($1071);
     public static property DEVICE_LATEST_CONFORMANCE_VERSION_PASSED:           DeviceInfo read new DeviceInfo($1072);
+    public static property DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR:        DeviceInfo read new DeviceInfo($1073);
     public static property DEVICE_TERMINATE_CAPABILITY_KHR:                    DeviceInfo read new DeviceInfo($2031);
     public static property DEVICE_MAX_NAMED_BARRIER_COUNT_KHR:                 DeviceInfo read new DeviceInfo($2035);
     public static property DEVICE_COMPUTE_CAPABILITY_MAJOR_NV:                 DeviceInfo read new DeviceInfo($4000);
@@ -987,14 +988,18 @@ type
     public static property DEVICE_AVC_ME_VERSION_INTEL:                        DeviceInfo read new DeviceInfo($410B);
     public static property DEVICE_AVC_ME_SUPPORTS_TEXTURE_SAMPLER_USE_INTEL:   DeviceInfo read new DeviceInfo($410C);
     public static property DEVICE_AVC_ME_SUPPORTS_PREEMPTION_INTEL:            DeviceInfo read new DeviceInfo($410D);
+    public static property DEVICE_PCI_BUS_INFO_KHR:                            DeviceInfo read new DeviceInfo($410F);
     public static property DEVICE_PLANAR_YUV_MAX_WIDTH_INTEL:                  DeviceInfo read new DeviceInfo($417E);
     public static property DEVICE_PLANAR_YUV_MAX_HEIGHT_INTEL:                 DeviceInfo read new DeviceInfo($417F);
+    public static property DEVICE_QUEUE_FAMILY_PROPERTIES_INTEL:               DeviceInfo read new DeviceInfo($418B);
     public static property DEVICE_HOST_MEM_CAPABILITIES_INTEL:                 DeviceInfo read new DeviceInfo($4190);
     public static property DEVICE_DEVICE_MEM_CAPABILITIES_INTEL:               DeviceInfo read new DeviceInfo($4191);
     public static property DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL: DeviceInfo read new DeviceInfo($4192);
     public static property DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL:  DeviceInfo read new DeviceInfo($4193);
     public static property DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL:        DeviceInfo read new DeviceInfo($4194);
     public static property DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM:        DeviceInfo read new DeviceInfo($41E4);
+    public static property DEVICE_SUPPORTED_REGISTER_ALLOCATIONS_ARM:          DeviceInfo read new DeviceInfo($41EB);
+    public static property DEVICE_CONTROLLED_TERMINATION_CAPABILITIES_ARM:     DeviceInfo read new DeviceInfo($41EE);
     public static property DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT:          DeviceInfo read new DeviceInfo($4230);
     
     public function ToString: string; override;
@@ -1122,6 +1127,7 @@ type
       if self.val = UInt32($1070) then Result := 'DEVICE_DEVICE_ENQUEUE_CAPABILITIES' else
       if self.val = UInt32($1071) then Result := 'DEVICE_PIPE_SUPPORT' else
       if self.val = UInt32($1072) then Result := 'DEVICE_LATEST_CONFORMANCE_VERSION_PASSED' else
+      if self.val = UInt32($1073) then Result := 'DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR' else
       if self.val = UInt32($2031) then Result := 'DEVICE_TERMINATE_CAPABILITY_KHR' else
       if self.val = UInt32($2035) then Result := 'DEVICE_MAX_NAMED_BARRIER_COUNT_KHR' else
       if self.val = UInt32($4000) then Result := 'DEVICE_COMPUTE_CAPABILITY_MAJOR_NV' else
@@ -1169,14 +1175,18 @@ type
       if self.val = UInt32($410B) then Result := 'DEVICE_AVC_ME_VERSION_INTEL' else
       if self.val = UInt32($410C) then Result := 'DEVICE_AVC_ME_SUPPORTS_TEXTURE_SAMPLER_USE_INTEL' else
       if self.val = UInt32($410D) then Result := 'DEVICE_AVC_ME_SUPPORTS_PREEMPTION_INTEL' else
+      if self.val = UInt32($410F) then Result := 'DEVICE_PCI_BUS_INFO_KHR' else
       if self.val = UInt32($417E) then Result := 'DEVICE_PLANAR_YUV_MAX_WIDTH_INTEL' else
       if self.val = UInt32($417F) then Result := 'DEVICE_PLANAR_YUV_MAX_HEIGHT_INTEL' else
+      if self.val = UInt32($418B) then Result := 'DEVICE_QUEUE_FAMILY_PROPERTIES_INTEL' else
       if self.val = UInt32($4190) then Result := 'DEVICE_HOST_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($4191) then Result := 'DEVICE_DEVICE_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($4192) then Result := 'DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($4193) then Result := 'DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($4194) then Result := 'DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($41E4) then Result := 'DEVICE_SCHEDULING_CONTROLS_CAPABILITIES_ARM' else
+      if self.val = UInt32($41EB) then Result := 'DEVICE_SUPPORTED_REGISTER_ALLOCATIONS_ARM' else
+      if self.val = UInt32($41EE) then Result := 'DEVICE_CONTROLLED_TERMINATION_CAPABILITIES_ARM' else
       if self.val = UInt32($4230) then Result := 'DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT' else
         Result := $'DeviceInfo[{self.val}]';
     end;
@@ -1499,6 +1509,7 @@ type
     public static property VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL:     ErrorCode read new ErrorCode(-1101);
     public static property PIPE_FULL_INTEL:                             ErrorCode read new ErrorCode(-1106);
     public static property PIPE_EMPTY_INTEL:                            ErrorCode read new ErrorCode(-1107);
+    public static property COMMAND_TERMINATED_ITSELF_WITH_FAILURE_ARM:  ErrorCode read new ErrorCode(-1108);
     public static property CONTEXT_TERMINATED_KHR:                      ErrorCode read new ErrorCode(-1121);
     public static property ERROR_RESERVED0_IMG:                         ErrorCode read new ErrorCode(-1122);
     public static property ERROR_RESERVED1_IMG:                         ErrorCode read new ErrorCode(-1123);
@@ -1604,6 +1615,7 @@ type
       if self.val = Int32(-1101) then Result := 'VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL' else
       if self.val = Int32(-1106) then Result := 'PIPE_FULL_INTEL' else
       if self.val = Int32(-1107) then Result := 'PIPE_EMPTY_INTEL' else
+      if self.val = Int32(-1108) then Result := 'COMMAND_TERMINATED_ITSELF_WITH_FAILURE_ARM' else
       if self.val = Int32(-1121) then Result := 'CONTEXT_TERMINATED_KHR' else
       if self.val = Int32(-1122) then Result := 'ERROR_RESERVED0_IMG' else
       if self.val = Int32(-1123) then Result := 'ERROR_RESERVED1_IMG' else
@@ -1626,11 +1638,12 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property EVENT_COMMAND_QUEUE:            EventInfo read new EventInfo($11D0);
-    public static property EVENT_COMMAND_TYPE:             EventInfo read new EventInfo($11D1);
-    public static property EVENT_REFERENCE_COUNT:          EventInfo read new EventInfo($11D2);
-    public static property EVENT_COMMAND_EXECUTION_STATUS: EventInfo read new EventInfo($11D3);
-    public static property EVENT_CONTEXT:                  EventInfo read new EventInfo($11D4);
+    public static property EVENT_COMMAND_QUEUE:                  EventInfo read new EventInfo($11D0);
+    public static property EVENT_COMMAND_TYPE:                   EventInfo read new EventInfo($11D1);
+    public static property EVENT_REFERENCE_COUNT:                EventInfo read new EventInfo($11D2);
+    public static property EVENT_COMMAND_EXECUTION_STATUS:       EventInfo read new EventInfo($11D3);
+    public static property EVENT_CONTEXT:                        EventInfo read new EventInfo($11D4);
+    public static property EVENT_COMMAND_TERMINATION_REASON_ARM: EventInfo read new EventInfo($41ED);
     
     public function ToString: string; override;
     begin
@@ -1639,6 +1652,7 @@ type
       if self.val = UInt32($11D2) then Result := 'EVENT_REFERENCE_COUNT' else
       if self.val = UInt32($11D3) then Result := 'EVENT_COMMAND_EXECUTION_STATUS' else
       if self.val = UInt32($11D4) then Result := 'EVENT_CONTEXT' else
+      if self.val = UInt32($41ED) then Result := 'EVENT_COMMAND_TERMINATION_REASON_ARM' else
         Result := $'EventInfo[{self.val}]';
     end;
     
@@ -1787,13 +1801,15 @@ type
     public constructor(val: IntPtr) := self.val := val;
     public constructor(val: Int32) := self.val := new IntPtr(val);
     
-    public static property IMPORT_MEMORY_WHOLE_ALLOCATION_ARM:            ImportPropertiesArm read new ImportPropertiesArm(-1);
-    public static property IMPORT_TYPE_ARM:                               ImportPropertiesArm read new ImportPropertiesArm($40B2);
-    public static property IMPORT_TYPE_HOST_ARM:                          ImportPropertiesArm read new ImportPropertiesArm($40B3);
-    public static property IMPORT_TYPE_DMA_BUF_ARM:                       ImportPropertiesArm read new ImportPropertiesArm($40B4);
-    public static property IMPORT_TYPE_PROTECTED_ARM:                     ImportPropertiesArm read new ImportPropertiesArm($40B5);
-    public static property IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM:       ImportPropertiesArm read new ImportPropertiesArm($41E2);
-    public static property IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM: ImportPropertiesArm read new ImportPropertiesArm($41E3);
+    public static property IMPORT_MEMORY_WHOLE_ALLOCATION_ARM:             ImportPropertiesArm read new ImportPropertiesArm(-1);
+    public static property IMPORT_TYPE_ARM:                                ImportPropertiesArm read new ImportPropertiesArm($40B2);
+    public static property IMPORT_TYPE_HOST_ARM:                           ImportPropertiesArm read new ImportPropertiesArm($40B3);
+    public static property IMPORT_TYPE_DMA_BUF_ARM:                        ImportPropertiesArm read new ImportPropertiesArm($40B4);
+    public static property IMPORT_TYPE_PROTECTED_ARM:                      ImportPropertiesArm read new ImportPropertiesArm($40B5);
+    public static property IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM:        ImportPropertiesArm read new ImportPropertiesArm($41E2);
+    public static property IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM:  ImportPropertiesArm read new ImportPropertiesArm($41E3);
+    public static property IMPORT_ANDROID_HARDWARE_BUFFER_PLANE_INDEX_ARM: ImportPropertiesArm read new ImportPropertiesArm($41EF);
+    public static property IMPORT_ANDROID_HARDWARE_BUFFER_LAYER_INDEX_ARM: ImportPropertiesArm read new ImportPropertiesArm($41F0);
     
     public function ToString: string; override;
     begin
@@ -1804,6 +1820,8 @@ type
       if self.val = IntPtr($40B5) then Result := 'IMPORT_TYPE_PROTECTED_ARM' else
       if self.val = IntPtr($41E2) then Result := 'IMPORT_TYPE_ANDROID_HARDWARE_BUFFER_ARM' else
       if self.val = IntPtr($41E3) then Result := 'IMPORT_DMA_BUF_DATA_CONSISTENCY_WITH_HOST_ARM' else
+      if self.val = IntPtr($41EF) then Result := 'IMPORT_ANDROID_HARDWARE_BUFFER_PLANE_INDEX_ARM' else
+      if self.val = IntPtr($41F0) then Result := 'IMPORT_ANDROID_HARDWARE_BUFFER_LAYER_INDEX_ARM' else
         Result := $'ImportPropertiesArm[{self.val}]';
     end;
     
@@ -2476,13 +2494,19 @@ type
     
     public static property QUEUE_PRIORITY_KHR:        QueueProperties read new QueueProperties($1096);
     public static property QUEUE_THROTTLE_KHR:        QueueProperties read new QueueProperties($1097);
+    public static property QUEUE_FAMILY_INTEL:        QueueProperties read new QueueProperties($418C);
+    public static property QUEUE_INDEX_INTEL:         QueueProperties read new QueueProperties($418D);
     public static property QUEUE_KERNEL_BATCHING_ARM: QueueProperties read new QueueProperties($41E7);
+    public static property QUEUE_DEFERRED_FLUSH_ARM:  QueueProperties read new QueueProperties($41EC);
     
     public function ToString: string; override;
     begin
       if self.val = UInt64($1096) then Result := 'QUEUE_PRIORITY_KHR' else
       if self.val = UInt64($1097) then Result := 'QUEUE_THROTTLE_KHR' else
+      if self.val = UInt64($418C) then Result := 'QUEUE_FAMILY_INTEL' else
+      if self.val = UInt64($418D) then Result := 'QUEUE_INDEX_INTEL' else
       if self.val = UInt64($41E7) then Result := 'QUEUE_KERNEL_BATCHING_ARM' else
+      if self.val = UInt64($41EC) then Result := 'QUEUE_DEFERRED_FLUSH_ARM' else
         Result := $'QueueProperties[{self.val}]';
     end;
     
@@ -12485,16 +12509,6 @@ type
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateFromGLTexture(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem :=
     z_CreateFromGLTexture_ovr_0(context, flags, target, miplevel, texture, errcode_ret);
     
-    private static function z_CreateFromGLTexture2D_ovr_0(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem;
-    external 'opencl.dll' name 'clCreateFromGLTexture2D';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateFromGLTexture2D(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem :=
-    z_CreateFromGLTexture2D_ovr_0(context, flags, target, miplevel, texture, errcode_ret);
-    
-    private static function z_CreateFromGLTexture3D_ovr_0(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem;
-    external 'opencl.dll' name 'clCreateFromGLTexture3D';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateFromGLTexture3D(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem :=
-    z_CreateFromGLTexture3D_ovr_0(context, flags, target, miplevel, texture, errcode_ret);
-    
     private static function z_CreateFromGLRenderbuffer_ovr_0(context: cl_context; flags: MemFlags; renderbuffer: UInt32; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateFromGLRenderbuffer';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateFromGLRenderbuffer(context: cl_context; flags: MemFlags; renderbuffer: UInt32; var errcode_ret: ErrorCode): cl_mem :=
@@ -12970,6 +12984,16 @@ type
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseGLObjects(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
     z_EnqueueReleaseGLObjects_ovr_26(command_queue, num_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
     
+    private static function z_CreateFromGLTexture2D_ovr_0(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLTexture2D';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateFromGLTexture2D(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateFromGLTexture2D_ovr_0(context, flags, target, miplevel, texture, errcode_ret);
+    
+    private static function z_CreateFromGLTexture3D_ovr_0(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLTexture3D';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateFromGLTexture3D(context: cl_context; flags: MemFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateFromGLTexture3D_ovr_0(context, flags, target, miplevel, texture, errcode_ret);
+    
   end;
   
   [PCUNotRestore]
@@ -13026,6 +13050,11 @@ type
     external 'opencl.dll' name 'clMemFreeINTEL';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function MemFreeINTEL(context: cl_context; ptr: IntPtr): ErrorCode :=
     z_MemFreeINTEL_ovr_0(context, ptr);
+    
+    private static function z_MemBlockingFreeINTEL_ovr_0(context: cl_context; ptr: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clMemBlockingFreeINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function MemBlockingFreeINTEL(context: cl_context; ptr: IntPtr): ErrorCode :=
+    z_MemBlockingFreeINTEL_ovr_0(context, ptr);
     
     private static function z_GetMemAllocInfoINTEL_ovr_0(context: cl_context; ptr: IntPtr; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetMemAllocInfoINTEL';
@@ -14125,6 +14154,362 @@ type
     external 'opencl.dll' name 'clEnqueueGenerateMipmapIMG';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueGenerateMipmapIMG(command_queue: cl_command_queue; src_image: cl_mem; dst_image: cl_mem; mipmap_filter_mode: MipmapFilterModeImg; array_region: IntPtr; mip_region: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
     z_EnqueueGenerateMipmapIMG_ovr_80(command_queue, src_image, dst_image, mipmap_filter_mode, array_region, mip_region, num_events_in_wait_list, event_wait_list, &event);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clSuggestedLocalWorkSizeKHR = static class
+    public const _ExtStr = 'khr_suggested_local_work_size';
+    
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000010(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000110(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000001(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000101(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000011(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000111(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; global_work_size: array of UIntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      if (global_work_size<>nil) and (global_work_size.Length<>0) then
+        if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+          z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue, kernel, work_dim, global_work_offset[0], global_work_size[0], suggested_local_work_size[0]) else
+          z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000001(command_queue, kernel, work_dim, global_work_offset[0], global_work_size[0], IntPtr.Zero) else
+        if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+          z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000010(command_queue, kernel, work_dim, global_work_offset[0], IntPtr.Zero, suggested_local_work_size[0]) else
+          z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000011(command_queue, kernel, work_dim, global_work_offset[0], IntPtr.Zero, IntPtr.Zero) else
+      if (global_work_size<>nil) and (global_work_size.Length<>0) then
+        if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+          z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size[0], suggested_local_work_size[0]) else
+          z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000101(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size[0], IntPtr.Zero) else
+        if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+          z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000110(command_queue, kernel, work_dim, IntPtr.Zero, IntPtr.Zero, suggested_local_work_size[0]) else
+          z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000111(command_queue, kernel, work_dim, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_1_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_1_anh0000010(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_1_anh0000110(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; global_work_size: array of UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      if (global_work_size<>nil) and (global_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue, kernel, work_dim, global_work_offset[0], global_work_size[0], suggested_local_work_size) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000010(command_queue, kernel, work_dim, global_work_offset[0], IntPtr.Zero, suggested_local_work_size) else
+      if (global_work_size<>nil) and (global_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size[0], suggested_local_work_size) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000110(command_queue, kernel, work_dim, IntPtr.Zero, IntPtr.Zero, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2_anh0000010(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2_anh0000110(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; global_work_size: array of UIntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      if (global_work_size<>nil) and (global_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2(command_queue, kernel, work_dim, global_work_offset[0], global_work_size[0], suggested_local_work_size) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2_anh0000010(command_queue, kernel, work_dim, global_work_offset[0], IntPtr.Zero, suggested_local_work_size) else
+      if (global_work_size<>nil) and (global_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size[0], suggested_local_work_size) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2_anh0000110(command_queue, kernel, work_dim, IntPtr.Zero, IntPtr.Zero, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_3_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_3_anh0000101(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; var global_work_size: UIntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue, kernel, work_dim, global_work_offset[0], global_work_size, suggested_local_work_size[0]) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000001(command_queue, kernel, work_dim, global_work_offset[0], global_work_size, IntPtr.Zero) else
+      if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size, suggested_local_work_size[0]) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000101(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size, IntPtr.Zero);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_4_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue, kernel, work_dim, global_work_offset[0], global_work_size, suggested_local_work_size) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_5_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2(command_queue, kernel, work_dim, global_work_offset[0], global_work_size, suggested_local_work_size) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6_anh0000001(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6_anh0000101(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; global_work_size: IntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6(command_queue, kernel, work_dim, global_work_offset[0], global_work_size, suggested_local_work_size[0]) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6_anh0000001(command_queue, kernel, work_dim, global_work_offset[0], global_work_size, IntPtr.Zero) else
+      if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size, suggested_local_work_size[0]) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6_anh0000101(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size, IntPtr.Zero);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_7_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6(command_queue, kernel, work_dim, global_work_offset[0], global_work_size, suggested_local_work_size) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_8(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_8_anh0000100(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: array of UIntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    if (global_work_offset<>nil) and (global_work_offset.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_8(command_queue, kernel, work_dim, global_work_offset[0], global_work_size, suggested_local_work_size) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_8_anh0000100(command_queue, kernel, work_dim, IntPtr.Zero, global_work_size, suggested_local_work_size);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: array of UIntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (global_work_size<>nil) and (global_work_size.Length<>0) then
+      if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue, kernel, work_dim, global_work_offset, global_work_size[0], suggested_local_work_size[0]) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000001(command_queue, kernel, work_dim, global_work_offset, global_work_size[0], IntPtr.Zero) else
+      if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000010(command_queue, kernel, work_dim, global_work_offset, IntPtr.Zero, suggested_local_work_size[0]) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000011(command_queue, kernel, work_dim, global_work_offset, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: array of UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    if (global_work_size<>nil) and (global_work_size.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue, kernel, work_dim, global_work_offset, global_work_size[0], suggested_local_work_size) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000010(command_queue, kernel, work_dim, global_work_offset, IntPtr.Zero, suggested_local_work_size);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: array of UIntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    if (global_work_size<>nil) and (global_work_size.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2(command_queue, kernel, work_dim, global_work_offset, global_work_size[0], suggested_local_work_size) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2_anh0000010(command_queue, kernel, work_dim, global_work_offset, IntPtr.Zero, suggested_local_work_size);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; var global_work_size: UIntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size[0]) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0_anh0000001(command_queue, kernel, work_dim, global_work_offset, global_work_size, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    z_GetKernelSuggestedLocalWorkSizeKHR_ovr_0(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    z_GetKernelSuggestedLocalWorkSizeKHR_ovr_2(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size[0]) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6_anh0000001(command_queue, kernel, work_dim, global_work_offset, global_work_size, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    z_GetKernelSuggestedLocalWorkSizeKHR_ovr_6(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; var global_work_offset: UIntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    z_GetKernelSuggestedLocalWorkSizeKHR_ovr_8(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18_anh0000010(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18_anh0000001(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18_anh0000011(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: array of UIntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (global_work_size<>nil) and (global_work_size.Length<>0) then
+      if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18(command_queue, kernel, work_dim, global_work_offset, global_work_size[0], suggested_local_work_size[0]) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18_anh0000001(command_queue, kernel, work_dim, global_work_offset, global_work_size[0], IntPtr.Zero) else
+      if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18_anh0000010(command_queue, kernel, work_dim, global_work_offset, IntPtr.Zero, suggested_local_work_size[0]) else
+        z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18_anh0000011(command_queue, kernel, work_dim, global_work_offset, IntPtr.Zero, IntPtr.Zero);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_19_anh0000010(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: array of UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    if (global_work_size<>nil) and (global_work_size.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18(command_queue, kernel, work_dim, global_work_offset, global_work_size[0], suggested_local_work_size) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18_anh0000010(command_queue, kernel, work_dim, global_work_offset, IntPtr.Zero, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_20(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_20_anh0000010(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: array of UIntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    if (global_work_size<>nil) and (global_work_size.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_20(command_queue, kernel, work_dim, global_work_offset, global_work_size[0], suggested_local_work_size) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_20_anh0000010(command_queue, kernel, work_dim, global_work_offset, IntPtr.Zero, suggested_local_work_size);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size[0]) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18_anh0000001(command_queue, kernel, work_dim, global_work_offset, global_work_size, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    z_GetKernelSuggestedLocalWorkSizeKHR_ovr_18(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; var global_work_size: UIntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    z_GetKernelSuggestedLocalWorkSizeKHR_ovr_20(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_24(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_24_anh0000001(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: array of UIntPtr): ErrorCode :=
+    if (suggested_local_work_size<>nil) and (suggested_local_work_size.Length<>0) then
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_24(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size[0]) else
+      z_GetKernelSuggestedLocalWorkSizeKHR_ovr_24_anh0000001(command_queue, kernel, work_dim, global_work_offset, global_work_size, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; var suggested_local_work_size: UIntPtr): ErrorCode :=
+    z_GetKernelSuggestedLocalWorkSizeKHR_ovr_24(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    private static function z_GetKernelSuggestedLocalWorkSizeKHR_ovr_26(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
+    z_GetKernelSuggestedLocalWorkSizeKHR_ovr_26(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clSharingFormatQueryGlINTEL = static class
+    public const _ExtStr = 'intel_sharing_format_query_gl';
+    
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_0(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; var gl_formats: UInt32; var num_texture_formats: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_0_anh0000010(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; var num_texture_formats: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_0_anh0000001(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; var gl_formats: UInt32; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_0_anh0000011(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: array of UInt32; num_texture_formats: array of UInt32): ErrorCode :=
+    if (gl_formats<>nil) and (gl_formats.Length<>0) then
+      if (num_texture_formats<>nil) and (num_texture_formats.Length<>0) then
+        z_GetSupportedGLTextureFormatsINTEL_ovr_0(context, flags, image_type, num_entries, gl_formats[0], num_texture_formats[0]) else
+        z_GetSupportedGLTextureFormatsINTEL_ovr_0_anh0000001(context, flags, image_type, num_entries, gl_formats[0], IntPtr.Zero) else
+      if (num_texture_formats<>nil) and (num_texture_formats.Length<>0) then
+        z_GetSupportedGLTextureFormatsINTEL_ovr_0_anh0000010(context, flags, image_type, num_entries, IntPtr.Zero, num_texture_formats[0]) else
+        z_GetSupportedGLTextureFormatsINTEL_ovr_0_anh0000011(context, flags, image_type, num_entries, IntPtr.Zero, IntPtr.Zero);
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_1_anh0000010(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; var num_texture_formats: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: array of UInt32; var num_texture_formats: UInt32): ErrorCode :=
+    if (gl_formats<>nil) and (gl_formats.Length<>0) then
+      z_GetSupportedGLTextureFormatsINTEL_ovr_0(context, flags, image_type, num_entries, gl_formats[0], num_texture_formats) else
+      z_GetSupportedGLTextureFormatsINTEL_ovr_0_anh0000010(context, flags, image_type, num_entries, IntPtr.Zero, num_texture_formats);
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_2(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; var gl_formats: UInt32; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_2_anh0000010(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: array of UInt32; num_texture_formats: IntPtr): ErrorCode :=
+    if (gl_formats<>nil) and (gl_formats.Length<>0) then
+      z_GetSupportedGLTextureFormatsINTEL_ovr_2(context, flags, image_type, num_entries, gl_formats[0], num_texture_formats) else
+      z_GetSupportedGLTextureFormatsINTEL_ovr_2_anh0000010(context, flags, image_type, num_entries, IntPtr.Zero, num_texture_formats);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; var gl_formats: UInt32; num_texture_formats: array of UInt32): ErrorCode :=
+    if (num_texture_formats<>nil) and (num_texture_formats.Length<>0) then
+      z_GetSupportedGLTextureFormatsINTEL_ovr_0(context, flags, image_type, num_entries, gl_formats, num_texture_formats[0]) else
+      z_GetSupportedGLTextureFormatsINTEL_ovr_0_anh0000001(context, flags, image_type, num_entries, gl_formats, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; var gl_formats: UInt32; var num_texture_formats: UInt32): ErrorCode :=
+    z_GetSupportedGLTextureFormatsINTEL_ovr_0(context, flags, image_type, num_entries, gl_formats, num_texture_formats);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; var gl_formats: UInt32; num_texture_formats: IntPtr): ErrorCode :=
+    z_GetSupportedGLTextureFormatsINTEL_ovr_2(context, flags, image_type, num_entries, gl_formats, num_texture_formats);
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_6(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; var num_texture_formats: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_6_anh0000001(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; num_texture_formats: array of UInt32): ErrorCode :=
+    if (num_texture_formats<>nil) and (num_texture_formats.Length<>0) then
+      z_GetSupportedGLTextureFormatsINTEL_ovr_6(context, flags, image_type, num_entries, gl_formats, num_texture_formats[0]) else
+      z_GetSupportedGLTextureFormatsINTEL_ovr_6_anh0000001(context, flags, image_type, num_entries, gl_formats, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; var num_texture_formats: UInt32): ErrorCode :=
+    z_GetSupportedGLTextureFormatsINTEL_ovr_6(context, flags, image_type, num_entries, gl_formats, num_texture_formats);
+    private static function z_GetSupportedGLTextureFormatsINTEL_ovr_8(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedGLTextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedGLTextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; gl_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode :=
+    z_GetSupportedGLTextureFormatsINTEL_ovr_8(context, flags, image_type, num_entries, gl_formats, num_texture_formats);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clSharingFormatQueryDx9INTEL = static class
+    public const _ExtStr = 'intel_sharing_format_query_dx9';
+    
+    private static function z_GetSupportedDX9MediaSurfaceFormatsINTEL_ovr_0(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; dx9_formats: IntPtr; var num_surface_formats: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedDX9MediaSurfaceFormatsINTEL';
+    private static function z_GetSupportedDX9MediaSurfaceFormatsINTEL_ovr_0_anh00000001(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; dx9_formats: IntPtr; num_surface_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedDX9MediaSurfaceFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedDX9MediaSurfaceFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; dx9_formats: IntPtr; num_surface_formats: array of UInt32): ErrorCode :=
+    if (num_surface_formats<>nil) and (num_surface_formats.Length<>0) then
+      z_GetSupportedDX9MediaSurfaceFormatsINTEL_ovr_0(context, flags, image_type, plane, num_entries, dx9_formats, num_surface_formats[0]) else
+      z_GetSupportedDX9MediaSurfaceFormatsINTEL_ovr_0_anh00000001(context, flags, image_type, plane, num_entries, dx9_formats, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedDX9MediaSurfaceFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; dx9_formats: IntPtr; var num_surface_formats: UInt32): ErrorCode :=
+    z_GetSupportedDX9MediaSurfaceFormatsINTEL_ovr_0(context, flags, image_type, plane, num_entries, dx9_formats, num_surface_formats);
+    private static function z_GetSupportedDX9MediaSurfaceFormatsINTEL_ovr_2(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; dx9_formats: IntPtr; num_surface_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedDX9MediaSurfaceFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedDX9MediaSurfaceFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; dx9_formats: IntPtr; num_surface_formats: IntPtr): ErrorCode :=
+    z_GetSupportedDX9MediaSurfaceFormatsINTEL_ovr_2(context, flags, image_type, plane, num_entries, dx9_formats, num_surface_formats);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clSharingFormatQueryD3d10INTEL = static class
+    public const _ExtStr = 'intel_sharing_format_query_d3d10';
+    
+    private static function z_GetSupportedD3D10TextureFormatsINTEL_ovr_0(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; d3d10_formats: IntPtr; var num_texture_formats: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedD3D10TextureFormatsINTEL';
+    private static function z_GetSupportedD3D10TextureFormatsINTEL_ovr_0_anh0000001(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; d3d10_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedD3D10TextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedD3D10TextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; d3d10_formats: IntPtr; num_texture_formats: array of UInt32): ErrorCode :=
+    if (num_texture_formats<>nil) and (num_texture_formats.Length<>0) then
+      z_GetSupportedD3D10TextureFormatsINTEL_ovr_0(context, flags, image_type, num_entries, d3d10_formats, num_texture_formats[0]) else
+      z_GetSupportedD3D10TextureFormatsINTEL_ovr_0_anh0000001(context, flags, image_type, num_entries, d3d10_formats, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedD3D10TextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; d3d10_formats: IntPtr; var num_texture_formats: UInt32): ErrorCode :=
+    z_GetSupportedD3D10TextureFormatsINTEL_ovr_0(context, flags, image_type, num_entries, d3d10_formats, num_texture_formats);
+    private static function z_GetSupportedD3D10TextureFormatsINTEL_ovr_2(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; d3d10_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedD3D10TextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedD3D10TextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; num_entries: UInt32; d3d10_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode :=
+    z_GetSupportedD3D10TextureFormatsINTEL_ovr_2(context, flags, image_type, num_entries, d3d10_formats, num_texture_formats);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clSharingFormatQueryD3d11INTEL = static class
+    public const _ExtStr = 'intel_sharing_format_query_d3d11';
+    
+    private static function z_GetSupportedD3D11TextureFormatsINTEL_ovr_0(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; d3d11_formats: IntPtr; var num_texture_formats: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedD3D11TextureFormatsINTEL';
+    private static function z_GetSupportedD3D11TextureFormatsINTEL_ovr_0_anh00000001(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; d3d11_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedD3D11TextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedD3D11TextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; d3d11_formats: IntPtr; num_texture_formats: array of UInt32): ErrorCode :=
+    if (num_texture_formats<>nil) and (num_texture_formats.Length<>0) then
+      z_GetSupportedD3D11TextureFormatsINTEL_ovr_0(context, flags, image_type, plane, num_entries, d3d11_formats, num_texture_formats[0]) else
+      z_GetSupportedD3D11TextureFormatsINTEL_ovr_0_anh00000001(context, flags, image_type, plane, num_entries, d3d11_formats, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedD3D11TextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; d3d11_formats: IntPtr; var num_texture_formats: UInt32): ErrorCode :=
+    z_GetSupportedD3D11TextureFormatsINTEL_ovr_0(context, flags, image_type, plane, num_entries, d3d11_formats, num_texture_formats);
+    private static function z_GetSupportedD3D11TextureFormatsINTEL_ovr_2(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; d3d11_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedD3D11TextureFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedD3D11TextureFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; d3d11_formats: IntPtr; num_texture_formats: IntPtr): ErrorCode :=
+    z_GetSupportedD3D11TextureFormatsINTEL_ovr_2(context, flags, image_type, plane, num_entries, d3d11_formats, num_texture_formats);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clSharingFormatQueryVaApiINTEL = static class
+    public const _ExtStr = 'intel_sharing_format_query_va_api';
+    
+    private static function z_GetSupportedVA_APIMediaSurfaceFormatsINTEL_ovr_0(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; va_api_formats: IntPtr; var num_surface_formats: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedVA_APIMediaSurfaceFormatsINTEL';
+    private static function z_GetSupportedVA_APIMediaSurfaceFormatsINTEL_ovr_0_anh00000001(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; va_api_formats: IntPtr; num_surface_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedVA_APIMediaSurfaceFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedVA_APIMediaSurfaceFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; va_api_formats: IntPtr; num_surface_formats: array of UInt32): ErrorCode :=
+    if (num_surface_formats<>nil) and (num_surface_formats.Length<>0) then
+      z_GetSupportedVA_APIMediaSurfaceFormatsINTEL_ovr_0(context, flags, image_type, plane, num_entries, va_api_formats, num_surface_formats[0]) else
+      z_GetSupportedVA_APIMediaSurfaceFormatsINTEL_ovr_0_anh00000001(context, flags, image_type, plane, num_entries, va_api_formats, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedVA_APIMediaSurfaceFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; va_api_formats: IntPtr; var num_surface_formats: UInt32): ErrorCode :=
+    z_GetSupportedVA_APIMediaSurfaceFormatsINTEL_ovr_0(context, flags, image_type, plane, num_entries, va_api_formats, num_surface_formats);
+    private static function z_GetSupportedVA_APIMediaSurfaceFormatsINTEL_ovr_2(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; va_api_formats: IntPtr; num_surface_formats: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSupportedVA_APIMediaSurfaceFormatsINTEL';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSupportedVA_APIMediaSurfaceFormatsINTEL(context: cl_context; flags: MemFlags; image_type: MemObjectType; plane: UInt32; num_entries: UInt32; va_api_formats: IntPtr; num_surface_formats: IntPtr): ErrorCode :=
+    z_GetSupportedVA_APIMediaSurfaceFormatsINTEL_ovr_2(context, flags, image_type, plane, num_entries, va_api_formats, num_surface_formats);
     
   end;
   
