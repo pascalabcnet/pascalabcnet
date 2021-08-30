@@ -20,7 +20,7 @@ jobs:
 
     name: Prepare and build on Windows Server VM (latest)
     runs-on: windows-latest
-    timeout-minutes: 40
+    timeout-minutes: 35
     #continue-on-error: true
     steps:
     #- run: git config --global core.autocrlf true
@@ -31,8 +31,8 @@ jobs:
       run: _RegisterHelixNUnit.bat
 
     - name: Build project in Debug-mode, compile Pas-units, run tests, create install packages...
-      run: _GenerateAllSetups.bat
-      #run: _RebuildReleaseAndRunTestsForGitHub
+      #run: _GenerateAllSetups.bat
+      run: _RebuildReleaseAndRunTestsForGitHub.bat
       timeout-minutes: 35
       env:
         PABCNET_BUILD_MODE: Debug
