@@ -10,4 +10,7 @@
 
 begin
   var a := new t2<integer>;
+  var o := new t1<t0>;
+  a.Add(o, 2);
+  assert(a[o] = 2);
 end.

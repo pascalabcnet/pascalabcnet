@@ -2089,6 +2089,8 @@ namespace PascalABCCompiler.TreeRealization
             {
                 // Если эту строчку раскомментировать, ложатся тесты inheritanceFromListInt.pas inheritanceFromListStudent.pas where6.pas 
                 //sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
+                if (!this.is_generic_type_definition)
+                    return (base_type as compiled_generic_instance_type_node).ConvertSymbolInfo(sil);
                 return sil;
             }
 
