@@ -3797,6 +3797,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (!(context.converted_type.IsPartial && context.converted_type.base_type != null && context.converted_type.base_type != SemanticRules.ClassBaseType))
                             context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
+                        else if (context.converted_type.IsPartial && context.converted_type.base_type != null)
+                            context.converted_type.SetBaseType(context.converted_type.base_type);
                     }
                     
                     context.converted_type.is_class = true;
