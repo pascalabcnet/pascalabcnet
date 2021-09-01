@@ -1,4 +1,5 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 <head>
 <meta charset="utf-8">
 <style>
@@ -14,6 +15,7 @@ body {
 
 .page-base {
 	position: absolute;
+	display: flex;
 }
 
 #splitter {
@@ -26,6 +28,7 @@ body {
 	margin: 7.5px;
 	background-color: white;
 	overflow: auto;
+	flex-grow: 1;
 }
 #page-select-container {
 	white-space: nowrap;
@@ -58,11 +61,11 @@ body {
 }
 .ps-folder-name {
 	cursor: pointer;
-    padding: 1;
+	padding: 1;
 }
 .ps-container {
-	margin-left: 7;
-	padding-left: 7;
+	margin-left: 7px;
+	padding-left: 7px;
 	border-left: thin solid;
 	border-color: #80808080;
 }
@@ -71,7 +74,7 @@ body {
 }
 .ps-page-name {
 	cursor: pointer;
-	padding: 1;
+	padding: 1px;
 }
 
 /* ============================== *\

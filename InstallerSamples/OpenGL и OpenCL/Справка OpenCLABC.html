@@ -1,4 +1,5 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 <head>
 <meta charset="utf-8">
 <style>
@@ -14,6 +15,7 @@ body {
 
 .page-base {
 	position: absolute;
+	display: flex;
 }
 
 #splitter {
@@ -26,6 +28,7 @@ body {
 	margin: 7.5px;
 	background-color: white;
 	overflow: auto;
+	flex-grow: 1;
 }
 #page-select-container {
 	white-space: nowrap;
@@ -58,11 +61,11 @@ body {
 }
 .ps-folder-name {
 	cursor: pointer;
-    padding: 1;
+	padding: 1;
 }
 .ps-container {
-	margin-left: 7;
-	padding-left: 7;
+	margin-left: 7px;
+	padding-left: 7px;
 	border-left: thin solid;
 	border-color: #80808080;
 }
@@ -71,7 +74,7 @@ body {
 }
 .ps-page-name {
 	cursor: pointer;
-	padding: 1;
+	padding: 1px;
 }
 
 /* ============================== *\
@@ -985,18 +988,28 @@ begin
   var dvc := Context.Default.MainDevice;
   
   Writeln('Поддерживаемые типы .Spilt-ов:');
-  // Пустой список, или DEVICE_PARTITION_BY_COUNTS_LIST_END, если ни 1 не поддерживается
-  dvc.Properties.PartitionProperties.PrintLines;
+  var partition_properties := dvc.Properties.PartitionProperties;
+  if (partition_properties.Length=0) or (partition_properties[0].val = System.IntPtr.Zero) then
+  begin
+    Writeln('Ничего не поддерживается...');
+    exit;
+  end else
+    partition_properties.PrintLines;
   Writeln('='*30);
   
   Writeln('Виртуальные устройства, по 1 ядру каждое:');
-  // Если упадёт потому что слишком много
-  // устройств - пожалуйста, напишите в issue
-  dvc.SplitEqually(1).PrintLines;
+  if dvc.CanSplitEqually then
+    // Если упадёт потому что слишком много
+    // устройств - пожалуйста, напишите в issue
+    dvc.SplitEqually(1).PrintLines else
+    Writeln('Не поддерживается...');
   Writeln('='*30);
   
   Writeln('Два устройства, 1 и 2 ядра соответственно:');
-  dvc.SplitByCounts(1,2).PrintLines;
+  if dvc.CanSplitByCounts then
+    dvc.SplitByCounts(1,2).PrintLines else
+    Writeln('Не поддерживается...');
+  Writeln('='*30);
   
 end.
 </code></pre>
@@ -1061,7 +1074,7 @@ begin
 end.
 </code></pre>
 </div>
-<script>on_start_folder("Buffer", document.getElementById("page-7"))</script>
+<script>on_start_folder("Виды памяти", document.getElementById("page-7"))</script>
 <script>on_end_folder()</script>
 <div id="page-8" page_name="" hidden=true>
 <p>Объект типа <code>Kernel</code> представляет одну подпрограмму в OpenCL-C коде,
@@ -1403,7 +1416,7 @@ end;
 </ol>
 </div>
 <script>on_start_folder("Создание очередей", document.getElementById("page-15"))</script>
-<div id="page-16" page_name="Из буфера или kernel'a" hidden=true>
+<div id="page-16" page_name="Из объекта с коммандами" hidden=true>
 <p>Самый просто способ создать очередь — выбрать объект типа <code>Buffer</code> или <code>Kernel</code> и вызвать для него метод <code>.NewQueue</code>.</p>
 <p>Полученная очередь будет иметь особый тип: <code>BufferCommandQueue</code>/<code>KernelCommandQueue</code> для буфера/kernel'а соответственно.<br />
 К такой очереди можно добавлять команды, вызывая её методы, имена которых начинаются с <code>.Add...</code>.</p>
@@ -1983,11 +1996,10 @@ begin
   
   var Q2 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q2'));
   var Q3 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q3'));
-  var Q4 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q4'));
   
   var t := Context.Default.BeginInvoke(
-    ( WaitFor(Q1)+Q3 ) *
-    ( WaitFor(Q1)+Q4 )
+    ( WaitFor(Q1)+Q2 ) *
+    ( WaitFor(Q1)+Q3 )
   );
   Q1.SendSignal;
   Context.Default.SyncInvoke(Q1);
