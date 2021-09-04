@@ -5417,7 +5417,6 @@ namespace PascalABCCompiler.TreeConverter
                         semantic_node sn = convert_semantic_strong(_dot_node.left);
 
                         // SSM 17/07/21 учёт ZeroBasedStrings в семантике срезов строк
-                        // Пока не получилось
                         if (SemanticRules.ZeroBasedStrings
                             && (sn as expression_node)?.type is compiled_type_node ctn && ctn.compiled_type == typeof(string)
                             && _dot_node.right is ident id0 
@@ -5427,11 +5426,25 @@ namespace PascalABCCompiler.TreeConverter
                                 || id0.name.ToLower() == "systemslicequestion"
                                 || id0.name.ToLower() == "systemsliceassignment"
                                 )
-                              id0.name += "0";
+                              id0.name += "0"; // SystemSlice0
+                        }
+
+                        // SSM 04/09/21 учёт ZeroBasedStrings в s[^1]
+                        if (SemanticRules.ZeroBasedStrings
+                            && (sn as expression_node)?.type.BaseFullName == "PABCSystem.SystemIndex"
+                            && _dot_node.right is ident id1 
+                            && id1.name.ToLower() == "reverse"
+                            && _method_call.parameters.Count == 1)
+                        {
+                            var strtn = convert_strong(_method_call.parameters.expressions[0]);
+                            if (strtn.type is compiled_type_node strtnc && strtnc.compiled_type == typeof(string)) // Уф
+                            {
+                                id1.name += "0"; // Reverse0
+                            }
                         }
 
                         //SyntaxTree.ident id_right = ConvertOperatorNameToIdent(_dot_node.right as SyntaxTree.ident);
-                        SyntaxTree.ident id_right = _dot_node.right as SyntaxTree.ident;
+                            SyntaxTree.ident id_right = _dot_node.right as SyntaxTree.ident;
                         switch (sn.general_node_type)
                         {
                             case general_node_type.expression:
