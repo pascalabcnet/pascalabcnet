@@ -1,14 +1,14 @@
 ﻿uses OpenCLABC;
 
 const
-  MatrW = 4; // можно поменять на любое положительное значение
+  MatrW = 4; // Можно поменять на любое положительное значение
   
   VecByteSize = MatrW*8;
   MatrByteSize = MatrW*MatrW*8;
   
 begin
   try
-    Randomize(0); // делает так, чтобы каждое выполнение давало одинаковый результат
+    Randomize(0); // Делает так, чтобы каждое выполнение давало одинаковый результат
     
     // Чтение и компиляция .cl файла
     
@@ -27,22 +27,22 @@ begin
     'Матрица A:'.Println;
     var A_Matr := MatrRandomReal(MatrW,MatrW,0,1).Println;
     Writeln;
-    var A := new Buffer(MatrByteSize);
+    var A := new MemorySegment(MatrByteSize);
     
     'Матрица B:'.Println;
     var B_Mart := MatrRandomReal(MatrW,MatrW,0,1).Println;
     Writeln;
-    var B := new Buffer(MatrByteSize);
+    var B := new MemorySegment(MatrByteSize);
     
-    var C := new Buffer(MatrByteSize);
+    var C := new MemorySegment(MatrByteSize);
     
     'Вектор V1:'.Println;
     var V1_Arr := ArrRandomReal(MatrW);
     V1_Arr.Println;
     Writeln;
-    var V1 := new Buffer(VecByteSize);
+    var V1 := new MemorySegment(VecByteSize);
     
-    var V2 := new Buffer(VecByteSize);
+    var V2 := new MemorySegment(VecByteSize);
     
     var W := KernelArg.FromRecord(MatrW);
     
