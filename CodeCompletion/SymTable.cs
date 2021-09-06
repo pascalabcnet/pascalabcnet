@@ -5698,7 +5698,7 @@ namespace CodeCompletion
                             if (this.instances[i].original_type == null && !(this.instances[i].elementType is TemplateParameterScope))
                             {
                                 if (exact)
-                                    sc.instances.Add(gen_args[i]);
+                                    sc.instances.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
                                 else
                                     sc.instances.Add(this.instances[i]);
                             }

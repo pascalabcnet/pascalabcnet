@@ -51,6 +51,7 @@
             this.cbRunMono = new System.Windows.Forms.CheckBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.cbUseSemanticForIntellisense = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PluginImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RunILDASMImage)).BeginInit();
@@ -303,11 +304,24 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.Button4_Click);
             // 
+            // cbUseSemanticForIntellisense
+            // 
+            this.cbUseSemanticForIntellisense.AutoSize = true;
+            this.cbUseSemanticForIntellisense.Location = new System.Drawing.Point(158, 272);
+            this.cbUseSemanticForIntellisense.Name = "cbUseSemanticForIntellisense";
+            this.cbUseSemanticForIntellisense.Size = new System.Drawing.Size(159, 17);
+            this.cbUseSemanticForIntellisense.TabIndex = 22;
+            this.cbUseSemanticForIntellisense.Text = "Use semantic for intellisense";
+            this.cbUseSemanticForIntellisense.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.cbUseSemanticForIntellisense.UseVisualStyleBackColor = true;
+            this.cbUseSemanticForIntellisense.CheckedChanged += new System.EventHandler(this.cbUseSemanticForIntellisense_CheckedChanged);
+            // 
             // CompilerInformation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(379, 633);
+            this.Controls.Add(this.cbUseSemanticForIntellisense);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.cbRunMono);
@@ -375,5 +389,6 @@
         public System.Windows.Forms.CheckBox cbRunMono;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.CheckBox cbUseSemanticForIntellisense;
     }
 }

@@ -87,6 +87,8 @@ namespace PascalABCCompiler.TreeConverter
         private common_unit_node _system_unit;
 		internal bool debug=true;
 		internal bool debugging=false;
+        public bool for_intellisense = false;
+        public List<var_definition_node> CompiledVariables = new List<var_definition_node>();
         internal List<Errors.Error> ErrorsList;
         internal List<Errors.CompilerWarning> WarningsList;
 		internal Dictionary<SyntaxTree.syntax_tree_node,string> docs;
@@ -123,7 +125,7 @@ namespace PascalABCCompiler.TreeConverter
 
         internal void AddError(Errors.Error err, bool shouldReturn=false)
         {
-            if (ThrowCompilationError || !shouldReturn /*|| err.MustThrow && !shouldReturn*/)
+            if (!for_intellisense && (ThrowCompilationError || !shouldReturn) /*|| err.MustThrow && !shouldReturn*/)
             {
                 throw err;
             }
@@ -136,7 +138,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void AddError(location loc, string ErrResourceString, params object[] values)
         {
             Errors.Error err = new SimpleSemanticError(loc, ErrResourceString, values);
-            if (ThrowCompilationError)
+            if (ThrowCompilationError && !for_intellisense)
             {
                 throw err;
             }
@@ -1720,6 +1722,8 @@ namespace PascalABCCompiler.TreeConverter
 
             lastname.source_context = l?.source_context;
             di = context.check_name_node_type(lastname.name, sil?.FirstOrDefault(), get_location(lastname), general_node_type.type_node);
+            if (di == null)
+                return new undefined_type(lastname.name, loc);
             return (type_node)di;
         }
 
@@ -17892,10 +17896,15 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (ex is CompilationErrorWithLocation && (ex as CompilationErrorWithLocation).loc == null)
                         (ex as CompilationErrorWithLocation).loc = get_location(syntax_statement);
-                    if (ThrowCompilationError || ex is MemberIsNotDeclaredInType || ex is UndefinedNameReference)//TODO: add interface
+                    if (!for_intellisense && (ThrowCompilationError || ex is MemberIsNotDeclaredInType || ex is UndefinedNameReference))//TODO: add interface
                         throw ex;
                     else
                         ErrorsList.Add(ex);
+                }
+                catch (Exception ex)
+                {
+                    if (!for_intellisense)
+                        throw ex;
                 }
             }
             convertion_data_and_alghoritms.statement_list_stack.pop();
