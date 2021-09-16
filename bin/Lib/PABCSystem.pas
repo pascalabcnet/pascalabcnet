@@ -820,6 +820,11 @@ type
         Result := str.Length - IndexValue + 1;
       end;
       
+      function Reverse0(str: string): integer;
+      begin
+        Result := str.Length - IndexValue;
+      end;
+
       function Reverse(arr: System.Array; dim: integer): integer;
       begin
         Result := arr.GetLength(dim) - IndexValue;
@@ -14063,7 +14068,8 @@ procedure __InitModule;
 begin
   try
     DefaultEncoding := Encoding.GetEncoding(1251);
-    System.Console.OutputEncoding := Encoding.UTF8;
+    if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
+      System.Console.OutputEncoding := Encoding.UTF8;
   except
     DefaultEncoding := Encoding.UTF8;
   end;

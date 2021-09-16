@@ -1808,6 +1808,8 @@ namespace PascalABCCompiler.TreeConverter
                 lv.block.local_variables.Add(lv);
                 if (tn == null) //Тип еще неизвестен, будем закрывать.
                     var_defs.Add(lv);
+                if (syntax_tree_visitor.for_intellisense)
+                    syntax_tree_visitor.CompiledVariables.Add(lv);
                 return lv;
             }
             switch (converting_block())
@@ -1844,6 +1846,8 @@ namespace PascalABCCompiler.TreeConverter
 			}
             if (tn == null) //Тип еще неизвестен, будем закрывать.
                 var_defs.Add(vdn);
+            if (syntax_tree_visitor.for_intellisense)
+                syntax_tree_visitor.CompiledVariables.Add(vdn);
             return vdn;
 		}
 

@@ -4,7 +4,7 @@
 unit Graph3D;
 
 {$reference System.Xml.dll}
-{$reference HelixToolkit.Wpf.dll}
+{$reference '%GAC%\HelixToolkit.Wpf.dll'}
 
 interface
 
