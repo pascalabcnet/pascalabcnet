@@ -111,7 +111,9 @@ function TrueTable(f: function(a, b, c, d, e: boolean): boolean):
 /// Выводит на монитор таблицу истинности
 /// f = 0 - только для значения функции False
 /// f = 1 - только для значения функции True
-procedure TrueTablePrint(a: array[,] of boolean; f: integer := -1);
+/// f = 2 (или не 0, 1, или отсутствует) - полная таблица истинности
+/// s = 'abcde' использует указанные буквы для именования колонок. Может отсутствовать.
+procedure TrueTablePrint(a: array[,] of boolean; f: integer := 2; s: string := 'abcde');
 
 /// Заменяет последнее вхождение подстроки в строку
 procedure ReplaceLast(var Строка: string; ЧтоЗаменить, ЧемЗаменить: string);
@@ -764,15 +766,17 @@ end;
 /// Выводит на монитор таблицу истинности
 /// f = 0 - только для значения функции False
 /// f = 1 - только для значения функции True
-procedure TrueTablePrint(a: array[,] of boolean; f: integer);
+/// f = 2 (или не 0, 1, или отсутствует) - полная таблица истинности
+/// s = 'abcde' использует указанные буквы для именования колонок. Может отсутствовать.
+procedure TrueTablePrint(a: array[,] of boolean; f: integer; s: string);
 begin
   var (n, c) := (a.ColCount, 'a');
-  for var i := 0 to n - 2 do
-  begin
-    Write(' ' + c);
-    Inc(c)
-  end;
-  Writeln(' F');
+  s := s?[:n];
+  s := s.PadRight(n - 1, ' ');
+  Write(' ');
+  for var i := 1 to s.Length do
+    Print(s[i]);
+  Writeln('F');
   Writeln(' ' + (2 * n - 1) * '-');
   for var i := 0 to a.RowCount - 1 do
     if not (((f = 0) and a[i, n - 1]) or ((f = 1) and not a[i, n - 1])) then

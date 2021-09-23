@@ -66,6 +66,7 @@ namespace PascalABCCompiler.SyntaxTree
         //Other operators
         Assignment,             //  :=      =                 
         In,                     //  in
+        NotIn,                  //  not in
         Is,                     //  is
         As,                     //  as
         Dereference,            //  ^       *
