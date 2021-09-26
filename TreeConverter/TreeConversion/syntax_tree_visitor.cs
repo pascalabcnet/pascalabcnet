@@ -12182,6 +12182,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (predefined_generic && cl_def.where_section != null && cl_def.where_section.defs.Count > 0)
                 AddError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
+            visit_where_list(cl_def.where_section);
+
             if ((cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial && cl_def.class_parents != null)
             {
                 type_node tn = ret.visit(cl_def.class_parents.types[0]);
@@ -12197,7 +12199,6 @@ namespace PascalABCCompiler.TreeConverter
                 }*/
             }
             
-            visit_where_list(cl_def.where_section);
            
             CheckWaitedRefTypes(ctn);
             is_direct_type_decl = true;
