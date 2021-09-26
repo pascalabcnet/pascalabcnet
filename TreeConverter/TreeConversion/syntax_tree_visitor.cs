@@ -69,7 +69,9 @@ namespace PascalABCCompiler.TreeConverter
         internal document current_document;
 
         public compilation_context context;
-		public ContextChanger contextChanger;
+        private bool var_def_statement_converting;
+
+        public ContextChanger contextChanger;
 		
         internal using_namespace_list using_list = new using_namespace_list();
         internal using_namespace_list interface_using_list = new using_namespace_list();
@@ -16652,6 +16654,7 @@ namespace PascalABCCompiler.TreeConverter
         
         public override void visit(SyntaxTree.var_def_statement _var_def_statement)
         {
+            var_def_statement_converting = true;
             if (_var_def_statement.vars_type != null && _var_def_statement.vars_type is procedure_header)
             {
                 var ph = _var_def_statement.vars_type as procedure_header;
@@ -16839,6 +16842,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (context.converted_type != null && context.converting_block() == block_type.type_block && context.converted_type.IsStatic && _var_def_statement.var_attr != definition_attribute.Static)
                 AddError(get_location(_var_def_statement), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
+            var_def_statement_converting = false;
             if (is_event) return;
             context.save_var_definitions();
 
@@ -16846,6 +16850,7 @@ namespace PascalABCCompiler.TreeConverter
             context.close_var_definition_list(tn, inital_value);
             if (!SemanticRules.ManyVariablesOneInitializator && _var_def_statement.inital_value != null && _var_def_statement.vars.idents.Count > 1)
                 AddError(get_location(_var_def_statement.inital_value), "ONE_VARIABLE_ONE_INITIALIZATOR");
+
         }
 		
         private void CheckForCircularityInPointers(ref_type_node left, type_node right, location loc)

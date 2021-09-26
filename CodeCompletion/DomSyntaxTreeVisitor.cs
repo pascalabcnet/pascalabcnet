@@ -133,9 +133,16 @@ namespace CodeCompletion
             }
         }
 
-        private TypeScope GetCorrectedType(ElementScope es, type_node tn)
+        private TypeScope GetCorrectedType(TypeScope ts, type_node tn, SymScope topScope)
         {
-            if (tn is compiled_type_node)
+            if (ts is TypeSynonim)
+            {
+                var corrected_type = GetCorrectedType((ts as TypeSynonim).actType, tn, topScope);
+                if (corrected_type != (ts as TypeSynonim).actType)
+                    return corrected_type;
+                return ts;
+            }
+            else if (tn is compiled_type_node)
             {
                 var ctn = tn as compiled_type_node;
                 if (ctn.compiled_type.IsArray)
@@ -155,14 +162,14 @@ namespace CodeCompletion
             else
             {
                 if (tn.full_name.IndexOf("$") != -1 || tn.full_name.IndexOf("#") != -1)
-                    return es.sc as TypeScope;
+                    return ts;
                 var ntr = BuildSyntaxNodeForTypeReference(tn);
-                cur_scope = es.topScope;
+                cur_scope = topScope;
                 
                 ntr.visit(this);
                 if (returned_scope != null && returned_scope is TypeScope)
                     return returned_scope as TypeScope;
-                return es.sc as TypeScope;
+                return ts;
             }
         }
 
@@ -186,7 +193,7 @@ namespace CodeCompletion
             var es = FindScopeByLocation(loc.begin_line_num,loc.begin_column_num) as ElementScope;
             if (es != null)
             {
-                es.sc = GetCorrectedType(es, vdn.type);
+                es.sc = GetCorrectedType(es.sc as TypeScope, vdn.type, es.topScope);
                 es.MakeDescription();
             }
         }
