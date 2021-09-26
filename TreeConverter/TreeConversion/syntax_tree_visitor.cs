@@ -12184,6 +12184,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (predefined_generic && cl_def.where_section != null && cl_def.where_section.defs.Count > 0)
                 AddError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
+            visit_where_list(cl_def.where_section);
+
             if ((cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial && cl_def.class_parents != null)
             {
                 type_node tn = ret.visit(cl_def.class_parents.types[0]);
@@ -12199,7 +12201,6 @@ namespace PascalABCCompiler.TreeConverter
                 }*/
             }
             
-            visit_where_list(cl_def.where_section);
            
             CheckWaitedRefTypes(ctn);
             is_direct_type_decl = true;
@@ -12764,7 +12765,13 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                             if (t.methods.Length > thist.methods.Length)
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
-                            if (t.base_type != SystemLibrary.SystemLibrary.object_type && !type_table.is_type_or_original_generics_equal(t.base_type as type_node, thist.base_type as type_node))
+
+                            var old_base = t.base_type as type_node;
+                            var new_base = thist.base_type as type_node;
+                            //ToDo: (тест where16) с1<T1> и c1<T2> это не всегда одно и тоже - только если T2 подставили вместо T1
+                            old_base = old_base.original_generic;
+                            new_base = new_base.original_generic;
+                            if (old_base!=new_base && !type_table.is_derived(old_base, new_base))
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                                 
                         }
