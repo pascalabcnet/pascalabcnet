@@ -193,6 +193,11 @@ function Pr<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Prin
 /// Выводит последовательность, разделяя элементы пробелами, и переходит на новую строку
 function Prln<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Println;
 
+/// Выводит последовательность, каждый элемент выводится на новой строке
+function PL<T>(Self: sequence of T); extensionmethod := Self.PrintLines;
+/// Выводит последовательность, каждый элемент отображается с помощью функции map и выводится на новой строке
+function PL<T,T1>(Self: sequence of T; map: T->T1); extensionmethod := Self.PrintLines(map);
+
 /// Возвращает инвертированную последовательность
 function Rev<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Reverse;
 
