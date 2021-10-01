@@ -10587,6 +10587,16 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
                     }
+                    if ((defined_range.lower_bound.constant_value <= cr.high_bound.constant_value) &&
+                        (defined_range.lower_bound.constant_value >= cr.lower_bound.constant_value))
+                    {
+                        AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
+                    }
+                    if ((defined_range.high_bound.constant_value <= cr.high_bound.constant_value) &&
+                        (defined_range.high_bound.constant_value >= cr.lower_bound.constant_value))
+                    {
+                        AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
+                    }
                 }
             }
         }
