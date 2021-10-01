@@ -18511,10 +18511,12 @@ namespace PascalABCCompiler.TreeConverter
                     if (ltr.first != null && rtl.first == null)
                     {
                         left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                        left.type = right.type;
                     }
                     else if (ltr.first == null && rtl.first != null)
                     {
                         right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        right.type = left.type;
                     }
                     else
                     {

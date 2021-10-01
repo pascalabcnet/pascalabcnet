@@ -686,7 +686,8 @@ namespace PascalABCCompiler.TreeConverter
 			type_node conv_type = en.type;
 			expression_node expr = create_simple_function_call(pct.first.convertion_method, en.location, en);
             expr.conversion_type = conv_type;
-			return expr;
+            
+            return expr;
 		}
 
         public static function_node get_empty_conversion(type_node from_type, type_node to_type, bool with_compile_time_executor)
