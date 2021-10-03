@@ -5029,6 +5029,11 @@ namespace PascalABCCompiler.NETGenerator
                         GenerateInitCodeForField(ccf);
                     else
                         GenerateInitCodeForStaticField(ccf);
+                foreach (IClassConstantDefinitionNode cnst in ctn.constants)
+                    if (cnst.constant_value is IArrayConstantNode)
+                    {
+                        GenerateInitCodeForClassConstant(cnst);
+                    }
             }
         }
 
@@ -5068,6 +5073,16 @@ namespace PascalABCCompiler.NETGenerator
             in_var_init = true;
             GenerateInitCode(value, cur_ti.static_cnstr.GetILGenerator());
             in_var_init = false;
+        }
+
+        internal void GenerateInitCodeForClassConstant(SemanticTree.IClassConstantDefinitionNode value)
+        {
+            TypeInfo ti = helper.GetTypeReference(value.type), cur_ti = helper.GetTypeReference(value.comperehensive_type);
+            FieldBuilder fb = helper.GetConstant(value).fb as FieldBuilder;
+           
+            if (value.constant_value is IArrayConstantNode)
+                CreateArrayForClassField(cur_ti.static_cnstr.GetILGenerator(), fb, ti, value.constant_value as IArrayConstantNode, value.type);
+            
         }
 
         internal void GenerateInitCodeForField(SemanticTree.ICommonClassFieldNode value)
@@ -11007,6 +11022,8 @@ namespace PascalABCCompiler.NETGenerator
                 fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Static | ConvertFALToFieldAttributes(value.field_access_level));
             if (value.constant_value.value != null)
                 fb.SetConstant(value.constant_value.value);
+            else
+                helper.AddConstant(value, fb);
             //else
             //    throw new Errors.CompilerInternalError("NetGenerator", new Exception("Invalid constant value in IClassConstantDefinitionNode"));
         }
