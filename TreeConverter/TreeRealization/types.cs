@@ -2908,7 +2908,9 @@ namespace PascalABCCompiler.TreeRealization
 				if (!_compiled_type.IsGenericType)
 				return _compiled_type.FullName;
 				StringBuilder sb = new StringBuilder();
-				sb.Append(_compiled_type.GetGenericTypeDefinition().Namespace+"."+_compiled_type.GetGenericTypeDefinition().Name.Substring(0,_compiled_type.GetGenericTypeDefinition().Name.IndexOf('`')));
+                Type t = _compiled_type.GetGenericTypeDefinition();
+                int ind = t.Name.IndexOf('`');
+                sb.Append(t.Namespace + "." + t.Name.Substring(0, ind != -1 ? ind : t.Name.Length));
 				if (!_compiled_type.IsGenericTypeDefinition)
 				{
 					sb.Append("{");
