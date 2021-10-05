@@ -3787,8 +3787,8 @@ namespace PascalABCCompiler.TreeConverter
                             if (type_instances != null)
                                 foreach (generic_type_instance_info gti in type_instances)
                                 {
-                                    if (!(gti.pseudo_instance.base_type != null && context.converted_type.IsPartial))
-                                    gti.pseudo_instance.SetBaseType(tn);
+                                    if (!(gti.pseudo_instance.base_type != null && gti.pseudo_instance.base_type.is_generic_type_instance && context.converted_type.IsPartial))
+                                        gti.pseudo_instance.SetBaseType(tn);
                                 }
                         }
                         //Теперь добавляем интерфейсы.
