@@ -9898,6 +9898,39 @@ begin
     Result *= f(x);
 end;
 
+/// Возвращает последовательность частичных сумм элементов последовательности
+function PartialSum(Self: sequence of integer): sequence of integer; extensionmethod;
+begin
+ var s := 0;
+ foreach var item in Self do
+ begin
+   s += item;
+   yield s;
+ end;
+end;
+
+/// Возвращает последовательность частичных сумм элементов последовательности
+function PartialSum(Self: sequence of real): sequence of real; extensionmethod;
+begin
+ var s := 0.0;
+ foreach var item in Self do
+ begin
+   s += item;
+   yield s;
+ end;
+end;
+
+/// Возвращает последовательность частичных сумм элементов последовательности
+function PartialSum(Self: sequence of BigInteger): sequence of BigInteger; extensionmethod;
+begin
+ var s := 0bi;
+ foreach var item in Self do
+ begin
+   s += item;
+   yield s;
+ end;
+end;
+
 /// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
 {function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
