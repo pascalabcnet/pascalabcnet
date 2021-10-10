@@ -9023,7 +9023,59 @@ namespace PascalABCCompiler.NETGenerator
                     else if (real_parameters[0].type.is_nullable_type && real_parameters[1].type.is_nullable_type)
                     {
                         MethodInfo mi_left = null;
+                        MethodInfo mi_right = null;
                         TypeInfo ti_left = helper.GetTypeReference(real_parameters[0].type);
+                        TypeInfo ti_right = helper.GetTypeReference(real_parameters[1].type);
+                        Label lb_false = il.DefineLabel();
+                        Label lb_true = il.DefineLabel();
+                        Label lb_end = il.DefineLabel();
+                        Label lb_common = il.DefineLabel();
+                        if (!(real_parameters[0] is IDefaultOperatorNode) && !(real_parameters[1] is IDefaultOperatorNode))
+                        {
+                            is_dot_expr = true;
+                            real_parameters[0].visit(this);
+                            if (real_parameters[0].type is IGenericTypeInstance)
+                                mi_left = TypeBuilder.GetMethod(ti_left.tp, typeof(Nullable<>).GetMethod("get_HasValue", new Type[] { }));
+                            else
+                                mi_left = ti_left.tp.GetMethod("get_HasValue", new Type[] { });
+                            il.Emit(OpCodes.Call, mi_left);
+                            LocalBuilder tmp_lb = il.DeclareLocal(TypeFactory.BoolType);
+                            il.Emit(OpCodes.Stloc, tmp_lb);
+                            il.Emit(OpCodes.Ldloc, tmp_lb);
+                            is_dot_expr = true;
+                            real_parameters[1].visit(this);
+                            if (real_parameters[1].type is IGenericTypeInstance)
+                                mi_right = TypeBuilder.GetMethod(ti_right.tp, typeof(Nullable<>).GetMethod("get_HasValue", new Type[] { }));
+                            else
+                                mi_right = ti_right.tp.GetMethod("get_HasValue", new Type[] { });
+
+                            il.Emit(OpCodes.Call, mi_right);
+                            if (value.basic_function.basic_function_type == basic_function_type.objnoteq)
+                            {
+                                il.Emit(OpCodes.Ceq);
+                                il.Emit(OpCodes.Ldc_I4_0);
+                                il.Emit(OpCodes.Ceq);
+                                il.Emit(OpCodes.Brtrue, lb_true);
+                                il.Emit(OpCodes.Br, lb_common);
+                                il.MarkLabel(lb_true);
+                                il.Emit(OpCodes.Ldc_I4_1);
+                                il.Emit(OpCodes.Br, lb_end);
+                            }
+                            else
+                            {
+                                il.Emit(OpCodes.Ceq);
+                                il.Emit(OpCodes.Brfalse, lb_false);
+                                il.Emit(OpCodes.Ldloc, tmp_lb);
+                                il.Emit(OpCodes.Brtrue, lb_common);
+                                il.Emit(OpCodes.Ldc_I4_1);
+                                il.Emit(OpCodes.Br, lb_end);
+                                il.MarkLabel(lb_false);
+                                il.Emit(OpCodes.Ldc_I4_0);
+                                il.Emit(OpCodes.Br, lb_end);
+                            }
+
+                        }
+                        il.MarkLabel(lb_common);
                         if (real_parameters[0] is IDefaultOperatorNode)
                             il.Emit(OpCodes.Ldc_I4_0);
                         else
@@ -9045,8 +9097,8 @@ namespace PascalABCCompiler.NETGenerator
                             
                         }
                         
-                        MethodInfo mi_right = null;
-                        TypeInfo ti_right = helper.GetTypeReference(real_parameters[1].type);
+                        
+                        
                         if (real_parameters[1] is IDefaultOperatorNode)
                             il.Emit(OpCodes.Ldc_I4_0);
                         else
@@ -9067,6 +9119,7 @@ namespace PascalABCCompiler.NETGenerator
                             }
                             
                         }
+
                         if (!(real_parameters[0] is IDefaultOperatorNode))
                         {
                             is_dot_expr = true;
@@ -9079,38 +9132,40 @@ namespace PascalABCCompiler.NETGenerator
                             real_parameters[1].visit(this);
                             il.Emit(OpCodes.Call, mi_right);
                         }
-                        EmitOperator(value);
-                        if (!(real_parameters[0] is IDefaultOperatorNode) && !(real_parameters[1] is IDefaultOperatorNode))
+                        MethodInfo eq_mi = null;
+                        if (real_parameters[0].type is IGenericTypeInstance)
                         {
-                            is_dot_expr = true;
-                            real_parameters[0].visit(this);
-                            if (real_parameters[0].type is IGenericTypeInstance)
-                                mi_left = TypeBuilder.GetMethod(ti_right.tp, typeof(Nullable<>).GetMethod("get_HasValue", new Type[] { }));
-                            else
-                                mi_left = ti_left.tp.GetMethod("get_HasValue", new Type[] { });
-                            il.Emit(OpCodes.Call, mi_left);
-                            is_dot_expr = true;
-                            real_parameters[1].visit(this);
-                            if (real_parameters[1].type is IGenericTypeInstance)
-                                mi_right = TypeBuilder.GetMethod(ti_right.tp, typeof(Nullable<>).GetMethod("get_HasValue", new Type[] { }));
-                            else
-                                mi_right = ti_right.tp.GetMethod("get_HasValue", new Type[] { });
+                            var ctn = (real_parameters[0].type as IGenericTypeInstance).generic_parameters[0] as ICommonTypeNode;
 
-                            il.Emit(OpCodes.Call, mi_right);
-                            if (value.basic_function.basic_function_type == basic_function_type.objnoteq)
+                            if (ctn != null)
                             {
-                                il.Emit(OpCodes.Ceq);
-                                il.Emit(OpCodes.Ldc_I4_0); 
-                                il.Emit(OpCodes.Ceq);
-                                il.Emit(OpCodes.Or);
-                            }      
-                            else
-                            {
-                                il.Emit(OpCodes.Ceq);
-                                il.Emit(OpCodes.And);
+                                foreach (ICommonMethodNode cmn in ctn.methods)
+                                    if ((value.basic_function.basic_function_type == basic_function_type.objnoteq? cmn.name == "op_Inequality" || cmn.name == "<>":cmn.name == "op_Equality" || cmn.name == "=") && cmn.parameters.Length == 2 && cmn.parameters[0].type == ctn && cmn.parameters[1].type == ctn)
+                                    {
+                                        eq_mi = helper.GetMethod(cmn).mi;
+                                        break;
+                                    }
                             }
-                           
                         }
+                        else if (real_parameters[0].type is ICompiledTypeNode)
+                        {
+                            var t = (real_parameters[0].type as ICompiledTypeNode).compiled_type.GetGenericArguments()[0];
+                            foreach (MethodInfo mi in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                            {
+                                if ((value.basic_function.basic_function_type == basic_function_type.objnoteq ? mi.Name == "op_Inequality" : mi.Name == "op_Equality") && mi.GetParameters().Length == 2 && mi.GetParameters()[0].ParameterType == t && mi.GetParameters()[1].ParameterType == t)
+                                {
+                                    eq_mi = mi;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (eq_mi != null)
+                            il.Emit(OpCodes.Call, eq_mi);
+                        else
+                            EmitOperator(value);
+                        il.MarkLabel(lb_end);
+
                         is_dot_expr = tmp_dot;
                         if (tmp_dot)
                         {
