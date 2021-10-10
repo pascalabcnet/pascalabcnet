@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 23.09.2021 17:46:26
-// UserName: ?????????
+// Machine:  DESKTOP-2BJCJ7I
+// DateTime: 07.10.2021 20:25:47
+// UserName: ibond
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex

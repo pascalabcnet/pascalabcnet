@@ -46,6 +46,7 @@ namespace PascalABCSavParser
         public bool build_tree_for_formatter = false;
         public bool build_tree_for_format_strings = false;
         public string CurrentFileName;
+        public List<compiler_directive> compilerDirectives;
 
         int lambda_num = 0;
         public List<function_lambda_definition> pascalABC_lambda_definitions;

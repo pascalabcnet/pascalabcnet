@@ -30,7 +30,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             this.FileName = FileName;
         }
 
-        public syntax_tree_node Parse(string Text)
+        public syntax_tree_node Parse(string Text, List<compiler_directive> compilerDirectives=null)
         {
 #if DEBUG
 #if _ERR
@@ -43,6 +43,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             PT parsertools = new PT(); // контекст сканера и парсера
             parsertools.errors = Errs;
             parsertools.warnings = Warnings;
+            parsertools.compilerDirectives = compilerDirectives;
             parsertools.CurrentFileName = Path.GetFullPath(FileName);
 
 
@@ -94,6 +95,7 @@ namespace PascalABCCompiler.PascalABCNewParser
 
             var parser = new PreprocessorParser(scanner);
             parser.compilerDirectives = compilerDirectives;
+            parsertools.compilerDirectives = compilerDirectives;
             //parser.parsertools = parsertools; // передали parsertools в объект парсера
 
             if (!parser.Parse())
@@ -200,7 +202,7 @@ namespace PascalABCCompiler.PascalABCNewParser
 
             localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             localparserhelper.DefinesList = DefinesList;
-            syntax_tree_node root = localparserhelper.Parse(Text);
+            syntax_tree_node root = localparserhelper.Parse(Text, preprocessor3.compilerDirectives);
 
             if (Errors.Count > 0)
                 return null;
