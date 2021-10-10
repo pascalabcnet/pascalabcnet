@@ -9082,12 +9082,14 @@ namespace PascalABCCompiler.NETGenerator
                         EmitOperator(value);
                         if (!(real_parameters[0] is IDefaultOperatorNode) && !(real_parameters[1] is IDefaultOperatorNode))
                         {
+                            is_dot_expr = true;
                             real_parameters[0].visit(this);
                             if (real_parameters[0].type is IGenericTypeInstance)
                                 mi_left = TypeBuilder.GetMethod(ti_right.tp, typeof(Nullable<>).GetMethod("get_HasValue", new Type[] { }));
                             else
                                 mi_left = ti_left.tp.GetMethod("get_HasValue", new Type[] { });
                             il.Emit(OpCodes.Call, mi_left);
+                            is_dot_expr = true;
                             real_parameters[1].visit(this);
                             if (real_parameters[1].type is IGenericTypeInstance)
                                 mi_right = TypeBuilder.GetMethod(ti_right.tp, typeof(Nullable<>).GetMethod("get_HasValue", new Type[] { }));
