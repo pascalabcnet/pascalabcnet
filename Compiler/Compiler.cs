@@ -2547,8 +2547,9 @@ namespace PascalABCCompiler
 
             for (; dir!="" && i < path.Length && path[i] == '.' && path[i + 1] == '.'; )
             {
+                if (Path.GetFileName(dir) == "..") break;
                 dir = Path.GetDirectoryName(dir);
-                if (string.IsNullOrEmpty(dir)) return null;
+                if (string.IsNullOrEmpty(dir)) break;
                 i += 2;
                 if (path[i] == Path.DirectorySeparatorChar || path[i] == Path.AltDirectorySeparatorChar) i += 1;
             }
