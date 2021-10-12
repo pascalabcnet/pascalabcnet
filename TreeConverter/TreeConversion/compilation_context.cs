@@ -2932,7 +2932,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Проверка типа на соответствие заявленным интерфейсам
-        private void check_implement_interfaces()//common_type_node cnode)
+        public void check_implement_interfaces()//common_type_node cnode)
         {
             //Переводим контекст в состояние разбора класса cnode
             //_ctn = cnode;
@@ -3115,6 +3115,22 @@ namespace PascalABCCompiler.TreeConverter
 				}
 			}
 		}
+
+        public void check_abstracts_implemented(List<common_type_node> types)
+        {
+            foreach (common_type_node ctn in types)
+            {
+                _ctn = ctn;
+                check_implement_interfaces();
+                _ctn = null;
+                if (ctn.IsSealed && ctn.IsAbstract && !ctn.IsStatic)
+                    if (ctn.AbstractReason == null)
+                        AddError(ctn.loc, "ABSTRACT_CLASS_CANNOT_BE_SEALED");
+                    else
+                        AddError(ctn.loc, ctn.AbstractReason.Explanation, ctn.name, ctn.AbstractReason.ObjName);
+                
+            }
+        }
 
         //ssyy
         public void check_labels(List<label_node> lab_list)

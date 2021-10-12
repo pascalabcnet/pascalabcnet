@@ -70,7 +70,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public compilation_context context;
         private bool var_def_statement_converting;
-
+        private List<common_type_node> inherited_from_partials_list = new List<common_type_node>();
         public ContextChanger contextChanger;
 		
         internal using_namespace_list using_list = new using_namespace_list();
@@ -202,6 +202,7 @@ namespace PascalABCCompiler.TreeConverter
             generic_param_abilities.Clear();
             current_converted_method_not_in_class_defined = false;
             assign_is_converting = false;
+            inherited_from_partials_list.Clear();
             motivation_keeper.reset();
             SystemLibrary.SystemLibInitializer.NeedsToRestore.Clear();
             type_section_converting = false;
@@ -3036,6 +3037,7 @@ namespace PascalABCCompiler.TreeConverter
             statement_node init_statements = convert_weak(_unit_module.initialization_part);
             context.leave_code_block();
             common_namespace_function_node initialization_function = null;
+            context.check_abstracts_implemented(inherited_from_partials_list);
             if (init_statements != null)
             {
                 context.check_labels(context.converted_namespace.labels);
@@ -3056,6 +3058,7 @@ namespace PascalABCCompiler.TreeConverter
             if (final_statements != null)
             {
                 context.check_labels(context.converted_namespace.labels);
+                
                 finalization_function = new common_namespace_function_node(compiler_string_consts.finalization_function_name,
                     null, final_statements.location, context.converted_namespace, convertion_data_and_alghoritms.symbol_table.CreateScope(context.converted_namespace.scope));
                 finalization_function.function_code = final_statements;
@@ -3758,6 +3761,8 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_DELEGATE_TYPE");
                         }
                         Hashtable used_interfs = new Hashtable();
+                        if (tn is common_type_node && (tn as common_type_node).IsPartial)
+                            inherited_from_partials_list.Add(context.converted_type);
                         //Если tn - это интерфейс
                         if (tn.IsInterface)
                         {
@@ -11111,7 +11116,7 @@ namespace PascalABCCompiler.TreeConverter
             UpdateUnitDefinitionItemForUnit(_compiled_unit);
             hard_node_test_and_visit(_program_module.program_block);
             context.check_labels(context.converted_namespace.labels);
-
+            context.check_abstracts_implemented(inherited_from_partials_list);
             // frninja 28/04/16 - режем мусорные методы хелперы yield
             {
                 var toRemove = cnsn.functions.Where(m => m.is_yield_helper).ToArray();
@@ -11122,6 +11127,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             // end frninja
 
+            
             common_namespace_function_node main_function = new common_namespace_function_node(compiler_string_consts.temp_main_function_name,
                 null, null, cnsn, null);
             main_function.function_code = context.code;
