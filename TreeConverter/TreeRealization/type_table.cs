@@ -1026,6 +1026,10 @@ namespace PascalABCCompiler.TreeRealization
                 }
             }
 
+            if (from.is_generic_type_instance && to.is_generic_type_instance && from.original_generic == to.original_generic && from.name == to.name
+                && from.original_generic is common_type_node && to.original_generic is common_type_node && (from.original_generic as common_type_node).comprehensive_namespace == (to.original_generic as common_type_node).comprehensive_namespace
+                && (to.original_generic as common_type_node).IsPartial && (from.original_generic as common_type_node).IsPartial)
+                add_conversion(ret, TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(from, to, true), from, to);
             return ret;
         }
     }
