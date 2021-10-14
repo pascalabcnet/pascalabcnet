@@ -10290,13 +10290,15 @@ begin
   var previous: T;
   var it := Self.GetEnumerator();
   if (it.MoveNext()) then
+  begin  
     previous := it.Current;
   
-  while (it.MoveNext()) do
-  begin
-    yield (previous, it.Current);
-    previous := it.Current;
-  end
+    while (it.MoveNext()) do
+    begin
+      yield (previous, it.Current);
+      previous := it.Current;
+    end;
+  end;
 end;
 
 /// Превращает последовательность в последовательность n-ок соседних элементов
@@ -10320,13 +10322,15 @@ begin
   var previous: T;
   var it := Self.GetEnumerator();
   if (it.MoveNext()) then
+  begin  
     previous := it.Current;
   
-  while (it.MoveNext()) do
-  begin
-    yield func(previous, it.Current);
-    previous := it.Current;
-  end
+    while (it.MoveNext()) do
+    begin
+      yield func(previous, it.Current);
+      previous := it.Current;
+    end;
+  end;
   //  Result := Self.ZipTuple(Self.Skip(1)).Select(x->func(x[0],x[1]));
 end;
 
