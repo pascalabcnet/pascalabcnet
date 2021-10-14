@@ -273,7 +273,7 @@
 
 	</RuleSet>
 		
-	<RuleSet name = "CommentMarkerSet" ignorecase = "true">
+	<RuleSet name = "CommentMarkerSet" ignorecase = "false">
 		<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 		<KeyWords name = "ErrorWords" bold="true" italic="false" color="Red">
 			<Key word = "TODO" />
@@ -283,7 +283,16 @@
 			<Key word = "HACK" />
 			<Key word = "UNDONE" />
 	  	</KeyWords>
+		<KeyWords name = "Russian" bold="true" italic="true" color="Green" >
+			<Key word = "Задание" />
+			<Key word = "Указание" />
+			<Key word = "Замечание" />
+	  	</KeyWords>
+		<KeyWords name = "Russian1" bold="true" italic="false" color="Green">
+			<Key word = "Тема" />
+	  	</KeyWords>
 	</RuleSet>
+
 
 	<RuleSet name = "CompilerDirectivesSet" ignorecase = "true">
 		<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
