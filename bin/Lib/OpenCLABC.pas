@@ -32,12 +32,6 @@ unit OpenCLABC;
 //===================================
 // Запланированное:
 
-//ToDo В описаниях в куче мест упоминаются буферы, которые вообще то теперь MemorySegment
-
-//ToDo q*4 - Повторение очереди 4 раза
-// - Всегда можно использовать Combine(ArrFill(4,q))
-// - Но тогда внутри будет хранится массив - это лишнее, если все очереди одинаковые
-
 //ToDo Порядок Wait очередей в Wait группах
 // - Проверить сочетание с каждой другой фичей
 
@@ -78,7 +72,7 @@ unit OpenCLABC;
 
 //ToDo Проверять ".IsReadOnly" перед запасным копированием коллекций
 
-//ToDo В методах вроде .AddWriteArray1 приходится добавлять &<>
+//ToDo В методах вроде MemorySegment.AddWriteArray1 приходится добавлять &<>
 
 //ToDo Подумать как об этом можно написать в справке (или не в справке):
 // - ReadValue отсутствует
@@ -157,7 +151,6 @@ unit OpenCLABC;
 //ToDo https://github.com/pascalabcnet/pascalabcnet/issues/{id}
 // - #2221
 // - #2431
-// - #2510
 
 //ToDo Баги NVidia
 //ToDo https://developer.nvidia.com/nvidia_bug/{id}
@@ -670,7 +663,7 @@ type
     public property AllDevices: IList<Device> read dvcs;
     
     private main_dvc: Device;
-    ///Возвращает главное устройство контекста, на котором выделяется память под буферы и внутренние объекты очередей
+    ///Возвращает главное устройство контекста, на котором выделяется память
     public property MainDevice: Device        read main_dvc;
     
     private function GetAllNtvDevices: array of cl_device_id;
@@ -1272,116 +1265,116 @@ type
     
     {$region 1#Write&Read}
     
-    ///Заполняет весь буфер данными, находящимися по указанному адресу в RAM
+    ///Заполняет всю область памяти данными, находящимися по указанному адресу в RAM
     public function WriteData(ptr: CommandQueue<IntPtr>): MemorySegment;
     
-    ///Копирует всё содержимое буфера в RAM, по указанному адресу
+    ///Читает всё содержимое области памяти в RAM, по указанному адресу
     public function ReadData(ptr: CommandQueue<IntPtr>): MemorySegment;
     
-    ///Заполняет часть буфер данными, находящимися по указанному адресу в RAM
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Заполняет часть области памяти данными, находящимися по указанному адресу в RAM
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function WriteData(ptr: CommandQueue<IntPtr>; mem_offset, len: CommandQueue<integer>): MemorySegment;
     
-    ///Копирует часть содержимого буфера в RAM, по указанному адресу
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Читает часть содержимого области памяти в RAM, по указанному адресу
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function ReadData(ptr: CommandQueue<IntPtr>; mem_offset, len: CommandQueue<integer>): MemorySegment;
     
-    ///Заполняет весь буфер данными, находящимися по указанному адресу в RAM
+    ///Заполняет всю область памяти данными, находящимися по указанному адресу в RAM
     public function WriteData(ptr: pointer): MemorySegment;
     
-    ///Копирует всё содержимое буфера в RAM, по указанному адресу
+    ///Читает всё содержимое области памяти в RAM, по указанному адресу
     public function ReadData(ptr: pointer): MemorySegment;
     
-    ///Заполняет часть буфер данными, находящимися по указанному адресу в RAM
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Заполняет часть области памяти данными, находящимися по указанному адресу в RAM
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function WriteData(ptr: pointer; mem_offset, len: CommandQueue<integer>): MemorySegment;
     
-    ///Копирует часть содержимого буфера в RAM, по указанному адресу
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Читает часть содержимого области памяти в RAM, по указанному адресу
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function ReadData(ptr: pointer; mem_offset, len: CommandQueue<integer>): MemorySegment;
     
-    ///Записывает указанное значение размерного типа в начало буфера
+    ///Записывает указанное значение размерного типа в начало области памяти
     public function WriteValue<TRecord>(val: TRecord): MemorySegment; where TRecord: record;
     
-    ///Записывает указанное значение размерного типа в буфер
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///Записывает указанное значение размерного типа в области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function WriteValue<TRecord>(val: TRecord; mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
-    ///Записывает указанное значение размерного типа в начало буфера
+    ///Записывает указанное значение размерного типа в начало области памяти
     public function WriteValue<TRecord>(val: CommandQueue<TRecord>): MemorySegment; where TRecord: record;
     
-    ///Записывает указанное значение размерного типа в буфер
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///Записывает указанное значение размерного типа в области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function WriteValue<TRecord>(val: CommandQueue<TRecord>; mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
-    ///Записывает весь массив в начало буфера
+    ///Записывает весь массив в начало области памяти
     public function WriteArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegment; where TRecord: record;
     
-    ///Записывает весь массив в начало буфера
+    ///Записывает весь массив в начало области памяти
     public function WriteArray2<TRecord>(a: CommandQueue<array[,] of TRecord>): MemorySegment; where TRecord: record;
     
-    ///Записывает весь массив в начало буфера
+    ///Записывает весь массив в начало области памяти
     public function WriteArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>): MemorySegment; where TRecord: record;
     
-    ///Читает из буфера достаточно байт чтоб заполнить весь массив
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
     public function ReadArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegment; where TRecord: record;
     
-    ///Читает из буфера достаточно байт чтоб заполнить весь массив
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
     public function ReadArray2<TRecord>(a: CommandQueue<array[,] of TRecord>): MemorySegment; where TRecord: record;
     
-    ///Читает из буфера достаточно байт чтоб заполнить весь массив
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
     public function ReadArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>): MemorySegment; where TRecord: record;
     
-    ///Записывает указанный участок массива в буфер
+    ///Записывает указанный участок массива в область памяти
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function WriteArray1<TRecord>(a: CommandQueue<array of TRecord>; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
-    ///Записывает указанный участок массива в буфер
+    ///Записывает указанный участок массива в область памяти
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     ///
     ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
     ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
     ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
     public function WriteArray2<TRecord>(a: CommandQueue<array[,] of TRecord>; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
-    ///Записывает указанный участок массива в буфер
+    ///Записывает указанный участок массива в область памяти
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     ///
     ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
     ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
     ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
     public function WriteArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
-    ///Читает в буфер указанный участок массива
+    ///Читает данные из области памяти в указанный участок массива
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function ReadArray1<TRecord>(a: CommandQueue<array of TRecord>; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
-    ///Читает в буфер указанный участок массива
+    ///Читает данные из области памяти в указанный участок массива
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     ///
     ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
     ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
     ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
     public function ReadArray2<TRecord>(a: CommandQueue<array[,] of TRecord>; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
-    ///Читает в буфер указанный участок массива
+    ///Читает данные из области памяти в указанный участок массива
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     ///
     ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
     ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
@@ -1392,51 +1385,51 @@ type
     
     {$region 2#Fill}
     
-    ///Читает pattern_len байт из RAM по указанному адресу и заполняет их копиями весь буфер
+    ///Читает pattern_len байт из RAM по указанному адресу и заполняет их копиями всю область памяти
     public function FillData(ptr: CommandQueue<IntPtr>; pattern_len: CommandQueue<integer>): MemorySegment;
     
-    ///Читает pattern_len байт из RAM по указанному адресу и заполняет их копиями часть буфера
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Читает pattern_len байт из RAM по указанному адресу и заполняет их копиями часть области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function FillData(ptr: CommandQueue<IntPtr>; pattern_len, mem_offset, len: CommandQueue<integer>): MemorySegment;
     
-    ///Заполняет весь буфер копиями указанного значения размерного типа
+    ///Заполняет всю область памяти копиями указанного значения размерного типа
     public function FillValue<TRecord>(val: TRecord): MemorySegment; where TRecord: record;
     
-    ///Заполняет часть буфера копиями указанного значения размерного типа
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Заполняет часть области памяти копиями указанного значения размерного типа
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function FillValue<TRecord>(val: TRecord; mem_offset, len: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
-    ///Заполняет весь буфер копиями указанного значения размерного типа
+    ///Заполняет всю область памяти копиями указанного значения размерного типа
     public function FillValue<TRecord>(val: CommandQueue<TRecord>): MemorySegment; where TRecord: record;
     
-    ///Заполняет часть буфера копиями указанного значения размерного типа
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Заполняет часть области памяти копиями указанного значения размерного типа
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function FillValue<TRecord>(val: CommandQueue<TRecord>; mem_offset, len: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
     {$endregion 2#Fill}
     
     {$region 3#Copy}
     
-    ///Копирует данные из текущего буфера в b
-    ///Если буферы имеют разный размер - в качестве объёма данных берётся размер меньшего буфера
+    ///Копирует данные из текущей области памяти в mem
+    ///Если области памяти имеют разный размер - в качестве объёма данных берётся размер меньшей области
     public function CopyTo(mem: CommandQueue<MemorySegment>): MemorySegment;
     
-    ///Копирует данные из b в текущий буфер
-    ///Если буферы имеют разный размер - в качестве объёма данных берётся размер меньшего буфера
+    ///Копирует данные из mem в текущюу область памяти
+    ///Если области памяти имеют разный размер - в качестве объёма данных берётся размер меньшей области
     public function CopyFrom(mem: CommandQueue<MemorySegment>): MemorySegment;
     
-    ///Копирует данные из текущего буфера в b
-    ///from_pos указывает отступ в байтах от начала буфера, из которого копируют
-    ///to_pos указывает отступ в байтах от начала буфера, в который копируют
+    ///Копирует данные из текущей области памяти в mem
+    ///from_pos указывает отступ в байтах от начала области памяти, из которой копируют
+    ///to_pos указывает отступ в байтах от начала области памяти, в которую копируют
     ///len указывает кол-во копируемых байт
     public function CopyTo(mem: CommandQueue<MemorySegment>; from_pos, to_pos, len: CommandQueue<integer>): MemorySegment;
     
-    ///Копирует данные из b в текущий буфер
-    ///from_pos указывает отступ в байтах от начала буфера, из которого копируют
-    ///to_pos указывает отступ в байтах от начала буфера, в который копируют
+    ///Копирует данные из mem в текущюу область памяти
+    ///from_pos указывает отступ в байтах от начала области памяти, из которой копируют
+    ///to_pos указывает отступ в байтах от начала области памяти, в которую копируют
     ///len указывает кол-во копируемых байт
     public function CopyFrom(mem: CommandQueue<MemorySegment>; from_pos, to_pos, len: CommandQueue<integer>): MemorySegment;
     
@@ -1444,31 +1437,31 @@ type
     
     {$region Get}
     
-    ///Выделяет область неуправляемой памяти и копирует в неё всё содержимое данного буфера
+    ///Выделяет область неуправляемой памяти и копирует в неё всё содержимое данной области памяти
     public function GetData: IntPtr;
     
-    ///Выделяет область неуправляемой памяти и копирует в неё часть содержимого данного буфера
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Выделяет область неуправляемой памяти и копирует в неё часть содержимого данной области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function GetData(mem_offset, len: CommandQueue<integer>): IntPtr;
     
-    ///Читает значение указанного размерного типа из начала буфера
+    ///Читает значение указанного размерного типа из начала области памяти
     public function GetValue<TRecord>: TRecord; where TRecord: record;
     
-    ///Читает значение указанного размерного типа из буфера
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///Читает значение указанного размерного типа из области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function GetValue<TRecord>(mem_offset: CommandQueue<integer>): TRecord; where TRecord: record;
     
-    ///Создаёт массив максимального размера (на сколько хватит байт буфера) и копирует в него содержимое буфера
+    ///Читает массив максимального размера, на сколько хватит байт данной области памяти
     public function GetArray1<TRecord>: array of TRecord; where TRecord: record;
     
-    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое буфера
+    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое данный области памяти
     public function GetArray1<TRecord>(len: CommandQueue<integer>): array of TRecord; where TRecord: record;
     
-    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое буфера
+    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое данный области памяти
     public function GetArray2<TRecord>(len1,len2: CommandQueue<integer>): array[,] of TRecord; where TRecord: record;
     
-    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое буфера
+    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое данный области памяти
     public function GetArray3<TRecord>(len1,len2,len3: CommandQueue<integer>): array[,,] of TRecord; where TRecord: record;
     
     {$endregion Get}
@@ -2762,116 +2755,116 @@ type
     
     {$region 1#Write&Read}
     
-    ///Заполняет весь буфер данными, находящимися по указанному адресу в RAM
+    ///Заполняет всю область памяти данными, находящимися по указанному адресу в RAM
     public function AddWriteData(ptr: CommandQueue<IntPtr>): MemorySegmentCCQ;
     
-    ///Копирует всё содержимое буфера в RAM, по указанному адресу
+    ///Читает всё содержимое области памяти в RAM, по указанному адресу
     public function AddReadData(ptr: CommandQueue<IntPtr>): MemorySegmentCCQ;
     
-    ///Заполняет часть буфер данными, находящимися по указанному адресу в RAM
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Заполняет часть области памяти данными, находящимися по указанному адресу в RAM
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function AddWriteData(ptr: CommandQueue<IntPtr>; mem_offset, len: CommandQueue<integer>): MemorySegmentCCQ;
     
-    ///Копирует часть содержимого буфера в RAM, по указанному адресу
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Читает часть содержимого области памяти в RAM, по указанному адресу
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function AddReadData(ptr: CommandQueue<IntPtr>; mem_offset, len: CommandQueue<integer>): MemorySegmentCCQ;
     
-    ///Заполняет весь буфер данными, находящимися по указанному адресу в RAM
+    ///Заполняет всю область памяти данными, находящимися по указанному адресу в RAM
     public function AddWriteData(ptr: pointer): MemorySegmentCCQ;
     
-    ///Копирует всё содержимое буфера в RAM, по указанному адресу
+    ///Читает всё содержимое области памяти в RAM, по указанному адресу
     public function AddReadData(ptr: pointer): MemorySegmentCCQ;
     
-    ///Заполняет часть буфер данными, находящимися по указанному адресу в RAM
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Заполняет часть области памяти данными, находящимися по указанному адресу в RAM
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function AddWriteData(ptr: pointer; mem_offset, len: CommandQueue<integer>): MemorySegmentCCQ;
     
-    ///Копирует часть содержимого буфера в RAM, по указанному адресу
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Читает часть содержимого области памяти в RAM, по указанному адресу
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function AddReadData(ptr: pointer; mem_offset, len: CommandQueue<integer>): MemorySegmentCCQ;
     
-    ///Записывает указанное значение размерного типа в начало буфера
+    ///Записывает указанное значение размерного типа в начало области памяти
     public function AddWriteValue<TRecord>(val: TRecord): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает указанное значение размерного типа в буфер
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///Записывает указанное значение размерного типа в области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function AddWriteValue<TRecord>(val: TRecord; mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает указанное значение размерного типа в начало буфера
+    ///Записывает указанное значение размерного типа в начало области памяти
     public function AddWriteValue<TRecord>(val: CommandQueue<TRecord>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает указанное значение размерного типа в буфер
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///Записывает указанное значение размерного типа в области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function AddWriteValue<TRecord>(val: CommandQueue<TRecord>; mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает весь массив в начало буфера
+    ///Записывает весь массив в начало области памяти
     public function AddWriteArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает весь массив в начало буфера
+    ///Записывает весь массив в начало области памяти
     public function AddWriteArray2<TRecord>(a: CommandQueue<array[,] of TRecord>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает весь массив в начало буфера
+    ///Записывает весь массив в начало области памяти
     public function AddWriteArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Читает из буфера достаточно байт чтоб заполнить весь массив
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
     public function AddReadArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Читает из буфера достаточно байт чтоб заполнить весь массив
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
     public function AddReadArray2<TRecord>(a: CommandQueue<array[,] of TRecord>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Читает из буфера достаточно байт чтоб заполнить весь массив
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
     public function AddReadArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает указанный участок массива в буфер
+    ///Записывает указанный участок массива в область памяти
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function AddWriteArray1<TRecord>(a: CommandQueue<array of TRecord>; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает указанный участок массива в буфер
+    ///Записывает указанный участок массива в область памяти
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     ///
     ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
     ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
     ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
     public function AddWriteArray2<TRecord>(a: CommandQueue<array[,] of TRecord>; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Записывает указанный участок массива в буфер
+    ///Записывает указанный участок массива в область памяти
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     ///
     ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
     ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
     ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
     public function AddWriteArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Читает в буфер указанный участок массива
+    ///Читает данные из области памяти в указанный участок массива
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function AddReadArray1<TRecord>(a: CommandQueue<array of TRecord>; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Читает в буфер указанный участок массива
+    ///Читает данные из области памяти в указанный участок массива
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     ///
     ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
     ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
     ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
     public function AddReadArray2<TRecord>(a: CommandQueue<array[,] of TRecord>; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Читает в буфер указанный участок массива
+    ///Читает данные из области памяти в указанный участок массива
     ///a_offset(-ы) указывают индекс в массиве
     ///len указывает кол-во задействованных элементов массива
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     ///
     ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
     ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
@@ -2882,51 +2875,51 @@ type
     
     {$region 2#Fill}
     
-    ///Читает pattern_len байт из RAM по указанному адресу и заполняет их копиями весь буфер
+    ///Читает pattern_len байт из RAM по указанному адресу и заполняет их копиями всю область памяти
     public function AddFillData(ptr: CommandQueue<IntPtr>; pattern_len: CommandQueue<integer>): MemorySegmentCCQ;
     
-    ///Читает pattern_len байт из RAM по указанному адресу и заполняет их копиями часть буфера
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Читает pattern_len байт из RAM по указанному адресу и заполняет их копиями часть области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function AddFillData(ptr: CommandQueue<IntPtr>; pattern_len, mem_offset, len: CommandQueue<integer>): MemorySegmentCCQ;
     
-    ///Заполняет весь буфер копиями указанного значения размерного типа
+    ///Заполняет всю область памяти копиями указанного значения размерного типа
     public function AddFillValue<TRecord>(val: TRecord): MemorySegmentCCQ; where TRecord: record;
     
-    ///Заполняет часть буфера копиями указанного значения размерного типа
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Заполняет часть области памяти копиями указанного значения размерного типа
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function AddFillValue<TRecord>(val: TRecord; mem_offset, len: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Заполняет весь буфер копиями указанного значения размерного типа
+    ///Заполняет всю область памяти копиями указанного значения размерного типа
     public function AddFillValue<TRecord>(val: CommandQueue<TRecord>): MemorySegmentCCQ; where TRecord: record;
     
-    ///Заполняет часть буфера копиями указанного значения размерного типа
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Заполняет часть области памяти копиями указанного значения размерного типа
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function AddFillValue<TRecord>(val: CommandQueue<TRecord>; mem_offset, len: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
     {$endregion 2#Fill}
     
     {$region 3#Copy}
     
-    ///Копирует данные из текущего буфера в b
-    ///Если буферы имеют разный размер - в качестве объёма данных берётся размер меньшего буфера
+    ///Копирует данные из текущей области памяти в mem
+    ///Если области памяти имеют разный размер - в качестве объёма данных берётся размер меньшей области
     public function AddCopyTo(mem: CommandQueue<MemorySegment>): MemorySegmentCCQ;
     
-    ///Копирует данные из b в текущий буфер
-    ///Если буферы имеют разный размер - в качестве объёма данных берётся размер меньшего буфера
+    ///Копирует данные из mem в текущюу область памяти
+    ///Если области памяти имеют разный размер - в качестве объёма данных берётся размер меньшей области
     public function AddCopyFrom(mem: CommandQueue<MemorySegment>): MemorySegmentCCQ;
     
-    ///Копирует данные из текущего буфера в b
-    ///from_pos указывает отступ в байтах от начала буфера, из которого копируют
-    ///to_pos указывает отступ в байтах от начала буфера, в который копируют
+    ///Копирует данные из текущей области памяти в mem
+    ///from_pos указывает отступ в байтах от начала области памяти, из которой копируют
+    ///to_pos указывает отступ в байтах от начала области памяти, в которую копируют
     ///len указывает кол-во копируемых байт
     public function AddCopyTo(mem: CommandQueue<MemorySegment>; from_pos, to_pos, len: CommandQueue<integer>): MemorySegmentCCQ;
     
-    ///Копирует данные из b в текущий буфер
-    ///from_pos указывает отступ в байтах от начала буфера, из которого копируют
-    ///to_pos указывает отступ в байтах от начала буфера, в который копируют
+    ///Копирует данные из mem в текущюу область памяти
+    ///from_pos указывает отступ в байтах от начала области памяти, из которой копируют
+    ///to_pos указывает отступ в байтах от начала области памяти, в которую копируют
     ///len указывает кол-во копируемых байт
     public function AddCopyFrom(mem: CommandQueue<MemorySegment>; from_pos, to_pos, len: CommandQueue<integer>): MemorySegmentCCQ;
     
@@ -2934,31 +2927,31 @@ type
     
     {$region Get}
     
-    ///Выделяет область неуправляемой памяти и копирует в неё всё содержимое данного буфера
+    ///Выделяет область неуправляемой памяти и копирует в неё всё содержимое данной области памяти
     public function AddGetData: CommandQueue<IntPtr>;
     
-    ///Выделяет область неуправляемой памяти и копирует в неё часть содержимого данного буфера
-    ///buff_offset указывает отступ от начала буфера, в байтах
-    ///len указывает кол-во задействованных байт буфера
+    ///Выделяет область неуправляемой памяти и копирует в неё часть содержимого данной области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///len указывает кол-во задействованных в операции байт
     public function AddGetData(mem_offset, len: CommandQueue<integer>): CommandQueue<IntPtr>;
     
-    ///Читает значение указанного размерного типа из начала буфера
+    ///Читает значение указанного размерного типа из начала области памяти
     public function AddGetValue<TRecord>: CommandQueue<TRecord>; where TRecord: record;
     
-    ///Читает значение указанного размерного типа из буфера
-    ///buff_offset указывает отступ от начала буфера, в байтах
+    ///Читает значение указанного размерного типа из области памяти
+    ///mem_offset указывает отступ от начала области памяти, в байтах
     public function AddGetValue<TRecord>(mem_offset: CommandQueue<integer>): CommandQueue<TRecord>; where TRecord: record;
     
-    ///Создаёт массив максимального размера (на сколько хватит байт буфера) и копирует в него содержимое буфера
+    ///Читает массив максимального размера, на сколько хватит байт данной области памяти
     public function AddGetArray1<TRecord>: CommandQueue<array of TRecord>; where TRecord: record;
     
-    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое буфера
+    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое данный области памяти
     public function AddGetArray1<TRecord>(len: CommandQueue<integer>): CommandQueue<array of TRecord>; where TRecord: record;
     
-    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое буфера
+    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое данный области памяти
     public function AddGetArray2<TRecord>(len1,len2: CommandQueue<integer>): CommandQueue<array[,] of TRecord>; where TRecord: record;
     
-    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое буфера
+    ///Создаёт массив с указанным кол-вом элементов и копирует в него содержимое данный области памяти
     public function AddGetArray3<TRecord>(len1,len2,len3: CommandQueue<integer>): CommandQueue<array[,,] of TRecord>; where TRecord: record;
     
     {$endregion Get}
@@ -6935,20 +6928,16 @@ type
 {$region 1#Exec}
 
 function Kernel.Exec1(sz1: CommandQueue<integer>; params args: array of KernelArg): Kernel :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddExec1(sz1, args) as object as CommandQueue<Kernel>);
+Context.Default.SyncInvoke(self.NewQueue.AddExec1(sz1, args));
 
 function Kernel.Exec2(sz1,sz2: CommandQueue<integer>; params args: array of KernelArg): Kernel :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddExec2(sz1, sz2, args) as object as CommandQueue<Kernel>);
+Context.Default.SyncInvoke(self.NewQueue.AddExec2(sz1, sz2, args));
 
 function Kernel.Exec3(sz1,sz2,sz3: CommandQueue<integer>; params args: array of KernelArg): Kernel :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddExec3(sz1, sz2, sz3, args) as object as CommandQueue<Kernel>);
+Context.Default.SyncInvoke(self.NewQueue.AddExec3(sz1, sz2, sz3, args));
 
 function Kernel.Exec(global_work_offset, global_work_size, local_work_size: CommandQueue<array of UIntPtr>; params args: array of KernelArg): Kernel :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddExec(global_work_offset, global_work_size, local_work_size, args) as object as CommandQueue<Kernel>);
+Context.Default.SyncInvoke(self.NewQueue.AddExec(global_work_offset, global_work_size, local_work_size, args));
 
 {$endregion 1#Exec}
 
@@ -6998,7 +6987,7 @@ type
             new UIntPtr[](new UIntPtr(sz1)),
             nil,
             evs.count, evs.evs, res_ev
-          );
+          ).RaiseIfError;
           
           cl.RetainKernel(ntv).RaiseIfError;
           var args_hnd := GCHandle.Alloc(args);
@@ -7091,7 +7080,7 @@ type
             new UIntPtr[](new UIntPtr(sz1),new UIntPtr(sz2)),
             nil,
             evs.count, evs.evs, res_ev
-          );
+          ).RaiseIfError;
           
           cl.RetainKernel(ntv).RaiseIfError;
           var args_hnd := GCHandle.Alloc(args);
@@ -7193,7 +7182,7 @@ type
             new UIntPtr[](new UIntPtr(sz1),new UIntPtr(sz2),new UIntPtr(sz3)),
             nil,
             evs.count, evs.evs, res_ev
-          );
+          ).RaiseIfError;
           
           cl.RetainKernel(ntv).RaiseIfError;
           var args_hnd := GCHandle.Alloc(args);
@@ -7300,7 +7289,7 @@ type
             global_work_size,
             local_work_size,
             evs.count, evs.evs, res_ev
-          );
+          ).RaiseIfError;
           
           cl.RetainKernel(ntv).RaiseIfError;
           var args_hnd := GCHandle.Alloc(args);
@@ -7372,20 +7361,16 @@ AddCommand(self, new KernelCommandExec(global_work_offset, global_work_size, loc
 {$region 1#Write&Read}
 
 function MemorySegment.WriteData(ptr: CommandQueue<IntPtr>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteData(ptr) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteData(ptr));
 
 function MemorySegment.ReadData(ptr: CommandQueue<IntPtr>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadData(ptr) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadData(ptr));
 
 function MemorySegment.WriteData(ptr: CommandQueue<IntPtr>; mem_offset, len: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteData(ptr, mem_offset, len) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteData(ptr, mem_offset, len));
 
 function MemorySegment.ReadData(ptr: CommandQueue<IntPtr>; mem_offset, len: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadData(ptr, mem_offset, len) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadData(ptr, mem_offset, len));
 
 function MemorySegment.WriteData(ptr: pointer): MemorySegment :=
 WriteData(IntPtr(ptr));
@@ -7403,146 +7388,115 @@ function MemorySegment.WriteValue<TRecord>(val: TRecord): MemorySegment :=
 WriteValue(val, 0);
 
 function MemorySegment.WriteValue<TRecord>(val: TRecord; mem_offset: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteValue&<TRecord>(val, mem_offset) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteValue&<TRecord>(val, mem_offset));
 
 function MemorySegment.WriteValue<TRecord>(val: CommandQueue<TRecord>): MemorySegment :=
 WriteValue(val, 0);
 
 function MemorySegment.WriteValue<TRecord>(val: CommandQueue<TRecord>; mem_offset: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteValue&<TRecord>(val, mem_offset) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteValue&<TRecord>(val, mem_offset));
 
 function MemorySegment.WriteArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteArray1&<TRecord>(a) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteArray1&<TRecord>(a));
 
 function MemorySegment.WriteArray2<TRecord>(a: CommandQueue<array[,] of TRecord>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteArray2&<TRecord>(a) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteArray2&<TRecord>(a));
 
 function MemorySegment.WriteArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteArray3&<TRecord>(a) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteArray3&<TRecord>(a));
 
 function MemorySegment.ReadArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadArray1&<TRecord>(a) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadArray1&<TRecord>(a));
 
 function MemorySegment.ReadArray2<TRecord>(a: CommandQueue<array[,] of TRecord>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadArray2&<TRecord>(a) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadArray2&<TRecord>(a));
 
 function MemorySegment.ReadArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadArray3&<TRecord>(a) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadArray3&<TRecord>(a));
 
 function MemorySegment.WriteArray1<TRecord>(a: CommandQueue<array of TRecord>; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteArray1&<TRecord>(a, a_offset, len, mem_offset) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteArray1&<TRecord>(a, a_offset, len, mem_offset));
 
 function MemorySegment.WriteArray2<TRecord>(a: CommandQueue<array[,] of TRecord>; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteArray2&<TRecord>(a, a_offset1, a_offset2, len, mem_offset) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteArray2&<TRecord>(a, a_offset1, a_offset2, len, mem_offset));
 
 function MemorySegment.WriteArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteArray3&<TRecord>(a, a_offset1, a_offset2, a_offset3, len, mem_offset) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteArray3&<TRecord>(a, a_offset1, a_offset2, a_offset3, len, mem_offset));
 
 function MemorySegment.ReadArray1<TRecord>(a: CommandQueue<array of TRecord>; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadArray1&<TRecord>(a, a_offset, len, mem_offset) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadArray1&<TRecord>(a, a_offset, len, mem_offset));
 
 function MemorySegment.ReadArray2<TRecord>(a: CommandQueue<array[,] of TRecord>; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadArray2&<TRecord>(a, a_offset1, a_offset2, len, mem_offset) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadArray2&<TRecord>(a, a_offset1, a_offset2, len, mem_offset));
 
 function MemorySegment.ReadArray3<TRecord>(a: CommandQueue<array[,,] of TRecord>; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadArray3&<TRecord>(a, a_offset1, a_offset2, a_offset3, len, mem_offset) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadArray3&<TRecord>(a, a_offset1, a_offset2, a_offset3, len, mem_offset));
 
 {$endregion 1#Write&Read}
 
 {$region 2#Fill}
 
 function MemorySegment.FillData(ptr: CommandQueue<IntPtr>; pattern_len: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFillData(ptr, pattern_len) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddFillData(ptr, pattern_len));
 
 function MemorySegment.FillData(ptr: CommandQueue<IntPtr>; pattern_len, mem_offset, len: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFillData(ptr, pattern_len, mem_offset, len) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddFillData(ptr, pattern_len, mem_offset, len));
 
 function MemorySegment.FillValue<TRecord>(val: TRecord): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFillValue&<TRecord>(val) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddFillValue&<TRecord>(val));
 
 function MemorySegment.FillValue<TRecord>(val: TRecord; mem_offset, len: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFillValue&<TRecord>(val, mem_offset, len) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddFillValue&<TRecord>(val, mem_offset, len));
 
 function MemorySegment.FillValue<TRecord>(val: CommandQueue<TRecord>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFillValue&<TRecord>(val) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddFillValue&<TRecord>(val));
 
 function MemorySegment.FillValue<TRecord>(val: CommandQueue<TRecord>; mem_offset, len: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFillValue&<TRecord>(val, mem_offset, len) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddFillValue&<TRecord>(val, mem_offset, len));
 
 {$endregion 2#Fill}
 
 {$region 3#Copy}
 
 function MemorySegment.CopyTo(mem: CommandQueue<MemorySegment>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddCopyTo(mem) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddCopyTo(mem));
 
 function MemorySegment.CopyFrom(mem: CommandQueue<MemorySegment>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddCopyFrom(mem) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddCopyFrom(mem));
 
 function MemorySegment.CopyTo(mem: CommandQueue<MemorySegment>; from_pos, to_pos, len: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddCopyTo(mem, from_pos, to_pos, len) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddCopyTo(mem, from_pos, to_pos, len));
 
 function MemorySegment.CopyFrom(mem: CommandQueue<MemorySegment>; from_pos, to_pos, len: CommandQueue<integer>): MemorySegment :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddCopyFrom(mem, from_pos, to_pos, len) as object as CommandQueue<MemorySegment>);
+Context.Default.SyncInvoke(self.NewQueue.AddCopyFrom(mem, from_pos, to_pos, len));
 
 {$endregion 3#Copy}
 
 {$region Get}
 
 function MemorySegment.GetData: IntPtr :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetData as object as CommandQueue<IntPtr>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetData);
 
 function MemorySegment.GetData(mem_offset, len: CommandQueue<integer>): IntPtr :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetData(mem_offset, len) as object as CommandQueue<IntPtr>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetData(mem_offset, len));
 
 function MemorySegment.GetValue<TRecord>: TRecord :=
 GetValue&<TRecord>(0);
 
 function MemorySegment.GetValue<TRecord>(mem_offset: CommandQueue<integer>): TRecord :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetValue&<TRecord>(mem_offset) as object as CommandQueue<TRecord>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetValue&<TRecord>(mem_offset));
 
 function MemorySegment.GetArray1<TRecord>: array of TRecord :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetArray1&<TRecord> as object as CommandQueue<array of TRecord>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetArray1&<TRecord>);
 
 function MemorySegment.GetArray1<TRecord>(len: CommandQueue<integer>): array of TRecord :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetArray1&<TRecord>(len) as object as CommandQueue<array of TRecord>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetArray1&<TRecord>(len));
 
 function MemorySegment.GetArray2<TRecord>(len1,len2: CommandQueue<integer>): array[,] of TRecord :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetArray2&<TRecord>(len1, len2) as object as CommandQueue<array[,] of TRecord>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetArray2&<TRecord>(len1, len2));
 
 function MemorySegment.GetArray3<TRecord>(len1,len2,len3: CommandQueue<integer>): array[,,] of TRecord :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetArray3&<TRecord>(len1, len2, len3) as object as CommandQueue<array[,,] of TRecord>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetArray3&<TRecord>(len1, len2, len3));
 
 {$endregion Get}
 
@@ -10151,84 +10105,67 @@ new MemorySegmentCommandGetArray3<TRecord>(self, len1, len2, len3) as CommandQue
 {$region 1#Write&Read}
 
 function CLArray<T>.WriteItem(val: &T; ind: CommandQueue<integer>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteItem(val, ind) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteItem(val, ind));
 
 function CLArray<T>.WriteItem(val: CommandQueue<&T>; ind: CommandQueue<integer>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteItem(val, ind) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteItem(val, ind));
 
 function CLArray<T>.WriteArray(a: CommandQueue<array of &T>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteArray(a) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteArray(a));
 
 function CLArray<T>.ReadArray(a: CommandQueue<array of &T>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadArray(a) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadArray(a));
 
 function CLArray<T>.WriteArray(a: CommandQueue<array of &T>; ind, len, a_ind: CommandQueue<integer>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddWriteArray(a, ind, len, a_ind) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddWriteArray(a, ind, len, a_ind));
 
 function CLArray<T>.ReadArray(a: CommandQueue<array of &T>; ind, len, a_ind: CommandQueue<integer>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddReadArray(a, ind, len, a_ind) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddReadArray(a, ind, len, a_ind));
 
 {$endregion 1#Write&Read}
 
 {$region 2#Fill}
 
 function CLArray<T>.Fill(val: &T): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFill(val) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddFill(val));
 
 function CLArray<T>.Fill(val: &T; ind, len: CommandQueue<integer>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFill(val, ind, len) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddFill(val, ind, len));
 
 function CLArray<T>.Fill(val: CommandQueue<&T>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFill(val) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddFill(val));
 
 function CLArray<T>.Fill(val: CommandQueue<&T>; ind, len: CommandQueue<integer>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddFill(val, ind, len) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddFill(val, ind, len));
 
 {$endregion 2#Fill}
 
 {$region 3#Copy}
 
 function CLArray<T>.CopyTo(a: CommandQueue<CLArray<T>>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddCopyTo(a) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddCopyTo(a));
 
 function CLArray<T>.CopyFrom(a: CommandQueue<CLArray<T>>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddCopyFrom(a) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddCopyFrom(a));
 
 function CLArray<T>.CopyTo(a: CommandQueue<CLArray<T>>; from_ind, to_ind, len: CommandQueue<integer>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddCopyTo(a, from_ind, to_ind, len) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddCopyTo(a, from_ind, to_ind, len));
 
 function CLArray<T>.CopyFrom(a: CommandQueue<CLArray<T>>; from_ind, to_ind, len: CommandQueue<integer>): CLArray<T> :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddCopyFrom(a, from_ind, to_ind, len) as object as CommandQueue<CLArray<T>>);
+Context.Default.SyncInvoke(self.NewQueue.AddCopyFrom(a, from_ind, to_ind, len));
 
 {$endregion 3#Copy}
 
 {$region Get}
 
 function CLArray<T>.GetItem(ind: CommandQueue<integer>): &T :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetItem(ind) as object as CommandQueue<&T>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetItem(ind));
 
 function CLArray<T>.GetArray: array of &T :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetArray as object as CommandQueue<array of &T>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetArray);
 
 function CLArray<T>.GetArray(ind, len: CommandQueue<integer>): array of &T :=
-//ToDo #2510
-Context.Default.SyncInvoke(self.NewQueue.AddGetArray(ind, len) as object as CommandQueue<array of &T>);
+Context.Default.SyncInvoke(self.NewQueue.AddGetArray(ind, len));
 
 {$endregion Get}
 
