@@ -871,7 +871,7 @@ namespace PascalABCCompiler.TreeConverter
                 int num = names.names.Count - 1;
                 if (di is namespace_node)
                 {
-                    si = (di as namespace_node).find(names.names[num].name);
+                    si = (di as namespace_node).findOnlyInNamespace(names.names[num].name);
                     if (si == null && throw_error)
                         AddError(new UndefinedNameReference(names.names[num].name, syntax_tree_visitor.get_location(names.names[num])));
                 }

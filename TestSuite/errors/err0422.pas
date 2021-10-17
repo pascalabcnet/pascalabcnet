@@ -1,4 +1,5 @@
-﻿function f(i: integer): string;
+﻿//!GetType не объявлен в типе function(i: integer): string
+function f(i: integer): string;
 begin
   
 end;

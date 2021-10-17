@@ -1,4 +1,5 @@
-﻿procedure p1<T>(o: T);
+﻿//!Невозможно инстанцировать, так как тип IEnumerable<char> не наследован от string
+procedure p1<T>(o: T);
 where T: string;
 begin
   o.Length.Println;
