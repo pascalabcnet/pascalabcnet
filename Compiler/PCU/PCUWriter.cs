@@ -999,6 +999,8 @@ namespace PascalABCCompiler.PCU
                 }
             }
             common_namespace_node cnn = cun.namespaces[0];
+            foreach (type_synonym ts in cnn.type_synonyms)
+                AddIndirectUsedUnitsForType(ts.original_type, interf_ns_dict, true);
             foreach (common_type_node ctn in cnn.types)
             {
                 if (ctn.base_type != null)
@@ -1049,6 +1051,8 @@ namespace PascalABCCompiler.PCU
                 }
             }
             common_namespace_node cnn = cun.namespaces[1];
+            foreach (type_synonym ts in cnn.type_synonyms)
+                AddIndirectUsedUnitsForType(ts.original_type, impl_ns_dict, true);
             foreach (common_type_node ctn in cnn.types)
             {
                 if (ctn.base_type != null)
