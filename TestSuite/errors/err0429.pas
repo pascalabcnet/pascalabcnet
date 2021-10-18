@@ -1,4 +1,5 @@
-﻿unit err0429;
+﻿//!Класс t1 абстрактный и не может иметь атрибут sealed, потому что метод p1 не реализован
+unit err0429;
 type
   t0 = partial abstract class
     

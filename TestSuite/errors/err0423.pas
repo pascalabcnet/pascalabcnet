@@ -1,4 +1,5 @@
-﻿function f(i: integer): integer;
+﻿//!Ожидался порядковый или строковый тип
+function f(i: integer): integer;
 begin
   
 end;
