@@ -2549,6 +2549,7 @@ namespace PascalABCCompiler
             {
                 if (Path.GetFileName(dir) == "..") break;
                 dir = Path.GetDirectoryName(dir);
+                if (dir == null) return null; // Path.GetDirectoryName("C:\") возвращает null
                 i += 2;
                 if (path[i] == Path.DirectorySeparatorChar || path[i] == Path.AltDirectorySeparatorChar) i += 1;
             }
@@ -2670,6 +2671,7 @@ namespace PascalABCCompiler
 		{
             //ToDo В корневом Compile() создаётся uses_unit_in без name. Выглядит как костыль
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in && (SyntaxUsesUnit as SyntaxTree.uses_unit_in).name == null) return (SyntaxUsesUnit as SyntaxTree.uses_unit_in).in_file.Value;
+            if (curr_path == null) throw new InvalidOperationException(SyntaxUsesUnit.UsesPath());
             var UnitName = SyntaxUsesUnit.name.idents[0].name;
 
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in uui)
