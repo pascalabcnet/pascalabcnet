@@ -134,7 +134,21 @@ procedure TrueTablePrint(a: array[,] of boolean; f: integer := 2; s: string := '
 /// Заменяет последнее вхождение подстроки в строку
 procedure ReplaceLast(var Строка: string; ЧтоЗаменить, ЧемЗаменить: string);
 
+/// Множественная замена символов в строке s
+/// Каждый символ source[i] заменяется во всей строке s символом target[i]
+function ReplaceMany(s, source, target: string): string;
+
+/// Множественная замена подстрок в строке
+/// Каждая подстрока source[i] заменяется во всей строке s подстрокой target[i]
+function ReplaceMany(s: string; source, target: IList<string>): string;
+
+/// В строке s меняет местами подстроки ss1 и ss2
+procedure SwapSubstr(var s: string; ss1, ss2: string);
+
+/// Выводит тип переменной или выражения
 procedure PrintType(o: Object);
+
+/// Выводит тип переменной или выражения, затем переходит к новой строке вывода
 procedure PrintlnType(o: Object);
 
 implementation
@@ -690,8 +704,8 @@ Digits(Self);
 
 {$region Divisors}
 
-// на основе идеи А. Богданова
 /// возвращает список всех делителей натурального числа n
+// на основе идеи А. Богданова
 function Divisors(n: integer): List<integer>;
 begin
   Result := new List<integer>;
@@ -910,6 +924,52 @@ begin
   end
 end;
 
+/// Множественная замена символов в строке s
+/// Каждый символ source[i] заменяется во всей строке s символом target[i]
+function ReplaceMany(s, source, target: string): string;
+begin
+  var SB := new StringBuilder(s);
+  var m := target.Length;
+  for var i := 1 to source.Length do
+    if i <= m then SB.Replace(source[i], target[i])
+    else SB.Replace(source[i],'');
+  Result := SB.ToString
+end;
+
+/// Множественная замена символов в строке s
+/// Каждый символ source[i] заменяется во всей строке s символом target[i]
+function ReplaceMany(Self, source, target: string): string;
+extensionmethod := ReplaceMany(Self, source, target);
+
+/// Множественная замена подстрок в строке
+/// Каждая подстрока source[i] заменяется во всей строке s подстрокой target[i]
+function ReplaceMany(s: string; source, target: IList<string>): string;
+begin
+  var SB := new StringBuilder(s);
+  var tl := target.Count - 1;
+  for var i := 0 to source.Count - 1 do
+    if i <= tl then SB.Replace(source[i], target[i])
+    else SB.Replace(source[i], '');
+  Result := SB.ToString
+end;
+
+/// Множественная замена подстрок в строке
+/// Каждая подстрока source[i] заменяется во всей строке s подстрокой target[i]
+function ReplaceMany(Self: string; source, target: IList<string>): string;
+extensionmethod := ReplaceMany(Self, source, target);
+
+/// В строке s меняет местами подстроки ss1 и ss2
+procedure SwapSubstr(var s: string; ss1, ss2: string);
+begin
+  if not ((ss1 in s) and (ss2 in s)) then exit;
+  var D := Dict((ss1, ss2), (ss2, ss1));
+  s := Regex.Replace(s, $'({ss1}|{ss2})', m -> D[m.Value])
+end;
+
+/// В строке s меняет местами подстроки ss1 и ss2
+procedure SwapSubstr(var Self: string; ss1, ss2: string);
+extensionmethod := SwapSubstr(Self, ss1, ss2);
+
 /// Выводит тип переменной или выражения
 procedure PrintType(o: Object);
 begin
@@ -941,7 +1001,7 @@ begin
   Print(s);
 end;
 
-/// Выводит тип переменной или выражения
+/// Выводит тип переменной или выражения, затем переходит к новой строке вывода
 procedure PrintlnType(o: Object);
 begin
   PrintType(o);

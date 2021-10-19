@@ -453,7 +453,16 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 else
                 {
+                    if (tc == type_compare.less_type) // нет - тогда не работает set of integer -> set of 1..4
+                    {
+                        var bti = PascalABCCompiler.TreeConverter.convertion_data_and_alghoritms.is_value_int_type(base_class.element_type);
+                        var dtr = PascalABCCompiler.TreeConverter.convertion_data_and_alghoritms.is_value_real_type(derived_class.element_type);
+                        if (bti && dtr)
+                            return false;
+                    }
+
                     type_intersection_node tin = base_class.element_type.get_type_intersection(derived_class.element_type);
+                    // вот тут ошибка. Сравниваются элементы. По идее, надо всегда выдавать false кроме случаев если оба - integer и оба - real
                     if (tin == null || tin.this_to_another == null)
                     {
                         //proverka na diapasony
@@ -503,7 +512,7 @@ namespace PascalABCCompiler.TreeRealization
                             }
                         }
                         else
-                     if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                        if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
                         {
                             if (base_class.element_type == derived_class.element_type.base_type) return true;
                             tc = get_table_type_compare(base_class.element_type, derived_class.element_type.base_type);
