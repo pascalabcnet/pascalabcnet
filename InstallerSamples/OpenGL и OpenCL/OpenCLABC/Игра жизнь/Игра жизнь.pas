@@ -33,7 +33,7 @@ try
     
   end, fps);
   
-  //ToDo Использовать CLArray2<byte> когда будет
+  //TODO Использовать CLArray2<byte> когда будет
   var B := new MemorySegment(W*W*sizeof(byte));
   B.WriteArray2&<byte>(MatrGen(W,W, (x,y)->byte(Random(2))));
   var B_temp := new MemorySegment(B.Size);
