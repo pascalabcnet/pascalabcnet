@@ -4113,10 +4113,6 @@ factor
 			}
 			$$ = new un_expr($2, $1.type, @$);
 		}
-    | tkDeref factor
-        {
-            $$ = new index($2, true, @$);
-        }
     | var_reference
 		{ $$ = $1; }
 	| tuple 
