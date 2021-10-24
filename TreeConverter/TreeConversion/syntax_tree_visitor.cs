@@ -3353,7 +3353,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        throw new CompilerInternalError("Undefined procedure name");
+                        AddError(get_location(_procedure_call), "EXPECTED_DELEGATE");
                     }
                 }
             }
