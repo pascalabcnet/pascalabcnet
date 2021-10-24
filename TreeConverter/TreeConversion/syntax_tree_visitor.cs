@@ -7329,6 +7329,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
                     List<function_node> spf = null;
+                    SeveralFunctionsCanBeCalled sf_error = null;
                     try
                     {
                         function_node fn = convertion_data_and_alghoritms.select_function(exprs, sil2, subloc2, syntax_nodes_parameters);
@@ -7356,6 +7357,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     catch (SeveralFunctionsCanBeCalled sf)
                     {
+                        sf_error = sf;
                         spf = sf.set_of_possible_functions; // Возможны несколько перегруженных версий - надо выводить дальше в надежде что какие-то уйдут и останется одна
                     }
 
@@ -7407,7 +7409,19 @@ namespace PascalABCCompiler.TreeConverter
                                         if (restype != null)
                                             realrestype = restype.real_type;
 
-                                        LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, fld, this);
+                                        try
+                                        {
+                                            LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, fld, this);
+                                        }
+                                        catch (SimpleSemanticError err)
+                                        {
+                                            if (err.ErrorResourceString == "ILLEGAL_LAMBDA_VARIABLE_TYPE" && spf != null)
+                                            {
+                                                AddError(new SeveralFunctionsCanBeCalled(sf_error.loc, spf));
+                                            }
+                                            else
+                                                AddError(err);
+                                        }
                                         fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //lroman
                                         fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
 

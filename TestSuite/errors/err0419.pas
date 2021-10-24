@@ -1,4 +1,5 @@
-﻿function f(i: integer): boolean;
+﻿//!Неверное количество параметров функции
+function f(i: integer): boolean;
 begin
   
 end;

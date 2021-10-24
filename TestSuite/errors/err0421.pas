@@ -1,4 +1,5 @@
-﻿function f(i: integer): string;
+﻿//!Нельзя преобразовать тип function(i: integer): string к string
+function f(i: integer): string;
 begin
   
 end;
