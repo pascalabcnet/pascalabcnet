@@ -8879,14 +8879,24 @@ namespace PascalABCCompiler.NETGenerator
             {
                 //(ssyy) 29.01.2008 Внёс band, bor под switch
                 basic_function_type ft = value.basic_function.basic_function_type;
-                if (ft == basic_function_type.objeq && real_parameters[0].type.is_value_type && 
-                    real_parameters[0].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) && !real_parameters[0].type.is_nullable_type
+                if ((ft == basic_function_type.objeq || ft == basic_function_type.objnoteq) && real_parameters[0].type.is_value_type && 
+                    (real_parameters[0].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) || real_parameters[0].type is ICompiledGenericTypeInstance) && !real_parameters[0].type.is_nullable_type
                      && real_parameters[1].type.is_value_type &&
-                    real_parameters[1].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) && !real_parameters[1].type.is_nullable_type)
+                    (real_parameters[1].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) || real_parameters[1].type is ICompiledGenericTypeInstance) && !real_parameters[1].type.is_nullable_type)
                 {
-                    Type t1 = (real_parameters[0].type as ICompiledTypeNode).compiled_type;
-                    Type t2 = (real_parameters[1].type as ICompiledTypeNode).compiled_type;
-                    MethodInfo mi = (real_parameters[0].type as ICompiledTypeNode).compiled_type.GetMethod("Equals");
+                    ICompiledTypeNode ctn1 = real_parameters[0].type as ICompiledTypeNode;
+                    ICompiledTypeNode ctn2 = real_parameters[1].type as ICompiledTypeNode;
+                    if (ctn1 == null)
+                        ctn1 = (real_parameters[0].type as ICompiledGenericTypeInstance).original_generic as ICompiledTypeNode;
+                    if (ctn2 == null)
+                        ctn2 = (real_parameters[1].type as ICompiledGenericTypeInstance).original_generic as ICompiledTypeNode;
+                    Type t1 = ctn1.compiled_type;
+                    Type t2 = ctn2.compiled_type;
+                    if (real_parameters[0].type is ICompiledGenericTypeInstance)
+                        t1 = helper.GetTypeReference(real_parameters[0].type).tp;
+                    if (real_parameters[1].type is ICompiledGenericTypeInstance)
+                        t2 = helper.GetTypeReference(real_parameters[1].type).tp;
+                    MethodInfo mi = ctn1.compiled_type.GetMethod("Equals");
                     if (mi != null)
                     {
                         real_parameters[0].visit(this);
@@ -8894,31 +8904,16 @@ namespace PascalABCCompiler.NETGenerator
                         real_parameters[1].visit(this);
                         il.Emit(OpCodes.Box, t2);
                         il.Emit(OpCodes.Callvirt, mi);
+                        if (ft == basic_function_type.objnoteq)
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
                         return;
                     }
                     
                 }
-                if (ft == basic_function_type.objnoteq && real_parameters[0].type.is_value_type &&
-                    real_parameters[0].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) && !real_parameters[0].type.is_nullable_type
-                     && real_parameters[1].type.is_value_type &&
-                    real_parameters[1].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) && !real_parameters[1].type.is_nullable_type)
-                {
-                    Type t1 = (real_parameters[0].type as ICompiledTypeNode).compiled_type;
-                    Type t2 = (real_parameters[1].type as ICompiledTypeNode).compiled_type;
-                    MethodInfo mi = (real_parameters[0].type as ICompiledTypeNode).compiled_type.GetMethod("Equals");
-                    if (mi != null)
-                    {
-                        real_parameters[0].visit(this);
-                        il.Emit(OpCodes.Box, t1);
-                        real_parameters[1].visit(this);
-                        il.Emit(OpCodes.Box, t2);
-                        il.Emit(OpCodes.Callvirt, mi);
-                        il.Emit(OpCodes.Ldc_I4_0); 
-                        il.Emit(OpCodes.Ceq);
-                        return;
-                    }
-
-                }
+                
                 switch (ft)
                 {
                     case basic_function_type.booland:
