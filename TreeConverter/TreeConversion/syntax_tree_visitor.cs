@@ -3262,8 +3262,11 @@ namespace PascalABCCompiler.TreeConverter
                     visit_procedure_header(_constructor);
                     if (context.top_function != null)
                     {
-                        (context.top_function as common_method_node).is_constructor = true;
-                        (context.top_function as common_method_node).cont_type.static_constr = context.top_function as common_method_node;
+                        common_method_node static_constr = context.top_function as common_method_node;
+                        static_constr.is_constructor = true;
+                        if (context.converted_type.IsPartial && context.converted_type.static_constr != null)//remove auto generated static constructor from partial class
+                            context.converted_type.methods.RemoveElement(context.converted_type.static_constr);
+                        static_constr.cont_type.static_constr = context.top_function as common_method_node;
                     }
                     return;
                 }
