@@ -2387,6 +2387,8 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 if (ctn.IsPointer)
                                     continue;
+                                if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                                    ctn = ctn.element_type;
                                 fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
                                 if (fn == null)
                                     continue;
@@ -2433,6 +2435,8 @@ namespace PascalABCCompiler.TreeRealization
                                     ctn = (ctn as ref_type_node).pointed_type;
                                 if (ctn.IsPointer)
                                     continue;
+                                if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                                    ctn = ctn.element_type;
                                 fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
                                 if (fn == null)
                                     continue;
