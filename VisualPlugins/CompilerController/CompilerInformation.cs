@@ -166,7 +166,8 @@ namespace VisualPascalABCPlugins
         string oiUseStandarParserForInellisense = "UseStandarParserForInellisense";
         string oiNotUseRemoteCompiler = "NotUseRemoteCompiler";
 		string oiRunMono = "RunOnMono";
-		
+        string oiUseSemanticForIntellisense = "UseSemanticForIntellisense";
+
         public string OptionsFileName = Path.ChangeExtension(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName, ".ini");
         public void SaveOptions(string FileName)
         {
@@ -174,7 +175,8 @@ namespace VisualPascalABCPlugins
             Options.Add(oiNoCodeGeneration, NoCodeGeneration.Checked);
             Options.Add(oiUseStandarParserForInellisense, cbUseStandarParserForInellisense.Checked);
             Options.Add(oiNotUseRemoteCompiler, cbNotUseRemoteCompiler.Checked);
-            Options.Add(oiRunMono,cbRunMono.Checked);
+            Options.Add(oiRunMono, cbRunMono.Checked);
+            Options.Add(oiUseSemanticForIntellisense, cbUseSemanticForIntellisense.Checked);
             try
             {
                 PascalABCCompiler.StringResources.WriteStringsToStream(new StreamWriter(FileName, false, System.Text.Encoding.GetEncoding(1251)), Options);
@@ -201,6 +203,8 @@ namespace VisualPascalABCPlugins
                     cbNotUseRemoteCompiler.Checked = Convert.ToBoolean(value);
                 if ((value = (string)Options[oiRunMono]) != null)
                     cbRunMono.Checked = Convert.ToBoolean(value);
+                if ((value = (string)Options[oiUseSemanticForIntellisense]) != null)
+                    cbUseSemanticForIntellisense.Checked = Convert.ToBoolean(value);
             }
             catch (Exception)
             {
@@ -253,6 +257,11 @@ namespace VisualPascalABCPlugins
         private void Button4_Click(object sender, EventArgs e)
         {
             CodeCompletion.CodeCompletionTester.TestRename(@"c:\Work\Miks\_PABCNETGitHub\TestSuite\refactoring_tests\rename_tests");
+        }
+
+        private void cbUseSemanticForIntellisense_CheckedChanged(object sender, EventArgs e)
+        {
+            CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = cbUseSemanticForIntellisense.Checked;
         }
     }
 }

@@ -1106,7 +1106,9 @@ namespace PascalABCCompiler.NetHelper
                         if (si.sym_info is common_namespace_function_node)
                         {
                             function_node fn = si.sym_info as function_node;
-                            if ((fn.return_value_type == to || fn.return_value_type.original_generic == to) && 
+                            if ((fn.return_value_type == to || fn.return_value_type.original_generic == to 
+                                || to.type_special_kind == type_special_kind.array_kind && fn.return_value_type != null && fn.return_value_type.type_special_kind == type_special_kind.array_kind 
+                                && fn.return_value_type.element_type.is_generic_parameter) && 
                                 fn.parameters.Count == 1 && 
                                 (fn.parameters[0].type == from || fn.parameters[0].type.original_generic == from)
                                 || fn.parameters[0].type.type_special_kind == type_special_kind.array_kind && fn.parameters[0].type.element_type.is_generic_parameter)

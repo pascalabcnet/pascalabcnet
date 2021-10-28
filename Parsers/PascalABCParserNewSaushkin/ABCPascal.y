@@ -154,7 +154,7 @@
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_type_expr as_expr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type simple_type_question/*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
-%type <td> template_param template_empty_param structured_type unpacked_structured_type empty_template_type_reference simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
+%type <td> template_param template_empty_param structured_type unpacked_structured_type empty_template_type_reference simple_or_template_type_reference simple_or_template_or_question_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
 %type <stn> try_handler  
@@ -3368,6 +3368,17 @@ simple_or_template_type_reference
         }
     ;
 
+simple_or_template_or_question_type_reference
+	: simple_or_template_type_reference
+		{
+			$$ = $1;
+		}
+	| simple_type_question
+		{
+			$$ = $1;
+		}
+	;	
+
 optional_array_initializer
     : tkRoundOpen typed_const_list tkRoundClose
         { 
@@ -3474,11 +3485,17 @@ relop_expr
 		{ $$ = $1; }
     | relop_expr relop simple_expr
         { 
-			$$ = new bin_expr($1, $3, $2.type, @$); 
+        	if ($2.type == Operators.NotIn)
+        		$$ = new un_expr(new bin_expr($1, $3, Operators.In, @$),Operators.LogicalNOT,@$);
+        	else	
+				$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
     | relop_expr relop new_question_expr
         { 
-			$$ = new bin_expr($1, $3, $2.type, @$); 
+        	if ($2.type == Operators.NotIn)
+        		$$ = new un_expr(new bin_expr($1, $3, Operators.In, @$),Operators.LogicalNOT,@$);
+        	else	
+				$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
     | is_type_expr tkRoundOpen pattern_out_param_list tkRoundClose
         {
@@ -3886,6 +3903,16 @@ relop
 		{ $$ = $1; }
     | tkIn
 		{ $$ = $1; }
+    | tkNot tkIn
+		{ 
+			if (parsertools.build_tree_for_formatter)
+				$$ = $2;
+			else
+			{
+				$$ = $2;	
+				$$.type = Operators.NotIn;
+			}				
+		}
     ;
 
 simple_expr                                                    
@@ -4010,7 +4037,7 @@ mulop
     ;
 
 default_expr
-    :  tkDefault tkRoundOpen simple_or_template_type_reference tkRoundClose
+    :  tkDefault tkRoundOpen simple_or_template_or_question_type_reference tkRoundClose
         { 
 			$$ = new default_operator($3 as named_type_reference, @$);  
 		}

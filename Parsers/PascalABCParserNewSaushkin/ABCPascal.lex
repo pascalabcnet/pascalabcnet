@@ -154,6 +154,22 @@ UNICODEARROW \x890
 		if (IfExclude == 0)
 			BEGIN(INITIAL); 		
 	}
+	else if (IfExclude > 0)
+	{
+		int ind_to_remove = -1;
+		for (int i=0; i<parsertools.compilerDirectives.Count; i++)
+		{
+			if (parsertools.compilerDirectives[i].source_context.begin_position.line_num == CurrentLexLocation.StartLine && 
+				parsertools.compilerDirectives[i].source_context.begin_position.column_num - 2 == CurrentLexLocation.StartColumn + 1)
+				{
+					ind_to_remove = i;
+					break;
+				}
+		}
+		if (ind_to_remove != -1)
+			parsertools.compilerDirectives.RemoveAt(ind_to_remove);
+	}
+	
 }
 
 <EXCLUDETEXT>.|\n {

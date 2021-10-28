@@ -2089,6 +2089,8 @@ namespace PascalABCCompiler.TreeRealization
             {
                 // Если эту строчку раскомментировать, ложатся тесты inheritanceFromListInt.pas inheritanceFromListStudent.pas where6.pas 
                 //sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
+                if (!this.is_generic_type_definition)
+                    return (base_type as compiled_generic_instance_type_node).ConvertSymbolInfo(sil);
                 return sil;
             }
 
@@ -2385,6 +2387,8 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 if (ctn.IsPointer)
                                     continue;
+                                if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                                    ctn = ctn.element_type;
                                 fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
                                 if (fn == null)
                                     continue;
@@ -2431,6 +2435,8 @@ namespace PascalABCCompiler.TreeRealization
                                     ctn = (ctn as ref_type_node).pointed_type;
                                 if (ctn.IsPointer)
                                     continue;
+                                if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                                    ctn = ctn.element_type;
                                 fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
                                 if (fn == null)
                                     continue;
@@ -2906,7 +2912,9 @@ namespace PascalABCCompiler.TreeRealization
 				if (!_compiled_type.IsGenericType)
 				return _compiled_type.FullName;
 				StringBuilder sb = new StringBuilder();
-				sb.Append(_compiled_type.GetGenericTypeDefinition().Namespace+"."+_compiled_type.GetGenericTypeDefinition().Name.Substring(0,_compiled_type.GetGenericTypeDefinition().Name.IndexOf('`')));
+                Type t = _compiled_type.GetGenericTypeDefinition();
+                int ind = t.Name.IndexOf('`');
+                sb.Append(t.Namespace + "." + t.Name.Substring(0, ind != -1 ? ind : t.Name.Length));
 				if (!_compiled_type.IsGenericTypeDefinition)
 				{
 					sb.Append("{");

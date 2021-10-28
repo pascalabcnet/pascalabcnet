@@ -18,6 +18,7 @@
 <param name="Keyword" value="Order">
 <param name="Keyword" value="OrderDescending">
 <param name="Keyword" value="Pairwise">
+<param name="Keyword" value="PartialSum">
 <param name="Keyword" value="Partition">
 <param name="Keyword" value="Print">
 <param name="Keyword" value="PrintLines">
@@ -111,6 +112,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Превращает последовательность в последовательность пар соседних элементов</td></tr>
 <tr><td><code><b>function</b> Pairwise&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T)-&gt;Res): <b>sequence </b>  <b>of</b> Res;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность</td></tr>
+<tr><td><code><b>function</b> PartialSum(Self: <b>sequence </b>  <b>of</b> integer): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность частичных сумм элементов последовательности</td></tr>
+<tr><td><code><b>function</b> PartialSum(Self: <b>sequence </b>  <b>of</b> real): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность частичных сумм элементов последовательности</td></tr>
+<tr><td><code><b>function</b> PartialSum(Self: <b>sequence </b>  <b>of</b> BigInteger): <b>sequence </b>  <b>of</b> BigInteger;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность частичных сумм элементов последовательности</td></tr>
 <tr><td><code><b>function</b> Partition&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; cond: T-&gt;boolean): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разделяет последовательность на две по заданному условию. Реализуется двухпроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> Partition&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; cond: (T,integer)-&gt;boolean): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>

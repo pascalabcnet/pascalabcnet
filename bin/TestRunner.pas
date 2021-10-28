@@ -45,7 +45,13 @@ begin
     var content := &File.ReadAllText(files[i]);
     if content.StartsWith('//winonly') and IsUnix then
       continue;
-    
+    if content.StartsWith('//exclude') then
+      continue;
+    var errorMessage := '';
+    if content.StartsWith('//!') then
+    begin
+      errorMessage := content.Substring(3, content.IndexOf(System.Environment.NewLine)-3).Trim;
+    end;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir + PathSeparator + 'errors';
@@ -69,6 +75,10 @@ begin
         if nogui then
           raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
         System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
+      end;
+      if (errorMessage <> '') and (comp.ErrorsList[0].Message.Trim <> errorMessage) then
+      begin
+        System.Windows.Forms.MessageBox.Show('Wrong error message in file ' + files[i] + ', should '+errorMessage+', is '+comp.ErrorsList[0].Message);
       end;
     end;
     if i mod 50 = 0 then

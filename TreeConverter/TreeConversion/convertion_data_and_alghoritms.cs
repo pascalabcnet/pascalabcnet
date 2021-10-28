@@ -686,7 +686,8 @@ namespace PascalABCCompiler.TreeConverter
 			type_node conv_type = en.type;
 			expression_node expr = create_simple_function_call(pct.first.convertion_method, en.location, en);
             expr.conversion_type = conv_type;
-			return expr;
+            
+            return expr;
 		}
 
         public static function_node get_empty_conversion(type_node from_type, type_node to_type, bool with_compile_time_executor)
@@ -2930,7 +2931,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         public enum int_types { sbyte_type = 0, byte_type = 1, short_type = 2, ushort_type = 3, integer_type = 4, uint_type = 5, int64_type = 6, uint64_type = 7};
-        public bool is_value_int_type(type_node tn)
+        public static bool is_value_int_type(type_node tn)
         {
             return 
                 tn == SystemLibrary.SystemLibrary.sbyte_type ||
@@ -2943,13 +2944,13 @@ namespace PascalABCCompiler.TreeConverter
                 tn == SystemLibrary.SystemLibrary.uint64_type
                 ;
         }
-        public bool is_value_real_type(type_node tn)
+        public static bool is_value_real_type(type_node tn)
         {
             return tn == SystemLibrary.SystemLibrary.double_type ||
                 tn == SystemLibrary.SystemLibrary.float_type 
                 ;
         }
-        public bool is_value_num_type(type_node tn)
+        public static bool is_value_num_type(type_node tn)
         {
             return is_value_int_type(tn) || is_value_real_type(tn);
         }

@@ -39,6 +39,8 @@ namespace CodeCompletion
         internal bool parse_only_interface = false;
         private template_type_reference converted_template_type = null;
         private List<var_def_statement> pending_is_pattern_vars = new List<var_def_statement>();
+        private Compiler compiler;
+        public static bool use_semantic_for_intellisense;
 
         public SemanticOptions semantic_options = new SemanticOptions();
 		
@@ -67,8 +69,155 @@ namespace CodeCompletion
                 //throw e;
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
+            if (use_semantic_for_intellisense && cu.file_name.IndexOf("PABCSystem.pas") == -1)
+            try
+            {
+                CorrectTreeWithSemantic(cu);
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
+            }
         }
-		
+
+        private named_type_reference BuildSyntaxNodeForTypeReference(type_node tn)
+        {
+            if (tn.instance_params != null && tn.instance_params.Count > 0)
+            {
+                var ttr = new template_type_reference();
+                var ntr = new named_type_reference();
+                ttr.name = ntr;
+                ttr.params_list = new template_param_list();
+                var arr = tn.full_name.Split('.');
+                foreach (string s in arr)
+                {
+                    if (s.IndexOf("<") == -1)
+                        ntr.names.Add(new ident(s));
+                    else
+                    {
+                        var id = new ident_with_templateparams();
+                        ntr.Add(new ident(s.Substring(0, s.IndexOf("<"))));
+                        foreach (var gen_td in tn.instance_params)
+                            ttr.params_list.Add(BuildSyntaxNodeForTypeReference(gen_td));
+                    }
+                }
+                return ttr;
+            }
+            else
+            {
+                var ntr = new named_type_reference();
+
+                var arr = tn.full_name.Split('.');
+                foreach (string s in arr)
+                {
+                    ntr.names.Add(new ident(s));
+                }
+                return ntr;
+            }
+        }
+
+        private TypeScope GetIntellisenseTypeByType(Type t)
+        {
+            if (t.GetGenericArguments().Length == 0)
+                return TypeTable.get_compiled_type(t);
+            else
+            {
+                List<TypeScope> gen_args = new List<TypeScope>();
+                foreach (var gen_tn in t.GetGenericArguments())
+                {
+                    gen_args.Add(TypeTable.get_compiled_type(gen_tn));
+                }
+                return CompiledScope.get_type_instance(t.GetGenericTypeDefinition(), gen_args);
+            }
+        }
+
+        private TypeScope GetCorrectedType(TypeScope ts, type_node tn, SymScope topScope)
+        {
+            if (ts is TypeSynonim)
+            {
+                var corrected_type = GetCorrectedType((ts as TypeSynonim).actType, tn, topScope);
+                if (corrected_type != (ts as TypeSynonim).actType)
+                    return corrected_type;
+                return ts;
+            }
+            else if (tn is compiled_type_node)
+            {
+                var ctn = tn as compiled_type_node;
+                if (ctn.compiled_type.IsArray)
+                    return new ArrayScope(GetIntellisenseTypeByType((ctn.element_type as compiled_type_node).compiled_type), null);
+                if (ctn.compiled_type.GetGenericArguments().Length == 0)
+                    return TypeTable.get_compiled_type(ctn.compiled_type);
+                else
+                {
+                    List<TypeScope> gen_args = new List<TypeScope>();
+                    foreach (var gen_tn in ctn.compiled_type.GetGenericArguments())
+                    {
+                        gen_args.Add(GetIntellisenseTypeByType(gen_tn));
+                    }
+                    return CompiledScope.get_type_instance(ctn.compiled_type.GetGenericTypeDefinition(), gen_args);
+                }
+            }   
+            else
+            {
+                if (tn.full_name.IndexOf("$") != -1 || tn.full_name.IndexOf("#") != -1)
+                    return ts;
+                var ntr = BuildSyntaxNodeForTypeReference(tn);
+                cur_scope = topScope;
+                
+                ntr.visit(this);
+                if (returned_scope != null && returned_scope is TypeScope)
+                    return returned_scope as TypeScope;
+                return ts;
+            }
+        }
+
+        private void CorrectVariableType(var_definition_node vdn)
+        {
+            location loc = null;
+            if (vdn is namespace_variable)
+            {
+                loc = (vdn as namespace_variable).loc;
+            }
+            else if (vdn is local_variable)
+            {
+                loc = (vdn as local_variable).loc;
+            }
+            else if (vdn is local_block_variable)
+            {
+                loc = (vdn as local_block_variable).loc;
+            }
+            if (loc == null)
+                return;
+            var es = FindScopeByLocation(loc.begin_line_num,loc.begin_column_num) as ElementScope;
+            if (es != null)
+            {
+                es.sc = GetCorrectedType(es.sc as TypeScope, vdn.type, es.topScope);
+                es.MakeDescription();
+            }
+        }
+
+
+        private void CorrectTreeWithSemantic(compilation_unit cu)
+        {
+            var co = new CompilerOptions();
+            co.SavePCU = false;
+            co.GenerateCode = false;
+            co.UnitSyntaxTree = cu;
+            co.SourceFileName = cu.source_context.FileName;
+            co.ForIntellisense = true;
+
+            compiler = new Compiler();
+            compiler.CompilerOptions = co;
+            compiler.ClearAfterCompilation = false;
+            compiler.Compile();
+
+            foreach (var lv in compiler.CompiledVariables)
+                CorrectVariableType(lv);
+            compiler.ClearAll();
+        }
+
 		public SymScope FindScopeByLocation(int line, int col)
 		{
 			try

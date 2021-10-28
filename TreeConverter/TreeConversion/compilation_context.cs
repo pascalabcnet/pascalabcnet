@@ -871,7 +871,7 @@ namespace PascalABCCompiler.TreeConverter
                 int num = names.names.Count - 1;
                 if (di is namespace_node)
                 {
-                    si = (di as namespace_node).find(names.names[num].name);
+                    si = (di as namespace_node).findOnlyInNamespace(names.names[num].name);
                     if (si == null && throw_error)
                         AddError(new UndefinedNameReference(names.names[num].name, syntax_tree_visitor.get_location(names.names[num])));
                 }
@@ -1808,6 +1808,8 @@ namespace PascalABCCompiler.TreeConverter
                 lv.block.local_variables.Add(lv);
                 if (tn == null) //Тип еще неизвестен, будем закрывать.
                     var_defs.Add(lv);
+                if (syntax_tree_visitor.for_intellisense)
+                    syntax_tree_visitor.CompiledVariables.Add(lv);
                 return lv;
             }
             switch (converting_block())
@@ -1844,6 +1846,8 @@ namespace PascalABCCompiler.TreeConverter
 			}
             if (tn == null) //Тип еще неизвестен, будем закрывать.
                 var_defs.Add(vdn);
+            if (syntax_tree_visitor.for_intellisense)
+                syntax_tree_visitor.CompiledVariables.Add(vdn);
             return vdn;
 		}
 
@@ -2928,7 +2932,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Проверка типа на соответствие заявленным интерфейсам
-        private void check_implement_interfaces()//common_type_node cnode)
+        public void check_implement_interfaces()//common_type_node cnode)
         {
             //Переводим контекст в состояние разбора класса cnode
             //_ctn = cnode;
@@ -3111,6 +3115,22 @@ namespace PascalABCCompiler.TreeConverter
 				}
 			}
 		}
+
+        public void check_abstracts_implemented(List<common_type_node> types)
+        {
+            foreach (common_type_node ctn in types)
+            {
+                _ctn = ctn;
+                check_implement_interfaces();
+                _ctn = null;
+                if (ctn.IsSealed && ctn.IsAbstract && !ctn.IsStatic)
+                    if (ctn.AbstractReason == null)
+                        AddError(ctn.loc, "ABSTRACT_CLASS_CANNOT_BE_SEALED");
+                    else
+                        AddError(ctn.loc, ctn.AbstractReason.Explanation, ctn.name, ctn.AbstractReason.ObjName);
+                
+            }
+        }
 
         //ssyy
         public void check_labels(List<label_node> lab_list)

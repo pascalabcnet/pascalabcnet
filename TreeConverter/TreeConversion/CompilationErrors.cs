@@ -141,6 +141,15 @@ namespace PascalABCCompiler.TreeConverter
             this.ErrResourceString = ErrResourceString;
             this.values = values;
         }
+
+        public string ErrorResourceString
+        {
+            get
+            {
+                return ErrResourceString;
+            }
+        }
+
         public override string ToString()
         {
             if (values != null)

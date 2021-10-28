@@ -485,6 +485,7 @@ namespace PascalABCCompiler
 
         public bool Debug = false;
         public bool ForDebugging = false;
+        public bool ForIntellisense = false;
         public bool Rebuild = false;
         public bool Optimise = false;
         public bool SavePCUInThreadPull = false;
@@ -499,6 +500,8 @@ namespace PascalABCCompiler
         public bool IgnoreRtlErrors = true;
         public bool Only32Bit = false;
         public string Locale = "ru";
+        public SyntaxTree.compilation_unit UnitSyntaxTree = null;
+
         private string sourceFileName = null;
         ///имя исходного файла
         ///при измененнии меняется OutputFileName,OutputDirectory,SourceFileDirectory
@@ -814,6 +817,16 @@ namespace PascalABCCompiler
                 return _semantic_tree;
             }
         }
+
+        public program_node semantic_tree
+        {
+            get
+            {
+                return _semantic_tree;
+            }
+        }
+
+        public List<var_definition_node> CompiledVariables = new List<var_definition_node>();
 
         private Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives = null;
 
@@ -1878,7 +1891,9 @@ namespace PascalABCCompiler
                                 CurrentUnit.ImplementationUsingNamespaceList,
                                 null,
                                 CompilerOptions.Debug,
-                                CompilerOptions.ForDebugging
+                                CompilerOptions.ForDebugging,
+                                CompilerOptions.ForIntellisense,
+                                CompiledVariables
                                 );
                             CheckErrors();
                         }
@@ -2073,8 +2088,8 @@ namespace PascalABCCompiler
                         File.Delete(rc_file);
                     }
                 }
-
-                if (ErrorsList.Count == 0 && compilerOptions.GenerateCode)
+                
+                if (ErrorsList.Count == 0)
                 {
                     cdo.ForRunningWithEnvironment = CompilerOptions.RunWithEnvironment;
                 	switch (CompilerOptions.OutputFileType)
@@ -2144,7 +2159,8 @@ namespace PascalABCCompiler
                     {
                     	pn.create_main_function_as_in_module();
                     }
-                    pn = semanticTreeConvertersController.Convert(pn) as TreeRealization.program_node;
+                    if (compilerOptions.GenerateCode)
+                        pn = semanticTreeConvertersController.Convert(pn) as TreeRealization.program_node;
 
                     _semantic_tree = pn;
 
@@ -2153,7 +2169,7 @@ namespace PascalABCCompiler
                         //если мы комилируем PCU
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                     }
-                    else
+                    else if (compilerOptions.GenerateCode)
                     {
                         if( CompilerOptions.OutputFileType!= CompilerOptions.OutputType.SemanticTree)
 #if DEBUG
@@ -2531,8 +2547,9 @@ namespace PascalABCCompiler
 
             for (; dir!="" && i < path.Length && path[i] == '.' && path[i + 1] == '.'; )
             {
+                if (Path.GetFileName(dir) == "..") break;
                 dir = Path.GetDirectoryName(dir);
-                if (string.IsNullOrEmpty(dir)) return null;
+                if (dir == null) return null; // Path.GetDirectoryName("C:\") возвращает null
                 i += 2;
                 if (path[i] == Path.DirectorySeparatorChar || path[i] == Path.AltDirectorySeparatorChar) i += 1;
             }
@@ -2654,6 +2671,7 @@ namespace PascalABCCompiler
 		{
             //ToDo В корневом Compile() создаётся uses_unit_in без name. Выглядит как костыль
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in && (SyntaxUsesUnit as SyntaxTree.uses_unit_in).name == null) return (SyntaxUsesUnit as SyntaxTree.uses_unit_in).in_file.Value;
+            if (curr_path == null) throw new InvalidOperationException(SyntaxUsesUnit.UsesPath());
             var UnitName = SyntaxUsesUnit.name.idents[0].name;
 
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in uui)
@@ -3240,19 +3258,29 @@ namespace PascalABCCompiler
                 if (FirstCompilationUnit == null)
                     FirstCompilationUnit = CurrentUnit;
                 OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName);
-                SourceText = GetSourceFileText(UnitFileName);
-                if (SourceText == null)
-                    if (CurrentUnit == FirstCompilationUnit)
-                        throw new SourceFileNotFound(UnitFileName);
-                    else
-                        throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitFileName, SyntaxUsesUnit.source_context);
+                if (compilerOptions.UnitSyntaxTree == null)
+                {
+                    SourceText = GetSourceFileText(UnitFileName);
+                    if (SourceText == null)
+                        if (CurrentUnit == FirstCompilationUnit)
+                            throw new SourceFileNotFound(UnitFileName);
+                        else
+                            throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitFileName, SyntaxUsesUnit.source_context);
+                }
+                    
                 List<string> DefinesList = new List<string>();
                 DefinesList.Add("PASCALABC");
                 if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
                     DefinesList.Add("RELEASE");
                 else
                     DefinesList.Add("DEBUG");
-                CurrentUnit.SyntaxTree = InternalParseText(UnitFileName, SourceText, errorsList, warnings, DefinesList);
+                if (compilerOptions.UnitSyntaxTree != null)
+                {
+                    CurrentUnit.SyntaxTree = compilerOptions.UnitSyntaxTree;
+                    compilerOptions.UnitSyntaxTree = null;
+                }
+                else
+                    CurrentUnit.SyntaxTree = InternalParseText(UnitFileName, SourceText, errorsList, warnings, DefinesList);
                 
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
@@ -3293,7 +3321,8 @@ namespace PascalABCCompiler
 
                 if (is_dll(CurrentUnit.SyntaxTree))
                     compilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary;
-                CurrentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
+                if (ParsersController.LastParser != null)
+                    CurrentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
                 CurrentCompilationUnit = CurrentUnit;
 
                 CurrentUnit.SyntaxUnitName = SyntaxUsesUnit;
@@ -3421,7 +3450,9 @@ namespace PascalABCCompiler
                         CurrentUnit.InterfaceUsingNamespaceList,
                         docs,
                         CompilerOptions.Debug,
-                        CompilerOptions.ForDebugging
+                        CompilerOptions.ForDebugging,
+                        CompilerOptions.ForIntellisense,
+                        CompiledVariables
                         );
                     CheckErrors();
                 }
@@ -3506,7 +3537,9 @@ namespace PascalABCCompiler
                         CurrentUnit.ImplementationUsingNamespaceList,
                         docs,
                         CompilerOptions.Debug,
-                        CompilerOptions.ForDebugging
+                        CompilerOptions.ForDebugging,
+                        CompilerOptions.ForIntellisense,
+                        CompiledVariables
                         );
                     CheckErrors();
                 }

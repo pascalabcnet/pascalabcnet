@@ -69,7 +69,9 @@ namespace PascalABCCompiler.TreeConverter
         internal document current_document;
 
         public compilation_context context;
-		public ContextChanger contextChanger;
+        private bool var_def_statement_converting;
+        private List<common_type_node> inherited_from_partials_list = new List<common_type_node>();
+        public ContextChanger contextChanger;
 		
         internal using_namespace_list using_list = new using_namespace_list();
         internal using_namespace_list interface_using_list = new using_namespace_list();
@@ -87,6 +89,8 @@ namespace PascalABCCompiler.TreeConverter
         private common_unit_node _system_unit;
 		internal bool debug=true;
 		internal bool debugging=false;
+        public bool for_intellisense = false;
+        public List<var_definition_node> CompiledVariables = new List<var_definition_node>();
         internal List<Errors.Error> ErrorsList;
         internal List<Errors.CompilerWarning> WarningsList;
 		internal Dictionary<SyntaxTree.syntax_tree_node,string> docs;
@@ -123,7 +127,7 @@ namespace PascalABCCompiler.TreeConverter
 
         internal void AddError(Errors.Error err, bool shouldReturn=false)
         {
-            if (ThrowCompilationError || !shouldReturn /*|| err.MustThrow && !shouldReturn*/)
+            if (!for_intellisense && (ThrowCompilationError || !shouldReturn) /*|| err.MustThrow && !shouldReturn*/)
             {
                 throw err;
             }
@@ -136,7 +140,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void AddError(location loc, string ErrResourceString, params object[] values)
         {
             Errors.Error err = new SimpleSemanticError(loc, ErrResourceString, values);
-            if (ThrowCompilationError)
+            if (ThrowCompilationError && !for_intellisense)
             {
                 throw err;
             }
@@ -198,6 +202,7 @@ namespace PascalABCCompiler.TreeConverter
             generic_param_abilities.Clear();
             current_converted_method_not_in_class_defined = false;
             assign_is_converting = false;
+            inherited_from_partials_list.Clear();
             motivation_keeper.reset();
             SystemLibrary.SystemLibInitializer.NeedsToRestore.Clear();
             type_section_converting = false;
@@ -1720,6 +1725,8 @@ namespace PascalABCCompiler.TreeConverter
 
             lastname.source_context = l?.source_context;
             di = context.check_name_node_type(lastname.name, sil?.FirstOrDefault(), get_location(lastname), general_node_type.type_node);
+            if (di == null)
+                return new undefined_type(lastname.name, loc);
             return (type_node)di;
         }
 
@@ -3030,6 +3037,7 @@ namespace PascalABCCompiler.TreeConverter
             statement_node init_statements = convert_weak(_unit_module.initialization_part);
             context.leave_code_block();
             common_namespace_function_node initialization_function = null;
+            context.check_abstracts_implemented(inherited_from_partials_list);
             if (init_statements != null)
             {
                 context.check_labels(context.converted_namespace.labels);
@@ -3050,6 +3058,7 @@ namespace PascalABCCompiler.TreeConverter
             if (final_statements != null)
             {
                 context.check_labels(context.converted_namespace.labels);
+                
                 finalization_function = new common_namespace_function_node(compiler_string_consts.finalization_function_name,
                     null, final_statements.location, context.converted_namespace, convertion_data_and_alghoritms.symbol_table.CreateScope(context.converted_namespace.scope));
                 finalization_function.function_code = final_statements;
@@ -3253,8 +3262,11 @@ namespace PascalABCCompiler.TreeConverter
                     visit_procedure_header(_constructor);
                     if (context.top_function != null)
                     {
-                        (context.top_function as common_method_node).is_constructor = true;
-                        (context.top_function as common_method_node).cont_type.static_constr = context.top_function as common_method_node;
+                        common_method_node static_constr = context.top_function as common_method_node;
+                        static_constr.is_constructor = true;
+                        if (context.converted_type.IsPartial && context.converted_type.static_constr != null)//remove auto generated static constructor from partial class
+                            context.converted_type.methods.RemoveElement(context.converted_type.static_constr);
+                        static_constr.cont_type.static_constr = context.top_function as common_method_node;
                     }
                     return;
                 }
@@ -3341,7 +3353,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        throw new CompilerInternalError("Undefined procedure name");
+                        AddError(get_location(_procedure_call), "EXPECTED_DELEGATE");
                     }
                 }
             }
@@ -3752,6 +3764,8 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_DELEGATE_TYPE");
                         }
                         Hashtable used_interfs = new Hashtable();
+                        if (tn is common_type_node && (tn as common_type_node).IsPartial)
+                            inherited_from_partials_list.Add(context.converted_type);
                         //Если tn - это интерфейс
                         if (tn.IsInterface)
                         {
@@ -3781,7 +3795,8 @@ namespace PascalABCCompiler.TreeConverter
                             if (type_instances != null)
                                 foreach (generic_type_instance_info gti in type_instances)
                                 {
-                                    gti.pseudo_instance.SetBaseType(tn);
+                                    if (!(gti.pseudo_instance.base_type != null && gti.pseudo_instance.base_type.is_generic_type_instance && context.converted_type.IsPartial))
+                                        gti.pseudo_instance.SetBaseType(tn);
                                 }
                         }
                         //Теперь добавляем интерфейсы.
@@ -3797,6 +3812,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (!(context.converted_type.IsPartial && context.converted_type.base_type != null && context.converted_type.base_type != SemanticRules.ClassBaseType))
                             context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
+                        else if (context.converted_type.IsPartial && context.converted_type.base_type != null)
+                            context.converted_type.SetBaseType(context.converted_type.base_type);
                     }
                     
                     context.converted_type.is_class = true;
@@ -5415,7 +5432,6 @@ namespace PascalABCCompiler.TreeConverter
                         semantic_node sn = convert_semantic_strong(_dot_node.left);
 
                         // SSM 17/07/21 учёт ZeroBasedStrings в семантике срезов строк
-                        // Пока не получилось
                         if (SemanticRules.ZeroBasedStrings
                             && (sn as expression_node)?.type is compiled_type_node ctn && ctn.compiled_type == typeof(string)
                             && _dot_node.right is ident id0 
@@ -5425,11 +5441,25 @@ namespace PascalABCCompiler.TreeConverter
                                 || id0.name.ToLower() == "systemslicequestion"
                                 || id0.name.ToLower() == "systemsliceassignment"
                                 )
-                              id0.name += "0";
+                              id0.name += "0"; // SystemSlice0
+                        }
+
+                        // SSM 04/09/21 учёт ZeroBasedStrings в s[^1]
+                        if (SemanticRules.ZeroBasedStrings
+                            && (sn as expression_node)?.type.BaseFullName == "PABCSystem.SystemIndex"
+                            && _dot_node.right is ident id1 
+                            && id1.name.ToLower() == "reverse"
+                            && _method_call.parameters.Count == 1)
+                        {
+                            var strtn = convert_strong(_method_call.parameters.expressions[0]);
+                            if (strtn.type is compiled_type_node strtnc && strtnc.compiled_type == typeof(string)) // Уф
+                            {
+                                id1.name += "0"; // Reverse0
+                            }
                         }
 
                         //SyntaxTree.ident id_right = ConvertOperatorNameToIdent(_dot_node.right as SyntaxTree.ident);
-                        SyntaxTree.ident id_right = _dot_node.right as SyntaxTree.ident;
+                            SyntaxTree.ident id_right = _dot_node.right as SyntaxTree.ident;
                         switch (sn.general_node_type)
                         {
                             case general_node_type.expression:
@@ -7299,6 +7329,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
                     List<function_node> spf = null;
+                    SeveralFunctionsCanBeCalled sf_error = null;
                     try
                     {
                         function_node fn = convertion_data_and_alghoritms.select_function(exprs, sil2, subloc2, syntax_nodes_parameters);
@@ -7326,6 +7357,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     catch (SeveralFunctionsCanBeCalled sf)
                     {
+                        sf_error = sf;
                         spf = sf.set_of_possible_functions; // Возможны несколько перегруженных версий - надо выводить дальше в надежде что какие-то уйдут и останется одна
                     }
 
@@ -7377,7 +7409,19 @@ namespace PascalABCCompiler.TreeConverter
                                         if (restype != null)
                                             realrestype = restype.real_type;
 
-                                        LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, fld, this);
+                                        try
+                                        {
+                                            LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, fld, this);
+                                        }
+                                        catch (SimpleSemanticError err)
+                                        {
+                                            if (err.ErrorResourceString == "ILLEGAL_LAMBDA_VARIABLE_TYPE" && spf != null)
+                                            {
+                                                AddError(new SeveralFunctionsCanBeCalled(sf_error.loc, spf));
+                                            }
+                                            else
+                                                AddError(err);
+                                        }
                                         fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //lroman
                                         fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
 
@@ -10566,6 +10610,16 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
                     }
+                    if ((defined_range.lower_bound.constant_value <= cr.high_bound.constant_value) &&
+                        (defined_range.lower_bound.constant_value >= cr.lower_bound.constant_value))
+                    {
+                        AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
+                    }
+                    if ((defined_range.high_bound.constant_value <= cr.high_bound.constant_value) &&
+                        (defined_range.high_bound.constant_value >= cr.lower_bound.constant_value))
+                    {
+                        AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
+                    }
                 }
             }
         }
@@ -11079,7 +11133,7 @@ namespace PascalABCCompiler.TreeConverter
             UpdateUnitDefinitionItemForUnit(_compiled_unit);
             hard_node_test_and_visit(_program_module.program_block);
             context.check_labels(context.converted_namespace.labels);
-
+            context.check_abstracts_implemented(inherited_from_partials_list);
             // frninja 28/04/16 - режем мусорные методы хелперы yield
             {
                 var toRemove = cnsn.functions.Where(m => m.is_yield_helper).ToArray();
@@ -11090,6 +11144,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             // end frninja
 
+            
             common_namespace_function_node main_function = new common_namespace_function_node(compiler_string_consts.temp_main_function_name,
                 null, null, cnsn, null);
             main_function.function_code = context.code;
@@ -12163,6 +12218,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (predefined_generic && cl_def.where_section != null && cl_def.where_section.defs.Count > 0)
                 AddError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
+            visit_where_list(cl_def.where_section);
+
             if ((cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial && cl_def.class_parents != null)
             {
                 type_node tn = ret.visit(cl_def.class_parents.types[0]);
@@ -12178,7 +12235,6 @@ namespace PascalABCCompiler.TreeConverter
                 }*/
             }
             
-            visit_where_list(cl_def.where_section);
            
             CheckWaitedRefTypes(ctn);
             is_direct_type_decl = true;
@@ -12743,7 +12799,13 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                             if (t.methods.Length > thist.methods.Length)
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
-                            if (t.base_type != SystemLibrary.SystemLibrary.object_type && !type_table.is_type_or_original_generics_equal(t.base_type as type_node, thist.base_type as type_node))
+
+                            var old_base = t.base_type as type_node;
+                            var new_base = thist.base_type as type_node;
+                            //ToDo: (тест where16) с1<T1> и c1<T2> это не всегда одно и тоже - только если T2 подставили вместо T1
+                            old_base = old_base.original_generic;
+                            new_base = new_base.original_generic;
+                            if (old_base!=new_base && !type_table.is_derived(old_base, new_base))
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                                 
                         }
@@ -16633,6 +16695,7 @@ namespace PascalABCCompiler.TreeConverter
         
         public override void visit(SyntaxTree.var_def_statement _var_def_statement)
         {
+            var_def_statement_converting = true;
             if (_var_def_statement.vars_type != null && _var_def_statement.vars_type is procedure_header)
             {
                 var ph = _var_def_statement.vars_type as procedure_header;
@@ -16820,6 +16883,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (context.converted_type != null && context.converting_block() == block_type.type_block && context.converted_type.IsStatic && _var_def_statement.var_attr != definition_attribute.Static)
                 AddError(get_location(_var_def_statement), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
+            var_def_statement_converting = false;
             if (is_event) return;
             context.save_var_definitions();
 
@@ -16827,6 +16891,7 @@ namespace PascalABCCompiler.TreeConverter
             context.close_var_definition_list(tn, inital_value);
             if (!SemanticRules.ManyVariablesOneInitializator && _var_def_statement.inital_value != null && _var_def_statement.vars.idents.Count > 1)
                 AddError(get_location(_var_def_statement.inital_value), "ONE_VARIABLE_ONE_INITIALIZATOR");
+
         }
 		
         private void CheckForCircularityInPointers(ref_type_node left, type_node right, location loc)
@@ -17877,10 +17942,15 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (ex is CompilationErrorWithLocation && (ex as CompilationErrorWithLocation).loc == null)
                         (ex as CompilationErrorWithLocation).loc = get_location(syntax_statement);
-                    if (ThrowCompilationError || ex is MemberIsNotDeclaredInType || ex is UndefinedNameReference)//TODO: add interface
+                    if (!for_intellisense && (ThrowCompilationError || ex is MemberIsNotDeclaredInType || ex is UndefinedNameReference))//TODO: add interface
                         throw ex;
                     else
                         ErrorsList.Add(ex);
+                }
+                catch (Exception ex)
+                {
+                    if (!for_intellisense)
+                        throw ex;
                 }
             }
             convertion_data_and_alghoritms.statement_list_stack.pop();
@@ -18465,10 +18535,12 @@ namespace PascalABCCompiler.TreeConverter
                     if (ltr.first != null && rtl.first == null)
                     {
                         left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                        left.type = right.type;
                     }
                     else if (ltr.first == null && rtl.first != null)
                     {
                         right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        right.type = left.type;
                     }
                     else
                     {

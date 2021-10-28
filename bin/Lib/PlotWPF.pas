@@ -1,4 +1,4 @@
-﻿{$reference InteractiveDataDisplay.WPF.dll}
+﻿{$reference %GAC%\InteractiveDataDisplay.WPF.dll}
 unit PlotWPF;
 
 uses GraphWPF;

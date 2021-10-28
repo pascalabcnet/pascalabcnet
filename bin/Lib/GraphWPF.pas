@@ -445,8 +445,8 @@ procedure DrawImage(x,y: real; b: Bitmap);
 procedure DrawImage(x,y,w,h: real; b: Bitmap);
 /// Рисует немасштабированное изображение из файла fname в позиции (x,y)
 procedure DrawImageUnscaled(x,y: real; fname: string);
-/// Выводит видеоиз файла fname в позицию (x,y)
-procedure DrawVideo(x,y: real; fname: string);
+/// Выводит видео из файла fname в позицию (x,y) в прямоугольник размером (w,h)
+procedure DrawVideo(x,y,w,h: real; fname: string);
 
 /// Ширина изображения в пикселах
 function ImageWidth(fname: string): integer;
@@ -1433,7 +1433,7 @@ procedure DrawImage(x,y: real; b: Bitmap) := InvokeVisual(DrawImagePB,x,y,b);
 procedure DrawImage(x,y,w,h: real; b: Bitmap) := InvokeVisual(DrawImageWHPB,x,y,w,h,b);
 
 procedure DrawImageUnscaled(x,y: real; fname: string) := InvokeVisual(DrawImageUnscaledP,x,y,fname);
-procedure DrawVideo(x,y: real; fname: string) := InvokeVisual(DrawVideoP,x,y,fname);
+procedure DrawVideo(x,y,w,h: real; fname: string) := InvokeVisual(DrawVideoP,x,y,w,h,fname);
 
 /// Ширина текста при выводе
 function TextWidth(text: string) := InvokeReal(TextV.Create(text).TextWidth);

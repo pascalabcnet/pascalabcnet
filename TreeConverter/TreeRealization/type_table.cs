@@ -453,7 +453,16 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 else
                 {
+                    if (tc == type_compare.less_type) // нет - тогда не работает set of integer -> set of 1..4
+                    {
+                        var bti = PascalABCCompiler.TreeConverter.convertion_data_and_alghoritms.is_value_int_type(base_class.element_type);
+                        var dtr = PascalABCCompiler.TreeConverter.convertion_data_and_alghoritms.is_value_real_type(derived_class.element_type);
+                        if (bti && dtr)
+                            return false;
+                    }
+
                     type_intersection_node tin = base_class.element_type.get_type_intersection(derived_class.element_type);
+                    // вот тут ошибка. Сравниваются элементы. По идее, надо всегда выдавать false кроме случаев если оба - integer и оба - real
                     if (tin == null || tin.this_to_another == null)
                     {
                         //proverka na diapasony
@@ -503,7 +512,7 @@ namespace PascalABCCompiler.TreeRealization
                             }
                         }
                         else
-                     if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                        if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
                         {
                             if (base_class.element_type == derived_class.element_type.base_type) return true;
                             tc = get_table_type_compare(base_class.element_type, derived_class.element_type.base_type);
@@ -872,6 +881,8 @@ namespace PascalABCCompiler.TreeRealization
                 return true;
             if (left is ref_type_node && right is ref_type_node)
                 return is_type_or_original_generics_equal((left as ref_type_node).pointed_type, (right as ref_type_node).pointed_type);
+            if (left.type_special_kind == SemanticTree.type_special_kind.array_kind && right.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                return is_type_or_original_generics_equal(left.element_type, right.element_type);
             return left == right;
         }
 
@@ -1026,6 +1037,10 @@ namespace PascalABCCompiler.TreeRealization
                 }
             }
 
+            if (from.is_generic_type_instance && to.is_generic_type_instance && from.original_generic == to.original_generic && from.name == to.name
+                && from.original_generic is common_type_node && to.original_generic is common_type_node && (from.original_generic as common_type_node).comprehensive_namespace == (to.original_generic as common_type_node).comprehensive_namespace
+                && (to.original_generic as common_type_node).IsPartial && (from.original_generic as common_type_node).IsPartial)
+                add_conversion(ret, TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(from, to, true), from, to);
             return ret;
         }
     }

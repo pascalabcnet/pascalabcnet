@@ -820,6 +820,11 @@ type
         Result := str.Length - IndexValue + 1;
       end;
       
+      function Reverse0(str: string): integer;
+      begin
+        Result := str.Length - IndexValue;
+      end;
+
       function Reverse(arr: System.Array; dim: integer): integer;
       begin
         Result := arr.GetLength(dim) - IndexValue;
@@ -9893,6 +9898,39 @@ begin
     Result *= f(x);
 end;
 
+/// Возвращает последовательность частичных сумм элементов последовательности
+function PartialSum(Self: sequence of integer): sequence of integer; extensionmethod;
+begin
+ var s := 0;
+ foreach var item in Self do
+ begin
+   s += item;
+   yield s;
+ end;
+end;
+
+/// Возвращает последовательность частичных сумм элементов последовательности
+function PartialSum(Self: sequence of real): sequence of real; extensionmethod;
+begin
+ var s := 0.0;
+ foreach var item in Self do
+ begin
+   s += item;
+   yield s;
+ end;
+end;
+
+/// Возвращает последовательность частичных сумм элементов последовательности
+function PartialSum(Self: sequence of BigInteger): sequence of BigInteger; extensionmethod;
+begin
+ var s := 0bi;
+ foreach var item in Self do
+ begin
+   s += item;
+   yield s;
+ end;
+end;
+
 /// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
 {function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
@@ -10252,13 +10290,15 @@ begin
   var previous: T;
   var it := Self.GetEnumerator();
   if (it.MoveNext()) then
+  begin  
     previous := it.Current;
   
-  while (it.MoveNext()) do
-  begin
-    yield (previous, it.Current);
-    previous := it.Current;
-  end
+    while (it.MoveNext()) do
+    begin
+      yield (previous, it.Current);
+      previous := it.Current;
+    end;
+  end;
 end;
 
 /// Превращает последовательность в последовательность n-ок соседних элементов
@@ -10282,13 +10322,15 @@ begin
   var previous: T;
   var it := Self.GetEnumerator();
   if (it.MoveNext()) then
+  begin  
     previous := it.Current;
   
-  while (it.MoveNext()) do
-  begin
-    yield func(previous, it.Current);
-    previous := it.Current;
-  end
+    while (it.MoveNext()) do
+    begin
+      yield func(previous, it.Current);
+      previous := it.Current;
+    end;
+  end;
   //  Result := Self.ZipTuple(Self.Skip(1)).Select(x->func(x[0],x[1]));
 end;
 
@@ -14063,9 +14105,11 @@ procedure __InitModule;
 begin
   try
     DefaultEncoding := Encoding.GetEncoding(1251);
-    System.Console.OutputEncoding := Encoding.UTF8;
+    if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
+      System.Console.OutputEncoding := Encoding.UTF8;
   except
-    DefaultEncoding := Encoding.UTF8;
+    //DefaultEncoding := Encoding.UTF8;
+    DefaultEncoding := new System.Text.UTF8Encoding(false)
   end;
   rnd := new System.Random;
   
