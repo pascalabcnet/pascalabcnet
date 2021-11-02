@@ -154,7 +154,7 @@ end;
 
 
 initialization
-
+  PrintDelimDefault := ' ';
 finalization
 
   FinExam;

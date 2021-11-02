@@ -379,6 +379,7 @@ type
     fi: FileInfo;
     sr: StreamReader;
     sw: TextWriter;
+    PrintState: integer := 0; // 0 - до любого вывода и в начале строки
   public 
     /// Возвращает значение типа integer, введенное из текстового файла
     function ReadInteger: integer;
@@ -1196,20 +1197,20 @@ procedure WriteFormat(f: Text; formatstr: string; params args: array of object);
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 
 ///- procedure Print(a,b,...);
-/// Выводит значения a,b,... на экран, после каждого значения выводит пробел
+/// Выводит значения a,b,... на экран, разделяя их пробелами
 procedure Print(o: object);
 ///--
 procedure Print(s: string);
 ///--
 procedure Print(params args: array of object);
 ///- procedure Print(f: Text; a,b,...);
-/// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел
+/// Выводит значения a,b,... в текстовый файл f, разделяя их пробелами
 procedure Print(f: Text; params args: array of object);
 ///- procedure Println(a,b,...);
-/// Выводит значения a,b,... на экран, после каждого значения выводит пробел и переходит на новую строку
+/// Выводит значения a,b,... на экран, разделяя их пробелами, и переходит на новую строку
 procedure Println(params args: array of object);
 ///- procedure Println(f: Text; a,b,...);
-/// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел и переходит на новую строку
+/// Выводит значения a,b,... в текстовый файл f, разделяя их пробелами, и переходит на новую строку
 procedure Println(f: Text; params args: array of object);
 
 /// Сериализует объект в файл (объект должен иметь атрибут [Serializable])
@@ -6570,17 +6571,19 @@ procedure Text.Writeln(params o: array of Object) := PABCSystem.Writeln(Self, o)
 
 procedure Text.Print(params o: array of Object);
 begin
-  if PrintDelimDefault<>'' then
+  PABCSystem.Print(Self,o);
+  {if PrintDelimDefault<>'' then
     foreach var s in o do
       PABCSystem.Write(Self, s, PrintDelimDefault)
   else    
     foreach var s in o do
-      PABCSystem.Write(Self, s)
+      PABCSystem.Write(Self, s)}
 end;
 
 procedure Text.Println(params o: array of Object);
 begin
-  if o.Length <> 0 then
+  PABCSystem.Println(Self,o);
+  {if o.Length <> 0 then
   begin
     if PrintDelimDefault<>'' then
       for var i:=0 to o.Length-2 do
@@ -6590,7 +6593,7 @@ begin
         PABCSystem.Write(Self, o[i]);
     PABCSystem.Write(Self, o.Last);
   end;
-  PABCSystem.Writeln(Self);
+  PABCSystem.Writeln(Self);}
 end;
 
 function Text.Eof := PABCSystem.Eof(Self);
@@ -6814,7 +6817,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//                  Write - Writeln # Write subroutines
+//                  PointerOutput # PointerOutput subroutines
 // -----------------------------------------------------
 function PointerOutput.ToString: string;
 begin
@@ -6825,6 +6828,11 @@ constructor PointerOutput.Create(ptr: pointer);
 begin
   p := ptr;
 end;
+
+// -----------------------------------------------------
+//                  Write - Writeln # Write subroutines
+// -----------------------------------------------------
+var PrintState := 0; // 0 в начале строки; 1 - после вывода без перехода на новую строку
 
 procedure Write;
 begin
@@ -6916,6 +6924,7 @@ begin
   if output.sw is StreamWriter then
     writeln_in_output
   else CurrentIOSystem.Writeln;
+  PrintState := 0;
 end;
 
 procedure Writeln(params args: array of object);
@@ -6932,6 +6941,7 @@ begin
       CurrentIOSystem.Write(args[i]);
     CurrentIOSystem.Writeln;
   end;
+  PrintState := 0;
 end;
 
 procedure Write(f: Text);
@@ -6946,19 +6956,6 @@ begin
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
   
   f.sw.Write(StructuredObjectToString(val));
-  {if val = nil then
-  begin
-  f.sw.Write('nil');
-  exit;
-  end;
-  case System.Type.GetTypeCode(val.GetType) of
-  TypeCode.Double, 
-  TypeCode.Single,  
-  TypeCode.Decimal: 
-  f.sw.Write(FormatFloatNumber(val.ToString));
-  else
-  f.sw.Write(val)
-  end;}
 end;
 
 procedure Write(f: Text; params args: array of object);
@@ -6975,6 +6972,7 @@ begin
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
   
   f.sw.WriteLine;
+  f.PrintState := 0;
 end;
 
 procedure Writeln(f: Text; val: object);
@@ -7020,14 +7018,28 @@ end;
 procedure Print(s: string);
 begin
   if PrintDelimDefault<>'' then
-    Write(s, PrintDelimDefault)
+  begin
+    if PrintState = 0 then
+    begin  
+      Write(s);
+      PrintState := 1
+    end  
+    else Write(PrintDelimDefault, s)
+  end  
   else Write(s)  
 end;
 
 procedure Print(o: object);
 begin
   if PrintDelimDefault<>'' then
-    Write(o, PrintDelimDefault)
+  begin
+    if PrintState = 0 then
+    begin  
+      Write(o);
+      PrintState := 1
+    end  
+    else Write(PrintDelimDefault, o)
+  end  
   else     
     Write(o)
 end; 
@@ -7036,19 +7048,24 @@ procedure Print(params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  if PrintDelimDefault<>'' then
+  {if PrintDelimDefault<>'' then
     for var i := 0 to args.length - 1 do
       Write(args[i], PrintDelimDefault)
   else     
     for var i := 0 to args.length - 1 do
-      Write(args[i])
+      Write(args[i])}
+  for var i := 0 to args.Length - 1 do
+    Print(args[i])
 end;
 
 procedure Println(params args: array of object);
 begin
   Print(args);
   Writeln;
+  PrintState := 0;
 end;
+
+var FilePrintState := 0;// Хранить FilePrintState в типе Text!!!
 
 procedure Print(f: Text; params args: array of object);
 begin
@@ -7056,7 +7073,12 @@ begin
     exit;
   if PrintDelimDefault<>'' then
     for var i := 0 to args.length - 1 do
-      Write(f, args[i], PrintDelimDefault)
+      if f.PrintState = 0 then
+      begin  
+        Write(f, args[i]);
+        f.PrintState := 1
+      end  
+      else Write(f, PrintDelimDefault, args[i])
   else     
     for var i := 0 to args.length - 1 do
       Write(f, args[i])
@@ -7066,6 +7088,7 @@ procedure Println(f: Text; params args: array of object);
 begin
   Print(f, args);
   Writeln(f);
+  f.PrintState := 0;
 end;
 
 procedure Serialize(filename: string; obj: object);
@@ -7089,6 +7112,9 @@ end;
 // -----------------------------------------------------
 procedure Assign(f: Text; name: string);
 begin
+  f.PrintState := 0;
+  if f = input then
+    PrintState := 0;
   try
     f.fi := System.IO.FileInfo.Create(name);
   except
@@ -7111,6 +7137,7 @@ procedure AssignFile(f: Text; name: string) := Assign(f, name);
 
 procedure Close(f: Text);
 begin
+  f.PrintState := 0;
   if f.fi = nil then
     raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sr <> nil then 
@@ -7138,6 +7165,7 @@ procedure Reset(f: Text; en: Encoding);
 begin
   if f.fi = nil then
     raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  f.PrintState := 0;
   if f.sr = nil then
   begin
     f.sr := new StreamReader(f.fi.FullName, en);
@@ -7178,6 +7206,7 @@ procedure Rewrite(f: Text; en: Encoding);
 begin
   if f.fi = nil then
     raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  f.PrintState := 0;
   if f.sw = nil then
   begin
     f.sw := new StreamWriter(f.fi.FullName, False, en);
@@ -7211,6 +7240,7 @@ procedure Append(f: Text; en: Encoding);
 begin
   if f.fi = nil then
     raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  f.PrintState := 0;
   f.sw := new StreamWriter(f.fi.FullName, True, en);
 end;
 
@@ -14150,6 +14180,7 @@ begin
         (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; }
   __FixPointer(nil);
   StartTime := DateTime.Now;
+  PrintState := 0;
 end;
 
 procedure __InitModule__;
@@ -14169,6 +14200,7 @@ end;
 
 procedure __FinalizeModule__;
 begin
+  PrintState := 0;
   if (output.sw <> nil) and (output.sw is StreamWriter) and ((output.sw as StreamWriter).BaseStream <> nil) then
     output.sw.Close;
   if (ErrOutput.sw <> nil) and (ErrOutput.sw is StreamWriter) and ((ErrOutput.sw as StreamWriter).BaseStream <> nil) then
