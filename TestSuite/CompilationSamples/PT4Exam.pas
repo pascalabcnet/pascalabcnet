@@ -4,15 +4,22 @@ unit PT4Exam;
 
 //------------------------------------------------------------------------------
 // Модуль для подключения задачника PT for Exam
-// Версия 2.3
-// Copyright © 2014-2019 М.Э.Абрамян
+// Версия 2.4
+// Новое в версии: используется только стандартный вывод,
+//   для ввода требуется организовать чтение из файла в самой учебной программе
+// Copyright © 2014-2021 М.Э.Абрамян
 //------------------------------------------------------------------------------
 
 
 interface
 
+/// Обеспечивает инициализацию задания
 procedure Task(name: string);
+
 procedure FinExam;
+
+/// Возвращает введенное значение типа string
+function ReadString: string;
 
 /// Выводит строку S в разделе отладки окна задачника
 procedure Show(S: string);
@@ -72,7 +79,7 @@ end;
 
 var 
   NextTask: boolean := False;
-  s1, s2: string;
+  s2: string;
 
 procedure Task(name: string);
 var 
@@ -82,32 +89,24 @@ begin
   if NextTask then
     exit;
   NextTask := True;  
-  GetS(s1);
   GetS(s2);
-  if not FileExists(s1) then
-  begin
-    s1 := 'null1.tst';
-    Assign(f, s1);
-    Rewrite(f);
-    Close(f);
-  end;
   if s2 = '' then
   begin
     s2 := 'null2.tst';
   end;  
-  Assign(input, s1);
-  Reset(input);
   Assign(output, s2);
   Rewrite(output);
+end;
+
+function ReadString: string;
+begin
+  result := PT4.ReadString;
 end;
 
 procedure FinExam;
 begin
   Sleep(100);
-  Close(input);
   Close(output);
-  if s1 = 'null1.tst' then
-    Erase(input);
   if s2 = 'null2.tst' then
     Erase(output)
   else  
@@ -155,7 +154,7 @@ end;
 
 
 initialization
-
+  PrintDelimDefault := ' ';
 finalization
 
   FinExam;

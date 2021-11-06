@@ -1,10 +1,14 @@
-[=Pascal][=PascalABC][1-14]
+[=PascalABC][1-14]
 var x, y: real;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(x, y);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, x, y);
+  Close(f);
 [1]
   if x*x + y*y >= 4 then
     if x >= -2 then
@@ -51,12 +55,7 @@ begin
       if x*x + y*y <= 25 then
 [11]
   if y >= x*x - 6 then
-  begin
     if x*x + y*y <= 16 then
-      writeln('Принадлежит')
-  end
-  else
-    if x >= 0 then
       writeln('Принадлежит')
     else
       writeln('Не принадлежит');
@@ -85,23 +84,39 @@ begin
 end.
 [15]
 var c: real;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(c);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, c);
+  Close(f);
   if c > 0 then
   write('нет решений')
   else
     write('x = ', sqrt(-c):0:2, ' или x = ', -sqrt(-c):0:2);
 [16-21]
 var a, b: real;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(a, b);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, a, b);
+  Close(f);
 [16]
+  if b = 0 then
+    write('x = 0.00')
+  else
+    if a = 0 then
+      write('нет решений')
+    else
+      write('x = ', -b/a:0:2);
+[17]
   if a = 0 then
     if b = 0 then
       write('любое число')
@@ -112,15 +127,6 @@ begin
       write('x = 0.00')
     else
       write('x = ', b/a:0:2,' или x = ', -b/a:0:2);
-[17]
-  if b = 0 then
-    write('x = 0.00')
-  else
-    if a = 0 then
-      write('нет решений')
-    else
-      write('x = ', -b/a:0:2);
-end.
 [18]
   if a = 0 then
     if b > 0 then
@@ -157,11 +163,15 @@ end.
 end.
 [22]
 var N: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f);
   while N > 10 do
   begin
     N := N mod 10;
@@ -170,11 +180,15 @@ begin
 end.
 [23]
 var N: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f); 
   while N > 10 do
   begin
     N := N mod 100;
@@ -183,11 +197,15 @@ begin
 end.
 [24]
 var N, digit, maxdigit: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f); 
   maxdigit := 10;
   while N >= 10 do
   begin
@@ -200,11 +218,15 @@ begin
 end.
 [25]
 var N, p, digit: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f); 
   p := N mod 10;
   while N >= 10 do
   begin
@@ -212,31 +234,39 @@ begin
     p := p * digit;
     N := N div 10;
   end;
-  writeln(p);
+  write(p);
 end.
 [26]
 var N, s: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f); 
   s := 1;
   while N > 1 do
   begin
     if N mod 10 <> 0 then
-      s := N mod 10;
+      s := s + N mod 10;
     N := N div 10;
   end;
   write(s);
 end.
 [27]
 var N, digit, maxdigit: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f); 
   maxdigit := N mod 10;
   while N > 0 do
   begin
@@ -247,64 +277,76 @@ begin
     N := N div 10;
   end;
   if maxdigit = 0 then
-    writeln('NO')
+    write('NO')
   else
-    writeln(maxDigit)
+    write(maxDigit)
 end.
 [28]
 var N, cnt: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f); 
   cnt := 0;
   while N > 0 do
   begin
     cnt := cnt + N mod 2;
     N := N div 10;
   end;
-  writeln(cnt)
+  write(cnt)
 end.
 [29]
-var N, R, T, d: integer;
+var N, r, t, d: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
-  R := 0;
-  T := 0;
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f); 
+  r := 0;
+  t := 0;
   while N > 0 do
   begin
     d := N mod 10;
     if d <> 2 then
     begin
-      R := R + d * T;
-      T := T + 1;
+      r := r + d * t;
+      t := t + 1;
     end;
     N := N div 10;
   end;
-  writeln(T);
+  write(r);
 end.
 [30]
-var N, m, d: integer;
+var N, r, d: integer;
+    f: text;
 begin
 [-HW]
   Task('%{task}');
 [+HW]
-  readln(N);
-  m := 0;
+  Assign(f, ReadString);
+  Reset(f);
+  readln(f, N);
+  Close(f); 
+  r := 0;
   while N > 0 do
   begin
     d := N mod 10;
     if d > 1 then
     begin
-      m := d + m;
+      r := d + r;
     end;
     N := N div 10;
   end;
-  write(m);
+  write(r);
 end.
 [-----------------------------------------------]
 [=CPP][12-15]
@@ -365,12 +407,7 @@ void Solve()
             if (x*x + y*y <= 25)
 [11]
     if (y >= x*x - 6)
-    {
         if (x*x + y*y <= 16)
-            cout << "Принадлежит" << endl;
-    }
-    else
-        if (x >= 0)
             cout << "Принадлежит" << endl;
         else
             cout << "Не принадлежит" << endl;
@@ -409,6 +446,14 @@ void Solve()
     double a, b;
     cin >> a >> b;
 [16]
+    if (b == 0)
+        cout << "x = 0.00";
+    else
+        if (a == 0)
+            cout << "нет решений";
+        else
+            cout << "x = " << -b/a;
+[17]
     if (a == 0)
         if (b == 0)
            cout << "любое число";
@@ -419,14 +464,6 @@ void Solve()
            cout << "x = 0.00";
         else
            cout << "x = " << b/a << " или x = " << -b/a;
-[17]
-    if (b == 0)
-        cout << "x = 0.00";
-    else
-        if (a == 0)
-            cout << "нет решений";
-        else
-            cout << "x = " << -b/a;
 [18]
     if (a == 0)
         if (b > 0)
@@ -505,7 +542,7 @@ void Solve()
     while (N > 1)
     {
         if (N % 10 != 0)
-            s = N % 10;
+            s = s + N % 10;
         N = N / 10;
     }
     cout << s;
@@ -536,35 +573,35 @@ void Solve()
     }
     cout << cnt;
 [29]
-    int N, R, T, d;
+    int N, r, t, d;
     cin >> N;
-    R = 0;
-    T = 0;
+    r = 0;
+    t = 0;
     while (N > 0)
     {
         d = N % 10;
         if (d != 2)
         {
-            R = R + d * T;
-            T++;
+            r = r + d * t;
+            t++;
         }
         N = N / 10;
     }
-    cout << T;
+    cout << r;
 [30]
-    int N, m, d;
+    int N, r, d;
     cin >> N;
-    m = 0;
+    r = 0;
     while (N > 0)
     {
         d = N % 10;
         if (d > 1)
         {
-            m = d + m;
+            r = d + r;
         }
         N = N / 10;
     }
-    cout << m;
+    cout << r;
 [1-30]
 [-HW]
 }
@@ -628,10 +665,8 @@ def solve():
     if y >= x*x - 6:
         if x*x + y*y <= 16:
             print("Принадлежит")
-    elif x >= 0:
-        print("Принадлежит")
-    else:
-        print("Не принадлежит")
+        else:
+            print("Не принадлежит")
 [12]
     if y <= math.sin(x):
         if x <= 3.14/2:
@@ -664,6 +699,14 @@ def solve():
     a = float(input())
     b = float(input())
 [16]
+    if b == 0:
+        print("x = 0.00")
+    else:
+        if a == 0:
+            print("нет решений")
+        else:
+            print("x = %0.2f" % -b/a)
+[17]
     if a == 0:
         if b == 0:
            print("любое число")
@@ -674,14 +717,6 @@ def solve():
            print("x = 0.00")
         else
            print("x = %0.2f или x = %0.2f" % (b/a, -b/a))
-[17]
-    if b == 0:
-        print("x = 0.00")
-    else:
-        if a == 0:
-            print("нет решений")
-        else:
-            print("x = %0.2f" % -b/a)
 [18]
     if a == 0:
         if b > 0:
@@ -744,7 +779,7 @@ def solve():
     s = 1
     while N > 1:
         if N % 10 != 0:
-            s = N % 10
+            s = s + N % 10
         N = N // 10
     print(s)
 [27]
@@ -766,21 +801,21 @@ def solve():
         N = N // 10
     print(cnt)
 [29]
-    R = 0
-    T = 0
+    r = 0
+    t = 0
     while N > 0:
         d = N % 10
         if d != 2:
-            R = R + d * T
-            T += 1
+            r = r + d * t
+            t += 1
         N = N // 10
-    print(T)
+    print(r)
 [30]
-    m = 0
+    r = 0
     while N > 0:
         d = N % 10
         if d > 1:
-            m = d + m
+            r = d + r
         N = N // 10
-    print(m)
+    print(r)
 
