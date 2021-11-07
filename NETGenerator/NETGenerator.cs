@@ -276,9 +276,13 @@ namespace PascalABCCompiler.NETGenerator
             if (ConvertedConstants.ContainsKey(c))
                 return ConvertedConstants[c];
             ILGenerator ilb = il;
-            il = ModulesInitILGenerators[cur_unit_type];
+            if (entry_type != null && false)
+                il = ModulesInitILGenerators[entry_type];
+            else
+                il = ModulesInitILGenerators[cur_unit_type];
             ConvertConstantDefinitionNode(null, GetTempName(), c.type, c);
             il = ilb;
+            il.Emit(OpCodes.Call, helper.GetDummyMethod(cur_unit_type));
             return ConvertedConstants[c];
         }
 
@@ -789,6 +793,9 @@ namespace PascalABCCompiler.NETGenerator
                 if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
+                MethodBuilder mb = cur_unit_type.DefineMethod("$dummy$", MethodAttributes.Public | MethodAttributes.Static);
+                mb.GetILGenerator().Emit(OpCodes.Ret);
+                helper.AddDummyMethod(cur_unit_type, mb);
                 ConvertTypeMemberHeaders(cnns[iii].types);
             }
 
