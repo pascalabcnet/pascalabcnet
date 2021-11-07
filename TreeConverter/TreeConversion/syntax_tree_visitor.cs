@@ -7583,6 +7583,17 @@ namespace PascalABCCompiler.TreeConverter
                 else
                 {
                     function_node fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc2, syntax_nodes_parameters);
+                    if (!proc_wait && fn.return_value_type == null && exp2 != null && exp2 != null && fn.name == "Invoke")
+                    {
+                        string del_name = "";
+                        if (exp2 is local_block_variable_reference)
+                            del_name = (exp2 as local_block_variable_reference).var.name;
+                        else if (exp2 is local_variable_reference)
+                            del_name = (exp2 as local_variable_reference).var.name;
+                        else if (exp2 is namespace_variable_reference)
+                            del_name = (exp2 as namespace_variable_reference).var.name;
+                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", del_name);
+                    }
                     base_function_call bbffcc = create_not_static_method_call(fn, exp2, subloc2, proc_wait);
                     bbffcc.parameters.AddRange(exprs);
                     expr_node = bbffcc;
