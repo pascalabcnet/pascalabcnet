@@ -3731,6 +3731,8 @@ namespace PascalABCCompiler.TreeConverter
             switch (_class_definition.keyword)
             {
                 case PascalABCCompiler.SyntaxTree.class_keyword.Class:
+                    //if (context.converted_type.IsPartial)
+                    //    generic_convertions.remove_type_instances(context.converted_type);
                     if (context.converted_type.is_value || context.converted_type.IsInterface)
                     {
                         AddError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", context.converted_type.name);
@@ -19445,7 +19447,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (tn.is_generic_parameter || tn.is_generic_type_definition || tn.is_generic_type_instance)
                     return false;
         		foreach (class_field cf in ctn.fields)
-        			if (!cf.IsStatic)
+        			if (!cf.IsStatic && cf.type != tn)
         			if (!can_evaluate_size(cf.type)) return false;
 
         	}
