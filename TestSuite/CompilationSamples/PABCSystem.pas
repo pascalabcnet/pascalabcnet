@@ -14106,9 +14106,9 @@ begin
   try
     DefaultEncoding := Encoding.GetEncoding(1251);
     if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
-      System.Console.OutputEncoding := Encoding.UTF8;
+      System.Console.OutputEncoding := Encoding.GetEncoding(1251);
   except
-    //DefaultEncoding := Encoding.UTF8;
+    DefaultEncoding := Encoding.UTF8;
     DefaultEncoding := new System.Text.UTF8Encoding(false)
   end;
   rnd := new System.Random;
