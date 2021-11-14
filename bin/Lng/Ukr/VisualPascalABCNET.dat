@@ -393,6 +393,7 @@ CODE_COMPLETION_PARAMS=Підказка параметрів функцій
 CODE_COMPLETION_KEYPRESSED=Підказка по натисканню клавіші
 SHOW_INTELLISENCE_PANEL=Панель навігації по вихідному коду
 NAMESPACE_VISIBLE_RANGE=Вкладеність просторів імен (0 - усі)
+USE_SEMANTIC_INTELLISENSE=Использовать компилятор для Intellisense
 
 //CompilerOptions
 %PREFIX%=VP_OC_COMPILEROPTIONS_

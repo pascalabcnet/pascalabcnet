@@ -28,6 +28,7 @@ namespace CodeCompletion
             //string dir = Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests");
             var comp = new PascalABCCompiler.Compiler();
             var controller = new CodeCompletion.CodeCompletionController();
+            CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
             CodeCompletion.CodeCompletionController.comp = comp;
             CodeCompletion.CodeCompletionController.SetParser(".pas");
             CodeCompletion.CodeCompletionController.ParsersController = comp.ParsersController;
@@ -54,7 +55,7 @@ namespace CodeCompletion
                     if (desc == null)
                         desc = "";
                     desc = desc.Split(new string[] { "\n"},StringSplitOptions.None)[0].Trim();
-                    assert(desc.Replace(", ", ",") == should_desc.Replace(", ",","), FileName+", should: "+should_desc+", is: "+desc);
+                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, FileName+", should: "+should_desc+", is: "+desc);
                     tmp = tmp.Remove(ind, tmp.IndexOf("@}") + 2 - ind);
                     ind = tmp.IndexOf("{@");
                 }
@@ -71,7 +72,7 @@ namespace CodeCompletion
                     if (desc == null)
                         desc = "";
                     desc = desc.Split(new string[] { "\n" }, StringSplitOptions.None)[0].Trim();
-                    assert(desc.Replace(", ", ",") == should_desc.Replace(", ", ","), FileName + ", should: " + should_desc + ", is: " + desc);
+                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, FileName + ", should: " + should_desc + ", is: " + desc);
                     tmp = tmp.Remove(ind, tmp.IndexOf("]}") + 2 - ind);
                     ind = tmp.IndexOf("{[");
                 }
@@ -88,7 +89,7 @@ namespace CodeCompletion
                     if (desc == null)
                         desc = "";
                     desc = desc.Split(new string[] { "\n" }, StringSplitOptions.None)[0].Trim();
-                    assert(desc.Replace(", ", ",") == should_desc.Replace(", ", ","), FileName + ", should: " + should_desc + ", is: " + desc);
+                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, FileName + ", should: " + should_desc + ", is: " + desc);
                     tmp = tmp.Remove(ind, tmp.IndexOf(")}") + 2 - ind);
                     ind = tmp.IndexOf("{(");
                 }
