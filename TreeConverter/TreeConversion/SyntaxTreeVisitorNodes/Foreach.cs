@@ -125,7 +125,6 @@ namespace PascalABCCompiler.TreeConverter
             {
                 semantic_check_extended_foreach(vars, elem_type, foreachCollection.location);
             }
-
             CheckToEmbeddedStatementCannotBeADeclaration(_foreach_stmt.stmt);
 
             foreachVariable = FindForeachVariable(_foreach_stmt, elem_type, sys_coll_ienum);

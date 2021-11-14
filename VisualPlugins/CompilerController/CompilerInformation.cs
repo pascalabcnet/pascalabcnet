@@ -261,7 +261,7 @@ namespace VisualPascalABCPlugins
 
         private void cbUseSemanticForIntellisense_CheckedChanged(object sender, EventArgs e)
         {
-            CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = cbUseSemanticForIntellisense.Checked;
+            //CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = cbUseSemanticForIntellisense.Checked;
         }
     }
 }

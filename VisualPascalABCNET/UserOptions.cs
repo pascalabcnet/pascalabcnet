@@ -31,6 +31,7 @@ namespace VisualPascalABC
         public bool ShowCompletionInfoByGroup = true;
         public bool EnableSmartIntellisense = false;
         public bool ShowQuickClassBrowserPanel = false;
+        public bool UseSemanticIntellisense = false;
         public bool AllowCodeFormatting = false;
         public bool SkipStackTraceItemIfSourceFileInSystemDirectory = true;
         public bool AlwaysAttachDebuggerAtStart = false;
@@ -254,6 +255,12 @@ namespace VisualPascalABC
         {
             get { return PABCDllChecked; }
             set { PABCDllChecked = value; }
+        }
+
+        bool VisualPascalABCPlugins.IUserOptions.UseSemanticIntellisense
+        {
+            get { return UseSemanticIntellisense; }
+            set { UseSemanticIntellisense = value; }
         }
 
         #endregion

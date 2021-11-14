@@ -15749,21 +15749,17 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.if_node _if_node)
         {
-            expression_node condition = convert_strong(_if_node.condition);
-            condition = convertion_data_and_alghoritms.convert_type(condition, SystemLibrary.SystemLibrary.bool_type);
-            try_convert_typed_expression_to_function_call(ref condition, true);
-            // SSM 29/08/16
-            /*var cc = condition as bool_const_node;
-            if (cc != null && cc.constant_value == false && _if_node.else_body == null)
+            expression_node condition = null;
+            if (!for_intellisense)
             {
-                // недостижимый код - ничего не генерировать
-                return_value(new empty_statement(get_location(_if_node)));
-                // перед этим надо обходить then_body
-                return;
-            }*/
+                condition = convert_strong(_if_node.condition);
+                condition = convertion_data_and_alghoritms.convert_type(condition, SystemLibrary.SystemLibrary.bool_type);
+                try_convert_typed_expression_to_function_call(ref condition, true);
 
-            CheckToEmbeddedStatementCannotBeADeclaration(_if_node.then_body);
-            CheckToEmbeddedStatementCannotBeADeclaration(_if_node.else_body);
+                CheckToEmbeddedStatementCannotBeADeclaration(_if_node.then_body);
+                CheckToEmbeddedStatementCannotBeADeclaration(_if_node.else_body);
+            }
+            
 
             statements_list sl = new statements_list(get_location(_if_node.then_body));
             convertion_data_and_alghoritms.statement_list_stack_push(sl);
@@ -15805,10 +15801,14 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.while_node _while_node)
         {
-            expression_node expr = convert_strong(_while_node.expr);
-            expr = convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.bool_type);
-            try_convert_typed_expression_to_function_call(ref expr, true);
-            CheckToEmbeddedStatementCannotBeADeclaration(_while_node.statements);
+            expression_node expr = null;
+            if (!for_intellisense)
+            {
+                expr = convert_strong(_while_node.expr);
+                expr = convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.bool_type);
+                try_convert_typed_expression_to_function_call(ref expr, true);
+                CheckToEmbeddedStatementCannotBeADeclaration(_while_node.statements);
+            }
 
             while_node wn = new while_node(expr, get_location(_while_node));
             context.cycle_stack.push(wn);
@@ -15853,10 +15853,14 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             rep.body = st;
-            expression_node expr = convert_strong(_repeat_node.expr);
-            expr = convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.bool_type);
-            try_convert_typed_expression_to_function_call(ref expr, true);
-            rep.condition = expr;
+            expression_node expr = null;
+            if (!for_intellisense)
+            {
+                expr = convert_strong(_repeat_node.expr);
+                expr = convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.bool_type);
+                try_convert_typed_expression_to_function_call(ref expr, true);
+                rep.condition = expr;
+            }
             context.cycle_stack.pop();
             return_value(rep);
         }
@@ -16078,6 +16082,12 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(loc, "NO_DEFAULT_PROPERTY_TO_FUNCTION_TYPE");
                 }
+                if (for_intellisense)
+                {
+                    return_value(expr);
+                    return;
+                }
+                    
             }
 
             if (expr.type.default_property_node.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
@@ -17933,6 +17943,16 @@ namespace PascalABCCompiler.TreeConverter
                 statement syntax_statement = _statement_list.subnodes[i];
                 try
                 {
+                    if (for_intellisense)
+                    {
+                        if (syntax_statement is assign && !(context.converted_func_stack.top() != null && context.converted_func_stack.top().return_value_type is undefined_type) 
+                            || syntax_statement is procedure_call || syntax_statement is raise_statement)
+                        {
+                           
+                            if (!(new LambdaSearcher(syntax_statement).CheckIfContainsLambdas()))
+                                continue;
+                        }
+                    }
                     statement_node semantic_statement = convert_strong(syntax_statement);
                     if (semantic_statement != null)
                     {
