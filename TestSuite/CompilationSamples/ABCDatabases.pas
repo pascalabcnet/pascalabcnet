@@ -80,6 +80,8 @@ type
     [PrintAttribute(' ', 4, -5)]
     property УчитсяВКШ: boolean read _inSunSchool;
   end;}
+
+  ///!#
   Ученик = auto class
     Фамилия: string;
     Класс, Рост: integer;
