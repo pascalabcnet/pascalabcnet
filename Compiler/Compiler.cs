@@ -918,7 +918,7 @@ namespace PascalABCCompiler
             }
         }
 
-        internal Dictionary<string,CompilationUnit> DLLCashe = new Dictionary<string,CompilationUnit>();
+        internal Dictionary<string,CompilationUnit> DLLCache = new Dictionary<string,CompilationUnit>();
 
         private Parsers.Controller parsersController = null;
         public Parsers.Controller ParsersController
@@ -946,6 +946,7 @@ namespace PascalABCCompiler
         public int beginOffset;
         public int varBeginOffset;
         private bool _clear_after_compilation = true;
+        private static Dictionary<string, CompilationUnit> pcuCompilationUnits = new Dictionary<string, CompilationUnit>();
 
         public bool ClearAfterCompilation
         {
@@ -1210,12 +1211,14 @@ namespace PascalABCCompiler
             CodeGeneratorsController.Reset();
             //PABCToCppCodeGeneratorsController.Reset();
             UnitsToCompile.Clear();
-            DLLCashe.Clear();
+            DLLCache.Clear();
             project = null;
         }
 
         void CheckErrors()
         {
+            if (compilerOptions.ForIntellisense)
+                return;
             if (ErrorsList.Count > 0)
                 throw ErrorsList[0];
         }
@@ -3668,8 +3671,25 @@ namespace PascalABCCompiler
 
 		public CompilationUnit ReadPCU(string FileName)
 		{
-            PCUReader pr = new PCUReader(this,pr_ChangeState);
-            return pr.GetCompilationUnit(FileName,CompilerOptions.Debug);
+            if (compilerOptions.ForIntellisense && false)
+            {
+                CompilationUnit unit = null;
+                if (pcuCompilationUnits.ContainsKey(FileName))
+                {
+                    unit = pcuCompilationUnits[FileName];
+                    return unit;
+                }
+                PCUReader pr = new PCUReader(this, pr_ChangeState);
+                unit = pr.GetCompilationUnit(FileName, CompilerOptions.Debug);
+                pcuCompilationUnits[FileName] = unit;
+                return unit;
+            }
+            else
+            {
+                PCUReader pr = new PCUReader(this, pr_ChangeState);
+                return pr.GetCompilationUnit(FileName, CompilerOptions.Debug);
+            }
+            
 		}
 
         void pr_ChangeState(object Sender, PCUReaderWriterState State, object obj)
@@ -3825,8 +3845,8 @@ namespace PascalABCCompiler
 
 		public CompilationUnit ReadDLL(string FileName)
 		{
-            if (DLLCashe.ContainsKey(FileName))
-                return DLLCashe[FileName];
+            if (DLLCache.ContainsKey(FileName))
+                return DLLCache[FileName];
             OnChangeCompilerState(this, CompilerState.ReadDLL, FileName);
             TreeRealization.using_namespace_list using_namespaces = new TreeRealization.using_namespace_list();
             try
@@ -3840,7 +3860,7 @@ namespace PascalABCCompiler
 
                 //un.dotNetScope=new PascalABCCompiler.NetHelper.NetScope(using_namespaces,
                 //	System.Reflection.Assembly.LoadFrom(FileName),SyntaxTreeToSemanticTreeConverter.SymbolTable);
-                DLLCashe[FileName] = cu;
+                DLLCache[FileName] = cu;
 
                 return cu;
             }
@@ -3924,20 +3944,30 @@ namespace PascalABCCompiler
             return false;
         }
 
-        public void ClearAll()
+        public void ClearAll(bool close_pcu=true)
         {
             _semantic_tree = null;
-            PCUReader.CloseUnits(); 
-            PCUWriter.Clear();
+            if (close_pcu)
+            {
+                PCUReader.CloseUnits();
+                PCUWriter.Clear();
+            }
+            
             RecompileList.Clear();
             CycleUnits.Clear();
             UnitTable.Clear();
             UnitsSortedList.Clear();
             //TreeRealization.PCUReturner.Clear();
             BadNodesInSyntaxTree.Clear();
-            PCUReader.AllReaders.Clear();
+            if (close_pcu)
+                PCUReader.AllReaders.Clear();
             project = null;
             StandarModules.Clear();
+            CompiledVariables.Clear();
+            if (!close_pcu)
+            {
+                SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
+            }
             //SystemLibrary.SystemLibrary.RestoreStandartNames();
         }
         

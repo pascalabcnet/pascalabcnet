@@ -39,7 +39,7 @@ namespace CodeCompletion
         internal bool parse_only_interface = false;
         private template_type_reference converted_template_type = null;
         private List<var_def_statement> pending_is_pattern_vars = new List<var_def_statement>();
-        private Compiler compiler;
+        private static Compiler compiler;
         public static bool use_semantic_for_intellisense;
 
         public SemanticOptions semantic_options = new SemanticOptions();
@@ -227,15 +227,17 @@ namespace CodeCompletion
             co.UnitSyntaxTree = cu;
             co.SourceFileName = cu.source_context.FileName;
             co.ForIntellisense = true;
+            co.SaveDocumentation = false;
 
-            compiler = new Compiler();
+            //if (compiler == null)
+                compiler = new Compiler();
             compiler.CompilerOptions = co;
             compiler.ClearAfterCompilation = false;
             compiler.Compile();
 
             foreach (var lv in compiler.CompiledVariables)
                 CorrectVariableType(lv);
-            compiler.ClearAll();
+            compiler.ClearAll(/*false*/);
         }
 
 		public SymScope FindScopeByLocation(int line, int col)
