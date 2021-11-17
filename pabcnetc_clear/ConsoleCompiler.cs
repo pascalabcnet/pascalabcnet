@@ -51,7 +51,7 @@ namespace PascalABCCompiler
             name = ss[0].ToLower();
             if (ss.Length > 1)
             {
-                value = ss[1].Trim().ToLower();
+                value = ss[1].Trim();
             }
 
             return true;
