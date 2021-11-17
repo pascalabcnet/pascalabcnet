@@ -268,10 +268,10 @@ namespace CodeCompletion
             else
                 System.Diagnostics.Debug.Assert(cond);
 #else
-            if (message != null)
+            /*if (message != null)
                 System.Diagnostics.Trace.Assert(cond, message);
             else
-                System.Diagnostics.Trace.Assert(cond);
+                System.Diagnostics.Trace.Assert(cond);*/
 #endif
             
         }
