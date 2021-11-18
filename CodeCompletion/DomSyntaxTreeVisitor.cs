@@ -3480,6 +3480,20 @@ namespace CodeCompletion
                     }
                 }
             }
+            /*if (good_procs.Count == 0)
+            {
+                for (int i = 0; i < meths.Length; i++)
+                {
+                    if (meths[i] is ProcScope)
+                    {
+                        if ((meths[i] as ProcScope).parameters.Count == arg_types.Count)
+                        {
+                            good_procs.Add(meths[i] as ProcScope);
+                            break;
+                        }
+                    }
+                }
+            }*/
             if (good_procs.Count > 0)
             {
                 if (obj != null)

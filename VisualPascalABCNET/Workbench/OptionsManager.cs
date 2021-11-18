@@ -239,7 +239,11 @@ namespace VisualPascalABC
                 if ((value = (string)Options[OptionsItemPABCDllChecked]) != null)
                     UserOptions.PABCDllChecked = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameUseSemanticIntellisense]) != null)
+                {
                     UserOptions.UseSemanticIntellisense = Convert.ToBoolean(value);
+                    CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = UserOptions.UseSemanticIntellisense;
+                }
+                    
                 int i = 0;
                 while ((value = (string)Options[OptionsItemNameLastFile + (i++).ToString()]) != null)
                     AddLastFile(value);
