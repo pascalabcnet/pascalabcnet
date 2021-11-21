@@ -46,13 +46,13 @@ namespace PascalABCCompiler.TreeConverter
 
             foreach_node foreachNode = new foreach_node(foreachVariable, foreachCollection, null, get_location(_foreach_stmt));
 
-            context.cycle_stack.push(foreachNode);
+            context.enter_in_cycle(foreachNode);
             context.loop_var_stack.Push(foreachVariable);
             context.enter_code_block_with_bind();
             statement_node body = convert_strong(_foreach_stmt.stmt);
             context.leave_code_block();
             context.loop_var_stack.Pop();
-            context.cycle_stack.pop();
+            context.leave_cycle();
 
             sl = convertion_data_and_alghoritms.statement_list_stack.pop();
 

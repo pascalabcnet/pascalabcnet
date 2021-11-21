@@ -167,6 +167,7 @@ AMBIGUOUS_DELEGATES=Невозможно выбрать конкретный д�
 EXPECTED_INTERFACE=Ожидалось имя интерфейса
 EXPECTED_PROPERTY=Ожидалось свойство
 NON_PUBLIC_RECORD_CONSTRUCTORS_NOT_ALLOWED=Записи могут иметь только публичный конструктор по умолчанию
+EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK=Использование exit, break и continue в блоке finally недопустимо
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Очікувався модуль, а зустріли бібліотеку
 ASSEMBLY_{0}_READING_ERROR=Помилка при читанні збірки '{0}'

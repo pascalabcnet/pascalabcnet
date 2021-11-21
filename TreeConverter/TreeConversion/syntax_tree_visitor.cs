@@ -1766,6 +1766,10 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(new BreakStatementWithoutComprehensiveCycle(call_location));
             }
+            if (context.in_finally_block())
+            {
+                AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
+            }
             statement_node sn = context.cycle_stack.top();
             switch (sn.semantic_node_type)
             {
@@ -1803,6 +1807,10 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(new ContinueStatementWithoutComprehensiveCycle(call_location));
             }
+            if (context.in_finally_block())
+            {
+                AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
+            }
             statement_node sn = context.cycle_stack.top();
             switch (sn.semantic_node_type)
             {
@@ -1835,6 +1843,10 @@ namespace PascalABCCompiler.TreeConverter
             if (parameters.Length != 0)
             {
                 return null;
+            }
+            if (context.in_finally_block(true))
+            {
+                AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
             }
             if (!TreeConverter.SemanticRules.EnableExitProcedure)
                 AddError(new TreeConverter.UndefinedNameReference(TreeConverter.compiler_string_consts.exit_procedure_name, call_location));
@@ -1932,7 +1944,9 @@ namespace PascalABCCompiler.TreeConverter
                 statements_list stm = new statements_list(null);
                 SyntaxTree.try_handler_finally try_hndlr_finally = _try_stmt.handler as SyntaxTree.try_handler_finally;
                 context.enter_code_block_without_bind();
+                context.enter_finally_block();
                 statement_node finally_stmt = convert_strong(try_hndlr_finally.stmt_list);
+                context.leave_finally_block();
                 context.leave_code_block();
                 stm.statements.AddElement(finally_stmt);
                 
@@ -1956,7 +1970,15 @@ namespace PascalABCCompiler.TreeConverter
             if (try_handler_finally != null)
             {
                 context.enter_code_block_without_bind();
-                finally_st = convert_strong(try_handler_finally.stmt_list);
+                context.enter_finally_block();
+                try
+                {
+                    finally_st = convert_strong(try_handler_finally.stmt_list);
+                }
+                finally
+                {
+                    context.leave_finally_block();
+                }
                 context.leave_code_block();
             }
             try_block tb = new try_block(try_statements, finally_st, efl, loc);
@@ -15811,7 +15833,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             while_node wn = new while_node(expr, get_location(_while_node));
-            context.cycle_stack.push(wn);
+            context.enter_in_cycle(wn);
 
             statements_list sl = new statements_list(get_location(_while_node.statements));
             convertion_data_and_alghoritms.statement_list_stack_push(sl);
@@ -15828,14 +15850,14 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             wn.body = st;
-            context.cycle_stack.pop();
+            context.leave_cycle();
             return_value(wn);
         }
 
         public override void visit(SyntaxTree.repeat_node _repeat_node)
         {
             repeat_node rep = new repeat_node(get_location(_repeat_node));
-            context.cycle_stack.push(rep);
+            context.enter_in_cycle(rep);
 
             statements_list sl = new statements_list(get_location(_repeat_node.statements));
             convertion_data_and_alghoritms.statement_list_stack_push(sl);
@@ -15861,7 +15883,7 @@ namespace PascalABCCompiler.TreeConverter
                 try_convert_typed_expression_to_function_call(ref expr, true);
                 rep.condition = expr;
             }
-            context.cycle_stack.pop();
+            context.leave_cycle();
             return_value(rep);
         }
 
@@ -20005,7 +20027,7 @@ namespace PascalABCCompiler.TreeConverter
             CheckToEmbeddedStatementCannotBeADeclaration(node.stmt);
 
             for_node fn = new for_node(sn_init, sn_cond, null, sn_next, null, get_location(node));
-            context.cycle_stack.push(fn);
+            context.enter_in_cycle(fn);
 
             statements_list slst = new statements_list(get_location(node.stmt));
             convertion_data_and_alghoritms.statement_list_stack_push(slst);
@@ -20021,7 +20043,7 @@ namespace PascalABCCompiler.TreeConverter
                 fn.body = slst;
             }
 
-            context.cycle_stack.pop();
+            context.leave_cycle();
 
             head_stmts = convertion_data_and_alghoritms.statement_list_stack.pop();
             head_stmts.statements.AddElement(fn);

@@ -3958,6 +3958,37 @@ namespace PascalABCCompiler.TreeConverter
             _block_stack.Push(new code_block(null));
         }
 
+        int finally_blocks_depth = 0;
+        bool disable_finally_control_break_check = false;
+
+        public void enter_finally_block()
+        {
+            finally_blocks_depth++;
+            disable_finally_control_break_check = false;
+        }
+
+        public void leave_finally_block()
+        {
+            finally_blocks_depth--;
+        }
+
+        public bool in_finally_block(bool ignore_disable_finally_control_break_check = false)
+        {
+            return (!disable_finally_control_break_check || ignore_disable_finally_control_break_check) && finally_blocks_depth > 0;
+        }
+
+        public void enter_in_cycle(statement_node stmt)
+        {
+            cycle_stack.push(stmt);
+            disable_finally_control_break_check = true;
+        }
+
+        public void leave_cycle()
+        {
+            cycle_stack.pop();
+            disable_finally_control_break_check = false;
+        }
+
         //Убирает блок со стека
         public void leave_code_block()
         {
