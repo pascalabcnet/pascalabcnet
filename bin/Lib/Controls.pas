@@ -1206,6 +1206,8 @@ function TextBox(text: string := ''): TextBoxWPF;
 /// Элемент управления "Текстовое поле с заголовком" с заданными координатами
 function TextBox(x, y: real; text: string := ''; width: real := 0): TextBoxWPF;
 
+/// Элемент управления "Целое поле" с диапазоном 0..10
+function IntegerBox(title: string): IntegerBoxWPF;
 /// Элемент управления "Целое поле" с заданным диапазоном значений
 function IntegerBox(title: string; min,max: integer): IntegerBoxWPF;
 /// Элемент управления "Целое поле" с заданными координатами
@@ -1315,6 +1317,7 @@ function RadioButton(x, y: real; text: string; width: real): RadioButtonWPF := R
 function TextBox(text: string): TextBoxWPF := TextBoxWPF.Create(text);
 function TextBox(x, y: real; text: string; width: real): TextBoxWPF := TextBoxWPF.Create(x,y,text,width);
 
+function IntegerBox(title: string): IntegerBoxWPF := IntegerBoxWPF.Create(title,0,10);
 function IntegerBox(title: string; min,max: integer): IntegerBoxWPF := IntegerBoxWPF.Create(title,min,max);
 function IntegerBox(x, y: real; title: string; min,max: integer; width: real) := IntegerBoxWPF.Create(x,y,title,min,max,width);
 

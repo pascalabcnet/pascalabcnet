@@ -37,11 +37,12 @@ end;
 procedure CompileErrorTests(withide: boolean);
 begin
   
-  var comp := new Compiler();
+  
   
   var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'errors', '*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var comp := new Compiler();
     var content := &File.ReadAllText(files[i]);
     if content.StartsWith('//winonly') and IsUnix then
       continue;
@@ -76,9 +77,11 @@ begin
           raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
         System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       end;
-      if (errorMessage <> '') and (comp.ErrorsList[0].Message.Trim <> errorMessage) then
+      if (errorMessage <> '') and (comp.ErrorsList[comp.ErrorsList.Count-1].Message.Trim <> errorMessage) then
       begin
-        System.Windows.Forms.MessageBox.Show('Wrong error message in file ' + files[i] + ', should '+errorMessage+', is '+comp.ErrorsList[0].Message);
+        if nogui then
+          raise new Exception('Wrong error message in file ' + files[i] + ', should '+errorMessage+', is '+comp.ErrorsList[comp.ErrorsList.Count-1].Message);
+        System.Windows.Forms.MessageBox.Show('Wrong error message in file ' + files[i] + ', should '+errorMessage+', is '+comp.ErrorsList[comp.ErrorsList.Count-1].Message);
       end;
     end;
     if i mod 50 = 0 then

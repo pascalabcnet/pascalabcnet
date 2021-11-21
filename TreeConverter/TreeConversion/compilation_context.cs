@@ -792,6 +792,7 @@ namespace PascalABCCompiler.TreeConverter
             if (si == null)
             {
                 AddError(new UndefinedNameReference(name, loc));
+                return null;
             }
 
             int i = 0;

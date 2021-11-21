@@ -59,6 +59,7 @@ namespace VisualPascalABC.OptionsContent
                         cbCodeCompletionKeyPressed.Checked = MainForm.UserOptions.EnableSmartIntellisense;
                         nuNamespaceVisibleRange.Value = MainForm.UserOptions.CodeCompletionNamespaceVisibleRange;
                         cbIntellisencePanel.Checked = MainForm.UserOptions.ShowQuickClassBrowserPanel;
+                        cbUseSemanticIntellisense.Checked = MainForm.UserOptions.UseSemanticIntellisense;
                         alreadyShown = true;
                     }
                     break;
@@ -70,6 +71,7 @@ namespace VisualPascalABC.OptionsContent
                     MainForm.UserOptions.EnableSmartIntellisense = cbCodeCompletionKeyPressed.Checked;
                     MainForm.UserOptions.CodeCompletionNamespaceVisibleRange = Convert.ToInt32(nuNamespaceVisibleRange.Value);
                     MainForm.UserOptions.ShowQuickClassBrowserPanel = cbIntellisencePanel.Checked;
+                    MainForm.UserOptions.UseSemanticIntellisense = cbUseSemanticIntellisense.Checked;
                     MainForm.UpdateUserOptions();
                     alreadyShown = false;
                     WorkbenchServiceFactory.OptionsService.SaveOptions();
@@ -84,9 +86,13 @@ namespace VisualPascalABC.OptionsContent
 
         private void cbAllowCodeCompletion_CheckedChanged(object sender, EventArgs e)
         {
-            cbIntellisencePanel.Checked = cbCodeCompletionKeyPressed.Checked = cbCodeCompletionDot.Checked = cbCodeCompletionHint.Checked = cbCodeCompletionParams.Checked = cbAllowCodeCompletion.Checked;
-            cbIntellisencePanel.Enabled = cbCodeCompletionKeyPressed.Enabled = nuNamespaceVisibleRange.Enabled = cbCodeCompletionDot.Enabled = cbCodeCompletionHint.Enabled = cbCodeCompletionParams.Enabled = cbAllowCodeCompletion.Checked;
+            cbIntellisencePanel.Checked = cbUseSemanticIntellisense.Checked = cbCodeCompletionKeyPressed.Checked = cbCodeCompletionDot.Checked = cbCodeCompletionHint.Checked = cbCodeCompletionParams.Checked = cbAllowCodeCompletion.Checked;
+            cbIntellisencePanel.Enabled = cbUseSemanticIntellisense.Enabled = cbCodeCompletionKeyPressed.Enabled = nuNamespaceVisibleRange.Enabled = cbCodeCompletionDot.Enabled = cbCodeCompletionHint.Enabled = cbCodeCompletionParams.Enabled = cbAllowCodeCompletion.Checked;
         }
- 
+
+        private void cbUseSemanticIntellisense_CheckedChanged(object sender, EventArgs e)
+        {
+            CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = cbUseSemanticIntellisense.Checked;
+        }
     }
 }

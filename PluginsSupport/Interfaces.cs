@@ -242,6 +242,7 @@ namespace VisualPascalABCPlugins
         bool UseDllForSystemUnits { get; set; }
         bool PABCDllChecked { get; set; }
         bool AutoInsertCodeIsEnabledOnStartup { get; set; }
+        bool UseSemanticIntellisense { get; set; }
     }
 
     public interface IListItem

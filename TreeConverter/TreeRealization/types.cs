@@ -2375,7 +2375,20 @@ namespace PascalABCCompiler.TreeRealization
                                 if (fn.parameters[0].type.is_generic_parameter)
                                     fn = fn.get_instance(new List<type_node>() { this }, false, null);
                                 else
-                                    fn = fn.get_instance(this.instance_params, false, null);
+                                {
+                                    var expr_list = new expressions_list();
+                                    expr_list.AddElement(new default_operator_node(ctn, fn.location));
+                                    try
+                                    {
+                                        fn = generic_convertions.DeduceFunction(fn, expr_list, true, compilation_context.instance, fn.location);
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                    if (fn != null && !fn.is_generic_function_instance)
+                                        fn = null;
+                                }
                                 if (fn == null)
                                     continue;
                             }
@@ -2387,9 +2400,18 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 if (ctn.IsPointer)
                                     continue;
-                                if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind)
-                                    ctn = ctn.element_type;
-                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
+                                var expr_list = new expressions_list();
+                                expr_list.AddElement(new default_operator_node(ctn, fn.location));
+                                try
+                                {
+                                    fn = generic_convertions.DeduceFunction(fn, expr_list, true, compilation_context.instance, fn.location);
+                                }
+                                catch
+                                {
+
+                                }
+                                if (fn != null && !fn.is_generic_function_instance)
+                                    fn = null;
                                 if (fn == null)
                                     continue;
                             }
@@ -2425,19 +2447,38 @@ namespace PascalABCCompiler.TreeRealization
                                 if (fn.parameters[0].type.is_generic_parameter)
                                     fn = fn.get_instance(new List<type_node>() { ctn }, false, null);
                                 else
-                                    fn = fn.get_instance(ctn.instance_params, false, null);
+                                {
+                                    var expr_list = new expressions_list();
+                                    expr_list.AddElement(new default_operator_node(ctn, fn.location));
+                                    try
+                                    {
+                                        fn = generic_convertions.DeduceFunction(fn, expr_list, true, compilation_context.instance, fn.location);
+                                    }
+                                    catch
+                                    {
+                                        
+                                    }
+                                    if (fn != null && !fn.is_generic_function_instance)
+                                        fn = null;
+                                }
+                                    
                                 if (fn == null)
                                     continue;
                             }
                             else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
                             {
-                                if (ctn is ref_type_node && !fn.parameters[0].type.is_generic_parameter)
-                                    ctn = (ctn as ref_type_node).pointed_type;
-                                if (ctn.IsPointer)
-                                    continue;
-                                if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind)
-                                    ctn = ctn.element_type;
-                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), false, null);
+                                var expr_list = new expressions_list();
+                                expr_list.AddElement(new default_operator_node(ctn, fn.location));
+                                try
+                                {
+                                    fn = generic_convertions.DeduceFunction(fn, expr_list, true, compilation_context.instance, fn.location);
+                                }
+                                catch
+                                {
+
+                                }
+                                if (fn != null && !fn.is_generic_function_instance)
+                                    fn = null;
                                 if (fn == null)
                                     continue;
                             }

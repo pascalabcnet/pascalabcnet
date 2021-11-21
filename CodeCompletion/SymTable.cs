@@ -3668,7 +3668,7 @@ namespace CodeCompletion
             if (arrs == null || !arrs.is_dynamic_arr && !arrs.IsMultiDynArray)
                 if (ts is TypeSynonim) return this.IsConvertable((ts as TypeSynonim).actType);
                 else return false;
-            if (arrs.elementType == null)
+            if (arrs.elementType == null || arrs.elementType is TemplateParameterScope)
                 return true;
             if (!this.elementType.IsEqual(arrs.elementType)) return false;
             if (this.IsMultiDynArray && arrs.IsMultiDynArray)
@@ -3693,7 +3693,8 @@ namespace CodeCompletion
                     return this.IsEqual((ts as TypeSynonim).actType);
                 else
                     return false;
-            if (arrs.elementType == null) return true;
+            if (arrs.elementType == null || arrs.elementType is TemplateParameterScope) 
+                return true;
             if (!this.elementType.IsEqual(arrs.elementType))
                 return false;
             if (is_multi_dyn_arr && !arrs.is_multi_dyn_arr)

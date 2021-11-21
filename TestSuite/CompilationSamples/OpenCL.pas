@@ -75,6 +75,13 @@ type
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
     public function ToString: string; override := $'cl_sampler[{val}]';
   end;
+  cl_semaphore = record
+    public val: IntPtr;
+    public constructor(val: IntPtr) := self.val := val;
+    public static property Zero: cl_semaphore read default(cl_semaphore);
+    public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_semaphore[{val}]';
+  end;
   cl_program = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
@@ -466,6 +473,10 @@ type
     public static property COMMAND_GL_FENCE_SYNC_OBJECT_KHR:            CommandType read new CommandType($200D);
     public static property COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR:      CommandType read new CommandType($202B);
     public static property COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR:      CommandType read new CommandType($202C);
+    public static property COMMAND_SEMAPHORE_WAIT_KHR:                  CommandType read new CommandType($2042);
+    public static property COMMAND_SEMAPHORE_SIGNAL_KHR:                CommandType read new CommandType($2043);
+    public static property COMMAND_ACQUIRE_EXTERNAL_MEM_OBJECTS_KHR:    CommandType read new CommandType($2047);
+    public static property COMMAND_RELEASE_EXTERNAL_MEM_OBJECTS_KHR:    CommandType read new CommandType($2048);
     public static property COMMAND_ACQUIRE_D3D10_OBJECTS_KHR:           CommandType read new CommandType($4017);
     public static property COMMAND_RELEASE_D3D10_OBJECTS_KHR:           CommandType read new CommandType($4018);
     public static property COMMAND_ACQUIRE_D3D11_OBJECTS_KHR:           CommandType read new CommandType($4020);
@@ -524,6 +535,10 @@ type
       if self.val = UInt32($200D) then Result := 'COMMAND_GL_FENCE_SYNC_OBJECT_KHR' else
       if self.val = UInt32($202B) then Result := 'COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR' else
       if self.val = UInt32($202C) then Result := 'COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR' else
+      if self.val = UInt32($2042) then Result := 'COMMAND_SEMAPHORE_WAIT_KHR' else
+      if self.val = UInt32($2043) then Result := 'COMMAND_SEMAPHORE_SIGNAL_KHR' else
+      if self.val = UInt32($2047) then Result := 'COMMAND_ACQUIRE_EXTERNAL_MEM_OBJECTS_KHR' else
+      if self.val = UInt32($2048) then Result := 'COMMAND_RELEASE_EXTERNAL_MEM_OBJECTS_KHR' else
       if self.val = UInt32($4017) then Result := 'COMMAND_ACQUIRE_D3D10_OBJECTS_KHR' else
       if self.val = UInt32($4018) then Result := 'COMMAND_RELEASE_D3D10_OBJECTS_KHR' else
       if self.val = UInt32($4020) then Result := 'COMMAND_ACQUIRE_D3D11_OBJECTS_KHR' else
@@ -945,6 +960,10 @@ type
     public static property DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR: DeviceInfo read new DeviceInfo($1075);
     public static property DEVICE_TERMINATE_CAPABILITY_KHR:                                      DeviceInfo read new DeviceInfo($2031);
     public static property DEVICE_MAX_NAMED_BARRIER_COUNT_KHR:                                   DeviceInfo read new DeviceInfo($2035);
+    public static property DEVICE_SEMAPHORE_TYPES_KHR:                                           DeviceInfo read new DeviceInfo($204C);
+    public static property DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR:                             DeviceInfo read new DeviceInfo($204D);
+    public static property DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR:                             DeviceInfo read new DeviceInfo($204E);
+    public static property DEVICE_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR:                       DeviceInfo read new DeviceInfo($204F);
     public static property DEVICE_COMPUTE_CAPABILITY_MAJOR_NV:                                   DeviceInfo read new DeviceInfo($4000);
     public static property DEVICE_COMPUTE_CAPABILITY_MINOR_NV:                                   DeviceInfo read new DeviceInfo($4001);
     public static property DEVICE_REGISTERS_PER_BLOCK_NV:                                        DeviceInfo read new DeviceInfo($4002);
@@ -1141,6 +1160,10 @@ type
       if self.val = UInt32($1075) then Result := 'DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR' else
       if self.val = UInt32($2031) then Result := 'DEVICE_TERMINATE_CAPABILITY_KHR' else
       if self.val = UInt32($2035) then Result := 'DEVICE_MAX_NAMED_BARRIER_COUNT_KHR' else
+      if self.val = UInt32($204C) then Result := 'DEVICE_SEMAPHORE_TYPES_KHR' else
+      if self.val = UInt32($204D) then Result := 'DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR' else
+      if self.val = UInt32($204E) then Result := 'DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR' else
+      if self.val = UInt32($204F) then Result := 'DEVICE_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR' else
       if self.val = UInt32($4000) then Result := 'DEVICE_COMPUTE_CAPABILITY_MAJOR_NV' else
       if self.val = UInt32($4001) then Result := 'DEVICE_COMPUTE_CAPABILITY_MINOR_NV' else
       if self.val = UInt32($4002) then Result := 'DEVICE_REGISTERS_PER_BLOCK_NV' else
@@ -1533,6 +1556,7 @@ type
     public static property ERROR_RESERVED1_IMG:                         ErrorCode read new ErrorCode(-1123);
     public static property ERROR_RESERVED2_IMG:                         ErrorCode read new ErrorCode(-1124);
     public static property ERROR_RESERVED3_IMG:                         ErrorCode read new ErrorCode(-1125);
+    public static property INVALID_SEMAPHORE_KHR:                       ErrorCode read new ErrorCode(-1142);
     public static property NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE:         ErrorCode read new ErrorCode(-9999);
     
     public function ToString: string; override;
@@ -1639,6 +1663,7 @@ type
       if self.val = Int32(-1123) then Result := 'ERROR_RESERVED1_IMG' else
       if self.val = Int32(-1124) then Result := 'ERROR_RESERVED2_IMG' else
       if self.val = Int32(-1125) then Result := 'ERROR_RESERVED3_IMG' else
+      if self.val = Int32(-1142) then Result := 'INVALID_SEMAPHORE_KHR' else
       if self.val = Int32(-9999) then Result := 'NV_KERNEL_ILLEGAL_BUFFER_READ_WRITE' else
         Result := $'ErrorCode[{self.val}]';
     end;
@@ -1672,6 +1697,28 @@ type
       if self.val = UInt32($11D4) then Result := 'EVENT_CONTEXT' else
       if self.val = UInt32($41ED) then Result := 'EVENT_COMMAND_TERMINATION_REASON_ARM' else
         Result := $'EventInfo[{self.val}]';
+    end;
+    
+  end;
+  
+  ExternalSemaphoreHandleTypeKhr = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property SEMAPHORE_HANDLE_OPAQUE_FD_KHR:        ExternalSemaphoreHandleTypeKhr read new ExternalSemaphoreHandleTypeKhr($2055);
+    public static property SEMAPHORE_HANDLE_OPAQUE_WIN32_KHR:     ExternalSemaphoreHandleTypeKhr read new ExternalSemaphoreHandleTypeKhr($2056);
+    public static property SEMAPHORE_HANDLE_OPAQUE_WIN32_KMT_KHR: ExternalSemaphoreHandleTypeKhr read new ExternalSemaphoreHandleTypeKhr($2057);
+    public static property SEMAPHORE_HANDLE_SYNC_FD_KHR:          ExternalSemaphoreHandleTypeKhr read new ExternalSemaphoreHandleTypeKhr($2058);
+    public static property SEMAPHORE_HANDLE_D3D12_FENCE_KHR:      ExternalSemaphoreHandleTypeKhr read new ExternalSemaphoreHandleTypeKhr($2059);
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($2055) then Result := 'SEMAPHORE_HANDLE_OPAQUE_FD_KHR' else
+      if self.val = UInt32($2056) then Result := 'SEMAPHORE_HANDLE_OPAQUE_WIN32_KHR' else
+      if self.val = UInt32($2057) then Result := 'SEMAPHORE_HANDLE_OPAQUE_WIN32_KMT_KHR' else
+      if self.val = UInt32($2058) then Result := 'SEMAPHORE_HANDLE_SYNC_FD_KHR' else
+      if self.val = UInt32($2059) then Result := 'SEMAPHORE_HANDLE_D3D12_FENCE_KHR' else
+        Result := $'ExternalSemaphoreHandleTypeKhr[{self.val}]';
     end;
     
   end;
@@ -2326,10 +2373,14 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    public static property MEM_ALLOC_FLAGS_IMG: MemProperties read new MemProperties($40D7);
+    public static property DEVICE_HANDLE_LIST_END_KHR: MemProperties read new MemProperties($0000);
+    public static property DEVICE_HANDLE_LIST_KHR:     MemProperties read new MemProperties($2051);
+    public static property MEM_ALLOC_FLAGS_IMG:        MemProperties read new MemProperties($40D7);
     
     public function ToString: string; override;
     begin
+      if self.val = UInt64($0000) then Result := 'DEVICE_HANDLE_LIST_END_KHR' else
+      if self.val = UInt64($2051) then Result := 'DEVICE_HANDLE_LIST_KHR' else
       if self.val = UInt64($40D7) then Result := 'MEM_ALLOC_FLAGS_IMG' else
         Result := $'MemProperties[{self.val}]';
     end;
@@ -2390,17 +2441,21 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property PLATFORM_PROFILE:                     PlatformInfo read new PlatformInfo($0900);
-    public static property PLATFORM_VERSION:                     PlatformInfo read new PlatformInfo($0901);
-    public static property PLATFORM_NAME:                        PlatformInfo read new PlatformInfo($0902);
-    public static property PLATFORM_VENDOR:                      PlatformInfo read new PlatformInfo($0903);
-    public static property PLATFORM_EXTENSIONS:                  PlatformInfo read new PlatformInfo($0904);
-    public static property PLATFORM_HOST_TIMER_RESOLUTION:       PlatformInfo read new PlatformInfo($0905);
-    public static property PLATFORM_NUMERIC_VERSION:             PlatformInfo read new PlatformInfo($0906);
-    public static property PLATFORM_NUMERIC_VERSION_KHR:         PlatformInfo read new PlatformInfo($0906);
-    public static property PLATFORM_EXTENSIONS_WITH_VERSION:     PlatformInfo read new PlatformInfo($0907);
-    public static property PLATFORM_EXTENSIONS_WITH_VERSION_KHR: PlatformInfo read new PlatformInfo($0907);
-    public static property PLATFORM_ICD_SUFFIX_KHR:              PlatformInfo read new PlatformInfo($0920);
+    public static property PLATFORM_PROFILE:                                 PlatformInfo read new PlatformInfo($0900);
+    public static property PLATFORM_VERSION:                                 PlatformInfo read new PlatformInfo($0901);
+    public static property PLATFORM_NAME:                                    PlatformInfo read new PlatformInfo($0902);
+    public static property PLATFORM_VENDOR:                                  PlatformInfo read new PlatformInfo($0903);
+    public static property PLATFORM_EXTENSIONS:                              PlatformInfo read new PlatformInfo($0904);
+    public static property PLATFORM_HOST_TIMER_RESOLUTION:                   PlatformInfo read new PlatformInfo($0905);
+    public static property PLATFORM_NUMERIC_VERSION:                         PlatformInfo read new PlatformInfo($0906);
+    public static property PLATFORM_NUMERIC_VERSION_KHR:                     PlatformInfo read new PlatformInfo($0906);
+    public static property PLATFORM_EXTENSIONS_WITH_VERSION:                 PlatformInfo read new PlatformInfo($0907);
+    public static property PLATFORM_EXTENSIONS_WITH_VERSION_KHR:             PlatformInfo read new PlatformInfo($0907);
+    public static property PLATFORM_ICD_SUFFIX_KHR:                          PlatformInfo read new PlatformInfo($0920);
+    public static property PLATFORM_SEMAPHORE_TYPES_KHR:                     PlatformInfo read new PlatformInfo($2036);
+    public static property PLATFORM_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR:       PlatformInfo read new PlatformInfo($2037);
+    public static property PLATFORM_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR:       PlatformInfo read new PlatformInfo($2038);
+    public static property PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR: PlatformInfo read new PlatformInfo($2044);
     
     public function ToString: string; override;
     begin
@@ -2415,6 +2470,10 @@ type
       if self.val = UInt32($0907) then Result := 'PLATFORM_EXTENSIONS_WITH_VERSION' else
       if self.val = UInt32($0907) then Result := 'PLATFORM_EXTENSIONS_WITH_VERSION_KHR' else
       if self.val = UInt32($0920) then Result := 'PLATFORM_ICD_SUFFIX_KHR' else
+      if self.val = UInt32($2036) then Result := 'PLATFORM_SEMAPHORE_TYPES_KHR' else
+      if self.val = UInt32($2037) then Result := 'PLATFORM_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR' else
+      if self.val = UInt32($2038) then Result := 'PLATFORM_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR' else
+      if self.val = UInt32($2044) then Result := 'PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR' else
         Result := $'PlatformInfo[{self.val}]';
     end;
     
@@ -2592,6 +2651,54 @@ type
       if self.val = UInt64($1156) then Result := 'SAMPLER_LOD_MIN_KHR' else
       if self.val = UInt64($1157) then Result := 'SAMPLER_LOD_MAX_KHR' else
         Result := $'SamplerProperties[{self.val}]';
+    end;
+    
+  end;
+  
+  SemaphoreInfoKhr = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property DEVICE_HANDLE_LIST_END_KHR:    SemaphoreInfoKhr read new SemaphoreInfoKhr($0000);
+    public static property SEMAPHORE_CONTEXT_KHR:         SemaphoreInfoKhr read new SemaphoreInfoKhr($2039);
+    public static property SEMAPHORE_REFERENCE_COUNT_KHR: SemaphoreInfoKhr read new SemaphoreInfoKhr($203A);
+    public static property SEMAPHORE_PROPERTIES_KHR:      SemaphoreInfoKhr read new SemaphoreInfoKhr($203B);
+    public static property SEMAPHORE_PAYLOAD_KHR:         SemaphoreInfoKhr read new SemaphoreInfoKhr($203C);
+    public static property SEMAPHORE_TYPE_KHR:            SemaphoreInfoKhr read new SemaphoreInfoKhr($203D);
+    public static property DEVICE_HANDLE_LIST_KHR:        SemaphoreInfoKhr read new SemaphoreInfoKhr($2051);
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt32($0000) then Result := 'DEVICE_HANDLE_LIST_END_KHR' else
+      if self.val = UInt32($2039) then Result := 'SEMAPHORE_CONTEXT_KHR' else
+      if self.val = UInt32($203A) then Result := 'SEMAPHORE_REFERENCE_COUNT_KHR' else
+      if self.val = UInt32($203B) then Result := 'SEMAPHORE_PROPERTIES_KHR' else
+      if self.val = UInt32($203C) then Result := 'SEMAPHORE_PAYLOAD_KHR' else
+      if self.val = UInt32($203D) then Result := 'SEMAPHORE_TYPE_KHR' else
+      if self.val = UInt32($2051) then Result := 'DEVICE_HANDLE_LIST_KHR' else
+        Result := $'SemaphoreInfoKhr[{self.val}]';
+    end;
+    
+  end;
+  
+  SemaphorePropertiesKhr = record
+    public val: UInt64;
+    public constructor(val: UInt64) := self.val := val;
+    
+    public static property DEVICE_HANDLE_LIST_END_KHR:                 SemaphorePropertiesKhr read new SemaphorePropertiesKhr($0000);
+    public static property SEMAPHORE_EXPORT_HANDLE_TYPES_LIST_END_KHR: SemaphorePropertiesKhr read new SemaphorePropertiesKhr($0000);
+    public static property SEMAPHORE_TYPE_KHR:                         SemaphorePropertiesKhr read new SemaphorePropertiesKhr($203D);
+    public static property SEMAPHORE_EXPORT_HANDLE_TYPES_KHR:          SemaphorePropertiesKhr read new SemaphorePropertiesKhr($203F);
+    public static property DEVICE_HANDLE_LIST_KHR:                     SemaphorePropertiesKhr read new SemaphorePropertiesKhr($2051);
+    
+    public function ToString: string; override;
+    begin
+      if self.val = UInt64($0000) then Result := 'DEVICE_HANDLE_LIST_END_KHR' else
+      if self.val = UInt64($0000) then Result := 'SEMAPHORE_EXPORT_HANDLE_TYPES_LIST_END_KHR' else
+      if self.val = UInt64($203D) then Result := 'SEMAPHORE_TYPE_KHR' else
+      if self.val = UInt64($203F) then Result := 'SEMAPHORE_EXPORT_HANDLE_TYPES_KHR' else
+      if self.val = UInt64($2051) then Result := 'DEVICE_HANDLE_LIST_KHR' else
+        Result := $'SemaphorePropertiesKhr[{self.val}]';
     end;
     
   end;
@@ -14398,6 +14505,2054 @@ type
     external 'opencl.dll' name 'clGetKernelSuggestedLocalWorkSizeKHR';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelSuggestedLocalWorkSizeKHR(command_queue: cl_command_queue; kernel: cl_kernel; work_dim: UInt32; global_work_offset: IntPtr; global_work_size: IntPtr; suggested_local_work_size: IntPtr): ErrorCode :=
     z_GetKernelSuggestedLocalWorkSizeKHR_ovr_26(command_queue, kernel, work_dim, global_work_offset, global_work_size, suggested_local_work_size);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clSemaphoreKHR = static class
+    public const _ExtStr = 'khr_semaphore';
+    
+    private static function z_CreateSemaphoreWithPropertiesKHR_ovr_0(context: cl_context; var sema_props: SemaphorePropertiesKhr; var errcode_ret: ErrorCode): cl_semaphore;
+    external 'opencl.dll' name 'clCreateSemaphoreWithPropertiesKHR';
+    private static function z_CreateSemaphoreWithPropertiesKHR_ovr_0_anh0010(context: cl_context; sema_props: IntPtr; var errcode_ret: ErrorCode): cl_semaphore;
+    external 'opencl.dll' name 'clCreateSemaphoreWithPropertiesKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateSemaphoreWithPropertiesKHR(context: cl_context; sema_props: array of SemaphorePropertiesKhr; var errcode_ret: ErrorCode): cl_semaphore :=
+    if (sema_props<>nil) and (sema_props.Length<>0) then
+      z_CreateSemaphoreWithPropertiesKHR_ovr_0(context, sema_props[0], errcode_ret) else
+      z_CreateSemaphoreWithPropertiesKHR_ovr_0_anh0010(context, IntPtr.Zero, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateSemaphoreWithPropertiesKHR(context: cl_context; var sema_props: SemaphorePropertiesKhr; var errcode_ret: ErrorCode): cl_semaphore :=
+    z_CreateSemaphoreWithPropertiesKHR_ovr_0(context, sema_props, errcode_ret);
+    private static function z_CreateSemaphoreWithPropertiesKHR_ovr_2(context: cl_context; sema_props: IntPtr; var errcode_ret: ErrorCode): cl_semaphore;
+    external 'opencl.dll' name 'clCreateSemaphoreWithPropertiesKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateSemaphoreWithPropertiesKHR(context: cl_context; sema_props: IntPtr; var errcode_ret: ErrorCode): cl_semaphore :=
+    z_CreateSemaphoreWithPropertiesKHR_ovr_2(context, sema_props, errcode_ret);
+    
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000011(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001011(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000011(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001001(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001010(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001011(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010011(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011001(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011010(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011011(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_1_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_1_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_1_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_1_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_1_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_1_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_1_anh00011010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001010(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011010(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_2_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_2_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_2_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_2_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_2_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_2_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_2_anh00011010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueWaitSemaphoresKHR_ovr_2_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_2_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueWaitSemaphoresKHR_ovr_2_anh00001010(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_2_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueWaitSemaphoresKHR_ovr_2_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_2_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueWaitSemaphoresKHR_ovr_2_anh00011010(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_3_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_3_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_3_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_3_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_3_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_3_anh00011001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001001(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011001(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_4_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_4_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_4_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_5_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_5_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_5_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_6_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_6_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_6_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_6_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_6_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_6_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_6_anh00011001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_6_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_6_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_6_anh00001001(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_6_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_6_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_6_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_6_anh00011001(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_7_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_7_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_7_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_8(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_8_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_8_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_8_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_8(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_8_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_8_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_8_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_9_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_9_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_9_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_9_anh00010011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000011(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010011(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_10_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_10_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_11_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_11_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_12_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_12_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_13_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_14_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_2_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_15_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_15_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_16_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_6_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_17_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_8(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_8_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000011(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000011(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010011(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_19_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_19_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_19_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_20(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_20_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_20_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_20_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_20(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_20_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_20_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_20_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_21_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_21_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_22_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_18_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_23_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_20(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_20_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_24(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_24_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_24_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_24_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_24(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_24_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_24_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_24_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_25_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_24(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_24_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_26(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_26_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_26(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_26_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001011(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_2_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_2_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_6_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_6_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_8(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_8_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_2_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueWaitSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueWaitSemaphoresKHR_ovr_6_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_8(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_20(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_20_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueWaitSemaphoresKHR_ovr_18_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_20(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_24(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueWaitSemaphoresKHR_ovr_24_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_24(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_26(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001011(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_55_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_55_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_55_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_56(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_56_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_56_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_56_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_56(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_56_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_56_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueWaitSemaphoresKHR_ovr_56_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_57_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_57_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_58_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_54_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_59_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_56(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_56_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_60(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_60_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_60_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_60_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_60(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_60_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_60_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_60_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_61_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_60(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_60_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_62(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_62_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_62(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_62_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_56(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_56_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueWaitSemaphoresKHR_ovr_54_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_56(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_60(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueWaitSemaphoresKHR_ovr_60_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_60(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_62(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_72(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_72_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_72_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_72_anh00000011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_72(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_72_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueWaitSemaphoresKHR_ovr_72_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueWaitSemaphoresKHR_ovr_72_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_73_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_72(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_72_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_74(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_74_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_74(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueWaitSemaphoresKHR_ovr_74_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_72(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueWaitSemaphoresKHR_ovr_72_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_72(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_74(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_78(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_78_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueWaitSemaphoresKHR_ovr_78(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueWaitSemaphoresKHR_ovr_78_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_78(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueWaitSemaphoresKHR_ovr_80(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWaitSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueWaitSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueWaitSemaphoresKHR_ovr_80(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000011(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001011(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000011(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001001(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001010(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001011(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010011(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011001(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+          if (&event<>nil) and (&event.Length<>0) then
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011010(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+            z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011011(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_1_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_1_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_1_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_1_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_1_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_1_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_1_anh00011010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001010(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011010(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_2_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_2_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_2_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_2_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_2_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_2_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_2_anh00011010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueSignalSemaphoresKHR_ovr_2_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_2_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueSignalSemaphoresKHR_ovr_2_anh00001010(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_2_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueSignalSemaphoresKHR_ovr_2_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+        if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_2_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+          z_EnqueueSignalSemaphoresKHR_ovr_2_anh00011010(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_3_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_3_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_3_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_3_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_3_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_3_anh00011001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001001(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011001(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_4_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_4_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_4_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_5_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_5_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_5_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_6_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_6_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_6_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_6_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_6_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_6_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_6_anh00011001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_6_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_6_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_6_anh00001001(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_6_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_6_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_6_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_6_anh00011001(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_7_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_7_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_7_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_8(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_8_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_8_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_8_anh00011000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_8(command_queue, num_sema_objects, sema_objects[0], sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_8_anh00001000(command_queue, num_sema_objects, sema_objects[0], IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event) else
+      if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_8_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_8_anh00011000(command_queue, num_sema_objects, IntPtr.Zero, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_9_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_9_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_9_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_9_anh00010011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000011(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010011(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_10_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_10_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_11_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_11_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_12_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_12_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_13_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_0_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_14_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_2_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_15_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_15_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_16_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_6_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_17_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_8(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_8_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000011(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000011(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010011(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_19_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_19_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_19_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_20(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_20_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_20_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_20_anh00010010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_20(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_20_anh00000010(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_20_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_20_anh00010010(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_21_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_21_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_22_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_18_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_23_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_20(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_20_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_24(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_24_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_24_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_24_anh00010001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_24(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_24_anh00000001(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_24_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_24_anh00010001(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_25_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_24(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_24_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_26(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_26_anh00010000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: array of cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_objects<>nil) and (sema_objects.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_26(command_queue, num_sema_objects, sema_objects[0], sema_payload_list, num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_26_anh00010000(command_queue, num_sema_objects, IntPtr.Zero, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001011(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_2_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_0_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_2_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_6_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_6_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_8(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_8_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_2_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueSignalSemaphoresKHR_ovr_0_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_0(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_2(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueSignalSemaphoresKHR_ovr_6_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_6(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_8(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_20(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_20_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueSignalSemaphoresKHR_ovr_18_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_18(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_20(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_24(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueSignalSemaphoresKHR_ovr_24_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_24(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; var sema_objects: cl_semaphore; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_26(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001011(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_55_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_55_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_55_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_56(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_56_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_56_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_56_anh00001010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_56(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_56_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_56_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueSignalSemaphoresKHR_ovr_56_anh00001010(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_57_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_57_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_58_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_54_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_59_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_56(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_56_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_60(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_60_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_60_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_60_anh00001001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_60(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_60_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_60_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_60_anh00001001(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_61_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_60(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_60_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_62(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_62_anh00001000(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: array of UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (sema_payload_list<>nil) and (sema_payload_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_62(command_queue, num_sema_objects, sema_objects, sema_payload_list[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_62_anh00001000(command_queue, num_sema_objects, sema_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_56(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_56_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueSignalSemaphoresKHR_ovr_54_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_54(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_56(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_60(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueSignalSemaphoresKHR_ovr_60_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_60(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; var sema_payload_list: UInt64; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_62(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_72(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_72_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_72_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_72_anh00000011(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_72(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_72_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueSignalSemaphoresKHR_ovr_72_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueSignalSemaphoresKHR_ovr_72_anh00000011(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_73_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_72(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_72_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_74(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_74_anh00000010(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_74(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueSignalSemaphoresKHR_ovr_74_anh00000010(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_72(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueSignalSemaphoresKHR_ovr_72_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_72(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_74(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_78(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_78_anh00000001(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueSignalSemaphoresKHR_ovr_78(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueSignalSemaphoresKHR_ovr_78_anh00000001(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_78(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueSignalSemaphoresKHR_ovr_80(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSignalSemaphoresKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueSignalSemaphoresKHR(command_queue: cl_command_queue; num_sema_objects: UInt32; sema_objects: IntPtr; sema_payload_list: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueSignalSemaphoresKHR_ovr_80(command_queue, num_sema_objects, sema_objects, sema_payload_list, num_events_in_wait_list, event_wait_list, &event);
+    
+    private static function z_GetSemaphoreInfoKHR_ovr_0(sema_object: cl_semaphore; param_name: SemaphoreInfoKhr; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSemaphoreInfoKHR';
+    private static function z_GetSemaphoreInfoKHR_ovr_0_anh000001(sema_object: cl_semaphore; param_name: SemaphoreInfoKhr; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSemaphoreInfoKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSemaphoreInfoKHR(sema_object: cl_semaphore; param_name: SemaphoreInfoKhr; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
+    if (param_value_size_ret<>nil) and (param_value_size_ret.Length<>0) then
+      z_GetSemaphoreInfoKHR_ovr_0(sema_object, param_name, param_value_size, param_value, param_value_size_ret[0]) else
+      z_GetSemaphoreInfoKHR_ovr_0_anh000001(sema_object, param_name, param_value_size, param_value, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSemaphoreInfoKHR(sema_object: cl_semaphore; param_name: SemaphoreInfoKhr; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetSemaphoreInfoKHR_ovr_0(sema_object, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetSemaphoreInfoKHR_ovr_2(sema_object: cl_semaphore; param_name: SemaphoreInfoKhr; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSemaphoreInfoKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSemaphoreInfoKHR(sema_object: cl_semaphore; param_name: SemaphoreInfoKhr; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetSemaphoreInfoKHR_ovr_2(sema_object, param_name, param_value_size, param_value, param_value_size_ret);
+    
+    private static function z_ReleaseSemaphoreKHR_ovr_0(sema_object: cl_semaphore): ErrorCode;
+    external 'opencl.dll' name 'clReleaseSemaphoreKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function ReleaseSemaphoreKHR(sema_object: cl_semaphore): ErrorCode :=
+    z_ReleaseSemaphoreKHR_ovr_0(sema_object);
+    
+    private static function z_RetainSemaphoreKHR_ovr_0(sema_object: cl_semaphore): ErrorCode;
+    external 'opencl.dll' name 'clRetainSemaphoreKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function RetainSemaphoreKHR(sema_object: cl_semaphore): ErrorCode :=
+    z_RetainSemaphoreKHR_ovr_0(sema_object);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clExternalSemaphoreKHR = static class
+    public const _ExtStr = 'khr_external_semaphore';
+    
+    private static function z_GetSemaphoreHandleForTypeKHR_ovr_0(sema_object: cl_semaphore; device: cl_device_id; handle_type: ExternalSemaphoreHandleTypeKhr; handle_size: UIntPtr; handle_ptr: IntPtr; var handle_size_ret: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSemaphoreHandleForTypeKHR';
+    private static function z_GetSemaphoreHandleForTypeKHR_ovr_0_anh0000001(sema_object: cl_semaphore; device: cl_device_id; handle_type: ExternalSemaphoreHandleTypeKhr; handle_size: UIntPtr; handle_ptr: IntPtr; handle_size_ret: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSemaphoreHandleForTypeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSemaphoreHandleForTypeKHR(sema_object: cl_semaphore; device: cl_device_id; handle_type: ExternalSemaphoreHandleTypeKhr; handle_size: UIntPtr; handle_ptr: IntPtr; handle_size_ret: array of UIntPtr): ErrorCode :=
+    if (handle_size_ret<>nil) and (handle_size_ret.Length<>0) then
+      z_GetSemaphoreHandleForTypeKHR_ovr_0(sema_object, device, handle_type, handle_size, handle_ptr, handle_size_ret[0]) else
+      z_GetSemaphoreHandleForTypeKHR_ovr_0_anh0000001(sema_object, device, handle_type, handle_size, handle_ptr, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSemaphoreHandleForTypeKHR(sema_object: cl_semaphore; device: cl_device_id; handle_type: ExternalSemaphoreHandleTypeKhr; handle_size: UIntPtr; handle_ptr: IntPtr; var handle_size_ret: UIntPtr): ErrorCode :=
+    z_GetSemaphoreHandleForTypeKHR_ovr_0(sema_object, device, handle_type, handle_size, handle_ptr, handle_size_ret);
+    private static function z_GetSemaphoreHandleForTypeKHR_ovr_2(sema_object: cl_semaphore; device: cl_device_id; handle_type: ExternalSemaphoreHandleTypeKhr; handle_size: UIntPtr; handle_ptr: IntPtr; handle_size_ret: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetSemaphoreHandleForTypeKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetSemaphoreHandleForTypeKHR(sema_object: cl_semaphore; device: cl_device_id; handle_type: ExternalSemaphoreHandleTypeKhr; handle_size: UIntPtr; handle_ptr: IntPtr; handle_size_ret: IntPtr): ErrorCode :=
+    z_GetSemaphoreHandleForTypeKHR_ovr_2(sema_object, device, handle_type, handle_size, handle_ptr, handle_size_ret);
+    
+  end;
+  
+  [PCUNotRestore]
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  clExternalMemoryKHR = static class
+    public const _ExtStr = 'khr_external_memory';
+    
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000001(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000011(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001011(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000001(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000010(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000011(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001001(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001010(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001011(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_1_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_1_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_1_anh0001010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000010(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001010(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_2(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_2_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_2_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_2_anh0001010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_2(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_2_anh0000010(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_2_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_2_anh0001010(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_3_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_3_anh0001001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000001(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001001(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_4_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_5_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_2(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_2_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_6(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_6_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_6_anh0000001(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_6_anh0001001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_6(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_6_anh0000001(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_6_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_6_anh0001001(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_7_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_6(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_6_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_8(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_8_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_8(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_8_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000011(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_2(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_2_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_0_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueAcquireExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueAcquireExternalMemObjectsKHR_ovr_2(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_6(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_6_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueAcquireExternalMemObjectsKHR_ovr_6(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueAcquireExternalMemObjectsKHR_ovr_8(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_18(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_18_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_18_anh0000001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_18_anh0000011(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_18(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_18_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_18_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueAcquireExternalMemObjectsKHR_ovr_18_anh0000011(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_19_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_18(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_18_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_20(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_20_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_20(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_20_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_18(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_18_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueAcquireExternalMemObjectsKHR_ovr_18(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueAcquireExternalMemObjectsKHR_ovr_20(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_24(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_24_anh0000001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_24(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueAcquireExternalMemObjectsKHR_ovr_24_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueAcquireExternalMemObjectsKHR_ovr_24(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueAcquireExternalMemObjectsKHR_ovr_26(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueAcquireExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueAcquireExternalMemObjectsKHR_ovr_26(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000001(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000011(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001011(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000001(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000010(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000011(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+          z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001001(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+        if (&event<>nil) and (&event.Length<>0) then
+          z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001010(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+          z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001011(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_1_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_1_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_1_anh0001010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000010(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001010(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_2(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_2_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_2_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_2_anh0001010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_2(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_2_anh0000010(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, IntPtr.Zero, &event) else
+      if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_2_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list[0], &event) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_2_anh0001010(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_3_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_3_anh0001001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000001(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001001(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_4_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_5_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_2(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_2_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_6(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_6_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_6_anh0000001(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_6_anh0001001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_6(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_6_anh0000001(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_6_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event[0]) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_6_anh0001001(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_7_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_6(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_6_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_8(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_8_anh0001000(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    if (mem_objects<>nil) and (mem_objects.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_8(command_queue, num_mem_objects, mem_objects[0], num_events_in_wait_list, event_wait_list, &event) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_8_anh0001000(command_queue, num_mem_objects, IntPtr.Zero, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000011(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_2(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_2_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_0_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueReleaseExternalMemObjectsKHR_ovr_0(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueReleaseExternalMemObjectsKHR_ovr_2(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_6(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_6_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueReleaseExternalMemObjectsKHR_ovr_6(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueReleaseExternalMemObjectsKHR_ovr_8(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_18(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_18_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_18_anh0000001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_18_anh0000011(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_18(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event[0]) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_18_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], IntPtr.Zero) else
+      if (&event<>nil) and (&event.Length<>0) then
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_18_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
+        z_EnqueueReleaseExternalMemObjectsKHR_ovr_18_anh0000011(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_19_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_18(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_18_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_20(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_20_anh0000010(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_20(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list[0], &event) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_20_anh0000010(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, IntPtr.Zero, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_18(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_18_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    z_EnqueueReleaseExternalMemObjectsKHR_ovr_18(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    z_EnqueueReleaseExternalMemObjectsKHR_ovr_20(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_24(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_24_anh0000001(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    if (&event<>nil) and (&event.Length<>0) then
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_24(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event[0]) else
+      z_EnqueueReleaseExternalMemObjectsKHR_ovr_24_anh0000001(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    z_EnqueueReleaseExternalMemObjectsKHR_ovr_24(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
+    private static function z_EnqueueReleaseExternalMemObjectsKHR_ovr_26(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseExternalMemObjectsKHR';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueReleaseExternalMemObjectsKHR(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    z_EnqueueReleaseExternalMemObjectsKHR_ovr_26(command_queue, num_mem_objects, mem_objects, num_events_in_wait_list, event_wait_list, &event);
     
   end;
   

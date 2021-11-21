@@ -39,7 +39,7 @@ namespace CodeCompletion
         internal bool parse_only_interface = false;
         private template_type_reference converted_template_type = null;
         private List<var_def_statement> pending_is_pattern_vars = new List<var_def_statement>();
-        private Compiler compiler;
+        private static Compiler compiler;
         public static bool use_semantic_for_intellisense;
 
         public SemanticOptions semantic_options = new SemanticOptions();
@@ -69,7 +69,7 @@ namespace CodeCompletion
                 //throw e;
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
-            if (use_semantic_for_intellisense && cu.file_name.IndexOf("PABCSystem.pas") == -1)
+            if (use_semantic_for_intellisense && !parse_only_interface)
             try
             {
                 CorrectTreeWithSemantic(cu);
@@ -90,15 +90,16 @@ namespace CodeCompletion
                 var ntr = new named_type_reference();
                 ttr.name = ntr;
                 ttr.params_list = new template_param_list();
-                var arr = tn.full_name.Split('.');
-                foreach (string s in arr)
+                var arr = tn.original_generic.full_name.Split('.');
+                for (int i = 0; i < arr.Length; i++)
                 {
-                    if (s.IndexOf("<") == -1)
+                    var s = arr[i];
+                    if (i < arr.Length - 1)
                         ntr.names.Add(new ident(s));
                     else
                     {
                         var id = new ident_with_templateparams();
-                        ntr.Add(new ident(s.Substring(0, s.IndexOf("<"))));
+                        ntr.Add(new ident(s));
                         foreach (var gen_td in tn.instance_params)
                             ttr.params_list.Add(BuildSyntaxNodeForTypeReference(gen_td));
                     }
@@ -108,7 +109,11 @@ namespace CodeCompletion
             else
             {
                 var ntr = new named_type_reference();
-
+                if (tn.IsDelegate)
+                {
+                    ntr.names.Add(new ident(tn.PrintableName.Replace("()", "")));
+                    return ntr;
+                }
                 var arr = tn.full_name.Split('.');
                 foreach (string s in arr)
                 {
@@ -138,7 +143,7 @@ namespace CodeCompletion
             if (ts is TypeSynonim)
             {
                 var corrected_type = GetCorrectedType((ts as TypeSynonim).actType, tn, topScope);
-                if (corrected_type != (ts as TypeSynonim).actType)
+                if (!corrected_type.IsEqual((ts as TypeSynonim).actType))
                     return corrected_type;
                 return ts;
             }
@@ -146,7 +151,11 @@ namespace CodeCompletion
             {
                 var ctn = tn as compiled_type_node;
                 if (ctn.compiled_type.IsArray)
+                {
+                    if (ctn.rank > 1)
+                        return new ArrayScope(GetIntellisenseTypeByType((ctn.element_type as compiled_type_node).compiled_type), new TypeScope[ctn.rank]);
                     return new ArrayScope(GetIntellisenseTypeByType((ctn.element_type as compiled_type_node).compiled_type), null);
+                }
                 if (ctn.compiled_type.GetGenericArguments().Length == 0)
                     return TypeTable.get_compiled_type(ctn.compiled_type);
                 else
@@ -158,10 +167,21 @@ namespace CodeCompletion
                     }
                     return CompiledScope.get_type_instance(ctn.compiled_type.GetGenericTypeDefinition(), gen_args);
                 }
-            }   
+            }
+            else if (tn is ref_type_node && ts is PointerScope)
+            {
+                var corrected_type = GetCorrectedType((ts as PointerScope).elementType, tn.element_type, topScope);
+                if (!corrected_type.IsEqual((ts as PointerScope).elementType))
+                    return new PointerScope(corrected_type);
+                return ts;
+            }
             else
             {
                 if (tn.full_name.IndexOf("$") != -1 || tn.full_name.IndexOf("#") != -1)
+                    return ts;
+                if (ts is FileScope && tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.typed_file)
+                    return ts;
+                if (ts is FileScope && tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.binary_file)
                     return ts;
                 var ntr = BuildSyntaxNodeForTypeReference(tn);
                 cur_scope = topScope;
@@ -207,15 +227,17 @@ namespace CodeCompletion
             co.UnitSyntaxTree = cu;
             co.SourceFileName = cu.source_context.FileName;
             co.ForIntellisense = true;
+            co.SaveDocumentation = false;
 
-            compiler = new Compiler();
+            //if (compiler == null)
+                compiler = new Compiler();
             compiler.CompilerOptions = co;
             compiler.ClearAfterCompilation = false;
             compiler.Compile();
 
             foreach (var lv in compiler.CompiledVariables)
                 CorrectVariableType(lv);
-            compiler.ClearAll();
+            compiler.ClearAll(/*false*/);
         }
 
 		public SymScope FindScopeByLocation(int line, int col)
@@ -3458,6 +3480,20 @@ namespace CodeCompletion
                     }
                 }
             }
+            /*if (good_procs.Count == 0)
+            {
+                for (int i = 0; i < meths.Length; i++)
+                {
+                    if (meths[i] is ProcScope)
+                    {
+                        if ((meths[i] as ProcScope).parameters.Count == arg_types.Count)
+                        {
+                            good_procs.Add(meths[i] as ProcScope);
+                            break;
+                        }
+                    }
+                }
+            }*/
             if (good_procs.Count > 0)
             {
                 if (obj != null)

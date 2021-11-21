@@ -14137,7 +14137,9 @@ begin
   
   // SSM 10/11/18 восстановил эту строку чтобы в главном потоке в вещественных была точка
   System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
-
+  var defaultCulture := typeof(System.Globalization.CultureInfo).GetProperty('DefaultThreadCurrentCulture');
+  if defaultCulture <> nil then
+    defaultCulture.SetValue(nil, new System.Globalization.CultureInfo('en-US'), nil);
   input := new TextFile();
   output := new TextFile();
   output.sw := Console.Out;

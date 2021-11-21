@@ -20,7 +20,7 @@ namespace CodeCompletion
         public Dictionary<PascalABCCompiler.SyntaxTree.syntax_tree_node, string> docs = new Dictionary<PascalABCCompiler.SyntaxTree.syntax_tree_node, string>();
 		static bool parsers_loaded=false;
 		public IParser Parser;
-		
+
         static CodeCompletionController()
         {
             //ParsersController.Reload();

@@ -58,6 +58,7 @@ namespace VisualPascalABC
         private string OptionsItemNameDockLeftPortion = "DockLeftPortion";
         private string OptionsItemNameDockRightPortion = "DockRightPortion";
         private string OptionsItemNameShowQuickClassBrowserPanel = "ShowQuickClassBrowserPanel";
+        private string OptionsItemNameUseSemanticIntellisense = "UseSemanticIntellisense";
         private string OptionsItemNameSkipStackTraceItemIfSourceFileInSystemDirectory = "SkipStakTraceItemIfSourceFileInSystemDirectory";
         private string OptionsItemNameShowFoundedNamesTab = "ShowFoundedNamesTab";
         private string OptionsItemNameShowWatchTab = "ShowWatchTab";
@@ -237,6 +238,12 @@ namespace VisualPascalABC
                     UserOptions.UseDllForSystemUnits = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemPABCDllChecked]) != null)
                     UserOptions.PABCDllChecked = Convert.ToBoolean(value);
+                if ((value = (string)Options[OptionsItemNameUseSemanticIntellisense]) != null)
+                {
+                    UserOptions.UseSemanticIntellisense = Convert.ToBoolean(value);
+                    CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = UserOptions.UseSemanticIntellisense;
+                }
+                    
                 int i = 0;
                 while ((value = (string)Options[OptionsItemNameLastFile + (i++).ToString()]) != null)
                     AddLastFile(value);
@@ -286,6 +293,7 @@ namespace VisualPascalABC
             Options.Add(OptionsItemNameCodeCompletionNamespaceVisibleRange, UserOptions.CodeCompletionNamespaceVisibleRange);
             Options.Add(OptionsItemNameSaveSourceFilesIfComilationOk, UserOptions.SaveSourceFilesIfComilationOk);
             Options.Add(OptionsItemNameShowQuickClassBrowserPanel, UserOptions.ShowQuickClassBrowserPanel);
+            Options.Add(OptionsItemNameUseSemanticIntellisense, UserOptions.UseSemanticIntellisense);
             Options.Add(OptionsItemNameSkipStackTraceItemIfSourceFileInSystemDirectory, UserOptions.SkipStackTraceItemIfSourceFileInSystemDirectory);
             Options.Add(OptionsItemNameAutoInsertCode, UserOptions.AutoInsertCodeIsEnabledOnStartup);
 

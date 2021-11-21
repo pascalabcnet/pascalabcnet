@@ -243,6 +243,12 @@ namespace PascalABCCompiler.TreeRealization
             return instances;
         }
 
+        public static void remove_type_instances(type_node original_generic_type)
+        {
+            if (generic_instances[original_generic_type] != null)
+                generic_instances.Remove(original_generic_type);
+        }
+
         public static List<generic_function_instance_info> get_function_instances(function_node original_generic_function)
         {
             List<generic_function_instance_info> instances = generic_instances[original_generic_function] as List<generic_function_instance_info>;
