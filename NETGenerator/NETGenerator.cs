@@ -7091,6 +7091,8 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Ldloc, tmp_lb);
                 real_parameters[0].visit(this);
                 il.Emit(OpCodes.Callvirt, TypeFactory.ArrayType.GetMethod("get_Length"));
+                real_parameters[1].visit(this);
+                il.Emit(OpCodes.Call, typeof(Math).GetMethod("Min", new Type[] { TypeFactory.Int32Type, TypeFactory.Int32Type }));
                 il.Emit(OpCodes.Call, TypeFactory.ArrayCopyMethod);
                 il.Emit(OpCodes.Ldloc, tmp_lb);
                 il.Emit(OpCodes.Br, l2);
