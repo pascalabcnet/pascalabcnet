@@ -8979,6 +8979,7 @@ namespace PascalABCCompiler.NETGenerator
 
                             real_parameters[0].visit(this);
                             is_dot_expr = tmp;
+                            
                             MethodInfo mi = null;
                             if (real_parameters[0].type is IGenericTypeInstance)
                                 mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
@@ -9032,10 +9033,14 @@ namespace PascalABCCompiler.NETGenerator
                         Label lb_true = il.DefineLabel();
                         Label lb_end = il.DefineLabel();
                         Label lb_common = il.DefineLabel();
+                        LocalBuilder lb_left = il.DeclareLocal(ti_left.tp);
+                        LocalBuilder lb_right = il.DeclareLocal(ti_right.tp);
                         if (!(real_parameters[0] is IDefaultOperatorNode) && !(real_parameters[1] is IDefaultOperatorNode))
                         {
                             is_dot_expr = true;
                             real_parameters[0].visit(this);
+                            il.Emit(OpCodes.Stloc, lb_left);
+                            il.Emit(OpCodes.Ldloca, lb_left);
                             if (real_parameters[0].type is IGenericTypeInstance)
                                 mi_left = TypeBuilder.GetMethod(ti_left.tp, typeof(Nullable<>).GetMethod("get_HasValue", new Type[] { }));
                             else
@@ -9046,6 +9051,8 @@ namespace PascalABCCompiler.NETGenerator
                             il.Emit(OpCodes.Ldloc, tmp_lb);
                             is_dot_expr = true;
                             real_parameters[1].visit(this);
+                            il.Emit(OpCodes.Stloc, lb_right);
+                            il.Emit(OpCodes.Ldloca, lb_right);
                             if (real_parameters[1].type is IGenericTypeInstance)
                                 mi_right = TypeBuilder.GetMethod(ti_right.tp, typeof(Nullable<>).GetMethod("get_HasValue", new Type[] { }));
                             else
@@ -9125,13 +9132,13 @@ namespace PascalABCCompiler.NETGenerator
                         if (!(real_parameters[0] is IDefaultOperatorNode))
                         {
                             is_dot_expr = true;
-                            real_parameters[0].visit(this);
+                            il.Emit(OpCodes.Ldloca, lb_left);
                             il.Emit(OpCodes.Call, mi_left);
                         }
                         if (!(real_parameters[1] is IDefaultOperatorNode))
                         {
                             is_dot_expr = true;
-                            real_parameters[1].visit(this);
+                            il.Emit(OpCodes.Ldloca, lb_right);
                             il.Emit(OpCodes.Call, mi_right);
                         }
                         MethodInfo eq_mi = null;
