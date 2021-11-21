@@ -553,6 +553,8 @@ namespace PascalABCCompiler
         //
         public string SystemDirectory;
 
+        public List<string> ForceDefines = new List<string>();
+
         public List<string> SearchDirectory;
 
         private bool useDllForSystemUnits = false;
@@ -2981,6 +2983,7 @@ namespace PascalABCCompiler
                 DefinesList.Add("RELEASE");
             else
                 DefinesList.Add("DEBUG");
+            DefinesList.AddRange(CompilerOptions.ForceDefines);
             SyntaxTree.compilation_unit SyntaxTree = InternalParseText(FileName, SourceText, errorsList, warnings, DefinesList);
             if (errorsList.Count > 0)
                 throw errorsList[0];
@@ -3277,6 +3280,7 @@ namespace PascalABCCompiler
                     DefinesList.Add("RELEASE");
                 else
                     DefinesList.Add("DEBUG");
+                DefinesList.AddRange(CompilerOptions.ForceDefines);
                 if (compilerOptions.UnitSyntaxTree != null)
                 {
                     CurrentUnit.SyntaxTree = compilerOptions.UnitSyntaxTree;
