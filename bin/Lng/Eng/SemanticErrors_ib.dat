@@ -175,6 +175,7 @@ AMBIGUOUS_DELEGATES=Ambiguous delegates detected
 EXPECTED_INTERFACE=Interface expected
 EXPECTED_PROPERTY=Property expected
 NON_PUBLIC_RECORD_CONSTRUCTORS_NOT_ALLOWED=Records can not have non-public default constructor
+EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK=exit, break and continue are not allowed in finally
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

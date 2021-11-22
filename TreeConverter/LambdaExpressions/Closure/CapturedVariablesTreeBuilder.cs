@@ -649,7 +649,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 _visitor.convertion_data_and_alghoritms.check_convert_type_with_inheritance(vdn.type, elemType, _visitor.get_location(_foreach_stmt.identifier));
 
             var fn = new foreach_node(vdn, inWhat, null, _visitor.get_location(_foreach_stmt));
-            _visitor.context.cycle_stack.push(fn);
+            _visitor.context.enter_in_cycle(fn);
             _visitor.context.loop_var_stack.Push(vdn);
 
             ProcessNode(_foreach_stmt.in_what);
@@ -664,7 +664,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
             _visitor.context.loop_var_stack.Pop();
             _visitor.convertion_data_and_alghoritms.statement_list_stack.pop();
-            _visitor.context.cycle_stack.pop();
+            _visitor.context.leave_cycle();
 
             _currentTreeNode = _currentTreeNode.ParentNode;
         }
@@ -727,7 +727,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             {
                 fn.bool_cycle = true;
             }
-            _visitor.context.cycle_stack.push(fn);
+            _visitor.context.enter_in_cycle(fn);
             _visitor.context.loop_var_stack.Push(vdn);
 
             nodesToProcess.Add(_for_node.initial_value);
@@ -746,7 +746,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
             ProcessNode(_for_node.statements);
 
-            _visitor.context.cycle_stack.pop();
+            _visitor.context.leave_cycle();
             _visitor.context.loop_var_stack.Pop();
             _visitor.convertion_data_and_alghoritms.statement_list_stack.pop();
 
