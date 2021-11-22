@@ -307,6 +307,10 @@ type
 // -----------------------------------------------------
 // IOSystem interface & IOStandardSystem implementation
 // -----------------------------------------------------
+
+// размер буфера. Определен эмпирически
+const buflen = 256;
+
 type
   /// Интерфейс подсистемы ввода/вывода
   IOSystem = interface
@@ -338,7 +342,7 @@ type
   IOStandardSystem = class(IOSystem)
     state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
     sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
-    buf: array of char;
+    buf: array of char := new char[buflen];
     pos := 0;
     realbuflen := -1; // только вначале
     tr: TextReader;
@@ -2859,6 +2863,8 @@ const
   MATR_DIMENSIONS_MUST_BE_EQUAL = 'Размеры матриц должны совпадать!!Matrix dimensions must be equal';
   COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1 = 'Количество параметров функции Max должно быть > 1!!The number of parameters of the Max function must be > 1';
   COUNT_PARAMS_MINFUN_MUSTBE_GREATER1 = 'Количество параметров функции Min должно быть > 1!!The number of parameters of the Min function must be > 1';
+  Format_InvalidString = 'Входная строка имела неверный формат!!Input string was not in a correct format';
+  Overflow_Int32 = 'Целочисленное переполнение!!Integer overflow';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -5279,15 +5285,14 @@ end;
 //          IOStandardSystem: implementation
 // -----------------------------------------------------
 
-// размер буфера. Определен эмпирически
-const
-  buflen = 256;
-
 constructor IOStandardSystem.Create;
 begin
   tr := Console.In; 
-  buf := new char[buflen];
+  //buf := new char[buflen]; - теперь при объявлении поля
 end;
+
+const
+  m = char(-1);
 
 procedure IOStandardSystem.ReadNextBuf;
 begin
@@ -5297,8 +5302,6 @@ begin
   pos := 0;
 end;
 
-const
-  m = char(-1);
 
 var
   _IsPipedRedirectedQuery := False;
@@ -5524,11 +5527,12 @@ begin
   end;
 end;
 
-function ErrorStringFromResource(s: string): string;
+{function ErrorStringFromResource(s: string): string;
 begin
-  var _rm := new System.Resources.ResourceManager('mscorlib', typeof(object).Assembly);
-  Result := _rm.GetString(s);
-end;
+  //var _rm := new System.Resources.ResourceManager('mscorlib', typeof(object).Assembly);
+  //Result := _rm.GetString(s);
+  Result := GetTranslation(s);
+end;}
 
 procedure IOStandardSystem.read(var x: integer);
 begin
@@ -5557,7 +5561,7 @@ begin
       raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_INPUT_STREAM));
     
     if (c < #48) or (c > #57) then
-      raise new System.FormatException(ErrorStringFromResource('Format_InvalidString') + ' ' + Ord(c));
+      raise new System.FormatException(GetTranslation(Format_InvalidString) + ' ' + Ord(c));
     x := integer(c) - 48;
     repeat
       
@@ -5574,11 +5578,11 @@ begin
         break;
       
       if c > #57 then
-        raise new System.FormatException(ErrorStringFromResource('Format_InvalidString') + ' ' + Ord(c));
+        raise new System.FormatException(GetTranslation(Format_InvalidString) + ' ' + Ord(c));
       if c < #48 then
-        raise new System.FormatException(ErrorStringFromResource('Format_InvalidString') + ' ' + Ord(c));
+        raise new System.FormatException(GetTranslation(Format_InvalidString) + ' ' + Ord(c));
       if x > 214748364 then
-        raise new System.OverflowException(ErrorStringFromResource('Overflow_Int32'));
+        raise new System.OverflowException(GetTranslation(Overflow_Int32));
       x := x * 10 + (integer(c) - 48);
       
       pos += 1;
@@ -5587,7 +5591,7 @@ begin
     if x < 0 then 
       if (x = -2147483648) and (sign = -1) then
         exit
-      else raise new System.OverflowException(ErrorStringFromResource('Overflow_Int32'));
+      else raise new System.OverflowException(GetTranslation(Overflow_Int32));
     if sign = -1 then
       x := -x;
   end    
@@ -9041,7 +9045,7 @@ begin
   while (j <= s.Length) and char.IsWhiteSpace(s[j]) do
     j += 1;
   if (j > s.Length) then 
-    raise new System.FormatException(ErrorStringFromResource('Format_InvalidString'));
+    raise new System.FormatException(GetTranslation(Format_InvalidString));
   var sign := 0;  
   if s[j] = '-' then
   begin
@@ -9054,10 +9058,10 @@ begin
     j += 1;
   end;
   if (j > s.Length) then 
-    raise new System.FormatException(ErrorStringFromResource('Format_InvalidString'));
+    raise new System.FormatException(GetTranslation(Format_InvalidString));
   var c := integer(s[j]);
   if (c < 48) or (c > 57) then
-    raise new System.FormatException(ErrorStringFromResource('Format_InvalidString'));
+    raise new System.FormatException(GetTranslation(Format_InvalidString));
   Result := c - 48;
   j += 1;  
   while j <= s.Length do
@@ -9068,20 +9072,20 @@ begin
     if c < 48 then
       break;
     if Result > 214748364 then
-      raise new System.OverflowException(ErrorStringFromResource('Overflow_Int32'));
+      raise new System.OverflowException(GetTranslation(Overflow_Int32));
     Result := Result * 10 + (c - 48);
     j += 1;
   end;
   if Result < 0 then 
     if (Result = -2147483648) and (sign = -1) then
       exit
-    else raise new System.OverflowException(ErrorStringFromResource('Overflow_Int32'));
+    else raise new System.OverflowException(GetTranslation(Overflow_Int32));
   if sign = -1 then
     Result := -Result;
   while (j <= s.Length) and char.IsWhiteSpace(s[j]) do
     j += 1;
   if j <= s.Length then  
-    raise new System.FormatException(ErrorStringFromResource('Format_InvalidString'));
+    raise new System.FormatException(GetTranslation(Format_InvalidString));
 end;
 
 function TryStrToInt(s: string; var value: integer): boolean;
@@ -9170,7 +9174,7 @@ begin
   while (from <= s.Length) and char.IsWhiteSpace(s[from]) do
     from += 1;
   if (from > s.Length) then 
-    raise new System.FormatException(ErrorStringFromResource('Format_InvalidString'));
+    raise new System.FormatException(GetTranslation(Format_InvalidString));
   var sign := 0;  
   if s[from] = '-' then
   begin
@@ -9183,10 +9187,10 @@ begin
     from += 1;
   end;
   if (from > s.Length) then 
-    raise new System.FormatException(ErrorStringFromResource('Format_InvalidString'));
+    raise new System.FormatException(GetTranslation(Format_InvalidString));
   var c := integer(s[from]);
   if (c < 48) or (c > 57) then
-    raise new System.FormatException(ErrorStringFromResource('Format_InvalidString'));
+    raise new System.FormatException(GetTranslation(Format_InvalidString));
   Result := c - 48;
   from += 1;  
   while from <= s.Length do
@@ -9197,14 +9201,14 @@ begin
     if c < 48 then
       break;
     if Result > 214748364 then
-      raise new System.OverflowException(ErrorStringFromResource('Overflow_Int32'));
+      raise new System.OverflowException(GetTranslation(Overflow_Int32));
     Result := Result * 10 + (c - 48);
     from += 1;
   end;
   if Result < 0 then 
     if (Result = -2147483648) and (sign = -1) then
       exit
-    else raise new System.OverflowException(ErrorStringFromResource('Overflow_Int32'));
+    else raise new System.OverflowException(GetTranslation(Overflow_Int32));
   if sign = -1 then
     Result := -Result;
 end;
