@@ -2414,6 +2414,14 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public override bool is_extension_method
+        {
+            get
+            {
+                return _original_function.is_extension_method;
+            }
+        }
+
         public override bool is_generic_function_instance
         {
             get

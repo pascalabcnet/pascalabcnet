@@ -156,7 +156,7 @@ namespace PascalABCCompiler.TreeConverter
             TreeRealization.for_node forNode = new TreeRealization.for_node(null, sn_while, sn_init_while, sn_inc, null, get_location(_for_node));
             if (vdn.type == SystemLibrary.SystemLibrary.bool_type)
                 forNode.bool_cycle = true;
-            context.cycle_stack.push(forNode);
+            context.enter_in_cycle(forNode);
             context.loop_var_stack.Push(vdn);
             statements_list slst = new statements_list(get_location(_for_node.statements));
             convertion_data_and_alghoritms.statement_list_stack_push(slst);
@@ -172,7 +172,7 @@ namespace PascalABCCompiler.TreeConverter
                 forNode.body = slst;
             }
 
-            context.cycle_stack.pop();
+            context.leave_cycle();
             context.loop_var_stack.Pop();
             head_stmts = convertion_data_and_alghoritms.statement_list_stack.pop();
             head_stmts.statements.AddElement(forNode);
