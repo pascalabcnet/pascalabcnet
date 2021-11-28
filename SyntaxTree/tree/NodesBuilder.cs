@@ -270,7 +270,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static type_declaration BuildAutoClass(string class_name, List<ident> names, List<type_definition> types, bool is_class)
         {
-            var fnames = names.Select(x=>new ident("f"+x.name, x.source_context)).ToList();
+            var fnames = names.Select(x=>new ident("<f>"+x.name, x.source_context)).ToList();
 
             var cm1 = BuildClassFieldsSection(fnames,types);
             var cm2 = BuildSimpleConstructorSection(fnames,names,types);

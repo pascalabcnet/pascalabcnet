@@ -970,10 +970,8 @@ end;
 procedure SwapSubstr(var Self: string; ss1, ss2: string);
 extensionmethod := SwapSubstr(Self, ss1, ss2);
 
-/// Выводит тип переменной или выражения
-procedure PrintType(o: Object);
+function InternalConvertTypeString(s: string): string;
 begin
-  var s := o.GetType.ToString;
   s := s.Replace('System.Int32','integer');
   s := s.Replace('System.Int64','int64');
   s := s.Replace('System.Double','real');
@@ -998,6 +996,15 @@ begin
   s := Regex.Replace(s,$'System.Tuple`5\[{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5)');
   s := Regex.Replace(s,$'System.Tuple`6\[{tt},{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5,$6)');
   s := Regex.Replace(s,$'System.Tuple`7\[{tt},{tt},{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5,$6,$7)');
+  Result := s;
+end;
+
+/// Выводит тип переменной или выражения
+procedure PrintType(o: Object);
+begin
+  var y := o.GetType.GetInterfaces.Select(i->i.ToString).Where(s->s.StartsWith('System.Collections.Generic.IEnumerable`')).FirstOrDefault;
+  var s := o.GetType.ToString;
+  s := InternalConvertTypeString(s);
   Print(s);
 end;
 
