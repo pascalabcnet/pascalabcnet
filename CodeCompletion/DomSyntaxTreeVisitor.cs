@@ -101,7 +101,31 @@ namespace CodeCompletion
                         var id = new ident_with_templateparams();
                         ntr.Add(new ident(s));
                         foreach (var gen_td in tn.instance_params)
-                            ttr.params_list.Add(BuildSyntaxNodeForTypeReference(gen_td));
+                        {
+                            if (gen_td.PrintableName.StartsWith("AnonymousType#"))
+                            {
+                                SymScope tmp = cur_scope;
+                                TypeScope ts = null;
+                                cur_scope = ts = new TypeScope(SymbolKind.Class, cur_scope, null);
+                                tmp.AddName(gen_td.PrintableName, cur_scope);
+                                ts.loc = get_location(gen_td.location);
+                                ts.si = new SymInfo("class", SymbolKind.Class, "");
+                                foreach (var field in (gen_td as common_type_node).fields)
+                                {
+                                    ElementScope es = new ElementScope();
+                                    es.si = new SymInfo(field.name, SymbolKind.Property, "");
+                                    BuildSyntaxNodeForTypeReference(field.type).visit(this);
+                                    es.sc = returned_scope;
+                                    ts.AddName(field.name, es);
+                                }
+                                returned_scope = cur_scope;
+                                cur_scope = tmp;
+                                ttr.params_list.Add(new named_type_reference(gen_td.PrintableName));
+                            }
+                            else
+                                ttr.params_list.Add(BuildSyntaxNodeForTypeReference(gen_td));
+                        }
+                            
                     }
                 }
                 return ttr;
@@ -177,7 +201,8 @@ namespace CodeCompletion
             }
             else
             {
-                if (tn.full_name.IndexOf("$") != -1 || tn.full_name.IndexOf("#") != -1)
+                
+                if (tn.full_name.IndexOf("$") != -1 || tn.full_name.IndexOf("#") != -1 && tn.full_name.IndexOf("AnonymousType#") == -1)
                     return ts;
                 if (ts is FileScope && tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.typed_file)
                     return ts;
@@ -192,6 +217,22 @@ namespace CodeCompletion
                 return ts;
             }
         }
+
+        /*private TypeScope CreateTypeScopeBySemanticType(type_node tn)
+        {
+            if (tn is common_generic_instance_type_node)
+            {
+                var ts = new TypeScope();
+                var gitn = tn as common_generic_instance_type_node;
+                ts.gener
+                foreach (var field in gitn.fields)
+                {
+                    ts.AddName(field.name, CreateTypeScopeBySemanticType(field.type));
+                }
+            }
+            return null;
+        }*/
+
 
         private void CorrectVariableType(var_definition_node vdn)
         {
@@ -761,7 +802,7 @@ namespace CodeCompletion
                 }
                 // if (si == null) dn = compiled_type_node.get_type_node(PascalABCCompiler.NetHelper.NetHelper.FindType((_var_def_statement.vars_type as named_type_reference).names[0].name,unl));
 
-                if (returned_scope == null) return;
+                //if (returned_scope == null) return;
                 if (returned_scope is ProcScope)
                 {
                     returned_scope = new ProcType(returned_scope as ProcScope);
@@ -773,6 +814,8 @@ namespace CodeCompletion
                         SymInfo si = new SymInfo(s.name, SymbolKind.Variable, s.name);
                         if (cur_scope is TypeScope) si.kind = SymbolKind.Field;
                         if (_var_def_statement.is_event) si.kind = SymbolKind.Event;
+                        if (returned_scope == null && false)
+                            returned_scope = new UnknownScope(new SymInfo("",SymbolKind.Class, ""));
                         ElementScope es = new ElementScope(si, returned_scope, cur_scope);
                         if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_var_def_statement))
                             es.AddDocumentation(this.converter.controller.docs[_var_def_statement]);

@@ -994,7 +994,7 @@ namespace PascalABCCompiler.Parsers
 			if (sc is IProcScope) return "";
 			if (sc is ITypeScope)
 			{
-				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>"))?"<>":"")+".";
+				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>") && sc.Name != "class")?"<>":"")+".";
 			}
 			return sc.Name + ".";
 		}
@@ -1478,7 +1478,7 @@ namespace PascalABCCompiler.Parsers
                 type_name = type_name.Substring(1, type_name.Length - 1);
             switch (scope.ElemKind)
             {
-                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name); break;
+                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ((type_name != "")?": " + type_name:"")); break;
                 case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
                 case SymbolKind.Constant:
                     {

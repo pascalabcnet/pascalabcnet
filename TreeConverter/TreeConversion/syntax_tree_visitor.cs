@@ -17971,7 +17971,7 @@ namespace PascalABCCompiler.TreeConverter
                             || syntax_statement is procedure_call || syntax_statement is raise_statement)
                         {
                            
-                            if (!(new LambdaSearcher(syntax_statement).CheckIfContainsLambdas()))
+                            if (lambdaProcessingState != LambdaProcessingState.TypeInferencePhase && !(new LambdaSearcher(syntax_statement).CheckIfContainsLambdas()))
                                 continue;
                         }
                     }
