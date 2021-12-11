@@ -33,7 +33,8 @@
 	<code class="codeit">операторы</code><br><b>end</b>.</code> </p>
 </blockquote>
 <p>Первая строка называется <i><b><font color="#FF0000">заголовком программы</font></b></i> и не является 
-обязательной.</p>
+обязательной. В <strong>PascalABC.NET</strong> использование заголовка программы 
+считается устаревшим.</p>
 <p><a href="../Modules/uses.html">Раздел
 <code>
 <b>uses</b></code></a>
@@ -80,6 +81,26 @@ uses</strong></span>, каждая из которых
 	</b>&nbsp; <strong>var</strong> x := 100;<br>&nbsp; <strong>var</strong> y := 
 	100;<br>&nbsp; <strong>var</strong> r := 50;<br>&nbsp; Circle(x,y,r);<br>
 	<b>end</b>.</code></blockquote>
+<p>Кроме того, имеется возможность записывать программы без внешнего begin-end. 
+Для этого в начале программы используется префикc ##:</p>
+<blockquote>
+	<code>##<b><br>
+	</b><strong>var</strong> a := ArrRandomInteger(10);<br>a.Println;</code></blockquote>
+<p>Такой режим называется командным и предназначен для написания коротких 
+программ из нескольких команд. В данном режиме разрешено использовать одну 
+секцию uses и описывать процедуры и функции:</p>
+<blockquote>
+	<code>
+	<div class="language-pascal highlighter-rouge">
+		<div class="highlight">
+			<pre class="highlight"><span class="p">##
+<strong>uses</strong> GraphWPF;</span>
+<span class="k"><strong>function</strong></span> <span class="n">Draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> real<span class="p">)</span> <span class="p">:=</span> Circle(x,y,5)<span class="p">;</span>
+<span class="p">Draw(100,100);</span></pre>
+		</div>
+	</div>
+	</code></blockquote>
+<p>&nbsp;</p>
 </body>
 
 </html>
