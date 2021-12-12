@@ -973,6 +973,9 @@ namespace PascalABCCompiler
                     VisitNonStaticPropertyReference((non_static_property_reference)en); break;
                 case semantic_node_type.simple_array_indexing:
                     VisitSimpleArrayIndexing((simple_array_indexing)en); break;
+                case semantic_node_type.double_question_colon_expression:
+                    VisitDoubleQuestionColon((double_question_colon_expression)en);
+                    break;
                 case semantic_node_type.this_node:
                     //VisitThisNode((this_node)en); 
                     break;
@@ -1015,6 +1018,12 @@ namespace PascalABCCompiler
                 CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
             }
+        }
+
+        private void VisitDoubleQuestionColon(double_question_colon_expression en)
+        {
+            VisitExpression(en.internal_condition);
+            VisitExpression(en.internal_ret_if_null);
         }
 
         private void VisitSimpleArrayIndexing(simple_array_indexing en)
