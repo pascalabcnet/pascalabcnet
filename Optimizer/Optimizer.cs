@@ -561,7 +561,7 @@ namespace PascalABCCompiler
             bool tuple_decomp = false;
             foreach (local_block_variable lbv in stmt.local_variables)
             {
-                if (lbv.name.StartsWith("#fpl"))
+                if (lbv.name.StartsWith("#fpl") || lbv.name.StartsWith("#temp_var"))
                     tuple_decomp = true;
                 helper.AddVariable(lbv);
                 if (lbv.inital_value != null)
