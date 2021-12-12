@@ -2327,7 +2327,7 @@ namespace CodeCompletion
                     ElementScope inst_param = null;
                     if ((parameter.sc as TypeScope).IsGeneric)
                         inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
-                    else if (parameter.param_kind == parametr_kind.params_parametr && (parameter.sc as TypeScope).IsArray && (parameter.sc as TypeScope).GetElementType().IsGenericParameter && gen_args[i - 1].IsArray)
+                    else if (parameter.param_kind == parametr_kind.params_parametr && (parameter.sc as TypeScope).IsArray && (parameter.sc as TypeScope).GetElementType().IsGenericParameter && i - 1 < gen_args.Count && gen_args[i - 1].IsArray)
                     {
                         gen_args[i - 1] = gen_args[i - 1].GetElementType();
                         inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
