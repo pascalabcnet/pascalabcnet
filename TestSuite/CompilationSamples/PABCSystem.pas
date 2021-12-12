@@ -637,7 +637,20 @@ type
 
     static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator in(x: real; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
-    static function operator=(r1,r2: IntRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
+    static function operator=(r1,r2: IntRange): boolean;
+    begin
+      var o1: object := r1;
+      var o2: object := r2;
+      if (o1 = nil) and (o2 = nil) then
+        Result := true
+      else if (o1 <> nil) and (o2 = nil) then
+        Result := false
+      else if (o1 = nil) and (o2 <> nil) then
+        Result := false
+      else
+        Result := (r1.l = r2.l) and (r1.h = r2.h);
+    end;
+    
     /// Возвращает True если диапазон пуст
     function IsEmpty: boolean := l>h;
 
