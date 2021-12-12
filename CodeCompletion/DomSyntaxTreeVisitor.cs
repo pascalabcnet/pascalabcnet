@@ -311,6 +311,7 @@ namespace CodeCompletion
             compiler.Compile();
             foreach (var lv in compiler.CompiledVariables)
                 CorrectVariableType(lv);
+            
             compiler.ClearAll(/*false*/);
         }
 

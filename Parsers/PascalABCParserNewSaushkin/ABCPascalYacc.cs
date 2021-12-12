@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-2BJCJ7I
-// DateTime: 24.10.2021 12:23:07
+// DateTime: 12.12.2021 14:38:37
 // UserName: ibond
 // Input file <ABCPascal.y>
 
@@ -6642,6 +6642,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 770: // dotted_identifier -> dotted_identifier, tkPoint, identifier_or_keyword
 {
+			if (ValueStack[ValueStack.Depth-3].ex is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");
 			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan);
 		}
         break;
@@ -6714,7 +6716,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
       case 785: // variable -> literal_or_number, tkPoint, identifier_or_keyword
-{ 
+{
+			if (ValueStack[ValueStack.Depth-3].ex is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");		
 			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); 
 		}
         break;
@@ -6790,6 +6794,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 790: // variable -> variable, tkPoint, identifier_keyword_operatorname
 {
+			if (ValueStack[ValueStack.Depth-3].ex is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");
 			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan);
         }
         break;

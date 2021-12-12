@@ -4183,6 +4183,8 @@ dotted_identifier
 	: identifier { $$ = $1; }
 	| dotted_identifier tkPoint identifier_or_keyword
 		{
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
 		}
 	;
@@ -4251,7 +4253,9 @@ variable
     | typeof_expr
 		{ $$ = $1; }
     | literal_or_number tkPoint identifier_or_keyword
-        { 
+        {
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");		
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
     | variable_or_literal_or_number tkSquareOpen expr_list tkSquareClose                
@@ -4320,6 +4324,8 @@ variable
         }
     | variable tkPoint identifier_keyword_operatorname
         {
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
         }
     | tuple tkPoint identifier_keyword_operatorname
