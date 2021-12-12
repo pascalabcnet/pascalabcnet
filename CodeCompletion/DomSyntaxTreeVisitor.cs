@@ -82,7 +82,7 @@ namespace CodeCompletion
             }
         }
 
-        private named_type_reference BuildSyntaxNodeForTypeReference(type_node tn)
+        private type_definition BuildSyntaxNodeForTypeReference(type_node tn)
         {
             if (tn.instance_params != null && tn.instance_params.Count > 0)
             {
@@ -110,13 +110,13 @@ namespace CodeCompletion
                                 tmp.AddName(gen_td.PrintableName, cur_scope);
                                 ts.loc = get_location(gen_td.location);
                                 ts.si = new SymInfo("class", SymbolKind.Class, "");
-                                foreach (var field in (gen_td as common_type_node).fields)
+                                foreach (var prop in (gen_td as common_type_node).properties)
                                 {
                                     ElementScope es = new ElementScope();
-                                    es.si = new SymInfo(field.name, SymbolKind.Property, "");
-                                    BuildSyntaxNodeForTypeReference(field.type).visit(this);
+                                    es.si = new SymInfo(prop.name, SymbolKind.Property, "");
+                                    BuildSyntaxNodeForTypeReference(prop.property_type).visit(this);
                                     es.sc = returned_scope;
-                                    ts.AddName(field.name, es);
+                                    ts.AddName(prop.name, es);
                                 }
                                 returned_scope = cur_scope;
                                 cur_scope = tmp;
@@ -135,6 +135,31 @@ namespace CodeCompletion
                 var ntr = new named_type_reference();
                 if (tn.IsDelegate)
                 {
+                    var invokeMeth = tn.find_first_in_type("Invoke");
+                    if (invokeMeth != null)
+                    {
+                        var fn = invokeMeth.sym_info as function_node;
+                        procedure_header header;
+                        if (fn.return_value_type != null)
+                        {
+                            header = new function_header(BuildSyntaxNodeForTypeReference(fn.return_value_type));
+                        }
+                        else
+                        {
+                            header = new procedure_header();
+                        }
+                        header.parameters = new formal_parameters();
+                        foreach (var param in fn.parameters)
+                        {
+                            var tparam = new typed_parameters();
+                            tparam.vars_type = BuildSyntaxNodeForTypeReference(param.type);
+                            tparam.idents = new ident_list();
+                            tparam.idents.Add(new ident(param.name));
+                            header.parameters.Add(tparam);
+                            
+                        }
+                        return header;
+                    }
                     ntr.names.Add(new ident(tn.PrintableName.Replace("()", "")));
                     return ntr;
                 }
@@ -202,7 +227,7 @@ namespace CodeCompletion
             else
             {
                 
-                if (tn.full_name.IndexOf("$") != -1 || tn.full_name.IndexOf("#") != -1 && tn.full_name.IndexOf("AnonymousType#") == -1)
+                if (tn.full_name.IndexOf("$") != -1 && !tn.IsDelegate|| tn.full_name.IndexOf("#") != -1 && tn.full_name.IndexOf("AnonymousType#") == -1)
                     return ts;
                 if (ts is FileScope && tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.typed_file)
                     return ts;
@@ -213,7 +238,17 @@ namespace CodeCompletion
                 
                 ntr.visit(this);
                 if (returned_scope != null && returned_scope is TypeScope)
-                    return returned_scope as TypeScope;
+                {
+                    var correctedType = returned_scope as TypeScope;
+                    if (!correctedType.IsTypeStrictEqual(ts))
+                        return correctedType;
+                }
+                else if (returned_scope != null && returned_scope is ProcScope)
+                {
+                    var procType = new ProcType(returned_scope as ProcScope);
+                    if (!procType.IsEqual(ts))
+                        return procType;
+                }
                 return ts;
             }
         }
@@ -269,13 +304,11 @@ namespace CodeCompletion
             co.SourceFileName = cu.source_context.FileName;
             co.ForIntellisense = true;
             co.SaveDocumentation = false;
-
             //if (compiler == null)
                 compiler = new Compiler();
             compiler.CompilerOptions = co;
             compiler.ClearAfterCompilation = false;
             compiler.Compile();
-
             foreach (var lv in compiler.CompiledVariables)
                 CorrectVariableType(lv);
             compiler.ClearAll(/*false*/);

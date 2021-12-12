@@ -4606,6 +4606,25 @@ namespace CodeCompletion
                 return false;
         }
 
+        public virtual bool IsTypeStrictEqual(TypeScope ts)
+        {
+            var eq = this.IsEqual(ts);
+            if (!eq)
+                return false;
+            if (this.instances != null && ts.instances == null)
+                return false;
+            if (this.instances == null && ts.instances != null)
+                return false;
+            if (this.instances.Count != ts.instances.Count)
+                return false;
+            for (int i = 0; i < this.instances.Count; i++)
+            {
+                if (!this.instances[i].IsTypeStrictEqual(ts.instances[i]))
+                    return false;
+            }
+            return true;
+        }
+
         public virtual ProcScope GetConstructor()
         {
             foreach (SymScope ss in members)
