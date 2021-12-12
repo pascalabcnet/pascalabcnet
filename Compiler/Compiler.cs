@@ -1997,7 +1997,7 @@ namespace PascalABCCompiler
                     {
                         ErrorsList.Add(new MainResourceNotAllowed(cds[0].location));
                     }
-                    cdo.MainResourceFileName = cds[0].directive;
+                    cdo.MainResourceFileName = Path.Combine(Path.GetDirectoryName(cds[0].source_file), cds[0].directive);
                     if (!File.Exists(cdo.MainResourceFileName))
                     {
                         ErrorsList.Add(new ResourceFileNotFound(cds[0].directive, cds[0].location));
