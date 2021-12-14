@@ -158,7 +158,10 @@ namespace PascalABCCompiler
                 return 2;
             }
 
-            var n1 = args.TakeWhile(a => a[0] == '/').Count(); // количество директив
+            //  /W/a.pas расценивается как директива. Нужен более сложный паттерн: начинается с \буквы:
+            //var n1 = args.TakeWhile(a => a[0] == '/').Count(); // количество директив
+            // Поменяем: SSM 14/12/21
+            var n1 = args.TakeWhile(a => System.Text.RegularExpressions.Regex.IsMatch(a, @"^/\w+:")).Count(); // количество директив
 
             if (n1<n-2)
             {
