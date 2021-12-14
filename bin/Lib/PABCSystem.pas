@@ -10988,7 +10988,7 @@ begin
     end;
 end;
 
-/// Есть ли элемент в матрице
+/// Равны ли матрицы
 function MatrEqual<T>(Self,b: array[,] of T): boolean; extensionmethod := MatrEqual(Self,b);
 
 /// Вывод двумерного массива, w - ширина поля вывода
