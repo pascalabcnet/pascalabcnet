@@ -666,7 +666,7 @@ namespace PascalABCCompiler.PCU
                 string tmp = s.Substring(0, s.IndexOf(','));
                 //if (tmp != "mscorlib")
                 //{
-                string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll");
+                string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll", Path.GetDirectoryName(this.FileName));
                 //Assembly a = Assembly.LoadFrom(name_with_path);
                 /*if (pcu_file.compiler_directives != null)
                 foreach (compiler_directive cd in pcu_file.compiler_directives)

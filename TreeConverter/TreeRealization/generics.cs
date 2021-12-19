@@ -878,10 +878,20 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         //Проверяем фактические, попадающие под params...
                         type_node tn = fact[i].type;
+                        bool deduce_empty_func_call = false;
+                        if (tn is delegated_methods && (tn as delegated_methods).empty_param_method != null && last_params_type.is_generic_parameter)
+                        {
+                            tn = (tn as delegated_methods).empty_param_method.ret_type;
+                            deduce_empty_func_call = true;
+                        }
+                            
                         if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper)
                             tn = tn.element_type;
+                        
                         if (!DeduceInstanceTypes(last_params_type, tn, deduced, nils, generic_params))
                         {
+                            if (deduce_empty_func_call && DeduceInstanceTypes(last_params_type, fact[i].type, deduced, nils, generic_params))
+                                continue;
                             if (alone)
                                 throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
                             return null;
