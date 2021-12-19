@@ -10988,7 +10988,7 @@ begin
     end;
 end;
 
-/// Есть ли элемент в матрице
+/// Равны ли матрицы
 function MatrEqual<T>(Self,b: array[,] of T): boolean; extensionmethod := MatrEqual(Self,b);
 
 /// Вывод двумерного массива, w - ширина поля вывода
@@ -14122,11 +14122,14 @@ procedure __InitModule;
 begin
   try
     DefaultEncoding := Encoding.GetEncoding(1251);
-    if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
-      System.Console.OutputEncoding := Encoding.UTF8;
   except
     //DefaultEncoding := Encoding.UTF8;
     DefaultEncoding := new System.Text.UTF8Encoding(false)
+  end;
+  try
+    if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
+      System.Console.OutputEncoding := Encoding.UTF8;
+  except
   end;
   rnd := new System.Random;
   

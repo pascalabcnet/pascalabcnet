@@ -2619,12 +2619,13 @@ namespace PascalABCCompiler
             return null;
         }
 
-        public static string GetReferenceFileName(string FileName)
+        public static string GetReferenceFileName(string FileName, string curr_path=null)
         {
             // Вначале - кешированные стандартные dll
             if (standart_assembly_dict.ContainsKey(FileName))
                 return standart_assembly_dict[FileName];
-
+            if (curr_path != null && System.IO.File.Exists(Path.Combine(curr_path, FileName)))
+                return Path.Combine(curr_path, FileName);
             if (System.IO.File.Exists(FileName))
             {
                 return FileName;//.ToLower();//? а надо ли tolover?
