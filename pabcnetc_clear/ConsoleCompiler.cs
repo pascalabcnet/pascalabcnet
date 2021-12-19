@@ -114,7 +114,7 @@ namespace PascalABCCompiler
             Console.WriteLine("Command line: ");
             Console.WriteLine("pabcnetcclear /directive1:value1 /directive2:value2 ... [inputfile]\n");
             Console.WriteLine("Available directives:");
-            Console.WriteLine("  /Help  /H  /?");
+            //Console.WriteLine("  /Help  /H  /?"); - запретил - конкурирует с pabcnetcclear /w/a.pas
             Console.WriteLine("  /Debug:<0/1>");
             Console.WriteLine("  /Define:<name>");
             Console.WriteLine("  /Output:<[path\\]name>");
