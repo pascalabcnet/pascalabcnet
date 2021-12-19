@@ -98,6 +98,14 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает случайное целое в диапазоне от a до b</td></tr>
 <tr><td><code><b>function</b> Random(a, b: real): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает случайное вещественное в диапазоне [a,b)</td></tr>
+<tr><td><code><b>function</b> Random(a, b: char): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает случайный символ в диапазоне от a до b</td></tr>
+<tr><td><code><b>function</b> Random(diap: IntRange): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает случайное целое в диапазоне</td></tr>
+<tr><td><code><b>function</b> Random(diap: RealRange): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает случайное вещественное в диапазоне</td></tr>
+<tr><td><code><b>function</b> Random(diap: CharRange): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает случайный символ в диапазоне</td></tr>
 <tr><td><code><b>function</b> Random: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает случайное вещественное в диапазоне [0..1)</td></tr>
 <tr><td><code><b>function</b> Random2(maxValue: integer): (integer, integer);</code>
@@ -106,8 +114,16 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из двух случайных вещественных в диапазоне [0,maxValue)</td></tr>
 <tr><td><code><b>function</b> Random2(a, b: integer): (integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из двух случайных целых в диапазоне от a до b</td></tr>
+<tr><td><code><b>function</b> Random2(a, b: char): (char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из двух случайных символов в диапазоне от a до b</td></tr>
 <tr><td><code><b>function</b> Random2(a, b: real): (real, real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из двух случайных вещественных в диапазоне [a,b)</td></tr>
+<tr><td><code><b>function</b> Random2(diap: IntRange): (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из двух случайных целых в диапазоне</td></tr>
+<tr><td><code><b>function</b> Random2(diap: CharRange): (char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из двух случайных символов в диапазоне</td></tr>
+<tr><td><code><b>function</b> Random2(diap: RealRange): (real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из двух случайных вещественных в диапазоне</td></tr>
 <tr><td><code><b>function</b> Random2: (real, real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из двух случайных вещественных в диапазоне [0..1)</td></tr>
 <tr><td><code><b>function</b> Random3(maxValue: integer): (integer, integer, integer);</code>
@@ -116,8 +132,16 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из трех случайных вещественных в диапазоне [0,maxValue)</td></tr>
 <tr><td><code><b>function</b> Random3(a, b: integer): (integer, integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из трех случайных целых в диапазоне от a до b</td></tr>
+<tr><td><code><b>function</b> Random3(a, b: char): (char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из трех случайных символов в диапазоне от a до b</td></tr>
 <tr><td><code><b>function</b> Random3(a, b: real): (real, real, real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из трех случайных вещественных в диапазоне [a,b)</td></tr>
+<tr><td><code><b>function</b> Random3(diap: IntRange): (integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из трех случайных целых в диапазоне</td></tr>
+<tr><td><code><b>function</b> Random3(diap: CharRange): (char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из трех случайных символов в диапазоне</td></tr>
+<tr><td><code><b>function</b> Random3(diap: RealRange): (real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из трех случайных вещественных в диапазоне</td></tr>
 <tr><td><code><b>function</b> Random3: (real, real, real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает кортеж из трех случайных вещественных в диапазоне [0..1)</td></tr>
 <tr><td><code><b>procedure</b> Randomize(seed: integer);</code>
