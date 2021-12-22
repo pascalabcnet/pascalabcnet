@@ -1687,6 +1687,14 @@ function Random(maxValue: real): real;
 function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
+/// Возвращает случайный символ в диапазоне от a до b
+function Random(a, b: char): char;
+/// Возвращает случайное целое в диапазоне 
+function Random(diap: IntRange): integer;
+/// Возвращает случайное вещественное в диапазоне 
+function Random(diap: RealRange): real;
+/// Возвращает случайный символ в диапазоне 
+function Random(diap: CharRange): char;
 /// Возвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
 /// Возвращает кортеж из двух случайных целых в диапазоне от 0 до maxValue-1
@@ -1695,8 +1703,16 @@ function Random2(maxValue: integer): (integer, integer);
 function Random2(maxValue: real): (real, real);
 /// Возвращает кортеж из двух случайных целых в диапазоне от a до b
 function Random2(a, b: integer): (integer, integer);
+/// Возвращает кортеж из двух случайных символов в диапазоне от a до b
+function Random2(a, b: char): (char, char);
 /// Возвращает кортеж из двух случайных вещественных в диапазоне [a,b)
 function Random2(a, b: real): (real, real);
+/// Возвращает кортеж из двух случайных целых в диапазоне
+function Random2(diap: IntRange): (integer, integer);
+/// Возвращает кортеж из двух случайных символов в диапазоне
+function Random2(diap: CharRange): (char, char);
+/// Возвращает кортеж из двух случайных вещественных в диапазоне
+function Random2(diap: RealRange): (real, real);
 /// Возвращает кортеж из двух случайных вещественных в диапазоне [0..1)
 function Random2: (real, real);
 /// Возвращает кортеж из трех случайных целых в диапазоне от 0 до maxValue-1
@@ -1705,8 +1721,16 @@ function Random3(maxValue: integer): (integer, integer, integer);
 function Random3(maxValue: real): (real, real, real);
 /// Возвращает кортеж из трех случайных целых в диапазоне от a до b
 function Random3(a, b: integer): (integer, integer, integer);
+/// Возвращает кортеж из трех случайных символов в диапазоне от a до b
+function Random3(a, b: char): (char, char, char);
 /// Возвращает кортеж из трех случайных вещественных в диапазоне [a,b)
 function Random3(a, b: real): (real, real, real);
+/// Возвращает кортеж из трех случайных целых в диапазоне
+function Random3(diap: IntRange): (integer, integer, integer);
+/// Возвращает кортеж из трех случайных символов в диапазоне
+function Random3(diap: CharRange): (char, char, char);
+/// Возвращает кортеж из трех случайных вещественных в диапазоне
+function Random3(diap: RealRange): (real, real, real);
 /// Возвращает кортеж из трех случайных вещественных в диапазоне [0..1)
 function Random3: (real, real, real);
 
@@ -8377,11 +8401,17 @@ begin
   Result := rnd.Next(a, b + 1);
 end;
 
+function Random(a, b: char) := Chr(Random(integer(a), integer(b)));
+
 function Random(a, b: real): real;
 begin
   if a > b then Swap(a, b);
   Result := a + Random()*(b-a);
 end;
+
+function Random(diap: IntRange): integer := Random(diap.Low,diap.High);
+function Random(diap: RealRange): real := Random(diap.Low,diap.High);
+function Random(diap: CharRange): char := Random(diap.Low,diap.High);
 
 function Random := rnd.NextDouble;
 
@@ -8393,7 +8423,13 @@ function Random2(maxValue: real) := (Random(maxValue), Random(maxValue));
 
 function Random2(a, b: integer) := (Random(a, b), Random(a, b));
 
+function Random2(a, b: char) := (Random(a, b), Random(a, b));
+
 function Random2(a, b: real) := (Random(a, b), Random(a, b));
+
+function Random2(diap: IntRange) := Random2(diap.Low,diap.High);
+function Random2(diap: RealRange) := Random2(diap.Low,diap.High);
+function Random2(diap: CharRange) := Random2(diap.Low,diap.High);
 
 function Random2 := (Random, Random);
 
@@ -8403,7 +8439,13 @@ function Random3(maxValue: Real) := (Random(maxValue), Random(maxValue), Random(
 
 function Random3(a, b: integer) := (Random(a, b), Random(a, b), Random(a, b));
 
+function Random3(a, b: char) := (Random(a, b), Random(a, b), Random(a, b));
+
 function Random3(a, b: real) := (Random(a, b), Random(a, b), Random(a, b));
+
+function Random3(diap: IntRange) := Random3(diap.Low,diap.High);
+function Random3(diap: RealRange) := Random3(diap.Low,diap.High);
+function Random3(diap: CharRange) := Random3(diap.Low,diap.High);
 
 function Random3 := (Random, Random, Random);
 
