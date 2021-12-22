@@ -13677,7 +13677,9 @@ end;
 [System.Diagnostics.DebuggerStepThrough]
 function ClipShortString(s: string; len: integer): string;
 begin
-  if s.Length <= len then 
+  if s = nil then
+	Result := ''
+  else if s.Length <= len then 
     Result := s
   else Result := s.Substring(0, len);
 end;
