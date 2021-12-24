@@ -10757,11 +10757,31 @@ namespace PascalABCCompiler.NETGenerator
             else
             {
                 value.condition.visit(this);
-                tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
-                il.Emit(OpCodes.Stloc, tmp_lb);
-                il.Emit(OpCodes.Ldloc, tmp_lb);
-                il.Emit(OpCodes.Ldnull);
-                il.Emit(OpCodes.Ceq);
+                if (value.condition.type.is_nullable_type)
+                {
+                    
+                    tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
+                    il.Emit(OpCodes.Stloc, tmp_lb);
+                    il.Emit(OpCodes.Ldloca, tmp_lb);
+                    MethodInfo mi = null;
+                    TypeInfo cond_ti = helper.GetTypeReference(value.condition.type);
+                    if (value.condition.type is IGenericTypeInstance)
+                        mi = TypeBuilder.GetMethod(cond_ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
+                    else
+                        mi = cond_ti.tp.GetMethod("get_HasValue");
+                    il.Emit(OpCodes.Call, mi);
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ceq);
+                }
+                else
+                {
+                    tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
+                    il.Emit(OpCodes.Stloc, tmp_lb);
+                    il.Emit(OpCodes.Ldloc, tmp_lb);
+                    il.Emit(OpCodes.Ldnull);
+                    il.Emit(OpCodes.Ceq);
+                }
+                
             }
                 
 
