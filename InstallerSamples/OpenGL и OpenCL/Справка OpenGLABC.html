@@ -212,34 +212,37 @@ const define_page_with_path = (path, page)=>{
 }
 
 const on_start_folder = (folder_name, root_page)=>{
+	
 	let res = {
 		folders: [],
 		pages: [],
-		content_ref: root_page,
 		container: document.createElement("div"),
 		name: folder_name,
 	};
-	
-	if (root_page)
-	{
-		root_page.tree_obj = res;
-		document.getElementById("page-display-container-body").append(root_page);
-	}
 	
 	if (!root_folder)
 	{
 		root_folder = res;
 		res.path = "";
 		
-		localStorageKey = `spec : ${folder_name} : `;
+		localStorageKey = `reference : ${folder_name} : `;
 		let prev_opened_folders_str = localStorage[localStorageKey+"opened_folders"];
 		prev_opened_folders = prev_opened_folders_str ? JSON.parse(prev_opened_folders_str) : [];
 		
 		res.container.className = "ps-root-container";
 		document.getElementById("page-select-container").append(res.container);
-		if (root_page) select_page(root_page);
 	} else
 	{
+		if (!root_page) {
+			res.auto_fill_content = true;
+			root_page = document.createElement("div");
+			root_page.hidden = true;
+		}
+		
+		res.content_ref = root_page;
+		root_page.tree_obj = res;
+		document.getElementById("page-display-container-body").append(root_page);
+		
 		currently_loading_folder.folders.push(res);
 		res.root = currently_loading_folder;
 		res.path = res.root.path + folder_name + '/';
@@ -280,10 +283,10 @@ const on_start_folder = (folder_name, root_page)=>{
 		res.name_span = document.createElement("span");
 		res.name_span.className = "ps-folder-name";
 		res.name_span.innerHTML = folder_name;
-		if (root_page) root_page.name_span = res.name_span;
+		root_page.name_span = res.name_span;
 		res.body.append(res.name_span);
 		//
-		if (root_page) res.name_span.addEventListener("click", ()=>select_page(root_page));
+		res.name_span.addEventListener("click", ()=>select_page(root_page));
 		res.name_span.addEventListener("mouseenter", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor=pointed_name_color; });
 		res.name_span.addEventListener("mouseleave", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor="inherit"; });
 		
@@ -335,73 +338,61 @@ const on_page_added = (page)=>{
 
 const on_end_folder = ()=>{
 	
-	if (currently_loading_folder!=root_folder) {
-		let folder = currently_loading_folder;
+	if (currently_loading_folder !== root_folder) {
+		let curr_folder = currently_loading_folder;
+		let root_page = curr_folder.content_ref;
 		
-		if ( folder.folders.length || folder.pages.length )
+		if ( curr_folder.folders.length || curr_folder.pages.length )
 		{
-			folder.state_span.className = "arrow-page-root";
-			folder.state_span.addEventListener("click", folder.reverse_state);
-			folder.name_span.addEventListener("dblclick", folder.reverse_state);
-			currently_loading_folder.update();
+			curr_folder.state_span.className = "arrow-page-root";
+			curr_folder.state_span.addEventListener("click", curr_folder.reverse_state);
+			curr_folder.name_span.addEventListener("dblclick", curr_folder.reverse_state);
+			curr_folder.update();
 		} else
-			folder.empty = true;
+			curr_folder.empty = true;
 		
-	}
-	
-	if (currently_loading_folder !== root_folder)
-	{
-		
-		if (!currently_loading_folder.content_ref)
-		{
-			let res = document.createElement("div");
-			res.hidden = true;
-			res.name_span = currently_loading_folder.name_span;
-			res.name_span.addEventListener("click", ()=>select_page(res));
-			document.getElementById("page-display-container-body").append(res);
-			currently_loading_folder.content_ref = res;
-			res.tree_obj = currently_loading_folder;
+		if (curr_folder.auto_fill_content) {
 			
-			if (currently_loading_folder.folders.length)
+			if (curr_folder.folders.length)
 			{
 				let h = document.createElement("h1");
 				h.innerHTML = "Под-папки:";
-				res.append(h);
+				root_page.append(h);
 				
 				let l = document.createElement("ul");
-				for (let folder of currently_loading_folder.folders)
+				for (let folder of curr_folder.folders)
 				{
 					let li = document.createElement("li");
 					li.innerHTML = folder.name_span.innerHTML;
 					make_smart_link(li, folder.content_ref);
 					l.append(li);
 				}
-				res.append(l);
+				root_page.append(l);
 				
 			}
 			
-			if (currently_loading_folder.pages.length)
+			if (curr_folder.pages.length)
 			{
 				let h = document.createElement("h1");
 				h.innerHTML = "Страницы:";
-				res.append(h);
+				root_page.append(h);
 				
 				let l = document.createElement("ul");
-				for (let page of currently_loading_folder.pages)
+				for (let page of curr_folder.pages)
 				{
 					let li = document.createElement("li");
 					li.innerHTML = page.name_span.innerHTML;
 					make_smart_link(li, page.content_ref);
 					l.append(li);
 				}
-				res.append(l);
+				root_page.append(l);
 				
 			}
 			
 		}
 		
-		define_page_with_path(currently_loading_folder.path, currently_loading_folder.content_ref);
-		currently_loading_folder = currently_loading_folder.root;
+		define_page_with_path(curr_folder.path, root_page);
+		currently_loading_folder = curr_folder.root;
 	}
 	
 }
@@ -432,6 +423,7 @@ const select_page = (new_page)=>{
 	if (selected_page)
 	{
 		selected_page.hidden = false;
+		container.focus({preventScroll: true});
 		let name_span = selected_page.name_span;
 		if (name_span) name_span.style.backgroundColor = selected_name_color;
 		
@@ -445,6 +437,15 @@ const select_page = (new_page)=>{
 		container.scrollTop = scroll_by_page[selected_page.tree_obj.path] || 0;
 	}
 }
+
+window.addEventListener("keyup", e=>{
+	if (e.code==="ArrowLeft") {
+		if (p = selected_page?.page_l) select_page(p);
+	} else
+	if (e.code==="ArrowRight") {
+		if (p = selected_page?.page_r) select_page(p);
+	}
+});
 
 const make_smart_link = (lnk, page)=>{
 	lnk.className = "smart-link";
@@ -461,6 +462,12 @@ const define_broken_lnk = (path, source, fixer)=>{
 }
 
 const fix_links = (page)=>{
+	
+	if (globalThis.last_page) {
+		page.page_l = last_page;
+		last_page.page_r = page;
+	}
+	last_page = page;
 	
 	for (let lnk of page.getElementsByTagName('a'))
 	{
@@ -882,7 +889,7 @@ window.onload = ()=>{
 <div id="page-1" page_name="" hidden=true>
 <p><code>ToDo</code> модуль <code>OpenGLABC</code> пока что не существует. Когда то он появится, но пока что есть только это сообщение.</p>
 <p>Если хотите понять, было ли это сообщение оставлено тут 10 лет назад и забыто - вот дата, когда автор сообщения последний раз прочитал его:<br />
-2021.09.04</p>
+22.12.2021</p>
 </div>
 <script>on_start_folder("GL ABC", document.getElementById("page-1"))</script>
 <script>on_end_folder()</script>
