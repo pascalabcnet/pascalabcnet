@@ -1866,6 +1866,10 @@ namespace PascalABCCompiler.TreeConverter
                     exprs[i].type = fn.parameters[fn.parameters.Count - 1].type;
                     break;
                 }
+                if (ptcal.Count <= i)
+                {
+                    continue;
+                }
                 if ((ptcal[i] == null) || (ptcal[i].first == null) || (exprs[i] is null_const_node && exprs[i].conversion_type == null))
                 {
                     continue;
