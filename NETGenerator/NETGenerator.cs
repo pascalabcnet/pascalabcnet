@@ -8976,11 +8976,12 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            is_dot_expr = true;
                             TypeInfo ti = helper.GetTypeReference(real_parameters[0].type);
 
                             real_parameters[0].visit(this);
-                            is_dot_expr = tmp;
+                            LocalBuilder tmp_lb = il.DeclareLocal(ti.tp);
+                            il.Emit(OpCodes.Stloc, tmp_lb);
+                            il.Emit(OpCodes.Ldloca, tmp_lb);
                             
                             MethodInfo mi = null;
                             if (real_parameters[0].type is IGenericTypeInstance)
@@ -9007,10 +9008,11 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            is_dot_expr = true;
                             TypeInfo ti = helper.GetTypeReference(real_parameters[1].type);
                             real_parameters[1].visit(this);
-                            is_dot_expr = tmp;
+                            LocalBuilder tmp_lb = il.DeclareLocal(ti.tp);
+                            il.Emit(OpCodes.Stloc, tmp_lb);
+                            il.Emit(OpCodes.Ldloca, tmp_lb);
                             MethodInfo mi = null;
                             if (real_parameters[1].type is IGenericTypeInstance)
                                 mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
