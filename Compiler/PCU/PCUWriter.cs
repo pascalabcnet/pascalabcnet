@@ -721,10 +721,14 @@ namespace PascalABCCompiler.PCU
 		{
             int pos = (int)bw.BaseStream.Position;
             members[dn] = pos;
-			name_pool[dn].offset = pos;
-            if (dn is common_namespace_function_node)
-                if ((dn as common_namespace_function_node).is_overload)
-                    name_pool[dn].symbol_kind = symbol_kind.sk_overload_function;
+			if (name_pool.ContainsKey(dn))
+            {
+                name_pool[dn].offset = pos;
+                if (dn is common_namespace_function_node)
+                    if ((dn as common_namespace_function_node).is_overload)
+                        name_pool[dn].symbol_kind = symbol_kind.sk_overload_function;
+            }
+            
 			gl_members[dn] = pos;
             List<PCUWriter> pwl = null;
             //если какой-то модуль ждет смещения от этой сущности, сообщаем ему
