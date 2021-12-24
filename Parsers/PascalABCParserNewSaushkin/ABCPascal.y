@@ -3989,7 +3989,7 @@ is_type_expr
         }
     | term tkIs array_type
 	    {
-            $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
+            $$ = NewAsIsExpr($1, op_typecast.is_op, $3, @$);
 	    }
     ;
     

@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-2BJCJ7I
-// DateTime: 12.12.2021 14:38:37
-// UserName: ibond
+// Machine:  DESKTOP-G8V08V4
+// DateTime: 24.12.2021 11:23:26
+// UserName: ?????????
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -6446,7 +6446,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 727: // is_type_expr -> term, tkIs, array_type
 {
-            CurrentSemanticValue.ex = NewAsIsExpr(ValueStack[ValueStack.Depth-3].ex, op_typecast.as_op, ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
+            CurrentSemanticValue.ex = NewAsIsExpr(ValueStack[ValueStack.Depth-3].ex, op_typecast.is_op, ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
 	    }
         break;
       case 728: // power_expr -> factor_without_unary_op, tkStarStar, factor
