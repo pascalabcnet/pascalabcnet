@@ -13,13 +13,13 @@ begin
   var A1 := NamedQ('A1');
   var A2 := NamedQ('A2');
   
-  var B1 := NamedQ('B1').ThenWaitMarker;
+  var B1 := NamedQ('B1').ThenMarkerSignal;
   var Bw := WaitFor(B1);
   
   var C1 := NamedQ('C1');
   var C2 := NamedQ('C2');
   
-  var D2 := NamedQ('D2').ThenWaitMarker;
+  var D2 := NamedQ('D2').ThenMarkerSignal;
   var Dw := WaitFor(D2);
   
   var E1 := NamedQ('E1');

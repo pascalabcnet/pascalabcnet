@@ -16,8 +16,8 @@ begin
   //
   
   var A := NamedQ('A');
-  var B := NamedQ('B').ThenWaitMarker;
-  var C := NamedQ('C').ThenWaitMarker;
+  var B := NamedQ('B').ThenMarkerSignal;
+  var C := NamedQ('C').ThenMarkerSignal;
   var D := NamedQ('D');
   var E := NamedQ('E');
   var F := NamedQ('F');
@@ -29,7 +29,7 @@ begin
     A +
     (B+D) *
     (C+F) *
-    (WaitForAll(B,C) + E)
+    (WaitFor(B and C) + E)
   );
   
 end.

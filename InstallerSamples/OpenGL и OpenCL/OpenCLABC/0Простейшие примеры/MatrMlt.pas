@@ -44,7 +44,7 @@ begin
     
     var V2 := new MemorySegment(VecByteSize);
     
-    var W := KernelArg.FromRecord(MatrW);
+    var W := KernelArg.FromValue(MatrW);
     
     // (запись значений в параметры - позже, в очередях)
     
