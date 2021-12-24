@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 24.12.2021 11:23:26
-// UserName: ?????????
+// Machine:  DESKTOP-2BJCJ7I
+// DateTime: 24.12.2021 14:49:34
+// UserName: ibond
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -6789,6 +6789,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 789: // variable -> variable, tkRoundOpen, optional_expr_list, tkRoundClose
 {
+			if (ValueStack[ValueStack.Depth-4].ex is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-4], "^");
 			CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].ex as addressed_value,ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
         }
         break;

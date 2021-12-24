@@ -4320,6 +4320,8 @@ variable
 		}
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
 			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
         }
     | variable tkPoint identifier_keyword_operatorname
