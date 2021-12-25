@@ -2794,6 +2794,8 @@ var_stmt
 assignment
     : var_reference assign_operator expr_with_func_decl_lambda           
         {      
+        	if (!($1 is addressed_value))
+        		parsertools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",@$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
         }
     | tkRoundOpen variable tkComma variable_list tkRoundClose assign_operator expr

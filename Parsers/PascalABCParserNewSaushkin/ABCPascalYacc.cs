@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-2BJCJ7I
-// DateTime: 24.12.2021 14:49:34
-// UserName: ibond
+// Machine:  DESKTOP-G8V08V4
+// DateTime: 25.12.2021 20:53:33
+// UserName: ?????????
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -5322,6 +5322,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 514: // assignment -> var_reference, assign_operator, expr_with_func_decl_lambda
 {      
+        	if (!(ValueStack[ValueStack.Depth-3].ex is addressed_value))
+        		parsertools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",CurrentLocationSpan);
 			CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
         }
         break;
