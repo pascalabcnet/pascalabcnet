@@ -1722,6 +1722,12 @@ namespace PascalABCCompiler.TreeRealization
                         return tn.default_property_node;
                     tn = tn.base_type;
                 }
+                if (this.ImplementingInterfaces != null)
+                    foreach (type_node intf in this.ImplementingInterfaces)
+                    {
+                        if (intf.default_property_node != null)
+                            return intf.default_property_node;
+                    }
                 return null;
 			}
 		}
