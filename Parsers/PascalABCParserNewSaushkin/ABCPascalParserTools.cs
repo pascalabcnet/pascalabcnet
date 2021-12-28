@@ -245,7 +245,7 @@ namespace PascalABCSavParser
 
         public void AddError(string message, LexLocation loc)
         {
-            errors.Add(new SyntaxError(message, CurrentFileName, loc, null));
+           errors.Add(new SyntaxError(message, CurrentFileName, loc, null));
         }
 
         public void AddErrorFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)
