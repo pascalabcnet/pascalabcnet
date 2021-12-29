@@ -12992,7 +12992,7 @@ function ToIntegers(Self: string; N: integer): array of integer; extensionmethod
 begin
   // SSM Скорость работы на 30% выше чем у ToIntegers без параметров
   Result := new integer[N];
-  var from := 1;
+  var from := 0;
   for var i:=0 to N-1 do
     Result[i] := Self.ReadInteger(from);
 end; 

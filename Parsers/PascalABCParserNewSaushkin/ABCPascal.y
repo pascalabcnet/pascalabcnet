@@ -2806,7 +2806,7 @@ assignment
 			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}	
-    | variable tkQuestionSquareOpen format_expr tkSquareClose assign_operator expr
+/*    | variable tkQuestionSquareOpen format_expr tkSquareClose assign_operator expr
 		{
 			var fe = $3 as format_expr;
             if (!parsertools.build_tree_for_formatter)
@@ -2818,7 +2818,7 @@ assignment
             }
       		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
             $$ = new assign(left, $6, $5.type, @$);
-		}
+		}*/
     ;
     
 variable_list
