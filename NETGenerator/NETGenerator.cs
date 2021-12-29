@@ -8300,7 +8300,9 @@ namespace PascalABCCompiler.NETGenerator
             FieldInfo fi = fi_info.fi;
             is_dot_expr = true;
             has_dereferences = false;
+            is_field_reference = true;
             value.obj.visit(this);
+            is_field_reference = false;
             bool has_dereferences_tmp = has_dereferences;
             has_dereferences = false;
             is_dot_expr = false;
