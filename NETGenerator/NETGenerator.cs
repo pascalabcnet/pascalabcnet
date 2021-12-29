@@ -1272,6 +1272,7 @@ namespace PascalABCCompiler.NETGenerator
         private void CloseTypes()
         {
             //(ssyy) TODO: подумать, в каком порядке создавать типы
+            List<TypeBuilder> closed_types = new List<TypeBuilder>();
             for (int i = 0; i < types.Count; i++)
                 if (types[i].IsInterface)
                     try
@@ -1298,10 +1299,34 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 catch (TypeLoadException ex)
                 {
-
                     SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(value_types[i]);
                     if (ctn != null)
                     {
+                        if (ctn.is_generic_type_definition)
+                        {
+                            bool has_class_contrains = false;
+                            foreach (var gp in ctn.generic_params)
+                            {
+                                if (!(gp.base_type is ICommonTypeNode))
+                                    continue;
+                                TypeBuilder tb = helper.GetTypeReference(gp.base_type).tp as TypeBuilder;
+                                if (tb != null)
+                                {
+                                    try
+                                    {
+                                        tb.CreateType();
+                                        closed_types.Add(tb);
+                                        has_class_contrains = true;
+                                    }
+                                    catch (TypeLoadException ex2)
+                                    {
+
+                                    }
+                                }
+                            }
+                            if (has_class_contrains)
+                                continue;
+                        }
                         IAttributeNode[] attrs = ctn.Attributes;
                         if (attrs.Length > 0 && attrs[0].AttributeType is ICompiledTypeNode && (attrs[0].AttributeType as ICompiledTypeNode).compiled_type == typeof(System.Runtime.InteropServices.StructLayoutAttribute))
                         {
@@ -1317,7 +1342,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             List<TypeBuilder> failed_types = new List<TypeBuilder>();
             for (int i = 0; i < types.Count; i++)
-                if (!types[i].IsInterface)
+                if (!types[i].IsInterface && !closed_types.Contains(types[i]))
                 {
                     try
                     {
