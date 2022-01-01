@@ -1291,6 +1291,7 @@ namespace PascalABCCompiler.NETGenerator
                         
             for (int i = 0; i < enums.Count; i++)
                 enums[i].CreateType();
+            List<TypeBuilder> failed_types = new List<TypeBuilder>();
             for (int i = 0; i < value_types.Count; i++)
             {
                 try
@@ -1302,9 +1303,10 @@ namespace PascalABCCompiler.NETGenerator
                     SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(value_types[i]);
                     if (ctn != null)
                     {
-                        if (ctn.is_generic_type_definition)
+                        if (ctn.is_generic_type_definition || ctn.ImplementingInterfaces != null && ctn.ImplementingInterfaces.Count > 0)
                         {
                             bool has_class_contrains = false;
+                            if (ctn.generic_params != null)
                             foreach (var gp in ctn.generic_params)
                             {
                                 if (!(gp.base_type is ICommonTypeNode))
@@ -1326,21 +1328,20 @@ namespace PascalABCCompiler.NETGenerator
                             }
                             if (has_class_contrains)
                                 continue;
+                            else
+                            {
+                                failed_types.Add(value_types[i]);
+                                continue;
+                            }
+                                
                         }
-                        IAttributeNode[] attrs = ctn.Attributes;
-                        if (attrs.Length > 0 && attrs[0].AttributeType is ICompiledTypeNode && (attrs[0].AttributeType as ICompiledTypeNode).compiled_type == typeof(System.Runtime.InteropServices.StructLayoutAttribute))
-                        {
-                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
-                        }
-                        else
-                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
-                            //throw ex;
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                     }
                     else
                         throw ex;
                 }
             }
-            List<TypeBuilder> failed_types = new List<TypeBuilder>();
+           
             for (int i = 0; i < types.Count; i++)
                 if (!types[i].IsInterface && !closed_types.Contains(types[i]))
                 {
@@ -1354,7 +1355,19 @@ namespace PascalABCCompiler.NETGenerator
                     }
                 }
             for (int i = 0; i < failed_types.Count; i++)
-                failed_types[i].CreateType();
+                try
+                {
+                    failed_types[i].CreateType();
+                }
+                catch (TypeLoadException ex)
+                {
+                    SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(failed_types[i]);
+                    if (ctn != null)
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                    else
+                        throw ex;
+                }
+                
         }
 
         //перевод тела
