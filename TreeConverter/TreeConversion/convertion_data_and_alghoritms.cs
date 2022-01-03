@@ -1350,7 +1350,7 @@ namespace PascalABCCompiler.TreeConverter
         public enum MoreSpecific { Left, Right, None}
 
         // SSM 04/07/2021
-        public MoreSpecific compare_more_specific(function_node left_func, function_node right_func)
+        public MoreSpecific compare_more_specific(function_node left_func, function_node right_func, possible_type_convertions_list left, possible_type_convertions_list right)
         {
             bool LeftIsMoreSpecific = false;
             bool RightIsMoreSpecific = false;
@@ -1369,11 +1369,23 @@ namespace PascalABCCompiler.TreeConverter
                     if (ltt.is_generic_parameter && !rtt.is_generic_parameter)
                     {
                         RightIsMoreSpecific = true;
+                        if (left != null && right != null && left.Count > 0 && right.Count > 0)
+                        {
+                            type_conversion_compare tcc = compare_type_conversions(left[0], right[0]);
+                            if (tcc == type_conversion_compare.greater_type_conversion && right[0].first != null && right[0].first.convertion_method != null && !(right[0].first.convertion_method is basic_function_node))
+                                RightIsMoreSpecific = false;//ignore user defined implicit conversions
+                        }
                         continue;
                     }
                     if (rtt.is_generic_parameter && !ltt.is_generic_parameter)
                     {
                         LeftIsMoreSpecific = true;
+                        if (left != null && right != null && left.Count > 0 && right.Count > 0)
+                        {
+                            type_conversion_compare tcc = compare_type_conversions(left[0], right[0]);
+                            if (tcc == type_conversion_compare.less_type_conversion && left[0].first != null && left[0].first.convertion_method != null && !(left[0].first.convertion_method is basic_function_node))
+                                LeftIsMoreSpecific = false;//ignore user defined implicit conversions
+                        }
                         continue;
                     }
                     var lt = ltt as generic_instance_type_node;
@@ -1394,6 +1406,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+
             if (RightIsMoreSpecific && !LeftIsMoreSpecific)
                 return MoreSpecific.Right;
             if (LeftIsMoreSpecific && !RightIsMoreSpecific)
@@ -1406,11 +1419,12 @@ namespace PascalABCCompiler.TreeConverter
             possible_type_convertions_list left,possible_type_convertions_list right)
 		{
             // Нет распознавания глубоко вложенных типов на IsMoreSpecific - только на глубину 1 или 2
-            var moreSpec = compare_more_specific(left_func, right_func);
+            var moreSpec = compare_more_specific(left_func, right_func, left, right);
             if (moreSpec == MoreSpecific.Left)
                 return method_compare.greater_method;
             if (moreSpec == MoreSpecific.Right)
                 return method_compare.less_method;
+                
             // а иначе пока ничего не возвращать
 
             function_compare fc = function_node.compare_functions(left_func, right_func);
