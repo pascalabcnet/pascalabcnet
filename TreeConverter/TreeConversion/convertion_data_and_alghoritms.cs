@@ -658,6 +658,11 @@ namespace PascalABCCompiler.TreeConverter
 
 			if (pct.second!=null)
 			{
+                if (pct.second.to == null && en is typed_expression && !to.IsDelegate)
+                {
+                    syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref en);
+                    return en;
+                }
                 AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
 			}
 
@@ -1831,7 +1836,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				if (ptc.second!=null)
 				{
-                    if (ptc.first.from is null_type_node || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
+                    if (ptc.first.from is null_type_node || ptc.second.to == null || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
                         continue; // SSM 9/12/20 fix 2363
 					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
@@ -1888,6 +1893,8 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     continue;
                 }
+                if (ptcal[i].second != null && ptcal[i].second.to == null)
+                    continue;
                 expression_node[] temp_arr = new expression_node[1];
                 temp_arr[0] = exprs[i];
                 if (ptcal[i].first.convertion_method is compiled_constructor_node)
