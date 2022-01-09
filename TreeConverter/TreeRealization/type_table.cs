@@ -590,8 +590,13 @@ namespace PascalABCCompiler.TreeRealization
                 return !tin.this_to_another.is_explicit;
             }
 
-            while ((tn != null) && (tn != base_class))
+            while (tn != null)
             {
+                if (tn == base_class) // точное совпадение
+                    break;
+                if ((tn is compiled_type_node ctn1) && (base_class is compiled_type_node ctn2) // в случае если этот тип определен в одной dll, а используется в другой
+                    && ctn1.compiled_type.AssemblyQualifiedName == ctn2.compiled_type.AssemblyQualifiedName)
+                    break;
                 tn = tn.base_type;
             }
             if (tn == null)

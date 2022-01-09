@@ -85,7 +85,7 @@ namespace PascalABCCompiler
         string inputId = "pabcnetc_input";
         string pabcnetcFileName = "pabcnetc.exe";
         public const int sendCommandStartNumber = 100;
-        CompilerState compilerState = CompilerState.Reloading;
+        public CompilerState compilerState = CompilerState.Reloading;
         Encoding inputEncoding = System.Text.Encoding.UTF8;
         bool compilationSatarted = false;
 
@@ -112,7 +112,7 @@ namespace PascalABCCompiler
             Reload();
         }
 
-        void stringRecived(string id, string line)
+        public void stringRecived(string id, string line)
         {
             string arg = null;
             if (line.Length < 3)
