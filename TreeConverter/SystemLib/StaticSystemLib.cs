@@ -1801,7 +1801,7 @@ namespace PascalABCCompiler.SystemLibrary
             _double_to_int = make_type_conversion(_ulong_type, _integer_type, type_compare.non_comparable_type, SemanticTree.basic_function_type.ultoi);
             _double_to_char = make_type_conversion(_ulong_type, _char_type, type_compare.greater_type, SemanticTree.basic_function_type.ultochar);
             */
-            //_double_to_int = make_type_conversion(_double_type, _integer_type, type_compare.greater_type, SemanticTree.basic_function_type.dtoi,false);
+            _double_to_int = make_type_conversion(_double_type, _integer_type, type_compare.greater_type, SemanticTree.basic_function_type.dtoi,false);
             _double_to_float = make_type_conversion(_double_type, _float_type, type_compare.greater_type, SemanticTree.basic_function_type.dtof);
             //Унарные операции.
             _real_unmin=make_unary_operator(compiler_string_consts.minus_name, _double_type, SemanticTree.basic_function_type.dunmin);
