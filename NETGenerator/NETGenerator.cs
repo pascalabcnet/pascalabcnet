@@ -2683,7 +2683,7 @@ namespace PascalABCCompiler.NETGenerator
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });
                 if (default_value != null)
                 {
-                    if (default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum && (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX))
+                    if ((Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX) && default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum)
                         default_value = Enum.ToObject(param_types[i + num], default_value);
                     if (default_value is TreeRealization.null_const_node) // SSM 20/04/21
                         pb.SetConstant(null);
