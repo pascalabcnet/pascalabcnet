@@ -35,7 +35,7 @@ try
   
   //TODO Использовать CLArray2<byte> когда будет
   var B := new MemorySegment(W*W*sizeof(byte));
-  B.WriteArray2&<byte>(MatrGen(W,W, (x,y)->byte(Random(2))));
+  B.WriteArray2(MatrGen(W,W, (x,y)->byte(Random(2))));
   var B_temp := new MemorySegment(B.Size);
   
   var code := new ProgramCode(ReadAllText('Игра жизнь.cl'));
@@ -51,12 +51,11 @@ try
  var Q_Otp :=
     B.NewQueue
     .AddGetArray2&<byte>(W,W)
-    .ThenConvert&<array[,] of byte>(field->
+    .ThenUse(field->
     begin
       // Если уже слишком далеко вперёд насчитали - можно немного отдохнуть
       while field_states_q.Count=16 do Sleep(1000 div fps);
       field_states_q.Enqueue(field);
-      Result := field;
     end)
   ;
   

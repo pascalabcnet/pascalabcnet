@@ -35,8 +35,6 @@ unit OpenCLABC;
 //TODO Использовать cl.EnqueueMapBuffer
 // - В виде .AddMap((MappedArray,Context)->())
 
-//TODO MultiusableBase позволяет использовать вне модуля
-
 //TODO Синхронные (с припиской Fast, а может Quick) варианты всего работающего по принципу HostQueue
 //TODO Справка: В обработке исключений написать, что обработчики всегда Quick
 
@@ -48,8 +46,6 @@ unit OpenCLABC;
 // - В том числе проверки с помощью BlittableHelper
 // - BlittableHelper вроде уже всё проверяет, но проверок надо тучу
 //TODO А в самих cl.* вызовах - использовать OpenCLABCInnerException.RaiseIfError, ибо это внутренние проблемы
-
-//TODO Проверять ".IsReadOnly" перед запасным копированием коллекций
 
 //TODO В методах вроде MemorySegment.AddWriteArray1 приходится добавлять &<>
 
@@ -76,6 +72,13 @@ unit OpenCLABC;
 //
 //TODO Несколько TODO в:
 // - Queue converter's >> Wait
+
+//TODO CLArray2 и CLArray3?
+// - Основная проблема использовать только CLArray<> сейчас - через него не прочитаешь/не запишешь многомерные массивы из RAM
+// - Вообще на стороне OpenCL запутывает, по строкам или по столбцам передался массив?
+// - С этой стороны, лучше иметь только одномерный CLArray, ради безопасности
+// - По хорошему, в коде использующем OpenCLABC, надо объявляться MatrixByRows/MatrixByCols и т.п.
+// - Но это будет объёмно, а ради простых примеров...
 
 //TODO Интегрировать профайлинг очередей
 
@@ -106,6 +109,7 @@ unit OpenCLABC;
 //TODO Issue компилятора:
 //TODO https://github.com/pascalabcnet/pascalabcnet/issues/{id}
 // - #2221
+// - #2550
 // - #2589
 // - #2604
 // - #2607
@@ -1311,7 +1315,7 @@ type
   
   {$endregion Kernel}
   
-  {$region CLValue}
+  {$region NativeValue}
   
   ///Представляет запись, значение которой хранится в неуправляемой области памяти
   NativeValue<T> = partial class(System.IDisposable)
@@ -1342,7 +1346,7 @@ type
     
   end;
   
-  {$endregion CLValue}
+  {$endregion NativeValue}
   
   {$region MemorySegment}
   
@@ -1491,6 +1495,76 @@ type
     ///Читает значение размерного типа из области памяти в указанное значение
     ///mem_offset указывает отступ от начала области памяти, в байтах
     public function ReadValue<TRecord>(val: CommandQueue<NativeValue<TRecord>>; mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+    
+    ///Записывает весь массив в начало области памяти
+    public function WriteArray1<TRecord>(a: array of TRecord): MemorySegment; where TRecord: record;
+    
+    ///Записывает весь массив в начало области памяти
+    public function WriteArray2<TRecord>(a: array[,] of TRecord): MemorySegment; where TRecord: record;
+    
+    ///Записывает весь массив в начало области памяти
+    public function WriteArray3<TRecord>(a: array[,,] of TRecord): MemorySegment; where TRecord: record;
+    
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
+    public function ReadArray1<TRecord>(a: array of TRecord): MemorySegment; where TRecord: record;
+    
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
+    public function ReadArray2<TRecord>(a: array[,] of TRecord): MemorySegment; where TRecord: record;
+    
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
+    public function ReadArray3<TRecord>(a: array[,,] of TRecord): MemorySegment; where TRecord: record;
+    
+    ///Записывает указанный участок массива в область памяти
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    public function WriteArray1<TRecord>(a: array of TRecord; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+    
+    ///Записывает указанный участок массива в область памяти
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///
+    ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
+    ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
+    ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
+    public function WriteArray2<TRecord>(a: array[,] of TRecord; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+    
+    ///Записывает указанный участок массива в область памяти
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///
+    ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
+    ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
+    ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
+    public function WriteArray3<TRecord>(a: array[,,] of TRecord; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+    
+    ///Читает данные из области памяти в указанный участок массива
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    public function ReadArray1<TRecord>(a: array of TRecord; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+    
+    ///Читает данные из области памяти в указанный участок массива
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///
+    ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
+    ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
+    ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
+    public function ReadArray2<TRecord>(a: array[,] of TRecord; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+    
+    ///Читает данные из области памяти в указанный участок массива
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///
+    ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
+    ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
+    ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
+    public function ReadArray3<TRecord>(a: array[,,] of TRecord; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
     
     ///Записывает весь массив в начало области памяти
     public function WriteArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegment; where TRecord: record;
@@ -3229,6 +3303,76 @@ type
     ///Читает значение размерного типа из области памяти в указанное значение
     ///mem_offset указывает отступ от начала области памяти, в байтах
     public function AddReadValue<TRecord>(val: CommandQueue<NativeValue<TRecord>>; mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Записывает весь массив в начало области памяти
+    public function AddWriteArray1<TRecord>(a: array of TRecord): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Записывает весь массив в начало области памяти
+    public function AddWriteArray2<TRecord>(a: array[,] of TRecord): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Записывает весь массив в начало области памяти
+    public function AddWriteArray3<TRecord>(a: array[,,] of TRecord): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
+    public function AddReadArray1<TRecord>(a: array of TRecord): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
+    public function AddReadArray2<TRecord>(a: array[,] of TRecord): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Читает из области памяти достаточно байт чтоб заполнить весь массив
+    public function AddReadArray3<TRecord>(a: array[,,] of TRecord): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Записывает указанный участок массива в область памяти
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    public function AddWriteArray1<TRecord>(a: array of TRecord; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Записывает указанный участок массива в область памяти
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///
+    ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
+    ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
+    ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
+    public function AddWriteArray2<TRecord>(a: array[,] of TRecord; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Записывает указанный участок массива в область памяти
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///
+    ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
+    ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
+    ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
+    public function AddWriteArray3<TRecord>(a: array[,,] of TRecord; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Читает данные из области памяти в указанный участок массива
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    public function AddReadArray1<TRecord>(a: array of TRecord; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Читает данные из области памяти в указанный участок массива
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///
+    ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
+    ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
+    ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
+    public function AddReadArray2<TRecord>(a: array[,] of TRecord; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+    
+    ///Читает данные из области памяти в указанный участок массива
+    ///a_offset(-ы) указывают индекс в массиве
+    ///len указывает кол-во задействованных элементов массива
+    ///mem_offset указывает отступ от начала области памяти, в байтах
+    ///
+    ///ВНИМАНИЕ! У многомерных массивов элементы распологаются так же как у одномерных, разделение на строки виртуально
+    ///Это значит что, к примеру, чтение 4 элементов 2-х мерного массива начиная с индекса [0,1]
+    ///прочитает элементы [0,1], [0,2], [1,0], [1,1]. Для чтения частей из нескольких строк массива - делайте несколько операций чтения, по 1 на строку
+    public function AddReadArray3<TRecord>(a: array[,,] of TRecord; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
     
     ///Записывает весь массив в начало области памяти
     public function AddWriteArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegmentCCQ; where TRecord: record;
@@ -8795,10 +8939,14 @@ type
     
   end;
   
-  QueueCommandFactory<TObj> = record(ITypedCQConverter<BasicGPUCommand<TObj>>)
+  QueueCommandFactory<TObj> = sealed class(ITypedCQConverter<BasicGPUCommand<TObj>>)
     
     public function ConvertNil(cq: CommandQueueNil): BasicGPUCommand<TObj> := new QueueCommandNil<TObj>(cq);
-    public function Convert<T>(cq: CommandQueue<T>): BasicGPUCommand<TObj> := new QueueCommand<TObj,T>(cq);
+    public function Convert<T>(cq: CommandQueue<T>): BasicGPUCommand<TObj> :=
+    if cq is ConstQueue<T> then nil else
+    if cq is CastQueueBase<T>(var ccq) then
+      ccq.SourceBase.ConvertTyped(self) else
+      new QueueCommand<TObj,T>(cq);
     
   end;
   
@@ -9046,10 +9194,8 @@ constructor KernelCCQ.Create := inherited;
 function KernelCCQ.AddQueue(q: CommandQueueBase): KernelCCQ;
 begin
   Result := self;
-  //TODO UseTyped
-//  if q is IConstQueue then raise new System.ArgumentException($'%Err:AddQueue(Const)%');
-//  if q is ICastQueue(var cq) then q := cq.GetQ;
-  commands.Add( BasicGPUCommand&<Kernel>.MakeQueue(q) );
+  var comm := BasicGPUCommand&<Kernel>.MakeQueue(q);
+  if comm<>nil then commands.Add(comm);
 end;
 
 function KernelCCQ.AddProc(p: Kernel->()) := AddCommand(self, BasicGPUCommand&<Kernel>.MakeProc(p));
@@ -9079,10 +9225,8 @@ constructor MemorySegmentCCQ.Create := inherited;
 function MemorySegmentCCQ.AddQueue(q: CommandQueueBase): MemorySegmentCCQ;
 begin
   Result := self;
-  //TODO UseTyped
-//  if q is IConstQueue then raise new System.ArgumentException($'%Err:AddQueue(Const)%');
-//  if q is ICastQueue(var cq) then q := cq.GetQ;
-  commands.Add( BasicGPUCommand&<MemorySegment>.MakeQueue(q) );
+  var comm := BasicGPUCommand&<MemorySegment>.MakeQueue(q);
+  if comm<>nil then commands.Add(comm);
 end;
 
 function MemorySegmentCCQ.AddProc(p: MemorySegment->()) := AddCommand(self, BasicGPUCommand&<MemorySegment>.MakeProc(p));
@@ -9102,7 +9246,8 @@ type
   end;
   
 static function KernelArg.operator implicit<T>(a_q: CLArrayCCQ<T>): KernelArg; where T: record;
-begin Result := FromCLArrayCQ(a_q); end;
+//TODO #2550
+begin Result := FromCLArrayCQ(a_q as object as GPUCommandContainer<CLArray<T>>); end;
 
 constructor CLArrayCCQ<T>.Create(o: CLArray<T>) := inherited;
 constructor CLArrayCCQ<T>.Create(q: CommandQueue<CLArray<T>>) := inherited;
@@ -9113,10 +9258,8 @@ constructor CLArrayCCQ<T>.Create := inherited;
 function CLArrayCCQ<T>.AddQueue(q: CommandQueueBase): CLArrayCCQ<T>;
 begin
   Result := self;
-  //TODO UseTyped
-//  if q is IConstQueue then raise new System.ArgumentException($'%Err:AddQueue(Const)%');
-//  if q is ICastQueue(var cq) then q := cq.GetQ;
-  commands.Add( BasicGPUCommand&<CLArray<T>>.MakeQueue(q) );
+  var comm := BasicGPUCommand&<CLArray<T>>.MakeQueue(q);
+  if comm<>nil then commands.Add(comm);
 end;
 
 function CLArrayCCQ<T>.AddProc(p: CLArray<T>->()) := AddCommand(self, BasicGPUCommand&<CLArray<T>>.MakeProc(p));
@@ -9930,6 +10073,66 @@ end;
 function MemorySegment.ReadValue<TRecord>(val: CommandQueue<NativeValue<TRecord>>; mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
 begin
   Result := Context.Default.SyncInvoke(self.NewQueue.AddReadValue&<TRecord>(val, mem_offset));
+end;
+
+function MemorySegment.WriteArray1<TRecord>(a: array of TRecord): MemorySegment; where TRecord: record;
+begin
+  Result := WriteArray1(new ConstQueue<array of TRecord>(a));
+end;
+
+function MemorySegment.WriteArray2<TRecord>(a: array[,] of TRecord): MemorySegment; where TRecord: record;
+begin
+  Result := WriteArray2(new ConstQueue<array[,] of TRecord>(a));
+end;
+
+function MemorySegment.WriteArray3<TRecord>(a: array[,,] of TRecord): MemorySegment; where TRecord: record;
+begin
+  Result := WriteArray3(new ConstQueue<array[,,] of TRecord>(a));
+end;
+
+function MemorySegment.ReadArray1<TRecord>(a: array of TRecord): MemorySegment; where TRecord: record;
+begin
+  Result := ReadArray1(new ConstQueue<array of TRecord>(a));
+end;
+
+function MemorySegment.ReadArray2<TRecord>(a: array[,] of TRecord): MemorySegment; where TRecord: record;
+begin
+  Result := ReadArray2(new ConstQueue<array[,] of TRecord>(a));
+end;
+
+function MemorySegment.ReadArray3<TRecord>(a: array[,,] of TRecord): MemorySegment; where TRecord: record;
+begin
+  Result := ReadArray3(new ConstQueue<array[,,] of TRecord>(a));
+end;
+
+function MemorySegment.WriteArray1<TRecord>(a: array of TRecord; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+begin
+  Result := WriteArray1(new ConstQueue<array of TRecord>(a), a_offset, len, mem_offset);
+end;
+
+function MemorySegment.WriteArray2<TRecord>(a: array[,] of TRecord; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+begin
+  Result := WriteArray2(new ConstQueue<array[,] of TRecord>(a), a_offset1,a_offset2, len, mem_offset);
+end;
+
+function MemorySegment.WriteArray3<TRecord>(a: array[,,] of TRecord; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+begin
+  Result := WriteArray3(new ConstQueue<array[,,] of TRecord>(a), a_offset1,a_offset2,a_offset3, len, mem_offset);
+end;
+
+function MemorySegment.ReadArray1<TRecord>(a: array of TRecord; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+begin
+  Result := ReadArray1(new ConstQueue<array of TRecord>(a), a_offset, len, mem_offset);
+end;
+
+function MemorySegment.ReadArray2<TRecord>(a: array[,] of TRecord; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+begin
+  Result := ReadArray2(new ConstQueue<array[,] of TRecord>(a), a_offset1,a_offset2, len, mem_offset);
+end;
+
+function MemorySegment.ReadArray3<TRecord>(a: array[,,] of TRecord; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegment; where TRecord: record;
+begin
+  Result := ReadArray3(new ConstQueue<array[,,] of TRecord>(a), a_offset1,a_offset2,a_offset3, len, mem_offset);
 end;
 
 function MemorySegment.WriteArray1<TRecord>(a: CommandQueue<array of TRecord>): MemorySegment; where TRecord: record;
@@ -10981,6 +11184,114 @@ begin
 end;
 
 {$endregion ReadValueNQ}
+
+{$region WriteArray1AutoSize}
+
+function MemorySegmentCCQ.AddWriteArray1<TRecord>(a: array of TRecord): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddWriteArray1(new ConstQueue<array of TRecord>(a));
+end;
+
+{$endregion WriteArray1AutoSize}
+
+{$region WriteArray2AutoSize}
+
+function MemorySegmentCCQ.AddWriteArray2<TRecord>(a: array[,] of TRecord): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddWriteArray2(new ConstQueue<array[,] of TRecord>(a));
+end;
+
+{$endregion WriteArray2AutoSize}
+
+{$region WriteArray3AutoSize}
+
+function MemorySegmentCCQ.AddWriteArray3<TRecord>(a: array[,,] of TRecord): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddWriteArray3(new ConstQueue<array[,,] of TRecord>(a));
+end;
+
+{$endregion WriteArray3AutoSize}
+
+{$region ReadArray1AutoSize}
+
+function MemorySegmentCCQ.AddReadArray1<TRecord>(a: array of TRecord): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddReadArray1(new ConstQueue<array of TRecord>(a));
+end;
+
+{$endregion ReadArray1AutoSize}
+
+{$region ReadArray2AutoSize}
+
+function MemorySegmentCCQ.AddReadArray2<TRecord>(a: array[,] of TRecord): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddReadArray2(new ConstQueue<array[,] of TRecord>(a));
+end;
+
+{$endregion ReadArray2AutoSize}
+
+{$region ReadArray3AutoSize}
+
+function MemorySegmentCCQ.AddReadArray3<TRecord>(a: array[,,] of TRecord): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddReadArray3(new ConstQueue<array[,,] of TRecord>(a));
+end;
+
+{$endregion ReadArray3AutoSize}
+
+{$region WriteArray1}
+
+function MemorySegmentCCQ.AddWriteArray1<TRecord>(a: array of TRecord; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddWriteArray1(new ConstQueue<array of TRecord>(a), a_offset, len, mem_offset);
+end;
+
+{$endregion WriteArray1}
+
+{$region WriteArray2}
+
+function MemorySegmentCCQ.AddWriteArray2<TRecord>(a: array[,] of TRecord; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddWriteArray2(new ConstQueue<array[,] of TRecord>(a), a_offset1,a_offset2, len, mem_offset);
+end;
+
+{$endregion WriteArray2}
+
+{$region WriteArray3}
+
+function MemorySegmentCCQ.AddWriteArray3<TRecord>(a: array[,,] of TRecord; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddWriteArray3(new ConstQueue<array[,,] of TRecord>(a), a_offset1,a_offset2,a_offset3, len, mem_offset);
+end;
+
+{$endregion WriteArray3}
+
+{$region ReadArray1}
+
+function MemorySegmentCCQ.AddReadArray1<TRecord>(a: array of TRecord; a_offset, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddReadArray1(new ConstQueue<array of TRecord>(a), a_offset, len, mem_offset);
+end;
+
+{$endregion ReadArray1}
+
+{$region ReadArray2}
+
+function MemorySegmentCCQ.AddReadArray2<TRecord>(a: array[,] of TRecord; a_offset1,a_offset2, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddReadArray2(new ConstQueue<array[,] of TRecord>(a), a_offset1,a_offset2, len, mem_offset);
+end;
+
+{$endregion ReadArray2}
+
+{$region ReadArray3}
+
+function MemorySegmentCCQ.AddReadArray3<TRecord>(a: array[,,] of TRecord; a_offset1,a_offset2,a_offset3, len, mem_offset: CommandQueue<integer>): MemorySegmentCCQ; where TRecord: record;
+begin
+  Result := AddReadArray3(new ConstQueue<array[,,] of TRecord>(a), a_offset1,a_offset2,a_offset3, len, mem_offset);
+end;
+
+{$endregion ReadArray3}
 
 {$region WriteArray1AutoSize}
 

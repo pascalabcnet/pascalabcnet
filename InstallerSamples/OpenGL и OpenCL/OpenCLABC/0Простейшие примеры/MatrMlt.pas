@@ -52,14 +52,14 @@ begin
     
     var Calc_C_Q :=
       code['MatrMltMatr'].NewQueue.AddExec2(MatrW, MatrW, // Выделяем ядра в форме квадрата, всего MatrW*MatrW ядер
-        A.NewQueue.AddWriteArray2&<real>(A_Matr), // Тип в &<> надо указывать явно, потому что компилятор не может вычислить его из типа элементов массива
-        B.NewQueue.AddWriteArray2&<real>(B_Mart),
+        A.NewQueue.AddWriteArray2(A_Matr),
+        B.NewQueue.AddWriteArray2(B_Mart),
         C,
         W
       );
     
     var Otp_C_Q :=
-      C.NewQueue.AddReadArray2&<real>(A_Matr) +
+      C.NewQueue.AddReadArray2(A_Matr) +
       HPQ(()->
       begin
         'Матрица С = A*B:'.Println;
@@ -70,13 +70,13 @@ begin
     var Calc_V2_Q :=
       code['MatrMltVec'].NewQueue.AddExec1(MatrW,
         C,
-        V1.NewQueue.AddWriteArray1&<real>(V1_Arr),
+        V1.NewQueue.AddWriteArray1(V1_Arr),
         V2,
         W
       );
     
     var Otp_V2_Q :=
-      V2.NewQueue.AddReadArray1&<real>(V1_Arr) +
+      V2.NewQueue.AddReadArray1(V1_Arr) +
       HPQ(()->
       begin
         'Вектор V2 = C*V1:'.Println;
