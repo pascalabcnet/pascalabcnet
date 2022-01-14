@@ -2794,6 +2794,8 @@ var_stmt
 assignment
     : var_reference assign_operator expr_with_func_decl_lambda           
         {      
+        	if (!($1 is addressed_value))
+        		parsertools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",@$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
         }
     | tkRoundOpen variable tkComma variable_list tkRoundClose assign_operator expr
@@ -2804,7 +2806,7 @@ assignment
 			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}	
-    | variable tkQuestionSquareOpen format_expr tkSquareClose assign_operator expr
+/*    | variable tkQuestionSquareOpen format_expr tkSquareClose assign_operator expr
 		{
 			var fe = $3 as format_expr;
             if (!parsertools.build_tree_for_formatter)
@@ -2816,7 +2818,7 @@ assignment
             }
       		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
             $$ = new assign(left, $6, $5.type, @$);
-		}
+		}*/
     ;
     
 variable_list
@@ -4320,6 +4322,8 @@ variable
 		}
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
 			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
         }
     | variable tkPoint identifier_keyword_operatorname

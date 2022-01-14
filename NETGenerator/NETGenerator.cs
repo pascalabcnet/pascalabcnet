@@ -1272,6 +1272,7 @@ namespace PascalABCCompiler.NETGenerator
         private void CloseTypes()
         {
             //(ssyy) TODO: подумать, в каком порядке создавать типы
+            List<TypeBuilder> closed_types = new List<TypeBuilder>();
             for (int i = 0; i < types.Count; i++)
                 if (types[i].IsInterface)
                     try
@@ -1290,6 +1291,7 @@ namespace PascalABCCompiler.NETGenerator
                         
             for (int i = 0; i < enums.Count; i++)
                 enums[i].CreateType();
+            List<TypeBuilder> failed_types = new List<TypeBuilder>();
             for (int i = 0; i < value_types.Count; i++)
             {
                 try
@@ -1298,26 +1300,50 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 catch (TypeLoadException ex)
                 {
-
                     SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(value_types[i]);
                     if (ctn != null)
                     {
-                        IAttributeNode[] attrs = ctn.Attributes;
-                        if (attrs.Length > 0 && attrs[0].AttributeType is ICompiledTypeNode && (attrs[0].AttributeType as ICompiledTypeNode).compiled_type == typeof(System.Runtime.InteropServices.StructLayoutAttribute))
+                        if (ctn.is_generic_type_definition || ctn.ImplementingInterfaces != null && ctn.ImplementingInterfaces.Count > 0)
                         {
-                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                            bool has_class_contrains = false;
+                            if (ctn.generic_params != null)
+                            foreach (var gp in ctn.generic_params)
+                            {
+                                if (!(gp.base_type is ICommonTypeNode))
+                                    continue;
+                                TypeBuilder tb = helper.GetTypeReference(gp.base_type).tp as TypeBuilder;
+                                if (tb != null)
+                                {
+                                    try
+                                    {
+                                        tb.CreateType();
+                                        closed_types.Add(tb);
+                                        has_class_contrains = true;
+                                    }
+                                    catch (TypeLoadException ex2)
+                                    {
+
+                                    }
+                                }
+                            }
+                            if (has_class_contrains)
+                                continue;
+                            else
+                            {
+                                failed_types.Add(value_types[i]);
+                                continue;
+                            }
+                                
                         }
-                        else
-                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
-                            //throw ex;
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                     }
                     else
                         throw ex;
                 }
             }
-            List<TypeBuilder> failed_types = new List<TypeBuilder>();
+           
             for (int i = 0; i < types.Count; i++)
-                if (!types[i].IsInterface)
+                if (!types[i].IsInterface && !closed_types.Contains(types[i]))
                 {
                     try
                     {
@@ -1329,7 +1355,19 @@ namespace PascalABCCompiler.NETGenerator
                     }
                 }
             for (int i = 0; i < failed_types.Count; i++)
-                failed_types[i].CreateType();
+                try
+                {
+                    failed_types[i].CreateType();
+                }
+                catch (TypeLoadException ex)
+                {
+                    SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(failed_types[i]);
+                    if (ctn != null)
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                    else
+                        throw ex;
+                }
+                
         }
 
         //перевод тела
@@ -2645,7 +2683,7 @@ namespace PascalABCCompiler.NETGenerator
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });
                 if (default_value != null)
                 {
-                    if (default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum && (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX))
+                    if ((Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX) && default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum)
                         default_value = Enum.ToObject(param_types[i + num], default_value);
                     if (default_value is TreeRealization.null_const_node) // SSM 20/04/21
                         pb.SetConstant(null);
@@ -8275,7 +8313,9 @@ namespace PascalABCCompiler.NETGenerator
             FieldInfo fi = fi_info.fi;
             is_dot_expr = true;
             has_dereferences = false;
+            is_field_reference = true;
             value.obj.visit(this);
+            is_field_reference = false;
             bool has_dereferences_tmp = has_dereferences;
             has_dereferences = false;
             is_dot_expr = false;
@@ -8976,11 +9016,12 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            is_dot_expr = true;
                             TypeInfo ti = helper.GetTypeReference(real_parameters[0].type);
 
                             real_parameters[0].visit(this);
-                            is_dot_expr = tmp;
+                            LocalBuilder tmp_lb = il.DeclareLocal(ti.tp);
+                            il.Emit(OpCodes.Stloc, tmp_lb);
+                            il.Emit(OpCodes.Ldloca, tmp_lb);
                             
                             MethodInfo mi = null;
                             if (real_parameters[0].type is IGenericTypeInstance)
@@ -9007,10 +9048,11 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            is_dot_expr = true;
                             TypeInfo ti = helper.GetTypeReference(real_parameters[1].type);
                             real_parameters[1].visit(this);
-                            is_dot_expr = tmp;
+                            LocalBuilder tmp_lb = il.DeclareLocal(ti.tp);
+                            il.Emit(OpCodes.Stloc, tmp_lb);
+                            il.Emit(OpCodes.Ldloca, tmp_lb);
                             MethodInfo mi = null;
                             if (real_parameters[1].type is IGenericTypeInstance)
                                 mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
@@ -10757,11 +10799,31 @@ namespace PascalABCCompiler.NETGenerator
             else
             {
                 value.condition.visit(this);
-                tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
-                il.Emit(OpCodes.Stloc, tmp_lb);
-                il.Emit(OpCodes.Ldloc, tmp_lb);
-                il.Emit(OpCodes.Ldnull);
-                il.Emit(OpCodes.Ceq);
+                if (value.condition.type.is_nullable_type)
+                {
+                    
+                    tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
+                    il.Emit(OpCodes.Stloc, tmp_lb);
+                    il.Emit(OpCodes.Ldloca, tmp_lb);
+                    MethodInfo mi = null;
+                    TypeInfo cond_ti = helper.GetTypeReference(value.condition.type);
+                    if (value.condition.type is IGenericTypeInstance)
+                        mi = TypeBuilder.GetMethod(cond_ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
+                    else
+                        mi = cond_ti.tp.GetMethod("get_HasValue");
+                    il.Emit(OpCodes.Call, mi);
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ceq);
+                }
+                else
+                {
+                    tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
+                    il.Emit(OpCodes.Stloc, tmp_lb);
+                    il.Emit(OpCodes.Ldloc, tmp_lb);
+                    il.Emit(OpCodes.Ldnull);
+                    il.Emit(OpCodes.Ceq);
+                }
+                
             }
                 
 

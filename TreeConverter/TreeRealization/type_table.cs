@@ -132,6 +132,19 @@ namespace PascalABCCompiler.TreeRealization
     /// </summary>
 	public static class type_table
     {
+        private static type_intersection_node change_to_opposite(type_intersection_node tin2)
+        {
+            type_intersection_node new_tin = null;
+            if (tin2.type_compare == type_compare.greater_type)
+                new_tin = new type_intersection_node(type_compare.less_type);
+            else if (tin2.type_compare == type_compare.less_type)
+                new_tin = new type_intersection_node(type_compare.greater_type);
+            else
+                new_tin = new type_intersection_node(type_compare.non_comparable_type);
+            new_tin.another_to_this = tin2.another_to_this;
+            new_tin.this_to_another = tin2.this_to_another;
+            return new_tin;
+        }
         private static type_intersection_node[] get_type_intersections_in_specific_order(type_node left, type_node right)
         {
             type_intersection_node tin1 = left.get_type_intersection(right);
@@ -148,7 +161,8 @@ namespace PascalABCCompiler.TreeRealization
                     if (tin2.another_to_this != null && tin2.another_to_this.is_explicit)
                         return new type_intersection_node[0];
                     type_intersection_node[] tinarr = new type_intersection_node[1];
-                    type_intersection_node new_tin = null;
+
+                    /*type_intersection_node new_tin = null;
                     if (tin2.type_compare == type_compare.greater_type)
                         new_tin = new type_intersection_node(type_compare.less_type);
                     else if (tin2.type_compare == type_compare.less_type)
@@ -156,8 +170,9 @@ namespace PascalABCCompiler.TreeRealization
                     else
                         new_tin = new type_intersection_node(type_compare.non_comparable_type);
                     new_tin.another_to_this = tin2.another_to_this;
-                    new_tin.this_to_another = tin2.this_to_another;
-                    tinarr[0] = new_tin;
+                    new_tin.this_to_another = tin2.this_to_another;*/
+
+                    tinarr[0] = change_to_opposite(tin2);
                     return tinarr;
                 }
             }
@@ -590,8 +605,13 @@ namespace PascalABCCompiler.TreeRealization
                 return !tin.this_to_another.is_explicit;
             }
 
-            while ((tn != null) && (tn != base_class))
+            while (tn != null)
             {
+                if (tn == base_class) // точное совпадение
+                    break;
+                if ((tn is compiled_type_node ctn1) && (base_class is compiled_type_node ctn2) // в случае если этот тип определен в одной dll, а используется в другой
+                    && ctn1.compiled_type.AssemblyQualifiedName == ctn2.compiled_type.AssemblyQualifiedName)
+                    break;
                 tn = tn.base_type;
             }
             if (tn == null)
@@ -606,7 +626,12 @@ namespace PascalABCCompiler.TreeRealization
             type_intersection_node[] tins = get_type_intersections_in_specific_order(left, right);
             if (only_implicit)
             {
-                tins = tins.Where(t => (t.this_to_another != null && t.this_to_another.is_explicit == false) || (t.another_to_this != null && t.another_to_this.is_explicit == false)).ToArray();
+                var tinsv = tins.Where(t => (t.this_to_another != null && t.this_to_another.is_explicit == false) || (t.another_to_this != null && t.another_to_this.is_explicit == false)).ToArray();
+                if (tins.Length==2 && tinsv.Length==1 && tins[1]==tinsv[0])
+                {
+                    tinsv[0] = change_to_opposite(tinsv[0]);
+                }
+                tins = tinsv;
             }
             if (tins.Length == 0)
             {
@@ -681,7 +706,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return ret;
             }
-            if (is_derived(left, right))
+            if (is_derived(left, right)) // left-base, right-derived, Person > Student
             {
                 return type_compare.greater_type;
             }

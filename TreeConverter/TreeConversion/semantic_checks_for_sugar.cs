@@ -97,7 +97,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (!b && !toIsIndex && !toIsIndex1)
             {
-                AddError(get_location(ex), "INTEGER_VALUE_EXPECTED" + semex);
+                AddError(get_location(ex), "INTEGER_VALUE_EXPECTED");
             }
         }
 

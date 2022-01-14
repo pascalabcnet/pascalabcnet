@@ -1746,7 +1746,7 @@ namespace PascalABCCompiler.TreeRealization
                 cmn.overrided_method = common_orig.overrided_method;
             if (orig_fn.is_generic_function)
             {
-                cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true);
+                cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true, orig_tpars);
             }
             if (orig_fn is common_function_node)
             {
