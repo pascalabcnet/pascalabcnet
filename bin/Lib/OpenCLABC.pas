@@ -47,19 +47,11 @@ unit OpenCLABC;
 // - BlittableHelper вроде уже всё проверяет, но проверок надо тучу
 //TODO А в самих cl.* вызовах - использовать OpenCLABCInnerException.RaiseIfError, ибо это внутренние проблемы
 
-//TODO В методах вроде MemorySegment.AddWriteArray1 приходится добавлять &<>
-
 //TODO Может всё же сделать защиту от дурака для "q.AddQueue(q)"?
 // - И в справке тогда убрать параграф...
 
 //TODO Порядок Wait очередей в Wait группах
 // - Проверить сочетание с каждой другой фичей
-
-//TODO Перепродумать MemorySubSegment, в случае перевыделения основного буфера - он плохо себя ведёт...
-// - Уже не существует никакого перевыделения, память выделяется всего 1 раз, при создании
-// - Но стоит всё же кидать исключения, если родительский сегмент удалён
-
-//TODO Создание SubDevice из cl_device_id
 
 //TODO .Cycle(integer)
 //TODO .Cycle // бесконечность циклов
@@ -723,8 +715,10 @@ type
   Device = partial class
     private ntv: cl_device_id;
     
+    private constructor(ntv: cl_device_id) := self.ntv := ntv;
     ///Создаёт обёртку для указанного неуправляемого объекта
-    public constructor(ntv: cl_device_id) := self.ntv := ntv;
+    public static function FromNative(ntv: cl_device_id): Device;
+    
     private constructor := raise new OpenCLABCInternalException;
     
     private function GetBasePlatform: Platform;
@@ -768,15 +762,16 @@ type
   ///Представляет виртуальное устройство, использующее часть ядер другого устройства
   ///Объекты данного типа обычно создаются методами "Device.Split*"
   SubDevice = partial class(Device)
-    private _parent: Device;
+    private _parent: cl_device_id;
     ///Возвращает родительское устройство, часть ядер которого использует данное устройство
-    public property Parent: Device read _parent;
+    public property Parent: Device read Device.FromNative(_parent);
     
-    private constructor(dvc: cl_device_id; parent: Device);
+    private constructor(parent, ntv: cl_device_id);
     begin
-      inherited Create(dvc);
+      inherited Create(ntv);
       self._parent := parent;
     end;
+    
     private constructor := inherited;
     
     ///Вызывает Dispose. Данный метод вызывается автоматически во время сборки мусора
@@ -1354,13 +1349,16 @@ type
   MemorySegment = partial class
     private ntv: cl_mem;
     
-    private sz: UIntPtr;
+    private static function GetSize(ntv: cl_mem): UIntPtr;
+    begin
+      cl.GetMemObjectInfo(ntv, MemInfo.MEM_SIZE, new UIntPtr(UIntPtr.Size), Result, IntPtr.Zero).RaiseIfError;
+    end;
     ///Возвращает размер области памяти в байтах
-    public property Size: UIntPtr read sz;
+    public property Size: UIntPtr read GetSize(ntv);
     ///Возвращает размер области памяти в байтах
-    public property Size32: UInt32 read sz.ToUInt32;
+    public property Size32: UInt32 read Size.ToUInt32;
     ///Возвращает размер области памяти в байтах
-    public property Size64: UInt64 read sz.ToUInt64;
+    public property Size64: UInt64 read Size.ToUInt64;
     
     ///Возвращает строку с основными данными о данном объекте
     public function ToString: string; override :=
@@ -1379,7 +1377,6 @@ type
       
       GC.AddMemoryPressure(size.ToUInt64);
       
-      self.sz := size;
     end;
     ///Выделяет область памяти устройства OpenCL указанного в байтах размера
     ///Память выделяется в указанном контексте
@@ -1398,24 +1395,16 @@ type
     ///Память выделяется в контексте Context.Default
     public constructor(size: int64)   := Create(new UIntPtr(size));
     
-    private constructor(ntv: cl_mem; sz: UIntPtr);
+    private constructor(ntv: cl_mem);
     begin
-      self.sz := sz;
       self.ntv := ntv;
-    end;
-    private static function GetMemSize(ntv: cl_mem): UIntPtr;
-    begin
-      cl.GetMemObjectInfo(ntv, MemInfo.MEM_SIZE, new UIntPtr(Marshal.SizeOf&<UIntPtr>), Result, IntPtr.Zero).RaiseIfError;
+      cl.RetainMemObject(ntv);
     end;
     ///Создаёт обёртку для указанного неуправляемого объекта
     ///При успешном создании обёртки вызывается cl.Retain
     ///А во время вызова .Dispose - cl.Release
-    public constructor(ntv: cl_mem);
-    begin
-      Create(ntv, GetMemSize(ntv));
-      cl.RetainMemObject(ntv).RaiseIfError;
-      GC.AddMemoryPressure(Size64);
-    end;
+    public static function FromNative(ntv: cl_mem): MemorySegment;
+    
     private constructor := raise new OpenCLABCInternalException;
     
     {$endregion constructor's}
@@ -1759,6 +1748,22 @@ type
     
     {$endregion Get}
     
+    private procedure InformGCOfRelease(prev_ntv: cl_mem); virtual :=
+    GC.RemoveMemoryPressure(GetSize(prev_ntv).ToUInt64);
+    
+    ///Позволяет OpenCL удалить неуправляемый объект
+    ///Данный метод вызывается автоматически во время сборки мусора, если объект ещё не удалён
+    public procedure Dispose;
+    begin
+      var prev_ntv := new cl_mem( Interlocked.Exchange(self.ntv.val, IntPtr.Zero) );
+      if prev_ntv=cl_mem.Zero then exit;
+      InformGCOfRelease(prev_ntv);
+      cl.ReleaseMemObject(prev_ntv).RaiseIfError;
+    end;
+    ///Вызывает Dispose. Данный метод вызывается автоматически во время сборки мусора
+    ///Данный метод не должен вызываться из пользовательского кода. Он виден только на случай если вы хотите переопределить его в своём классе-наследнике
+    protected procedure Finalize; override := Dispose;
+    
   end;
   
   {$endregion MemorySegment}
@@ -1768,9 +1773,12 @@ type
   ///Представляет виртуальную область памяти, выделенную внутри MemorySegment
   MemorySubSegment = partial class(MemorySegment)
     
-    private _parent: MemorySegment;
+    // Только чтоб не вызвалось GC.RemoveMemoryPressure
+    private parent_dispose_lock: MemorySegment;
+    
+    private _parent: cl_mem;
     ///Возвращает родительскую область памяти
-    public property Parent: MemorySegment read _parent;
+    public property Parent: MemorySegment read MemorySegment.FromNative(_parent);
     
     ///Возвращает строку с основными данными о данном объекте
     public function ToString: string; override :=
@@ -1778,22 +1786,22 @@ type
     
     {$region constructor's}
     
-    private static function MakeSubNtv(ntv: cl_mem; reg: cl_buffer_region): cl_mem;
+    private static function MakeSubNtv(parent: cl_mem; reg: cl_buffer_region): cl_mem;
     begin
       var ec: ErrorCode;
-      Result := cl.CreateSubBuffer(ntv, MemFlags.MEM_READ_WRITE, BufferCreateType.BUFFER_CREATE_TYPE_REGION, reg, ec);
+      Result := cl.CreateSubBuffer(parent, MemFlags.MEM_READ_WRITE, BufferCreateType.BUFFER_CREATE_TYPE_REGION, reg, ec);
       ec.RaiseIfError;
     end;
-    private constructor(parent: MemorySegment; reg: cl_buffer_region);
-    begin
-      inherited Create(MakeSubNtv(parent.ntv, reg), reg.size);
-      self._parent := parent;
-    end;
+    
     ///Создаёт виртуальную область памяти, использующую указанную область из parent
     ///origin указывает отступ в байтах от начала parent
     ///size указывает размер новой области памяти
-    public constructor(parent: MemorySegment; origin, size: UIntPtr) := Create(parent, new cl_buffer_region(origin, size));
-    
+    public constructor(parent: MemorySegment; origin, size: UIntPtr);
+    begin
+      inherited Create( MakeSubNtv(parent.ntv, new cl_buffer_region(origin, size)) );
+      self._parent := parent.ntv;
+      self.parent_dispose_lock := parent;
+    end;
     ///Создаёт виртуальную область памяти, использующую указанную область из parent
     ///origin указывает отступ в байтах от начала parent
     ///size указывает размер новой области памяти
@@ -1803,7 +1811,17 @@ type
     ///size указывает размер новой области памяти
     public constructor(parent: MemorySegment; origin, size: UInt64) := Create(parent, new UIntPtr(origin), new UIntPtr(size));
     
+    private constructor(parent, ntv: cl_mem);
+    begin
+      inherited Create(ntv);
+      self.parent_dispose_lock := nil;
+      self._parent := parent;
+    end;
+    private constructor := raise new OpenCLABCInternalException;
+    
     {$endregion constructor's}
+    
+    private procedure InformGCOfRelease(prev_ntv: cl_mem); override := exit;
     
   end;
   
@@ -1910,6 +1928,19 @@ type
     ///Возвращает или задаёт элементы массива в заданном диапазоне
     ///Внимание! Данные свойство использует неявные очереди при каждом обращение, поэтому может быть очень не эффективным
     public property Section[range: IntRange]: array of T read GetSectionProp write SetSectionProp;
+    
+    ///Позволяет OpenCL удалить неуправляемый объект
+    ///Данный метод вызывается автоматически во время сборки мусора, если объект ещё не удалён
+    public procedure Dispose;
+    begin
+      var prev := Interlocked.Exchange(self.ntv.val, IntPtr.Zero);
+      if prev=IntPtr.Zero then exit;
+      GC.RemoveMemoryPressure(ByteSize);
+      cl.ReleaseMemObject(new cl_mem(prev)).RaiseIfError;
+    end;
+    ///Вызывает Dispose. Данный метод вызывается автоматически во время сборки мусора
+    ///Данный метод не должен вызываться из пользовательского кода. Он виден только на случай если вы хотите переопределить его в своём классе-наследнике
+    protected procedure Finalize; override := Dispose;
     
     {$region 1#Write&Read}
     
@@ -2254,7 +2285,7 @@ type
       var res := new cl_device_id[int64(c)];
       cl.CreateSubDevices(self.ntv, props, c, res[0], IntPtr.Zero).RaiseIfError;
       
-      Result := res.ConvertAll(sdvc->new SubDevice(sdvc, self));
+      Result := res.ConvertAll(sdvc->new SubDevice(self.ntv, sdvc));
     end;
     
     ///Указывает, поддерживает ли это устройство вызов метода .SplitEqually
@@ -2298,56 +2329,6 @@ type
       DevicePartitionProperty.Create(new IntPtr(affinity_domain.val)),
       DevicePartitionProperty.Create(0)
     );
-    
-  end;
-  
-  ///Представляет область памяти устройства OpenCL (обычно GPU)
-  MemorySegment = partial class
-    
-    ///Позволяет OpenCL удалить неуправляемый объект
-    ///Данный метод вызывается автоматически во время сборки мусора, если объект ещё не удалён
-    public procedure Dispose; virtual;
-    begin
-      var prev := Interlocked.Exchange(self.ntv.val, IntPtr.Zero);
-      if prev=IntPtr.Zero then exit;
-      GC.RemoveMemoryPressure(Size64);
-      cl.ReleaseMemObject(new cl_mem(prev)).RaiseIfError;
-    end;
-    ///Вызывает Dispose. Данный метод вызывается автоматически во время сборки мусора
-    ///Данный метод не должен вызываться из пользовательского кода. Он виден только на случай если вы хотите переопределить его в своём классе-наследнике
-    protected procedure Finalize; override := Dispose;
-    
-  end;
-  
-  ///Представляет виртуальную область памяти, выделенную внутри MemorySegment
-  MemorySubSegment = partial class
-    
-    ///Позволяет OpenCL удалить неуправляемый объект
-    ///Данный метод вызывается автоматически во время сборки мусора, если объект ещё не удалён
-    public procedure Dispose; override;
-    begin
-      var prev := Interlocked.Exchange(self.ntv.val, IntPtr.Zero);
-      if prev=IntPtr.Zero then exit;
-      cl.ReleaseMemObject(new cl_mem(prev)).RaiseIfError;
-    end;
-    
-  end;
-  
-  ///Представляет массив записей, содержимое которого хранится на устройстве OpenCL (обычно GPU)
-  CLArray<T> = partial class
-    
-    ///Позволяет OpenCL удалить неуправляемый объект
-    ///Данный метод вызывается автоматически во время сборки мусора, если объект ещё не удалён
-    public procedure Dispose;
-    begin
-      var prev := Interlocked.Exchange(self.ntv.val, IntPtr.Zero);
-      if prev=IntPtr.Zero then exit;
-      GC.RemoveMemoryPressure(ByteSize);
-      cl.ReleaseMemObject(new cl_mem(prev)).RaiseIfError;
-    end;
-    ///Вызывает Dispose. Данный метод вызывается автоматически во время сборки мусора
-    ///Данный метод не должен вызываться из пользовательского кода. Он виден только на случай если вы хотите переопределить его в своём классе-наследнике
-    protected procedure Finalize; override := Dispose;
     
   end;
   
@@ -4414,6 +4395,52 @@ function CLArrayProperties.GetUsesSvmPointer := GetVal&<Bool>(MemInfo.MEM_USES_S
 {$endregion Properties}
 
 {$region Wrappers}
+
+{$region Device}
+
+static function Device.FromNative(ntv: cl_device_id): Device;
+begin
+  
+  var parent: cl_device_id;
+  OpenCLABCInternalException.RaiseIfError(
+    cl.GetDeviceInfo(ntv, DeviceInfo.DEVICE_PARENT_DEVICE, new UIntPtr(cl_device_id.Size), parent, IntPtr.Zero)
+  );
+  
+  if parent=cl_device_id.Zero then
+    Result := new Device(ntv) else
+    Result := new SubDevice(parent, ntv);
+  
+end;
+
+{$endregion Device}
+
+{$region MemorySegment}
+
+static function MemorySegment.FromNative(ntv: cl_mem): MemorySegment;
+begin
+  var t: MemObjectType;
+  OpenCLABCInternalException.RaiseIfError(
+    cl.GetMemObjectInfo(ntv, MemInfo.MEM_TYPE, new UIntPtr(sizeof(MemObjectType)), t, IntPtr.Zero)
+  );
+  
+  if t<>MemObjectType.MEM_OBJECT_BUFFER then
+    raise new ArgumentException($'Неправильный тип неуправляемого объекта памяти. Ожидалось [MEM_OBJECT_BUFFER], а не [{t}]');
+  
+  var parent: cl_mem;
+  OpenCLABCInternalException.RaiseIfError(
+    cl.GetMemObjectInfo(ntv, MemInfo.MEM_ASSOCIATED_MEMOBJECT, new UIntPtr(cl_mem.Size), parent, IntPtr.Zero)
+  );
+  
+  if parent=cl_mem.Zero then
+  begin
+    Result := new MemorySegment(ntv);
+    GC.AddMemoryPressure(Result.Size64);
+  end else
+    Result := new MemorySubSegment(parent, ntv);
+  
+end;
+
+{$endregion MemorySegment}
 
 {$region CLArray}
 
