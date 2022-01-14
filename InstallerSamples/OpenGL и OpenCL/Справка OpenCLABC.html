@@ -1661,6 +1661,8 @@ var q := new MemorySegmentCCQ(q0);
 </ol>
 <p>Но при этом отсутствуют некоторые комбинации.</p>
 <p>В первую очередь, в случае <code>Copy</code> нет понятия типа данных на стороне RAM, потому что RAM в принципе не задействуется.</p>
+<p>И нет <code>GetData</code>, потому что в случае ошибок будут утечки памяти.
+Вместо него выделяйте память явно и передавайте её в <code>ReadData</code>.</p>
 <p>Так же, <code>WriteValue</code> может принимать размерное значение и <code>NativeValue</code>, но <code>ReadValue</code> принимает только <code>NativeValue</code>.<br />
 Это потому, что принимать размерное значение в <code>ReadValue</code> <code>var</code>-параметром не безопастно,
 как и в случае передачи адреса в качестве <a path="../../Простые обёртки/Kernel/KernelArg"> <code>KernelArg</code> </a>.<br />
