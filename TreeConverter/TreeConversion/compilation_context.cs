@@ -331,6 +331,7 @@ namespace PascalABCCompiler.TreeConverter
             in_parameters_block = false;
             is_order_independed_method_description = false;
             _has_nested_functions = false;
+            finally_blocks_depth = 0;
         }
         
         public void clear_type_prededinitions()
