@@ -2460,12 +2460,14 @@ type
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    public static property MEM_ALLOC_FLAGS_INTEL: MemPropertiesIntel read new MemPropertiesIntel($4195);
-    public static property MEM_CHANNEL_INTEL:     MemPropertiesIntel read new MemPropertiesIntel($4213);
+    public static property MEM_ALLOC_FLAGS_INTEL:           MemPropertiesIntel read new MemPropertiesIntel($4195);
+    public static property MEM_ALLOC_BUFFER_LOCATION_INTEL: MemPropertiesIntel read new MemPropertiesIntel($419E);
+    public static property MEM_CHANNEL_INTEL:               MemPropertiesIntel read new MemPropertiesIntel($4213);
     
     public function ToString: string; override;
     begin
       if self.val = UInt64($4195) then Result := 'MEM_ALLOC_FLAGS_INTEL' else
+      if self.val = UInt64($419E) then Result := 'MEM_ALLOC_BUFFER_LOCATION_INTEL' else
       if self.val = UInt64($4213) then Result := 'MEM_CHANNEL_INTEL' else
         Result := $'MemPropertiesIntel[{self.val}]';
     end;
