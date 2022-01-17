@@ -404,6 +404,15 @@ namespace PascalABCCompiler.SystemLibrary
         private static basic_function_node _ulong_shr;
 
         //float
+        private static basic_function_node _float_to_byte;
+        private static basic_function_node _float_to_sbyte;
+        private static basic_function_node _float_to_short;
+        private static basic_function_node _float_to_ushort;
+        private static basic_function_node _float_to_int;
+        private static basic_function_node _float_to_uint;
+        private static basic_function_node _float_to_long;
+        private static basic_function_node _float_to_ulong;
+
         private static basic_function_node _float_to_double;
         private static basic_function_node _float_assign;
         private static basic_function_node _float_unmin;
@@ -1801,10 +1810,27 @@ namespace PascalABCCompiler.SystemLibrary
             _double_to_int = make_type_conversion(_ulong_type, _integer_type, type_compare.non_comparable_type, SemanticTree.basic_function_type.ultoi);
             _double_to_char = make_type_conversion(_ulong_type, _char_type, type_compare.greater_type, SemanticTree.basic_function_type.ultochar);
             */
-            _double_to_int = make_type_conversion(_double_type, _integer_type, type_compare.greater_type, SemanticTree.basic_function_type.dtoi,false);
+            _float_to_sbyte = make_type_conversion(_float_type, _sbyte_type, type_compare.greater_type, SemanticTree.basic_function_type.ftosb, false);
+            _float_to_byte = make_type_conversion(_float_type, _byte_type, type_compare.greater_type, SemanticTree.basic_function_type.ftob, false);
+            _float_to_ushort = make_type_conversion(_float_type, _ushort_type, type_compare.greater_type, SemanticTree.basic_function_type.ftous, false);
+            _float_to_short = make_type_conversion(_float_type, _short_type, type_compare.greater_type, SemanticTree.basic_function_type.ftos, false);
+            _float_to_ulong = make_type_conversion(_float_type, _uint64_type, type_compare.greater_type, SemanticTree.basic_function_type.ftoul, false);
+            _float_to_long = make_type_conversion(_float_type, _int64_type, type_compare.greater_type, SemanticTree.basic_function_type.ftol, false);
+            _float_to_uint = make_type_conversion(_float_type, _uint_type, type_compare.greater_type, SemanticTree.basic_function_type.ftoui, false);
+            _float_to_int = make_type_conversion(_float_type, _integer_type, type_compare.greater_type, SemanticTree.basic_function_type.ftoi, false);
+
+
+            _double_to_sbyte = make_type_conversion(_double_type, _sbyte_type, type_compare.greater_type, SemanticTree.basic_function_type.dtosb, false);
+            _double_to_byte = make_type_conversion(_double_type, _byte_type, type_compare.greater_type, SemanticTree.basic_function_type.dtob, false);
+            _double_to_ushort = make_type_conversion(_double_type, _ushort_type, type_compare.greater_type, SemanticTree.basic_function_type.dtous, false);
+            _double_to_short = make_type_conversion(_double_type, _short_type, type_compare.greater_type, SemanticTree.basic_function_type.dtos, false);
+            _double_to_ulong = make_type_conversion(_double_type, _uint64_type, type_compare.greater_type, SemanticTree.basic_function_type.dtoul, false);
+            _double_to_long = make_type_conversion(_double_type, _int64_type, type_compare.greater_type, SemanticTree.basic_function_type.dtol, false);
+            _double_to_uint = make_type_conversion(_double_type, _uint_type, type_compare.greater_type, SemanticTree.basic_function_type.dtoui, false);
+            _double_to_int = make_type_conversion(_double_type, _integer_type, type_compare.greater_type, SemanticTree.basic_function_type.dtoi, false);
             _double_to_float = make_type_conversion(_double_type, _float_type, type_compare.greater_type, SemanticTree.basic_function_type.dtof);
             //Унарные операции.
-            _real_unmin=make_unary_operator(compiler_string_consts.minus_name, _double_type, SemanticTree.basic_function_type.dunmin);
+            _real_unmin = make_unary_operator(compiler_string_consts.minus_name, _double_type, SemanticTree.basic_function_type.dunmin);
             //make_empty_operator(compiler_string_consts.plus_name, _real_type);
             make_unary_empty_operator(compiler_string_consts.plus_name, _double_type, _double_type);
             //Арифметические операции.
