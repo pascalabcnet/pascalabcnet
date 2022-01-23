@@ -2361,6 +2361,7 @@ namespace PascalABCCompiler
                 	p.AddInitFinalMethods();
                     SystemLibrary.SystemLibInitializer.RestoreStandardFunctions();
                     p.ProcessWaitedToRestoreFields();
+                    p.RestoreWaitedMethodCodes();
             	}
             	bool rest = true;
             	for (int i=0; i<PCUReader.AllReaders.Count; i++)
