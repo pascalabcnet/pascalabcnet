@@ -389,10 +389,18 @@ namespace PascalABCCompiler.TreeConverter
         }
         public static string GetGetAccessorName(string name)
         {
+            if (name.IndexOf(".") != -1)
+            {
+                return string.Format("{0}get_{1}", name.Substring(0, name.LastIndexOf('.') + 1), name.Substring(name.LastIndexOf('.')+1));
+            }
             return GetAccessorName("get_{0}", name);
         }
         public static string GetSetAccessorName(string name)
         {
+            if (name.IndexOf(".") != -1)
+            {
+                return string.Format("{0}set_{1}", name.Substring(0, name.LastIndexOf('.') + 1), name.Substring(name.LastIndexOf('.') + 1));
+            }
             return GetAccessorName("set_{0}", name);
         }
         public static string GetAddHandler(string name)
