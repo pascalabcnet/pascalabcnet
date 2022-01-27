@@ -1077,6 +1077,9 @@ type
     public static property DEVICE_SUPPORTED_REGISTER_ALLOCATIONS_ARM:                            DeviceInfo read new DeviceInfo($41EB);
     public static property DEVICE_CONTROLLED_TERMINATION_CAPABILITIES_ARM:                       DeviceInfo read new DeviceInfo($41EE);
     public static property DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT:                            DeviceInfo read new DeviceInfo($4230);
+    public static property DEVICE_SINGLE_FP_ATOMIC_CAPABILITIES_EXT:                             DeviceInfo read new DeviceInfo($4231);
+    public static property DEVICE_DOUBLE_FP_ATOMIC_CAPABILITIES_EXT:                             DeviceInfo read new DeviceInfo($4232);
+    public static property DEVICE_HALF_FP_ATOMIC_CAPABILITIES_EXT:                               DeviceInfo read new DeviceInfo($4233);
     public static property DEVICE_IP_VERSION_INTEL:                                              DeviceInfo read new DeviceInfo($4250);
     public static property DEVICE_ID_INTEL:                                                      DeviceInfo read new DeviceInfo($4251);
     public static property DEVICE_NUM_SLICES_INTEL:                                              DeviceInfo read new DeviceInfo($4252);
@@ -1279,6 +1282,9 @@ type
       if self.val = UInt32($41EB) then Result := 'DEVICE_SUPPORTED_REGISTER_ALLOCATIONS_ARM' else
       if self.val = UInt32($41EE) then Result := 'DEVICE_CONTROLLED_TERMINATION_CAPABILITIES_ARM' else
       if self.val = UInt32($4230) then Result := 'DEVICE_CXX_FOR_OPENCL_NUMERIC_VERSION_EXT' else
+      if self.val = UInt32($4231) then Result := 'DEVICE_SINGLE_FP_ATOMIC_CAPABILITIES_EXT' else
+      if self.val = UInt32($4232) then Result := 'DEVICE_DOUBLE_FP_ATOMIC_CAPABILITIES_EXT' else
+      if self.val = UInt32($4233) then Result := 'DEVICE_HALF_FP_ATOMIC_CAPABILITIES_EXT' else
       if self.val = UInt32($4250) then Result := 'DEVICE_IP_VERSION_INTEL' else
       if self.val = UInt32($4251) then Result := 'DEVICE_ID_INTEL' else
       if self.val = UInt32($4252) then Result := 'DEVICE_NUM_SLICES_INTEL' else
@@ -6844,38 +6850,46 @@ type
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_platform_id; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetDeviceInfo_ovr_23(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_24(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetDeviceInfo_ovr_24(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_device_id; var param_value_size_ret: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetDeviceInfo';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_device_id; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetDeviceInfo_ovr_24(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_25(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_device_id; param_value_size_ret: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetDeviceInfo';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_device_id; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetDeviceInfo_ovr_25(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_26(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_24(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_25(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_26(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_27(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_25(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_26(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_27(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_28(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_26(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_27(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_28(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_29(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_27(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_28(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_29(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_30(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_28(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_29(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_30(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_31(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_29(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_30(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_31(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_32(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_30(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_31(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_32(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_33(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_31(device, param_name, param_value_size, param_value, param_value_size_ret);
+    z_GetDeviceInfo_ovr_33(device, param_name, param_value_size, param_value, param_value_size_ret);
     
     // added in cl1.0
     private static function z_GetEventInfo_ovr_0(&event: cl_event; param_name: EventInfo; param_value_size: UIntPtr; var param_value: cl_command_queue; var param_value_size_ret: UIntPtr): ErrorCode;

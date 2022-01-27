@@ -458,7 +458,13 @@ namespace PascalABCCompiler.NETGenerator
 
         bool IsDotnet5()
         {
-            return comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5win || comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5linux || comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5linux;
+            return 
+                comp_opt.platformtarget == 
+                  CompilerOptions.PlatformTarget.dotnet5win || 
+                comp_opt.platformtarget == 
+                  CompilerOptions.PlatformTarget.dotnet5linux || 
+                comp_opt.platformtarget == 
+                  CompilerOptions.PlatformTarget.dotnet5macos; // PVS 01/2022
         }
 
         private void BuildDotnet5(string orig_dir, string dir, string publish_dir)

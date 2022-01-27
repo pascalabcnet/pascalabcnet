@@ -119,11 +119,13 @@ namespace PascalABCCompiler
             Console.WriteLine("  /Define:<name>");
             Console.WriteLine("  /Output:<[path\\]name>");
             Console.WriteLine("  /SearchDir:<path>");
+            Console.WriteLine("  /Version:");
             Console.WriteLine();
             Console.WriteLine("/Help show this message");
             Console.WriteLine("/Output:<[path\\]name> compile into an executable called \"name\" and save it in \"path\" directory");
             Console.WriteLine("/Debug:0 generates code with all .NET optimizations");
             Console.WriteLine("/SearchDir:<path> add \"path\" to list of standart unit search directories. Last added paths would be searched first");
+            Console.WriteLine("/Version: outputs PascalABC.NET version");
         }
 
         public static int Main(string[] args)
@@ -133,6 +135,7 @@ namespace PascalABCCompiler
             // Пока сделаю только директивы /Help /H /? и /Debug=0(1)
             // Имя директивы - это одно слово. Равенства может не быть - тогда value директивы равно null
             // Вычленяем первое равенство и делим директиву: до него - name, после него - value. Если name или value - пустые строки, то ошибка
+            // 2022 г. К сожалению, директива с / конкурирует с именами каталогов в Linux. Надо писать новый консольный компилятор
 
             DateTime ldt = DateTime.Now;
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
@@ -183,6 +186,10 @@ namespace PascalABCCompiler
                     case "?":
                         OutputHelp();
                         return 0;
+                    case "version":
+                        Console.WriteLine(PascalABCCompiler.Compiler.Version);
+                        return 0;
+
                     default:
                         Console.WriteLine("Filename is absent. Nothing to compile");
                         return 4;
