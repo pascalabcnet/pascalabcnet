@@ -427,7 +427,7 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     catch(Exception e)
                     {
-                        e = e;
+                        // e = e; // PVS 01/2022
                     }
                 }
                 else

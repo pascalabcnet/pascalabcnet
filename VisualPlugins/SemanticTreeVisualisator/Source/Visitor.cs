@@ -595,10 +595,10 @@ namespace VisualPascalABCPlugins
 
                     tn.Text = collection_name + "   Count : " + num.ToString();
                     tn.Tag = icol;
-                    if (t != null)
+                    /*if (t != null)
                         t.Nodes.Add(tn);
-                    else
-                        nodes.Add(tn);
+                    else*/ // PVS 01/2022
+                    nodes.Add(tn);
                     foreach (ISemanticNode sn in icol)
                     {
                         prepare_node_in_collection(sn, item_name + "[" + i.ToString() + "]", tn);

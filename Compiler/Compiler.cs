@@ -2193,7 +2193,7 @@ namespace PascalABCCompiler
                                 string pdb_file_name=Path.ChangeExtension(CompilerOptions.OutputFileName, ".pdb");
                                 if (File.Exists(pdb_file_name))
                                     File.Delete(pdb_file_name);
-                                    n = 5;
+                                n = 5; // PVS 01/2022
                             }
                             catch (Exception e)
                             {

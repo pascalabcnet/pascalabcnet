@@ -8561,7 +8561,11 @@ namespace PascalABCCompiler.NETGenerator
             }
             //ICompiledTypeNode ctn = from.type as ICompiledTypeNode;
             ICompiledTypeNode ctn2 = to.type as ICompiledTypeNode;
-            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type.IsInterface)))
+            if ((from.type.is_value_type || from.type.is_generic_parameter) && 
+                ctn2 != null && 
+                (ctn2.compiled_type == TypeFactory.ObjectType || 
+                (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type.IsInterface))
+               )
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
             }
