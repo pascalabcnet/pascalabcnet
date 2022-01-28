@@ -5871,7 +5871,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 {
         // sugared node	
         	var l = ValueStack[ValueStack.Depth-2].ob as name_assign_expr_list;
-        	var exprs = l.name_expr.Select(x=>x.expr).ToList();
+        	var exprs = l.name_expr.Select(x=>x.expr.Clone() as expression).ToList();
         	var typename = "AnonymousType#"+Guid();
         	var type = new named_type_reference(typename,LocationStack[LocationStack.Depth-5]);
         	
