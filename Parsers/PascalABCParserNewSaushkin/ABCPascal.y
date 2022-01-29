@@ -3412,7 +3412,7 @@ new_expr
         {
         // sugared node	
         	var l = $4 as name_assign_expr_list;
-        	var exprs = l.name_expr.Select(x=>x.expr).ToList();
+        	var exprs = l.name_expr.Select(x=>x.expr.Clone() as expression).ToList();
         	var typename = "AnonymousType#"+Guid();
         	var type = new named_type_reference(typename,@1);
         	
@@ -3424,13 +3424,13 @@ new_expr
     ;
     
 field_in_unnamed_object
-	: identifier tkAssign relop_expr
+	: identifier tkAssign expr_l1
 		{
 		    if ($3 is nil_const)
 				parsertools.AddErrorFromResource("NIL_IN_UNNAMED_OBJECT",@$);		    
 			$$ = new name_assign_expr($1,$3,@$);
 		}
-	| relop_expr
+	| expr_l1
 		{
 			ident name = null;
 			var id = $1 as ident;
