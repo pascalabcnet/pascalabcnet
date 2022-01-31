@@ -4121,7 +4121,12 @@ const
 begin
   var sb := new StringBuilder;
   if i = a.Rank then
-    sb.Append(StructuredObjectToString(a.GetValue(indexes)))
+  begin
+    var indexes1 := new integer[indexes.Length];
+    for var j:=0 to indexes.Length-1 do
+      indexes1[j] := indexes[j] + a.GetLowerBound(j);
+    sb.Append(StructuredObjectToString(a.GetValue(indexes1)))
+  end  
   else
   begin
     sb.Append('[');
