@@ -963,7 +963,13 @@ namespace PascalABCCompiler.PCU
                 return mi as FieldInfo;
             //FieldInfo mi = t.GetField(pcu_file.dotnet_names[off].name);
             List<MemberInfo> mis = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
-            FieldInfo fi = (FieldInfo)mis[0];
+            FieldInfo fi = null;
+            foreach (MemberInfo mi2 in mis)
+                if (mi2 is FieldInfo)
+                {
+                    fi = (FieldInfo)mi2;
+                    break;
+                }
             dot_net_cache[off] = fi;
             return fi;
         }
@@ -994,7 +1000,13 @@ namespace PascalABCCompiler.PCU
                 return mi as PropertyInfo;
             //FieldInfo mi = t.GetField(pcu_file.dotnet_names[off].name);
             List<MemberInfo> mis = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
-            PropertyInfo pi = (PropertyInfo)mis[0];
+            PropertyInfo pi = null;
+            foreach (MemberInfo mi2 in mis)
+                if (mi2 is PropertyInfo)
+                {
+                    pi = (PropertyInfo)mi2;
+                    break;
+                }
             dot_net_cache[off] = pi;
             return pi;
         }
