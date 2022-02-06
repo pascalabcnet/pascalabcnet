@@ -320,6 +320,8 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         check_property_params(spr, loc);
                         function_node set_func = spr.property.set_function;
+                        if (from.type is delegated_methods && !spr.property.property_type.IsDelegate)
+                            from = convert_if_typed_expression_to_function_call(from, true);
                         from = convertion_data_and_alghoritms.convert_type(from, spr.property.property_type);
                         spr.fact_parametres.AddElement(from);
                         base_function_call bfc = create_static_method_call(set_func, loc,
@@ -332,6 +334,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         non_static_property_reference nspr = (non_static_property_reference) to;
                         check_property_params(nspr, loc);
+                        if (from.type is delegated_methods && !nspr.property.property_type.IsDelegate)
+                            from = convert_if_typed_expression_to_function_call(from, true);
                         from = convertion_data_and_alghoritms.convert_type(from, nspr.property.property_type);
                         nspr.fact_parametres.AddElement(from);
 
