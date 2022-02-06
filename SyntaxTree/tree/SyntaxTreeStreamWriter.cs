@@ -6250,7 +6250,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_is_pattern_expr(is_pattern_expr _is_pattern_expr)
 		{
-			write_expression(_is_pattern_expr);
+			write_addressed_value(_is_pattern_expr);
 			if (_is_pattern_expr.left == null)
 			{
 				bw.Write((byte)0);

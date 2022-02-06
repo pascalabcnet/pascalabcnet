@@ -2893,7 +2893,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="is_pattern_expr" BaseName="expression">
+    <SyntaxNode Name="is_pattern_expr" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="left" SyntaxType="expression" />
         <SyntaxField Name="right" SyntaxType="pattern_node" />

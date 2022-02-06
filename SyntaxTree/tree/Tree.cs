@@ -48708,7 +48708,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class is_pattern_expr : expression
+	public partial class is_pattern_expr : addressed_value
 	{
 
 		///<summary>

@@ -4046,7 +4046,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_is_pattern_expr(is_pattern_expr _is_pattern_expr)
 		{
-			read_expression(_is_pattern_expr);
+			read_addressed_value(_is_pattern_expr);
 			_is_pattern_expr.left = _read_node() as expression;
 			_is_pattern_expr.right = _read_node() as pattern_node;
 		}
