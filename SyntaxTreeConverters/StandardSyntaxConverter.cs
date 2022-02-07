@@ -72,6 +72,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
             ExtendedIsDesugaringVisitor.New.ProcessNode(root); // Десахаризация расширенного is, который используется в сложных логических выражениях
             PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
+#if DEBUG
+            //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+#endif
 
             // simple_property
             PropertyDesugarVisitor.New.ProcessNode(root);
