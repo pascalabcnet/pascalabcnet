@@ -1230,20 +1230,20 @@ procedure Println(params args: array of object);
 procedure Println(f: Text; params args: array of object);
 
 /// Сериализует объект в файл (объект должен иметь атрибут [Serializable])
-procedure Serialize(filename: string; obj: object);
+procedure Serialize(fileName: string; obj: object);
 /// Десериализует объект из файла 
-function Deserialize(filename: string): object;
+function Deserialize(fileName: string): object;
 
 
 // -----------------------------------------------------
 //>>     Общие подпрограммы для работы с файлами # Common subroutines for files
 // -----------------------------------------------------
-///- procedure Assign(f: файл; name: string);
+///- procedure Assign(f: файл; fileName: string);
 /// Связывает файловую переменную с файлом на диске
-procedure Assign(f: AbstractBinaryFile; name: string);
-///- procedure AssignFile(f: файл; name: string);
+procedure Assign(f: AbstractBinaryFile; fileName: string);
+///- procedure AssignFile(f: файл; fileName: string);
 /// Связывает файловую переменную с файлом на диске
-procedure AssignFile(f: AbstractBinaryFile; name: string);
+procedure AssignFile(f: AbstractBinaryFile; fileName: string);
 ///- procedure Close(f: файл);
 /// Закрывает файл
 procedure Close(f: AbstractBinaryFile);
@@ -1264,9 +1264,9 @@ procedure Rename(f: AbstractBinaryFile; newname: string);
 //>>     Подпрограммы для работы с текстовыми файлами # Subroutines for text files
 // -----------------------------------------------------
 ///--
-procedure Assign(f: Text; name: string);
+procedure Assign(f: Text; fileName: string);
 ///--
-procedure AssignFile(f: Text; name: string);
+procedure AssignFile(f: Text; fileName: string);
 ///--
 procedure Close(f: Text);
 ///--
@@ -1275,42 +1275,42 @@ procedure CloseFile(f: Text);
 procedure Reset(f: Text);
 /// Открывает текстовый файл на чтение в указанной кодировке
 procedure Reset(f: Text; en: Encoding);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение в кодировке Windows
-procedure Reset(f: Text; name: string);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение в указанной кодировке
-procedure Reset(f: Text; name: string; en: Encoding);
+/// Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на чтение в кодировке Windows
+procedure Reset(f: Text; fileName: string);
+/// Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на чтение в указанной кодировке
+procedure Reset(f: Text; fileName: string; en: Encoding);
 /// Открывает текстовый файл на запись в кодировке Windows. 
 ///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text);
 /// Открывает текстовый файл на запись в указанной кодировке. 
 ///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text; en: Encoding);
-/// Связывает файловую переменную с именем файла name и открывает текстовый файл f на запись в кодировке Windows. 
+/// Связывает файловую переменную с именем файла fileName и открывает текстовый файл f на запись в кодировке Windows. 
 ///Если файл существовал - он обнуляется, если нет - создается пустой
-procedure Rewrite(f: Text; name: string);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись в указанной кодировке. 
+procedure Rewrite(f: Text; fileName: string);
+/// Связывает файловую переменную f с именем файла fileName и открывает текстовый файл f на запись в указанной кодировке. 
 ///Если файл существовал - он обнуляется, если нет - создается пустой
-procedure Rewrite(f: Text; name: string; en: Encoding);
+procedure Rewrite(f: Text; fileName: string; en: Encoding);
 /// Открывает текстовый файл на дополнение в кодировке Windows
 procedure Append(f: Text);
 /// Открывает текстовый файл на дополнение в указанной кодировке
 procedure Append(f: Text; en: Encoding);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение в кодировке Windows
-procedure Append(f: Text; name: string);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение в указанной кодировке
-procedure Append(f: Text; name: string; en: Encoding);
-/// Возвращает текстовый файл с именем fname, открытый на чтение в кодировке Windows
-function OpenRead(fname: string): Text;
-/// Возвращает текстовый файл с именем fname, открытый на чтение в указанной кодировке 
-function OpenRead(fname: string; en: Encoding): Text;
-/// Возвращает текстовый файл с именем fname, открытый на запись в кодировке Windows
-function OpenWrite(fname: string): Text;
-/// Возвращает текстовый файл с именем fname, открытый на запись в указанной кодировке
-function OpenWrite(fname: string; en: Encoding): Text;
-/// Возвращает текстовый файл с именем fname, открытый на дополнение в кодировке Windows
-function OpenAppend(fname: string): Text;
-/// Возвращает текстовый файл с именем fname, открытый на дополнение в указанной кодировке 
-function OpenAppend(fname: string; en: Encoding): Text;
+/// Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на дополнение в кодировке Windows
+procedure Append(f: Text; fileName: string);
+/// Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на дополнение в указанной кодировке
+procedure Append(f: Text; fileName: string; en: Encoding);
+/// Возвращает текстовый файл с именем fileName, открытый на чтение в кодировке Windows
+function OpenRead(fileName: string): Text;
+/// Возвращает текстовый файл с именем fileName, открытый на чтение в указанной кодировке 
+function OpenRead(fileName: string; en: Encoding): Text;
+/// Возвращает текстовый файл с именем fileName, открытый на запись в кодировке Windows
+function OpenWrite(fileName: string): Text;
+/// Возвращает текстовый файл с именем fileName, открытый на запись в указанной кодировке
+function OpenWrite(fileName: string; en: Encoding): Text;
+/// Возвращает текстовый файл с именем fileName, открытый на дополнение в кодировке Windows
+function OpenAppend(fileName: string): Text;
+/// Возвращает текстовый файл с именем fileName, открытый на дополнение в указанной кодировке 
+function OpenAppend(fileName: string; en: Encoding): Text;
 
 ///--
 function Eof(f: Text): boolean;
@@ -1361,35 +1361,35 @@ procedure WriteAllText(path: string; s: string; en: Encoding);
 /// Открывает двоичный файл на чтение и запись.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Reset(f: AbstractBinaryFile);
-///- procedure Reset(f: двоичный файл; name: string);
+///- procedure Reset(f: двоичный файл; fileName: string);
 /// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
-procedure Reset(f: AbstractBinaryFile; name: string);
+procedure Reset(f: AbstractBinaryFile; fileName: string);
 ///- procedure Rewrite(f: двоичный файл);
 /// Открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Rewrite(f: AbstractBinaryFile);
-///- procedure Rewrite(f: двоичный файл; name: string);
-/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое.
+///- procedure Rewrite(f: двоичный файл; fileName: string);
+/// Связывает файловую переменную f с файлом fileName на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
-procedure Rewrite(f: AbstractBinaryFile; name: string);
+procedure Rewrite(f: AbstractBinaryFile; fileName: string);
 
 ///- procedure Reset(f: двоичный файл; en: Encoding);
 /// Открывает двоичный файл на чтение и запись в заданной кодировке.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Reset(f: AbstractBinaryFile; en: Encoding);
-///- procedure Reset(f: двоичный файл; name: string; en: Encoding);
-/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись в заданной кодировке.
+///- procedure Reset(f: двоичный файл; fileName: string; en: Encoding);
+/// Связывает файловую переменную f с файлом fileName на диске и открывает двоичный файл на чтение и запись в заданной кодировке.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
-procedure Reset(f: AbstractBinaryFile; name: string; en: Encoding);
+procedure Reset(f: AbstractBinaryFile; fileName: string; en: Encoding);
 ///- procedure Rewrite(f: двоичный файл; en: Encoding);
 /// Открывает двоичный файл на чтение и запись в заданной кодировке, при этом обнуляя его содержимое. Если файл существовал, он обнуляется.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Rewrite(f: AbstractBinaryFile; en: Encoding);
-///- procedure Rewrite(f: двоичный файл; name: string; en: Encoding);
-/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись в заданной кодировке, при этом обнуляя его содержимое.
+///- procedure Rewrite(f: двоичный файл; fileName: string; en: Encoding);
+/// Связывает файловую переменную f с файлом fileName на диске и открывает двоичный файл на чтение и запись в заданной кодировке, при этом обнуляя его содержимое.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
-procedure Rewrite(f: AbstractBinaryFile; name: string; en: Encoding);
+procedure Rewrite(f: AbstractBinaryFile; fileName: string; en: Encoding);
 ///- procedure Truncate(f: двоичный файл);
 /// Усекает двоичный файл, отбрасывая все элементы с позиции файлового указателя.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
@@ -1459,15 +1459,15 @@ function DeleteFile(fname: string): boolean;
 function GetCurrentDir: string;
 /// Удаляет каталог. Возвращает True, если каталог успешно удален
 function RemoveDir(s: string): boolean;
-/// Переименовывает файл name, давая ему новое имя newname. Возвращает True, если файл успешно переименован
-function RenameFile(name, newname: string): boolean;
+/// Переименовывает файл fileName, давая ему новое имя newfileName. Возвращает True, если файл успешно переименован
+function RenameFile(fileName, newfileName: string): boolean;
 /// Устанавливает текущий каталог. Возвращает True, если каталог успешно удален
 function SetCurrentDir(s: string): boolean;
 
-/// Изменяет расширение файла с именем name на newext
-function ChangeFileNameExtension(name, newext: string): string;
-/// Возвращает True, если файл с именем name существует
-function FileExists(name: string): boolean;
+/// Изменяет расширение файла с именем fileName на newExt
+function ChangeFileNameExtension(fileName, newExt: string): string;
+/// Возвращает True, если файл с именем fileName существует
+function FileExists(fileName: string): boolean;
 
 ///- procedure Assert(cond: boolean);
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
@@ -1501,14 +1501,14 @@ function GetEXEFileName: string;
 /// Преобразует указатель к строковому представлению
 function PointerToString(p: pointer): string;
 
-/// Запускает программу или документ с именем filename 
-procedure Exec(filename: string);
-/// Запускает программу или документ с именем filename и параметрами командной строки args
-procedure Exec(filename: string; args: string);
-/// Запускает программу или документ с именем filename 
-procedure Execute(filename: string);
-/// Запускает программу или документ с именем filename и параметрами командной строки args
-procedure Execute(filename: string; args: string);
+/// Запускает программу или документ с именем fileName 
+procedure Exec(fileName: string);
+/// Запускает программу или документ с именем fileName и параметрами командной строки args
+procedure Exec(fileName: string; args: string);
+/// Запускает программу или документ с именем fileName 
+procedure Execute(fileName: string);
+/// Запускает программу или документ с именем fileName и параметрами командной строки args
+procedure Execute(fileName: string; args: string);
 
 /// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска 
 function EnumerateFiles(path: string; searchPattern: string := '*.*'): sequence of string;
@@ -1531,18 +1531,18 @@ function EnumerateAllDirectories(path: string): sequence of string;
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с именами файлов # Functions for file names
 // -----------------------------------------------------
-/// Выделяет имя файла из полного имени файла fname
-function ExtractFileName(fname: string): string;
-/// Выделяет расширение из полного имени файла fname
-function ExtractFileExt(fname: string): string;
-/// Выделяет путь из полного имени файла fname
-function ExtractFilePath(fname: string): string;
-/// Выделяет имя диска и путь из полного имени файла fname
-function ExtractFileDir(fname: string): string;
-/// Выделяет путь из полного имени файла fname
-function ExtractFileDrive(fname: string): string;
-/// Возвращает полное имя файла fname
-function ExpandFileName(fname: string): string;
+/// Выделяет имя файла из полного имени файла fileName
+function ExtractFileName(fileName: string): string;
+/// Выделяет расширение из полного имени файла fileName
+function ExtractFileExt(fileName: string): string;
+/// Выделяет путь из полного имени файла fileName
+function ExtractFilePath(fileName: string): string;
+/// Выделяет имя диска и путь из полного имени файла fileName
+function ExtractFileDir(fileName: string): string;
+/// Выделяет путь из полного имени файла fileName
+function ExtractFileDrive(fileName: string): string;
+/// Возвращает полное имя файла fileName
+function ExpandFileName(fileName: string): string;
 
 // -----------------------------------------------------
 //>>     Математические подпрограммы # Math subroutines
@@ -2645,7 +2645,7 @@ function ExecuteAssemlyIsDll: boolean;
 ///--
 function __StandardFilesDirectory: string;
 ///--
-function __FindFile(filename: string): string;
+function __FindFile(fileName: string): string;
 ///--
 function __FixPointer(obj: object): GCHandle;
 
@@ -7114,7 +7114,7 @@ begin
   Writeln(f);
 end;
 
-procedure Serialize(filename: string; obj: object);
+procedure Serialize(fileName: string; obj: object);
 begin
   var fs := new System.IO.FileStream(filename,System.IO.FileMode.Create);
   var formatter := new BinaryFormatter;
@@ -7122,9 +7122,9 @@ begin
   fs.Close;
 end;
 
-function Deserialize(filename: string): object;
+function Deserialize(fileName: string): object;
 begin
-  var fs := new System.IO.FileStream(filename,System.IO.FileMode.Open);
+  var fs := new System.IO.FileStream(fileName,System.IO.FileMode.Open);
   var formatter := new BinaryFormatter;
   Result := formatter.Deserialize(fs);
   fs.Close;
@@ -7133,10 +7133,10 @@ end;
 // -----------------------------------------------------
 //                  Text files
 // -----------------------------------------------------
-procedure Assign(f: Text; name: string);
+procedure Assign(f: Text; fileName: string);
 begin
   try
-    f.fi := System.IO.FileInfo.Create(name);
+    f.fi := System.IO.FileInfo.Create(fileName);
   except
     on e: Exception do
       raise e;
@@ -7153,7 +7153,7 @@ begin
   end;  
 end;
 
-procedure AssignFile(f: Text; name: string) := Assign(f, name);
+procedure AssignFile(f: Text; fileName: string) := Assign(f, fileName);
 
 procedure Close(f: Text);
 begin
@@ -7207,11 +7207,11 @@ begin
   end;  
 end;
 
-procedure Reset(f: Text; name: string) := Reset(f, name, DefaultEncoding);
+procedure Reset(f: Text; fileName: string) := Reset(f, fileName, DefaultEncoding);
 
-procedure Reset(f: Text; name: string; en: Encoding);
+procedure Reset(f: Text; fileName: string; en: Encoding);
 begin
-  Assign(f, name);
+  Assign(f, fileName);
   Reset(f, en);
 end;
 
@@ -7240,14 +7240,14 @@ begin
   end;
 end;
 
-procedure Rewrite(f: Text; name: string);
+procedure Rewrite(f: Text; fileName: string);
 begin
-  Rewrite(f, name, DefaultEncoding)
+  Rewrite(f, fileName, DefaultEncoding)
 end;
 
-procedure Rewrite(f: Text; name: string; en: Encoding);
+procedure Rewrite(f: Text; fileName: string; en: Encoding);
 begin
-  Assign(f, name);
+  Assign(f, fileName);
   Rewrite(f, en);
 end;
 
@@ -7260,38 +7260,38 @@ begin
   f.sw := new StreamWriter(f.fi.FullName, True, en);
 end;
 
-procedure Append(f: Text; name: string) := Append(f, name, DefaultEncoding);
+procedure Append(f: Text; fileName: string) := Append(f, fileName, DefaultEncoding);
 
-procedure Append(f: Text; name: string; en: Encoding);
+procedure Append(f: Text; fileName: string; en: Encoding);
 begin
-  Assign(f, name);
+  Assign(f, fileName);
   Append(f, en);
 end;
 
-function OpenRead(fname: string): Text := OpenRead(fname, DefaultEncoding);
+function OpenRead(fileName: string): Text := OpenRead(fileName, DefaultEncoding);
 
-function OpenRead(fname: string; en: Encoding): Text;
+function OpenRead(fileName: string; en: Encoding): Text;
 begin
   var f: Text := new Text;
-  Reset(f, fname, en);
+  Reset(f, fileName, en);
   Result := f;
 end;
 
-function OpenWrite(fname: string): Text := OpenWrite(fname, DefaultEncoding);
+function OpenWrite(fileName: string): Text := OpenWrite(fileName, DefaultEncoding);
 
-function OpenWrite(fname: string; en: Encoding): Text;
+function OpenWrite(fileName: string; en: Encoding): Text;
 begin
   var f: Text := new Text;
-  Rewrite(f, fname, en);
+  Rewrite(f, fileName, en);
   Result := f;
 end;
 
-function OpenAppend(fname: string): Text := OpenAppend(fname, DefaultEncoding);
+function OpenAppend(fileName: string): Text := OpenAppend(fileName, DefaultEncoding);
 
-function OpenAppend(fname: string; en: Encoding): Text;
+function OpenAppend(fileName: string; en: Encoding): Text;
 begin
   var f: Text := new Text;
-  Append(f, fname, en);
+  Append(f, fileName, en);
   Result := f;
 end;
 
@@ -7453,12 +7453,12 @@ end;
 // -----------------------------------------------------
 //                  Abstract binary files
 // -----------------------------------------------------
-procedure Assign(f: AbstractBinaryFile; name: string);
+procedure Assign(f: AbstractBinaryFile; fileName: string);
 begin
-  f.fi := System.IO.FileInfo.Create(name);
+  f.fi := System.IO.FileInfo.Create(fileName);
 end;
 
-procedure AssignFile(f: AbstractBinaryFile; name: string) := Assign(f, name);
+procedure AssignFile(f: AbstractBinaryFile; fileName: string) := Assign(f, fileName);
 
 procedure Close(f: AbstractBinaryFile);
 begin
@@ -7496,15 +7496,15 @@ end;
 
 procedure Reset(f: AbstractBinaryFile) := Reset(f,DefaultEncoding);
 
-procedure Reset(f: AbstractBinaryFile; name: string);
+procedure Reset(f: AbstractBinaryFile; fileName: string);
 begin
-  Assign(f, name);
+  Assign(f, fileName);
   Reset(f);
 end;
 
-procedure Reset(f: AbstractBinaryFile; name: string; en: Encoding);
+procedure Reset(f: AbstractBinaryFile; fileName: string; en: Encoding);
 begin
-  Assign(f, name);
+  Assign(f, fileName);
   Reset(f,en);
 end;
 
@@ -7529,15 +7529,15 @@ end;
 
 procedure Rewrite(f: AbstractBinaryFile) := Rewrite(f,DefaultEncoding);
 
-procedure Rewrite(f: AbstractBinaryFile; name: string; en: Encoding);
+procedure Rewrite(f: AbstractBinaryFile; fileName: string; en: Encoding);
 begin
-  Assign(f, name);
+  Assign(f, fileName);
   Rewrite(f,en);
 end;
 
-procedure Rewrite(f: AbstractBinaryFile; name: string);
+procedure Rewrite(f: AbstractBinaryFile; fileName: string);
 begin
-  Assign(f, name);
+  Assign(f, fileName);
   Rewrite(f);
 end;
 
@@ -7963,11 +7963,11 @@ begin
   end;
 end;
 
-function RenameFile(name, newname: string): boolean;
+function RenameFile(fileName, newfileName: string): boolean;
 begin
   try
     Result := True;
-    &File.Move(name, newname);
+    &File.Move(fileName, newfileName);
   except
     Result := False;
   end;
@@ -7983,14 +7983,14 @@ begin
   end;
 end;
 
-function ChangeFileNameExtension(name, newext: string): string;
+function ChangeFileNameExtension(fileName, newext: string): string;
 begin
-  Result := System.IO.Path.ChangeExtension(name, newext);
+  Result := System.IO.Path.ChangeExtension(fileName, newext);
 end;
 
-function FileExists(name: string): boolean;
+function FileExists(fileName: string): boolean;
 begin
-  Result := System.IO.File.Exists(name);
+  Result := System.IO.File.Exists(fileName);
 end;
 
 [System.Diagnostics.Conditional('DEBUG')]
@@ -8144,22 +8144,22 @@ begin
     result := '$' + integer(p).ToString('X')
 end;
 
-procedure Exec(filename: string);
+procedure Exec(fileName: string);
 begin
-  System.Diagnostics.Process.Start(filename)
+  System.Diagnostics.Process.Start(fileName)
 end;
 
-procedure Exec(filename: string; args: string);
+procedure Exec(fileName: string; args: string);
 begin
-  System.Diagnostics.Process.Start(filename, args)
+  System.Diagnostics.Process.Start(fileName, args)
 end;
 
-procedure Execute(filename: string);
+procedure Execute(fileName: string);
 begin
-  System.Diagnostics.Process.Start(filename)
+  System.Diagnostics.Process.Start(fileName)
 end;
 
-procedure Execute(filename: string; args: string) := System.Diagnostics.Process.Start(filename, args);
+procedure Execute(fileName: string; args: string) := System.Diagnostics.Process.Start(fileName, args);
 
 // -----------------------------------------------------
 // EnumerateFiles, EnumerateDirectories
@@ -8187,36 +8187,36 @@ end;
 // -----------------------------------------------------
 //                File name functions: implementation
 // -----------------------------------------------------
-function ExtractFileName(fname: string): string;
+function ExtractFileName(fileName: string): string;
 begin
-  var fi := new System.IO.FileInfo(fname);
+  var fi := new System.IO.FileInfo(fileName);
   Result := fi.Name;
 end;
 
-function ExtractFileExt(fname: string): string;
+function ExtractFileExt(fileName: string): string;
 begin
-  var fi := new System.IO.FileInfo(fname);
+  var fi := new System.IO.FileInfo(fileName);
   Result := fi.Extension;
 end;
 
-function ExtractFilePath(fname: string): string;
+function ExtractFilePath(fileName: string): string;
 begin
-  var fi := new System.IO.FileInfo(fname);
+  var fi := new System.IO.FileInfo(fileName);
   Result := fi.DirectoryName;
   if (Result.Length > 0) and (Result[Result.Length] <> '\') and (Result[Result.Length] <> '/') then
     Result += '\';
 end;
 
-function ExtractFileDir(fname: string): string;
+function ExtractFileDir(fileName: string): string;
 begin
-  var fi := new System.IO.FileInfo(fname);
+  var fi := new System.IO.FileInfo(fileName);
   Result := fi.DirectoryName;
 end;
 
-function ExtractFileDrive(fname: string): string;
+function ExtractFileDrive(fileName: string): string;
 begin
   try
-    var fi := new System.IO.FileInfo(fname);
+    var fi := new System.IO.FileInfo(fileName);
     Result := fi.DirectoryName;
     var p := Pos(':', Result);
     if p > 0 then
@@ -8228,9 +8228,9 @@ begin
   end;
 end;
 
-function ExpandFileName(fname: string): string;
+function ExpandFileName(fileName: string): string;
 begin
-  var fi := new System.IO.FileInfo(fname);
+  var fi := new System.IO.FileInfo(fileName);
   Result := fi.FullName;
 end;
 
@@ -14103,13 +14103,13 @@ begin
   Result := 'C:\Program Files (x86)\PascalABC.NET\Files\';
 end;
 
-function __FindFile(filename: string): string;
+function __FindFile(fileName: string): string;
 begin
-  Result := __StandardFilesDirectory+filename;
+  Result := __StandardFilesDirectory+fileName;
   if not FileExists(Result) then 
     Result := '';
   if Result = '' then
-    Result := filename;
+    Result := fileName;
   if not FileExists(Result) then 
     Result := '';
 end;
