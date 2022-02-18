@@ -9361,20 +9361,20 @@ type
   clLoaderLayers = static class
     public const _ExtStr = 'loader_layers';
     
-    private static function z_GetLayerInfo_ovr_0(param_value_size: UIntPtr; param_name: LayerInfo; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetLayerInfo_ovr_0(param_name: LayerInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetLayerInfo';
-    private static function z_GetLayerInfo_ovr_0_anh00001(param_value_size: UIntPtr; param_name: LayerInfo; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetLayerInfo_ovr_0_anh00001(param_name: LayerInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetLayerInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetLayerInfo(param_value_size: UIntPtr; param_name: LayerInfo; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetLayerInfo(param_name: LayerInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: array of UIntPtr): ErrorCode :=
     if (param_value_size_ret<>nil) and (param_value_size_ret.Length<>0) then
-      z_GetLayerInfo_ovr_0(param_value_size, param_name, param_value, param_value_size_ret[0]) else
-      z_GetLayerInfo_ovr_0_anh00001(param_value_size, param_name, param_value, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetLayerInfo(param_value_size: UIntPtr; param_name: LayerInfo; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetLayerInfo_ovr_0(param_value_size, param_name, param_value, param_value_size_ret);
-    private static function z_GetLayerInfo_ovr_2(param_value_size: UIntPtr; param_name: LayerInfo; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+      z_GetLayerInfo_ovr_0(param_name, param_value_size, param_value, param_value_size_ret[0]) else
+      z_GetLayerInfo_ovr_0_anh00001(param_name, param_value_size, param_value, IntPtr.Zero);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetLayerInfo(param_name: LayerInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetLayerInfo_ovr_0(param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetLayerInfo_ovr_2(param_name: LayerInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetLayerInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetLayerInfo(param_value_size: UIntPtr; param_name: LayerInfo; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetLayerInfo_ovr_2(param_value_size, param_name, param_value, param_value_size_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetLayerInfo(param_name: LayerInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetLayerInfo_ovr_2(param_name, param_value_size, param_value, param_value_size_ret);
     
     private static function z_InitLayer_ovr_0(num_entries: UInt32; target_dispatch: IntPtr; var num_entries_ret: UInt32; var layer_dispatch: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clInitLayer';
