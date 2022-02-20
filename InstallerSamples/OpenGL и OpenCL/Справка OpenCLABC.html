@@ -1668,7 +1668,7 @@ var q := new MemorySegmentCCQ(q0);
 <p>И нет <code>GetData</code>, потому что в случае ошибок будут утечки памяти.
 Вместо него выделяйте память явно и передавайте её в <code>ReadData</code>.</p>
 <p>Так же, <code>WriteValue</code> может принимать размерное значение и <code>NativeValue</code>, но <code>ReadValue</code> принимает только <code>NativeValue</code>.<br />
-Это потому, что принимать размерное значение в <code>ReadValue</code> <code>var</code>-параметром не безопастно,
+Это потому, что принимать размерное значение в <code>ReadValue</code> <code>var</code>-параметром не безопасно,
 как и в случае передачи адреса в качестве <a path="../../Простые обёртки/Kernel/KernelArg"> <code>KernelArg</code> </a>.<br />
 Если вы понимаете что делаете - используйте <code>ReadData</code>, явно передавая в него адрес вашего значения (то есть указатель).<br />
 Но обычно лучше использовать <code>GetValue</code>, создающее и возвращающее новое размерное значение, либо <code>ReadValue</code> принимающее <code>NativeValue</code>.</p>
@@ -2081,7 +2081,7 @@ WaitFor(WaitAny(M1,M2,M3)); // Ожидание любого из маркеро
 </code></pre>
 <hr />
 <p><code>Wait</code>-очереди работают даже между вызовами <code>Context.BeginInvoke</code>, в отличии от всего остального в <code>OpenCLABC</code>.</p>
-<p>Это не всегда безопастно:</p>
+<p>Это не всегда безопасно:</p>
 <pre><code>Context.Default.BeginInvoke(M);
 Context.Default.BeginInvoke(WaitFor(M) + Q);
 </code></pre>
