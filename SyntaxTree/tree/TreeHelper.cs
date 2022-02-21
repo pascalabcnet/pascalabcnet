@@ -1385,6 +1385,10 @@ namespace PascalABCCompiler.SyntaxTree
         {
         }
 
+        public var_statement(ident id, string type, expression iv, SourceContext sc) : this(new var_def_statement(new ident_list(id, id.source_context), new named_type_reference(type), iv, sc), sc)
+        {
+        }
+
         public override string ToString()
         {
             return "var " + var_def.ToString();

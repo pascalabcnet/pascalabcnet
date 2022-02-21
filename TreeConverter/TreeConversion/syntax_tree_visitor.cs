@@ -21202,7 +21202,17 @@ namespace PascalABCCompiler.TreeConverter
             /*if (st.visited)
                 return;
             st.visited = true;*/
-            if (st.typ as System.Type == typeof(SyntaxTree.assign_tuple))
+            if (st.typ as System.Type == typeof(SyntaxTree.for_node)) 
+                // плохо то, что многие преобразования синт сахара могут использовать for_node 
+            {
+                var expr1 = convert_strong(st.lst[0] as expression);
+                var expr2 = convert_strong(st.lst[1] as expression);
+                CheckOrdinaryType(expr1);
+                CheckOrdinaryType(expr2);
+                if (!convertion_data_and_alghoritms.can_convert_type(expr2,expr1.type))
+                    AddError(new CanNotConvertTypes(expr2, expr2.type, expr1.type, expr2.location)); ;
+            }
+            else if (st.typ as System.Type == typeof(SyntaxTree.assign_tuple))
             {
                 var vars = st.lst[0] as SyntaxTree.addressed_value_list;
                 var expr = st.lst[1] as SyntaxTree.expression;

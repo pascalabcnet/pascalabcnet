@@ -52,7 +52,8 @@
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkBigInteger tkFloat tkHex
-%token <id> tkUnknown 
+%token <id> tkUnknown
+%token <ti> tkStep
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 
@@ -3075,7 +3076,11 @@ foreach_stmt_ident_dype_opt
 for_stmt
     : tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 optional_tk_do unlabelled_stmt
         { 
-			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, @$);
+			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, null, @$);
+        }
+    | tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 tkStep expr_l1 optional_tk_do unlabelled_stmt  
+        { 
+			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $11 as statement, $9, @$);
         }
 	;
 	
@@ -4470,6 +4475,8 @@ identifier
 		{ $$ = $1; }
     | non_reserved
 		{ $$ = $1; }
+    | tkStep
+        { $$ = new ident($1.text, @$); }
     ;
 
 identifier_or_keyword

@@ -74,6 +74,25 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        void CheckOrdinaryType(expression ex)
+        {
+            var expr = convert_strong(ex);
+            internal_interface ii = expr.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (ii == null)
+            {
+                AddError(new OrdinalTypeExpected(get_location(ex)));
+            }
+        }
+
+        void CheckOrdinaryType(expression_node expr)
+        {
+            internal_interface ii = expr.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (ii == null)
+            {
+                AddError(new OrdinalTypeExpected(expr.location));
+            }
+        }
+
         void CheckInteger(expression ex)
         {
             if (ex == null)

@@ -389,6 +389,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkMatch:
     case (int)Tokens.tkWhen:
     case (int)Tokens.tkStatic:
+    case (int)Tokens.tkStep:
 		yylval = new Union();
         yylval.ti = new token_info(cur_yytext,currentLexLocation);
         break;
