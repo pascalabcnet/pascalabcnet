@@ -350,6 +350,19 @@ namespace ICSharpCode.TextEditor.Document
                     }
                 }
             }
+            var fe = words.FindIndex(tw => string.Compare(tw.Word, "foreach", true) == 0);
+            if (fe >= 0)
+            {
+                var index = words.FindIndex(tw => string.Compare(tw.Word, "index", true) == 0);
+                if (index >= 0)
+                {
+                    var f = words[fe];
+                    var ind = words[index];
+                    ind.SyntaxColor = f.SyntaxColor;
+                }
+
+            }
+
 
             if (currentSpanStack != null && currentSpanStack.IsEmpty) {
 				currentSpanStack = null;

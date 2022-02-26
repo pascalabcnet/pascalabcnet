@@ -55,6 +55,8 @@ namespace SyntaxVisitors.SugarVisitors
                 var un = UniqueNumStr();
                 var a = new ident("#a" + un, fn.initial_value.source_context);
                 var b = new ident("#b" + un, fn.finish_value.source_context);
+                var oa = new ident("#oa" + un, a.source_context);
+                var ob = new ident("#ob" + un, b.source_context);
                 var h = new ident("#h" + un, fn.increment_value.source_context);
                 var n = new ident("#n" + un, a.source_context);
                 var i = fn.loop_variable; //new ident(iname, a.source_context);
@@ -70,7 +72,19 @@ namespace SyntaxVisitors.SugarVisitors
 
                 var mcOrdb = new method_call(new dot_node(new ident("PABCSystem"), new ident("Ord")), new expression_list(b), b.source_context);
                 var mcOrda = new method_call(new dot_node(new ident("PABCSystem"), new ident("Ord")), new expression_list(a), a.source_context);
-                var sub = new bin_expr(mcOrdb, mcOrda, Operators.Minus, b.source_context);
+                var oavar = new var_statement(oa, mcOrda, oa.source_context);
+                var obvar = new var_statement(ob, mcOrdb, ob.source_context);
+                var bexhg0 = new bin_expr(h.TypedClone(), new int32_const(0), Operators.Greater, h.source_context);
+                var bexhl0 = new bin_expr(h.TypedClone(), new int32_const(0), Operators.Less, h.source_context);
+                var bexbla = new bin_expr(b.TypedClone(), a.TypedClone(), Operators.Less, b.source_context);
+                var bexalb = new bin_expr(a.TypedClone(), b.TypedClone(), Operators.Less, a.source_context);
+                var bexand1 = new bin_expr(bexhg0, bexbla, Operators.LogicalAND, h.source_context);
+                var bexand2 = new bin_expr(bexhl0, bexalb, Operators.LogicalAND, h.source_context);
+                var bexor = new bin_expr(bexand1, bexand2, Operators.LogicalOR, h.source_context);
+                var assn0 = new assign(n.TypedClone(), new int32_const(0), Operators.Assignment, n.source_context);
+                var ifn = new if_node(bexor, assn0, null, bexor.source_context);
+
+                var sub = new bin_expr(ob.TypedClone(), oa.TypedClone(), Operators.Minus, b.source_context);
                 var div = new bin_expr(sub, h, Operators.IntegerDivision, b.source_context);
                 var nexpr = new bin_expr(div, new int32_const(1), Operators.Plus, b.source_context);
                 var nvar = new var_statement(n, nexpr, n.source_context);
@@ -86,7 +100,7 @@ namespace SyntaxVisitors.SugarVisitors
                 var semCheck1 = new semantic_check_sugared_statement_node(typeof(for_node), new List<syntax_tree_node> { a,b }, a.source_context);
 
                 var for_st = new for_node(j, new int32_const(1), n, stlist, fn.statements.source_context);
-                var mainstlist = new statement_list(avar, bvar, semCheck1, hvar, nvar, ivar, for_st);
+                var mainstlist = new statement_list(avar, bvar, semCheck1, oavar, obvar, hvar, nvar, ifn, ivar, for_st);
                 mainstlist.source_context = avar.source_context;
 
                 ReplaceUsingParent(fn, mainstlist);
@@ -111,7 +125,11 @@ namespace SyntaxVisitors.SugarVisitors
         // семантика - b приводится к типу a
         /* if h = 0 then
           raise new ZeroStepException;
-        var n := (Ord(b) - Ord(a)) div h + 1;
+        var ob := Ord(b);
+        var oa := Ord(a);
+        var n := (ob - oa) div h + 1;
+        if h > 0 and b < a or h < 0 and b > a then
+          n := 0;
         var i := a;
         for var j := 1 to n do
         begin
@@ -134,6 +152,24 @@ namespace SyntaxVisitors.SugarVisitors
 
         visit(fn);*/
         //}
+
+        public override void visit(foreach_stmt fe)
+        {
+            if (fe.index != null && !fe.index.name.StartsWith("##")) // Повторно обходить ## не надо - он для семантики
+            {
+                var newindex = new ident("##" + fe.index, fe.index.source_context); // нам нужно это имя на семантике для контроля неизменения переменной внутри цикла
+                var indexvar = new var_statement(fe.index, new int32_const(0), fe.index.source_context);
+                var IncIndex = new assign(fe.index.TypedClone(), new int32_const(1), Operators.AssignmentAddition);
+                var forstat = new statement_list(fe.stmt, IncIndex);
+                var fe2 = new foreach_stmt(fe.identifier, fe.type_name, fe.in_what, forstat, newindex, fe.source_context);
+                var stat = new statement_list(indexvar,fe2);
+                ReplaceUsingParent(fe, stat);
+                ProcessNode(fe2.in_what);
+                ProcessNode(forstat.list[0]);
+            }
+            else DefaultVisit(fe);
+        }
+
 
     }
 }

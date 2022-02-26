@@ -3310,6 +3310,7 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(foreach_stmt.type_name);
 			visit(foreach_stmt.in_what);
 			visit(foreach_stmt.stmt);
+			visit(foreach_stmt.index);
 			post_do_visit(_foreach_stmt);
 		}
 
@@ -4270,6 +4271,7 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(foreach_stmt_formatting.il);
 			visit(foreach_stmt_formatting.in_what);
 			visit(foreach_stmt_formatting.stmt);
+			visit(foreach_stmt_formatting.index);
 			post_do_visit(_foreach_stmt_formatting);
 		}
 

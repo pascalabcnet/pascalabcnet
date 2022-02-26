@@ -41,7 +41,8 @@
 %token <ti> tkSequence tkYield tkShortProgram tkVertParen tkShortSFProgram
 %token <id> tkNew
 %token <id> tkOn 
-%token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
+%token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite 
+%token <id> tkIndex
 %token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType tkBegin tkEnd 
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
 %token <ti> tkRepeat tkUntil tkDo tkComma tkFinally tkTry
@@ -53,7 +54,7 @@
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkBigInteger tkFloat tkHex
 %token <id> tkUnknown
-%token <ti> tkStep
+%token <ti> tkStep 
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 
@@ -185,6 +186,7 @@
 %type <stn> const_pattern_expression pattern deconstruction_or_const_pattern pattern_optional_var collection_pattern tuple_pattern collection_pattern_list_item tuple_pattern_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list const_pattern_expr_list
 %type <stn> var_with_init_for_expr_with_let var_with_init_for_expr_with_let_list
+%type <id> index_or_nothing
 
 %%
 
@@ -3028,39 +3030,46 @@ lock_stmt
         }
 	;
 	
+index_or_nothing
+	: tkIndex tkIdentifier
+		{ $$ = $2; }
+	| 
+		{ $$ = null; }
+	;
+	
 foreach_stmt
-    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr_l1 tkDo unlabelled_stmt
+    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
         { 
-			$$ = new foreach_stmt($2, $3, $5, $7 as statement, @$);
+			$$ = new foreach_stmt($2, $3, $5, $8 as statement, $6, @$);
             if ($3 == null)
                 parsertools.AddWarningFromResource("USING_UNLOCAL_FOREACH_VARIABLE", $2.source_context);
         }
-    | tkForeach tkVar identifier tkColon type_ref tkIn expr_l1 tkDo unlabelled_stmt
+    | tkForeach tkVar identifier tkColon type_ref tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
         { 
-			$$ = new foreach_stmt($3, $5, $7, $9 as statement, @$); 
+			$$ = new foreach_stmt($3, $5, $7, $10 as statement, $8, @$); 
         }
-    | tkForeach tkVar identifier tkIn expr_l1 tkDo unlabelled_stmt
+    | tkForeach tkVar identifier tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
         { 
-			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$7, @$); 
+			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$8, $6, @$); 
         }
-    | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 tkDo unlabelled_stmt // сахарное правило
+    | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt // сахарное правило
         { 
         	if (parsertools.build_tree_for_formatter)
         	{
         		var il = $4 as ident_list;
         		il.source_context = LexLocation.MergeAll(@4,@5); // нужно дл€ форматировани€
-        		$$ = new foreach_stmt_formatting(il,$7,$9 as statement,@$);
+        		$$ = new foreach_stmt_formatting(il,$7,$10 as statement,$8,@$);
         	}
         	else
         	{
-        		// ≈сть проблема - непон€тно, где здесь сделать семантческий узед дл€ проверки
+        		// ≈сть проблема - непон€тно, где здесь сделать семантческий узел дл€ проверки
         		// ѕроверить можно и в foreach, но где-то должен быть маркер, что это сахарный узел
         		// Ќапример, идентификатор #fe - но это плоха€ иде€
                 var id = NewId("#fe",@4);
                 var tttt = new assign_var_tuple($4 as ident_list, id, @$);
-                statement_list nine = $9 is statement_list ? $9 as statement_list : new statement_list($9 as statement,@9);
+                statement_list nine = $10 is statement_list ? $10 as statement_list : new statement_list($10 as statement,@9);
                 nine.Insert(0,tttt);
-			    var fe = new foreach_stmt(id, new no_type_foreach(), $7, nine, @$);
+			    var fe = new foreach_stmt(id, new no_type_foreach(), $7, nine, $8, @$);
 			    fe.ext = $4 as ident_list;
 			    $$ = fe;
 			}
@@ -4477,6 +4486,8 @@ identifier
 		{ $$ = $1; }
     | tkStep
         { $$ = new ident($1.text, @$); }
+    | tkIndex
+        { $$ = $1; }
     ;
 
 identifier_or_keyword

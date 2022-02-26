@@ -1884,6 +1884,7 @@
         <SyntaxField Name="type_name" SyntaxType="type_definition" />
         <SyntaxField Name="in_what" SyntaxType="expression" />
         <SyntaxField Name="stmt" SyntaxType="statement" />
+        <SyntaxField Name="index" SyntaxType="ident" />
       </Fields>
       <Methods />
       <Tags>
@@ -3306,6 +3307,7 @@
         <SyntaxField Name="il" SyntaxType="ident_list" />
         <SyntaxField Name="in_what" SyntaxType="expression" />
         <SyntaxField Name="stmt" SyntaxType="statement" />
+        <SyntaxField Name="index" SyntaxType="ident" />
       </Fields>
       <Methods />
       <Tags>
@@ -3888,11 +3890,13 @@
       <HelpData Key="foreach_stmt.ext" Value="" />
       <HelpData Key="foreach_stmt.identifier" Value="" />
       <HelpData Key="foreach_stmt.in_what" Value="" />
+      <HelpData Key="foreach_stmt.index" Value="" />
       <HelpData Key="foreach_stmt.stmt" Value="" />
       <HelpData Key="foreach_stmt.type_name" Value="" />
       <HelpData Key="foreach_stmt_formatting" Value="// для форматирования только" />
       <HelpData Key="foreach_stmt_formatting.il" Value="" />
       <HelpData Key="foreach_stmt_formatting.in_what" Value="" />
+      <HelpData Key="foreach_stmt_formatting.index" Value="" />
       <HelpData Key="foreach_stmt_formatting.stmt" Value="" />
       <HelpData Key="foreach_stmt_formatting.type_name" Value="" />
       <HelpData Key="formal_parameters" Value="" />

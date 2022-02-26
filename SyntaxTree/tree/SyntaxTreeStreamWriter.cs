@@ -4019,6 +4019,15 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_foreach_stmt.stmt.visit(this);
 			}
+			if (_foreach_stmt.index == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt.index.visit(this);
+			}
 		}
 
 
@@ -7008,6 +7017,15 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_foreach_stmt_formatting.stmt.visit(this);
+			}
+			if (_foreach_stmt_formatting.index == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.index.visit(this);
 			}
 		}
 

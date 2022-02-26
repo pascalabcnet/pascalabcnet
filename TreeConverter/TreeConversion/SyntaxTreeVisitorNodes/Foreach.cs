@@ -38,6 +38,15 @@ namespace PascalABCCompiler.TreeConverter
             var_definition_node foreachVariable;
             ForeachCheckAndConvert(_foreach_stmt, out foreachCollection, out foreachVariable);
 
+            definition_node dnind = null;
+            var_definition_node vdn = null;
+            if (_foreach_stmt.index != null && _foreach_stmt.index.name.StartsWith("##"))
+            {
+                dnind = context.check_name_node_type(_foreach_stmt.index.name.Remove(0, 2), get_location(_foreach_stmt.index),
+                    general_node_type.variable_node);
+                vdn = (var_definition_node)dnind;
+            }
+
             // SSM 29.07.16 - если in_what - одномерный массив, то заменить код foreach на for
             // if (OptimizeForeachInCase1DArray(_foreach_stmt, foreachCollection)) return;
 
@@ -48,9 +57,13 @@ namespace PascalABCCompiler.TreeConverter
 
             context.enter_in_cycle(foreachNode);
             context.loop_var_stack.Push(foreachVariable);
+            if (vdn != null)
+                context.loop_var_stack.Push(vdn);
             context.enter_code_block_with_bind();
             statement_node body = convert_strong(_foreach_stmt.stmt);
             context.leave_code_block();
+            if (vdn != null)
+                context.loop_var_stack.Pop();
             context.loop_var_stack.Pop();
             context.leave_cycle();
 

@@ -174,7 +174,7 @@ namespace PascalABCCompiler.TreeConverter
             if (context.is_in_cycle() && !SemanticRules.AllowChangeLoopVariable)
             {
                 var_definition_node toAsVariable = GetLocalVariableFromAdressExpressionIfPossible(to);
-                if (toAsVariable != null && context.is_loop_variable(toAsVariable))
+                if (toAsVariable != null && context.is_loop_variable(toAsVariable) && _assign.source_context != null) // последнее - обрезает проверку для сгенерированного i += 1 в foreach ... index i
                     AddError(to.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
             }
             {

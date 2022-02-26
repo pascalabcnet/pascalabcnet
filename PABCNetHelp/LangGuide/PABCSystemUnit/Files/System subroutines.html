@@ -37,8 +37,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется</td></tr>
 <tr><td><code><b>procedure</b> Assert(cond: boolean; message: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется</td></tr>
-<tr><td><code><b>function</b> ChangeFileNameExtension(name, newext: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет расширение файла с именем name на newext</td></tr>
+<tr><td><code><b>function</b> ChangeFileNameExtension(fileName, newExt: string): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет расширение файла с именем fileName на newExt</td></tr>
 <tr><td><code><b>procedure</b> ChDir(s: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет текущий каталог</td></tr>
 <tr><td><code><b>function</b> CreateDir(s: string): boolean;</code>
@@ -63,16 +63,16 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути</td></tr>
 <tr><td><code><b>function</b> EnumerateFiles(path: string; searchPattern: string := '*.*'): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска</td></tr>
-<tr><td><code><b>procedure</b> Exec(filename: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename</td></tr>
-<tr><td><code><b>procedure</b> Exec(filename: string; args: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename и параметрами командной строки args</td></tr>
-<tr><td><code><b>procedure</b> Execute(filename: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename</td></tr>
-<tr><td><code><b>procedure</b> Execute(filename: string; args: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename и параметрами командной строки args</td></tr>
-<tr><td><code><b>function</b> FileExists(name: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если файл с именем name существует</td></tr>
+<tr><td><code><b>procedure</b> Exec(fileName: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем fileName</td></tr>
+<tr><td><code><b>procedure</b> Exec(fileName: string; args: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем fileName и параметрами командной строки args</td></tr>
+<tr><td><code><b>procedure</b> Execute(fileName: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем fileName</td></tr>
+<tr><td><code><b>procedure</b> Execute(fileName: string; args: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем fileName и параметрами командной строки args</td></tr>
+<tr><td><code><b>function</b> FileExists(fileName: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если файл с именем fileName существует</td></tr>
 <tr><td><code><b>function</b> GetCurrentDir: string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог</td></tr>
 <tr><td><code><b>function</b> GetDir: string;</code>
@@ -101,8 +101,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует указатель к строковому представлению</td></tr>
 <tr><td><code><b>function</b> RemoveDir(s: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог. Возвращает True, если каталог успешно удален</td></tr>
-<tr><td><code><b>function</b> RenameFile(name, newname: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл name, давая ему новое имя newname. Возвращает True, если файл успешно переименован</td></tr>
+<tr><td><code><b>function</b> RenameFile(fileName, newfileName: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл fileName, давая ему новое имя newfileName. Возвращает True, если файл успешно переименован</td></tr>
 <tr><td><code><b>procedure</b> RmDir(s: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог</td></tr>
 <tr><td><code><b>function</b> SetCurrentDir(s: string): boolean;</code>

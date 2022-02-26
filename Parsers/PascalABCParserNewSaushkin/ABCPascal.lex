@@ -408,6 +408,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkInternal:
     case (int)Tokens.tkRead:
     case (int)Tokens.tkWrite:
+    case (int)Tokens.tkIndex:
 		yylval = new Union(); 
         yylval.id = new ident(cur_yytext,currentLexLocation);
         break;
