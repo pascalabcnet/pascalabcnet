@@ -64,6 +64,10 @@ namespace SyntaxVisitors.SugarVisitors
                 var avar = new var_statement(a, fn.initial_value, fn.initial_value.source_context);
                 var bvar = new var_statement(b, fn.finish_value, fn.finish_value.source_context);
                 var hvar = new var_statement(h, "integer", fn.increment_value, fn.increment_value.source_context);
+                var bexhe0 = new bin_expr(h.TypedClone(), new int32_const(0), Operators.Equal, h.source_context);
+                var raise = new raise_stmt(new new_expr("PABCSystem.ZeroStepException"), null,h.source_context);
+                var if0 = new if_node(bexhe0, raise, null, h.source_context);
+
                 statement ivar = null;
                 if (fn.create_loop_variable || fn.type_name != null)
                 { ivar = new var_statement(i, fn.type_name, a); ivar.source_context = a.source_context; }
@@ -100,7 +104,7 @@ namespace SyntaxVisitors.SugarVisitors
                 var semCheck1 = new semantic_check_sugared_statement_node(typeof(for_node), new List<syntax_tree_node> { a,b }, a.source_context);
 
                 var for_st = new for_node(j, new int32_const(1), n, stlist, fn.statements.source_context);
-                var mainstlist = new statement_list(avar, bvar, semCheck1, oavar, obvar, hvar, nvar, ifn, ivar, for_st);
+                var mainstlist = new statement_list(avar, bvar, semCheck1, oavar, obvar, hvar, if0, nvar, ifn, ivar, for_st);
                 mainstlist.source_context = avar.source_context;
 
                 ReplaceUsingParent(fn, mainstlist);

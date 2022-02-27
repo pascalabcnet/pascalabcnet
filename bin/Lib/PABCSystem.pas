@@ -2841,6 +2841,13 @@ function IsInputPipedOrRedirectedFromFile: boolean;
 
 ///--
 function CheckAndCorrectFromToAndCalcCountForSystemSlice(situation: integer; Len: integer; var from, &to: integer; step: integer): integer;
+
+type 
+  ///--
+  ZeroStepException = class(exception)
+    constructor Create;
+  end;
+
   
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
@@ -2902,6 +2909,7 @@ const
   COUNT_PARAMS_MINFUN_MUSTBE_GREATER1 = 'Количество параметров функции Min должно быть > 1!!The number of parameters of the Min function must be > 1';
   Format_InvalidString = 'Входная строка имела неверный формат!!Input string was not in a correct format';
   Overflow_Int32 = 'Целочисленное переполнение!!Integer overflow';
+  FOR_STEP_CANNOT_BE_EQUAL0 = 'Шаг цикла for не может быт равен 0!!Step of the for loop cannot be equal to 0';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -2935,6 +2943,11 @@ begin
     Result := arr[1]
   else
     Result := arr[0]
+end;
+
+constructor ZeroStepException.Create;
+begin
+  inherited Create(GetTranslation(FOR_STEP_CANNOT_BE_EQUAL0))
 end;
 
 function IsWDE: boolean;
