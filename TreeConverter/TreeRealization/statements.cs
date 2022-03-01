@@ -576,7 +576,7 @@ namespace PascalABCCompiler.TreeRealization
         /// <summary>
         /// Шаг цикла
         /// </summary>
-		private expression_node for_step;
+		public expression_node for_step { get; set; }
 
 
         private bool _bool_cycle;
