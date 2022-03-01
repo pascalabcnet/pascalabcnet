@@ -572,8 +572,14 @@ namespace PascalABCCompiler.TreeRealization
         /// Тело цикла.
         /// </summary>
 		private statement_node _body;
-		
-		private bool _bool_cycle;
+
+        /// <summary>
+        /// Шаг цикла
+        /// </summary>
+		private expression_node for_step;
+
+
+        private bool _bool_cycle;
 		
         /// <summary>
         /// Конструктор клааса.
