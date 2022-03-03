@@ -578,7 +578,6 @@ namespace PascalABCCompiler.TreeRealization
         /// </summary>
 		public expression_node for_step { get; set; }
 
-        parameter - 
         private bool _bool_cycle;
 		
         /// <summary>
