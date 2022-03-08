@@ -1501,6 +1501,11 @@ function GetEXEFileName: string;
 /// Преобразует указатель к строковому представлению
 function PointerToString(p: pointer): string;
 
+/// Для типа System.Type возвращает имя типа объекта
+function TypeToTypeName(t: System.Type): string;
+/// Возвращает имя типа объекта
+function TypeName(o: Object): string;
+
 /// Запускает программу или документ с именем fileName 
 procedure Exec(fileName: string);
 /// Запускает программу или документ с именем fileName и параметрами командной строки args
@@ -7611,7 +7616,6 @@ begin
         TypeCode.UInt64: Result := ReadUInt64;
         TypeCode.SByte: Result := ReadSByte;
         TypeCode.Single: Result := ReadSingle;
-      
       end;
   end 
   else if t.IsEnum then Result := f.br.ReadInt32
@@ -13136,6 +13140,93 @@ begin
   Result := L.Select(i -> i - 1)
 end;
 
+/// Для типа System.Type возвращает имя типа объекта
+function TypeToTypeName(t: System.Type): string;
+begin
+  if t.IsPrimitive then 
+    case System.Type.GetTypeCode(t) of
+      TypeCode.Boolean: Result := 'boolean';
+      TypeCode.Char: Result := 'char';
+      TypeCode.Byte: Result := 'byte';
+      TypeCode.Int16: Result := 'smallint';
+      TypeCode.Int32: Result := 'integer';
+      TypeCode.Int64: Result := 'int64';
+      TypeCode.UInt16: Result := 'word';
+      TypeCode.UInt32: Result := 'longword';
+      TypeCode.UInt64: Result := 'uint64';
+      TypeCode.SByte: Result := 'shortint';
+      TypeCode.Double: Result := 'real';
+      TypeCode.Single: Result := 'single';
+    end
+  else if t = typeof(string) then
+    Result := 'string'
+  else if t = typeof(decimal) then
+    Result := 'decimal'
+  else if t.IsArray then
+  begin
+    var ts := t.ToString;
+    var dims := ts.MatchValue('\[,*\]');
+    if dims = '[]' then 
+      dims := ''
+    else dims := dims + ' ';
+    Result := 'array ' + dims + 'of ' + TypeToTypeName(t.GetElementType);
+  end
+  else if t.IsGenericType then
+  begin  
+    var name := t.ToString.MatchValue('\w+(?=`)');
+    var ss := t.GetGenericArguments.Select(x->TypeToTypeName(x));
+    if name = 'Tuple' then 
+      Result := '('+ss.JoinToString(',')+')'
+    else if name = 'Func' then
+    begin
+      if ss.Count = 1 then
+        Result := '() -> '+ ss.Last
+      else if ss.Count = 2 then
+        Result := ss.First + ' -> '+ ss.Last
+      else  
+        Result := '('+ss.SkipLast.JoinToString(',')+') -> '+ ss.Last;
+    end
+    else if name = 'Action' then
+    begin
+      if ss.Count = 1 then
+        Result := ss.First + ' -> ()'
+      else  
+        Result := '('+ss.JoinToString(',')+') -> ()';
+    end
+    else Result := name + '<'+ss.JoinToString(',')+'>'
+  end
+  else
+  begin
+     //Всё остальное
+    var s := t.ToString;
+    if s = 'System.Action' then
+    begin
+      Result := 'procedure';
+      exit;
+    end;
+    var ind := s.LastIndexOf('.');
+    if ind >= 0 then
+      s := s.Substring(ind + 1);
+    Result := s;
+  end;
+end;
+
+/// Возвращает имя типа объекта
+function TypeName(o: Object): string;
+begin
+  if o = nil then
+    Result := 'nil'
+  else if o is System.Reflection.Pointer then
+    Result := 'pointer'
+  else if o.GetType.GetField('NullBasedArray') <> nil then
+  begin
+    // неточно для двумерных массивов
+    var fi := o.GetType.GetField('NullBasedArray');
+    var f := fi.GetValue(o).GetType;
+    Result := TypeToTypeName(f);
+  end
+  else Result := TypeToTypeName(o.GetType);
+end;
 
 ///-- 
 function CreateSliceFromStringInternal(Self: string; from, step, count: integer): string;

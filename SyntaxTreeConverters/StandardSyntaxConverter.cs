@@ -40,12 +40,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
             VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
             FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
-#if DEBUG
-            //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
-#endif
 
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
+#if DEBUG
+            new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+#endif
 
             // tuple_node
             TupleVisitor.New.ProcessNode(root);

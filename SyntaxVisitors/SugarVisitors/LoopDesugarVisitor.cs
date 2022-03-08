@@ -99,7 +99,12 @@ namespace SyntaxVisitors.SugarVisitors
                 var IncIh = new method_call(new ident("Inc"), exlist, i.source_context);
                 var stlist = new statement_list(fn.statements, fn.statements.source_context);
                 var pc = new procedure_call(IncIh, IncIh.source_context);
-                stlist.Add(pc);
+                var ig0 = new bin_expr(j.TypedClone(), new int32_const(1), Operators.Greater, i.source_context);
+                var ifpc = new if_node(ig0, pc, null, ig0.source_context);
+
+                stlist.Insert(0, ifpc);
+                //stlist.Add(pc);
+
 
                 var semCheck1 = new semantic_check_sugared_statement_node(typeof(for_node), new List<syntax_tree_node> { a,b }, a.source_context);
 
@@ -162,9 +167,9 @@ namespace SyntaxVisitors.SugarVisitors
             if (fe.index != null && !fe.index.name.StartsWith("##")) // Повторно обходить ## не надо - он для семантики
             {
                 var newindex = new ident("##" + fe.index, fe.index.source_context); // нам нужно это имя на семантике для контроля неизменения переменной внутри цикла
-                var indexvar = new var_statement(fe.index, new int32_const(0), fe.index.source_context);
+                var indexvar = new var_statement(fe.index, new int32_const(-1), fe.index.source_context);
                 var IncIndex = new assign(fe.index.TypedClone(), new int32_const(1), Operators.AssignmentAddition);
-                var forstat = new statement_list(fe.stmt, IncIndex);
+                var forstat = new statement_list(IncIndex, fe.stmt);
                 var fe2 = new foreach_stmt(fe.identifier, fe.type_name, fe.in_what, forstat, newindex, fe.source_context);
                 var stat = new statement_list(indexvar,fe2);
                 ReplaceUsingParent(fe, stat);
