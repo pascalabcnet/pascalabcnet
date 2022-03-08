@@ -275,7 +275,7 @@ type
     /// Угол поворота графического объекта (по часовой стрелке)
     property RotateAngle: real read InvokeReal(()->rot.Angle) write Invoke(procedure->begin rot.CenterX := Width/2; rot.CenterY := Height/2; rot.Angle := value end);
     /// Множитель масштабирования объекта  
-    property ScaleFactor: real read InvokeReal(()->sca.ScaleX) write Invoke(()->begin (sca.ScaleX, sca.ScaleY) := (value,value); end);
+    property ScaleFactor: real read InvokeReal(()->sca.ScaleX) write Invoke(()->begin sca.CenterX := Width/2; sca.CenterY := Height/2; (sca.ScaleX, sca.ScaleY) := (value,value); end);
     // Центр поворота графического объекта - запретил, т.к. это будет сбивать координаты объекта
     {property RotateCenter: Point 
       read Invoke&<Point>(()->new Point(rot.CenterX,rot.CenterY))
@@ -366,6 +366,8 @@ type
     procedure AnimScaleP(a,sec: real);
     begin
       var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
+      sca.CenterX := Width / 2;
+      sca.CenterY := Height / 2;
       sca.BeginAnimation(ScaleTransform.ScaleXProperty, an, HandoffBehavior.Compose);
       sca.BeginAnimation(ScaleTransform.ScaleYProperty, an, HandoffBehavior.Compose);
     end;
