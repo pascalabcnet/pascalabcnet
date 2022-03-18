@@ -328,14 +328,76 @@
 	</RuleSet>
 	
 	<RuleSet name = "StringInterpolation" ignorecase = "true">
-		<Span name = "String" rule="Default" bold = "false" italic = "false" color = "Black" stopateol = "true">
+        <Delimiters>&lt;&gt;~!%^*#()-+=|\/{}[]:;"' ,	?.</Delimiters>
+
+		<Span name = "String" rule="ExprStringInterpolation" bold = "false" italic = "false" color = "Black" stopateol = "true">
 			<Begin>{</Begin>
 			<End>}</End>
 		</Span>
 	</RuleSet>
 	
-	<RuleSet name = "Default" ignorecase = "true" reference="PascalABC.NET">
-			<Delimiters>&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+	<RuleSet name = "ExprStringInterpolation" ignorecase = "true">
+        <Delimiters>&lt;&gt;&#x3C;>~!%^*#()-+=|\/[]:;"' ,	?.</Delimiters>
+		<Span name = "StringFormat" rule="StringInterpolation" bold = "false" italic = "false" color = "Blue" stopateol = "true">
+			<Begin>{</Begin>
+			<End>}</End>
+		</Span>
+
+		<Span name = "String" bold = "false" italic = "false" color = "Blue" stopateol = "true">
+			<Begin>''</Begin>
+			<End>''</End>
+		</Span>
+		
+		<KeyWords name = "BlueWords" bold="false" italic="false" color="Blue">
+			<Key word = "self" />
+			<Key word = "result" />
+			<Key word = "value" />
+			
+			<Key word = "true" />
+			<Key word = "false" />
+			<Key word = "nil" />
+			
+			<Key word = "boolean" />
+			<Key word = "byte" />
+			<Key word = "shortint" />
+			<Key word = "smallint" />
+			<Key word = "word" />
+			<Key word = "integer" />
+			<Key word = "BigInteger" />
+			<Key word = "longword" />
+			<Key word = "uint64" />
+			<Key word = "cardinal" />
+			<Key word = "int64" />
+			<Key word = "single" />
+			<Key word = "longint" />
+			<Key word = "string" />
+			<Key word = "char" />
+			<Key word = "real" />
+			<Key word = "double" />
+			<Key word = "pointer" />
+			<Key word = "object" />
+			<Key word = "decimal" />
+		</KeyWords>
+
+		<KeyWords name = "BoldWords" bold = "true" italic="false" color="Black">
+			<Key word = "in" />
+			<Key word = "or" />
+			<Key word = "xor" />
+			<Key word = "and" />
+			<Key word = "div" />
+			<Key word = "mod" />
+			<Key word = "shl" />
+			<Key word = "shr" />
+			<Key word = "not" />
+			<Key word = "as" />
+			<Key word = "is" />
+			<Key word = "sizeof" />
+			<Key word = "typeof" />
+			<Key word = "new" />
+			<Key word = "then" />
+			<Key word = "else" />
+			<Key word = "if" />
+		</KeyWords>
 	</RuleSet>
 
 	</RuleSets>
