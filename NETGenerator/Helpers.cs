@@ -518,9 +518,20 @@ namespace PascalABCCompiler.NETGenerator {
 		private MethodInfo arr_mi=null;
 		private Hashtable pas_defs = new Hashtable();
         private Hashtable memoized_exprs = new Hashtable();
+		private Hashtable dummy_methods = new Hashtable();
 
 		public Helper() {}
 		
+		public void AddDummyMethod(TypeBuilder tb, MethodBuilder mb)
+        {
+			dummy_methods[tb] = mb;
+        }
+
+		public MethodBuilder GetDummyMethod(TypeBuilder tb)
+        {
+			return dummy_methods[tb] as MethodBuilder;
+        }
+
 		public void AddPascalTypeReference(ITypeNode tn, Type t)
 		{
 			pas_defs[tn] = t;
@@ -657,6 +668,8 @@ namespace PascalABCCompiler.NETGenerator {
 
         public object GetConstantForExpression(IExpressionNode expr)
         {
+            if (expr is PascalABCCompiler.TreeRealization.null_const_node) // SSM 20/04/21
+                return expr;
             if (expr is IConstantNode)
                 return (expr as IConstantNode).value;
             return null;

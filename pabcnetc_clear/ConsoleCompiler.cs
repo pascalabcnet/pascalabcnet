@@ -5,6 +5,7 @@ using PascalABCCompiler.Errors;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace PascalABCCompiler
 {
@@ -50,7 +51,7 @@ namespace PascalABCCompiler
             name = ss[0].ToLower();
             if (ss.Length > 1)
             {
-                value = ss[1].Trim().ToLower();
+                value = ss[1].Trim();
             }
 
             return true;
@@ -74,13 +75,23 @@ namespace PascalABCCompiler
                             Console.WriteLine("Bad value in 'Debug' directive '{0}'. Acceptable values are 0 or 1", value);
                             return false;
                     }
-                    case "output":
-                        co.OutputFileName = Path.GetFileName(value);
-                        if (Path.IsPathRooted(value))
-                        {
-                            co.OutputDirectory = Path.GetDirectoryName(value);
-                        }
-                        return true;
+
+                case "define":
+                    co.ForceDefines.Add(value);
+                    return true;
+
+                case "output":
+                    co.OutputFileName = Path.GetFileName(value);
+                    if (Path.IsPathRooted(value))
+                    {
+                        co.OutputDirectory = Path.GetDirectoryName(value);
+                    }
+                    return true;
+
+                case "searchdir":
+                    co.SearchDirectory.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
+                    return true;
+
                 default:
                     Console.WriteLine("No such directive name: '{0}'", name);
                     return false;
@@ -102,9 +113,19 @@ namespace PascalABCCompiler
         {
             Console.WriteLine("Command line: ");
             Console.WriteLine("pabcnetcclear /directive1:value1 /directive2:value2 ... [inputfile]\n");
-            Console.WriteLine("Available directives:\n  /Help  /H  /?\n  /Debug:0(1)\n  /output:[<path>\\name]\n");
-            Console.WriteLine("/output:[ <path>\\name ] compile into an executable called \"name\" and save it in \"path\" directory");
-            Console.WriteLine("/Debug:0 generates code with all .NET optimizations!");
+            Console.WriteLine("Available directives:");
+            //Console.WriteLine("  /Help  /H  /?"); - запретил - конкурирует с pabcnetcclear /w/a.pas
+            Console.WriteLine("  /Debug:<0/1>");
+            Console.WriteLine("  /Define:<name>");
+            Console.WriteLine("  /Output:<[path\\]name>");
+            Console.WriteLine("  /SearchDir:<path>");
+            Console.WriteLine("  /Version:");
+            Console.WriteLine();
+            Console.WriteLine("/Help show this message");
+            Console.WriteLine("/Output:<[path\\]name> compile into an executable called \"name\" and save it in \"path\" directory");
+            Console.WriteLine("/Debug:0 generates code with all .NET optimizations");
+            Console.WriteLine("/SearchDir:<path> add \"path\" to list of standart unit search directories. Last added paths would be searched first");
+            Console.WriteLine("/Version: outputs PascalABC.NET version");
         }
 
         public static int Main(string[] args)
@@ -114,13 +135,19 @@ namespace PascalABCCompiler
             // Пока сделаю только директивы /Help /H /? и /Debug=0(1)
             // Имя директивы - это одно слово. Равенства может не быть - тогда value директивы равно null
             // Вычленяем первое равенство и делим директиву: до него - name, после него - value. Если name или value - пустые строки, то ошибка
+            // 2022 г. К сожалению, директива с / конкурирует с именами каталогов в Linux. Надо писать новый консольный компилятор
 
             DateTime ldt = DateTime.Now;
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
             Compiler.InternalDebug.SkipPCUErrors = false;
-            StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[0];
+            CultureInfo ci = CultureInfo.InstalledUICulture;
+            if (StringResourcesLanguage.CurrentTwoLetterISO == "ru" && ci.TwoLetterISOLanguageName != "ru")
+                StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[StringResourcesLanguage.TwoLetterISOLanguages.IndexOf("en")];
+            else
+                StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[StringResourcesLanguage.TwoLetterISOLanguages.IndexOf(StringResourcesLanguage.CurrentTwoLetterISO)];
+
             //Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);
             ldt = DateTime.Now;
 
@@ -134,7 +161,10 @@ namespace PascalABCCompiler
                 return 2;
             }
 
-            var n1 = args.TakeWhile(a => a[0] == '/').Count(); // количество директив
+            //  /W/a.pas расценивается как директива. Нужен более сложный паттерн: начинается с \буквы:
+            //var n1 = args.TakeWhile(a => a[0] == '/').Count(); // количество директив
+            // Поменяем: SSM 14/12/21
+            var n1 = args.TakeWhile(a => System.Text.RegularExpressions.Regex.IsMatch(a, @"^/\w+:")).Count(); // количество директив
 
             if (n1<n-2)
             {
@@ -156,6 +186,10 @@ namespace PascalABCCompiler
                     case "?":
                         OutputHelp();
                         return 0;
+                    case "version":
+                        Console.WriteLine(PascalABCCompiler.Compiler.Version);
+                        return 0;
+
                     default:
                         Console.WriteLine("Filename is absent. Nothing to compile");
                         return 4;

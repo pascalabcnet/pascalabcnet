@@ -30,31 +30,37 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // new range - до всего! До выноса выражения с лямбдой из foreach. 11.07 добавил поиск yields и присваивание pd.HasYield
             NewRangeDesugarAndFindHasYieldVisitor.New.ProcessNode(root);
 
+            // Распаковка параметров в лямбдах
+            UnpackLambdaParametersVisitor.New.ProcessNode(root);
+
             // Unnamed Records перенёс сюда
             UnnamedRecordsCheckVisitor.New.ProcessNode(root);
 
-            // Выносим выражения с лямбдами из заголовка foreach
-            StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
+            // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
+            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
             VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
             FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
-#if DEBUG
-            //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
-#endif
 
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
+#if DEBUG
+            new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+#endif
 
             // tuple_node
             TupleVisitor.New.ProcessNode(root);
 
-            // index
+            // index 
             IndexVisitor.New.ProcessNode(root);
 
+            // slice_expr и slice_expr_question
+            SliceDesugarVisitor.New.ProcessNode(root); 
+            // поставил раньше AssignTuplesDesugarVisitor из за var (a,b) := a[1:3];
+
+            // теперь коллизия с (a[1:6], a[6:11]):= (a[6:11], a[1:6]);
             // assign_tuple и assign_var_tuple
             AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
 
-            // slice_expr и slice_expr_question
-            SliceDesugarVisitor.New.ProcessNode(root);
 
             // question_point_desugar_visitor
             QuestionPointDesugarVisitor.New.ProcessNode(root);
@@ -66,6 +72,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
             ExtendedIsDesugaringVisitor.New.ProcessNode(root); // Десахаризация расширенного is, который используется в сложных логических выражениях
             PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
+#if DEBUG
+            //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+#endif
 
             // simple_property
             PropertyDesugarVisitor.New.ProcessNode(root);
@@ -74,6 +83,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             CapturedNamesHelper.Reset();
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
+
+            CacheFunctionVisitor.New.ProcessNode(root);
 
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:\\Tree.txt").ProcessNode(root);

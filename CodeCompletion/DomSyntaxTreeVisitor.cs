@@ -39,6 +39,8 @@ namespace CodeCompletion
         internal bool parse_only_interface = false;
         private template_type_reference converted_template_type = null;
         private List<var_def_statement> pending_is_pattern_vars = new List<var_def_statement>();
+        private static Compiler compiler;
+        public static bool use_semantic_for_intellisense;
 
         public SemanticOptions semantic_options = new SemanticOptions();
 		
@@ -67,8 +69,252 @@ namespace CodeCompletion
                 //throw e;
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
+            if (use_semantic_for_intellisense && !parse_only_interface)
+            try
+            {
+                CorrectTreeWithSemantic(cu);
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
+            }
         }
-		
+
+        private type_definition BuildSyntaxNodeForTypeReference(type_node tn)
+        {
+            if (tn.instance_params != null && tn.instance_params.Count > 0)
+            {
+                var ttr = new template_type_reference();
+                var ntr = new named_type_reference();
+                ttr.name = ntr;
+                ttr.params_list = new template_param_list();
+                var arr = tn.original_generic.full_name.Split('.');
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    var s = arr[i];
+                    if (i < arr.Length - 1)
+                        ntr.names.Add(new ident(s));
+                    else
+                    {
+                        var id = new ident_with_templateparams();
+                        ntr.Add(new ident(s));
+                        foreach (var gen_td in tn.instance_params)
+                        {
+                            if (gen_td.PrintableName.StartsWith("AnonymousType#"))
+                            {
+                                SymScope tmp = cur_scope;
+                                TypeScope ts = null;
+                                cur_scope = ts = new TypeScope(SymbolKind.Class, cur_scope, null);
+                                tmp.AddName(gen_td.PrintableName, cur_scope);
+                                ts.loc = get_location(gen_td.location);
+                                ts.si = new SymInfo("class", SymbolKind.Class, "");
+                                foreach (var prop in (gen_td as common_type_node).properties)
+                                {
+                                    ElementScope es = new ElementScope();
+                                    es.si = new SymInfo(prop.name, SymbolKind.Property, "");
+                                    BuildSyntaxNodeForTypeReference(prop.property_type).visit(this);
+                                    es.sc = returned_scope;
+                                    ts.AddName(prop.name, es);
+                                }
+                                returned_scope = cur_scope;
+                                cur_scope = tmp;
+                                ttr.params_list.Add(new named_type_reference(gen_td.PrintableName));
+                            }
+                            else
+                                ttr.params_list.Add(BuildSyntaxNodeForTypeReference(gen_td));
+                        }
+                            
+                    }
+                }
+                return ttr;
+            }
+            else
+            {
+                var ntr = new named_type_reference();
+                if (tn.IsDelegate)
+                {
+                    var invokeMeth = tn.find_first_in_type("Invoke");
+                    if (invokeMeth != null)
+                    {
+                        var fn = invokeMeth.sym_info as function_node;
+                        procedure_header header;
+                        if (fn.return_value_type != null)
+                        {
+                            header = new function_header(BuildSyntaxNodeForTypeReference(fn.return_value_type));
+                        }
+                        else
+                        {
+                            header = new procedure_header();
+                        }
+                        header.parameters = new formal_parameters();
+                        foreach (var param in fn.parameters)
+                        {
+                            var tparam = new typed_parameters();
+                            tparam.vars_type = BuildSyntaxNodeForTypeReference(param.type);
+                            tparam.idents = new ident_list();
+                            tparam.idents.Add(new ident(param.name));
+                            header.parameters.Add(tparam);
+                            
+                        }
+                        return header;
+                    }
+                    ntr.names.Add(new ident(tn.PrintableName.Replace("()", "")));
+                    return ntr;
+                }
+                var arr = tn.full_name.Split('.');
+                foreach (string s in arr)
+                {
+                    ntr.names.Add(new ident(s));
+                }
+                return ntr;
+            }
+        }
+
+        private TypeScope GetIntellisenseTypeByType(Type t)
+        {
+            if (t.GetGenericArguments().Length == 0)
+                return TypeTable.get_compiled_type(t);
+            else
+            {
+                List<TypeScope> gen_args = new List<TypeScope>();
+                foreach (var gen_tn in t.GetGenericArguments())
+                {
+                    gen_args.Add(TypeTable.get_compiled_type(gen_tn));
+                }
+                return CompiledScope.get_type_instance(t.GetGenericTypeDefinition(), gen_args);
+            }
+        }
+
+        private TypeScope GetCorrectedType(TypeScope ts, type_node tn, SymScope topScope)
+        {
+            if (ts is TypeSynonim)
+            {
+                var corrected_type = GetCorrectedType((ts as TypeSynonim).actType, tn, topScope);
+                if (!corrected_type.IsEqual((ts as TypeSynonim).actType))
+                    return corrected_type;
+                return ts;
+            }
+            else if (tn is compiled_type_node)
+            {
+                var ctn = tn as compiled_type_node;
+                if (ctn.compiled_type.IsArray)
+                {
+                    if (ctn.rank > 1)
+                        return new ArrayScope(GetIntellisenseTypeByType((ctn.element_type as compiled_type_node).compiled_type), new TypeScope[ctn.rank]);
+                    return new ArrayScope(GetIntellisenseTypeByType((ctn.element_type as compiled_type_node).compiled_type), null);
+                }
+                if (ctn.compiled_type.GetGenericArguments().Length == 0)
+                    return TypeTable.get_compiled_type(ctn.compiled_type);
+                else
+                {
+                    List<TypeScope> gen_args = new List<TypeScope>();
+                    foreach (var gen_tn in ctn.compiled_type.GetGenericArguments())
+                    {
+                        gen_args.Add(GetIntellisenseTypeByType(gen_tn));
+                    }
+                    return CompiledScope.get_type_instance(ctn.compiled_type.GetGenericTypeDefinition(), gen_args);
+                }
+            }
+            else if (tn is ref_type_node && ts is PointerScope)
+            {
+                var corrected_type = GetCorrectedType((ts as PointerScope).elementType, tn.element_type, topScope);
+                if (!corrected_type.IsEqual((ts as PointerScope).elementType))
+                    return new PointerScope(corrected_type);
+                return ts;
+            }
+            else
+            {
+                
+                if (tn.full_name.IndexOf("$") != -1 && !tn.IsDelegate|| tn.full_name.IndexOf("#") != -1 && tn.full_name.IndexOf("AnonymousType#") == -1)
+                    return ts;
+                if (ts is FileScope && tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.typed_file)
+                    return ts;
+                if (ts is FileScope && tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.binary_file)
+                    return ts;
+                var ntr = BuildSyntaxNodeForTypeReference(tn);
+                cur_scope = topScope;
+                
+                ntr.visit(this);
+                if (returned_scope != null && returned_scope is TypeScope)
+                {
+                    var correctedType = returned_scope as TypeScope;
+                    if (!correctedType.IsTypeStrictEqual(ts))
+                        return correctedType;
+                }
+                else if (returned_scope != null && returned_scope is ProcScope)
+                {
+                    var procType = new ProcType(returned_scope as ProcScope);
+                    if (!procType.IsEqual(ts))
+                        return procType;
+                }
+                return ts;
+            }
+        }
+
+        /*private TypeScope CreateTypeScopeBySemanticType(type_node tn)
+        {
+            if (tn is common_generic_instance_type_node)
+            {
+                var ts = new TypeScope();
+                var gitn = tn as common_generic_instance_type_node;
+                ts.gener
+                foreach (var field in gitn.fields)
+                {
+                    ts.AddName(field.name, CreateTypeScopeBySemanticType(field.type));
+                }
+            }
+            return null;
+        }*/
+
+
+        private void CorrectVariableType(var_definition_node vdn)
+        {
+            location loc = null;
+            if (vdn is namespace_variable)
+            {
+                loc = (vdn as namespace_variable).loc;
+            }
+            else if (vdn is local_variable)
+            {
+                loc = (vdn as local_variable).loc;
+            }
+            else if (vdn is local_block_variable)
+            {
+                loc = (vdn as local_block_variable).loc;
+            }
+            if (loc == null)
+                return;
+            var es = FindScopeByLocation(loc.begin_line_num,loc.begin_column_num) as ElementScope;
+            if (es != null)
+            {
+                es.sc = GetCorrectedType(es.sc as TypeScope, vdn.type, es.topScope);
+                es.MakeDescription();
+            }
+        }
+
+
+        private void CorrectTreeWithSemantic(compilation_unit cu)
+        {
+            var co = new CompilerOptions();
+            co.SavePCU = false;
+            co.GenerateCode = false;
+            co.UnitSyntaxTree = cu;
+            co.SourceFileName = cu.source_context.FileName;
+            co.ForIntellisense = true;
+            co.SaveDocumentation = false;
+            //if (compiler == null)
+                compiler = new Compiler();
+            compiler.CompilerOptions = co;
+            compiler.ClearAfterCompilation = false;
+            compiler.Compile();
+            foreach (var lv in compiler.CompiledVariables)
+                CorrectVariableType(lv);
+            
+            compiler.ClearAll(/*false*/);
+        }
+
 		public SymScope FindScopeByLocation(int line, int col)
 		{
 			try
@@ -590,7 +836,7 @@ namespace CodeCompletion
                 }
                 // if (si == null) dn = compiled_type_node.get_type_node(PascalABCCompiler.NetHelper.NetHelper.FindType((_var_def_statement.vars_type as named_type_reference).names[0].name,unl));
 
-                if (returned_scope == null) return;
+                //if (returned_scope == null) return;
                 if (returned_scope is ProcScope)
                 {
                     returned_scope = new ProcType(returned_scope as ProcScope);
@@ -602,6 +848,8 @@ namespace CodeCompletion
                         SymInfo si = new SymInfo(s.name, SymbolKind.Variable, s.name);
                         if (cur_scope is TypeScope) si.kind = SymbolKind.Field;
                         if (_var_def_statement.is_event) si.kind = SymbolKind.Event;
+                        if (returned_scope == null && false)
+                            returned_scope = new UnknownScope(new SymInfo("",SymbolKind.Class, ""));
                         ElementScope es = new ElementScope(si, returned_scope, cur_scope);
                         if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_var_def_statement))
                             es.AddDocumentation(this.converter.controller.docs[_var_def_statement]);
@@ -2414,7 +2662,7 @@ namespace CodeCompletion
 
         public string FindPCUFileName(string UnitName)
         {
-        	return CodeCompletionController.comp.FindPCUFileNameWithoutSources(UnitName,System.IO.Path.GetDirectoryName(doc.file_name));
+        	return CodeCompletionController.comp.FindPCUFileName(UnitName,System.IO.Path.GetDirectoryName(doc.file_name), out _);
         }
         
 		private void add_system_unit()
@@ -2612,20 +2860,9 @@ namespace CodeCompletion
                             NamespaceScope ns_scope = null;
                             if (i == 0)
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                {
-                                    string unit_in_file = (s as uses_unit_in).in_file.Value;
-                                    string unit_in_dir = null;
-                                    if (Path.IsPathRooted(unit_in_file))
-                                        unit_in_dir = Path.GetDirectoryName(unit_in_file);
-                                    else
-                                        unit_in_dir = Path.Combine(Path.GetDirectoryName(_program_module.file_name),Path.GetDirectoryName(unit_in_file));
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(Path.GetFileNameWithoutExtension(unit_in_file), unit_in_dir);
-                                }
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_program_module.file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(_program_module.file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -2736,10 +2973,16 @@ namespace CodeCompletion
                 }
             if (cur_scope != null && _program_module.program_block.program_code != null)
             {
-                var left_line_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num;
-                var left_column_num = _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num;
+                var left_line_num = _program_module.program_block.program_code.left_logical_bracket.source_context != null ? _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num : 1;
+                var left_column_num = _program_module.program_block.program_code.left_logical_bracket.source_context != null ? _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num : 1;
                 var right_line_num = _program_module.program_block.program_code.source_context.end_position.line_num;
                 var right_column_num = _program_module.program_block.program_code.source_context.end_position.column_num;
+                if (_program_module.program_block.program_code.right_logical_bracket == null || _program_module.program_block.program_code.right_logical_bracket.source_context == null)
+                {
+                    right_line_num += 2;
+                    _program_module.program_block.program_code.source_context = new SourceContext(_program_module.program_block.program_code.source_context.begin_position.line_num,
+                               _program_module.program_block.program_code.source_context.begin_position.column_num, right_line_num, right_column_num);
+                }
                 cur_scope.body_loc = new location(left_line_num,
                                                   left_column_num,
                                                   right_line_num, right_column_num,
@@ -2829,8 +3072,56 @@ namespace CodeCompletion
        		ps.AddParameter(prm);
        		ps.Complete();
        		cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.dispose_procedure_name,ps);
-       }
-        
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int16_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint16_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.sbyte_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int64_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint64_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint32_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            ps.si.not_include = true;
+            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+        }
+
         public override void visit(hex_constant _hex_constant)
         {
             //throw new Exception("The method or operation is not implemented.");
@@ -2920,6 +3211,13 @@ namespace CodeCompletion
                                     return;
                                 }
 
+                            }
+                            else if (returned_scope is ProcScope)
+                            {
+                                method_call mc = new method_call(_dot_node, new expression_list());
+                                search_all = true;
+                                mc.visit(this);
+                                return;
                             }
                         }
                         
@@ -3259,6 +3557,20 @@ namespace CodeCompletion
                     }
                 }
             }
+            /*if (good_procs.Count == 0)
+            {
+                for (int i = 0; i < meths.Length; i++)
+                {
+                    if (meths[i] is ProcScope)
+                    {
+                        if ((meths[i] as ProcScope).parameters.Count == arg_types.Count)
+                        {
+                            good_procs.Add(meths[i] as ProcScope);
+                            break;
+                        }
+                    }
+                }
+            }*/
             if (good_procs.Count > 0)
             {
                 if (obj != null)
@@ -4357,20 +4669,9 @@ namespace CodeCompletion
                         {
                             try
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                {
-                                    string unit_in_file = (s as uses_unit_in).in_file.Value;
-                                    string unit_in_dir = null;
-                                    if (Path.IsPathRooted(unit_in_file))
-                                        unit_in_dir = Path.GetDirectoryName(unit_in_file);
-                                    else
-                                        unit_in_dir = Path.Combine(Path.GetDirectoryName(this.cur_unit_file_name),Path.GetDirectoryName(unit_in_file));
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(Path.GetFileNameWithoutExtension(unit_in_file), unit_in_dir);
-                                }
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(this.cur_unit_file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -4490,12 +4791,9 @@ namespace CodeCompletion
                         {
                             try
                             {
-                                string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
-                                if (s is uses_unit_in)
-                                    unit_name = (s as uses_unit_in).in_file.Value;
-                                else
-                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(this.cur_unit_file_name));
+
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                        && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
@@ -5149,7 +5447,7 @@ namespace CodeCompletion
                                 }
                                 else
                                 {
-                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str);
+                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.file_name), out _);
                                     if (unit_name == null)
                                     {
                                         unit_name = Path.Combine(System.IO.Path.GetDirectoryName(_c_module.file_name), str) + System.IO.Path.GetExtension(_c_module.file_name);

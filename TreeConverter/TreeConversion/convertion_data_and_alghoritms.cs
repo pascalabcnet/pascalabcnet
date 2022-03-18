@@ -637,6 +637,13 @@ namespace PascalABCCompiler.TreeConverter
 				return en;
 			}
 
+            if (to == SystemLibrary.SystemLibrary.system_delegate_type && en is typed_expression)
+            {
+                delegated_methods dm = (en as typed_expression).type as delegated_methods;
+                if (dm.proper_methods.Count > 1)
+                    AddError(loc, "AMBIGUOUS_DELEGATES");
+            }
+
             if (en.type is compiled_type_node comptn1 && to is compiled_type_node comptn2) // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные
             {
                 if (comptn1.compiled_type == comptn2.compiled_type 
@@ -651,6 +658,11 @@ namespace PascalABCCompiler.TreeConverter
 
 			if (pct.second!=null)
 			{
+                if (pct.second.to == null && en is typed_expression && !to.IsDelegate)
+                {
+                    syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref en);
+                    return en;
+                }
                 AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
 			}
 
@@ -663,7 +675,7 @@ namespace PascalABCCompiler.TreeConverter
                 en.location = loc;
                 if (en.type is delegated_methods dm && dm.proper_methods[0].parameters.Count == 0 && dm.proper_methods[0].ret_type != null)
                 {
-                    if (to != SystemLibrary.SystemLibrary.object_type)
+                    if (to != SystemLibrary.SystemLibrary.object_type && to.IsDelegate)
                         AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
                     else
                         return en;
@@ -679,7 +691,8 @@ namespace PascalABCCompiler.TreeConverter
 			type_node conv_type = en.type;
 			expression_node expr = create_simple_function_call(pct.first.convertion_method, en.location, en);
             expr.conversion_type = conv_type;
-			return expr;
+            
+            return expr;
 		}
 
         public static function_node get_empty_conversion(type_node from_type, type_node to_type, bool with_compile_time_executor)
@@ -1259,7 +1272,9 @@ namespace PascalABCCompiler.TreeConverter
 		{
 			if ((left.first==null)&&(right.first!=null))
 			{
-				return type_conversion_compare.greater_type_conversion;
+                if (right.from.IsDelegate && right.to.IsDelegate && left.to == SystemLibrary.SystemLibrary.object_type)
+                    return type_conversion_compare.less_type_conversion;//right.first != null из-за структурной эквивалентности процедурных типов и в силу того, что для каждого процедурного типа создается свой класс и и создается пустой метод преобразования типов
+                return type_conversion_compare.greater_type_conversion;
 			}
 			if ((left.first!=null)&&(right.first==null))
 			{
@@ -1337,9 +1352,86 @@ namespace PascalABCCompiler.TreeConverter
 			return type_conversion_compare.equal_type_conversions;
 		}
 
-		private method_compare compare_methods(function_node left_func, function_node right_func,
+        public enum MoreSpecific { Left, Right, None}
+
+        // SSM 04/07/2021
+        public MoreSpecific compare_more_specific(function_node left_func, function_node right_func, possible_type_convertions_list left, possible_type_convertions_list right)
+        {
+            bool LeftIsMoreSpecific = false;
+            bool RightIsMoreSpecific = false;
+            var left_original = left_func.original_function;
+            var right_original = right_func.original_function;
+            if (left_original != null && right_original != null)
+            {
+                for (var i = 0; i < left_original.parameters.Count; i++)
+                {
+                    if (left_original.parameters[i].is_params || right_original.parameters[i].is_params)
+                    {
+                        return MoreSpecific.None;
+                    }
+                    var ltt = left_original.parameters[i].type;
+                    var rtt = right_original.parameters[i].type;
+                    if (ltt.is_generic_parameter && !rtt.is_generic_parameter)
+                    {
+                        RightIsMoreSpecific = true;
+                        if (left != null && right != null && left.Count > 0 && right.Count > 0)
+                        {
+                            type_conversion_compare tcc = compare_type_conversions(left[0], right[0]);
+                            if (tcc == type_conversion_compare.greater_type_conversion && right[0].first != null && right[0].first.convertion_method != null && !(right[0].first.convertion_method is basic_function_node))
+                                RightIsMoreSpecific = false;//ignore user defined implicit conversions
+                        }
+                        continue;
+                    }
+                    if (rtt.is_generic_parameter && !ltt.is_generic_parameter)
+                    {
+                        LeftIsMoreSpecific = true;
+                        if (left != null && right != null && left.Count > 0 && right.Count > 0)
+                        {
+                            type_conversion_compare tcc = compare_type_conversions(left[0], right[0]);
+                            if (tcc == type_conversion_compare.less_type_conversion && left[0].first != null && left[0].first.convertion_method != null && !(left[0].first.convertion_method is basic_function_node))
+                                LeftIsMoreSpecific = false;//ignore user defined implicit conversions
+                        }
+                        continue;
+                    }
+                    var lt = ltt as generic_instance_type_node;
+                    var rt = rtt as generic_instance_type_node;
+                    if (lt == null || rt == null)
+                        continue;
+                    if (lt.original_generic == rt.original_generic)
+                    {
+                        var lins = lt.instance_params;
+                        var rins = rt.instance_params;
+                        for (int j = 0; j < rins.Count; j++)
+                        {
+                            if (lins[j].is_generic_parameter && !rins[j].is_generic_parameter)
+                                RightIsMoreSpecific = true;
+                            else if (rins[j].is_generic_parameter && !lins[j].is_generic_parameter)
+                                LeftIsMoreSpecific = true;
+                        }
+                    }
+                }
+            }
+
+            if (RightIsMoreSpecific && !LeftIsMoreSpecific)
+                return MoreSpecific.Right;
+            if (LeftIsMoreSpecific && !RightIsMoreSpecific)
+                return MoreSpecific.Left;
+            return MoreSpecific.None;
+
+        }
+
+        private method_compare compare_methods(function_node left_func, function_node right_func,
             possible_type_convertions_list left,possible_type_convertions_list right)
 		{
+            // Нет распознавания глубоко вложенных типов на IsMoreSpecific - только на глубину 1 или 2
+            var moreSpec = compare_more_specific(left_func, right_func, left, right);
+            if (moreSpec == MoreSpecific.Left)
+                return method_compare.greater_method;
+            if (moreSpec == MoreSpecific.Right)
+                return method_compare.less_method;
+                
+            // а иначе пока ничего не возвращать
+
             function_compare fc = function_node.compare_functions(left_func, right_func);
             if (fc == function_compare.less)
             {
@@ -1395,7 +1487,26 @@ namespace PascalABCCompiler.TreeConverter
                 if (left_func is basic_function_node)
                     return method_compare.less_method;
                 else
-                    return method_compare.greater_method;
+                {
+                    if (left.Count > 0 && right.Count > 0 && left[0].from is delegated_methods && right[0].from is delegated_methods && right[0].to.is_generic_type_instance
+                        && (left[0].from as delegated_methods).proper_methods[0].ret_type is lambda_any_type_node && (right[0].from as delegated_methods).proper_methods[0].ret_type is lambda_any_type_node)
+                    {
+                        var llist = right_func.get_generic_params_list();
+                        var rlist = right[0].to.instance_params;
+                        
+                        if (llist.Count == rlist.Count)
+                        {
+                            for (int i=0; i<llist.Count; i++)
+                                if (llist[i] != rlist[i])
+                                    return method_compare.greater_method;
+                            return method_compare.less_method;
+                        }
+                        else
+                            return method_compare.greater_method;
+                    }
+                    else
+                        return method_compare.greater_method;
+                }
             }
             if (left_func.is_generic_function_instance && !right_func.is_generic_function_instance)
             {
@@ -1420,8 +1531,57 @@ namespace PascalABCCompiler.TreeConverter
                             eq = false;
                             break;
                         }
+                    
                     if (eq)
                     {
+                        // SSM 03/07/2021 - в связи с EachCount с GroupBy и без
+
+                        /*bool LeftIsMoreSpecific = false;
+                        bool RightIsMoreSpecific = false;
+                        var left_original = left_func.original_function;
+                        var right_original = right_func.original_function;
+                        if (left_original != null && right_original != null)
+                        {
+                            for (var i = 0; i < left_original.parameters.Count; i++)
+                            {
+                                var ltt = left_original.parameters[i].type;
+                                var rtt = right_original.parameters[i].type;
+                                if (ltt.is_generic_parameter && !rtt.is_generic_parameter)
+                                {
+                                    RightIsMoreSpecific = true;
+                                    continue;
+                                }
+                                if (rtt.is_generic_parameter && !ltt.is_generic_parameter)
+                                {
+                                    LeftIsMoreSpecific = true;
+                                    continue;
+                                }
+                                var lt = ltt as generic_instance_type_node;
+                                var rt = rtt as generic_instance_type_node;
+                                if (lt == null || rt == null)
+                                    continue;
+                                if (lt.original_generic == rt.original_generic)
+                                {
+                                    var lins = lt.instance_params;
+                                    var rins = rt.instance_params;
+                                    for (int j = 0; j < rins.Count; j++)
+                                    {
+                                        if (lins[j].is_generic_parameter && !rins[j].is_generic_parameter)
+                                            RightIsMoreSpecific = true;
+                                        else if (rins[j].is_generic_parameter && !lins[j].is_generic_parameter)
+                                            LeftIsMoreSpecific = true;
+                                    }
+                                }
+                            }
+                        }
+                        if (RightIsMoreSpecific && !LeftIsMoreSpecific)
+                            return method_compare.less_method;
+                        if (LeftIsMoreSpecific && !RightIsMoreSpecific)
+                            return method_compare.greater_method;*/
+
+                        // end SSM 03/07/2021
+
+                        // Это не всегда правильно срабатывает
                         var lc = left_func.get_generic_params_list().Count;
                         var rc = right_func.get_generic_params_list().Count;
                         if (lc < rc)
@@ -1432,6 +1592,15 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+            if (left_func.return_value_type != null && right_func.return_value_type != null && function_eq_params(left_func, right_func, true))
+            {
+                var tc = type_table.compare_types(left_func.return_value_type, right_func.return_value_type);
+                if (tc == type_compare.less_type)
+                    return method_compare.greater_method;
+                if (tc == type_compare.greater_type)
+                    return method_compare.less_method;
+            }
+                
             return method_compare.not_comparable_methods;
 		}
 
@@ -1667,7 +1836,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				if (ptc.second!=null)
 				{
-                    if (ptc.first.from is null_type_node || ptc.second.from is null_type_node)
+                    if (ptc.first.from is null_type_node || ptc.second.to == null || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
                         continue; // SSM 9/12/20 fix 2363
 					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
@@ -1716,10 +1885,16 @@ namespace PascalABCCompiler.TreeConverter
                     exprs[i].type = fn.parameters[fn.parameters.Count - 1].type;
                     break;
                 }
-                if ((ptcal[i]==null)||(ptcal[i].first==null)||exprs[i] is null_const_node)
-				{
-					continue;
-				}
+                if (ptcal.Count <= i)
+                {
+                    continue;
+                }
+                if ((ptcal[i] == null) || (ptcal[i].first == null) || (exprs[i] is null_const_node && exprs[i].conversion_type == null))
+                {
+                    continue;
+                }
+                if (ptcal[i].second != null && ptcal[i].second.to == null)
+                    continue;
                 expression_node[] temp_arr = new expression_node[1];
                 temp_arr[0] = exprs[i];
                 if (ptcal[i].first.convertion_method is compiled_constructor_node)
@@ -1871,7 +2046,7 @@ namespace PascalABCCompiler.TreeConverter
                                 mc = method_compare.greater_method;
                             }
                         }
-                        if (mc == method_compare.greater_method)
+                        if (mc == method_compare.greater_method) // f[i]>f[j] - значит, удалять надо f[i], а в коде наоборот!!! Странно...
                         {
                             tcll.remove_at(j);
                             set_of_possible_functions.RemoveAt(j);
@@ -1969,12 +2144,13 @@ namespace PascalABCCompiler.TreeConverter
                 // В режиме only_from_not_extensions пропускать все extensions
                 if (only_from_not_extensions && (function.sym_info is function_node) && (function.sym_info as function_node).is_extension_method)
                     continue;
-#if (DEBUG)
+
                 if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
                 {
-                    throw new CompilerInternalError("Function name is used to define another kind of object.");
+                    continue;
+                    //throw new CompilerInternalError("Function name is used to define another kind of object.");
                 }
-#endif
+                
                 function_node fn = null;
                 if (function.sym_info.general_node_type == general_node_type.property_node)
                 {
@@ -2131,7 +2307,12 @@ namespace PascalABCCompiler.TreeConverter
             {
                 throw lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException.ExceptionOnCompileBody;  // Если перебрали все, но ничто не подошло, то кидаем последнее исключение
             }
-
+            else if (lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException != null
+                && set_of_possible_functions.Count > 0
+                && indefinits.Count == 0)
+            {
+                syntax_tree_visitor.RemoveLastError();
+            }
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
                 if (is_op)
@@ -2602,7 +2783,25 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }*/
                     }
-
+                }
+                List<function_node> to_remove = new List<function_node>();
+                foreach (function_node fn in funcs)
+                {
+                    if (fn.is_generic_function_instance)
+                    foreach (parameter p in fn.original_function.parameters)
+                    {
+                        if (p.type.is_generic_parameter)
+                        {
+                            to_remove.Add(fn);
+                            break;
+                        }
+                    }
+                }
+                if (set_of_possible_functions.Count - to_remove.Count == 1)
+                {
+                    foreach (function_node fn in to_remove)
+                        set_of_possible_functions.Remove(fn);
+                    return set_of_possible_functions[0];
                 }
             }
 
@@ -2757,7 +2956,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         public enum int_types { sbyte_type = 0, byte_type = 1, short_type = 2, ushort_type = 3, integer_type = 4, uint_type = 5, int64_type = 6, uint64_type = 7};
-        public bool is_value_int_type(type_node tn)
+        public static bool is_value_int_type(type_node tn)
         {
             return 
                 tn == SystemLibrary.SystemLibrary.sbyte_type ||
@@ -2770,13 +2969,13 @@ namespace PascalABCCompiler.TreeConverter
                 tn == SystemLibrary.SystemLibrary.uint64_type
                 ;
         }
-        public bool is_value_real_type(type_node tn)
+        public static bool is_value_real_type(type_node tn)
         {
             return tn == SystemLibrary.SystemLibrary.double_type ||
                 tn == SystemLibrary.SystemLibrary.float_type 
                 ;
         }
-        public bool is_value_num_type(type_node tn)
+        public static bool is_value_num_type(type_node tn)
         {
             return is_value_int_type(tn) || is_value_real_type(tn);
         }

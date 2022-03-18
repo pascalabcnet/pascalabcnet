@@ -28,15 +28,15 @@ namespace PascalABCCompiler
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.Encoding = Encoding.UTF8;
                 settings.Indent = true;
-                xtw = XmlTextWriter.Create(Path.ChangeExtension(cu.UnitName, ".xml"), settings);
-                unit_name = Path.GetFileNameWithoutExtension(cu.UnitName);
+                xtw = XmlTextWriter.Create(Path.ChangeExtension(cu.UnitFileName, ".xml"), settings);
+                unit_name = Path.GetFileNameWithoutExtension(cu.UnitFileName);
                 xtw.WriteStartDocument();
                 xtw.WriteStartElement("doc");
                 if (is_assembly)
                 {
                     xtw.WriteStartElement("assembly");
                     xtw.WriteStartElement("name");
-                    xtw.WriteString(Path.GetFileNameWithoutExtension(cu.UnitName));
+                    xtw.WriteString(Path.GetFileNameWithoutExtension(cu.UnitFileName));
                     xtw.WriteEndElement();
                     xtw.WriteEndElement();
                 }
@@ -45,7 +45,7 @@ namespace PascalABCCompiler
                     xtw.WriteStartElement("unit");
                     xtw.WriteStartAttribute("name");
                     //xtw.WriteString((cu.SemanticTree as common_unit_node).unit_name);
-                    xtw.WriteString(Path.GetFileNameWithoutExtension(cu.UnitName));
+                    xtw.WriteString(Path.GetFileNameWithoutExtension(cu.UnitFileName));
                     xtw.WriteEndAttribute();
                     xtw.WriteString(cu.SemanticTree.documentation);
                     xtw.WriteEndElement();

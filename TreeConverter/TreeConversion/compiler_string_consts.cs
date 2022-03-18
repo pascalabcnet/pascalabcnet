@@ -322,9 +322,11 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_reference = "reference";
         public static string include_namespace_directive = "includenamespace";
         public static string compiler_savepcu = "savepcu";
-        public static string compiler_directive_nullbasedstrings = "nullbasedstrings";
-        public static string compiler_directive_nullbasedstrings_ON = "string_nullbased+";
-        public static string compiler_directive_nullbasedstrings_OFF = "string_nullbased-";
+        public static string compiler_directive_zerobasedstrings = "zerobasedstrings";
+        public static string compiler_directive_zerobasedstrings_ON = "string_zerobased+";
+        public static string compiler_directive_zerobasedstrings_OFF = "string_zerobased-";
+        public static string compiler_directive_nullbasedstrings_ON = "string_nullbased+"; // для совместимости. Deprecated
+        public static string compiler_directive_nullbasedstrings_OFF = "string_nullbased-"; // для совместимости. Deprecated
         public static string compiler_directive_initstring_as_empty_ON = "string_initempty+";
         public static string compiler_directive_initstring_as_empty_OFF = "string_initempty-";
         public static string compiler_directive_resource = "resource";
@@ -387,10 +389,18 @@ namespace PascalABCCompiler.TreeConverter
         }
         public static string GetGetAccessorName(string name)
         {
+            if (name.IndexOf(".") != -1)
+            {
+                return string.Format("{0}get_{1}", name.Substring(0, name.LastIndexOf('.') + 1), name.Substring(name.LastIndexOf('.')+1));
+            }
             return GetAccessorName("get_{0}", name);
         }
         public static string GetSetAccessorName(string name)
         {
+            if (name.IndexOf(".") != -1)
+            {
+                return string.Format("{0}set_{1}", name.Substring(0, name.LastIndexOf('.') + 1), name.Substring(name.LastIndexOf('.') + 1));
+            }
             return GetAccessorName("set_{0}", name);
         }
         public static string GetAddHandler(string name)

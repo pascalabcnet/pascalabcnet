@@ -45,18 +45,51 @@ procedure InvokeP(p: procedure(r: real); r: real);
 
 type
   ///!#
+  /// Базовый класс для всех элементов управления
+  CommonElementWPF = class
+  protected  
+    element: FrameworkElement;
+    procedure Init0(el: FrameworkElement; width: real := 0; x: real := -1; y: real := -1);
+  private
+    procedure SetWP(w: real) := element.Width := w;
+    procedure SetHP(h: real) := element.Height := h;
+    procedure SetMPB(m: real) := element.Margin := new Thickness(0,0,0,m);
+    procedure SetMPs(m: (real, real, real, real)) := element.Margin := new Thickness(m[0],m[1],m[2],m[3]);
+    procedure SetTTP(s: string) := element.Tooltip := s;
+    procedure SetEP(enabled: boolean) := element.IsEnabled := enabled;
+  public
+    /// Ширина элемента управления
+    property Width: real read InvokeReal(()->element.Width) write Invoke(SetWP, value);
+    /// Высота элемента управления
+    property Height: real read InvokeReal(()->element.Height) write Invoke(SetHP, value); virtual;
+    /// Отступ элемента управления
+    //property Margin: real read InvokeReal(()->element.Margin.Bottom) write Invoke(SetMPB, value);
+    /// Нижний отступ элемента управления
+    property BottomMargin: real read InvokeReal(()->element.Margin.Bottom) write Invoke(SetMPB, value);
+    /// Отступы элемента управления
+    property Margins: (real,real,real,real) 
+      //read InvokeReal(()->element.Margin.Bottom) 
+      write Invoke(SetMPs, value);
+    /// Активирован ли элемент управления
+    property Enabled: boolean read InvokeBoolean(()->element.IsEnabled) write Invoke(SetEP, value);
+    /// Всплывающая подсказка
+    property Tooltip: string read Invokestring(()->element.ToolTip as string) write Invoke(SetTTP, value);
+  end;
+  
+  ///!#
   /// Базовый класс для панелей
-  PanelWPF = class
+  PanelWPF = class(CommonElementWPF)
   public  
     fsize: real := 12;
   private
-    p: StackPanel;
     bb: Border;
+    property p: StackPanel read element as StackPanel;
     procedure CreateP(wh: real; d: Dock; c: Color; InternalMargin: real);
     begin
       bb := new Border();  
       bb.Background := new SolidColorBrush(c);
-      p := new StackPanel;
+      var p := new StackPanel;
+      element := p;
       bb.Child := p;
       p.Background := GetBrush(c);
       p.Margin := new System.Windows.Thickness(InternalMargin);
@@ -107,10 +140,12 @@ type
       SetFSzPP(Self.p,value);
     end;
   public 
-    constructor Create(wh: real := 150; d: Dock := Dock.Left; c: Color := PanelsColor; internalMargin: real := 10);
+    constructor Create(wh: real; d: Dock; c: Color; internalMargin: real);
     begin
       Invoke(CreateP,wh,d,c,internalMargin);
     end;
+    constructor Create(wh: real; d: Dock; c: Color) := Create(wh,d,c,10);
+    constructor Create(wh: real := 150; d: Dock := Dock.Left) := Create(wh,d,PanelsColor,10);
     /// Цвет
     property Color: GColor read Invoke&<GColor>(GetColorP) write Invoke(SetColorP, value);
     /// Ширина внутренней границы
@@ -128,64 +163,25 @@ type
   /// Класс левой панели
   LeftPanelWPF = class(PanelWPF)
   public
-    constructor Create(width: real := 150; c: GColor := PanelsColor; internalMargin: real := 10);
+    constructor Create(width: real; c: GColor; internalMargin: real);
     begin
       inherited Create(width, Dock.Left,c,internalMargin)
     end;
+    constructor Create(width: real; c: GColor) := Create(width,c,10);
+    constructor Create(width: real := 150) := Create(width,PanelsColor,10);
   end;
 
   /// Класс правой панели
   RightPanelWPF = class(PanelWPF)
   public
-    constructor Create(width: real := 150; c: GColor := PanelsColor; internalMargin: real := 10);
+    constructor Create(width: real; c: GColor; internalMargin: real);
     begin
       inherited Create(width, Dock.Right,c,internalMargin)
     end;
+    constructor Create(width: real; c: GColor) := Create(width,c,10);
+    constructor Create(width: real := 150) := Create(width,PanelsColor,10);
   end;
 
-  ///!#
-  /// Базовый класс для всех элементов управления
-  CommonElementWPF = class
-  private 
-    element: FrameworkElement;
-    procedure Init0(el: FrameworkElement; width: real := 0; x: real := -1; y: real := -1);
-    begin
-      element := el;
-      element.Focusable := False;
-      if __ActivePanelInternal is StackPanel(var sp) then
-        if sp.Orientation = Orientation.Vertical then
-          element.Margin := new Thickness(0,0,0,GlobalHMargin);
-        //else element.Margin := new Thickness(0,0,GlobalHMargin,0);
-      if x<>-1 then
-      begin
-        element.SetLeft(x);
-        element.SetTop(y);
-      end;
-      if width>0 then
-        element.Width := width;
-      __ActivePanelInternal.Children.Add(element);
-      if __ActivePanelInternal.Tag is PanelWPF(var pwpf) then
-        PanelWPF.SetFSzElement(element,pwpf.fsize);
-    end;
-
-    procedure SetWP(w: real) := element.Width := w;
-    procedure SetHP(h: real) := element.Height := h;
-    procedure SetMP(m: real) := element.Margin := new Thickness(0,0,0,m);
-    procedure SetTTP(s: string) := element.Tooltip := s;
-    procedure SetEP(enabled: boolean) := element.IsEnabled := enabled;
-  public
-    /// Ширина элемента управления
-    property Width: real read InvokeReal(()->element.Width) write Invoke(SetWP, value);
-    /// Высота элемента управления
-    property Height: real read InvokeReal(()->element.Height) write Invoke(SetHP, value); virtual;
-    /// Нижний отступ элемента управления
-    property Margin: real read InvokeReal(()->element.Margin.Bottom) write Invoke(SetMP, value);
-    /// Активирован ли элемент управления
-    property Enabled: boolean read InvokeBoolean(()->element.IsEnabled) write Invoke(SetEP, value);
-    /// Всплывающая подсказка
-    property Tooltip: string read Invokestring(()->element.ToolTip as string) write Invoke(SetTTP, value);
-  end;
-  
   CommonControlWPF = class(CommonElementWPF)
   private
     property Control: GControl read element as GControl;
@@ -197,7 +193,7 @@ type
     /// Имя шрифта
     property FontName: string write Invoke(SetFontNameP, value); virtual;
   end;
-
+  
   ///!#
   ClickableControlWPF = class(CommonControlWPF)
   protected
@@ -238,6 +234,41 @@ type
   public 
     constructor (Orient: Orientation; width: real := 0; height: real := 0) := Invoke(CreateP,Orient,width,height);
     property Color: GColor read Invoke&<GColor>(GetColorP) write Invoke(SetColorP, value);
+  end;
+
+  /// Элемент управления Grid
+  GridWPF = class(CommonElementWPF)
+  private
+    property gr: UniformGrid read element as UniformGrid;
+    procedure CreatePP(rows,columns: integer); // только для добавления как главной панели
+    begin
+      element := new UniformGrid();
+      gr.Rows := rows;
+      gr.Columns := columns;
+      element.Focusable := False;
+      MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
+      MainDockPanel.children.Add(gr);
+    end;
+    procedure CreateP(rows,columns,InternalMargin: integer);
+    begin
+      element := new UniformGrid();
+      element.Focusable := False;
+      gr.Rows := rows;
+      gr.Columns := columns;
+      __ActivePanelInternal.Children.Add(gr);
+      _ActivePanel := gr;
+      _ActivePanel.Tag := Self;
+      Self.InternalMargin := InternalMargin;
+    end;
+    constructor (i: boolean; rows,columns: integer) := Invoke(CreatePP,rows,columns); // фиктивный первый параметр
+  public 
+    constructor (rows: integer := 1; columns: integer := 1; InternalMargin: integer := 5) 
+      := Invoke(CreateP,rows,columns,InternalMargin);
+    property Rows: integer read InvokeInteger(()->gr.Rows) 
+      write Invoke(procedure->if value>0 then gr.Rows := value);
+    property Columns: integer read InvokeInteger(()->gr.Columns) 
+      write Invoke(procedure->if value>0 then gr.Columns := value);
+    auto property InternalMargin: real := 5;  
   end;
 
   /// Элемент управления "Изображение"
@@ -1086,6 +1117,7 @@ type
     static function AsCanvas: CanvasWPF := new CanvasWPF(0);
     static function AsListView: ListViewWPF := new ListViewWPF(0);
     static function AsTextBox: TextBoxNoTitleWPF := new TextBoxNoTitleWPF(0);
+    static function AsGrid(rows: integer := 1; columns: integer := 1): GridWPF := new GridWPF(true,rows,columns);
   end;
   
   ///!#
@@ -1174,6 +1206,8 @@ function TextBox(text: string := ''): TextBoxWPF;
 /// Элемент управления "Текстовое поле с заголовком" с заданными координатами
 function TextBox(x, y: real; text: string := ''; width: real := 0): TextBoxWPF;
 
+/// Элемент управления "Целое поле" с диапазоном 0..10
+function IntegerBox(title: string): IntegerBoxWPF;
 /// Элемент управления "Целое поле" с заданным диапазоном значений
 function IntegerBox(title: string; min,max: integer): IntegerBoxWPF;
 /// Элемент управления "Целое поле" с заданными координатами
@@ -1221,9 +1255,13 @@ function OpenFileDialog(initDirectory: string := ''; filter: string := ''): Open
 function SaveFileDialog(initDirectory: string := ''; filter: string := ''): SaveFileDialogWPF;
 
 /// Элемент управления "Левая панель"
-function LeftPanel(width: real := 150; c: Color := PanelsColor; InternalMargin: real := 10): PanelWPF;
+function LeftPanel(width: real; c: Color; InternalMargin: real := 10): PanelWPF;
+/// Элемент управления "Левая панель"
+function LeftPanel(width: real := 150): PanelWPF;
 /// Элемент управления "Правая панель"
-function RightPanel(width: real := 150; c: Color := PanelsColor; InternalMargin: real := 10): PanelWPF;
+function RightPanel(width: real; c: Color; InternalMargin: real := 10): PanelWPF;
+/// Элемент управления "Правая панель"
+function RightPanel(width: real := 150): PanelWPF;
 
 /// Элемент управления "Строка статуса"
 function StatusBar(height: real := 24; itemWidth: real := 0): StatusBarWPF;
@@ -1232,9 +1270,13 @@ function StatusBar(height: real := 24; itemWidth: real := 0): StatusBarWPF;
 procedure EmptyBlock(sz: integer := 16);
 
 /// Установка активной панели, на которую размещаются элементы управления
-procedure SetActivePanel(p: PanelWPF);
+procedure SetActivePanel(p: CommonElementWPF);
 
+/// Толщина границ элемента
+function Margins(l,t,r,b: real): (real,real,real,real);
 
+/// Толщина границ элемента
+function Margins(all: real): (real,real,real,real);
 
 /// Графическое окно
 //function Window: WindowType;
@@ -1275,6 +1317,7 @@ function RadioButton(x, y: real; text: string; width: real): RadioButtonWPF := R
 function TextBox(text: string): TextBoxWPF := TextBoxWPF.Create(text);
 function TextBox(x, y: real; text: string; width: real): TextBoxWPF := TextBoxWPF.Create(x,y,text,width);
 
+function IntegerBox(title: string): IntegerBoxWPF := IntegerBoxWPF.Create(title,0,10);
 function IntegerBox(title: string; min,max: integer): IntegerBoxWPF := IntegerBoxWPF.Create(title,min,max);
 function IntegerBox(x, y: real; title: string; min,max: integer; width: real) := IntegerBoxWPF.Create(x,y,title,min,max,width);
 
@@ -1323,7 +1366,11 @@ function OpenFileDialog(initDirectory: string; filter: string) := new OpenFileDi
 function SaveFileDialog(initDirectory: string; filter: string) := new SaveFileDialogWPF(initDirectory,filter);
 
 function LeftPanel(width: real; c: Color; internalMargin: real) := new LeftPanelWPF(width,c,internalMargin);
+function LeftPanel(width: real): PanelWPF := new LeftPanelWPF(width,PanelsColor,10);
+
 function RightPanel(width: real; c: Color; internalMargin: real) := new RightPanelWPF(width,c,internalMargin);
+function RightPanel(width: real): PanelWPF := new RightPanelWPF(width,PanelsColor,10);
+
 
 function StatusBar(height: real; itemWidth: real): StatusBarWPF := new StatusBarWPF(height,itemWidth);
 
@@ -1378,9 +1425,10 @@ begin
   end);
 end;
 
-procedure SetActivePanel(p: PanelWPF);
+procedure SetActivePanel(p: CommonElementWPF);
 begin
-  __SetActivePanelInternal(p.p)
+  if p.element is GPanel then
+    __SetActivePanelInternal(p.element as GPanel)
 end;
 
 procedure SetActivePanelInit;
@@ -1395,6 +1443,33 @@ begin
     Invoke(SetActivePanelInit);
   Result := _ActivePanel;
 end;
+
+function Margins(l,t,r,b: real): (real,real,real,real) := (l,t,r,b);
+
+function Margins(all: real): (real,real,real,real) := (all,all,all,all);
+
+procedure CommonElementWPF.Init0(el: FrameworkElement; width: real; x: real; y: real);
+begin
+  element := el;
+  element.Focusable := False;
+  if __ActivePanelInternal is StackPanel(var sp) then
+    if sp.Orientation = Orientation.Vertical then
+      element.Margin := new Thickness(0,0,0,GlobalHMargin);
+    //else element.Margin := new Thickness(0,0,GlobalHMargin,0);
+  if x<>-1 then
+  begin
+    element.SetLeft(x);
+    element.SetTop(y);
+  end;
+  if width>0 then
+    element.Width := width;
+  __ActivePanelInternal.Children.Add(element);
+  if __ActivePanelInternal.Tag is PanelWPF(var pwpf) then
+    PanelWPF.SetFSzElement(element,pwpf.fsize);
+  if __ActivePanelInternal.Tag is GridWPF(var grwpf) then
+    element.Margin := new Thickness(grwpf.InternalMargin);
+end;
+
 
 var
   ///--

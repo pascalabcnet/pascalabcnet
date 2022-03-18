@@ -159,7 +159,7 @@ namespace PascalABCCompiler
 
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 Remove(so.Ident);
             }

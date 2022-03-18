@@ -47,3 +47,7 @@ OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX=Операции нельзя вы
 MEMBER_{0}_OF_TYPE_{1}_CANNOT_BE_FOUND_IN_THE_CONTEEXT_OF_FUNCTION_WITH_YIELD=Имя {0} не удаётся найти в типе {1} в контексте функции с оператором yield
 UNCOMPARABLE_TYPES_IN_ARRAY_CONST=Несовместимые типы при задании массива
 IMPOSSIBLE_TO_CONVERT_ARRAY_CONST_TO_{0}=Невозможно преобразовать инициализатор массива к типу {0}
+SLICES_MULTI_DIMENSIONAL_ARRAY_EXPECTED=Многмерные срезы доступны только для многомерных массивов
+NUMBER_OF_SLICES_IN_MULTIDIMENSIONAL_ARRAY_SHOULD_BE_EQUAL_TO_ARRAY_RANK=Количество срезов или индексов многомерного массива должно совпадать с количеством размерностей этого массива
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_DELEGATES_AS_PARAMETERS=Функции, помеченные атрибутом [Cache], не должны содержать параметры-делегаты
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_POINTERS_AS_PARAMETERS=Функции, помеченные атрибутом [Cache], не должны содержать параметры-указатели

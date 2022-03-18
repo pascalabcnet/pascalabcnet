@@ -1292,6 +1292,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_foreach_stmt_formatting);
 		}
+
+		public virtual void visit(property_ident _property_ident)
+		{
+			DefaultVisit(_property_ident);
+		}
+
+		public virtual void visit(expression_with_let _expression_with_let)
+		{
+			DefaultVisit(_expression_with_let);
+		}
 	}
 
 

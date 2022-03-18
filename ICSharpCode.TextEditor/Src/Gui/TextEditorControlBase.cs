@@ -650,6 +650,8 @@ namespace ICSharpCode.TextEditor
 			if (autodetectEncoding) {
 				Encoding encoding = this.Encoding;
 				Document.TextContent = Util.FileReader.ReadFileContent(stream, ref encoding);
+				if (Document.TextContent.IndexOf('\r') == -1 && Document.TextContent.IndexOf('\n') != -1)
+					Document.TextContent = Document.TextContent.Replace("\n", "\r\n");
 				this.Encoding = encoding;
 			} else {
 				using (StreamReader reader = new StreamReader(fileName, this.Encoding)) {

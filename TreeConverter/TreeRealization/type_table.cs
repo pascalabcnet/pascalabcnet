@@ -132,6 +132,19 @@ namespace PascalABCCompiler.TreeRealization
     /// </summary>
 	public static class type_table
     {
+        private static type_intersection_node change_to_opposite(type_intersection_node tin2)
+        {
+            type_intersection_node new_tin = null;
+            if (tin2.type_compare == type_compare.greater_type)
+                new_tin = new type_intersection_node(type_compare.less_type);
+            else if (tin2.type_compare == type_compare.less_type)
+                new_tin = new type_intersection_node(type_compare.greater_type);
+            else
+                new_tin = new type_intersection_node(type_compare.non_comparable_type);
+            new_tin.another_to_this = tin2.another_to_this;
+            new_tin.this_to_another = tin2.this_to_another;
+            return new_tin;
+        }
         private static type_intersection_node[] get_type_intersections_in_specific_order(type_node left, type_node right)
         {
             type_intersection_node tin1 = left.get_type_intersection(right);
@@ -148,7 +161,8 @@ namespace PascalABCCompiler.TreeRealization
                     if (tin2.another_to_this != null && tin2.another_to_this.is_explicit)
                         return new type_intersection_node[0];
                     type_intersection_node[] tinarr = new type_intersection_node[1];
-                    type_intersection_node new_tin = null;
+
+                    /*type_intersection_node new_tin = null;
                     if (tin2.type_compare == type_compare.greater_type)
                         new_tin = new type_intersection_node(type_compare.less_type);
                     else if (tin2.type_compare == type_compare.less_type)
@@ -156,8 +170,9 @@ namespace PascalABCCompiler.TreeRealization
                     else
                         new_tin = new type_intersection_node(type_compare.non_comparable_type);
                     new_tin.another_to_this = tin2.another_to_this;
-                    new_tin.this_to_another = tin2.this_to_another;
-                    tinarr[0] = new_tin;
+                    new_tin.this_to_another = tin2.this_to_another;*/
+
+                    tinarr[0] = change_to_opposite(tin2);
                     return tinarr;
                 }
             }
@@ -278,7 +293,12 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     if (tn.is_generic_parameter)
                     {
-                        return (tn.is_class || tn.base_type != SystemLibrary.SystemLibrary.object_type && tn.base_type.is_class);
+                        if (tn.is_class)
+                            return true;
+                        if (tn.base_type.is_value || tn.is_value_type)
+                            return false;
+                        return true;
+                        //return (tn.is_class || tn.base_type != SystemLibrary.SystemLibrary.object_type && tn.base_type.is_class);
                     }
                     else if (tn is ref_type_node)
                     {
@@ -448,7 +468,16 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 else
                 {
+                    if (tc == type_compare.less_type) // нет - тогда не работает set of integer -> set of 1..4
+                    {
+                        var bti = PascalABCCompiler.TreeConverter.convertion_data_and_alghoritms.is_value_int_type(base_class.element_type);
+                        var dtr = PascalABCCompiler.TreeConverter.convertion_data_and_alghoritms.is_value_real_type(derived_class.element_type);
+                        if (bti && dtr)
+                            return false;
+                    }
+
                     type_intersection_node tin = base_class.element_type.get_type_intersection(derived_class.element_type);
+                    // вот тут ошибка. Сравниваются элементы. По идее, надо всегда выдавать false кроме случаев если оба - integer и оба - real
                     if (tin == null || tin.this_to_another == null)
                     {
                         //proverka na diapasony
@@ -498,7 +527,7 @@ namespace PascalABCCompiler.TreeRealization
                             }
                         }
                         else
-                     if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                        if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
                         {
                             if (base_class.element_type == derived_class.element_type.base_type) return true;
                             tc = get_table_type_compare(base_class.element_type, derived_class.element_type.base_type);
@@ -537,7 +566,26 @@ namespace PascalABCCompiler.TreeRealization
                 type_node tnode = derived_class;
                 while (!implements && tnode != null && tnode.ImplementingInterfaces != null)
                 {
-                    implements = tnode.ImplementingInterfaces.Contains(base_class);
+                    //implements = tnode.ImplementingInterfaces.Contains(base_class);
+
+                    implements = false;
+                    foreach (var interf in tnode.ImplementingInterfaces)
+                    {
+                        if (interf == base_class)
+                        {
+                            implements = true;
+                            break;
+                        }
+                        else if (interf is compiled_type_node ictn && base_class is compiled_type_node bctn)
+                        {
+                            if (ictn.compiled_type.AssemblyQualifiedName != null &&  ictn.compiled_type.AssemblyQualifiedName == bctn.compiled_type.AssemblyQualifiedName)
+                            {
+                                implements = true;
+                                break;
+                            }
+                        }
+                    }
+
                     tnode = tnode.base_type;
                 }
                 return implements;
@@ -557,8 +605,13 @@ namespace PascalABCCompiler.TreeRealization
                 return !tin.this_to_another.is_explicit;
             }
 
-            while ((tn != null) && (tn != base_class))
+            while (tn != null)
             {
+                if (tn == base_class) // точное совпадение
+                    break;
+                if ((tn is compiled_type_node ctn1) && (base_class is compiled_type_node ctn2) // в случае если этот тип определен в одной dll, а используется в другой
+                    && ctn1.compiled_type.AssemblyQualifiedName == ctn2.compiled_type.AssemblyQualifiedName)
+                    break;
                 tn = tn.base_type;
             }
             if (tn == null)
@@ -573,7 +626,12 @@ namespace PascalABCCompiler.TreeRealization
             type_intersection_node[] tins = get_type_intersections_in_specific_order(left, right);
             if (only_implicit)
             {
-                tins = tins.Where(t => (t.this_to_another != null && t.this_to_another.is_explicit == false) || (t.another_to_this != null && t.another_to_this.is_explicit == false)).ToArray();
+                var tinsv = tins.Where(t => (t.this_to_another != null && t.this_to_another.is_explicit == false) || (t.another_to_this != null && t.another_to_this.is_explicit == false)).ToArray();
+                if (tins.Length==2 && tinsv.Length==1 && tins[1]==tinsv[0])
+                {
+                    tinsv[0] = change_to_opposite(tinsv[0]);
+                }
+                tins = tinsv;
             }
             if (tins.Length == 0)
             {
@@ -648,7 +706,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return ret;
             }
-            if (is_derived(left, right))
+            if (is_derived(left, right)) // left-base, right-derived, Person > Student
             {
                 return type_compare.greater_type;
             }
@@ -846,6 +904,10 @@ namespace PascalABCCompiler.TreeRealization
             if (left.type_special_kind == SemanticTree.type_special_kind.set_type && right == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info
                 || right.type_special_kind == SemanticTree.type_special_kind.set_type && left == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info)
                 return true;
+            if (left is ref_type_node && right is ref_type_node)
+                return is_type_or_original_generics_equal((left as ref_type_node).pointed_type, (right as ref_type_node).pointed_type);
+            if (left.type_special_kind == SemanticTree.type_special_kind.array_kind && right.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                return is_type_or_original_generics_equal(left.element_type, right.element_type);
             return left == right;
         }
 
@@ -1000,6 +1062,10 @@ namespace PascalABCCompiler.TreeRealization
                 }
             }
 
+            if (from.is_generic_type_instance && to.is_generic_type_instance && from.original_generic == to.original_generic && from.name == to.name
+                && from.original_generic is common_type_node && to.original_generic is common_type_node && (from.original_generic as common_type_node).comprehensive_namespace == (to.original_generic as common_type_node).comprehensive_namespace
+                && (to.original_generic as common_type_node).IsPartial && (from.original_generic as common_type_node).IsPartial)
+                add_conversion(ret, TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(from, to, true), from, to);
             return ret;
         }
     }

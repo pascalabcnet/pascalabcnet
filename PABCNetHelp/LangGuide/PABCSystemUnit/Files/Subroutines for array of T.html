@@ -5,6 +5,7 @@
 <param name="Keyword" value="Length">
 <param name="Keyword" value="Low">
 <param name="Keyword" value="MatrEqual">
+<param name="Keyword" value="NextPermutation">
 <param name="Keyword" value="Reverse">
 <param name="Keyword" value="SetLength">
 <param name="Keyword" value="Shuffle">
@@ -26,6 +27,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 0</td></tr>
 <tr><td><code><b>function</b> MatrEqual&lt;T&gt;(a, b: <b>array</b> [,]  <b>of</b> T): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сравнивает матрицы на равенство</td></tr>
+<tr><td><code><b>function</b> NextPermutation(a: <b>array</b>  <b>of</b> integer): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующую перестановку в массиве</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в динамическом массиве на противоположный</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: <b>array</b>  <b>of</b> T; index, count: integer);</code>
@@ -52,15 +55,23 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; less: (T,T)-&gt;boolean);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T,T1&gt;(<b>var</b> a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по ключу</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;; cmp: (T,T)-&gt;integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;; less: (T,T)-&gt;boolean);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по критерию сортировки, задаваемому функцией сравнения less</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T,T1&gt;(<b>var</b> l: List&lt;T&gt;; keySelector: T-&gt;T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию</td></tr>
+<tr><td><code><b>procedure</b> SortDescending&lt;T,T1&gt;(<b>var</b> a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(l: List&lt;T&gt;);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по убыванию</td></tr>
+<tr><td><code><b>procedure</b> SortDescending&lt;T,T1&gt;(<b>var</b> l: List&lt;T&gt;; keySelector: T-&gt;T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по убыванию по ключу</td></tr>
 </table>
 </body></HTML>

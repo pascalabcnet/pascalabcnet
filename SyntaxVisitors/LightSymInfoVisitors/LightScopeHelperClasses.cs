@@ -27,7 +27,7 @@ namespace PascalABCCompiler.SyntaxTree
         public override string ToString()
         {
             string typepart = "";
-            if (SK == SymKind.var || SK == SymKind.field || SK == SymKind.field || SK == SymKind.param)
+            if (SK == SymKind.var || SK == SymKind.field || SK == SymKind.param)
                 typepart = ": " + (Td == null ? "NOTYPE" : Td.ToString());
             typepart = typepart.Replace("PascalABCCompiler.SyntaxTree.", "");
             var attrstr = Attr != 0 ? "[" + Attr.ToString() + "]" : "";

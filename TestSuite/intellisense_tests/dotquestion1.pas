@@ -1,4 +1,5 @@
-﻿type
+﻿//!semantic
+type
   TClass = class
     fX: byte;
     
@@ -9,7 +10,7 @@
 
 begin
   var instance := new TClass();
-  var x1{@var x1: byte;@} := instance?.fX;
-  var x3{@var x3: integer;@} := instance?.F;
+  var x1{@var x1: Nullable<byte>;@} := instance?.fX;
+  var x3{@var x3: Nullable<integer>;@} := instance?.F;
   writeln(instance?.F{@function TClass.F(): integer;@});
 end.

@@ -1,4 +1,4 @@
-﻿uses WPFObjects, GraphWPF;
+﻿uses WPFObjects;
 
 const
   /// отступ по оси x
@@ -7,7 +7,7 @@ const
   zy = 50;
 
 begin
-  //Window.IsFixedSize := True;
+  Window.IsFixedSize := True;
   Window.Title := 'Секундомер';
   var r := new RoundRectWPF(zx, zy, Window.Width - 2 * zx, Window.Height - 2 * zy, 100, Colors.LightGreen, 5, Colors.Green);
   r.FontSize := 200;

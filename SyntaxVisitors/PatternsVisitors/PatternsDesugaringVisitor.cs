@@ -327,7 +327,10 @@ namespace SyntaxVisitors.PatternsVisitors
                 foreach (var x in l)
                     x.Parent = stat.Parent;
                 var stl = stat.Parent as statement_list;
-                stl.ReplaceInList(stat, l);
+                if (stl != null)
+                    stl.ReplaceInList(stat, l);
+                else if (stat is var_statement)
+                    throw new SyntaxVisitorError("EMBEDDED_STATEMENT_CANNOT_BE_A_DECLARATION", stat.source_context);
             }
             //}
 

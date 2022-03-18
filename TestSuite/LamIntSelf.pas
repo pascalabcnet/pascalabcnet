@@ -1,4 +1,5 @@
-﻿// #2173
+﻿//winonly
+// #2173
 type
   I1 = interface
     function f1(b: byte): ()->byte;

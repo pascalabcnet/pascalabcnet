@@ -59,7 +59,7 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(foreach_stmt fe)
         {
-            if (fe.in_what is diapason_expr_new diap)
+            if (fe.in_what is diapason_expr_new diap && fe.index == null)
             {
                 var from = diap.left;
                 var typ = fe.type_name;

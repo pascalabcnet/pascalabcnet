@@ -175,8 +175,10 @@ begin
 end;
 
 begin
+  HideObjects;
   InitScene;
   StartupPosition;
+  ShowObjects;
   //Turns('1. c2-c4  g7-g6  2. e2-e4  Cf8-g7  3. d2-d4  d7-d6  4. Kb1-c3  Kg8-f6 5. Kg1-f3  0-0  6. Cf1-e2  e7-e5  7. Cc1-e3  Kf6-g4  8. Ce3-g5  f7-f6 9. Cg5-h4  g6-g5  10. Ch4-g3  Kg4-h6');
   Turns('1. e2-e4 e7-e5 2. f1-c4 g8-f6 3. d2-d4 e5-d4 4. g1-f3 d7-d5 5. e4-d5 f8-b4 6. c2-c3 d8-e7');
 end.

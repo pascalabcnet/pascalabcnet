@@ -84,6 +84,8 @@ namespace PascalABCCompiler.TreeRealization
         	get { return false; }
         }
         
+        public virtual ClassAbstractReason AbstractReason { get => null; }
+
         public virtual bool is_standard_type
         {
         	get { return false; }
@@ -1203,6 +1205,48 @@ namespace PascalABCCompiler.TreeRealization
 
     }
 
+    public abstract class ClassAbstractReason
+    {
+        public abstract string Explanation { get; }
+        public abstract string ObjName { get; }
+    }
+
+    public sealed class CARMethodNotImplemented : ClassAbstractReason
+    {
+        private function_node f;
+
+        public CARMethodNotImplemented(function_node f) => this.f = f;
+
+        public override string Explanation { get => "ABSTRACT_CLASS_CANNOT_BE_SEALED_BECAUSE_METHOD_NOT_IMPLEMENTED"; }
+
+        public override string ObjName { get => f.name; }
+
+    }
+
+    public sealed class CARPropertieNotImplemented : ClassAbstractReason
+    {
+        private common_property_node p;
+
+        public CARPropertieNotImplemented(common_property_node p) => this.p = p;
+
+        public override string Explanation { get => "ABSTRACT_CLASS_CANNOT_BE_SEALED_BECAUSE_PROPERTIE_NOT_IMPLEMENTED"; }
+
+        public override string ObjName { get => p.name; }
+
+    }
+
+    public sealed class CARAbstractPropertie : ClassAbstractReason
+    {
+        private SyntaxTree.simple_property p;
+
+        public CARAbstractPropertie(SyntaxTree.simple_property p) => this.p = p;
+
+        public override string Explanation { get => "ABSTRACT_CLASS_CANNOT_BE_SEALED_BECAUSE_ABSTRACT_PROPERTIE"; }
+
+        public override string ObjName { get => p.property_name.name; }
+
+    }
+
     //\ssyy
 
     /// <summary>
@@ -1270,6 +1314,7 @@ namespace PascalABCCompiler.TreeRealization
 		private SymbolTable.ClassScope _scope;
 
         public bool has_default_constructor = false;
+        public bool has_explicit_default_constructor = false;
         public bool has_user_defined_constructor = false;
 
         private bool _has_static_constructor = false;
@@ -1524,6 +1569,7 @@ namespace PascalABCCompiler.TreeRealization
 		}
         bool _sealed = false;
         public bool _is_abstract = false;
+        ClassAbstractReason abstract_reason;
         bool _is_partial = false;
         bool _is_static = false;
 
@@ -1532,9 +1578,10 @@ namespace PascalABCCompiler.TreeRealization
             _sealed=val;
         }
         
-        public void SetIsAbstract(bool val)
+        public void SetIsAbstract(bool val, ClassAbstractReason reason)
         {
         	_is_abstract = val;
+            this.abstract_reason = reason;
         }
 
         public void SetIsStatic(bool val)
@@ -1582,6 +1629,8 @@ namespace PascalABCCompiler.TreeRealization
         	}
         }
         
+        public override ClassAbstractReason AbstractReason { get => abstract_reason; }
+
         public int rank
         {
         	get
@@ -1673,6 +1722,12 @@ namespace PascalABCCompiler.TreeRealization
                         return tn.default_property_node;
                     tn = tn.base_type;
                 }
+                if (this.ImplementingInterfaces != null)
+                    foreach (type_node intf in this.ImplementingInterfaces)
+                    {
+                        if (intf.default_property_node != null)
+                            return intf.default_property_node;
+                    }
                 return null;
 			}
 		}
@@ -2040,6 +2095,8 @@ namespace PascalABCCompiler.TreeRealization
             {
                 // Если эту строчку раскомментировать, ложатся тесты inheritanceFromListInt.pas inheritanceFromListStudent.pas where6.pas 
                 //sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
+                if (!this.is_generic_type_definition)
+                    return (base_type as compiled_generic_instance_type_node).ConvertSymbolInfo(sil);
                 return sil;
             }
 
@@ -2321,7 +2378,25 @@ namespace PascalABCCompiler.TreeRealization
                         {
                             if (this.instance_params != null && this.instance_params.Count > 0)
                             {
-                                fn = fn.get_instance(this.instance_params, true, null);
+                                if (fn.parameters[0].type.is_generic_parameter)
+                                    fn = fn.get_instance(new List<type_node>() { this }, false, null);
+                                else
+                                {
+                                    var expr_list = new expressions_list();
+                                    expr_list.AddElement(new default_operator_node(ctn, fn.location));
+                                    try
+                                    {
+                                        fn = generic_convertions.DeduceFunction(fn, expr_list, true, compilation_context.instance, fn.location);
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                    if (fn != null && !fn.is_generic_function_instance)
+                                        fn = null;
+                                }
+                                if (fn == null)
+                                    continue;
                             }
                             else if (ctn.instance_params != null && ctn.instance_params.Count > 0)
                             {
@@ -2331,7 +2406,20 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 if (ctn.IsPointer)
                                     continue;
-                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), true, null);
+                                var expr_list = new expressions_list();
+                                expr_list.AddElement(new default_operator_node(ctn, fn.location));
+                                try
+                                {
+                                    fn = generic_convertions.DeduceFunction(fn, expr_list, true, compilation_context.instance, fn.location);
+                                }
+                                catch
+                                {
+
+                                }
+                                if (fn != null && !fn.is_generic_function_instance)
+                                    fn = null;
+                                if (fn == null)
+                                    continue;
                             }
                         }
                         return fn;
@@ -2362,15 +2450,47 @@ namespace PascalABCCompiler.TreeRealization
                             }
                             else if (ctn.instance_params != null && ctn.instance_params.Count > 0)
                             {
-                                fn = fn.get_instance(ctn.instance_params, true, null);
+                                if (fn.parameters[0].type.is_generic_parameter)
+                                    fn = fn.get_instance(new List<type_node>() { ctn }, false, null);
+                                else
+                                {
+                                    var expr_list = new expressions_list();
+                                    expr_list.AddElement(new default_operator_node(ctn, fn.location));
+                                    try
+                                    {
+                                        fn = generic_convertions.DeduceFunction(fn, expr_list, true, compilation_context.instance, fn.location);
+                                    }
+                                    catch
+                                    {
+                                        
+                                    }
+                                    if (fn != null && !fn.is_generic_function_instance)
+                                        fn = null;
+                                }
+                                    
+                                if (fn == null)
+                                    continue;
                             }
                             else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
                             {
-                                if (ctn.IsPointer)
+                                var expr_list = new expressions_list();
+                                expr_list.AddElement(new default_operator_node(ctn, fn.location));
+                                try
+                                {
+                                    fn = generic_convertions.DeduceFunction(fn, expr_list, true, compilation_context.instance, fn.location);
+                                }
+                                catch
+                                {
+
+                                }
+                                if (fn != null && !fn.is_generic_function_instance)
+                                    fn = null;
+                                if (fn == null)
                                     continue;
-                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), true, null);
                             }
                         }
+                        else if (fn.parameters[0].type.is_generic_parameter && type_table.is_derived(ctn, this))
+                            continue;
                         return fn;
                     }
         		}
@@ -2839,7 +2959,9 @@ namespace PascalABCCompiler.TreeRealization
 				if (!_compiled_type.IsGenericType)
 				return _compiled_type.FullName;
 				StringBuilder sb = new StringBuilder();
-				sb.Append(_compiled_type.GetGenericTypeDefinition().Namespace+"."+_compiled_type.GetGenericTypeDefinition().Name.Substring(0,_compiled_type.GetGenericTypeDefinition().Name.IndexOf('`')));
+                Type t = _compiled_type.GetGenericTypeDefinition();
+                int ind = t.Name.IndexOf('`');
+                sb.Append(t.Namespace + "." + t.Name.Substring(0, ind != -1 ? ind : t.Name.Length));
 				if (!_compiled_type.IsGenericTypeDefinition)
 				{
 					sb.Append("{");
@@ -3456,7 +3578,7 @@ namespace PascalABCCompiler.TreeRealization
                 List<SymbolInfo> sil2 = find_in_additional_names(name);
                 List<SymbolInfo> sil3 = compiled_find(name);
                 bool clone = false;
-                if (!no_search_in_extension_methods || this._compiled_type.IsGenericType)
+                if (!no_search_in_extension_methods || this._compiled_type.IsGenericType || this.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 {
                     
                     if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
@@ -3664,19 +3786,16 @@ namespace PascalABCCompiler.TreeRealization
         {
             // То есть получается, что конвертировать откомпилированный тип в неоткомпилированный нельзя несмотря на то что есть extension оператор
             var cctn = ctn as compiled_type_node;
-            if (cctn == null)
-            {
-                return null;
-            }
+            
             function_node fn = null;
-            if (!_implicit_convertions_to.TryGetValue(cctn, out fn))
+            if (!_implicit_convertions_to.TryGetValue(ctn, out fn))
             {
-                fn = NetHelper.NetHelper.get_implicit_conversion(this, this, cctn, scope);
+                fn = NetHelper.NetHelper.get_implicit_conversion(this, this, ctn, scope);
                 if (fn is compiled_function_node)
-                    _implicit_convertions_to.Add(cctn, fn);
+                    _implicit_convertions_to.Add(ctn, fn);
                 else if (fn == null && this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
                 {
-                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, this.base_type as compiled_type_node, cctn, this.base_type.Scope as NetHelper.NetTypeScope);
+                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, this.base_type as compiled_type_node, ctn, this.base_type.Scope as NetHelper.NetTypeScope);
                     if (fn != null)
                     {
                         List<type_node> instance_params = new List<type_node>();
@@ -3685,7 +3804,7 @@ namespace PascalABCCompiler.TreeRealization
                         return fn;
                     }
                 }
-                else if (fn == null && (this.is_generic_type_instance || cctn.is_generic_type_instance))
+                else if (fn == null && cctn != null && (this.is_generic_type_instance || cctn.is_generic_type_instance))
                 {
                     List<type_node> instance_params1 = this.instance_params;
                     List<type_node> instance_params2 = cctn.instance_params;

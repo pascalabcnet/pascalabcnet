@@ -19,7 +19,7 @@ procedure ToPoint(x,y: integer);
 procedure OnVector(a,b: integer);
 /// Вызывать задание с именем name
 procedure Task(name: string);
-/// Создать пустое поле размера 9 на 11 клеток
+/// Создать пустое поле размера 9 на 7 клеток
 procedure StandardField;
 /// Создать пустое поле размера n на m клеток
 procedure Field(n,m: integer);

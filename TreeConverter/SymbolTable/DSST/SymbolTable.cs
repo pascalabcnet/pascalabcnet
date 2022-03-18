@@ -867,9 +867,9 @@ namespace SymbolTable
         private Scope FindClassScope(Scope scope)
         {
             while (scope != null && !(scope is ClassScope))
-                if(scope is ClassMethodScope)
+                /*if(scope is ClassMethodScope)
                     scope = scope.TopScope;
-                else
+                else*/ // PVS 01/2022
                     scope = scope.TopScope;
             return scope;
         }

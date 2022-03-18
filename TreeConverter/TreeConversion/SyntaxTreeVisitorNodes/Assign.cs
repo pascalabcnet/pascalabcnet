@@ -135,7 +135,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 #region Вывод параметров лямбда-выражения
 
-                LambdaHelper.InferTypesFromVarStmt(to.type, fromAsLambda, this); //lroman//
+                LambdaHelper.InferTypesFromVarStmt(to.type, fromAsLambda, this, _assign.operator_type); //lroman//
 
                 #endregion
 
@@ -174,7 +174,7 @@ namespace PascalABCCompiler.TreeConverter
             if (context.is_in_cycle() && !SemanticRules.AllowChangeLoopVariable)
             {
                 var_definition_node toAsVariable = GetLocalVariableFromAdressExpressionIfPossible(to);
-                if (toAsVariable != null && context.is_loop_variable(toAsVariable))
+                if (toAsVariable != null && context.is_loop_variable(toAsVariable) && _assign.source_context != null) // последнее - обрезает проверку для сгенерированного i += 1 в foreach ... index i
                     AddError(to.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
             }
             {
@@ -320,6 +320,8 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         check_property_params(spr, loc);
                         function_node set_func = spr.property.set_function;
+                        if (from.type is delegated_methods && !spr.property.property_type.IsDelegate)
+                            from = convert_if_typed_expression_to_function_call(from, true);
                         from = convertion_data_and_alghoritms.convert_type(from, spr.property.property_type);
                         spr.fact_parametres.AddElement(from);
                         base_function_call bfc = create_static_method_call(set_func, loc,
@@ -332,6 +334,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         non_static_property_reference nspr = (non_static_property_reference) to;
                         check_property_params(nspr, loc);
+                        if (from.type is delegated_methods && !nspr.property.property_type.IsDelegate)
+                            from = convert_if_typed_expression_to_function_call(from, true);
                         from = convertion_data_and_alghoritms.convert_type(from, nspr.property.property_type);
                         nspr.fact_parametres.AddElement(from);
 

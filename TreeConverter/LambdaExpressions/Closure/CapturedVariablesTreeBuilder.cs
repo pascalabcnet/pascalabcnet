@@ -649,7 +649,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 _visitor.convertion_data_and_alghoritms.check_convert_type_with_inheritance(vdn.type, elemType, _visitor.get_location(_foreach_stmt.identifier));
 
             var fn = new foreach_node(vdn, inWhat, null, _visitor.get_location(_foreach_stmt));
-            _visitor.context.cycle_stack.push(fn);
+            _visitor.context.enter_in_cycle(fn);
             _visitor.context.loop_var_stack.Push(vdn);
 
             ProcessNode(_foreach_stmt.in_what);
@@ -664,7 +664,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
             _visitor.context.loop_var_stack.Pop();
             _visitor.convertion_data_and_alghoritms.statement_list_stack.pop();
-            _visitor.context.cycle_stack.pop();
+            _visitor.context.leave_cycle();
 
             _currentTreeNode = _currentTreeNode.ParentNode;
         }
@@ -727,7 +727,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             {
                 fn.bool_cycle = true;
             }
-            _visitor.context.cycle_stack.push(fn);
+            _visitor.context.enter_in_cycle(fn);
             _visitor.context.loop_var_stack.Push(vdn);
 
             nodesToProcess.Add(_for_node.initial_value);
@@ -746,7 +746,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
             ProcessNode(_for_node.statements);
 
-            _visitor.context.cycle_stack.pop();
+            _visitor.context.leave_cycle();
             _visitor.context.loop_var_stack.Pop();
             _visitor.convertion_data_and_alghoritms.statement_list_stack.pop();
 
@@ -760,6 +760,23 @@ namespace TreeConverter.LambdaExpressions.Closure
                 var varDefsList = new List<statement>();
                 for (var i = 0; i < lambdaDefinition.formal_parameters.params_list.Count; i++)
                 {
+                    if (lambdaDefinition.formal_parameters.params_list[i].vars_type is lambda_inferred_type)
+                    {
+                        type_node tn = (type_node)((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type;
+                        common_type_node ctn = tn as common_type_node;
+                        if (ctn != null && ctn.comprehensive_namespace != null && ctn.comprehensive_namespace.cont_unit != _visitor.context.converted_namespace.cont_unit)
+                        {
+                            var si = _visitor.context.find(ctn.name);
+                            if (si == null)
+                            {
+                                si = _visitor.context.find(ctn.comprehensive_namespace.namespace_name);
+                                if (si == null)
+                                {
+                                    _visitor.AddError(_visitor.get_location(lambdaDefinition), "PARAMETER_{0}_HAS_TYPE_{1}_FROM_UNIT_{2}", lambdaDefinition.formal_parameters.params_list[i].idents.idents[0].name, ctn.name, ctn.comprehensive_namespace.namespace_name);
+                                }
+                            }
+                        }
+                    }
                     var varType = lambdaDefinition.formal_parameters.params_list[i].vars_type is lambda_inferred_type ?
                         LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type) :
                         //new semantic_type_node(((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type): // SSM 29/12/18 поменял - пробую - не получилось

@@ -1013,7 +1013,7 @@
     </SyntaxNode>
     <SyntaxNode Name="simple_property" BaseName="declaration">
       <Fields>
-        <SyntaxField Name="property_name" SyntaxType="ident" />
+        <SyntaxField Name="property_name" SyntaxType="property_ident" />
         <SyntaxField Name="property_type" SyntaxType="type_definition" />
         <SyntaxField Name="index_expression" SyntaxType="expression" />
         <SyntaxField Name="accessors" SyntaxType="property_accessors" />
@@ -1884,6 +1884,7 @@
         <SyntaxField Name="type_name" SyntaxType="type_definition" />
         <SyntaxField Name="in_what" SyntaxType="expression" />
         <SyntaxField Name="stmt" SyntaxType="statement" />
+        <SyntaxField Name="index" SyntaxType="ident" />
       </Fields>
       <Methods />
       <Tags>
@@ -2893,7 +2894,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="is_pattern_expr" BaseName="expression">
+    <SyntaxNode Name="is_pattern_expr" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="left" SyntaxType="expression" />
         <SyntaxField Name="right" SyntaxType="pattern_node" />
@@ -3306,6 +3307,28 @@
         <SyntaxField Name="il" SyntaxType="ident_list" />
         <SyntaxField Name="in_what" SyntaxType="expression" />
         <SyntaxField Name="stmt" SyntaxType="statement" />
+        <SyntaxField Name="index" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="property_ident" BaseName="ident">
+      <Fields>
+        <ExtendedField Name="ln" Type="List&lt;ident&gt;" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="expression_with_let" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="stat" SyntaxType="statement_list" />
+        <SyntaxField Name="expr" SyntaxType="expression" />
       </Fields>
       <Methods />
       <Tags>
@@ -3391,6 +3414,7 @@
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
       <HelpData Key=".listunitsections" Value="" />
+      <HelpData Key=".ln" Value="" />
       <HelpData Key=".mark" Value="" />
       <HelpData Key=".name" Value="" />
       <HelpData Key=".name_expr" Value="" />
@@ -3411,6 +3435,7 @@
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
       <HelpData Key=".simple_expr" Value="" />
       <HelpData Key=".specificator" Value="" />
+      <HelpData Key=".st" Value="" />
       <HelpData Key=".stat" Value="" />
       <HelpData Key=".statements" Value="" />
       <HelpData Key=".step" Value="" />
@@ -3816,6 +3841,7 @@
       <HelpData Key="exit_directive" Value="" />
       <HelpData Key="expr_collection_pattern_item" Value="" />
       <HelpData Key="expr_collection_pattern_item.item_expression" Value="" />
+      <HelpData Key="expr_with_let" Value="" />
       <HelpData Key="expression" Value="Выражение" />
       <HelpData Key="expression." Value="" />
       <HelpData Key="expression_as_statement" Value="" />
@@ -3833,6 +3859,9 @@
       <HelpData Key="expression_list.override string ToString()" Value="" />
       <HelpData Key="expression_list.void Add(expression ex)" Value="" />
       <HelpData Key="expression_list.void Add(expression ex, SourceContext sc)" Value="" />
+      <HelpData Key="expression_with_let" Value="" />
+      <HelpData Key="expression_with_let.expr" Value="" />
+      <HelpData Key="expression_with_let.stat" Value="" />
       <HelpData Key="external_directive" Value="expression может быть literal или ident" />
       <HelpData Key="external_directive.modulename" Value="" />
       <HelpData Key="external_directive.name" Value="" />
@@ -3861,11 +3890,13 @@
       <HelpData Key="foreach_stmt.ext" Value="" />
       <HelpData Key="foreach_stmt.identifier" Value="" />
       <HelpData Key="foreach_stmt.in_what" Value="" />
+      <HelpData Key="foreach_stmt.index" Value="" />
       <HelpData Key="foreach_stmt.stmt" Value="" />
       <HelpData Key="foreach_stmt.type_name" Value="" />
       <HelpData Key="foreach_stmt_formatting" Value="// для форматирования только" />
       <HelpData Key="foreach_stmt_formatting.il" Value="" />
       <HelpData Key="foreach_stmt_formatting.in_what" Value="" />
+      <HelpData Key="foreach_stmt_formatting.index" Value="" />
       <HelpData Key="foreach_stmt_formatting.stmt" Value="" />
       <HelpData Key="foreach_stmt_formatting.type_name" Value="" />
       <HelpData Key="formal_parameters" Value="" />
@@ -4336,11 +4367,15 @@
       <HelpData Key="program_tree.program_tree Add(compilation_unit _compilation_unit)" Value="" />
       <HelpData Key="program_tree.program_tree Add(compilation_unit _compilation_unit, SourceContext sc)" Value="" />
       <HelpData Key="program_tree.program_tree(compilation_unit _compilation_unit, SourceContext sc)" Value="" />
+      <HelpData Key="properpty_ident" Value="" />
+      <HelpData Key="properpty_ident.ln" Value="" />
       <HelpData Key="property_accessors" Value="" />
       <HelpData Key="property_accessors.property_accessors(ident read_accessor, ident write_accessor): this(new read_accessor_name(read_accessor), new write_accessor_name(write_accessor))" Value="" />
       <HelpData Key="property_accessors.read_accessor" Value="" />
       <HelpData Key="property_accessors.write_accessor" Value="" />
       <HelpData Key="property_array_default" Value="" />
+      <HelpData Key="property_ident" Value="" />
+      <HelpData Key="property_ident.ln" Value="" />
       <HelpData Key="property_interface" Value="" />
       <HelpData Key="property_interface." Value="" />
       <HelpData Key="property_interface.index_expression" Value="" />

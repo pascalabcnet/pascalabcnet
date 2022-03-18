@@ -38,6 +38,15 @@ namespace PascalABCCompiler.TreeConverter
             var_definition_node foreachVariable;
             ForeachCheckAndConvert(_foreach_stmt, out foreachCollection, out foreachVariable);
 
+            definition_node dnind = null;
+            var_definition_node vdn = null;
+            if (_foreach_stmt.index != null && _foreach_stmt.index.name.StartsWith("##"))
+            {
+                dnind = context.check_name_node_type(_foreach_stmt.index.name.Remove(0, 2), get_location(_foreach_stmt.index),
+                    general_node_type.variable_node);
+                vdn = (var_definition_node)dnind;
+            }
+
             // SSM 29.07.16 - если in_what - одномерный массив, то заменить код foreach на for
             // if (OptimizeForeachInCase1DArray(_foreach_stmt, foreachCollection)) return;
 
@@ -46,13 +55,17 @@ namespace PascalABCCompiler.TreeConverter
 
             foreach_node foreachNode = new foreach_node(foreachVariable, foreachCollection, null, get_location(_foreach_stmt));
 
-            context.cycle_stack.push(foreachNode);
+            context.enter_in_cycle(foreachNode);
             context.loop_var_stack.Push(foreachVariable);
+            if (vdn != null)
+                context.loop_var_stack.Push(vdn);
             context.enter_code_block_with_bind();
             statement_node body = convert_strong(_foreach_stmt.stmt);
             context.leave_code_block();
+            if (vdn != null)
+                context.loop_var_stack.Pop();
             context.loop_var_stack.Pop();
-            context.cycle_stack.pop();
+            context.leave_cycle();
 
             sl = convertion_data_and_alghoritms.statement_list_stack.pop();
 
@@ -125,7 +138,6 @@ namespace PascalABCCompiler.TreeConverter
             {
                 semantic_check_extended_foreach(vars, elem_type, foreachCollection.location);
             }
-
             CheckToEmbeddedStatementCannotBeADeclaration(_foreach_stmt.stmt);
 
             foreachVariable = FindForeachVariable(_foreach_stmt, elem_type, sys_coll_ienum);
@@ -161,8 +173,10 @@ namespace PascalABCCompiler.TreeConverter
                     check_for_type_allowed(tn, get_location(_foreach_stmt.type_name));
                     check_using_static_class(tn, get_location(_foreach_stmt.type_name));
                 }
-
-                context.close_var_definition_list(tn, null);
+                if (tn.is_value_type && !tn.is_standard_type)
+                    context.close_var_definition_list(tn, new default_operator_node(tn, foreachVariable.location));
+                else
+                    context.close_var_definition_list(tn, null);
             }
 
             if (/*!(foreachVariable.type is compiled_generic_instance_type_node) &&*/ !sys_coll_ienum) // SSM 16.09.18 - закомментировал это ограничение для фиксации бага #1184

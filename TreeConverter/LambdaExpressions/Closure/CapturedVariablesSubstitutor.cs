@@ -1079,7 +1079,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     whereDef.types.Add(d);
                 }
 
-                if (el.has_default_ctor)
+                if (el.has_explicit_default_ctor)
                 {
                     var d = new declaration_specificator(DeclarationSpecificator.WhereDefConstructor, "constructor");
                     whereDef.types.Add(d);
@@ -1113,7 +1113,16 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                 if (_visitor.context._ctn != null && _visitor.context._ctn.generic_params != null)
                 {
-                    genericParameterEliminations.AddRange(generic_parameter_eliminations.make_eliminations_common(_visitor.context._ctn.generic_params));
+                    List<generic_parameter_eliminations> lst = generic_parameter_eliminations.make_eliminations_common(_visitor.context._ctn.generic_params);
+                    for (int i = 0; i < lst.Count; i++)
+                        if (!lst[i].has_default_ctor && _visitor.context._ctn.generic_params[i] is common_type_node)
+                        {
+                            lst[i].has_default_ctor = (_visitor.context._ctn.generic_params[i] as common_type_node).has_default_constructor;
+                            lst[i].has_explicit_default_ctor = (_visitor.context._ctn.generic_params[i] as common_type_node).has_explicit_default_constructor;
+                        }
+                            
+                    genericParameterEliminations.AddRange(lst);
+                    
                 }
 
                 if (_visitor.context.top_function != null && _visitor.context.top_function.generic_params != null)

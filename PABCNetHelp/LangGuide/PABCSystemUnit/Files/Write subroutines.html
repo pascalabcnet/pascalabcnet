@@ -1,13 +1,17 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Deserialize">
 <param name="Keyword" value="Print">
 <param name="Keyword" value="Println">
+<param name="Keyword" value="Serialize">
 <param name="Keyword" value="Write">
 <param name="Keyword" value="WriteFormat">
 <param name="Keyword" value="Writeln">
 <param name="Keyword" value="WritelnFormat"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы вывода</H1>
-<table border=0 cellpadding=5><tr><td><code><b>procedure</b> Print(a,b,...);</code>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Deserialize(fileName: string): object;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Десериализует объект из файла</td></tr>
+<tr><td><code><b>procedure</b> Print(a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран, после каждого значения выводит пробел</td></tr>
 <tr><td><code><b>procedure</b> Print(f: Text; a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел</td></tr>
@@ -15,6 +19,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран, после каждого значения выводит пробел и переходит на новую строку</td></tr>
 <tr><td><code><b>procedure</b> Println(f: Text; a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел и переходит на новую строку</td></tr>
+<tr><td><code><b>procedure</b> Serialize(fileName: string; obj: object);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сериализует объект в файл (объект должен иметь атрибут [Serializable])</td></tr>
 <tr><td><code><b>procedure</b> Write(a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран</td></tr>
 <tr><td><code><b>procedure</b> Write(f: файл; a,b,...);</code>

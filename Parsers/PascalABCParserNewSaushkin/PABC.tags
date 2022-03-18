@@ -15,11 +15,6 @@
     <name value="record_const" />
     <name value="const_term" />
     <name value="const_set" />
-    <name value="allowable_expr_as_stmt" />
-    <name value="expr_l1" />
-    <name value="typeof_expr" />
-    <name value="question_expr" />
-    <name value="new_expr" />
     <name value="relop_expr" />
     <name value="as_is_expr" />
     <name value="term" />
@@ -28,8 +23,6 @@
     <name value="one_literal" />
     <name value="literal" />
     <name value="literal_list" />
-    <name value="expr" />
-    <name value="expr_with_func_decl_lambda" />
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />
@@ -69,25 +62,17 @@
     <name value="fp_list" />
     <name value="fp_sect_list" />
     <name value="param_name_list" />
-    <name value="stmt_list" />
-    <name value="case_list" />
-    <name value="case_label_list" />
-    <name value="exception_handler_list" />
-    <name value="expr_list" />
-    <name value="optional_expr_list_with_bracket" />
     <name value="optional_expr_list" />
     <name value="elem_list" />
     <name value="elem_list1" />
     <name value="literal_list" />
     <name value="full_lambda_fp_list" />
-    <name value="list_fields_in_unnamed_object" />
   </tag>
   <tag value="Элементы списка">
     <name value="const_elem" />
     <name value="one_compiler_directive" />
     <name value="program_param" />
     <name value="used_unit_name" />
-    <name value="decl_sect" />
     <name value="abc_decl_sect" />
     <name value="template_param" />
     <name value="one_attribute" />
@@ -101,9 +86,6 @@
     <name value="parameter_decl" />
     <name value="fp_sect" />
     <name value="param_name" />
-    <name value="case_item" />
-    <name value="case_label" />
-    <name value="exception_handler" />
     <name value="elem" />
     <name value="lambda_simple_fp_sect" />
     <name value="const_field" />
@@ -134,7 +116,6 @@
     <name value="const_simple_expr" />
     <name value="as_is_constexpr" />
     <name value="const_variable_2" />
-    <name value="optional_array_initializer" />
     <name value="literal_or_number" />
     <name value="one_literal" />
     <name value="literal" />
@@ -186,20 +167,6 @@
     <name value="unlabelled_stmt" />
     <name value="var_stmt" />
     <name value="assignment" />
-    <name value="goto_stmt" />
-    <name value="compound_stmt" />
-    <name value="if_stmt" />
-    <name value="case_stmt" />
-    <name value="repeat_stmt" />
-    <name value="while_stmt" />
-    <name value="lock_stmt" />
-    <name value="foreach_stmt" />
-    <name value="for_stmt" />
-    <name value="with_stmt" />
-    <name value="try_stmt" />
-    <name value="raise_stmt" />
-    <name value="expr_as_stmt" />
-    <name value="allowable_expr_as_stmt" />
     <name value="lambda_procedure_body" />
   </tag>
   <tag value="Имена">
@@ -210,7 +177,6 @@
     <name value="type_decl_identifier" />
     <name value="template_identifier_with_equal" />
     <name value="simple_type_identifier" />
-    <name value="qualified_identifier" />
     <name value="proc_name" />
     <name value="func_name" />
     <name value="func_class_name_ident" />
@@ -218,9 +184,6 @@
     <name value="func_name_with_template_args" />
     <name value="func_name_ident" />
     <name value="external_directive_ident" />
-    <name value="exception_identifier" />
-    <name value="exception_class_type_identifier" />
-    <name value="exception_variable" />
     <name value="identifier" />
     <name value="identifier_or_keyword" />
     <name value="identifier_keyword_operatorname" />
@@ -232,13 +195,11 @@
     <name value="const_decl_sect" />
     <name value="res_str_decl_sect" />
     <name value="type_decl_sect" />
-    <name value="uses_clause" />
     <name value="interface_part" />
     <name value="implementation_part" />
     <name value="abc_interface_part" />
     <name value="initialization_part" />
     <name value="int_decl_sect" />
-    <name value="decl_sect" />
     <name value="optional_where_section" />
     <name value="member_list_section" />
     <name value="decl_sect_list" />
@@ -257,7 +218,6 @@
     <name value="constr_destr_header" />
     <name value="proc_header" />
     <name value="func_header" />
-    <name value="try_handler" />
   </tag>
   <tag value="Типы">
     <name value="type_decl_type" />
@@ -288,13 +248,8 @@
   <tag value="ShortFuncDefinition">
     <name value="proc_func_decl_noclass" />
     <name value="inclass_proc_func_decl_noclass" />
-    <name value="proc_func_constr_destr_decl_with_attr" />
   </tag>
-  <tag value="new_expr">
-    <name value="new_expr" />
-    <name value="field_in_unnamed_object" />
-    <name value="list_fields_in_unnamed_object" />
-  </tag>
+  <tag value="new_expr" />
   <tag value="TemplateTypeName">
     <name value="type_decl_identifier" />
     <name value="template_identifier_with_equal" />
@@ -302,14 +257,10 @@
   </tag>
   <tag value="FuncName">
     <name value="func_name" />
-    <name value="qualified_identifier" />
     <name value="simple_type_identifier" />
-    <name value="simple_or_template_type_reference" />
   </tag>
   <tag value="Проблема с атрибутами">
-    <name value="decl_sect" />
     <name value="type_decl_sect" />
-    <name value="proc_func_constr_destr_decl_with_attr" />
     <name value="type_decl" />
     <name value="attribute_declarations" />
     <name value="simple_type_decl" />
@@ -319,6 +270,5 @@
     <name value="var_decl_part" />
     <name value="typed_const" />
     <name value="var_stmt" />
-    <name value="func_decl_lambda" />
   </tag>
 </tags>

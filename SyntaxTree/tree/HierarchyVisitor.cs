@@ -2061,6 +2061,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(property_ident _property_ident)
+		{
+		}
+
+		public virtual void post_do_visit(property_ident _property_ident)
+		{
+		}
+
+		public virtual void pre_do_visit(expression_with_let _expression_with_let)
+		{
+		}
+
+		public virtual void post_do_visit(expression_with_let _expression_with_let)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3294,6 +3310,7 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(foreach_stmt.type_name);
 			visit(foreach_stmt.in_what);
 			visit(foreach_stmt.stmt);
+			visit(foreach_stmt.index);
 			post_do_visit(_foreach_stmt);
 		}
 
@@ -4254,7 +4271,26 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(foreach_stmt_formatting.il);
 			visit(foreach_stmt_formatting.in_what);
 			visit(foreach_stmt_formatting.stmt);
+			visit(foreach_stmt_formatting.index);
 			post_do_visit(_foreach_stmt_formatting);
+		}
+
+		public override void visit(property_ident _property_ident)
+		{
+			DefaultVisit(_property_ident);
+			pre_do_visit(_property_ident);
+			for (int i = 0; i < ln.Count; i++)
+				visit(property_ident.ln[i]);
+			post_do_visit(_property_ident);
+		}
+
+		public override void visit(expression_with_let _expression_with_let)
+		{
+			DefaultVisit(_expression_with_let);
+			pre_do_visit(_expression_with_let);
+			visit(expression_with_let.stat);
+			visit(expression_with_let.expr);
+			post_do_visit(_expression_with_let);
 		}
 	}
 

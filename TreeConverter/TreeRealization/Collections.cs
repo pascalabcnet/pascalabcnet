@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-
+using System.Collections.Generic;
 using PascalABCCompiler.Collections;
 
 namespace PascalABCCompiler.TreeRealization
@@ -105,6 +105,27 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public class unit_node_list : extended_collection<unit_node>
     {
+        public Dictionary<unit_node, string> unit_uses_paths = new Dictionary<unit_node, string>();
+
+        public new void AddElement(unit_node unit)
+        {
+            throw new InvalidOperationException("Use second overload of \"unit_node_list.AddElement\"");
+        }
+
+        /// <summary>
+        /// Adds element to the "uses" list
+        /// </summary>
+        /// <param name="unit">Element to add. Can be unit, namespace, .dll reference, etc.</param>
+        /// <param name="unit_uses_path">Path to unit. Can be relative string, null for non-pascal_unit's</param>
+        /// <returns>Returns true if new pascal unit (not .dll, namespace, etc.) was added</returns>
+        public bool AddElement(unit_node unit, string unit_uses_path)
+        {
+            if (unit_uses_paths.ContainsKey(unit)) return false;
+            base.AddElement(unit);
+            if (unit_uses_path != null) unit_uses_paths.Add(unit, unit_uses_path);
+            return true;
+        }
+
     }
 
     /// <summary>
@@ -121,6 +142,17 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public class statement_node_list : extendable_collection<statement_node>
     {
+        public new statement_node this[int num]
+        {
+            get
+            {
+                return _elements[num];
+            }
+            set
+            {
+                _elements[num] = value;
+            }
+        }
     }
 
     /// <summary>

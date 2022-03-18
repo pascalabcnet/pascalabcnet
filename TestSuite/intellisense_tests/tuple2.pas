@@ -12,5 +12,6 @@ begin
   var t := f1{@function f1(): (byte,byte);@};
   var b{@var b: byte;@} := t.Item1;
   var t1 := f2;
-  var i{@@} := t1.Item1;
+  var i{@var i;@} := t1.Item1;
+  var j{@var j;@} := i;
 end.

@@ -3,6 +3,8 @@
 ///--
 unit PABCExtensions;
 
+{$zerobasedstrings off}
+
 uses PABCSystem;
 
 function GetCurrentLocale: string;
@@ -94,18 +96,12 @@ begin
   Result := count;
 end;
 
-///--
-procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex); extensionmethod;
+procedure SystemSliceAssignmentStringImpl(var Self: string; rightValue: string; situation: integer; 
+  from, &to: SystemIndex; step: integer; baseIndex: integer := 1);
 begin
-  if from.IsInverted then
-    from.IndexValue := Self.Length - from.IndexValue + 1;
-  if &to.IsInverted then
-    &to.IndexValue := Self.Length - &to.IndexValue + 1;
-    
-  from.IndexValue := from.IndexValue - 1;
-  &to.IndexValue := &to.IndexValue - 1;
+  from.IndexValue := from.IndexValue - baseIndex;
+  &to.IndexValue := &to.IndexValue - baseIndex;
   
-  var step := 1;
   var fromValue := from.IndexValue;
   var toValue := &to.IndexValue;
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, fromValue, toValue, step);
@@ -121,35 +117,75 @@ begin
     f += step;
     strInd += 1;
   end;
+end;  
+
+///--
+procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: integer; 
+  step: integer := 1); extensionmethod;
+begin
+  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, step);
 end;
 
 ///--
-procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex; step: integer); extensionmethod;
+{procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: integer); extensionmethod;
+begin
+  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, 1);
+end;}
+
+///--
+procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex; 
+  step: integer := 1); extensionmethod;
 begin
   if from.IsInverted then
     from.IndexValue := Self.Length - from.IndexValue + 1;
   if &to.IsInverted then
     &to.IndexValue := Self.Length - &to.IndexValue + 1;
-    
-  from.IndexValue := from.IndexValue - 1;
-  &to.IndexValue := &to.IndexValue - 1;
-  
-  var fromValue := from.IndexValue;
-  var toValue := &to.IndexValue;
-  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, fromValue, toValue, step);
-  if count <> rightValue.Length then
-    raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
-    
-  var f := fromValue + 1;
-  
-  var strInd := 1;
-  loop count do
-  begin
-    Self[f] := rightValue[strInd];
-    f += step;
-    strInd += 1;
-  end;
+  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, step);
 end;
+
+///--
+{procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Length - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Length - &to.IndexValue + 1;
+  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, 1);
+end;}
+
+///--
+procedure SystemSliceAssignment0(var Self: string; rightValue: string; situation: integer; from, &to: integer; 
+  step: integer := 1); extensionmethod;
+begin
+  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, step, 0);
+end;
+
+///--
+{procedure SystemSliceAssignment0(var Self: string; rightValue: string; situation: integer; from, &to: integer); extensionmethod;
+begin
+  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, 1, 0);
+end;}
+
+///--
+procedure SystemSliceAssignment0(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex; 
+  step: integer := 1); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Length - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Length - &to.IndexValue;
+  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, step, 0);
+end;
+
+///--
+{procedure SystemSliceAssignment0(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Length - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Length - &to.IndexValue;
+  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, 1, 0);
+end;}
 
 //{{{--doc: Конец секции расширений строк для срезов }}} 
 

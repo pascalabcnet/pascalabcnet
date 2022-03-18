@@ -174,7 +174,7 @@ namespace GPPGParserScanner
         public method_name NewQualifiedIdentifier(method_name qualified_identifier, ident identifier, LexLocation loc)
         {
             var nqi = qualified_identifier;
-			nqi.class_name = nqi.meth_name;
+            nqi.class_name = nqi.meth_name;
 			nqi.meth_name = identifier;
 			nqi.source_context = loc;
             return nqi;
@@ -200,8 +200,15 @@ namespace GPPGParserScanner
         {
             var nnspd = new simple_property();
             nnspd.virt_over_none_attr = virt_over_none_attr;
-
-            nnspd.property_name = qualified_identifier.meth_name;
+            List<ident> ln = null;
+            if (qualified_identifier.ln != null)
+                ln = qualified_identifier.ln;
+            else if (qualified_identifier.class_name != null)
+            {
+                ln = new List<ident>();
+                ln.Add(qualified_identifier.class_name);
+            }
+            nnspd.property_name = new property_ident(qualified_identifier.meth_name.name, ln, qualified_identifier.source_context);
 			if (property_interface != null)
 			{
 				nnspd.parameter_list = property_interface.parameter_list;
@@ -297,9 +304,9 @@ namespace GPPGParserScanner
             return nws;
         }
 
-        public for_node NewForStmt(bool opt_var, ident identifier, type_definition for_stmt_decl_or_assign, expression expr1, for_cycle_type fc_type, expression expr2, token_info opt_tk_do, statement stmt, LexLocation loc)
+        public for_node NewForStmt(bool opt_var, ident identifier, type_definition for_stmt_decl_or_assign, expression expr1, for_cycle_type fc_type, expression expr2, token_info opt_tk_do, statement stmt, expression increment_value, LexLocation loc)
         {
-            var nfs = new for_node(identifier, expr1, expr2, stmt, fc_type, null, for_stmt_decl_or_assign, opt_var != false, loc); 
+            var nfs = new for_node(identifier, expr1, expr2, stmt, fc_type, increment_value, for_stmt_decl_or_assign, opt_var != false, loc); 
             if (opt_tk_do == null)
             {
                 file_position fp = expr2.source_context.end_position;
@@ -315,9 +322,10 @@ namespace GPPGParserScanner
 
         public typecast_node NewAsIsExpr(syntax_tree_node term, op_typecast typecast_op, type_definition simple_or_template_type_reference, LexLocation loc)
         {
+            if (!(term is addressed_value))
+                parsertools.errors.Add(new bad_operand_type(parsertools.CurrentFileName, term.source_context, term));
             var naie = new typecast_node((addressed_value)term, simple_or_template_type_reference, typecast_op, loc); 
-			if (!(term is addressed_value))
-                parsertools.errors.Add(new bad_operand_type(parsertools.CurrentFileName, term.source_context, naie));
+			
             return naie;
         }
 

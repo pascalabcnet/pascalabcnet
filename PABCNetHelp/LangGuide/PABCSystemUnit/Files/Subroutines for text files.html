@@ -21,26 +21,26 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на дополнение в кодировке Windows</td></tr>
 <tr><td><code><b>procedure</b> Append(f: Text; en: Encoding);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на дополнение в указанной кодировке</td></tr>
-<tr><td><code><b>procedure</b> Append(f: Text; name: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение в кодировке Windows</td></tr>
-<tr><td><code><b>procedure</b> Append(f: Text; name: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение в указанной кодировке</td></tr>
+<tr><td><code><b>procedure</b> Append(f: Text; fileName: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на дополнение в кодировке Windows</td></tr>
+<tr><td><code><b>procedure</b> Append(f: Text; fileName: string; en: Encoding);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на дополнение в указанной кодировке</td></tr>
 <tr><td><code><b>function</b> Eoln(f: Text): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если в файле достигнут конец строки</td></tr>
 <tr><td><code><b>procedure</b> Flush(f: Text);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает содержимое буфера файла на диск</td></tr>
-<tr><td><code><b>function</b> OpenAppend(fname: string): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на дополнение в кодировке Windows</td></tr>
-<tr><td><code><b>function</b> OpenAppend(fname: string; en: Encoding): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на дополнение в указанной кодировке</td></tr>
-<tr><td><code><b>function</b> OpenRead(fname: string): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на чтение в кодировке Windows</td></tr>
-<tr><td><code><b>function</b> OpenRead(fname: string; en: Encoding): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на чтение в указанной кодировке</td></tr>
-<tr><td><code><b>function</b> OpenWrite(fname: string): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на запись в кодировке Windows</td></tr>
-<tr><td><code><b>function</b> OpenWrite(fname: string; en: Encoding): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на запись в указанной кодировке</td></tr>
+<tr><td><code><b>function</b> OpenAppend(fileName: string): Text;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на дополнение в кодировке Windows</td></tr>
+<tr><td><code><b>function</b> OpenAppend(fileName: string; en: Encoding): Text;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на дополнение в указанной кодировке</td></tr>
+<tr><td><code><b>function</b> OpenRead(fileName: string): Text;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на чтение в кодировке Windows</td></tr>
+<tr><td><code><b>function</b> OpenRead(fileName: string; en: Encoding): Text;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на чтение в указанной кодировке</td></tr>
+<tr><td><code><b>function</b> OpenWrite(fileName: string): Text;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на запись в кодировке Windows</td></tr>
+<tr><td><code><b>function</b> OpenWrite(fileName: string; en: Encoding): Text;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на запись в указанной кодировке</td></tr>
 <tr><td><code><b>function</b> ReadAllLines(path: string): <b>array</b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает файл, считывает из него строки в кодировке Windows в виде массива строк, после чего закрывает файл</td></tr>
 <tr><td><code><b>function</b> ReadAllLines(path: string; en: Encoding): <b>array</b>  <b>of</b> string;</code>
@@ -57,18 +57,18 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на чтение в кодировке Windows</td></tr>
 <tr><td><code><b>procedure</b> Reset(f: Text; en: Encoding);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на чтение в указанной кодировке</td></tr>
-<tr><td><code><b>procedure</b> Reset(f: Text; name: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение в кодировке Windows</td></tr>
-<tr><td><code><b>procedure</b> Reset(f: Text; name: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение в указанной кодировке</td></tr>
+<tr><td><code><b>procedure</b> Reset(f: Text; fileName: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на чтение в кодировке Windows</td></tr>
+<tr><td><code><b>procedure</b> Reset(f: Text; fileName: string; en: Encoding);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на чтение в указанной кодировке</td></tr>
 <tr><td><code><b>procedure</b> Rewrite(f: Text);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на запись в кодировке Windows.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
 <tr><td><code><b>procedure</b> Rewrite(f: Text; en: Encoding);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на запись в указанной кодировке.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
-<tr><td><code><b>procedure</b> Rewrite(f: Text; name: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную с именем файла name и открывает текстовый файл f на запись в кодировке Windows.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
-<tr><td><code><b>procedure</b> Rewrite(f: Text; name: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись в указанной кодировке.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
+<tr><td><code><b>procedure</b> Rewrite(f: Text; fileName: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную с именем файла fileName и открывает текстовый файл f на запись в кодировке Windows.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
+<tr><td><code><b>procedure</b> Rewrite(f: Text; fileName: string; en: Encoding);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл f на запись в указанной кодировке.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
 <tr><td><code><b>function</b> SeekEof(f: Text): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если достигнут конец файла</td></tr>
 <tr><td><code><b>function</b> SeekEoln(f: Text): boolean;</code>

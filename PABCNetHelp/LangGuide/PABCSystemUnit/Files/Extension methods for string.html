@@ -3,7 +3,9 @@
 <param name="Keyword" value="IndicesOf">
 <param name="Keyword" value="InRange">
 <param name="Keyword" value="Inverse">
+<param name="Keyword" value="IsInteger">
 <param name="Keyword" value="IsMatch">
+<param name="Keyword" value="IsReal">
 <param name="Keyword" value="Left">
 <param name="Keyword" value="Matches">
 <param name="Keyword" value="MatchValue">
@@ -34,8 +36,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если значение находитс€ между двум€ другими</td></tr>
 <tr><td><code><b>function</b> Inverse(Self: string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает инверсию строки</td></tr>
+<tr><td><code><b>function</b> IsInteger(Self: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если строку можно преобразовать в целое</td></tr>
 <tr><td><code><b>function</b> IsMatch(Self: string; reg: string; options: RegexOptions := RegexOptions.None): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;”довлетвор€ет ли строка регул€рному выражению</td></tr>
+<tr><td><code><b>function</b> IsReal(Self: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если строку можно преобразовать в вещественное</td></tr>
 <tr><td><code><b>function</b> Left(Self: string; length: integer): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает подстроку, полученную вырезанием из строки length самых левых символов</td></tr>
 <tr><td><code><b>function</b> Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): <b>sequence </b>  <b>of</b> Match;</code>
@@ -82,6 +88,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив вещественных</td></tr>
 <tr><td><code><b>function</b> ToWords(Self: string; <b>params</b> delim: <b>array</b>  <b>of</b> char): <b>array</b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив слов</td></tr>
+<tr><td><code><b>function</b> ToWords(Self: string; delims: string := ' '): <b>array</b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив слов, использу€ в качестве разделителей символы из строки delims</td></tr>
 <tr><td><code><b>function</b> TryToInteger(Self: string; <b>var</b> value: integer): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в целое и записывает его в value.ѕри невозможности преобразовани€ возвращаетс€ False</td></tr>
 <tr><td><code><b>function</b> TryToReal(Self: string; <b>var</b> value: real): boolean;</code>

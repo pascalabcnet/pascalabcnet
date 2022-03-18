@@ -1,0 +1,1 @@
+﻿uses u_delegates5; begin end.

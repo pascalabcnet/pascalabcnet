@@ -4,6 +4,7 @@
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="foreach">
 <param name="Keyword" value="in">
+<param name="Keyword" value="index">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -16,19 +17,22 @@
 форм:</p>
 <blockquote>
 	<p><code><b>foreach</b> </code><code class="codeit">переменная</code><code>
-	<b>in</b> </code><code class="codeit">контейнер</code><code> <b>do</b><br>
+	<b>in</b> </code><code class="codeit">контейнер</code><code> <b>[index </b>
+	<em>переменная</em><strong>]</strong> <b>do</b><br>
 	&nbsp; </code><code class="codeit">оператор</code></p>
 </blockquote>
 <p>или</p>
 <blockquote>
 	<p><code><b>foreach</b> </code><code class="codeit">переменная</code><code>:</code><code class="codeit"> 
 	тип</code><code> <b>in</b> </code><code class="codeit">контейнер</code><code>
+	<b>[index </b><em>переменная</em><strong>]</strong>
 	<b>do</b><br>
 	&nbsp; </code><code class="codeit">оператор</code></p>
 </blockquote>
 <p>или</p>
 <blockquote>
 	<p><code><b>foreach</b> <strong>var</strong> </code><code class="codeit">переменная</code><code> <b>in</b> </code><code class="codeit">контейнер</code><code>
+	<b>[index </b><em>переменная</em><strong>]</strong>
 	<b>do</b><br>
 	&nbsp; </code><code class="codeit">оператор</code></p>
 </blockquote>
@@ -40,8 +44,11 @@
 должна иметь тип, <strong>совпадающий</strong> с типом элементов контейнера 
 (если контейнер удовлетворяет интерфейсу 
 <code>IEnumerable</code>, то это тип <code>object</code>). В последней форме
-<code>foreach</code> тип переменной цикла автовыводится по типу элементов 
+<code><strong>foreach</strong></code> тип переменной цикла автовыводится по типу элементов 
 контейнера.</p>
+<p>Необязательная часть <code>
+<b>index </b><em>переменная</em></code> вводит переменную, которая хранит на 
+каждой итерации индекс элемента контейнера (элементы индексируются с нуля).</p>
 <p>Переменная цикла пробегает все 
 значения элементов контейнера и для каждого значения переменной 
 цикла выполняется тело цикла. Изменение переменной цикла 

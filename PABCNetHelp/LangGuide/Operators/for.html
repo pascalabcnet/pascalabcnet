@@ -6,6 +6,7 @@
 <param name="Keyword" value="to">
 <param name="Keyword" value="downto">
 <param name="Keyword" value="do">
+<param name="Keyword" value="step">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -65,6 +66,17 @@
 	<b>for</b> <strong>var </strong>i := 1 <b>to</b> 5 <b>do</b><br>
 	&nbsp; Print(i*i);</code></p>
 </blockquote>
+<p>Наконец, в заголовке цикла for можно указать шаг изменения цикла:</p>
+<blockquote>
+	<p><code><b>for var</b> </code><code class="codeit">переменная</code><code> :=
+	</code><code class="codeit">начальное 
+	значение</code><code> <b>to</b> </code><code class="codeit">конечное 
+	значение</code><code> <b>step </b><code class="codeit">значение<b> </b></code> <b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p>При наличии шага цикла разрешается использовать только направление <code> <b>to</b></code>. </p>
+<p>Шаг <code> <b>step</b></code> может быть отрицательным. Если шаг <code> <b>
+step</b></code> равен нулю, возникает ошибка времени выполнения программы.</p>
 <p>Текст от слова <code><b>for</b></code> до слова <code><b>do</b></code> 
 включительно называется <b><font color="#FF0000"> <i>заголовком цикла</i></font></b>, а 
 оператор после <code><b>do</b></code> - <i><b><font color="#FF0000">телом цикла</font></b>.</i> 
@@ -86,7 +98,7 @@
 	...<br>
 	for</b> en := red <b>to</b> blue <b>do</b><br>
 &nbsp; write(Ord(en):2);<br>
-	<b>for</b> <b>var</b> c := 'a' <b>to</b> 'z' <b>do</b><br>
+	<b>for</b> <b>var</b> c := 'a' <b>to</b> 'z' <b>step</b> 2 <b>do</b><br>
 &nbsp; write(c);</code></p>
 </blockquote>
 <p>Если для цикла <code><b>for</b></code> ... <code><b>to</b></code>

@@ -13,20 +13,20 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов в двоичном файле</td></tr>
 <tr><td><code><b>procedure</b> Reset(f: двоичный файл);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает двоичный файл на чтение и запись.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
-<tr><td><code><b>procedure</b> Reset(f: двоичный файл; name: string);</code>
+<tr><td><code><b>procedure</b> Reset(f: двоичный файл; fileName: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
 <tr><td><code><b>procedure</b> Reset(f: двоичный файл; en: Encoding);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает двоичный файл на чтение и запись в заданной кодировке.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
-<tr><td><code><b>procedure</b> Reset(f: двоичный файл; name: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись в заданной кодировке.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
+<tr><td><code><b>procedure</b> Reset(f: двоичный файл; fileName: string; en: Encoding);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом fileName на диске и открывает двоичный файл на чтение и запись в заданной кодировке.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
 <tr><td><code><b>procedure</b> Rewrite(f: двоичный файл);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
-<tr><td><code><b>procedure</b> Rewrite(f: двоичный файл; name: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
+<tr><td><code><b>procedure</b> Rewrite(f: двоичный файл; fileName: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом fileName на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
 <tr><td><code><b>procedure</b> Rewrite(f: двоичный файл; en: Encoding);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает двоичный файл на чтение и запись в заданной кодировке, при этом обнуляя его содержимое. Если файл существовал, он обнуляется.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
-<tr><td><code><b>procedure</b> Rewrite(f: двоичный файл; name: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись в заданной кодировке, при этом обнуляя его содержимое.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
+<tr><td><code><b>procedure</b> Rewrite(f: двоичный файл; fileName: string; en: Encoding);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом fileName на диске и открывает двоичный файл на чтение и запись в заданной кодировке, при этом обнуляя его содержимое.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
 <tr><td><code><b>procedure</b> Seek(f: двоичный файл; n: int64);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в двоичном файле на элемент с данным номером</td></tr>
 <tr><td><code><b>procedure</b> Truncate(f: двоичный файл);</code>

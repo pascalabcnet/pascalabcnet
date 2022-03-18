@@ -36,7 +36,7 @@ namespace SyntaxVisitors
         {
             var id = NewVarName();
             id.source_context = yn.source_context;
-            var fe = new foreach_stmt(id, new no_type_foreach(), yn.ex, new yield_node(id,yn.source_context),yn.source_context);
+            var fe = new foreach_stmt(id, new no_type_foreach(), yn.ex, new yield_node(id,yn.source_context),null,yn.source_context);
             ReplaceStatement(yn, fe);
         }
     }

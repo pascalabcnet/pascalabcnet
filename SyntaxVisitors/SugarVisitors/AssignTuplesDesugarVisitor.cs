@@ -107,10 +107,12 @@ namespace SyntaxVisitors.SugarVisitors
             var n = assvartup.idents.idents.Count();
             for (var i = 0; i < n; i++)
             {
+                var sc = assvartup.idents.idents[i].source_context;
                 var a = new var_statement(assvartup.idents.idents[i],
-                    //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
-                    new semantic_ith_element_of(new ident(tname, assvartup.expr.source_context), new int32_const(i), assvartup.expr.source_context),
-                    assvartup.idents.idents[i].source_context);
+                    //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString(),sc)),
+                    new semantic_ith_element_of(new ident(tname, assvartup.expr.source_context), new int32_const(i,sc), assvartup.expr.source_context),
+                    sc);
+                //a.source_context = assvartup.idents.idents[i].source_context;
                 sl.Add(a);
             }
             ReplaceStatementUsingParent(assvartup, sl);

@@ -112,7 +112,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static simple_property BuildSimpleReadWriteProperty(ident name, ident field, type_definition type)
         {
-            return new simple_property(name, type, new property_accessors(new read_accessor_name(field,null,null), new write_accessor_name(field, null, null)));
+            return new simple_property(new property_ident(name.name, null, name.source_context), type, new property_accessors(new read_accessor_name(field,null,null), new write_accessor_name(field, null, null)));
         }
 
         public static class_members BuildSimpleReadPropertiesSection(List<ident> names, List<ident> fields, List<type_definition> types)
@@ -190,9 +190,11 @@ namespace PascalABCCompiler.SyntaxTree
                         var ts = m as procedure_definition;
                         if (!HasConstructor)
                         {
-                            if (ts != null && ts.proc_header is constructor)
+                            if (ts != null && ts.proc_header is constructor 
+                                && (ts.proc_header.parameters?.params_list.SelectMany(tp => tp.idents.idents).Count() ?? 0) == names.Count
+                                )
                             {
-                                HasConstructor = true;
+                                HasConstructor = true; // на самом деле это означает, что есть конструктор с точно таким же количеством параметров
                             }
                         }
 
@@ -268,7 +270,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static type_declaration BuildAutoClass(string class_name, List<ident> names, List<type_definition> types, bool is_class)
         {
-            var fnames = names.Select(x=>new ident("f"+x.name, x.source_context)).ToList();
+            var fnames = names.Select(x=>new ident("<f>"+x.name, x.source_context)).ToList();
 
             var cm1 = BuildClassFieldsSection(fnames,types);
             var cm2 = BuildSimpleConstructorSection(fnames,names,types);

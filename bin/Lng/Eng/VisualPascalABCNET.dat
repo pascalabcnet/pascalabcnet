@@ -399,6 +399,7 @@ CODE_COMPLETION_PARAMS=Show tooltip when writing method calls
 CODE_COMPLETION_KEYPRESSED=Show tooltip by key pressing
 SHOW_INTELLISENCE_PANEL=Show quick class browser panel
 NAMESPACE_VISIBLE_RANGE=Level of nesting namespaces (0 - all)
+USE_SEMANTIC_INTELLISENSE=Use compiler engine for code completion
 
 //CompilerOptions
 %PREFIX%=VP_OC_COMPILEROPTIONS_

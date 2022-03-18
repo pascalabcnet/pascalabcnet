@@ -43,6 +43,7 @@ namespace PascalABCCompiler.TreeRealization
         public bool is_class = false;
         public bool is_value = false;
         public bool has_default_ctor = false;
+        public bool has_explicit_default_ctor = false;
         public type_node base_class = null;
         public List<type_node> implementing_interfaces = null;
 
@@ -56,6 +57,7 @@ namespace PascalABCCompiler.TreeRealization
             param.methods.AddElement(cnode);
             param.add_name(compiler_string_consts.default_constructor_name, new SymbolInfo(cnode));
             param.has_default_constructor = true;
+            param.has_explicit_default_constructor = true;
         }
 
         public static List<generic_parameter_eliminations> make_eliminations_common(List<SemanticTree.ICommonTypeNode> generic_params)
@@ -65,6 +67,8 @@ namespace PascalABCCompiler.TreeRealization
             {
                 generic_parameter_eliminations gpe = new generic_parameter_eliminations();
                 gpe.has_default_ctor = generic_convertions.type_has_default_ctor(t, false);
+                if (t is common_type_node && (t as common_type_node).has_explicit_default_constructor)
+                    gpe.has_explicit_default_ctor = true;
                 gpe.is_class = t.is_class;
                 gpe.is_value = t.is_value;
                 gpe.base_class = t.base_type;
@@ -87,6 +91,8 @@ namespace PascalABCCompiler.TreeRealization
                 gpe.has_default_ctor =
                     ((t.GenericParameterAttributes &
                     GenericParameterAttributes.DefaultConstructorConstraint) != 0);
+                if (gpe.has_default_ctor)
+                    gpe.has_explicit_default_ctor = true;
                 gpe.is_class =
                     ((t.GenericParameterAttributes &
                     GenericParameterAttributes.ReferenceTypeConstraint) != 0);
@@ -166,6 +172,10 @@ namespace PascalABCCompiler.TreeRealization
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.name);
                     }
                 }
+                if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type && tn.is_value && !gpe.base_class.is_value && gpe.base_class != SystemLibrary.SystemLibrary.value_type && gpe.base_class != SystemLibrary.SystemLibrary.enum_base_type)
+                {
+                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
+                }
                 foreach (type_node interf in gpe.implementing_interfaces)
                 {
                     type_node di = generic_convertions.determine_type(interf, tparams, method_param_types);
@@ -231,6 +241,12 @@ namespace PascalABCCompiler.TreeRealization
                 generic_instances.Add(original_generic_type, instances);
             }
             return instances;
+        }
+
+        public static void remove_type_instances(type_node original_generic_type)
+        {
+            if (generic_instances[original_generic_type] != null)
+                generic_instances.Remove(original_generic_type);
         }
 
         public static List<generic_function_instance_info> get_function_instances(function_node original_generic_function)
@@ -309,6 +325,8 @@ namespace PascalABCCompiler.TreeRealization
             //Определяем базовый тип
             type_node btype = determine_type(
                 original.base_type, param_types, false);
+            if (btype == null)
+                btype = SystemLibrary.SystemLibrary.object_type;
             instance.SetBaseTypeIgnoringScope(btype);
             
             //instance._scope = new SymbolTable.GenericTypeInstanceScope(instance, instance.original_generic.Scope, btype.Scope);
@@ -409,7 +427,7 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     catch(Exception e)
                     {
-                        e = e;
+                        // e = e; // PVS 01/2022
                     }
                 }
                 else
@@ -675,7 +693,7 @@ namespace PascalABCCompiler.TreeRealization
             var visitor = SystemLibrary.SystemLibrary.syn_visitor;
             var result = true;
             exception_on_body_compilation = null;
-
+            int errors_count = visitor.ErrorsList.Count;
             /*if (lambda_syntax_node.formal_parameters == null
                 || lambda_syntax_node.formal_parameters.params_list == null
                 || lambda_syntax_node.formal_parameters.params_list.Count == 0)
@@ -708,8 +726,8 @@ namespace PascalABCCompiler.TreeRealization
                 param_counter += t.idents.idents.Count;
             }
 
-            if (!there_are_undeduced_params
-                && lambda_syntax_node.return_type is lambda_inferred_type
+            if (/*!there_are_undeduced_params
+                && */lambda_syntax_node.return_type is lambda_inferred_type
                 && ((lambda_inferred_type)lambda_syntax_node.return_type).real_type is lambda_any_type_node)
             {
                 var lambdaName = lambda_syntax_node.lambda_name;
@@ -724,8 +742,12 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 catch (Exception exc)
                 {
-                    exception_on_body_compilation = exc; // Если произошло исключение то запишем его в выходной параметр, оно потом будет обработано вызывающим методом
-                    result = false;
+                    if (!there_are_undeduced_params)
+                    {
+                        exception_on_body_compilation = exc; // Если произошло исключение то запишем его в выходной параметр, оно потом будет обработано вызывающим методом
+                        result = false;
+                    }
+                        
                 }
                 finally
                 {
@@ -739,23 +761,33 @@ namespace PascalABCCompiler.TreeRealization
 
                     if (result)
                     {
-                        if (formal_delegate == null) // SSM 5.12.15
+                        if (there_are_undeduced_params && visitor.ErrorsList.Count > errors_count)
                         {
-                            result = false;
+                            visitor.ErrorsList.RemoveAt(visitor.ErrorsList.Count - 1);
+                            
                         }
                         else
-                        { 
-                            if (formal_delegate.return_value_type==null) // SSM 19/04/16 - эта проверка в связи с падением при передаче функции вместо процедуры в качестве функционального параметра: a.Foreach(x->1)
+                        {
+                            if (formal_delegate == null) // SSM 5.12.15
                             {
                                 result = false;
                             }
-                            else if (!DeduceInstanceTypes(formal_delegate.return_value_type,
-                                                     (type_node)((lambda_inferred_type)lambda_syntax_node.return_type).real_type,
-                                                     deduced, nils, generic_params)) //Выводим дженерик-параметры после того как вычислили тип возвращаемого значения
+                            else
                             {
-                                result = false; 
+                                if (formal_delegate.return_value_type == null) // SSM 19/04/16 - эта проверка в связи с падением при передаче функции вместо процедуры в качестве функционального параметра: a.Foreach(x->1)
+                                {
+                                    result = false;
+                                }
+                                else if (!DeduceInstanceTypes(formal_delegate.return_value_type,
+                                                         (type_node)((lambda_inferred_type)lambda_syntax_node.return_type).real_type,
+                                                         deduced, nils, generic_params)) //Выводим дженерик-параметры после того как вычислили тип возвращаемого значения
+                                {
+                                    result = false;
+                                }
                             }
                         }
+                        
+                        
                     }
                 }
             }
@@ -846,10 +878,20 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         //Проверяем фактические, попадающие под params...
                         type_node tn = fact[i].type;
+                        bool deduce_empty_func_call = false;
+                        if (tn is delegated_methods && (tn as delegated_methods).empty_param_method != null && last_params_type.is_generic_parameter)
+                        {
+                            tn = (tn as delegated_methods).empty_param_method.ret_type;
+                            deduce_empty_func_call = true;
+                        }
+                            
                         if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper)
                             tn = tn.element_type;
+                        
                         if (!DeduceInstanceTypes(last_params_type, tn, deduced, nils, generic_params))
                         {
+                            if (deduce_empty_func_call && DeduceInstanceTypes(last_params_type, fact[i].type, deduced, nils, generic_params))
+                                continue;
                             if (alone)
                                 throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
                             return null;
@@ -874,6 +916,15 @@ namespace PascalABCCompiler.TreeRealization
                         .Where(t => t.Type != null)
                         .Select(t => t.Index)
                         .ToArray();
+
+                // SSM 08/07/21 попытаться вывести нефункциональные параметры первыми
+                /*for (int i = 0; i < count_params_to_see; ++i)
+                    if (!(fact[i].type is delegated_methods))
+                    {
+                        bool b = DeduceInstanceTypes(formal[i].type, fact[i].type, deduced, nils, generic_params);
+                        b = b;
+                    }*/
+                        
 
                 for (int i = 0; i < count_params_to_see; ++i)
                 {
@@ -1113,9 +1164,9 @@ namespace PascalABCCompiler.TreeRealization
             if (formal_type.IsDelegate)
             {
                 //Если текущий параметр - лямбда, то просто выводим дженерик-параметры из типов, которые уже известны. Не трогаем lambda_any_type_node. Остальное выведется в цикле выше 
-                var lambda_func = fact_type as delegated_methods;
-                if (lambda_func != null 
-                    && lambda_func.proper_methods.Count == 1 
+                var lambda_func = fact_type as delegated_methods; // Возвр true не только если fact_type - лямбда, но и если это имя функции
+                if (lambda_func != null
+                    && lambda_func.proper_methods.Count == 1
                     && LambdaHelper.IsLambdaName(lambda_func.proper_methods[0].simple_function_node.name))
                 {
                     var dii = formal_type.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
@@ -1161,7 +1212,7 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     // 07.04.15 - SSM поменял местами первые 2 параметра - видимо, была ошибка
                     else if (fact_func.return_value_type == null || !DeduceInstanceTypes(dii.return_value_type, fact_func.return_value_type, deduced, nils, generic_params)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
-//                    else if (fact_func.return_value_type == null || !DeduceInstanceTypes(fact_func.return_value_type, dii.return_value_type, deduced, nils)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
+                                                                                                                                                                             //                    else if (fact_func.return_value_type == null || !DeduceInstanceTypes(fact_func.return_value_type, dii.return_value_type, deduced, nils)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
                     {
                         goto eq_cmp;
                     }
@@ -1173,19 +1224,52 @@ namespace PascalABCCompiler.TreeRealization
                     delegate_internal_interface dii = formal_type.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
                     delegated_methods dm = fact_type as delegated_methods;
                     function_node fact_func = null;
+                    List<function_node> fact_funcs = new List<function_node>();
                     if (dm != null && dm.proper_methods.Count == 1)
-                        fact_func = dm.proper_methods[0].simple_function_node;
+                    {
+                        fact_funcs.Add(dm.proper_methods[0].simple_function_node);
+                    }
                     else if (fact_type.IsDelegate)
                     {
                         var sil = fact_type.find_in_type("Invoke");
                         if (sil != null && sil.Count > 0)
-                            fact_func = sil[0].sym_info as function_node;
+                        {
+                            fact_funcs.Add(sil[0].sym_info as function_node);
+                        }
+                            
                     }
-                        
-                    if (fact_func != null)
+                    // SSM 09.07 - My(f: T->T1) при наличии двух f - следующие 2 else дают пропуск этой ошибки!! Она внесена 10.01 в 20:54 при исправлении 1093
+                    // Видимо, это улучшило ситуацию - просто надо точнее отбрасывать часть fact_funcs
+                    else if (dm != null && dm.proper_methods.Count > 1 && formal_type.original_generic is compiled_type_node && (formal_type.original_generic as compiled_type_node).compiled_type.FullName.StartsWith("System.Func`"))
                     {
+                        var ctn = formal_type.original_generic as compiled_type_node;
+                        foreach (var fc in dm.proper_methods)
+                        {
+                            if (fc.simple_function_node.parameters.Count == formal_type.instance_params.Count - 1)
+                            {
+                                fact_funcs.Add(fc.simple_function_node);
+                            }
+                        }
+                    }
+                    else if (dm != null && dm.proper_methods.Count > 1 && formal_type.original_generic is compiled_type_node && (formal_type.original_generic as compiled_type_node).compiled_type.FullName.StartsWith("System.Action`"))
+                    {
+                        var ctn = formal_type.original_generic as compiled_type_node;
+                        foreach (var fc in dm.proper_methods)
+                        {
+                            if (fc.simple_function_node.parameters.Count == formal_type.instance_params.Count)
+                            {
+                                fact_funcs.Add(fc.simple_function_node);
+                            }
+                        }
+                    }
+                    // end SSM 09.07 - конец кода, который был написан раньше IB. Здесь поясняется его влияние на ошибки
+                    for (int j = 0; j < fact_funcs.Count; j++)
+                    {
+                        fact_func = fact_funcs[j];
                         if (fact_func.parameters.Count != dii.parameters.Count)
                         {
+                            if (j < fact_funcs.Count - 1)
+                                continue;
                             goto eq_cmp;
                         }
                         int param_count = fact_func.parameters.Count;
@@ -1193,31 +1277,48 @@ namespace PascalABCCompiler.TreeRealization
                         {
                             if (fact_func.parameters[i].parameter_type != dii.parameters[i].parameter_type ||
                                 fact_func.parameters[i].is_params != dii.parameters[i].is_params)
+                            {
+                                if (j < fact_funcs.Count - 1)
+                                    continue;
                                 goto eq_cmp;
+                            }
+                                
                         }
+                        bool skip_j = false; // SSM 06/07/21
                         for (int i = 0; i < param_count; i++)
                         {
                             if (!DeduceInstanceTypes(dii.parameters[i].type, fact_func.parameters[i].type, deduced, nils, generic_params))      // 07.04.15 - SSM поменял местами первые 2 параметра - видимо, была ошибка
-                            //if (!DeduceInstanceTypes(fact_func.parameters[i].type, dii.parameters[i].type, deduced, nils))
                             {
+                                if (j < fact_funcs.Count - 1)
+                                {
+                                    skip_j = true; // SSM 06/07/21
+                                    break;
+                                    //continue; // тут надо завершать итерацию по j, а не по i !!!
+                                }
                                 goto eq_cmp;
                             }
                         }
+                        if (skip_j) // // SSM 06/07/21 пропустить текущую итерацию по j !!
+                            continue;
                         if (fact_func.return_value_type == null && dii.return_value_type == null)
                         {
                             //ok
                         }
                         else if (fact_func.return_value_type is lambda_any_type_node && dii.return_value_type == null) //lroman//
                         {
+                            if (j < fact_funcs.Count - 1)
+                                continue;
                             goto eq_cmp;
                         }
                         // 07.04.15 - SSM поменял местами первые 2 параметра - видимо, была ошибка
                         else if (fact_func.return_value_type == null || !DeduceInstanceTypes(dii.return_value_type, fact_func.return_value_type, deduced, nils, generic_params)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
-//                        else if (fact_func.return_value_type == null || !DeduceInstanceTypes(fact_func.return_value_type, dii.return_value_type, deduced, nils)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
+                                                                                                                                                                                 //                        else if (fact_func.return_value_type == null || !DeduceInstanceTypes(fact_func.return_value_type, dii.return_value_type, deduced, nils)) // SSM 29.05.14 - не выводится если IEnumerable<TResult>
                         {
+                            if (j < fact_funcs.Count - 1)
+                                continue;
                             goto eq_cmp;
                         }
-                        return true;
+                        return true; // SSM 06/07/21 тут сбита логика. Мы рассматриваем получается только первую fact_func[0] и выходим
                     }
                 }
                 if (fact_type.IsDelegate && fact_type.semantic_node_type == semantic_node_type.delegated_method)
@@ -1244,14 +1345,36 @@ namespace PascalABCCompiler.TreeRealization
                         base_type = base_type.base_type;
                     }
                     if (fact_type.ImplementingInterfaces != null && fact_type_converted == null)
-                    foreach (type_node ti in fact_type.ImplementingInterfaces)
                     {
-                        if (ti.original_generic == formal_type.original_generic)
+                        foreach (type_node ti in fact_type.ImplementingInterfaces)
                         {
-                            fact_type_converted = ti;
-                            break;
+                            if (ti.original_generic == formal_type.original_generic)
+                            {
+                                fact_type_converted = ti;
+                                break;
+                            }
+                        }
+                        if (fact_type_converted == null)
+                        {
+                            base_type = fact_type.base_type;
+                            while (base_type != null)
+                            {
+                                if (base_type.ImplementingInterfaces != null)
+                                foreach (type_node ti in base_type.ImplementingInterfaces)
+                                {
+                                    if (ti.original_generic == formal_type.original_generic)
+                                    {
+                                        fact_type_converted = ti;
+                                        break;
+                                    }
+                                }
+                                if (fact_type_converted != null)
+                                    break;
+                                base_type = base_type.base_type;
+                            }
                         }
                     }
+                    
                     if (fact_type_converted == null) goto eq_cmp;
                 }
                 else
@@ -1313,7 +1436,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public static bool type_has_default_ctor(type_node tn, bool find_protected_ctors)
         {
-            if (tn.is_generic_parameter && tn.base_type != null && tn.base_type.IsAbstract)
+            if (tn.is_generic_parameter && tn.base_type != null && tn.base_type.IsAbstract && !(tn is common_type_node && (tn as common_type_node).has_default_constructor))
                 return false;
             List<SymbolInfo> sil = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
             if (sil != null)
@@ -1623,7 +1746,7 @@ namespace PascalABCCompiler.TreeRealization
                 cmn.overrided_method = common_orig.overrided_method;
             if (orig_fn.is_generic_function)
             {
-                cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true);
+                cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true, orig_tpars);
             }
             if (orig_fn is common_function_node)
             {
@@ -2003,7 +2126,14 @@ namespace PascalABCCompiler.TreeRealization
 
         private void conform_basic_function(string name, int base_func_num)
         {
-            SymbolInfo si1 = _original_generic.find_first_in_type(name, true);
+            SymbolInfo si1 = null;
+            List<SymbolInfo> sil = _original_generic.find_in_type(name, true);
+            foreach (SymbolInfo si in sil)
+                if (si.sym_info is function_node && !(si.sym_info as function_node).is_extension_method)
+                {
+                    si1 = si;
+                    break;
+                }
             AddMember(si1.sym_info, temp_names[base_func_num].sym_info);
         }
 
@@ -2291,6 +2421,14 @@ namespace PascalABCCompiler.TreeRealization
             get
             {
                 return _original_function;
+            }
+        }
+
+        public override bool is_extension_method
+        {
+            get
+            {
+                return _original_function.is_extension_method;
             }
         }
 

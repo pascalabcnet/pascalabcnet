@@ -1,17 +1,14 @@
 ﻿uses OpenCLABC;
 
 const
-  MatrW = 4; // можно поменять на любое положительное значение
+  MatrW = 4; // Можно поменять на любое положительное значение
   
   VecByteSize = MatrW*8;
   MatrByteSize = MatrW*MatrW*8;
   
-//ToDo issue компилятора:
-// - #1981
-
 begin
   try
-    Randomize(0); // делает так, чтобы каждое выполнение давало одинаковый результат
+    Randomize(0); // Делает так, чтобы каждое выполнение давало одинаковый результат
     
     // Чтение и компиляция .cl файла
     
@@ -30,24 +27,24 @@ begin
     'Матрица A:'.Println;
     var A_Matr := MatrRandomReal(MatrW,MatrW,0,1).Println;
     Writeln;
-    var A := new Buffer(MatrByteSize);
+    var A := new MemorySegment(MatrByteSize);
     
     'Матрица B:'.Println;
     var B_Mart := MatrRandomReal(MatrW,MatrW,0,1).Println;
     Writeln;
-    var B := new Buffer(MatrByteSize);
+    var B := new MemorySegment(MatrByteSize);
     
-    var C := new Buffer(MatrByteSize);
+    var C := new MemorySegment(MatrByteSize);
     
     'Вектор V1:'.Println;
     var V1_Arr := ArrRandomReal(MatrW);
     V1_Arr.Println;
     Writeln;
-    var V1 := new Buffer(VecByteSize);
+    var V1 := new MemorySegment(VecByteSize);
     
-    var V2 := new Buffer(VecByteSize);
+    var V2 := new MemorySegment(VecByteSize);
     
-    var W := KernelArg.FromRecord(MatrW);
+    var W := KernelArg.FromValue(MatrW);
     
     // (запись значений в параметры - позже, в очередях)
     
@@ -55,16 +52,15 @@ begin
     
     var Calc_C_Q :=
       code['MatrMltMatr'].NewQueue.AddExec2(MatrW, MatrW, // Выделяем ядра в форме квадрата, всего MatrW*MatrW ядер
-        A.NewQueue.AddWriteArray2&<real>(A_Matr),
-        B.NewQueue.AddWriteArray2&<real>(B_Mart),
+        A.NewQueue.AddWriteArray2(A_Matr),
+        B.NewQueue.AddWriteArray2(B_Mart),
         C,
         W
-      ) as CommandQueue<Kernel>;
+      );
     
     var Otp_C_Q :=
-      C.NewQueue.AddReadArray2&<real>(A_Matr) +
+      C.NewQueue.AddReadArray2(A_Matr) +
       HPQ(()->
-      lock output do
       begin
         'Матрица С = A*B:'.Println;
         A_Matr.Println;
@@ -74,15 +70,14 @@ begin
     var Calc_V2_Q :=
       code['MatrMltVec'].NewQueue.AddExec1(MatrW,
         C,
-        V1.NewQueue.AddWriteArray1&<real>(V1_Arr),
+        V1.NewQueue.AddWriteArray1(V1_Arr),
         V2,
         W
-      ) as CommandQueue<Kernel>;
+      );
     
     var Otp_V2_Q :=
-      V2.NewQueue.AddReadArray1&<real>(V1_Arr) +
+      V2.NewQueue.AddReadArray1(V1_Arr) +
       HPQ(()->
-      lock output do
       begin
         'Вектор V2 = C*V1:'.Println;
         V1_Arr.Println;
@@ -94,13 +89,8 @@ begin
     Context.Default.SyncInvoke(
       
       Calc_C_Q +
-      (
-        Otp_C_Q * // выводить C и считать V2 можно одновременно, поэтому тут *, т.е. параллельное выполнение
-        (
-          Calc_V2_Q +
-          Otp_V2_Q
-        )
-      )
+      Calc_V2_Q * Otp_C_Q + // Считать V2 и выводить C можно одновременно, поэтому тут *, т.е. параллельное выполнение
+      Otp_V2_Q
       
     );
     

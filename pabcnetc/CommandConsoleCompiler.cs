@@ -60,7 +60,6 @@ namespace PascalABCCompiler
             switch (FileOperation)
             {
                 case SourceFileOperation.GetText:
-                    
                     if (SourceFiles.ContainsKey(fn))
                         return SourceFiles[fn].Text;
                     string text = getFileText(FileName);
@@ -102,7 +101,7 @@ namespace PascalABCCompiler
             string arg = null;
             
             ReadCommand(out command, out arg);
-            if (command == 182)
+            if (command == 182) // Error
                 return null;
             int length = Convert.ToInt32(arg);
             return readStringFromConsole(length);

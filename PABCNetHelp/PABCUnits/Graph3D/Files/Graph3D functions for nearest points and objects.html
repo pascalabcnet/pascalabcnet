@@ -1,15 +1,21 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="BeginFrameBasedAnimationTime">
+<param name="Keyword" value="DeserializeObject3D">
 <param name="Keyword" value="EndFrameBasedAnimation">
 <param name="Keyword" value="FindNearestObject">
 <param name="Keyword" value="FindNearestObjectPoint">
 <param name="Keyword" value="NearestPointOnLine">
 <param name="Keyword" value="ParametricTrajectory">
-<param name="Keyword" value="PointOnPlane"></object>
+<param name="Keyword" value="PointOnPlane">
+<param name="Keyword" value="SerializeObject3D">
+<param name="Keyword" value="SystemMouseEventsOff">
+<param name="Keyword" value="SystemMouseEventsOn"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Graph3D: функции для определения ближайших точек и объектов</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> BeginFrameBasedAnimationTime(Draw: <b>procedure</b>(dt: real));</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки</td></tr>
+<tr><td><code><b>function</b> DeserializeObject3D(filename: string): Object3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Десериализует трёхмерный объект из файла</td></tr>
 <tr><td><code><b>procedure</b> EndFrameBasedAnimation;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заканчивает анимацию, основанную на кадре</td></tr>
 <tr><td><code><b>function</b> FindNearestObject(x, y: real): Object3D;</code>
@@ -22,5 +28,11 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт траекторию в виде массива точек, заданную параметрически. Функция fun отображает параметр t на координаты точки в пространстве</td></tr>
 <tr><td><code><b>function</b> PointOnPlane(Plane: Plane3D; x, y: real): Point3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку на плоскости Plane, которую пересекает невизуальный луч, выпущенный из камеры и проходящий через точку (x,y) экрана</td></tr>
+<tr><td><code><b>procedure</b> SerializeObject3D(filename: string; obj: Object3D);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сериализует трёхмерный объект в файл</td></tr>
+<tr><td><code><b>procedure</b> SystemMouseEventsOff;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отключить стандартные обработчики событий мыши</td></tr>
+<tr><td><code><b>procedure</b> SystemMouseEventsOn;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Включить стандартные обработчики событий мыши</td></tr>
 </table>
 </body></HTML>

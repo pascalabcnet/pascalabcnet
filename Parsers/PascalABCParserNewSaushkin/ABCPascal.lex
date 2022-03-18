@@ -154,6 +154,22 @@ UNICODEARROW \x890
 		if (IfExclude == 0)
 			BEGIN(INITIAL); 		
 	}
+	else if (IfExclude > 0)
+	{
+		int ind_to_remove = -1;
+		for (int i=0; i<parsertools.compilerDirectives.Count; i++)
+		{
+			if (parsertools.compilerDirectives[i].source_context.begin_position.line_num == CurrentLexLocation.StartLine && 
+				parsertools.compilerDirectives[i].source_context.begin_position.column_num - 2 == CurrentLexLocation.StartColumn + 1)
+				{
+					ind_to_remove = i;
+					break;
+				}
+		}
+		if (ind_to_remove != -1)
+			parsertools.compilerDirectives.RemoveAt(ind_to_remove);
+	}
+	
 }
 
 <EXCLUDETEXT>.|\n {
@@ -219,6 +235,8 @@ UNICODEARROW \x890
 "<>"            { yylval = new Union(); yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.tkNotEqual; }
 "^"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Deref); return (int)Tokens.tkDeref; }
 "->"            { yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
+\\[(]           { yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkBackSlashRoundOpen; }
+
 
 \u2192 			{ yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
 
@@ -371,6 +389,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkMatch:
     case (int)Tokens.tkWhen:
     case (int)Tokens.tkStatic:
+    case (int)Tokens.tkStep:
 		yylval = new Union();
         yylval.ti = new token_info(cur_yytext,currentLexLocation);
         break;
@@ -389,6 +408,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkInternal:
     case (int)Tokens.tkRead:
     case (int)Tokens.tkWrite:
+    case (int)Tokens.tkIndex:
 		yylval = new Union(); 
         yylval.id = new ident(cur_yytext,currentLexLocation);
         break;

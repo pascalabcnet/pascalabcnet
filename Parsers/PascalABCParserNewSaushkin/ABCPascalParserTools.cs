@@ -46,6 +46,7 @@ namespace PascalABCSavParser
         public bool build_tree_for_formatter = false;
         public bool build_tree_for_format_strings = false;
         public string CurrentFileName;
+        public List<compiler_directive> compilerDirectives;
 
         int lambda_num = 0;
         public List<function_lambda_definition> pascalABC_lambda_definitions;
@@ -65,6 +66,7 @@ namespace PascalABCSavParser
             tokenNum["tkExpression"] = StringResources.Get("EXPR");
             tokenNum["EOF"] = StringResources.Get("EOF1");
             tokenNum["tkIdentifier"] = StringResources.Get("TKIDENTIFIER");
+            tokenNum["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
             tokenNum["tkAmpersend"] = "'";
             tokenNum["tkColon"]="':'";
             tokenNum["tkDotDot"]="'..'";
@@ -223,11 +225,15 @@ namespace PascalABCSavParser
                 return string.Format(prefix + StringResources.Get("EXPECTEDBEGIN"), "'" + yytext + "'");
 
             var MaxTok = tokens.First();
+            if (yytext != null && yytext.ToLower() == "record" && MaxTok == "tkSealed")
+                return StringResources.Get("WRONG_ATTRIBUTE_FOR_RECORD");
 
             var ExpectedString = StringResources.Get("EXPECTED{1}");
 
             if (MaxTok.Equals("tkStatement") || MaxTok.Equals("tkIdentifier"))
                 ExpectedString = StringResources.Get("EXPECTEDR{1}");
+            else if (MaxTok.Equals("tkStringLiteral"))
+                ExpectedString = StringResources.Get("EXPECTEDF{1}");
             if ((MaxTok == "EOF" || MaxTok == "EOF1" || MaxTok == "FOUNDEOF") && this.build_tree_for_format_strings)
                 MaxTok = "}";
             var MaxTokHuman = ConvertToHumanName(MaxTok);
@@ -239,7 +245,7 @@ namespace PascalABCSavParser
 
         public void AddError(string message, LexLocation loc)
         {
-            errors.Add(new SyntaxError(message, CurrentFileName, loc, null));
+           errors.Add(new SyntaxError(message, CurrentFileName, loc, null));
         }
 
         public void AddErrorFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)
@@ -441,6 +447,7 @@ namespace PascalABCSavParser
             literal lt;
             text = ReplaceSpecialSymbols(text.Substring(2, text.Length - 3));
             lt = new string_const(text);
+            (lt as string_const).IsInterpolated = true;
             lt.source_context = sc;
             return lt;
         }

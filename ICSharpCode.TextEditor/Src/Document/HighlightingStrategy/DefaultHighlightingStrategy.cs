@@ -330,8 +330,41 @@ namespace ICSharpCode.TextEditor.Document
 			}
 
             List<TextWord> words = ParseLine(document);
-			
-			if (currentSpanStack != null && currentSpanStack.IsEmpty) {
+            // SSM 21/02/2022 - пробую исправить step
+            var fi = words.FindIndex(tw => string.Compare(tw.Word,"for",true)==0);
+            if (fi >= 0)
+            {
+                var toi = words.FindIndex(fi,tw => string.Compare(tw.Word, "to", true) == 0);
+                if (toi >= 0)
+                {
+                    var stepi = words.FindIndex(toi,tw => string.Compare(tw.Word, "step", true) == 0);
+                    if (stepi >= 0)
+                    {
+                        var doi = words.FindIndex(stepi, tw => string.Compare(tw.Word, "do", true) == 0);
+                        if (doi >= 0)
+                        {
+                            var f = words[fi];
+                            var w = words[stepi];
+                            w.SyntaxColor = f.SyntaxColor;
+                        }
+                    }
+                }
+            }
+            var fe = words.FindIndex(tw => string.Compare(tw.Word, "foreach", true) == 0);
+            if (fe >= 0)
+            {
+                var index = words.FindIndex(tw => string.Compare(tw.Word, "index", true) == 0);
+                if (index >= 0)
+                {
+                    var f = words[fe];
+                    var ind = words[index];
+                    ind.SyntaxColor = f.SyntaxColor;
+                }
+
+            }
+
+
+            if (currentSpanStack != null && currentSpanStack.IsEmpty) {
 				currentSpanStack = null;
 			}
 			

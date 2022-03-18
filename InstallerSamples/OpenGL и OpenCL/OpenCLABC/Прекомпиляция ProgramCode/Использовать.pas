@@ -11,14 +11,14 @@ begin
   
   // Дальше всё так же как в "0Простейшие примеры\SimpleAddition"
   
-  var A := new Buffer( 10 * sizeof(integer) );
+  var A := new CLArray<integer>(10);
   
-  prog['TEST'].Exec1(10,
+  prog['TEST'].Exec1(10, // Используем 10 ядер
     
     A.NewQueue.AddFillValue(1)
     
   );
   
-  A.GetArray1&<integer>.Println;
+  A.GetArray.Println;
   
 end.

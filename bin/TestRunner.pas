@@ -11,7 +11,8 @@ uses PascalABCCompiler, System.IO, System.Diagnostics;
 
 var
   TestSuiteDir: string;
-
+  nogui: boolean;
+  
 var
   PathSeparator: string := Path.DirectorySeparatorChar;
 
@@ -36,15 +37,22 @@ end;
 procedure CompileErrorTests(withide: boolean);
 begin
   
-  var comp := new Compiler();
+  
   
   var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'errors', '*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var comp := new Compiler();
     var content := &File.ReadAllText(files[i]);
     if content.StartsWith('//winonly') and IsUnix then
       continue;
-    
+    if content.StartsWith('//exclude') then
+      continue;
+    var errorMessage := '';
+    if content.StartsWith('//!') then
+    begin
+      errorMessage := content.Substring(3, content.IndexOf(System.Environment.NewLine)-3).Trim;
+    end;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir + PathSeparator + 'errors';
@@ -56,13 +64,25 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count = 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of error sample ' + files[i] + ' was successfull');
       System.Windows.Forms.MessageBox.Show('Compilation of error sample ' + files[i] + ' was successfull' + System.Environment.NewLine);
       Halt();
     end
     else if comp.ErrorsList.Count = 1 then
     begin
       if comp.ErrorsList[0].GetType() = typeof(PascalABCCompiler.Errors.CompilerInternalError) then
+      begin
+        if nogui then
+          raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
         System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
+      end;
+      if (errorMessage <> '') and (comp.ErrorsList[comp.ErrorsList.Count-1].Message.Trim <> errorMessage) then
+      begin
+        if nogui then
+          raise new Exception('Wrong error message in file ' + files[i] + ', should '+errorMessage+', is '+comp.ErrorsList[comp.ErrorsList.Count-1].Message);
+        System.Windows.Forms.MessageBox.Show('Wrong error message in file ' + files[i] + ', should '+errorMessage+', is '+comp.ErrorsList[comp.ErrorsList.Count-1].Message);
+      end;
     end;
     if i mod 50 = 0 then
       System.GC.Collect();
@@ -78,6 +98,8 @@ begin
   var files := Directory.GetFiles(TestSuiteDir, '*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    if IsUnix then
+      writeln('Compile file '+files[i]);
     var content := &File.ReadAllText(files[i]);
     if content.StartsWith('//winonly') and IsUnix then
       continue;
@@ -96,6 +118,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count > 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
@@ -130,6 +154,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count > 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
@@ -159,6 +185,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count > 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
@@ -186,6 +214,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count > 0 then
     begin
+      if nogui then
+        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
@@ -206,6 +236,11 @@ end;
 
 procedure RunAllTests(redirectIO: boolean);
 begin
+  var dlls := Directory.GetFiles(TestSuiteDir, '*.dll');
+  foreach var dll in dlls do
+  begin
+    System.IO.File.Copy(dll, TestSuiteDir + PathSeparator + 'exe' + PathSeparator + Path.GetFileName(dll), true);
+  end;
   var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'exe', '*.exe');
   for var i := 0 to files.Length - 1 do
   begin
@@ -225,11 +260,22 @@ begin
       p.StandardInput.WriteLine('GO');
 		  //p.StandardInput.AutoFlush := true;
 		  //var p := System.Diagnostics.Process.Start(psi);
-    
-    while not p.HasExited do
-      Sleep(10);
+		if nogui then
+    begin
+      var success := p.WaitForExit(60000);
+      if not success then
+      begin
+        raise new Exception('Running of ' + files[i] + ' failed.');
+      end;
+    end
+    else
+      p.WaitForExit();
+    //while not p.HasExited do
+    //  Sleep(5);
     if p.ExitCode <> 0 then
     begin
+      if nogui then
+        raise new Exception('Running of ' + files[i] + ' failed. Exit code is not 0');
       System.Windows.Forms.MessageBox.Show('Running of ' + files[i] + ' failed. Exit code is not 0');
       Halt;
     end;
@@ -339,17 +385,21 @@ begin
   try
     TestSuiteDir := GetTestSuiteDir;
     System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
+    if (ParamCount = 2) and (ParamStr(2) = '1') then
+      nogui := true;
     if (ParamCount = 0) or (ParamStr(1) = '1') then
     begin
       DeletePCUFiles;
       ClearExeDir;
       CompileAllRunTests(false);
+      writeln('Tests to run: '+Milliseconds()+'ms');
     end;
     
     if (ParamCount = 0) or (ParamStr(1) = '2') then
     begin
       CopyLibFiles;
       CompileAllCompilationTests('CompilationSamples', false);
+      writeln('CompilationSamples: '+Milliseconds()+'ms');
     end;
     if (ParamCount = 0) or (ParamStr(1) = '3') then
     begin
@@ -357,12 +407,12 @@ begin
       CopyPCUFiles;
       CompileAllUsesUnits;
       CompileErrorTests(false);
-      writeln('Tests compiled successfully');
+      writeln('Other tests '+Milliseconds()+'ms'+'. Tests compiled successfully ');
     end;
     if (ParamCount = 0) or (ParamStr(1) = '4') then
     begin
       RunAllTests(false);
-      writeln('Tests run successfully');
+      writeln('Tests run successfully: '+Milliseconds()+'ms');
       ClearExeDir;
       DeletePCUFiles;
     end;
@@ -392,6 +442,11 @@ begin
     end;
   except
     on e: Exception do
+    begin
+      if nogui then
+        raise new Exception(e.ToString());
       assert(false, e.ToString());
+    end;
+     
   end;
 end.

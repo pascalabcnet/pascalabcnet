@@ -40,7 +40,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 case PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET:
                     SemanticRules.AddResultVariable = true;
-                    SemanticRules.NullBasedStrings = false;
+                    SemanticRules.ZeroBasedStrings = false;
                     SemanticRules.FastStrings = false;
                     SemanticRules.InitStringAsEmptyString = true;
                     SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes = false;
@@ -55,7 +55,7 @@ namespace PascalABCCompiler.TreeConverter
                     break;
                 case PascalABCCompiler.SyntaxTree.LanguageId.C:
                     SemanticRules.AddResultVariable = false;
-                    SemanticRules.NullBasedStrings = true;
+                    SemanticRules.ZeroBasedStrings = true;
                     SemanticRules.InitStringAsEmptyString = false;
                     SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes = true;
                     SemanticRules.ManyVariablesOneInitializator = false;
@@ -73,7 +73,7 @@ namespace PascalABCCompiler.TreeConverter
         //TODO: Исправить коллекцию модулей.
         public PascalABCCompiler.TreeRealization.common_unit_node CompileInterface(SyntaxTree.compilation_unit SyntaxUnit,
             PascalABCCompiler.TreeRealization.unit_node_list UsedUnits, List<Errors.Error> ErrorsList, List<Errors.CompilerWarning> WarningsList, PascalABCCompiler.Errors.SyntaxError parser_error,
-            System.Collections.Hashtable bad_nodes, TreeRealization.using_namespace_list namespaces, Dictionary<SyntaxTree.syntax_tree_node,string> docs, bool debug, bool debugging)
+            System.Collections.Hashtable bad_nodes, TreeRealization.using_namespace_list namespaces, Dictionary<SyntaxTree.syntax_tree_node,string> docs, bool debug, bool debugging, bool for_intellisense, List<TreeRealization.var_definition_node> CompiledVariables)
 		{
             //convertion_data_and_alghoritms.__i = 0;
 			stv.parser_error=parser_error;
@@ -92,6 +92,7 @@ namespace PascalABCCompiler.TreeConverter
             stv.docs = docs;
             stv.debug = debug;
             stv.debugging = debugging;
+            stv.for_intellisense = for_intellisense;
 			SystemLibrary.SystemLibrary.syn_visitor = stv;
             SetSemanticRules(SyntaxUnit);
             
@@ -102,7 +103,8 @@ namespace PascalABCCompiler.TreeConverter
             stv.DirectivesToNodesLinks = CompilerDirectivesToSyntaxTreeNodesLinker.BuildLinks(SyntaxUnit, ErrorsList);  //MikhailoMMX добавил передачу списка ошибок (02.10.10)
 
             SyntaxUnit.visit(stv);
-			/*SyntaxTree.program_module pmod=SyntaxUnit as SyntaxTree.program_module;
+            CompiledVariables.AddRange(stv.CompiledVariables);
+            /*SyntaxTree.program_module pmod=SyntaxUnit as SyntaxTree.program_module;
 			if (pmod!=null)
 			{
 				stv.visit(pmod);
@@ -116,15 +118,15 @@ namespace PascalABCCompiler.TreeConverter
 				}
 				stv.visit(umod);
 			}*/
-			//stv.visit(SyntaxUnit);
-			//if (ErrorsList.Count>0) throw ErrorsList[0];
-			return stv.compiled_unit;
+            //stv.visit(SyntaxUnit);
+            //if (ErrorsList.Count>0) throw ErrorsList[0];
+            return stv.compiled_unit;
 		}
 
         public void CompileImplementation(PascalABCCompiler.TreeRealization.common_unit_node SemanticUnit,
 			SyntaxTree.compilation_unit SyntaxUnit,PascalABCCompiler.TreeRealization.unit_node_list UsedUnits,List<Errors.Error> ErrorsList,List<Errors.CompilerWarning> WarningsList,
             PascalABCCompiler.Errors.SyntaxError parser_error, System.Collections.Hashtable bad_nodes, TreeRealization.using_namespace_list interface_namespaces, TreeRealization.using_namespace_list imlementation_namespaces,
-           Dictionary<SyntaxTree.syntax_tree_node,string> docs, bool debug, bool debugging)
+           Dictionary<SyntaxTree.syntax_tree_node,string> docs, bool debug, bool debugging, bool for_intellisense, List<TreeRealization.var_definition_node> CompiledVariables)
 		{
 			//if (ErrorsList.Count>0) throw ErrorsList[0];
 			stv.parser_error=parser_error;
@@ -142,7 +144,8 @@ namespace PascalABCCompiler.TreeConverter
             stv.docs = docs;
             stv.debug = debug;
             stv.debugging = debugging;
-			SystemLibrary.SystemLibrary.syn_visitor = stv;
+            stv.for_intellisense = for_intellisense;
+            SystemLibrary.SystemLibrary.syn_visitor = stv;
             SetSemanticRules(SyntaxUnit);
 
 			SyntaxTree.unit_module umod = SyntaxUnit as SyntaxTree.unit_module;
@@ -158,7 +161,7 @@ namespace PascalABCCompiler.TreeConverter
                 cd.visit(stv);
 
 			stv.visit_implementation(umod);
-
+            CompiledVariables.AddRange(stv.CompiledVariables);
 			//stv.visit(SyntaxUnit);
 			//return stv.compiled_unit;
 		}

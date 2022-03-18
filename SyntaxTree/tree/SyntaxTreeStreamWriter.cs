@@ -4019,6 +4019,15 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_foreach_stmt.stmt.visit(this);
 			}
+			if (_foreach_stmt.index == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt.index.visit(this);
+			}
 		}
 
 
@@ -6250,7 +6259,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_is_pattern_expr(is_pattern_expr _is_pattern_expr)
 		{
-			write_expression(_is_pattern_expr);
+			write_addressed_value(_is_pattern_expr);
 			if (_is_pattern_expr.left == null)
 			{
 				bw.Write((byte)0);
@@ -7008,6 +7017,78 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_foreach_stmt_formatting.stmt.visit(this);
+			}
+			if (_foreach_stmt_formatting.index == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.index.visit(this);
+			}
+		}
+
+
+		public void visit(property_ident _property_ident)
+		{
+			bw.Write((Int16)257);
+			write_property_ident(_property_ident);
+		}
+
+		public void write_property_ident(property_ident _property_ident)
+		{
+			write_ident(_property_ident);
+			if (_property_ident.ln == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_property_ident.ln.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _property_ident.ln.Count; ssyy_i++)
+				{
+					if (_property_ident.ln[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_property_ident.ln[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
+
+		public void visit(expression_with_let _expression_with_let)
+		{
+			bw.Write((Int16)258);
+			write_expression_with_let(_expression_with_let);
+		}
+
+		public void write_expression_with_let(expression_with_let _expression_with_let)
+		{
+			write_addressed_value(_expression_with_let);
+			if (_expression_with_let.stat == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_expression_with_let.stat.visit(this);
+			}
+			if (_expression_with_let.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_expression_with_let.expr.visit(this);
 			}
 		}
 

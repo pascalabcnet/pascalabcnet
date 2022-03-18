@@ -1546,6 +1546,18 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_foreach_stmt_formatting">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(foreach_stmt_formatting _foreach_stmt_formatting);
+		///<summary>
+		///Method to visit property_ident.
+		///</summary>
+		///<param name="_property_ident">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(property_ident _property_ident);
+		///<summary>
+		///Method to visit expression_with_let.
+		///</summary>
+		///<param name="_expression_with_let">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(expression_with_let _expression_with_let);
 	}
 
 

@@ -122,6 +122,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("overload", "overload"); keys.Add("overload");
             keywords.Add("internal", "internal"); keys.Add("internal");
             //keywords.Add("template", "template"); keys.Add("template");
+            keywords.Add("partial", "partial"); keys.Add("partial");
             keywords.Add("namespace", "namespace"); keys.Add("namespace");
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
@@ -993,7 +994,7 @@ namespace PascalABCCompiler.Parsers
 			if (sc is IProcScope) return "";
 			if (sc is ITypeScope)
 			{
-				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>"))?"<>":"")+".";
+				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>") && sc.Name != "class")?"<>":"")+".";
 			}
 			return sc.Name + ".";
 		}
@@ -1477,7 +1478,7 @@ namespace PascalABCCompiler.Parsers
                 type_name = type_name.Substring(1, type_name.Length - 1);
             switch (scope.ElemKind)
             {
-                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name); break;
+                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ((type_name != "")?": " + type_name:"")); break;
                 case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
                 case SymbolKind.Constant:
                     {
@@ -1627,8 +1628,17 @@ namespace PascalABCCompiler.Parsers
 				Type t = (scope.Type as ICompiledTypeScope).CompiledType;
 				inst_type = get_type_instance(t,scope.GenericArgs);
 			}
-			sb.Append("property "+ GetShortTypeName(scope.CompiledProperty.DeclaringType) +"."+ scope.CompiledProperty.Name + get_indexer_for_prop(scope)+ ": "+(inst_type != null?inst_type:GetSimpleDescription(scope.Type)));
-			if (acc != null)
+			sb.Append("property "+ GetShortTypeName(scope.CompiledProperty.DeclaringType) +"."+ scope.CompiledProperty.Name + get_indexer_for_prop(scope));
+            if (inst_type == null)
+            {
+                if (scope.Type is ICompiledTypeScope)
+                    sb.Append(": " + GetFullTypeName((scope.Type as ICompiledTypeScope).CompiledType, false));
+                else
+                    sb.Append(": " + GetSimpleDescription(scope.Type));
+            }
+            else
+                sb.Append(": " + inst_type);
+            if (acc != null)
 			//if (acc.IsStatic) sb.Append("; static");
 			if (acc.IsVirtual) sb.Append("; virtual");
 			else if (acc.IsAbstract) sb.Append("; abstract");
@@ -2913,57 +2923,78 @@ namespace PascalABCCompiler.Parsers
                             break;
                         case '[':
                         case '(':
-                            if (kav.Count == 0)
+                        case '|':
+                            if (ch == '|' && ((tokens.Count == 0) || (tokens.Peek()==']') || (tokens.Peek() == ')') || (tokens.Peek() == ','))) 
+                                // Закрывающий | - после него (tokens.Pop()) - пусто или ] ) ,
                             {
-                                if (tokens.Count > 0)
+                                if (kav.Count == 0)
                                 {
-                                    tokens.Pop();
-                                    punkt_sym = true;
+                                    string tmps = sb.ToString().Trim(' ', '\r', '\t', '\n');
+                                    if (tmps.Length >= 1 && (char.IsLetter(tmps[0]) || tmps[0] == '_' || tmps[0] == '&' || tmps[0] == '?') && tokens.Count == 0)
+                                        end = true;
+                                    else
+                                        tokens.Push(ch);
+                                }
+                                if (!end)
+                                {
                                     sb.Insert(0, ch);
-                                    if (ch == '(')
-                                    {
-                                        int tmp = i--;
-                                        /*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-                                        {
-                                            i--;
-                                        }*/
-                                        while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i] == '}'))
-                                        {
-                                            if (Text[i] != '}')
-                                                i--;
-                                            else
-                                            {
-                                                while (i >= 0 && Text[i] != '{') //propusk kommentariev
-                                                    i--;
-                                                if (i >= 0)
-                                                    i--;
-                                            }
-                                        }
-                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i+1)))
-                                        {
-                                            bound = i + 1;
-                                            TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
-                                            if (keyw != KeywordKind.None && tokens.Count == 0)
-                                            {
-                                                end = true;
-                                            }
-                                            else bound = 0;
-                                        }
-                                        else if (i >= 0 && Text[i] == '\'') return "";
-                                        i = tmp;
-                                    }
+                                    punkt_sym = true;
                                 }
-                                else
-                                {
-                                    end = true;
-                                    if (ch == '[')
-                                    {
-                                        keyw = KeywordKind.SquareBracket;
-                                    }
-                                }
-                                    
                             }
-                            else sb.Insert(0, ch); punkt_sym = true;
+                            else 
+                            {
+                                if (kav.Count == 0) // в т.ч. открывающий |
+                                {
+                                    if (tokens.Count > 0)
+                                    {
+                                        tokens.Pop();
+                                        punkt_sym = true;
+                                        sb.Insert(0, ch);
+                                        if (ch == '(')
+                                        {
+                                            int tmp = i--;
+                                            /*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                                            {
+                                                i--;
+                                            }*/
+                                            while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i] == '}'))
+                                            {
+                                                if (Text[i] != '}')
+                                                    i--;
+                                                else
+                                                {
+                                                    while (i >= 0 && Text[i] != '{') //propusk kommentariev
+                                                        i--;
+                                                    if (i >= 0)
+                                                        i--;
+                                                }
+                                            }
+                                            if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i+1)))
+                                            {
+                                                bound = i + 1;
+                                                TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
+                                                if (keyw != KeywordKind.None && tokens.Count == 0)
+                                                {
+                                                    end = true;
+                                                }
+                                                else bound = 0;
+                                            }
+                                            else if (i >= 0 && Text[i] == '\'') return "";
+                                            i = tmp;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        end = true;
+                                        if (ch == '[')
+                                        {
+                                            keyw = KeywordKind.SquareBracket;
+                                        }
+                                    }
+                                    
+                                }
+                                else sb.Insert(0, ch); punkt_sym = true;
+                            }
                             break;
                         case '\'':
                             if (kav.Count == 0) kav.Push(ch); else kav.Pop();
