@@ -327,9 +327,19 @@
 	  	</KeyWords>
 	</RuleSet>
 	
+	<RuleSet name = "Default" reference = "PascalABC.NET">
+        <Delimiters>&lt;&gt;~!%^*#()-+=|\/{}[]:;"' ,	?.</Delimiters><!-- Digits -->
+	</RuleSet>
+	
 	<RuleSet name = "StringInterpolation" ignorecase = "true">
-        <Delimiters>&lt;&gt;~!%^*#()-+=|\/{}[]:;"' ,	?.</Delimiters>
-
+		<Span name = "String1" rule="StringInterpolation" bold = "false" italic = "false" color = "Blue" stopateol = "true">
+			<Begin>{{ }}</Begin>
+		</Span>
+		
+		<Span name = "String1" rule="Default" bold = "false" italic = "false" color = "Black" stopateol = "true">
+			<Begin>'</Begin>
+		</Span>
+		
 		<Span name = "String" rule="ExprStringInterpolation" bold = "false" italic = "false" color = "Black" stopateol = "true">
 			<Begin>{</Begin>
 			<End>}</End>
