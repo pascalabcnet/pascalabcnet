@@ -153,14 +153,6 @@ namespace PascalABCCompiler.TreeRealization
                 generic_parameter_eliminations gpe = gpe_list[i];
                 type_node tn = tparams[i];
                 
-                if (gpe.is_class && !tn.is_class && !(tn.is_generic_parameter && tn.base_type != null && tn.base_type.is_class))
-                {
-                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
-                }
-                if (gpe.is_value && (!tn.is_value || tn.BaseFullName != null && tn.BaseFullName.StartsWith("System.Nullable")) /*&& !tn.is_generic_parameter*/)
-                {
-                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_VALUE_TYPE", tn.PrintableName);
-                }
                 if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type && !tn.is_value)
                 {
                     type_node base_type = generic_convertions.determine_type(gpe.base_class, tparams, method_param_types);
@@ -171,6 +163,14 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.name);
                     }
+                }
+                if (gpe.is_class && !tn.is_class && !(tn.is_generic_parameter && tn.base_type != null && tn.base_type.is_class))
+                {
+                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
+                }
+                if (gpe.is_value && (!tn.is_value || tn.BaseFullName != null && tn.BaseFullName.StartsWith("System.Nullable")) /*&& !tn.is_generic_parameter*/)
+                {
+                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_VALUE_TYPE", tn.PrintableName);
                 }
                 if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type && tn.is_value && !gpe.base_class.is_value && gpe.base_class != SystemLibrary.SystemLibrary.value_type && gpe.base_class != SystemLibrary.SystemLibrary.enum_base_type)
                 {
