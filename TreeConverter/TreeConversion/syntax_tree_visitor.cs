@@ -20118,7 +20118,7 @@ namespace PascalABCCompiler.TreeConverter
             //Нужно ли это???
             if (lock_object.type.semantic_node_type == semantic_node_type.delegated_method)
                 try_convert_typed_expression_to_function_call(ref lock_object);
-            if (lock_object.type == null || lock_object.type.is_value_type)
+            if (/*lock_object.type == null ||*/ !lock_object.type.is_class)
                 AddError(get_location(node.lock_object), "EXPRESSION_IN_LOCK_STATEMENT_RETURNED_NOT_A_REFERENCE_TYPE", lock_object.type);
             CheckToEmbeddedStatementCannotBeADeclaration(node.stmt);
             statement_node stmt = convert_strong(node.stmt);
