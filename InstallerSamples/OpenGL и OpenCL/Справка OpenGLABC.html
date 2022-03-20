@@ -231,17 +231,14 @@ const on_start_folder = (folder_name, root_page)=>{
 		
 		res.container.className = "ps-root-container";
 		document.getElementById("page-select-container").append(res.container);
-	} else
+	}
+	else
 	{
 		if (!root_page) {
 			res.auto_fill_content = true;
 			root_page = document.createElement("div");
 			root_page.hidden = true;
 		}
-		
-		res.content_ref = root_page;
-		root_page.tree_obj = res;
-		document.getElementById("page-display-container-body").append(root_page);
 		
 		currently_loading_folder.folders.push(res);
 		res.root = currently_loading_folder;
@@ -294,13 +291,18 @@ const on_start_folder = (folder_name, root_page)=>{
 		res.body.append(res.container);
 		
 	}
-	
 	currently_loading_folder = res;
-	if (root_page) fix_links(root_page);
+	
+	if (root_page) {
+		res.content_ref = root_page;
+		root_page.tree_obj = res;
+		document.getElementById("page-display-container-body").append(root_page);
+		if (!res.auto_fill_content) fix_links(root_page);
+	}
+	
 }
 
 const on_page_added = (page)=>{
-	document.getElementById("page-display-container-body").append(page);
 	
 	let res = {
 		root: currently_loading_folder,
@@ -328,6 +330,7 @@ const on_page_added = (page)=>{
 	
 	res.content_ref = page;
 	page.tree_obj = res;
+	document.getElementById("page-display-container-body").append(page);
 	
 	currently_loading_folder.pages.push(res);
 	define_page_with_path(res.path, page);
@@ -393,7 +396,8 @@ const on_end_folder = ()=>{
 		
 		define_page_with_path(curr_folder.path, root_page);
 		currently_loading_folder = curr_folder.root;
-	}
+	} else if (!selected_page)
+		select_page(root_folder.content_ref);
 	
 }
 
