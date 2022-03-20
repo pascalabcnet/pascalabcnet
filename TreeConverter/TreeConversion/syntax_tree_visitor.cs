@@ -8949,22 +8949,27 @@ namespace PascalABCCompiler.TreeConverter
                 if (scope != null)
                     if (context.WithVariables.ContainsKey(scope))
                         return context.WithVariables[scope];
-            		else
+                    else
             if (context.WithTypes.Contains(scope))
+                    {
+                        switch (dn.semantic_node_type)
+                        {
+                            case semantic_node_type.class_field: if (!(dn as class_field).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field, loc, null)); break;
+                            case semantic_node_type.compiled_variable_definition: if (!(dn as compiled_variable_definition).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field, loc, null)); break;
+                            case semantic_node_type.compiled_property_node:
+                            case semantic_node_type.common_property_node: if ((dn as property_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticPropertyWithType(dn as property_node, loc, null)); break;
+                            case semantic_node_type.compiled_function_node:
+                            case semantic_node_type.common_method_node: if ((dn as function_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticMethodWithType((dn as function_node).name, loc)); break;
+                        }
+                    }
+            if (context.static_variable_converted)
             {
-            	switch (dn.semantic_node_type)
-            	{
-            		case semantic_node_type.class_field : if (!(dn as class_field).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field,loc,null)); break;
-            		case semantic_node_type.compiled_variable_definition : if (!(dn as compiled_variable_definition).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field,loc,null)); break;
-            		case semantic_node_type.compiled_property_node:
-            		case semantic_node_type.common_property_node : if ((dn as property_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticPropertyWithType(dn as property_node,loc,null)); break;
-            		case semantic_node_type.compiled_function_node:
-            		case semantic_node_type.common_method_node:  if ((dn as function_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticMethodWithType((dn as function_node).name,loc)); break;
-            	}
+                AddError(new CanNotReferenceToNonStaticFromStaticInitializer(dn, loc));
+                return null;
             }
-            if (context.inStaticArea())
+            else if (context.inStaticArea())
             {
-                AddError(new CanNotReferenceToNonStaticFromStatic(dn,loc));
+                AddError(new CanNotReferenceToNonStaticFromStatic(dn, loc));
                 return null;
             }
             else
@@ -16775,6 +16780,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.var_def_statement _var_def_statement)
         {
             var_def_statement_converting = true;
+
             if (_var_def_statement.vars_type != null && _var_def_statement.vars_type is procedure_header)
             {
                 var ph = _var_def_statement.vars_type as procedure_header;
@@ -16786,7 +16792,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
 
             }
-
+            context.static_variable_converted = _var_def_statement.var_attr == SyntaxTree.definition_attribute.Static ? true : false;
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition fld)
             {
                 if (fld.formal_parameters != null && fld.formal_parameters.params_list.Select(x => x.vars_type).Any(x=>x is lambda_inferred_type))
@@ -16963,6 +16969,7 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converted_type != null && context.converting_block() == block_type.type_block && context.converted_type.IsStatic && _var_def_statement.var_attr != definition_attribute.Static)
                 AddError(get_location(_var_def_statement), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             var_def_statement_converting = false;
+            context.static_variable_converted = false;
             if (is_event) return;
             context.save_var_definitions();
 

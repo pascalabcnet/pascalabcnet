@@ -1947,6 +1947,43 @@ namespace PascalABCCompiler.TreeConverter
             return string.Format(StringResources.Get(message, name));
         }
     }
+
+    public class CanNotReferenceToNonStaticFromStaticInitializer : CompilationErrorWithLocation
+    {
+        string message = "CAN_NOT_REFERENCE_TO_NONSTATIC_METHOD_{0}_FROM_STATIC_INITIALIZER";
+        string name;
+        public CanNotReferenceToNonStaticFromStaticInitializer(definition_node dn, location loc)
+            : base(loc)
+        {
+            string meth_name;
+            switch (dn.general_node_type)
+            {
+                case general_node_type.function_node:
+                    meth_name = (dn as function_node).name;
+                    if (meth_name.Contains(compiler_string_consts.event_add_method_prefix) ||
+                        meth_name.Contains(compiler_string_consts.event_remove_method_prefix))
+                    {
+                        meth_name = meth_name.Replace(compiler_string_consts.event_add_method_prefix, "");
+                        meth_name = meth_name.Replace(compiler_string_consts.event_remove_method_prefix, "");
+                        message = "CAN_NOT_REFERENCE_TO_NONSTATIC_EVENT_{0}_FROM_STATIC_INITIALIZER";
+                    }
+                    break;
+                case general_node_type.variable_node:
+                    meth_name = (dn as var_definition_node).name;
+                    message = "CAN_NOT_REFERENCE_TO_NONSTATIC_FIELD_{0}_FROM_STATIC_INITIALIZER";
+                    break;
+                default:
+                    message = "CAN_NOT_REFERENCE_TO_NONSTATIC_{0}_FROM_INITIALIZER";
+                    meth_name = "";
+                    break;
+            }
+            name = meth_name;
+        }
+        public override string ToString()
+        {
+            return string.Format(StringResources.Get(message, name));
+        }
+    }
     /*->*/
     public class CanNotReferenceToNonStaticFieldWithType : CompilationError
     {
