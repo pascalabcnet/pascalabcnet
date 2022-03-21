@@ -332,12 +332,15 @@ namespace PascalABCCompiler.TreeConverter
             is_order_independed_method_description = false;
             _has_nested_functions = false;
             finally_blocks_depth = 0;
+            static_variable_converted = false;
         }
         
         public void clear_type_prededinitions()
         {
             _types_predefined.Clear();
         }
+
+        public bool static_variable_converted;
 
         public bool inStaticArea()
         {

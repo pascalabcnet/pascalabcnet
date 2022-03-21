@@ -8949,22 +8949,27 @@ namespace PascalABCCompiler.TreeConverter
                 if (scope != null)
                     if (context.WithVariables.ContainsKey(scope))
                         return context.WithVariables[scope];
-            		else
+                    else
             if (context.WithTypes.Contains(scope))
+                    {
+                        switch (dn.semantic_node_type)
+                        {
+                            case semantic_node_type.class_field: if (!(dn as class_field).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field, loc, null)); break;
+                            case semantic_node_type.compiled_variable_definition: if (!(dn as compiled_variable_definition).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field, loc, null)); break;
+                            case semantic_node_type.compiled_property_node:
+                            case semantic_node_type.common_property_node: if ((dn as property_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticPropertyWithType(dn as property_node, loc, null)); break;
+                            case semantic_node_type.compiled_function_node:
+                            case semantic_node_type.common_method_node: if ((dn as function_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticMethodWithType((dn as function_node).name, loc)); break;
+                        }
+                    }
+            if (context.static_variable_converted)
             {
-            	switch (dn.semantic_node_type)
-            	{
-            		case semantic_node_type.class_field : if (!(dn as class_field).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field,loc,null)); break;
-            		case semantic_node_type.compiled_variable_definition : if (!(dn as compiled_variable_definition).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field,loc,null)); break;
-            		case semantic_node_type.compiled_property_node:
-            		case semantic_node_type.common_property_node : if ((dn as property_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticPropertyWithType(dn as property_node,loc,null)); break;
-            		case semantic_node_type.compiled_function_node:
-            		case semantic_node_type.common_method_node:  if ((dn as function_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticMethodWithType((dn as function_node).name,loc)); break;
-            	}
+                AddError(new CanNotReferenceToNonStaticFromStaticInitializer(dn, loc));
+                return null;
             }
-            if (context.inStaticArea())
+            else if (context.inStaticArea())
             {
-                AddError(new CanNotReferenceToNonStaticFromStatic(dn,loc));
+                AddError(new CanNotReferenceToNonStaticFromStatic(dn, loc));
                 return null;
             }
             else
@@ -12925,6 +12930,12 @@ namespace PascalABCCompiler.TreeConverter
         private void add_generic_eliminations(common_type_node param, List<SyntaxTree.type_definition> specificators)
         {
             Hashtable used_interfs = new Hashtable();
+            // System.Enum это класс, но его наследники - записи
+            // Если указать "where T: Enum, record" - станет нельзя применять T=Enum, с ошибкой что Enum не запись
+            // Но чтобы в секции where override метода можно было указать record без System.Enum
+            // И чтобы можно было передавать конкретные энумы (которые записи), когда record не указан во where
+            // Разрешил стрелять себе в ногу, указывая Enum вместе с record или class
+            var base_is_enum = false;
             for (int i = 0; i < specificators.Count; ++i)
             {
                 SyntaxTree.declaration_specificator ds = specificators[i] as SyntaxTree.declaration_specificator;
@@ -12933,7 +12944,7 @@ namespace PascalABCCompiler.TreeConverter
                     switch (ds.specificator)
                     {
                         case SyntaxTree.DeclarationSpecificator.WhereDefClass:
-                            if (i == 0)
+                            if (i == 0 || i == 1 && base_is_enum)
                             {
                                 param.is_class = true;
                             }
@@ -12943,7 +12954,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             break;
                         case SyntaxTree.DeclarationSpecificator.WhereDefValueType:
-                            if (i == 0)
+                            if (i == 0 || i == 1 && base_is_enum)
                             {
                                 param.internal_is_value = true;
                             }
@@ -13014,6 +13025,10 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 check_cycle_inheritance(param, spec_type);
                                 param.SetBaseType(spec_type);
+                                base_is_enum = spec_type == SystemLibrary.SystemLibrary.enum_base_type;
+                                // Чтобы в секции where override метода можно было указать class вместо конкретного типа
+                                // Иначе CLR падает с TypeLoadException
+                                if (!base_is_enum) param.is_class = true;
                             }
                         }
                     }
@@ -14236,8 +14251,32 @@ namespace PascalABCCompiler.TreeConverter
                                 cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
                                 
                             }
-                            if (is_override && _procedure_attributes_list.Parent is procedure_header ph && ph.where_defs != null)
-                                AddError(cmn.loc, "OVERRIDE_METHODS_CANNOT_CONTAIN_WHERE_SECTION");
+                            if (is_override && (_procedure_attributes_list.Parent as procedure_header)?.where_defs is where_definition_list where_node)
+                            {
+                                var where_loc = get_location(where_node);
+
+                                var gen_pars1 = cmn.overrided_method.get_generic_params_list();
+                                var gen_pars2 = cmn.get_generic_params_list();
+                                System.Diagnostics.Debug.Assert(gen_pars1.Count == gen_pars2.Count);
+
+                                for (int par_i = 0; par_i < gen_pars1.Count; par_i++)
+                                {
+                                    var gen_par1 = gen_pars1[par_i] as common_type_node;
+                                    var gen_par2 = gen_pars2[par_i] as common_type_node;
+
+                                    if (gen_par2.base_type != SystemLibrary.SystemLibrary.object_type && !convertion_data_and_alghoritms.eq_type_nodes(gen_par2.base_type, gen_par1.base_type, true))
+                                        AddError(where_loc, "OVERRIDE_WHERE_TYPE_MUST_BE_SAME", gen_par2.name, gen_par1.base_type.PrintableName);
+
+                                    if (gen_par2.has_explicit_default_constructor && !gen_par1.has_explicit_default_constructor)
+                                        AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "constructor");
+                                    if (gen_par2.is_class && !gen_par1.is_class)
+                                        AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "class");
+                                    if (gen_par2.is_value && !gen_par1.is_value)
+                                        AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "record");
+
+                                }
+
+                            }
 
                             if (cmn.field_access_level < cmn.overrided_method.field_access_level)
                                 AddError(cmn.loc, "CAN_NOT_BE_DOWN_ACCESS_LEVEL_FOR_METH");
@@ -16741,6 +16780,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.var_def_statement _var_def_statement)
         {
             var_def_statement_converting = true;
+
             if (_var_def_statement.vars_type != null && _var_def_statement.vars_type is procedure_header)
             {
                 var ph = _var_def_statement.vars_type as procedure_header;
@@ -16752,7 +16792,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
 
             }
-
+            context.static_variable_converted = _var_def_statement.var_attr == SyntaxTree.definition_attribute.Static ? true : false;
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition fld)
             {
                 if (fld.formal_parameters != null && fld.formal_parameters.params_list.Select(x => x.vars_type).Any(x=>x is lambda_inferred_type))
@@ -16929,6 +16969,7 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converted_type != null && context.converting_block() == block_type.type_block && context.converted_type.IsStatic && _var_def_statement.var_attr != definition_attribute.Static)
                 AddError(get_location(_var_def_statement), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             var_def_statement_converting = false;
+            context.static_variable_converted = false;
             if (is_event) return;
             context.save_var_definitions();
 

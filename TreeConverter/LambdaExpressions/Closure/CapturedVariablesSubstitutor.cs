@@ -1056,20 +1056,20 @@ namespace TreeConverter.LambdaExpressions.Closure
                     types = new where_type_specificator_list()
                 };
 
-                if (el.is_class)
+                if (el.base_class != null && el.base_class != SystemLibrary.object_type)
+                {
+                    var d = LambdaHelper.ConvertSemanticTypeToSyntaxType(el.base_class);
+                    whereDef.types.Add(d);
+                }
+                else if (el.is_class)
                 {
                     var d = new declaration_specificator(DeclarationSpecificator.WhereDefClass, "class");
                     whereDef.types.Add(d);
                 }
+
                 if (el.is_value)
                 {
                     var d = new declaration_specificator(DeclarationSpecificator.WhereDefValueType, "record");
-                    whereDef.types.Add(d);
-                }
-
-                if (el.base_class != null && el.base_class != SystemLibrary.object_type)
-                {
-                    var d = LambdaHelper.ConvertSemanticTypeToSyntaxType(el.base_class);
                     whereDef.types.Add(d);
                 }
 

@@ -231,17 +231,14 @@ const on_start_folder = (folder_name, root_page)=>{
 		
 		res.container.className = "ps-root-container";
 		document.getElementById("page-select-container").append(res.container);
-	} else
+	}
+	else
 	{
 		if (!root_page) {
 			res.auto_fill_content = true;
 			root_page = document.createElement("div");
 			root_page.hidden = true;
 		}
-		
-		res.content_ref = root_page;
-		root_page.tree_obj = res;
-		document.getElementById("page-display-container-body").append(root_page);
 		
 		currently_loading_folder.folders.push(res);
 		res.root = currently_loading_folder;
@@ -294,13 +291,18 @@ const on_start_folder = (folder_name, root_page)=>{
 		res.body.append(res.container);
 		
 	}
-	
 	currently_loading_folder = res;
-	if (root_page) fix_links(root_page);
+	
+	if (root_page) {
+		res.content_ref = root_page;
+		root_page.tree_obj = res;
+		document.getElementById("page-display-container-body").append(root_page);
+		if (!res.auto_fill_content) fix_links(root_page);
+	}
+	
 }
 
 const on_page_added = (page)=>{
-	document.getElementById("page-display-container-body").append(page);
 	
 	let res = {
 		root: currently_loading_folder,
@@ -328,6 +330,7 @@ const on_page_added = (page)=>{
 	
 	res.content_ref = page;
 	page.tree_obj = res;
+	document.getElementById("page-display-container-body").append(page);
 	
 	currently_loading_folder.pages.push(res);
 	define_page_with_path(res.path, page);
@@ -393,7 +396,8 @@ const on_end_folder = ()=>{
 		
 		define_page_with_path(curr_folder.path, root_page);
 		currently_loading_folder = curr_folder.root;
-	}
+	} else if (!selected_page)
+		select_page(root_folder.content_ref);
 	
 }
 
@@ -1254,7 +1258,7 @@ k.Exec1(1,
 type
   t1 = class
     val1 := 1; // Не подходит, потому что поле класса
-    static val2 := 2; // И статичных полей это тоже касается
+    static val2 := 2; // И статических полей это тоже касается
   end;
 
 var
@@ -1298,11 +1302,11 @@ var val1_ptr := @val1;
 k.Exec1(1,
 
   val1,
-  HFQ(()-&gt;val1_ptr^), // захватили переменную val1_ptr, а не val1
+  HFQ(()-&gt;val1_ptr^), // Захватили переменную val1_ptr, а не val1
 
   // val1 нигде не захвачена, поэтому теперь так можно
   @val1,
-  val1_ptr // то же самое
+  val1_ptr // То же самое
 
 );
 </code></pre>
@@ -1664,7 +1668,7 @@ var q := new MemorySegmentCCQ(q0);
 <p>И нет <code>GetData</code>, потому что в случае ошибок будут утечки памяти.
 Вместо него выделяйте память явно и передавайте её в <code>ReadData</code>.</p>
 <p>Так же, <code>WriteValue</code> может принимать размерное значение и <code>NativeValue</code>, но <code>ReadValue</code> принимает только <code>NativeValue</code>.<br />
-Это потому, что принимать размерное значение в <code>ReadValue</code> <code>var</code>-параметром не безопастно,
+Это потому, что принимать размерное значение в <code>ReadValue</code> <code>var</code>-параметром не безопасно,
 как и в случае передачи адреса в качестве <a path="../../Простые обёртки/Kernel/KernelArg"> <code>KernelArg</code> </a>.<br />
 Если вы понимаете что делаете - используйте <code>ReadData</code>, явно передавая в него адрес вашего значения (то есть указатель).<br />
 Но обычно лучше использовать <code>GetValue</code>, создающее и возвращающее новое размерное значение, либо <code>ReadValue</code> принимающее <code>NativeValue</code>.</p>
@@ -1849,7 +1853,7 @@ Context.Default.SyncInvoke(CombineAsyncQueue(
 </code></pre>
 <p>Эта программа запросит три разных значения, что не всегда то что надо.</p>
 <hr />
-<p>Чтоб использовать результат одной очереди несколько раз применяется <code>.Multiusable</code>:</p>
+<p>Чтобы использовать результат одной очереди несколько раз применяется <code>.Multiusable</code>:</p>
 <pre><code>## uses OpenCLABC;
 
 var Q := HFQ(()-&gt;
@@ -2077,7 +2081,7 @@ WaitFor(WaitAny(M1,M2,M3)); // Ожидание любого из маркеро
 </code></pre>
 <hr />
 <p><code>Wait</code>-очереди работают даже между вызовами <code>Context.BeginInvoke</code>, в отличии от всего остального в <code>OpenCLABC</code>.</p>
-<p>Это не всегда безопастно:</p>
+<p>Это не всегда безопасно:</p>
 <pre><code>Context.Default.BeginInvoke(M);
 Context.Default.BeginInvoke(WaitFor(M) + Q);
 </code></pre>
