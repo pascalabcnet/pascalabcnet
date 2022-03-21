@@ -44,7 +44,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
 #if DEBUG
-            new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+            //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
 #endif
 
             // tuple_node

@@ -1,4 +1,5 @@
 ﻿{$reference %GAC%\InteractiveDataDisplay.WPF.dll}
+/// Модуль для визуализации данных
 unit PlotWPF;
 
 uses GraphWPF;
