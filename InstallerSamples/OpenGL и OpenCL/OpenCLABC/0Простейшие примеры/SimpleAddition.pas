@@ -13,7 +13,7 @@ var A := new CLArray<integer>(10);
 prog['TEST'].Exec1(10, // Используем 10 ядер
   
   // Заполняем весь массив значениями (1), прямо перед выполнением
-  A.NewQueue.AddFillValue(1)
+  A.NewQueue.ThenFillValue(1)
   
 );
 

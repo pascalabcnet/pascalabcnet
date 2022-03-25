@@ -13,7 +13,8 @@ begin
     // Чтение и компиляция .cl файла
     
     {$resource MatrMlt.cl} // Засовывает файл MatrMlt.cl внуть .exe
-    // Вообще лучше прекомпилировать .cl файл (загружать в переменную ProgramCode)
+    // Вообще лучше прекомпилировать .cl файл
+    // (загружать в переменную типа ProgramCode)
     // И сохранять с помощью метода ProgramCode.SerializeTo
     // А полученный бинарник уже подключать через $resource
     var code := new ProgramCode(Context.Default,
@@ -26,12 +27,12 @@ begin
     
     'Матрица A:'.Println;
     var A_Matr := MatrRandomReal(MatrW,MatrW,0,1).Println;
-    Writeln;
+    Println;
     var A := new MemorySegment(MatrByteSize);
     
     'Матрица B:'.Println;
     var B_Mart := MatrRandomReal(MatrW,MatrW,0,1).Println;
-    Writeln;
+    Println;
     var B := new MemorySegment(MatrByteSize);
     
     var C := new MemorySegment(MatrByteSize);
@@ -39,7 +40,7 @@ begin
     'Вектор V1:'.Println;
     var V1_Arr := ArrRandomReal(MatrW);
     V1_Arr.Println;
-    Writeln;
+    Println;
     var V1 := new MemorySegment(VecByteSize);
     
     var V2 := new MemorySegment(VecByteSize);
@@ -51,38 +52,44 @@ begin
     // Подготовка очередей выполнения
     
     var Calc_C_Q :=
-      code['MatrMltMatr'].NewQueue.AddExec2(MatrW, MatrW, // Выделяем ядра в форме квадрата, всего MatrW*MatrW ядер
-        A.NewQueue.AddWriteArray2(A_Matr),
-        B.NewQueue.AddWriteArray2(B_Mart),
+      // Выделяем ядра в форме квадрата, всего MatrW*MatrW ядер
+      code['MatrMltMatr'].NewQueue.ThenExec2(MatrW, MatrW,
+        A.NewQueue.ThenWriteArray2(A_Matr),
+        B.NewQueue.ThenWriteArray2(B_Mart),
         C,
         W
-      );
+      // DiscardResult не обязательно, но желательно
+      // чтобы не использовать результат случайно
+      ).DiscardResult;
     
     var Otp_C_Q :=
-      C.NewQueue.AddReadArray2(A_Matr) +
-      HPQ(()->
+      C.NewQueue.ThenGetArray2&<real>(MatrW, MatrW)
+      .ThenQuickUse(C_Matr->
       begin
         'Матрица С = A*B:'.Println;
-        A_Matr.Println;
-        Writeln;
-      end);
+        C_Matr.Println;
+        Println;
+      end).DiscardResult;
     
     var Calc_V2_Q :=
-      code['MatrMltVec'].NewQueue.AddExec1(MatrW,
+      code['MatrMltVec'].NewQueue.ThenExec1(MatrW,
         C,
-        V1.NewQueue.AddWriteArray1(V1_Arr),
+        V1.NewQueue.ThenWriteArray1(V1_Arr),
         V2,
         W
-      );
+      ).DiscardResult;
     
     var Otp_V2_Q :=
-      V2.NewQueue.AddReadArray1(V1_Arr) +
-      HPQ(()->
+      V2.NewQueue.ThenGetArray1&<real>
+      .ThenQuickUse(V2_Arr->
       begin
         'Вектор V2 = C*V1:'.Println;
-        V1_Arr.Println;
-        Writeln;
-      end);
+        V2_Arr.Println;
+        Println;
+      // Единственный DiscardResult, меняющий поведение очереди:
+      // С ним не выделяются ресурсы на то, чтобы передать V2_Arr
+      // Из результата ThenGetArray1 в результат SyncInvoke
+      end).DiscardResult;
     
     // Выполнение всего и сразу асинхронный вывод
     
@@ -95,6 +102,10 @@ begin
     );
     
   except
-    on e: Exception do Writeln(e); // Эта строчка позволяет выводить всю ошибку, если при выполнении Context.SyncInvoke возникла ошибка
+    // except позволяет получать список ошибку,
+    // возникшую при выполнении SyncInvoke
+    on ae: System.AggregateException do
+      foreach var e in ae.InnerExceptions do
+        Println(e); 
   end;
 end.

@@ -293,11 +293,13 @@ const on_start_folder = (folder_name, root_page)=>{
 	}
 	currently_loading_folder = res;
 	
-	if (root_page) {
+	if (root_folder !== res) {
 		res.content_ref = root_page;
 		root_page.tree_obj = res;
 		document.getElementById("page-display-container-body").append(root_page);
-		if (!res.auto_fill_content) fix_links(root_page);
+		add_to_switch_list(root_page);
+		if (!res.auto_fill_content)
+			fix_links(root_page);
 	}
 	
 }
@@ -334,6 +336,7 @@ const on_page_added = (page)=>{
 	
 	currently_loading_folder.pages.push(res);
 	define_page_with_path(res.path, page);
+	add_to_switch_list(page);
 	fix_links(page);
 	
 	if (!selected_page && !document.location.hash) select_page(page);
@@ -465,13 +468,16 @@ const define_broken_lnk = (path, source, fixer)=>{
 	});
 }
 
-const fix_links = (page)=>{
+const add_to_switch_list = (o)=>{
 	
-	if (globalThis.last_page) {
-		page.page_l = last_page;
-		last_page.page_r = page;
+	if (add_to_switch_list.last_o) {
+		o.page_l = add_to_switch_list.last_o;
+		add_to_switch_list.last_o.page_r = o;
 	}
-	last_page = page;
+	add_to_switch_list.last_o = o;
+	
+}
+const fix_links = (page)=>{
 	
 	for (let lnk of page.getElementsByTagName('a'))
 	{
@@ -1024,12 +1030,12 @@ Writeln('='*30);
 <script>on_start_folder("Device", document.getElementById("page-5"))</script>
 <script>on_end_folder()</script>
 <div id="page-6" page_name="" hidden=true>
-<p>Для отправки команд в GPU необходим контекст (объект типа <code>Context</code>):<br />
-Он содержит информацию о том, какие устройства будут использоваться для выполнения кода на GPU и хранения содержимого буферов.</p>
+<p>Контекст (объект типа <code>Context</code>) содержит информацию об устройствах,
+на которых надо выделяет области памяти <code>OpenCL</code> и выполнять код для GPU.</p>
 <hr />
 <p>Создать контекст можно конструктором (<code>new Context(...)</code>).<br />
 Контекст можно и не создавать, используя везде свойство <code>Context.Default</code>.</p>
-<p>Если в операции, требующей контекст (как выделение памяти GPU или выполнение программы на GPU),
+<p>Если в операции, требующей контекст (как выделение памяти GPU),
 его не указать - будет автоматически выбран <code>Context.Default</code>.<br />
 Неявные очереди всегда используют <code>Context.Default</code>.</p>
 <p>Изначально этому свойству присваивается контекст, использующий GPU, если оно имеется,
@@ -1162,7 +1168,7 @@ Writeln(s2);
 Как минимум они требуют освобождения в <code>try-finally</code> чтобы избежать утечек памяти.
 И защиты от дурака, не возволяющей записать значение типа <code>real</code> туда, где хранится <code>int64</code> - не существует.</p>
 <p>Как что-то среднее между этими двумя вариантами - существует <code>NativeValue&lt;T&gt;</code>:<br />
-Этот класс является обёрткой указателя. Именно обычного указателя - не памяти <code>GPU</code> как все остальные простые обёртки <code>OpenCLABC</code>.</p>
+Этот класс является обёрткой указателя на область памяти RAM.</p>
 <pre><code>## uses OpenCLABC;
 
 // В конструктор необходимо передавать значение,
@@ -1170,12 +1176,13 @@ Writeln(s2);
 // Но можно передать default, чтобы заполнить выделяемую память нулями
 var nv := new NativeValue&lt;integer&gt;(default(integer));
 
-nv.Value := 5; // Значение можно и читать,
-nv.Value.Println; // и перезаписывать
+nv.Value := 5; // Перезаписываем значение,
+nv.Value.Println; // И читаем назад
 
 // Напрямую получать доступ к области памяти,
 // через свойство Pointer, не рекомендуется
 Writeln(nv.Pointer);
+// Кроме как передавать nv.Pointer^ var-параметром
 
 nv.Dispose; // Освобождение памяти - вызывается и само при сборке мусора
 </code></pre>
@@ -1270,7 +1277,7 @@ procedure p1;
 var val4 := 4;
 begin
 
-  // А val5 однозначно подходит, потому что объявлена не только в той же
+  // Однозначно подходит, потому что объявлена не только в той же
   // подпрограмме, но и прямо перед использованием в k.Exec*
   var val5 := 5;
 
@@ -1294,7 +1301,7 @@ begin end.
 var k: Kernel;
 var val1 := 3;
 
-// На val1 всё ещё накладываются все ограничени,
+// На val1 всё ещё накладываются все ограничения,
 // когда val1_ptr использована в качестве KernelArg
 // Но к самой val1_ptr эти ограничения не применяются
 var val1_ptr := @val1;
@@ -1352,7 +1359,7 @@ end.
 </ol>
 <p>Обратите внимание: Компилятор не заставит вас следовать описанным тут ограничениям.
 И показанные на этой странице коды могут работать не смотря на эти ограничения,
-потому что саму область памяти, на которую ссылается <code>KernelArg</code> в нём, никто никогда не уничтожает.</p>
+потому что саму область памяти, на которую ссылается созданный <code>KernelArg</code>, никто никогда не уничтожает.</p>
 <p>Но в то же время эту же область памяти может использовать под другие данные, таким образом
 заменяя значение которое вы пытались передать в GPU на мусорные данные.</p>
 <p>Это плохо в первую очередь потому, что на перезапись этих данных может повлиять совершенно не связанная
@@ -1446,24 +1453,59 @@ Writeln(Context.Default.SyncInvoke( Q.Cast&amp;&lt;object&gt; ));
 Writeln(Context.Default.SyncInvoke( Q.Cast&amp;&lt;Exception&gt; ));
 
 Sleep(1000); // Чтобы было видно предыдущий вывод
-//Ошибка времени выполнения: .Cast не может преобразовывать nil в System.Int32
+//Ошибка времени выполнения: .Cast не может преобразовывать nil в integer
 // Ошибка кидается ещё в момент создания .Cast очереди
 Writeln(Context.Default.SyncInvoke( Q.Cast&amp;&lt;integer&gt; ));
 </code></pre>
-<p>Подробнее <a path="../Создание очередей/Из очереди + преобразователя">тут</a>.</p>
+<p>Подробнее <a path="../Создание очередей/С кодом для CPU">тут</a>.</p>
+<hr />
+<p>В то же время, если результат выполнения очереди не нужен,
+от него можно избавится с помощью <code>.DiscardResult</code>.</p>
+<p>Это может понадобится если вы хотите:</p>
+<ul>
+<li>Защититься от случайного использования результата;</li>
+<li>Передать очередь туда, где ожидается <code>CommandQueueNil</code>;</li>
+<li>Сократить (мизерное, но не нулевое) использование ресурсов, выделяемых для передачи резутата. К примеру:</li>
+</ul>
+<pre><code>## uses OpenCLABC;
+
+var Q := HFQQ(()-&gt;
+begin
+  Writeln('Функция выполнилась');
+  Result := 5;
+end).DiscardResult;
+
+var t := Context.Default.BeginInvoke(Q as CommandQueueBase);
+$'Has result: {not (t is CLTaskNil)}'.Println;
+
+t.Wait;
+</code></pre>
+<p>Без <code>.DiscardResult</code> - <code>BeginInvoke</code> создаст <code>CLTask&lt;integer&gt;</code>,
+не смотря на то, что в него передают <code>CommandQueueBase</code>.</p>
+<p>А с <code>.DiscardResult</code> - <code>HFQQ</code> выполняется как будто это <code>HPQQ</code>.</p>
+<p>Обратите внимание, если результат очереди выкидывается, без
+какого-либо использования - ресурсы на него не выделяются. К примеру:</p>
+<pre><code>## uses OpenCLABC;
+
+Context.Default.SyncInvoke(
+  HFQQ(()-&gt;1) +
+  HFQQ(()-&gt;2)
+);
+</code></pre>
+<p>Первая <code>HFQQ</code> выполнится как будто это <code>HPQQ</code>, потому что
+из <code>SyncInvoke</code> можно получить только результат второй <code>HFQQ</code>.</p>
 <hr />
 <p>Очереди, созданные из областей памяти OpenCL или kernel'ов возващают свои области памяти/<code>Kernel</code>'ы соответственно, из которых были созданы;<br />
-Очереди, созданные с <code>HFQ</code> - значение, которое вернёт переданная функция;<br />
-Очереди, созданные с <code>HPQ</code> являются <code>CommandQueueNil</code>.</p>
+Очереди, созданные с <code>HF[Q]Q</code> - значение, которое вернёт переданная функция;<br />
+Очереди, созданные с <code>HP[Q]Q</code> являются <code>CommandQueueNil</code>.</p>
 <p>Демонстрация:</p>
 <pre><code>## uses OpenCLABC;
 
 /// Вывод типа и значения объекта
 procedure OtpObject(o: object) :=
-$'{o?.GetType}[{_ObjectToString(o)}]'.Println;
-// &quot;o?.GetType&quot; это короткая форма &quot;o=nil ? nil : o.GetType&quot;,
-// то есть, берём или тип объекта, или nil если сам объект nil
-// _ObjectToString это функция, которую использует Writeln для форматирования значений
+$'{if o=nil then nil else TypeName(o)}[{_ObjectToString(o)}]'.Println;
+// _ObjectToString это функция, которую используют
+// Writeln и Println для форматирования значений
 
 procedure Test(q: CommandQueueBase) :=
 OtpObject(Context.Default.SyncInvoke(
@@ -1476,14 +1518,14 @@ var s := new MemorySegment(1);
 // Тип - MemorySegment, потому что очередь создали из него
 Test( s.NewQueue );
 
-// Тип - Int32 (то есть integer), потому что это тип по умолчанию для выражения (5)
-Test( HFQ(()-&gt;5) );
+// Тип - integer, потому что это тип по умолчанию для выражения (5)
+Test( HFQQ(()-&gt;5) );
 
 // Тип - string, по той же причине
-Test( HFQ(()-&gt;'abc') );
+Test( HFQQ(()-&gt;'abc') );
 
-// Тип отсутствует, потому что HPQ возвращает nil
-Test( HPQ(()-&gt;Print('Выполнилась HPQ:')) );
+// Тип отсутствует, потому что HP[Q]Q возвращает nil
+Test( HPQQ(()-&gt;Print('Выполнилась HPQQ:')) );
 </code></pre>
 <hr />
 <p>Проверить что очередь ничего не возвращает очень просто:</p>
@@ -1494,7 +1536,7 @@ if Q is CommandQueueNil(var cqn) then
   p2(Q);
 </code></pre>
 <p>Но для типа <code>CommandQueue&lt;T&gt;</code> надо указать конкретный тип, чтобы вызвать <code>is</code>.
-Другими словами, с помощью <code>is</code> можно проверять только по 1 типу возвращаемого значения за раз:</p>
+Другими словами, с помощью <code>is</code> можно проверять только по одному типу возвращаемого значения за раз:</p>
 <pre><code>var Q: CommandQueueBase;
 ...
 if Q is CommandQueueNil(var cqn) then
@@ -1510,7 +1552,7 @@ if Q is CommandQueue&lt;word&gt;(var cq) then
 <pre><code>uses OpenCLABC;
 
 procedure p1(cq: CommandQueueNil) := Writeln('nil');
-procedure p2&lt;T&gt;(cq: CommandQueue&lt;T&gt;) := Writeln($'&lt;{typeof(T)}&gt;');
+procedure p2&lt;T&gt;(cq: CommandQueue&lt;T&gt;) := Writeln($'&lt;{TypeToTypeName(typeof(T))}&gt;');
 
 type
   // Не обязательно запись
@@ -1540,7 +1582,7 @@ type
   QueueConverterResTName = record(ITypedCQConverter&lt;string&gt;)
     
     public function ConvertNil(cq: CommandQueueNil): string := nil;
-    public function Convert&lt;T&gt;(cq: CommandQueue&lt;T&gt;): string := typeof(T).ToString;
+    public function Convert&lt;T&gt;(cq: CommandQueue&lt;T&gt;): string := TypeToTypeName(typeof(T));
     
   end;
   
@@ -1575,22 +1617,26 @@ end.
 </ul>
 <p>У <code>CLTask&lt;T&gt;</code> так же есть метод <code>.WaitRes</code>, вызывающий <code>.Wait</code> и затем возвращающий результат очереди.</p>
 <hr />
-<p>Если при выполнении возникла ошибка, о ней выведет не полную информацию. Чтобы получить всю информацию - используется <code>try</code>:</p>
-<pre><code>try
+<p>При выполнении очереди может произойти несколько исключений, поэтому, чтобы получить можно было все, их упаковывает в <code>System.AggregateException</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+try
   
-  //ToDo ваш код, вызывающий ошибку
+  // Context.SyncInvoke или CLTask.Wait
+  Context.Default.SyncInvoke(Q);
   
 except
-  // Writeln выводит все внутренние исключения. &quot;e.ToString&quot; тоже.
-  on e: Exception do Writeln(e);
+  on e: System.AggregateException do
+    e.InnerExceptions.PrintLines;
 end;
 </code></pre>
-<p>Для этого кода есть стандартный снипет. Чтобы активировать его - напишите <code>tryo</code> и нажмите Shift+Пробел.</p>
+<p>Но для более тонкого контроля лучше использовать
+<a path="../Создание очередей/Обработка исключений"><code>.Handle*</code> методы очередей</a>.</p>
 </div>
 <script>on_start_folder("Выполнение очередей", document.getElementById("page-19"))</script>
 <script>on_end_folder()</script>
 <div id="page-20" page_name="" hidden=true>
-<h1>Есть всего 11 базовых способов создать очередь:</h1>
+<h1>Есть всего 10 базовых способов создать очередь:</h1>
 <ol>
 <li><p><a path="Из объекта с коммандами">				Из объекта с коммандами					</a></p>
 </li>
@@ -1600,13 +1646,11 @@ end;
 </li>
 <li><p><a path="Комбинируя другие очереди">				Из нескольких других очередей			</a></p>
 </li>
-<li><p><a path="Из очереди + преобразователя">			Из очереди + преобразования результата	</a></p>
-</li>
 <li><p><a path="Из повторения очереди">					Из повторения одной очереди				</a></p>
 </li>
 <li><p><a path="Множественное использование очереди">	Несколько очередей с общим результатом	</a></p>
 </li>
-<li><p><a path="Особые .Add методы">					Особыми <code>.Add*</code> методами				</a></p>
+<li><p><a path="Общие методы CCQ объектов">				Общими методами CCQ объектов			</a></p>
 </li>
 <li><p><a path="Из ожидания очередей">					Из ожидания других очередей				</a></p>
 </li>
@@ -1618,11 +1662,12 @@ end;
 </div>
 <script>on_start_folder("Создание очередей", document.getElementById("page-20"))</script>
 <div id="page-21" page_name="Из объекта с коммандами" hidden=true>
-<p>Самый просто способ создать очередь — выбрать объект, имеющий методы, соответствующие командам для GPU, и вызвав его метод <code>.NewQueue</code>.</p>
-<p>Полученная очередь будет иметь особый тип, с припиской CCQ (что значит &quot;Command Container Queue&quot;, то есть очередь-контейнер для коман GPU).<br />
-К примеру, метод <code>CLArray&lt;byte&gt;.NewQueue</code> вернёт очередь типа <code>CLArrayCCQ&lt;byte&gt;</code>, наследующего от <code>CommandQueue&lt; CLArray&lt;byte&gt; &gt;</code>.<br />
-К такой очереди можно добавлять команды, вызывая её методы, имена которых начинаются с <code>.Add</code>.</p>
-<p>К примеру:</p>
+<p>OpenCL используется для передачи комманд в GPU.
+Поэтому в первую очередь стоит поговорить об очередях <code>OpenCLABC</code>, содержащих комманды для GPU.</p>
+<p>Такие очереди создаются из некоторых типов-простых_обёрток методом <code>.NewQueue</code> и имеют тип с припиской <code>CCQ</code>.<br />
+(&quot;Command Container Queue&quot;, то есть очередь-контейнер для коман GPU)<br />
+К примеру, метод <code>CLArray&lt;byte&gt;.NewQueue</code> вернёт очередь типа <code>CLArrayCCQ&lt;byte&gt;</code>, наследующего от <code>CommandQueue&lt; CLArray&lt;byte&gt; &gt;</code>.</p>
+<p>Чтобы создать саму комманду - надо вызвать соответствующий ей метод <code>CCQ</code> объекта. К примеру:</p>
 <pre><code>## uses OpenCLABC;
 
 // Массив на 3 элемента типа integer
@@ -1631,18 +1676,16 @@ var a := new CLArray&lt;integer&gt;(3);
 // Создаём очередь
 var q: CLArrayCCQ&lt;integer&gt; := a.NewQueue;
 
-// Добавлять команды в полученную очередь можно вызывая соответствующие методы
-q.AddWriteItem(1, 0);
-
-// .Add методы возвращают очередь, для которой их вызвали
-// (не копию, а именно ссылку на оригинал)
-// Поэтому можно добавлять по несколько команд в 1 строчке:
-q.AddWriteItem(5, 1).AddWriteItem(7, 2);
-// Все команды в q будут выполняться в порядке их добавления
-
-// .AddGet методы особенные, потому что они возвращают новую очередь
-// В данном случае эта очередь читает весь CLArray как обычный массив в RAM
-Context.Default.SyncInvoke(q.AddGetArray).Println;
+Context.Default.SyncInvoke(q
+  .ThenWriteValue(1, 0)
+  // Записывать по 1 элементу не эффективно
+  // Лучше сначала создать массив в RAM
+  // А затем послать его целиком
+  .ThenWriteArray(|5,7|, 1, 2,0)
+  // .ThenGet методы особенные, потому что не возвращают CCQ объект
+  // В данном случае эта комманда читает весь CLArray как обычный массив в RAM
+  .ThenGetArray
+).Println;
 </code></pre>
 <p>Также, <code>CCQ</code> очереди можно создавать из очередей, возвращающих объект с командами. Для этого используется конструктор:</p>
 <pre><code>var q0: CommandQueue&lt;MemorySegment&gt;;
@@ -1674,25 +1717,145 @@ var q := new MemorySegmentCCQ(q0);
 Но обычно лучше использовать <code>GetValue</code>, создающее и возвращающее новое размерное значение, либо <code>ReadValue</code> принимающее <code>NativeValue</code>.</p>
 <hr />
 <p>Кроме таких объектов, методы-команды для GPU есть только у <code>Kernel</code>. И все они представляют запуск kernel'а.</p>
+<hr />
+<p>Комманда <code>.ThenGet</code> не выполняется, если её результат выкидывается.
+Подробнее <a path="../Возвращаемое значение очередей/">тут</a>.</p>
+<p>Это оптимизация, которую вы можете заметить только в одном случае:
+Если параметры этой команды были неправильные - ошибка не возникнет.</p>
 </div>
 <script>on_page_added(document.getElementById("page-21"))</script>
 <div id="page-22" page_name="Из готового результата" hidden=true>
-<p>Переменной очереди можно присвоить значение, тип которого совпадает с возвращаемым значением очереди:</p>
-<pre><code>var q: CommandQueue&lt;integer&gt; := 5;
+<p>Константы в любом контексте позволяют проводить особые оптимизации.<br />
+В случае <code>OpenCLABC</code> - константные очереди являются константами только на время выполнения очереди.</p>
+<pre><code>## uses OpenCLABC;
+
+var cq := new ConstQueue&lt;integer&gt;(1);
+Context.Default.SyncInvoke(cq).Println;
+
+cq.Value := 2;
+Context.Default.SyncInvoke(cq).Println;
 </code></pre>
-<p>Этот код присваевает переменной <code>q</code> константную очередь, которая ничего не выполняет и возвращает <code>5</code>.</p>
-<p>Получить значение, из которого создали константную очередь, можно преобразовав её к <code>ConstQueue&lt;&gt;</code>:</p>
-<pre><code>if q is ConstQueue&lt;integer&gt;(var cq) then
-  Writeln($'Очередь была создана из значения ({cq.Val})') else
-  Writeln($'Очередь не константная');
+<p>Обратите внимание, <code>.Value</code> нельзя изменять пока <code>.BeginInvoke</code> не досоздаст <code>CLTask</code>. Иначе поведение неопределено.</p>
+<hr />
+<p>Так же, константную очередь можно создать присвоив значение результата туда, где ожидается очередь:</p>
+<pre><code>var q: CommandQueue&lt;integer&gt; := 1;
 </code></pre>
+<p>Для этого тип значения (<code>1</code>) и результата очереди <code>&lt;integer&gt;</code> должны полностью совпадать. К примеру так сделать не позволит:</p>
+<pre><code>//Ошибка: Нельзя преобразовать тип integer к CommandQueue&lt;object&gt;
+var q: CommandQueue&lt;object&gt; := 1;
+</code></pre>
+<p>Чтобы можно было присвоить - значение надо явно преобразовать к <code>object</code>:</p>
+<pre><code>var q: CommandQueue&lt;object&gt; := object(1);
+</code></pre>
+<p>Этот способ создания константной очереди обычно используется подпрограммами, принимающими очереди:</p>
+<pre><code>## uses OpenCLABC;
+
+procedure p1(q: CommandQueue&lt;integer&gt;) :=
+Context.Default.SyncInvoke(q).Println;
+
+p1(1);
+p1(HFQQ(()-&gt;2));
+</code></pre>
+<p>В <code>OpenCLABC</code> есть множество подпрограмм, принимающий очередь вместо значения.
+<a path="../Вложенные очереди/">Подробнее</a>.</p>
+<hr />
+<p>Если нужно сохранить константную очередь в переменную, можно написать:</p>
+<pre><code>var q1 := new ConstQueue&lt;integer&gt;(1);
+var q2: CommandQueue&lt;integer&gt; := 3;
+</code></pre>
+<p>Но оба способа объёмны и, что важнее, требуют указать тип значения явно.</p>
+<p>Поэтому в <code>OpenCLABC</code> есть вспомогательная подпрограмма:</p>
+<pre><code>var q3 := CQ(3);
+</code></pre>
+<hr />
+<p>У очередей есть возвращаемое значение, но чтобы передавать в них данные при запуске - можно
+или создавать новую очередь на каждое выполнение (что очень не эффективно), или выкручиваться так:</p>
+<pre><code>uses OpenCLABC;
+
+type
+  MyQueueContainer = sealed class
+    private Q: CommandQueue&lt;integer&gt;;
+    private par1 := new ConstQueue&lt;integer&gt;(-1);
+    private par2 := new ConstQueue&lt;string&gt;(nil);
+    
+    // Эта очередь ничего полезного не делает, но это только пример
+    public constructor := self.Q :=
+    MemorySegment.Create(sizeof(integer)).NewQueue
+    .ThenWriteValue( self.par1 )
+    .ThenQueue( self.par2.ThenQuickUse(x-&gt;Writeln(x)) )
+    .ThenGetValue&amp;&lt;integer&gt;;
+    
+    public function Invoke(par1: integer; par2: string): integer;
+    begin
+      var tsk: CLTask&lt;integer&gt;;
+      // Нужна блокировка, чтобы если метод Invoke будет выполнен
+      // в нескольких потоках одновременно, .Value параметров
+      // не могло поменяться пока Context.BeginInvoke создаёт CLTask
+      lock self do
+      begin
+        self.par1.Value := par1;
+        self.par2.Value := par2;
+        tsk := Context.Default.BeginInvoke(Q);
+      end;
+      
+      Result := tsk.WaitRes;
+    end;
+    
+  end;
+  
+begin
+  var cont := new MyQueueContainer;
+  
+  cont.Invoke(1, 'abc').Println;
+  cont.Invoke(2, 'def').Println;
+  
+end.
+</code></pre>
+<p>Но это не очень красиво. Можно сделать красивее, используя специальную очередь-параметр.<br />
+<code>ParameterQueue&lt;T&gt;</code> тоже является константной во время выполнения очереди, но используется по-другому:</p>
+<pre><code>uses OpenCLABC;
+
+type
+  MyQueueContainer = sealed class
+    private Q: CommandQueue&lt;integer&gt;;
+    private par1 := new ParameterQueue&lt;integer&gt;('par1');
+    private par2 := new ParameterQueue&lt;string&gt;('par2');
+    
+    // Эта очередь ничего полезного не делает, но это только пример
+    public constructor := self.Q :=
+    MemorySegment.Create(sizeof(integer)).NewQueue
+    .ThenWriteValue( self.par1 )
+    .ThenQueue( self.par2.ThenQuickUse(x-&gt;Writeln(x)) )
+    .ThenGetValue&amp;&lt;integer&gt;;
+    
+    public function Invoke(par1: integer; par2: string) :=
+    Context.Default.SyncInvoke(self.Q,
+      self.par1.NewSetter(par1),
+      self.par2.NewSetter(par2)
+    );
+    
+  end;
+  
+begin
+  var cont := new MyQueueContainer;
+  
+  cont.Invoke(1, 'abc').Println;
+  cont.Invoke(2, 'def').Println;
+  
+end.
+</code></pre>
+<p>Таким образом код получается значительно чище.<br />
+Кроме того, при запуске очереди проводятся проверки, чтобы очереди-параметры
+не оказывались не_определены или установлены дважды.</p>
 </div>
 <script>on_page_added(document.getElementById("page-22"))</script>
 <div id="page-23" page_name="С кодом для CPU" hidden=true>
 <p>Иногда между командами для GPU надо вставить выполнение обычного кода на CPU.
 А разрывать для этого очередь на две части - плохо, потому что
 одна целая очередь всегда выполнится быстрее двух её частей.</p>
-<p>Для таких случае существуют глобальные подпрограммы <code>HFQ</code> и <code>HPQ</code>:</p>
+<p>Поэтому существует множество типов очередей, хранящих обычный код для CPU.</p>
+<hr />
+<p>Чтобы создать самую простую такую очередь используются глобальные подпрограммы <code>HFQ</code> и <code>HPQ</code>:</p>
 <p>HFQ — Host Function Queue<br />
 HPQ — Host Procedure Queue<br />
 (Хост в контексте OpenCL - это CPU, потому что с него посылаются команды для GPU)</p>
@@ -1709,86 +1872,40 @@ Context.Default.SyncInvoke(Q
   .ThenConvert(x-&gt;$'x^2 = {x**2}')
 ).Println;
 </code></pre>
-<p>Они схожи с <code>HPQ</code> и <code>HFQ</code> соответственно, за исключением того, что <code>.ThenUse</code> возвращает значение, которое в него передали, а не <code>nil</code>.</p>
-</div>
-<script>on_page_added(document.getElementById("page-23"))</script>
-<div id="page-24" page_name="Комбинируя другие очереди" hidden=true>
-<p>Если сложить две очереди A и B (<code>var C := A+B</code>) — получится очередь C, в которой сначала выполнится A, а затем B.<br />
-Очередь C будет считаться выполненной тогда, когда выполнится очередь B.</p>
-<p>Если умножить две очереди A и B (<code>var C := A*B</code>) — получится очередь C, в которой одновременно начнут выполняться A и B.<br />
-Очередь C будет считаться выполненной тогда, когда обе очереди (A и B) выполнятся.</p>
-<p>Как и в математике, умножение имеет бОльший приоритет чем сложение.</p>
-<p>В обоих случаях очередь C будет возвращать то, что вернула очередь B. То есть если складывать и умножать много очередей - результат будет всегда возвращать то, что вернула самая последняя очередь.</p>
-<p>Простейший пример:</p>
-<pre><code>uses OpenCLABC;
+<p><code>.ThenUse</code> дублирует возвращаемое значение предыдущей очереди (<code>Q</code> в примере).<br />
+А <code>.ThenConvert</code> возвращает результат выполнения переданной функции, как и <code>HFQ</code>.</p>
+<hr />
+<p><code>OpenCLABC</code> очереди существуют чтобы можно было удобно описывать параллельные процедуры.
+Поэтому, с расчётом на параллельность, обычные очереди с кодом для CPU создают себе по одному потоку выполнения (<code>Thread</code>) при запуске.</p>
+<p>Этот поток выполнения запускается до выхода из <code>Context.BeginInvoke</code> и остаётся в режиме ожидая.<br />
+Но даже если игнорировать затраты на запуск потока, выход из режима ожидания это не моментальня операция.</p>
+<p>Если надо выполнить очень простое действие, как в последнем примере выше, эти затраты неоправданны.<br />
+Для таких случаев используется <code>Quick</code> версии очередей:</p>
+<pre><code>## uses OpenCLABC;
+var Q := HFQQ(()-&gt;5);
 
-begin
-  
-  var q1 := HPQ(()-&gt;
-  begin
-    // lock необходим чтобы при параллельном выполнении два потока
-    // не пытались использовать вывод одновременно. Иначе выведет кашу
-    lock output do Writeln('Очередь 1 начала выполняться');
-    Sleep(500);
-    lock output do Writeln('Очередь 1 закончила выполняться');
-  end);
-  var q2 := HPQ(()-&gt;
-  begin
-    lock output do Writeln('Очередь 2 начала выполняться');
-    Sleep(500);
-    lock output do Writeln('Очередь 2 закончила выполняться');
-  end);
-  
-  Writeln('Последовательное выполнение:');
-  Context.Default.SyncInvoke( q1 + q2 );
-  
-  Writeln;
-  Writeln('Параллельное выполнение:');
-  Context.Default.SyncInvoke( q1 * q2 );
-  
-end.
+Context.Default.SyncInvoke(Q
+  .ThenQuickUse(x-&gt;Println($'x*2 = {x*2}'))
+  .ThenQuickConvert(x-&gt;$'x^2 = {x**2}')
+).Println;
 </code></pre>
-<p>Операторы += и *= также применимы к очередям.<br />
-И как и для чисел - <code>A += B</code> работает как <code>A := A+B</code> (и аналогично с *=).<br />
-А значит, возвращаемые типы очередей A и B должны быть одинаковыми, чтобы к ним можно было применить +=/*=.</p>
-<p>Если надо сложить/умножить много очередей - лучше применять <code>CombineSyncQueue</code>/<code>CombineAsyncQueue</code> соответственно.<br />
-Точнее <code>A+B+C</code> это то же самое что <code>CombineSyncQueue(CombineSyncQueue(A, B), C)</code>.<br />
-Поэтому <code>CombineSyncQueue(A, B, C)</code> создаст очередь немного быстрее чем <code>A+B+C</code>.<br />
-Но скорость выполнения очереди будет абсолютно одинаковой в этих двух случаях.</p>
-<p>Кроме того, они могут принимать ещё один параметр перед очередями:
-Этот параметр позволяет указать функцию преобразования, которая использует результаты всех входных очередей:</p>
-<pre><code>uses OpenCLABC;
+<p>В отличии от предыдущего примера, в данном будет создан только один поток выполнения (его всегда создаёт <code>Context.BeginInvoke</code>).</p>
+<p>В общем случае <code>Quick</code> очереди стараются выполняться на одном из уже существующих потоков выполнения, но так чтобы не нарушать порядок выполнения очередей.</p>
+<p>В случае <code>HFQ</code> и <code>HPQ</code>, их <code>Quick</code> варианты это <code>HFQQ</code> и <code>HPQQ</code> соответственно.</p>
+<hr />
+<p>Если вам необходимо быстро преобразовать тип возвращаемого значения очереди - можно использовать <code>.ThenQuickConvert</code>:</p>
+<pre><code>## uses OpenCLABC;
+var Q := HFQQ(()-&gt;1 as object);
 
-begin
-  
-  var q1 := HFQ( ()-&gt;1 );
-  var q2 := HFQ( ()-&gt;2 );
-  
-  // Выводит 2, то есть только результат последней очереди
-  // Так сделано из за вопросов производительности
-  Context.Default.SyncInvoke( q1+q2 ).Println;
-  // Однако бывает так, что нужны результаты всех сложенных/умноженных очередей
-  
-  // В таком случае надо использовать CombineSyncQueue и CombineAsyncQueue
-  // А точнее их перегрузку, первый параметр которой - функция преобразования
-  Context.Default.SyncInvoke(
-    CombineSyncQueue(
-      results-&gt;results.JoinToString, // Функция преобразования
-      q1, q2
-    )
-  ).Println;
-  // Теперь выводит строку &quot;1 2&quot;. Это то же самое, что вернёт &quot;Arr(1,2).JoinToString&quot;
-  
-end.
+Context.Default.SyncInvoke(
+  Q.ThenQuickConvert(x-&gt;integer(x))
+).Println;
 </code></pre>
-</div>
-<script>on_page_added(document.getElementById("page-24"))</script>
-<div id="page-25" page_name="Из очереди + преобразователя" hidden=true>
-<p>Если надо с минимальными затратами производительности изменить представление компилятора об очереди - лучше всего использовать <code>.Cast</code>.<br />
-Но он ограничен примерно так же, как метод последовательностей <code>.Cast</code>. То есть:</p>
+<p>Но в <code>OpenCLABC</code> для случая простого преобразования существует особо-оптимизированный метод <code>.Cast</code>.<br />
+Он ограничен примерно так же, как метод последовательностей <code>.Cast</code>. То есть:</p>
 <pre><code>uses OpenCLABC;
 
-type t1 = class  end;
+type t1 = class end;
 type t2 = class(t1) end;
 
 begin
@@ -1801,32 +1918,160 @@ begin
   // Можно, потому что к object можно преобразовать всё
   Context.Default.SyncInvoke( Q1.Cast&amp;&lt;object&gt; );
   
-  // Нельзя, преобразование между 2 записями, как из integer в byte, меняет представление данных в памяти
-  Context.Default.SyncInvoke( Q1.Cast&amp;&lt;byte&gt; );
+  //Ошибка: .Cast не может преобразовывать integer в byte
+  // Преобразование записей меняет представление данных в памяти
+  // Можно преобразовывать только object в запись и назад
+//  Context.Default.SyncInvoke( Q1.Cast&amp;&lt;byte&gt; );
   
-  // Можно, Q2 и так имеет тип CommandQueue&lt;integer&gt;, а значит тут Cast вернёт (Q2 as CommandQueue&lt;integer&gt;)
+  // Можно, Q2 и так имеет тип CommandQueue&lt;integer&gt;,
+  // а значит тут Cast вернёт (Q2 as CommandQueue&lt;integer&gt;)
   Context.Default.SyncInvoke( Q2.Cast&amp;&lt;integer&gt; );
   
   // Можно, потому что Q3 возвращает t2
   Context.Default.SyncInvoke( Q3.Cast&amp;&lt;t2&gt; );
   
-  // Нельзя, Q4 возвращает не t2 а t1, поэтому к t2 преобразовать не получится
-  Context.Default.SyncInvoke( Q4.Cast&amp;&lt;t2&gt; );
+  //Ошибка: Не удалось привести тип объекта &quot;t1&quot; к типу &quot;t2&quot;.
+  // Q4 возвращает не t2 а именно t1
+//  Context.Default.SyncInvoke( Q4.Cast&amp;&lt;t2&gt;.HandleDefaultRes(e-&gt;e.Message.Println&lt;&gt;nil, new t2) );
   
   // Можно, потому что t2 наследует от t1
   Context.Default.SyncInvoke( Q5.Cast&amp;&lt;t1&gt; );
+  
 end.
 </code></pre>
+<p>Кроме того, <code>.Cast</code> можно применять к очередям без типа результата:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQQ(()-&gt;begin end);
+var Q2 := HFQQ(()-&gt;5) as CommandQueueBase;
+
+// .Cast применимо к CommandQueueNil, но результат будет всегда nil
+Writeln( Context.Default.SyncInvoke(Q1.Cast&amp;&lt;object&gt;) );
+// .Cast применимо и к CommandQueueBase
+Writeln( Context.Default.SyncInvoke(Q2.Cast&amp;&lt;object&gt;) );
+</code></pre>
+<p>Ближайшей альтернативой к вызову <code>CommandQueueBase.Cast</code> будет вызов <code>.ConvertTyped</code> - но для этого надо на много больше кода.</p>
+<hr />
+<p>Основная оптимизация <code>.Cast</code> состоит в том, что преобразование не выполняется, если возможно.
+Но будьте осторожны, в некоторых случаях такая оптимизация приглушит ошибку:</p>
+<pre><code>uses OpenCLABC;
+
+type t1 = class end;
+type t2 = class(t1) end;
+
+begin
+  Context.Default.SyncInvoke( HFQ(()-&gt;new t1).Cast&amp;&lt;t2&gt;.Cast&amp;&lt;t1&gt; );
+end.
+</code></pre>
+<p>Преобразование в <code>t2</code> не выполняется из-за следующего <code>.Cast</code>, поэтому
+проверяется только преобразование <code>defalt(t1)</code> к <code>t2</code> (во время создания очереди) - а оно допустимое.</p>
 </div>
-<script>on_page_added(document.getElementById("page-25"))</script>
-<div id="page-26" page_name="Из повторения очереди" hidden=true>
+<script>on_page_added(document.getElementById("page-23"))</script>
+<div id="page-24" page_name="Комбинируя другие очереди" hidden=true>
+<p>Если сложить две очереди A и B (<code>var C := A+B</code>) — получится очередь C, в которой сначала выполнится A, а затем B.<br />
+Очередь C будет считаться выполненной тогда, когда выполнится очередь B.</p>
+<p>Если умножить две очереди A и B (<code>var C := A*B</code>) — получится очередь C, в которой одновременно начнут выполняться A и B.<br />
+Очередь C будет считаться выполненной тогда, когда обе очереди (A и B) выполнятся.</p>
+<p>Как и в математике, умножение имеет бОльший приоритет чем сложение.</p>
+<p>В обоих случаях очередь C будет возвращать то, что вернула очередь B. То есть если складывать и умножать много очередей - результат будет всегда возвращать то, что вернула самая последняя очередь.</p>
+<p>Простейший пример:</p>
+<pre><code>## uses OpenCLABC;
+
+var q1 := HPQ(()-&gt;
+begin
+  // lock необходим чтобы при параллельном выполнении два потока
+  // не пытались использовать вывод одновременно. Иначе выведет кашу
+  lock output do Writeln('Очередь 1 начала выполняться');
+  Sleep(500);
+  lock output do Writeln('Очередь 1 закончила выполняться');
+end);
+var q2 := HPQ(()-&gt;
+begin
+  lock output do Writeln('Очередь 2 начала выполняться');
+  Sleep(500);
+  lock output do Writeln('Очередь 2 закончила выполняться');
+end);
+
+Writeln('Последовательное выполнение:');
+Context.Default.SyncInvoke( q1 + q2 );
+
+Writeln;
+Writeln('Параллельное выполнение:');
+Context.Default.SyncInvoke( q1 * q2 );
+</code></pre>
+<p>Операторы += и *= также применимы к очередям.<br />
+И как и для чисел - <code>A += B</code> работает как <code>A := A+B</code> (и аналогично с *=).<br />
+А значит, возвращаемые типы очередей A и B должны быть одинаковыми, чтобы к ним можно было применить +=/*=.</p>
+<hr />
+<p>Если надо сложить/умножить много очередей - лучше применять <code>CombineSyncQueue</code>/<code>CombineAsyncQueue</code> соответственно.<br />
+Точнее <code>A+B+C</code> это то же самое что <code>CombineSyncQueue(CombineSyncQueue(A, B), C)</code>.<br />
+Поэтому <code>CombineSyncQueue(A, B, C)</code> создаст очередь немного быстрее чем <code>A+B+C</code>.<br />
+Но скорость выполнения очереди будет абсолютно одинаковой в этих двух случаях.</p>
+<p>Чтобы складывать/умножать много <code>CommandQueueBase</code> и <code>CommandQueueNil</code> очередей
+используются <code>Combine*QueueBase</code> и <code>Combine*QueueNil</code> соответственно.</p>
+<hr />
+<p>Используя <code>CombineConv*Queue</code> можно указать функцию преобразования, принимающую результаты всех скомбинированных очередей:</p>
+<pre><code>## uses OpenCLABC;
+
+var q1 := HFQ( ()-&gt;1 );
+var q2 := HFQ( ()-&gt;2 );
+
+// Выводит 2, то есть только результат последней очереди
+// Так сделано из за вопросов производительности
+Context.Default.SyncInvoke( q1+q2 ).Println;
+// Но бывает так, что нужны результаты всех сложенных/умноженных очередей
+
+// В таком случае надо использовать CombineConv*Queue
+Context.Default.SyncInvoke(
+  CombineConvSyncQueue(
+    results-&gt;results.JoinToString, // Функция преобразования
+    q1, q2
+  )
+).Println;
+// Выводит строку &quot;1 2&quot;. Это то же самое, что вернёт &quot;Arr(1,2).JoinToString&quot;
+</code></pre>
+<p>И так же как с другими очередями с кодом на CPU - есть <code>Quick</code> версия:</p>
+<pre><code>## uses OpenCLABC;
+
+var q1 := HFQQ( ()-&gt;1 );
+var q2 := HFQQ( ()-&gt;2 );
+
+Context.Default.SyncInvoke( q1+q2 ).Println;
+
+Context.Default.SyncInvoke(
+  CombineQuickConvSyncQueue(
+    results-&gt;results.JoinToString,
+    q1, q2
+  )
+).Println;
+</code></pre>
+<hr />
+<p>Если надо скомбинировать несколько очередей с разными типами результатов, но при этом использовать все результаты, можно использовать <code>CombineConv*QueueN*</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var q1 := HFQQ( ()-&gt;1 );
+var q2 := HFQQ( ()-&gt;'abc' );
+
+Context.Default.SyncInvoke( q1+q2 ).Println;
+
+Context.Default.SyncInvoke(
+  CombineConvSyncQueueN2(
+    (r1,r2)-&gt;$'integer[{r1}]+string[{r2}]',
+    q1, q2
+  )
+).Println;
+</code></pre>
+<p>У каждой из <code>CombineConv*QueueN*</code> так же есть <code>CombineQuickConv*QueueN*</code> версия.</p>
+</div>
+<script>on_page_added(document.getElementById("page-24"))</script>
+<div id="page-25" page_name="Из повторения очереди" hidden=true>
 <p><del>В данный момент всё ещё не работает... Но уже совсем скоро, правда-правда!</del></p>
 </div>
-<script>on_page_added(document.getElementById("page-26"))</script>
-<div id="page-27" page_name="Множественное использование очереди" hidden=true>
+<script>on_page_added(document.getElementById("page-25"))</script>
+<div id="page-26" page_name="Множественное использование очереди" hidden=true>
 <p>Одну и ту же очередь можно использовать несколько раз, в том числе одновременно:</p>
 <pre><code>## uses OpenCLABC;
-var Q := HPQ(()-&gt;lock output do Writeln('Q выполнилась'));
+var Q := HPQQ(()-&gt;lock output do Writeln('Q выполнилась'));
 
 var t1 := Context.Default.BeginInvoke(Q);
 var t2 := Context.Default.BeginInvoke(Q*Q);
@@ -1844,11 +2089,10 @@ begin
     Result := ReadInteger;
 end);
 
-Context.Default.SyncInvoke(CombineAsyncQueue(
-  res-&gt;res,
+Context.Default.SyncInvoke(CombineConvAsyncQueue(res-&gt;res,
   Q,
-  Q.ThenConvert(i-&gt;i*i),
-  Q.ThenConvert(i-&gt;i*i*i)
+  Q.ThenQuickConvert(i-&gt;i*i),
+  Q.ThenQuickConvert(i-&gt;i*i*i)
 )).Println;
 </code></pre>
 <p>Эта программа запросит три разных значения, что не всегда то что надо.</p>
@@ -1863,11 +2107,11 @@ begin
 end);
 var Qs := Q.Multiusable;
 
-Context.Default.SyncInvoke(CombineAsyncQueue(
-  res-&gt;res,
+// Теперь нет смысла в Async, потому что 
+Context.Default.SyncInvoke(CombineConvAsyncQueue(res-&gt;res,
   Qs(),
-  Qs().ThenConvert(i-&gt;i*i),
-  Qs().ThenConvert(i-&gt;i*i*i)
+  Qs().ThenQuickConvert(i-&gt;i*i),
+  Qs().ThenQuickConvert(i-&gt;i*i*i)
 )).Println;
 </code></pre>
 <p><code>.Multiusable</code> создаёт новую функцию, вызывая которую можно получить любое количество очередей,
@@ -1884,12 +2128,47 @@ end);
 var Q1s := Q.Multiusable;
 var Q2s := Q.Multiusable;
 
-Context.Default.SyncInvoke(CombineAsyncQueue(
-  res-&gt;res,
+Context.Default.SyncInvoke(CombineConvAsyncQueue(res-&gt;res,
   Q1s(),
-  Q1s().ThenConvert(i-&gt;i*i),
-  Q2s().ThenConvert(i-&gt;i*i*i)
+  Q1s().ThenQuickConvert(i-&gt;i*i),
+  Q2s().ThenQuickConvert(i-&gt;i*i*i)
 )).Println;
+</code></pre>
+<hr />
+<p>Очередь для которой вызвали <code>.Multiusable</code> начинает выполняться не ожидая другие очереди:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q0 := HPQ(()-&gt;
+begin
+  Sleep(1000);
+  Writeln('Q0');
+end);
+
+var Q1s := HPQ(()-&gt;
+begin
+  Writeln('Q1');
+end).Multiusable;
+var Q1 := Q1s();
+
+// Q1 выполнит первым
+Context.Default.SyncInvoke( Q0 + Q1 );
+</code></pre>
+<p>Чтобы <code>Q1</code> выполнялась после <code>Q0</code> - они должны быть сумированны под <code>.Multiusable</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q0 := HPQ(()-&gt;
+begin
+  Sleep(1000);
+  Writeln('Q0');
+end);
+
+var Q1 := HPQ(()-&gt;
+begin
+  Writeln('Q1');
+end);
+
+var Qs := (Q0+Q1).Multiusable;
+Context.Default.SyncInvoke( Qs() );
 </code></pre>
 <hr />
 <p><code>.Multiusable</code> не работает между вызовами <code>Context.BeginInvoke</code>:</p>
@@ -1902,8 +2181,8 @@ begin
 end);
 var Qs := Q.Multiusable;
 
-Context.Default.SyncInvoke( Qs()                     ).Println;
-Context.Default.SyncInvoke( Qs().ThenConvert(i-&gt;i*i) ).Println;
+Context.Default.SyncInvoke( Qs()                          ).Println;
+Context.Default.SyncInvoke( Qs().ThenQuickConvert(i-&gt;i*i) ).Println;
 </code></pre>
 <p>Эта программа запросит ввод два раза.</p>
 <p>Если контекст у двух очередей общий - лучше объединить вызовы <code>Context.BeginInvoke</code>.
@@ -1911,18 +2190,21 @@ Context.Default.SyncInvoke( Qs().ThenConvert(i-&gt;i*i) ).Println;
 <p>А если контекст разный - надо сохранять результат в переменную и использовать <code>Wait</code> очереди
 (<a path="Из ожидания очередей">подробнее на странице ниже</a>).</p>
 </div>
-<script>on_page_added(document.getElementById("page-27"))</script>
-<div id="page-28" page_name="Особые .Add методы" hidden=true>
+<script>on_page_added(document.getElementById("page-26"))</script>
+<div id="page-27" page_name="Общие методы CCQ объектов" hidden=true>
 <p>Между командами в <code>CCQ</code> очередях бывает надо вставить выполнение другой очереди или кода для CPU.</p>
 <p>Это можно сделать, используя несколько <code>.NewQueue</code>:</p>
 <pre><code>var s: MemorySegment;
 var q0: CommandQueueBase;
 ...
 var q :=
-  s.NewQueue.AddWriteValue(...) +
+  s.NewQueue.ThenWriteValue(...) +
+  
   q0 +
   HPQ(...) +
-  s.NewQueue.AddWriteValue(...)
+  HPQQ(...) +
+  
+  s.NewQueue.ThenWriteValue(...)
 ;
 </code></pre>
 <p>Однако можно сделать и красивее:</p>
@@ -1930,23 +2212,20 @@ var q :=
 var q0: CommandQueueBase;
 ...
 var q := s.NewQueue
-  .AddWriteValue(...)
-  .AddQueue(q0)
-  .AddProc(...)
-  .AddWriteValue(...)
+  .ThenWriteValue(...)
+  
+  .ThenQueue(q0)
+  .ThenProc(...)
+  .ThenQuickProc(...)
+  
+  .ThenWriteValue(...)
 ;
 </code></pre>
-<p>(вообще <code>callback</code> <code>AddProc</code>'а принимает исходный объект с командами параметром, что делает его более похожим на <code>.ThenConvert</code>, чем <code>HPQ</code>)</p>
+<p>(На самом деле процедура передаваемая в <code>.ThenProc</code>'а принимает исходную простую обёртку параметром, что делает его более похожим на <code>.ThenUse</code>, чем <code>HPQ</code>)</p>
 <p>Эти методы не имеют незаменимых применений, но позволяют сделать код значительно читабельнее.</p>
-<p>Кроме того, будьте осторожны, защита от дурака для такого случая - отсутствует:</p>
-<pre><code>var q := s.NewQueue;
-q.AddQueue(q);
-</code></pre>
-<p>Все <code>.Add*</code> методы добавляют команды в существующую очередь, а не создают новую.
-Поэтому очередь, созданная предыдущим кодом при попытке выполнения начнёт циклически запускать саму себя.</p>
 </div>
-<script>on_page_added(document.getElementById("page-28"))</script>
-<div id="page-29" page_name="Из ожидания очередей" hidden=true>
+<script>on_page_added(document.getElementById("page-27"))</script>
+<div id="page-28" page_name="Из ожидания очередей" hidden=true>
 <p>Большинство деревьев выполнения очередей можно реализовать используя только сложение и умножение очередей. Но есть несколько проблем:</p>
 <ul>
 <li><p>Большинство но не все. Пример дерева которое нельзя реализовать через сложение и умножение можно найти <a href="https://github.com/SunSerega/POCGL/blob/master/Samples/OpenCLABC/Wait%20%D0%BE%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D0%B8/1.pas">тут</a> или в файле:<br />
@@ -1982,11 +2261,11 @@ t.Wait;
 <p>Далее, вызов <code>M.SendSignal</code> посылает по 1 сигналу всем <code>.BeginInvoke</code>, имеющим <code>Wait</code>-очереди в ожидании этого сигнала.</p>
 <hr />
 <p><code>WaitMarker</code> не является очередью, но может быть преобразован к типу <code>CommandQueueBase</code>, в своеобразную выполняемую форму.</p>
-<p>Преобразование в выполняемой форме обычно происходит автоматически, если складывать/умножать его с другими очередями,
+<p>Преобразование к выполняемой форме обычно происходит автоматически, если складывать/умножать его с другими очередями,
 либо передавать в подпрограмму принимающую <code>CommandQueueBase</code>, как <code>.BeginInvoke</code>.<br />
 Так же его можно вызвать явно, написав <code>CommandQueueBase(M)</code>, где <code>M</code> - маркер.</p>
-<p>Выпоняемая форма маркера всегда вызывает метод <code>.SendSignal</code> своего макера.<br />
-Таким образом <code>CommandQueueBase(M)</code> обычно равноценна, но немного эффективнее чем <code>HPQ(M.SendSignal)</code>.<br />
+<p>Выполняемая форма маркера вызывает метод <code>.SendSignal</code> своего макера.<br />
+То есть <code>CommandQueueBase(M)</code> обычно равноценна, но немного эффективнее чем <code>HPQQ(M.SendSignal)</code>.<br />
 Но не всегда - потому что <code>HPQ</code> возвращает <code>nil</code>, а выполняемая форма маркера может возвращать другие результаты (об этом ниже).</p>
 <p>И стоит так же сказать, прямой вызов <code>M.SendSignal</code> всё равно всегда эффективнее чем <code>Context.Default.SyncInvoke(M)</code>.<br />
 Используйте выполнение маркеров внутри <code>.BeginInvoke</code> только если вам надо активировать его сразу после других очередей:</p>
@@ -2022,12 +2301,12 @@ res.Println;
 var Q := HFQ(()-&gt;5).ThenMarkerSignal;
 var M: WaitMarker := Q;
 
-Writeln(Context.Default.SyncInvoke(
+Context.Default.SyncInvoke(
   CommandQueueBase(M)
   // CommandQueueBase надо всё равно как то преобразовать,
   // чтобы SyncInvoke вернуло результат Q
   .Cast&amp;&lt;integer&gt;
-));
+).Println;
 </code></pre>
 <hr />
 <p>Того же эффекта можно добится используя <code>.Multiusable</code>:</p>
@@ -2051,11 +2330,11 @@ res.Println;
 <li><p>Глобальная, <code>WaitFor</code>:<br />
 Ничего не делает сама, но блокирует выполнение, ожидая сигнала указанного маркера.</p>
 </li>
-<li><p>Ещё один особый метод <code>.Add*</code> - <code>.AddWait</code>:<br />
-Как и <code>.AddQueue</code> и <code>.AddProc</code>, <code>.AddWait(...)</code> это всего лишь аналог
-<code>.AddQueue(WaitFor(...))</code>, существующий только ради читабельности кода.</p>
+<li><p>Ещё один общий метод CCQ объектов: <code>.ThenWait</code>:<br />
+Как и <code>.ThenQueue</code> и <code>.ThenProc</code>, <code>.ThenWait(...)</code> это всего лишь аналог
+<code>.ThenQueue(WaitFor(...))</code>, существующий только ради читабельности кода.</p>
 </li>
-<li><p>Метод очереди, <code>.ThenWaitFor</code>:<br />
+<li><p>Метод очереди с результатом, <code>.ThenWaitFor</code>:<br />
 Как и <code>.ThenMarkerSignal</code>, сначала выполняет исходную очередь, потом ожидает и в конце возвращает результат исходной очереди.</p>
 </li>
 </ol>
@@ -2066,8 +2345,8 @@ res.Println;
 var M1 := WaitMarker.Create;
 var M2 := WaitMarker.Create;
 
-WaitFor(M1 and M2); // Ожидание обоих маркеров
-WaitFor(M1 or M2); // Ожидание любого из маркеров
+var Q1 := WaitFor(M1 and M2); // Ожидание обоих маркеров
+var Q2 := WaitFor(M1 or M2); // Ожидание любого из маркеров
 </code></pre>
 <p>При этом если надо применить <code>and</code> или <code>or</code> &gt;2 маркерам - лучше использовать <code>WaitAll</code>/<code>WaitAny</code> соответственно:</p>
 <pre><code>## uses OpenCLABC;
@@ -2076,8 +2355,8 @@ var M1 := WaitMarker.Create;
 var M2 := WaitMarker.Create;
 var M3 := WaitMarker.Create;
 
-WaitFor(WaitAll(M1,M2,M3)); // Ожидание всех маркеров
-WaitFor(WaitAny(M1,M2,M3)); // Ожидание любого из маркеров
+var Q1 := WaitFor(WaitAll(M1,M2,M3)); // Ожидание всех маркеров
+var Q2 := WaitFor(WaitAny(M1,M2,M3)); // Ожидание любого из маркеров
 </code></pre>
 <hr />
 <p><code>Wait</code>-очереди работают даже между вызовами <code>Context.BeginInvoke</code>, в отличии от всего остального в <code>OpenCLABC</code>.</p>
@@ -2159,7 +2438,7 @@ t1.Wait;
 </code></pre>
 <hr />
 <p><code>Wait</code>-очереди ожидающие один и тот же маркер в разных <code>Context.BeginInvoke</code> - образуют отдельные <code>Wait</code>-группы.<br />
-И при активации маркера - он посылает по 1 сигналу <strong>каждой</strong> <code>Wait</code>-группе:</p>
+И при активации маркера - он посылает по 1 сигналу <strong>каждой</strong> (ожидающей его) <code>Wait</code>-группе:</p>
 <pre><code>## uses OpenCLABC;
 
 var Q1 := HPQ(()-&gt;
@@ -2189,8 +2468,8 @@ t1.Wait;
 t2.Wait;
 </code></pre>
 </div>
-<script>on_page_added(document.getElementById("page-29"))</script>
-<div id="page-30" page_name="Обработка исключений" hidden=true>
+<script>on_page_added(document.getElementById("page-28"))</script>
+<div id="page-29" page_name="Обработка исключений" hidden=true>
 <p>Для начала немного о распространении ошибок в очередях:</p>
 <p>Исключения в очереди Q отменяет выполнение всех очередей, ожидающих Q,
 но никак не влияет на параллельные к Q очереди:</p>
@@ -2233,8 +2512,8 @@ except
 end;
 </code></pre>
 <p>Из за исключения первое <code>WaitFor(M)</code> пропускается. Оно начинает ожидать
-ещё до выхода из <code>.BeginInvoke</code>, но никогда не заканчивает, а значит
-и не поглащает сигнал от <code>M</code>, оставляя его для второго <code>WaitFor(M)</code>.</p>
+ещё до выхода из <code>.BeginInvoke</code>, но затем отменяется, а значит не имеет
+шанса поглотить сигнал от <code>M</code>, оставляя его для второго <code>WaitFor(M)</code>.</p>
 <hr />
 <p>Так же надо сказать что <code>.Multiusable</code> даёт множественный доступ
 к любому результату выполнения очереди, будь то возвращаемое значение или ошибка:</p>
@@ -2320,7 +2599,7 @@ loop 3 do Context.Default.SyncInvoke( (QErr+HFQ(()-&gt;5))
 <p>Не всегда значение, которым надо заменять возвращаемое значение очереди, можно посчитать до выполнения этой очереди.<br />
 В более сложном случае это значение может вычисляться во время выполнения, скорее всего используя пойманные исключения.</p>
 <p>В таком случае нет смысла обрабатывать исключения по одному, потому что так
-можно получить несколько конфликтующий замен для возвращаемого значения:</p>
+можно получить несколько конфликтующих замен для возвращаемого значения:</p>
 <pre><code>## uses OpenCLABC;
 var QErr := HPQ(()-&gt;raise new Exception);
 
@@ -2333,6 +2612,26 @@ Context.Default.SyncInvoke(
   end)
 ).Println;
 </code></pre>
+<p><code>.HandleReplaceRes</code> нельзя вызывать на <code>Base</code> и <code>Nil</code> очередях, потому что непонятно что возвращать если ошибка <strong>не</strong> возникла.
+Но всегда можно прибавить константную очередь к обрабатываемой, таким образом указав результат по-умолчанию, на случай без ошибок:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQQ(()-&gt;begin end);
+var Q2 := HPQQ(()-&gt;raise new Exception);
+
+Context.Default.SyncInvoke((Q1*Q2 + CQ(0)).HandleReplaceRes(err_lst-&gt;
+begin
+  err_lst.PrintLines;
+  err_lst.Clear;
+  Result := -1;
+end)).Println;
+</code></pre>
+<p>Результат очереди из этого примера можно передавать напрямую в <code>Halt</code>, если вы, к примеру, делаете инструмент для коммандной строки.</p>
+<hr />
+<p>Обратите внимание, обработчики исключений всегда действую по принципу <code>Quick</code> очередей.<br />
+То есть код выполняемый на CPU, который обрабатывает исключения, не должен содержать блокирующих вызовов модуля <code>OpenCL</code>.</p>
+<p>Но использовать затратные алгоритмы, или блокирующие вызовы как ввод с клавиатуры (<code>'Ошибка, всё равно продолжить? [Y/n]'</code>) вполне нормально:<br />
+Обработчики вызываются только если было кинуто исключение. А исключения должны кидаться только в исключительных ситуациях, когда что-то пошло не так.</p>
 <hr />
 <p>В паскале есть два типа блоков для обработки исключений, <code>try-except</code> - собственно обработчик,
 а так же <code>try-finally</code> - позволяющий выполнять код не зависимо от того, было ли кинуто исключение.</p>
@@ -2357,30 +2656,29 @@ Context.Default.SyncInvoke(
 <p>Затем стоит обработчик, который съедает все исключения, но перед этим выводит их текст, показывая что выполнились очереди 1, 3 и 5.</p>
 <hr />
 <p>Обычные <code>.ThenMarkerSignal</code> и <code>.ThenWaitFor</code> посылают/съедают сигнал маркера только если перед ними небыло ошибок.<br />
-Это не всегда хорошо, потому что значит что о количестве сигналов нельзя будет что-либо сказать заранее.</p>
+Это не всегда хорошо, потому что в случае ошибок будет сложно судить о количестве сигналов.</p>
 <p>Как общее правило - <code>Wait</code>-очереди и маркеры лучше ставить после <code>&gt;=</code>.
 Но <code>HFQ(()-&gt;5) &gt;= WaitFor(M)</code> вернёт результат последней очереди, то есть <code>nil</code>.</p>
 <p>Поэтому существуют методы <code>.ThenFinallyMarkerSignal</code> и <code>.ThenFinallyWaitFor</code>.<br />
 Эти методы так же как их варианты без <code>Finally</code> - возвращают то что вернула исходная очередь.<br />
 Но в отличии от них - посылают/поглащают сигнал не зависимо от ошибок в очереди, из которой их создали.</p>
 </div>
-<script>on_page_added(document.getElementById("page-30"))</script>
-<div id="page-31" page_name="Не создавая явно" hidden=true>
+<script>on_page_added(document.getElementById("page-29"))</script>
+<div id="page-30" page_name="Не создавая явно" hidden=true>
 <p>Передавать команды по одной, когда их несколько - ужасно не эффективно!<br />
 Но нередко бывает так, что команда всего одна. Или для отладки надо одноразово выполнить несколько команд.</p>
 <p>Для таких случаев можно создавать очередь неявно:<br />
-У каждого <code>*CCQ.Add*</code> метода есть дублирующий метод в оригинальном объекте. Такие методы сами создают
-новую очередь, добавляют в неё одну соответствующую команду и выполняют полученную очередь в <code>Context.Default.SyncInvoke(...)</code>.</p>
+У каждого метода для создания комманды для GPU есть дублирующий метод в простой обёртке. Этот метод сам создаёт
+новую очередь, добавляет в неё одну соответствующую команду и выполняет полученную очередь в <code>Context.Default.SyncInvoke(...)</code>.</p>
 <p>Обычный код с очередями:</p>
 <pre><code>## uses OpenCLABC;
 
 var a := new CLArray&lt;integer&gt;(3);
 
 Context.Default.SyncInvoke(a.NewQueue
-  .AddWriteValue(1, 0)
-  .AddWriteValue(5, 1)
-  .AddWriteValue(7, 2)
-  .AddGetArray
+  .ThenWriteValue(1, 0)
+  .ThenWriteArray(|5,7|, 1, 2,0)
+  .ThenGetArray
 ).Println;
 </code></pre>
 <p>Он же, но с неявными очередями:</p>
@@ -2388,17 +2686,23 @@ Context.Default.SyncInvoke(a.NewQueue
 
 var a := new CLArray&lt;integer&gt;(3);
 
-// То же самое что &quot;a.WriteValue(число, позиция)&quot;, но читабельнее
-a[0] := 1;
-a[1] := 5;
-a[2] := 7;
-
+a.WriteValue(1, 0);
+a.WriteArray(|5,7|, 1, 2,0);
 a.GetArray.Println;
 </code></pre>
+<p>И в случае <code>CLArray</code> можно ещё красивее:</p>
+<pre><code>## uses OpenCLABC;
+
+var a := new CLArray&lt;integer&gt;(3);
+
+a[0] := 1;
+a.Section[1..2] := |5,7|;
+a.Section[0..2].Println;
+</code></pre>
 </div>
-<script>on_page_added(document.getElementById("page-31"))</script>
+<script>on_page_added(document.getElementById("page-30"))</script>
 <script>on_end_folder()</script>
-<div id="page-32" page_name="" hidden=true>
+<div id="page-31" page_name="" hidden=true>
 <p>Все методы создающие одну команду (<code>*CCQ.Add*</code> методы и все методы неявных очередей)
 могут принимать очередь вместо значения в качестве практически любого параметра. Но в таком случае
 возвращаемый тип очереди должен совпадать с типом параметра. К примеру:</p>
@@ -2413,7 +2717,7 @@ a.FillValue(0);
 // Таким образом, в параметр сохраняется алгоритм, а не готовое значение
 // Поэтому 3 вызова ниже могут получится с 3 разными индексами
 var q := a.NewQueue
-  .AddWriteValue(5, HFQ(()-&gt; Random(a.Length) ))
+  .ThenWriteValue(5, HFQQ(()-&gt; Random(a.Length) ))
 ;
 
 Context.Default.SyncInvoke(q);
@@ -2424,17 +2728,17 @@ a.GetArray.Println;
 </code></pre>
 <p>Все вложенные очереди начинают выполняться сразу при вызове метода <code>Context.BeginInvoke</code>, не ожидая других очередей.</p>
 <p>Обычно вложенные очереди особо полезны когда надо записать что-то в память GPU прямо перед вызовом kernel'а:</p>
-<pre><code>k.Exec1(N, a.NewQueue.AddFillValue(1))
+<pre><code>k.Exec1(N, a.NewQueue.ThenFillValue(1))
 </code></pre>
 <p>Вместо:</p>
-<pre><code>a.NewQueue.AddFillValue(1) +
+<pre><code>a.NewQueue.ThenFillValue(1) +
 k.Exec1(N, a)
 </code></pre>
 </div>
-<script>on_start_folder("Вложенные очереди", document.getElementById("page-32"))</script>
+<script>on_start_folder("Вложенные очереди", document.getElementById("page-31"))</script>
 <script>on_end_folder()</script>
 <script>on_end_folder()</script>
-<div id="page-33" page_name="" hidden=true>
+<div id="page-32" page_name="" hidden=true>
 <p>В данной справке в нескольких местах можно встретить утверждения вроде</p>
 <blockquote>
 <p>Вызовы <code>Context.BeginInvoke</code> стоит, по возможности, объединять.</p>
@@ -2449,8 +2753,8 @@ k.Exec1(N, a)
 <li><a path="Внутренности BeginInvoke">	Что делает вызов <code>BeginInvoke</code>	</a></li>
 </ul>
 </div>
-<script>on_start_folder("Оптимизация", document.getElementById("page-33"))</script>
-<div id="page-34" page_name="Внутренности BeginInvoke" hidden=true>
+<script>on_start_folder("Оптимизация", document.getElementById("page-32"))</script>
+<div id="page-33" page_name="Внутренности BeginInvoke" hidden=true>
 <p>Кроме самого выполнения очередей - им так же необходима инициализация и финализация.</p>
 <hr />
 <h3>Инициализация</h3>
@@ -2491,7 +2795,7 @@ c1.BeginInvoke(A);
 <p>Внутренние оптимизации <code>OpenCLABC</code> делают этот код практически не отличимым по скорости, от <code>BeginInvoke(A+B)</code>.</p>
 <p>Единственное различие - время инициализации. Потому что <code>A</code> не запустится, пока не закончится вызов <code>c2.BeginInvoke</code>.</p>
 </div>
-<script>on_page_added(document.getElementById("page-34"))</script>
+<script>on_page_added(document.getElementById("page-33"))</script>
 <script>on_end_folder()</script>
 <script>on_end_folder()</script>
 </body>
