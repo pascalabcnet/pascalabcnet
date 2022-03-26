@@ -1995,11 +1995,6 @@ namespace PascalABCCompiler.TreeConverter
 			return find_eq_return_value_method_in_list(fn, funcs);
 		}
 
-		public void init_reference_type(type_node ctn)
-		{
-			SystemLibrary.SystemLibrary.init_reference_type(ctn);
-		}
-
         /// <summary>
         ///  Получение compiled_type_node из либо compiled_type_node либо compiled_generic_instance_type_node. Используется ниже локально
         /// </summary>
