@@ -293,11 +293,13 @@ const on_start_folder = (folder_name, root_page)=>{
 	}
 	currently_loading_folder = res;
 	
-	if (root_page) {
+	if (root_folder !== res) {
 		res.content_ref = root_page;
 		root_page.tree_obj = res;
 		document.getElementById("page-display-container-body").append(root_page);
-		if (!res.auto_fill_content) fix_links(root_page);
+		add_to_switch_list(root_page);
+		if (!res.auto_fill_content)
+			fix_links(root_page);
 	}
 	
 }
@@ -334,6 +336,7 @@ const on_page_added = (page)=>{
 	
 	currently_loading_folder.pages.push(res);
 	define_page_with_path(res.path, page);
+	add_to_switch_list(page);
 	fix_links(page);
 	
 	if (!selected_page && !document.location.hash) select_page(page);
@@ -465,13 +468,16 @@ const define_broken_lnk = (path, source, fixer)=>{
 	});
 }
 
-const fix_links = (page)=>{
+const add_to_switch_list = (o)=>{
 	
-	if (globalThis.last_page) {
-		page.page_l = last_page;
-		last_page.page_r = page;
+	if (add_to_switch_list.last_o) {
+		o.page_l = add_to_switch_list.last_o;
+		add_to_switch_list.last_o.page_r = o;
 	}
-	last_page = page;
+	add_to_switch_list.last_o = o;
+	
+}
+const fix_links = (page)=>{
 	
 	for (let lnk of page.getElementsByTagName('a'))
 	{

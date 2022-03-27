@@ -43,14 +43,14 @@ try
   var Q_1Step :=
     code['CalcStep']
     .NewQueue
-    .AddExec2(W,W,
+    .ThenExec2(W,W,
       B, B_temp, W
     ) +
-    B.NewQueue.AddCopyFrom(B_temp)
+    B.NewQueue.ThenCopyFrom(B_temp)
  ;
  var Q_Otp :=
     B.NewQueue
-    .AddGetArray2&<byte>(W,W)
+    .ThenGetArray2&<byte>(W,W)
     .ThenUse(field->
     begin
       // Если уже слишком далеко вперёд насчитали - можно немного отдохнуть

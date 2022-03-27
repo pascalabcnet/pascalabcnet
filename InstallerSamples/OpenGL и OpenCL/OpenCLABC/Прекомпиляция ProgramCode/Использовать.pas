@@ -15,7 +15,7 @@ begin
   
   prog['TEST'].Exec1(10, // Используем 10 ядер
     
-    A.NewQueue.AddFillValue(1)
+    A.NewQueue.ThenFillValue(1)
     
   );
   
