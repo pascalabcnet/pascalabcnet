@@ -1411,6 +1411,7 @@ namespace PascalABCCompiler.TreeConverter
                 scope,def_loc);
             (scope as SymbolTable.ClassScope).class_type = tctn; // SSM 02.04.19 - каждый Scope пользовательского класса хранит свой type_node
 
+            tctn.is_class = true;
             tctn.IsPartial = is_partial;
             if (partial_class != null)
             {
@@ -1438,6 +1439,7 @@ namespace PascalABCCompiler.TreeConverter
                 scope, def_loc);
             _cmn.scope.AddSymbol(name, new SymbolInfo(tctn));
             tctn.IsInterface = false;
+            tctn.is_class = true;
             _cmn.types.AddElement(tctn);
             _ctn = tctn;
             SystemLibrary.SystemLibrary.init_reference_type(tctn);

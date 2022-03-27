@@ -14265,7 +14265,14 @@ namespace PascalABCCompiler.TreeConverter
                                     var gen_par2 = gen_pars2[par_i] as common_type_node;
 
                                     if (gen_par2.base_type != SystemLibrary.SystemLibrary.object_type && !convertion_data_and_alghoritms.eq_type_nodes(gen_par2.base_type, gen_par1.base_type, true))
-                                        AddError(where_loc, "OVERRIDE_WHERE_TYPE_MUST_BE_SAME", gen_par2.name, gen_par1.base_type.PrintableName);
+                                        if (gen_par1.base_type == SystemLibrary.SystemLibrary.object_type)
+                                            AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_TYPE", gen_par2.name, gen_par2.base_type.PrintableName);
+                                        else
+                                            AddError(where_loc, "OVERRIDE_WHERE_TYPE_MUST_BE_SAME", gen_par2.name, gen_par1.base_type.PrintableName);
+
+                                    foreach (type_node intr2 in gen_par2.ImplementingInterfaces)
+                                        if (!gen_par1.ImplementingInterfaces.Any(intr1=> convertion_data_and_alghoritms.eq_type_nodes((type_node)intr1, intr2, true)))
+                                            AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_INTERFACE", gen_par2.name, intr2.PrintableName);
 
                                     if (gen_par2.has_explicit_default_constructor && !gen_par1.has_explicit_default_constructor)
                                         AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "constructor");
@@ -20118,7 +20125,7 @@ namespace PascalABCCompiler.TreeConverter
             //Нужно ли это???
             if (lock_object.type.semantic_node_type == semantic_node_type.delegated_method)
                 try_convert_typed_expression_to_function_call(ref lock_object);
-            if (lock_object.type == null || lock_object.type.is_value_type)
+            if (/*lock_object.type == null ||*/ !lock_object.type.is_class)
                 AddError(get_location(node.lock_object), "EXPRESSION_IN_LOCK_STATEMENT_RETURNED_NOT_A_REFERENCE_TYPE", lock_object.type);
             CheckToEmbeddedStatementCannotBeADeclaration(node.stmt);
             statement_node stmt = convert_strong(node.stmt);
