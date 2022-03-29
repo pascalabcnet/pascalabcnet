@@ -5356,7 +5356,7 @@ const
 
 procedure IOStandardSystem.ReadNextBuf;
 begin
-  realbuflen := tr.ReadBlock(buf, 0, buflen);
+  realbuflen := tr.Read{Block}(buf, 0, buflen); // SSM 29/03/22 #2647
   if realbuflen < buflen then
     buf[realbuflen] := char(-1);
   pos := 0;
