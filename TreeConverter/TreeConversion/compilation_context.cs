@@ -295,6 +295,8 @@ namespace PascalABCCompiler.TreeConverter
         
         public void reset()
         {
+            //CurrentHandlerList = null; // SSM 29/03/22 - не сработало
+            //CurrentHandlerListStack = new Stack<List<string>>(); // SSM 29/03/22 - не сработало
             _cmn = null;
             _ctn = null;
             _func_stack.clear();

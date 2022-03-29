@@ -20,7 +20,7 @@ type
   PredI = int -> bool;
   PredR = real -> bool;
   PredS = string -> bool;
-  Act = () -> ();
+  Act = procedure;
   ProcI = int -> ();
   ProcR = real -> ();
   ProcS = string -> ();
