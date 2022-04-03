@@ -7292,6 +7292,7 @@ namespace PascalABCCompiler.NETGenerator
             if ((value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual || value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual_abstract || value.compiled_method.polymorphic_state == polymorphic_state.ps_common) && (value.obj is ICommonParameterReferenceNode || value.obj is ICommonClassFieldReferenceNode))
                 virtual_method_call = true;
             value.obj.visit(this);
+            virtual_method_call = false;
             if (value.obj.type.is_value_type && !value.compiled_method.method_info.DeclaringType.IsValueType)
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
