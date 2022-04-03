@@ -7283,6 +7283,8 @@ namespace PascalABCCompiler.NETGenerator
             	_box = value.obj.conversion_type.is_value_type;
             if (_box)
                 is_dot_expr = false;
+            if ((value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual || value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual_abstract || value.compiled_method.polymorphic_state == polymorphic_state.ps_common) && (value.obj is ICommonParameterReferenceNode || value.obj is ICommonClassFieldReferenceNode))
+                virtual_method_call = true;
             value.obj.visit(this);
             if (value.obj.type.is_value_type && !value.compiled_method.method_info.DeclaringType.IsValueType)
             {
@@ -11444,7 +11446,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (is_dot_expr == true) //если после перем. в выражении стоит точка
                 {
-                    if (lb.LocalType.IsValueType == true || value.type.is_generic_parameter)
+                    if (lb.LocalType.IsValueType || value.type.is_generic_parameter)
                     {
                         if (is_field_reference && value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null)
                             il.Emit(OpCodes.Ldloc, lb);
