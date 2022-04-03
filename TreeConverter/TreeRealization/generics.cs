@@ -1069,6 +1069,8 @@ namespace PascalABCCompiler.TreeRealization
         {
             if (fact_type == null)//issue #347
                 return false;
+            if (formal_type == null)
+                return false;
             if (formal_type.generic_function_container == null && fact_type.generic_function_container != null)
             {
                 //swap
