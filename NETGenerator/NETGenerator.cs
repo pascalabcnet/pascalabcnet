@@ -5456,9 +5456,9 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (value.type.is_value_type || value.type.is_generic_parameter)
                 {
-                    if (!(value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null))
+                    if (!(is_field_reference && value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null))
                         must_push_addr = true;
-                    else if (value.type.is_generic_parameter && virtual_method_call)
+                    else if (value.type.is_generic_parameter && virtual_method_call && !is_field_reference)
                     {
                         must_push_addr = true;
                         virtual_method_call = false;
@@ -5549,15 +5549,17 @@ namespace PascalABCCompiler.NETGenerator
             //если у поля нет постоянное значение
             if (!value.static_field.compiled_field.IsLiteral)
             {
-                if (is_addr == false)
+                if (!is_addr)
                 {
-                    if (is_dot_expr == true && value.static_field.compiled_field.FieldType.IsValueType)
+                    if (is_dot_expr && value.static_field.compiled_field.FieldType.IsValueType)
                     {
                         il.Emit(OpCodes.Ldsflda, value.static_field.compiled_field);
                     }
-                    else il.Emit(OpCodes.Ldsfld, value.static_field.compiled_field);
+                    else 
+                        il.Emit(OpCodes.Ldsfld, value.static_field.compiled_field);
                 }
-                else il.Emit(OpCodes.Ldsflda, value.static_field.compiled_field);
+                else 
+                    il.Emit(OpCodes.Ldsflda, value.static_field.compiled_field);
 
             }
             else
@@ -5578,8 +5580,9 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             if (!tmp_dot)
                 is_dot_expr = true;
-            if (value.field.compiled_field.IsLiteral == false)
+            if (!value.field.compiled_field.IsLiteral)
             {
+                is_field_reference = true;
                 value.obj.visit(this);
                 if (!is_addr)
                 {
@@ -5587,9 +5590,12 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         il.Emit(OpCodes.Ldflda, value.field.compiled_field);
                     }
-                    else il.Emit(OpCodes.Ldfld, value.field.compiled_field);
+                    else 
+                        il.Emit(OpCodes.Ldfld, value.field.compiled_field);
                 }
-                else il.Emit(OpCodes.Ldflda, value.field.compiled_field);
+                else 
+                    il.Emit(OpCodes.Ldflda, value.field.compiled_field);
+                is_field_reference = false;
             }
             else
             {
@@ -5599,7 +5605,7 @@ namespace PascalABCCompiler.NETGenerator
                     il.Emit(OpCodes.Box, value.field.compiled_field.FieldType);
                 }
             }
-            if (tmp_dot == false)
+            if (!tmp_dot)
             {
                 is_dot_expr = false;
             }
