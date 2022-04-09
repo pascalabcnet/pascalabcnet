@@ -601,7 +601,6 @@ namespace PascalABCCompiler.TreeConverter
                 ctn.clear_generated_names();
                 ctn.clear_generated_intersections();
             }
-            //compiled_type_node.compiled_types = compiled_type_node.compiled_types.Where(x => x.Value.name != "Act12345").ToDictionary(x=>x.Key,x=>x.Value);
         }
 
         public PascalABCCompiler.Errors.SyntaxError parser_error

@@ -12568,7 +12568,7 @@ function NotDivs(Self,d: integer): boolean; extensionmethod := Self mod d <> 0;
 function DivsAny(Self: integer; params a: array of integer): boolean; extensionmethod;
 begin
   Result := False;
-  for var i:=0 to a.High do
+  for var i:=0 to a.Length-1 do
     if Self mod a[i] = 0 then
     begin
       Result := True;
@@ -12580,7 +12580,7 @@ end;
 function DivsAll(Self: integer; params a: array of integer): boolean; extensionmethod;
 begin
   Result := True;
-  for var i:=0 to a.High do
+  for var i:=0 to a.Length-1 do
     if Self mod a[i] <> 0 then
     begin
       Result := False;

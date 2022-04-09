@@ -128,7 +128,8 @@ namespace PascalABCCompiler.TreeConverter
 		
 		//TODO: Вообще-то здесь не должно быть этого кода. Не должен type_constructor знать о этих типах. Доступ к ним должен идти через StaticSystemLib.
 		//Здесь хэшируются типы, чтобы не создавать их каждый раз. При очистке compiled_type_node.compiled_types их желательно тоже очистить.
-		//Но compiled_type_node.compiled_types все равно никто никогда не чистит.
+		//Но compiled_type_node.compiled_types все равно никто никогда не чистит. 
+        // А зря! SSM 05/04/2022
 		private static type_node _IAsyncResultType;
 		private static type_node _AsyncCallbackType;
 		

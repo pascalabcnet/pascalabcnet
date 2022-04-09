@@ -3339,10 +3339,11 @@ namespace PascalABCCompiler.TreeRealization
                 return ctn;
 			}
 			ctn=new compiled_type_node(st);
-            
+
             //Если это не чистить, будет ошибка. Т.к. при следующей компиляции области видимости могут изменится.
             //Но если это чистить то тоже ошибка. нужна еще одна статическая таблица для стандартных типов
-			compiled_types[st] = ctn;
+            // SSM 05.04.2022 Это актуально и сегодня!
+            compiled_types[st] = ctn;
 			
             ctn.init_constructors();
             ctn.mark_if_delegate();
