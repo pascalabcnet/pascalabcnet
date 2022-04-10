@@ -8964,14 +8964,23 @@ namespace PascalABCCompiler.NETGenerator
                         t1 = helper.GetTypeReference(real_parameters[0].type).tp;
                     if (real_parameters[1].type is ICompiledGenericTypeInstance)
                         t2 = helper.GetTypeReference(real_parameters[1].type).tp;
-                    MethodInfo mi = ctn1.compiled_type.GetMethod("Equals");
+                    MemberInfo[] eq_members = ctn1.compiled_type.GetMember("Equals", BindingFlags.Public | BindingFlags.Instance);
+                    MethodInfo mi = null;
+                    foreach (MemberInfo member in eq_members)
+                        if (member is MethodInfo)
+                        {
+                            mi = member as MethodInfo;
+                            break;
+                        }
                     if (mi != null)
                     {
                         real_parameters[0].visit(this);
-                        il.Emit(OpCodes.Box, t1);
+                        var lb = il.DeclareLocal(t1);
+                        il.Emit(OpCodes.Stloc, lb);
+                        il.Emit(OpCodes.Ldloca, lb);
                         real_parameters[1].visit(this);
                         il.Emit(OpCodes.Box, t2);
-                        il.Emit(OpCodes.Callvirt, mi);
+                        il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objnoteq)
                         {
                             il.Emit(OpCodes.Ldc_I4_0);
