@@ -360,7 +360,7 @@ type
     end;
     procedure AnimRotateP(a,sec: real);
     begin
-      var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
+      var an := new DoubleAnimation(a + rot.Angle, System.TimeSpan.FromSeconds(sec));
       rot.BeginAnimation(RotateTransform.AngleProperty, an, HandoffBehavior.Compose);
     end;
     procedure AnimScaleP(a,sec: real);
