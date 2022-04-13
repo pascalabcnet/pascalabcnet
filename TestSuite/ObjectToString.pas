@@ -13,9 +13,9 @@ var res := new StringBuilder;
 procedure Test(o: object);
 begin
   TypeName(o, res);
-  res += '{ ';
+  res.Append('{ ');
   _ObjectToString(o, res);
-  res += ' }'#10;
+  res.Append(' }'#10);
 end;
 
 begin
