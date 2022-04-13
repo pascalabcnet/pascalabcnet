@@ -1,10 +1,10 @@
-integer{ 1 }
+﻿integer{ 1 }
 string{ abc }
 UIntPtr{ 123 }
 array[,,,,,,,,] of byte{ [[[[[[[[[0,0]]]]]]]],[[[[[[[[0,0]]]]]]]]] }
 array[,,,,,,,,] of byte{ [] }
 r1{ (a=123; b=abc; p=123) }
-procedure(byte){ nil => procedure lambda(b: byte) }
-procedure(byte){ nil => procedure lambda(b: byte) => procedure Invoke(b: byte) }
-procedure(byte){ nil => procedure lambda(b: byte) }
-procedure(byte){ nil => procedure lambda(b: byte) }
+procedure(byte){ procedure lambda(b: byte) }
+procedure(byte){ procedure lambda(b: byte) => procedure Invoke(b: byte) }
+function: Object{ (d1=procedure lambda(b: byte)) => function lambda: Object }
+function: Object{ (d1=procedure lambda(b: byte)) => function lambda: Object => function Invoke: Object }

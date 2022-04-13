@@ -4275,8 +4275,11 @@ type
       if o is Delegate then
       begin
         var d := Delegate(o);
-        Append(d.Target, prev, res);
-        res += ' => ';
+        if d.Target<>nil then
+        begin
+          Append(d.Target, prev, res);
+          res += ' => ';
+        end;
         MethodToString(d.Method, true, res);
         exit;
       end;

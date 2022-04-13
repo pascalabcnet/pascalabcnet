@@ -10,7 +10,6 @@
   end;
   
 var res := new StringBuilder;
-
 procedure Test(o: object);
 begin
   TypeName(o, res);
@@ -31,18 +30,38 @@ begin
   Test(new r1);
   
   var d1 := procedure(b: byte)->exit();
-  var d2 := function: object->d1;
+  var d2: Action<byte> := d1;
+  var d3 := function: object->d1;
+  var d4: Func0<object> := d3;
   Test(d1);
-  Test(Action&<byte>(d1));
   Test(d2);
-  Test(Func0&<object>(d2));
+  Test(Delegate(d3));
+  Test(Delegate(d4));
   
   var otp_fname := 'ObjectToString.txt';
+  var enc := new System.Text.UTF8Encoding(true);
   // Убрать одну звёздочку, если надо поменять содержимое вывода
   (**)
-  Assert(ReadAllText('..\'+otp_fname) = res.ToString);
+//  try
+    var expected := ReadAllText('..\'+otp_fname, enc).Remove(#13);
+    var curr := res.ToString;
+    var tr := expected = curr;
+//    if not tr then
+//    begin
+//      {$reference System.Windows.Forms.dll}
+//      System.Windows.Forms.MessageBox.Show(
+//        expected +
+//        #10+'='*30+#10+
+//        curr
+//      );
+//    end;
+    Assert(tr);
+//  except
+//    on e: Exception do
+//      Writeln(e);
+//  end;
   (*)
-  WriteAllText(otp_fname, res.ToString);
+  WriteAllText(otp_fname, res.ToString, enc);
   (**)
   
 end.
