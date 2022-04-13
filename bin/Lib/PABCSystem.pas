@@ -2646,7 +2646,9 @@ function TypeName(o: object): string;
 /// Записывает в res имя типа объекта
 procedure TypeName(o: object; res: StringBuilder);
 
-///Возвращает строку для вывода в write
+/// Записывает в res строку для вывода в write
+procedure _ObjectToString(o: object; res: StringBuilder);
+/// Возвращает строку для вывода в write
 function _ObjectToString(o: object): string;
 
 function IsUnix: boolean;
@@ -4508,6 +4510,7 @@ begin
         exit;
       end;
       
+      res += name;
     end;
     
   end;
@@ -4553,10 +4556,12 @@ end;
 
 
 
+procedure _ObjectToString(o: object; res: StringBuilder) :=
+ObjectToStringUtils.Append(o, new Stack<object>, res);
 function _ObjectToString(o: object): string;
 begin
   var res := new StringBuilder;
-  ObjectToStringUtils.Append(o, new Stack<object>, res);
+  _ObjectToString(o, res);
   Result := res.ToString;
 end;
 
