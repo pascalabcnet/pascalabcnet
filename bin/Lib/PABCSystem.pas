@@ -4184,9 +4184,9 @@ type
     end;
     
     static procedure ContentsToString(o: Object; prev: Stack<object>; res: StringBuilder);
+    const val_sep = '; ';
     begin
       res += '(';
-      var val_sep := '; ';
       var any_vals := false;
       
       var inh_st := new Stack<System.Type>;
@@ -4221,7 +4221,14 @@ type
           if mi=nil then continue;
           res += pi.Name;
           res += '=';
-          Append(mi.Invoke(o, &Array.Empty&<object>), prev, res);
+          var val: object;
+          try
+            val := mi.Invoke(o, &Array.Empty&<object>);
+          except
+            on e: System.Reflection.TargetInvocationException do
+              val := e.InnerException.ToString;
+          end;
+          Append(val, prev, res);
           res += val_sep;
           any_vals := true;
         end;
