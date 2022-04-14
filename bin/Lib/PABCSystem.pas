@@ -4488,7 +4488,13 @@ begin
       if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
       begin
         var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
-        if typed<>nil then
+        if (typed<>nil) and (
+          // Выводим как sequence только классы, созданные yield функцией
+          // "clyield#" это yield класс паскаля
+          t.Name.StartsWith('clyield#') or
+          // А все yield классы C# являются вложенными и скрытыми
+          (t.DeclaringType<>nil) and not t.IsPublic
+        ) then
         begin
           res += 'sequence of ';
           TypeToTypeName(typed.GetGenericArguments.Single, res);
