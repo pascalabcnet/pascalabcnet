@@ -26,6 +26,8 @@ begin
   
   Test(new byte[2,1,1,1,1,1,1,1,2]);
   Test(new byte[2,1,1,1,0,1,1,1,2]);
+  Test(|1,2,3,4,5|.Skip(1).Take(3));
+  Test(new System.Collections.ArrayList(|6,7,8|)); // Пример НЕ типизированной последовательности
   
   Test(new r1);
   

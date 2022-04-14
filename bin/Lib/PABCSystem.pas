@@ -4406,18 +4406,19 @@ type
         var len := 0;
         if enmr.MoveNext then while true do
         begin
-          var next := enmr.MoveNext;
+          var enmr_curr := enmr.Current;
+          var enmr_has_next := enmr.MoveNext;
           if len<>0 then res += ',';
           len += 1;
           
-          if (len>max_seq_len) and next then
+          if (len>max_seq_len) and enmr_has_next then
           begin
             res += '...';
-            next := false;
+            enmr_has_next := false;
           end else
-            Append(enmr.Current, prev, res);
+            Append(enmr_curr, prev, res);
           
-          if not next then break;
+          if not enmr_has_next then break;
         end;
         res += if is_set then ']' else ']';
         exit;
@@ -4431,7 +4432,6 @@ type
     
   end;
   
-
 procedure TypeToTypeName(t: System.Type; res: StringBuilder);
 begin
   if t=nil then
@@ -4483,6 +4483,17 @@ begin
         res += ' of ';
         TypeToTypeName(t.GetElementType, res);
         exit;
+      end;
+      
+      if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
+      begin
+        var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
+        if typed<>nil then
+        begin
+          res += 'sequence of ';
+          TypeToTypeName(typed.GetGenericArguments.Single, res);
+          exit;
+        end;
       end;
       
       var name := t.Name;
@@ -4556,8 +4567,6 @@ begin
   TypeName(o, res);
   Result := res.ToString;
 end;
-
-
 
 procedure _ObjectToString(o: object; res: StringBuilder) :=
 ObjectToStringUtils.Append(o, new Stack<object>, res);

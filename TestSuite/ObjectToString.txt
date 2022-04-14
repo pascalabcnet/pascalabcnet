@@ -1,8 +1,10 @@
-﻿integer{ 1 }
+integer{ 1 }
 string{ abc }
 UIntPtr{ 123 }
 array[,,,,,,,,] of byte{ [[[[[[[[[0,0]]]]]]]],[[[[[[[[0,0]]]]]]]]] }
 array[,,,,,,,,] of byte{ [] }
+sequence of integer{ [2,3,4] }
+ArrayList{ [6,7,8] }
 r1{ (a=123; b=abc; p=123) }
 procedure(byte){ procedure lambda(b: byte) }
 procedure(byte){ procedure lambda(b: byte) => procedure Invoke(b: byte) }
