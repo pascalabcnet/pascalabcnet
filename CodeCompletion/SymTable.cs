@@ -364,8 +364,9 @@ namespace CodeCompletion
         {
             /*if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
                 return new List<ProcScope>();*/
-            List<ProcScope> meths = GetExtensionMethods(ts);
+            List<ProcScope> meths = GetExtensionMethods(ts, name);
             List<ProcScope> lst = new List<ProcScope>();
+            
             for (int i = 0; i < meths.Count; i++)
             {
                 if (string.Compare(meths[i].si.name, name, true) == 0)
@@ -376,12 +377,12 @@ namespace CodeCompletion
             return lst;
         }
 
-        public List<ProcScope> GetExtensionMethods(TypeScope ts)
+        public List<ProcScope> GetExtensionMethods(TypeScope ts, string name=null)
         {
             if (ts is TypeSynonim)
-                return GetExtensionMethods((ts as TypeSynonim).actType);
+                return GetExtensionMethods((ts as TypeSynonim).actType, name);
             if (ts.original_type != null)
-                return GetExtensionMethods(ts.original_type);
+                return GetExtensionMethods(ts.original_type, name);
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
@@ -396,7 +397,11 @@ namespace CodeCompletion
                         tmp_ts2 = TypeTable.get_compiled_type((tmp_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
                     if (extension_methods.TryGetValue(tmp_ts2, out meths))
                     {
-                        lst.AddRange(meths);
+                        foreach (var meth in meths)
+                        {
+                            if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                                lst.Add(meth);
+                        }
                     }
                     else
                     {
@@ -411,7 +416,12 @@ namespace CodeCompletion
                                 ((t as FileScope).elementType == null) == ((tmp_ts2 as FileScope).elementType == null)
                                 )
                             {
-                                lst.AddRange(extension_methods[t]);
+                                var meth_list = extension_methods[t];
+                                foreach (var meth in meth_list)
+                                {
+                                    if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                                        lst.Add(meth);
+                                }
                             }
                         }
                     }
@@ -433,7 +443,11 @@ namespace CodeCompletion
                             int_ts2 = TypeTable.get_compiled_type((int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
                         if (extension_methods.TryGetValue(int_ts2, out meths))
                         {
-                            lst.AddRange(meths);
+                            foreach (var meth in meths)
+                            {
+                                if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                                    lst.Add(meth);
+                            }
                         }
                         else
                         {
@@ -445,7 +459,12 @@ namespace CodeCompletion
                                         t is FileScope && int_ts2 is FileScope && 
                                         ((t as FileScope).elementType == null) == ((int_ts2 as FileScope).elementType == null))
                                 {
-                                    lst.AddRange(extension_methods[t]);
+                                    var meth_list = extension_methods[t];
+                                    foreach (var meth in meth_list)
+                                    {
+                                        if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                                            lst.Add(meth);
+                                    }
                                     //break;
                                 }
                             }
@@ -459,7 +478,15 @@ namespace CodeCompletion
                 for (int i = 0; i < this.used_units.Count; i++)
                 {
             		if (!hasUsesCycle(this))
-                        lst.AddRange(this.used_units[i].GetExtensionMethods(ts));
+                    {
+                        var unit_meth_lst = this.used_units[i].GetExtensionMethods(ts, name);
+                        foreach (var meth in unit_meth_lst)
+                        {
+                            if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                                lst.Add(meth);
+                        }
+                    }
+                       
                 }
             return lst;
         }

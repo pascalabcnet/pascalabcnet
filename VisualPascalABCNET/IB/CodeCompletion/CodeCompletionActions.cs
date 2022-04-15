@@ -37,6 +37,8 @@ namespace VisualPascalABC
             int addit = 0;
             PascalABCCompiler.SourceLocation tmp = new PascalABCCompiler.SourceLocation(null, 0, 0, 0, 0);
             string file_name = null;
+            if (CodeCompletion.CodeCompletionNameHelper.Helper.IsKeyword(new_val))
+                new_val = "&" + new_val;
             foreach (SymbolsViewerSymbol svs in refers)
             {
                 if (svs.SourceLocation.BeginPosition.Line != tmp.BeginPosition.Line)
@@ -54,6 +56,7 @@ namespace VisualPascalABC
                 TextLocation tl_beg = new TextLocation(svs.SourceLocation.BeginPosition.Column - 1 + addit, svs.SourceLocation.BeginPosition.Line - 1);
                 //TextLocation tl_end = new TextLocation(svs.SourceLocation.EndPosition.Line,svs.SourceLocation.EndPosition.Column);
                 int offset = doc.PositionToOffset(tl_beg);
+                
                 addit += new_val.Length - name.Length;
                 doc.Replace(offset, name.Length, new_val);
                 doc.CommitUpdate();
