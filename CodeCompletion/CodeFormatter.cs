@@ -579,16 +579,24 @@ namespace CodeFormatters
                             comm = "() ->";
                         comm += " ";
                     }
+                    else if (comm.EndsWith("procedure->("))
+                    {
+                        comm = comm.Replace("procedure->(", "procedure -> (");
+                    }
+                    else if (comm.EndsWith("procedure->"))
+                    {
+                        comm = comm.Replace("procedure->", "procedure -> ");
+                    }
                     else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ", "") == "::")
                         comm = "::";
                     else if (comm.StartsWith("[") && comm.EndsWith(":"))
                         comm = comm.Replace(" ", "");
                     else if (comm.StartsWith("( ") && comm.TrimEnd().EndsWith("var"))
-                        comm = comm.Replace(" ", "")+" ";
+                        comm = comm.Replace(" ", "") + " ";
                     else if (trimed_comm.StartsWith(", ") && comm.TrimEnd().EndsWith("var"))
                         comm = RemoveOverSpaces(comm);
                     else if (trimed_comm.StartsWith(",var"))
-                        comm = ", var"+ trimed_comm.Replace(",var", "");
+                        comm = ", var" + trimed_comm.Replace(",var", "");
                     else if (comm.StartsWith("array") || comm.StartsWith("set") || comm.StartsWith("sequence"))
                         comm = RemoveOverSpaces(comm);
                     else if ((comm.StartsWith("class") || comm.StartsWith("interface")) && comm.EndsWith("("))

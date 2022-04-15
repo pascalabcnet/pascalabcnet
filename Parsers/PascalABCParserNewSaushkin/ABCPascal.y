@@ -5185,7 +5185,7 @@ common_lambda_body
 		}
 	| tkRoundOpen assignment tkRoundClose
 		{
-			$$ = new statement_list($2 as statement, @$);
+			$$ = new statement_list($2 as statement, @2);
 		}
 	;
 
