@@ -211,11 +211,12 @@ namespace VisualPascalABC
                 rf = new RenameForm();
                 Form1StringResources.SetTextForAllControls(rf);
             }
-            rf.EditValue = name.Trim(' ');
+            rf.EditValue = name.Trim(' ').Replace("&", "");
             DialogResult dr = rf.ShowDialog();
             if (dr == DialogResult.OK)
             {
                 new_val = rf.EditValue;
+                
                 List<SymbolsViewerSymbol> refers = FindReferences(expr, fileName, line, column, true);
                 if (refers == null) return null;
                 return refers;

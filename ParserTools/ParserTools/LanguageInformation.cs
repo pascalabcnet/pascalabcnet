@@ -130,6 +130,7 @@ namespace PascalABCCompiler.Parsers
     	string SkipNew(int off, string Text, ref KeywordKind keyw);
     	//char GetParameterDelimiter();
     	string GetCompiledTypeRepresentation(Type t, System.Reflection.MemberInfo mi, ref int line, ref int col);
+        bool IsKeyword(string value);
         string[] Keywords
         {
             get;

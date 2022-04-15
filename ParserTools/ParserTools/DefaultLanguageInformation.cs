@@ -137,6 +137,11 @@ namespace PascalABCCompiler.Parsers
             keywords.Values.CopyTo(keywords_array, 2);
             type_keywords_array = type_keys.ToArray();
 		}
+        
+        public bool IsKeyword(string value)
+        {
+            return keywords.ContainsKey(value.ToLower());
+        }
 
         public virtual string BodyStartBracket
         {
@@ -3691,7 +3696,7 @@ namespace PascalABCCompiler.Parsers
         	i++;
             if (i < Text.Length && Text[i] != ' ' && !char.IsControl(Text[i]))
         	{
-        		while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
+        		while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
         		{
         			sb.Append(Text[i]);//.Append(Text[i]);
         			i++;
