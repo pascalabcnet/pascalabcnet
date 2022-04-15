@@ -315,6 +315,10 @@ namespace CodeCompletion
 
         public override void visit(for_node _for_node)
         {
+            IBaseScope tmp = cur_scope;
+            cur_scope = entry_scope.FindScopeByLocation(_for_node.source_context.begin_position.line_num, _for_node.source_context.begin_position.column_num);
+            if (cur_scope == null)
+                cur_scope = tmp;
             if (_for_node.loop_variable != null)
             {
                 ret_tn = cur_scope.FindNameInAnyOrder(_for_node.loop_variable.name);
@@ -330,7 +334,10 @@ namespace CodeCompletion
             if (_for_node.increment_value != null)
                 _for_node.increment_value.visit(this);
             if (_for_node.statements != null)
+            {
                 _for_node.statements.visit(this);
+            }
+            cur_scope = tmp;
         }
 
         public override void visit(repeat_node _repeat_node)
