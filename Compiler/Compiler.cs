@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
  /***************************************************************************
  *   
@@ -2409,13 +2409,15 @@ namespace PascalABCCompiler
             List<string> names = new List<string>();
             foreach (SyntaxTree.unit_or_namespace un in usesList)
             {
-                string name=SyntaxTree.Utils.IdentListToString(un.name.idents,".").ToLower();
+                var uui = un as SyntaxTree.uses_unit_in;
+                string name = (uui!=null ? uui.in_file.Value : SyntaxTree.Utils.IdentListToString(un.name.idents, "."));
+                var name_lower = name.ToLower();
                 if (un.source_context != null)
                 {
-                    if (names.Contains(name))
+                    if (names.Contains(name_lower))
                         throw new DuplicateUsesUnit(CurrentCompilationUnit.SyntaxTree.file_name, name, un.source_context);
                     else
-                        names.Add(name);
+                        names.Add(name_lower);
                 }
             }
         }
@@ -2676,19 +2678,25 @@ namespace PascalABCCompiler
         
         public string GetUnitFileName(SyntaxTree.unit_or_namespace SyntaxUsesUnit, string curr_path)
 		{
-            //ToDo В корневом Compile() создаётся uses_unit_in без name. Выглядит как костыль
-            if (SyntaxUsesUnit is SyntaxTree.uses_unit_in && (SyntaxUsesUnit as SyntaxTree.uses_unit_in).name == null) return (SyntaxUsesUnit as SyntaxTree.uses_unit_in).in_file.Value;
-            if (curr_path == null) throw new InvalidOperationException(SyntaxUsesUnit.UsesPath());
-            var UnitName = SyntaxUsesUnit.name.idents[0].name;
+            if (!Path.IsPathRooted(SyntaxUsesUnit.UsesPath()) && curr_path == null) throw new InvalidOperationException(SyntaxUsesUnit.UsesPath());
+            var UnitName = SyntaxUsesUnit.name?.idents[0].name;
 
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in uui)
             {
-                
-                if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
+
+                if (UnitName==null)
+                {
+                    UnitName = uui.in_file.Value;
+                    UnitName = Path.GetFileName(UnitName);
+                    UnitName = Path.ChangeExtension(UnitName, null);
+                } else if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
                     throw new UsesInWrongName(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
             }
+            else if (UnitName == null)
+                throw new InvalidOperationException();
 
+            // UnitName передаётся только для вывода ошибок, а для поиска файла используется второй параметр
             return GetUnitFileName(UnitName, SyntaxUsesUnit.UsesPath(), curr_path, SyntaxUsesUnit.source_context);
         }
         
@@ -2741,9 +2749,9 @@ namespace PascalABCCompiler
             }
 
             if (PCUFileExists)
-                res = Path.Combine(curr_path, PCUFileName);
+                res = Path.Combine(curr_path??"", PCUFileName);
             else if (SourceFileExists)
-                res = Path.Combine(curr_path, SourceFileName);
+                res = Path.Combine(curr_path??"", SourceFileName);
             else
                 throw new InvalidOperationException(nameof(SourceFileExists)); // тело "if (PCUFileExists && SourceFileExists)" не должно присваивать false обоим переменным
 
@@ -2755,9 +2763,6 @@ namespace PascalABCCompiler
         {
             //if (FileInSearchDirectory(cu.file_name)) return;
             
-            string ModuleName = null;
-            SyntaxTree.uses_unit_in uses_unit_in = null;
-            SyntaxTree.unit_or_namespace uses_unit = null;
             List<SyntaxTree.unit_or_namespace> UsesList = GetSyntaxInterfaceUsesList(cu);
             if (UsesList == null) 
                 return;
@@ -2765,7 +2770,7 @@ namespace PascalABCCompiler
             foreach (CompilerOptions.StandartModule Module in CompilerOptions.StandartModules)
             {
                 //Я стандартный??
-                ModuleName = Path.GetFileNameWithoutExtension(Module.Name);
+                var ModuleName = Path.GetFileNameWithoutExtension(Module.Name);
                 if (ModuleName.ToLower() == cu_module_name)
                     return;             
             }
@@ -2774,19 +2779,14 @@ namespace PascalABCCompiler
                 if ((Module.AddToLanguages & FirstCompilationUnit.SyntaxTree.Language) != FirstCompilationUnit.SyntaxTree.Language
                     && (Module.AddToLanguages & CurrentCompilationUnit.SyntaxTree.Language) != CurrentCompilationUnit.SyntaxTree.Language)
                     continue;
-                ModuleName = Path.GetFileNameWithoutExtension(Module.Name);
+                var ModuleName = Path.GetFileNameWithoutExtension(Module.Name);
                 if (Module.AddMethod == CompilerOptions.StandartModuleAddMethod.RightToMain && CurrentCompilationUnit != FirstCompilationUnit)
                     continue;
-                foreach (SyntaxTree.unit_or_namespace curunit in UsesList)
-                {
-                    if (curunit.name.idents.Count == 1 && curunit.name.idents[0].name.ToLower() == ModuleName.ToLower())
-                        continue;
-                }
 
                 PascalABCCompiler.SyntaxTree.unit_or_namespace to_add;
                 if (Path.GetExtension(Module.Name) != "" /*&& Path.GetExtension(ModuleFileName).ToLower() != ".dll"*/)
                 {
-                    uses_unit_in = new SyntaxTree.uses_unit_in(
+                    var uses_unit_in = new SyntaxTree.uses_unit_in(
                         _name: new SyntaxTree.ident_list(new SyntaxTree.ident(ModuleName)),
                         _in_file: new SyntaxTree.string_const(Module.Name));
                     //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
@@ -2794,7 +2794,7 @@ namespace PascalABCCompiler
                 }
                 else
                 {
-                    uses_unit = new SyntaxTree.unit_or_namespace(new SyntaxTree.ident_list(new SyntaxTree.ident(ModuleName)));
+                    var uses_unit = new SyntaxTree.unit_or_namespace(new SyntaxTree.ident_list(new SyntaxTree.ident(ModuleName)));
                     //uses_unit.source_context = uses_unit.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
                     to_add = uses_unit;
                 }
@@ -3398,7 +3398,7 @@ namespace PascalABCCompiler
                 
                 for (int i = SyntaxUsesList.Count - 1 - CurrentUnit.InterfaceUsedUnits.Count; i >= 0; i--)
                 {
-                    if (IsPossibleNamespace(SyntaxUsesList[i], true, curr_path) || namespaces.ContainsKey(SyntaxUsesList[i].name.idents[0].name))
+                    if (!(SyntaxUsesList[i] is SyntaxTree.uses_unit_in) && (IsPossibleNamespace(SyntaxUsesList[i], true, curr_path) || namespaces.ContainsKey(SyntaxUsesList[i].name.idents[0].name)))
                     {
                         CurrentUnit.InterfaceUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])), null);
                         CurrentUnit.PossibleNamespaces.Add(SyntaxUsesList[i]);
