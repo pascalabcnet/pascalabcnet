@@ -145,12 +145,6 @@ function ReplaceMany(s: string; source, target: IList<string>): string;
 /// В строке s меняет местами подстроки ss1 и ss2
 procedure SwapSubstr(var s: string; ss1, ss2: string);
 
-/// Выводит тип переменной или выражения
-procedure PrintType(o: Object);
-
-/// Выводит тип переменной или выражения, затем переходит к новой строке вывода
-procedure PrintlnType(o: Object);
-
 implementation
 
 type
@@ -968,53 +962,7 @@ end;
 
 /// В строке s меняет местами подстроки ss1 и ss2
 procedure SwapSubstr(var Self: string; ss1, ss2: string);
-extensionmethod := SwapSubstr(Self, ss1, ss2);
-
-function InternalConvertTupleString(s: string): string;
-begin
-  var tt := '([\w.`<>\[\],()]+?)';  
-  s := Regex.Replace(s,$'System.Tuple`2\[{tt},{tt}\]','($1,$2)');
-  s := Regex.Replace(s,$'System.Tuple`3\[{tt},{tt},{tt}\]','($1,$2,$3)');
-  s := Regex.Replace(s,$'System.Tuple`4\[{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4)');
-  s := Regex.Replace(s,$'System.Tuple`5\[{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5)');
-  s := Regex.Replace(s,$'System.Tuple`6\[{tt},{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5,$6)');
-  Result := Regex.Replace(s,$'System.Tuple`7\[{tt},{tt},{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5,$6,$7)');
-end;
-
-function InternalConvertTypeString(s: string): string;
-begin
-  s := s.Replace('System.Int32','integer');
-  s := s.Replace('System.Int64','int64');
-  s := s.Replace('System.Double','real');
-  s := s.Replace('System.String','string');
-  s := s.Replace('System.Char','char');
-  s := s.Replace('System.Numerics.BigInteger','BigInteger');
-  var tt := '([\w.`<>\[\],()]+?)';  
-  s := Regex.Replace(s,$'{tt}\[\]\[\]','array of array of $1');
-  s := Regex.Replace(s,$'{tt}\[\]','array of $1');
-  s := Regex.Replace(s,$'{tt}\[,\]','array [,] of $1');
-  s := Regex.Replace(s,$'System.Collections.Generic.(Dictionary|SortedDictionary)`2\[{tt},{tt}\]','$1<$2,$3>');
-  s := Regex.Replace(s,$'System.Collections.Generic.(List|Stack|Queue|HashSet|SortedSet)`1\[{tt}\]','$1<$2>');
-  s := InternalConvertTupleString(s);
-  s := InternalConvertTupleString(s);
-  Result := s;
-end;
-
-/// Выводит тип переменной или выражения
-procedure PrintType(o: Object);
-begin
-  var y := o.GetType.GetInterfaces.Select(i->i.ToString).Where(s->s.StartsWith('System.Collections.Generic.IEnumerable`')).FirstOrDefault;
-  var s := o.GetType.ToString;
-  s := InternalConvertTypeString(s);
-  Print(s);
-end;
-
-/// Выводит тип переменной или выражения, затем переходит к новой строке вывода
-procedure PrintlnType(o: Object);
-begin
-  PrintType(o);
-  Println;
-end;
+  extensionmethod := SwapSubstr(Self, ss1, ss2);
 
 /// Возвращает все перестановки букв в строке в виде последовательности строк
 function Permutations(Self: string): sequence of string; extensionmethod 

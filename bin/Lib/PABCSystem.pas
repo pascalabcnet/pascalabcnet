@@ -13169,6 +13169,7 @@ begin
       TypeCode.SByte: Result := 'shortint';
       TypeCode.Double: Result := 'real';
       TypeCode.Single: Result := 'single';
+      else Result := t.ToString;
     end
   else if t = typeof(string) then
     Result := 'string'
