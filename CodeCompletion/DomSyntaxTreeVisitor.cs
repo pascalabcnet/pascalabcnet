@@ -41,7 +41,7 @@ namespace CodeCompletion
         private List<var_def_statement> pending_is_pattern_vars = new List<var_def_statement>();
         private static Compiler compiler;
         public static bool use_semantic_for_intellisense;
-
+        private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
         public SemanticOptions semantic_options = new SemanticOptions();
 		
 		public DomSyntaxTreeVisitor(DomConverter converter)
@@ -57,6 +57,7 @@ namespace CodeCompletion
 
 		public void Convert(compilation_unit cu)
         {
+            method_call_cache.Clear();
             try
             {
 				cu.visit(this);
@@ -3591,6 +3592,11 @@ namespace CodeCompletion
 
         public override void visit(method_call _method_call)
         {
+            if (method_call_cache.ContainsKey(_method_call))
+            {
+                returned_scope = method_call_cache[_method_call];
+                return;
+            }
             search_all = true;
             returned_scope = null;
             _method_call.dereferencing_value.visit(this);
@@ -3603,6 +3609,7 @@ namespace CodeCompletion
             if (names.Length > 0 && names[0] is TypeScope)
             {
                 returned_scope = names[0];
+                method_call_cache.Add(_method_call, returned_scope);
                 return;
             }
             foreach (SymScope ss in names)
@@ -3717,6 +3724,7 @@ namespace CodeCompletion
                         returned_scope = ss;
                     }
             }
+            method_call_cache.Add(_method_call, returned_scope);
             cnst_val.prim_val = null;
         }
 

@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 23.02.2022 10:29:11
-// UserName: ?????????
-// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
+// Machine:  DESKTOP-2BJCJ7I
+// DateTime: 15.04.2022 12:29:58
+// UserName: ibond
+// Input file <ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -60,7 +60,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // Verbatim content from ABCPascal.y
 // ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public syntax_tree_node root; // �������� ���� ��������������� ������ 
 
@@ -72,7 +72,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -7767,7 +7767,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 1006: // common_lambda_body -> tkRoundOpen, assignment, tkRoundClose
 {
-			CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-2].stn as statement, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-2].stn as statement, LocationStack[LocationStack.Depth-2]);
 		}
         break;
       case 1007: // lambda_function_body -> expr_l1_for_lambda
