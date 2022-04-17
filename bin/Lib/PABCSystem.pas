@@ -2641,15 +2641,21 @@ function GetRuntimeSize<T>: integer;
 function TypeToTypeName(t: System.Type): string;
 /// Для типа System.Type записывает в res имя типа объекта
 procedure TypeToTypeName(t: System.Type; res: StringBuilder);
+/// Для типа System.Type записывает в res имя типа объекта
+procedure TypeToTypeName(t: System.Type; res: TextWriter);
 /// Возвращает имя типа объекта
 function TypeName(o: object): string;
 /// Записывает в res имя типа объекта
 procedure TypeName(o: object; res: StringBuilder);
+/// Записывает в res имя типа объекта
+procedure TypeName(o: object; res: TextWriter);
 
-/// Записывает в res строку для вывода в write
-procedure _ObjectToString(o: object; res: StringBuilder);
 /// Возвращает строку для вывода в write
 function _ObjectToString(o: object): string;
+/// Записывает в res строку для вывода в write
+procedure _ObjectToString(o: object; res: StringBuilder);
+/// Записывает в res строку для вывода в write
+procedure _ObjectToString(o: object; res: TextWriter);
 
 function IsUnix: boolean;
 ///--
@@ -4132,61 +4138,61 @@ function operator implicit(s: string): StringBuilder; extensionmethod := new Str
 type
   ObjectToStringUtils = static class
     
-    static procedure MethodToString(mi: System.Reflection.MethodInfo; write_sub_names: boolean; res: StringBuilder);
+    static procedure MethodToString(mi: System.Reflection.MethodInfo; write_sub_names: boolean; res: TextWriter);
     const lambda_name='lambda';
     const sugar_name_begin='<>';
     const par_separator = ', ';
     begin
       var rt := mi.ReturnType;
       if rt=typeof(Void) then rt := nil;
-      res += if rt=nil then 'procedure' else 'function';
+      res.Write( if rt=nil then 'procedure' else 'function' );
       
       if write_sub_names then
       begin
-        res += ' ';
+        res.Write(' ');
         var name := mi.Name;
         if name.StartsWith(sugar_name_begin) then
         begin
           if name.IndexOf(lambda_name, sugar_name_begin.Length, lambda_name.Length)=-1 then
-            res.Append(name, sugar_name_begin.Length, name.Length-sugar_name_begin.Length) else
-            res += lambda_name;
+            res.Write( name.Substring(sugar_name_begin.Length) ) else
+            res.Write( lambda_name );
         end else
-          res += name;
+          res.Write( name );
       end;
       
       var pars := mi.GetParameters;
       if pars.Length<>0 then
       begin
-        res += '(';
-        foreach var par in pars do
+        res.Write('(');
+        for var i := 0 to pars.Length-1 do
         begin
+          var par := pars[i];
+          if i<>0 then res.Write( par_separator );
           if write_sub_names then
           begin
             var name := par.Name;
             if name.StartsWith(sugar_name_begin) then
-              res.Append(name, sugar_name_begin.Length, name.Length-sugar_name_begin.Length) else
-              res += name;
-            res += ': ';
+              res.Write( name.SubString(sugar_name_begin.Length) ) else
+              res.Write( name );
+            res.Write(': ');
           end;
           TypeToTypeName(par.ParameterType, res);
-          res += par_separator;
         end;
-        res.Length -= par_separator.Length;
-        res += ')';
+        res.Write(')');
       end;
       
       if rt<>nil then
       begin
-        res += ': ';
+        res.Write(': ');
         TypeToTypeName(rt, res);
       end;
       
     end;
     
-    static procedure ContentsToString(o: Object; prev: Stack<object>; res: StringBuilder);
+    static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
     const val_sep = '; ';
     begin
-      res += '(';
+      res.Write('(');
       var any_vals := false;
       
       var inh_st := new Stack<System.Type>;
@@ -4206,11 +4212,12 @@ type
       foreach var t in inh_st do
         foreach var fi in t.GetFields(bind_flags) do
         begin
-          res += fi.Name;
-          res += '=';
+          if any_vals then
+            res.Write( val_sep ) else
+            any_vals := true;
+          res.Write( fi.Name );
+          res.Write('=');
           Append(fi.GetValue(o), prev, res);
-          res += val_sep;
-          any_vals := true;
         end;
       
       foreach var t in inh_st do
@@ -4219,8 +4226,11 @@ type
           if pi.GetIndexParameters.Length<>0 then continue;
           var mi := pi.GetGetMethod;
           if mi=nil then continue;
-          res += pi.Name;
-          res += '=';
+          if any_vals then
+            res.Write( val_sep ) else
+            any_vals := true;
+          res.Write( pi.Name );
+          res.Write('=');
           var val: object;
           try
             val := mi.Invoke(o, &Array.Empty&<object>);
@@ -4229,19 +4239,16 @@ type
               val := e.InnerException.ToString;
           end;
           Append(val, prev, res);
-          res += val_sep;
-          any_vals := true;
         end;
       
-      if any_vals then res.Length -= val_sep.Length;
-      res += ')';
+      res.Write(')');
     end;
     
-    static procedure Append(o: Object; prev: Stack<object>; res: StringBuilder);
+    static procedure Append(o: Object; prev: Stack<object>; res: TextWriter);
     begin
       if prev.Contains(o) then
       begin
-        res += '(...)';
+        res.Write( '(...)' );
         exit;
       end;
       
@@ -4250,12 +4257,12 @@ type
       if prev.Pop<>o then raise new InvalidOperationException;
       
     end;
-    static procedure AppendImpl(o: Object; prev: Stack<object>; res: StringBuilder);
+    static procedure AppendImpl(o: Object; prev: Stack<object>; res: TextWriter);
     const max_seq_len = 100;
     begin
       if o = nil then
       begin
-        res += 'nil';
+        res.Write( 'nil' );
         exit;
       end;
       var o_t := o.GetType;
@@ -4264,18 +4271,18 @@ type
       
       if o is System.Reflection.Pointer then
       begin
-        res += PointerToString(System.Reflection.Pointer.Unbox(o));
+        res.Write( PointerToString(System.Reflection.Pointer.Unbox(o)) );
         exit;
       end;
       
       if o is Complex then
       begin
         var c := Complex(o);
-        res += '(';
+        res.Write('(');
         AppendImpl(c.Real, prev, res);
-        res += ' + i*';
+        res.Write(' + i*');
         AppendImpl(c.Imaginary, prev, res);
-        res += ')';
+        res.Write(')');
         exit;
       end;
       
@@ -4285,7 +4292,7 @@ type
         if d.Target<>nil then
         begin
           Append(d.Target, prev, res);
-          res += ' => ';
+          res.Write(' => ');
         end;
         MethodToString(d.Method, true, res);
         exit;
@@ -4314,7 +4321,7 @@ type
       if o is IFormattable then
       begin
         // Применение nfi к числам с плавающей точкой
-        res += IFormattable(o).ToString(nil, nfi);
+        res.Write( IFormattable(o).ToString(nil, nfi) );
         exit;
       end;
       begin
@@ -4322,7 +4329,7 @@ type
         var decl_t := d.Method.DeclaringType;
         if (decl_t<>typeof(object)) and (decl_t<>typeof(ValueType)) then
         begin
-          res += d();
+          res.Write( d() );
           exit;
         end;
       end;
@@ -4339,7 +4346,7 @@ type
           // Алгоритм ниже не расчитан на пустые массив
           // Правда для "new byte[1,0]" таким образом
           // выведет "[]" вместо "[[]]"
-          res += '[]';
+          res.Write('[]');
           exit;
         end;
         
@@ -4359,7 +4366,7 @@ type
         var stack_pos := -1;
         while true do
         begin
-          res.Append('[', last_r-stack_pos);
+          loop last_r-stack_pos do res.Write('[');
           stack_pos := last_r;
           
           Append(a.GetValue(inds), prev, res);
@@ -4371,19 +4378,19 @@ type
             var need_pop := inds[stack_pos]>a.GetUpperBound(stack_pos);
             if not need_pop and (inds[stack_pos]=trim_inds[stack_pos]) then
             begin
-              res += ',...';
+              res.Write(',...');
               need_pop := true;
             end;
             
             if need_pop then
             begin
               inds[stack_pos] := a.GetLowerBound(stack_pos);
-              res += ']';
+              res.Write(']');
               stack_pos -= 1;
               if stack_pos<0 then exit;
             end else
             begin
-              res += ',';
+              res.Write(',');
               break;
             end;
             
@@ -4408,26 +4415,26 @@ type
           o.GetType.GetInterfaces.Contains(typeof(System.Collections.IDictionary)) or
           o.GetType.GetInterfaces.Any(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(System.Collections.Generic.ISet<>)));
         
-        res += if is_set then '{' else '[';
+        res.Write( if is_set then '{' else '[' );
         var enmr := s.GetEnumerator;
         var len := 0;
         if enmr.MoveNext then while true do
         begin
           var enmr_curr := enmr.Current;
           var enmr_has_next := enmr.MoveNext;
-          if len<>0 then res += ',';
+          if len<>0 then res.Write(',');
           len += 1;
           
           if (len>max_seq_len) and enmr_has_next then
           begin
-            res += '...';
+            res.Write( '...' );
             enmr_has_next := false;
           end else
             Append(enmr_curr, prev, res);
           
           if not enmr_has_next then break;
         end;
-        res += if is_set then ']' else ']';
+        res.Write( if is_set then ']' else ']' );
         exit;
       end;
       
@@ -4439,55 +4446,55 @@ type
     
   end;
   
-procedure TypeToTypeName(t: System.Type; res: StringBuilder);
+procedure TypeToTypeName(t: System.Type; res: TextWriter);
 begin
   if t=nil then
   begin
-    res += 'nil';
+    res.Write( 'nil' );
     exit;
   end;
   
   case &Type.GetTypeCode(t) of
     
     // int
-    TypeCode.SByte:   res += 'shortint';
-    TypeCode.Byte:    res += 'byte';
-    TypeCode.Boolean: res += 'boolean';
+    TypeCode.SByte:   res.Write('shortint');
+    TypeCode.Byte:    res.Write('byte');
+    TypeCode.Boolean: res.Write('boolean');
     
-    TypeCode.Int16:   res += 'smallint';
-    TypeCode.UInt16:  res += 'word';
-    TypeCode.Char:    res += 'char';
+    TypeCode.Int16:   res.Write('smallint');
+    TypeCode.UInt16:  res.Write('word');
+    TypeCode.Char:    res.Write('char');
     
-    TypeCode.Int32:   res += 'integer';
-    TypeCode.UInt32:  res += 'longword';
+    TypeCode.Int32:   res.Write('integer');
+    TypeCode.UInt32:  res.Write('longword');
     
-    TypeCode.Int64:   res += 'int64';
-    TypeCode.UInt64:  res += 'uint64';
-    TypeCode.DateTime:res += 'DateTime';
+    TypeCode.Int64:   res.Write('int64');
+    TypeCode.UInt64:  res.Write('uint64');
+    TypeCode.DateTime:res.Write('DateTime');
     
     // float
-    TypeCode.Single:  res += 'single';
-    TypeCode.Double:  res += 'real';
-    TypeCode.Decimal: res += 'decimal';
+    TypeCode.Single:  res.Write('single');
+    TypeCode.Double:  res.Write('real');
+    TypeCode.Decimal: res.Write('decimal');
     
-    TypeCode.String:  res += 'string';
+    TypeCode.String:  res.Write('string');
     
     else
     begin
       
       if t.IsArray then
       begin
-        res += 'array';
+        res.Write('array');
         var rank := t.GetArrayRank;
         if rank>1 then
         begin
-          res += '[';
-          loop rank-1 do res += ',';
-          res += ']';
+          res.Write('[');
+          loop rank-1 do res.Write(',');
+          res.Write(']');
         end else
         if rank<1 then
           raise new NotImplementedException;
-        res += ' of ';
+        res.Write(' of ');
         TypeToTypeName(t.GetElementType, res);
         exit;
       end;
@@ -4503,7 +4510,7 @@ begin
           (t.DeclaringType<>nil) and not t.IsPublic
         ) then
         begin
-          res += 'sequence of ';
+          res.Write('sequence of ');
           TypeToTypeName(typed.GetGenericArguments.Single, res);
           exit;
         end;
@@ -4524,27 +4531,30 @@ begin
       // Но в данном случае это не нужно
       if t.IsGenericType then
       begin
-        res.Append(name, 0,name.IndexOf('`'));
-        res += '<';
-        var gen_par_separator := ', ';
+        res.Write( name.Remove(name.IndexOf('`')) );
+        res.Write('<');
+        var any_gen_par := false;
         foreach var gen_par in t.GetGenericArguments do
         begin
+          if any_gen_par then
+            res.Write(', ') else
+            any_gen_par := true;
           TypeToTypeName(gen_par, res);
-          res += gen_par_separator;
         end;
-        res.Length -= gen_par_separator.Length;
-        res += '>';
+        res.Write('>');
         exit;
       end;
       
-      res += name;
+      res.Write(name);
     end;
     
   end;
   
 end;
+procedure TypeToTypeName(t: System.Type; res: StringBuilder) :=
+TypeToTypeName(t, new StringWriter(res));
 
-procedure TypeName(o: object; res: StringBuilder);
+procedure TypeName(o: object; res: TextWriter);
 begin
   var t := o?.GetType;
   
@@ -4566,6 +4576,8 @@ begin
   
   TypeToTypeName(t, res);
 end;
+procedure TypeName(o: object; res: StringBuilder) :=
+TypeName(o, new StringWriter(res));
 
 function TypeToTypeName(t: System.Type): string;
 begin
@@ -4581,8 +4593,10 @@ begin
   Result := res.ToString;
 end;
 
-procedure _ObjectToString(o: object; res: StringBuilder) :=
+procedure _ObjectToString(o: object; res: TextWriter) :=
 ObjectToStringUtils.Append(o, new Stack<object>, res);
+procedure _ObjectToString(o: object; res: StringBuilder) :=
+_ObjectToString(o, new StringWriter(res));
 function _ObjectToString(o: object): string;
 begin
   var res := new StringBuilder;

@@ -42,29 +42,16 @@ begin
   Test(Delegate(d4));
   
   var otp_fname := 'ObjectToString.txt';
+  var otp_new_fname := 'ObjectToString[new].txt';
   var enc := new System.Text.UTF8Encoding(true);
-  // Убрать одну звёздочку, если надо поменять содержимое вывода
-  (**)
-  { $reference System.Windows.Forms.dll}
-//  try
-    var expected := ReadAllText('..\'+otp_fname, enc).Remove(#13);
-    var curr := res.ToString;
-    var tr := expected = curr;
-//    if not tr then
-//    begin
-//      System.Windows.Forms.MessageBox.Show(
-//        expected +
-//        #10+'='*30+#10+
-//        curr
-//      );
-//    end;
-    Assert(tr);
-//  except
-//    on e: Exception do
-//      System.Windows.Forms.MessageBox.Show(e.ToString);
-//  end;
-  (*)
-  WriteAllText(otp_fname, res.ToString, enc);
-  (**)
   
+  var dir := GetCurrentDir;
+  if System.IO.Path.GetFileName(dir)='exe' then
+    dir := System.IO.Path.GetDirectoryName(dir);
+  
+  var expected := ReadAllText(dir+'\'+otp_fname, enc).Remove(#13);
+  var curr := res.ToString;
+  var tr := expected = curr;
+  if not tr then WriteAllText(dir+'\'+otp_new_fname, curr, enc);
+  Assert(tr);
 end.
