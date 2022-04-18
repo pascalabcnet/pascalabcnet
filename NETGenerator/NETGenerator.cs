@@ -5643,8 +5643,10 @@ namespace PascalABCCompiler.NETGenerator
             is_addr = false;
             //is_dot_expr = false;
             is_field_reference = true;
+            bool tmp_virtual_method_call = virtual_method_call;
+            virtual_method_call = false;
             value.obj.visit(this);
-            
+            virtual_method_call = tmp_virtual_method_call;
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
 #if DEBUG
