@@ -1864,10 +1864,15 @@ begin
   var dc := myvis.RenderOpen;
   var r := Rect(0,0,Window.Width,Window.Height);
   var mm := (canvas as MyVisualHost).RenderTransform.Value;
+  var m1 := mm;
   mm.Invert;
   r.Transform(mm);
   dc.DrawRectangle(Brushes.White,nil,r);
-  var rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
+  
+  var rr: GRect;
+  if CurrentCoordType = MathematicalCoords then
+    rr := Rect(r.Left,r.Top,rtbmap.Width/m1.M11,rtbmap.Height/-m1.M22)
+  else rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
   dc.DrawImage(rtbmap,rr);
   dc.Close;
   (canvas as MyVisualHost).children.Insert(0,myvis);
