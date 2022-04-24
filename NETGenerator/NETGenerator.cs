@@ -7198,6 +7198,11 @@ namespace PascalABCCompiler.NETGenerator
                         is_addr = true;
                     }
                 }
+                if (parameters[i].type is ICompiledTypeNode && (parameters[i].type as ICompiledTypeNode).compiled_type == TypeFactory.CharType && parameters[i].parameter_type == parameter_type.var
+                    && real_parameters[i] is ISimpleArrayIndexingNode && helper.GetTypeReference((real_parameters[i] as ISimpleArrayIndexingNode).array.type).tp == TypeFactory.StringType)
+                {
+                    copy_string = true;
+                }
                 real_parameters[i].visit(this);
                 
                 if (mi.DeclaringType == TypeFactory.ArrayType && mi.Name == "Resize" && i == 1)
