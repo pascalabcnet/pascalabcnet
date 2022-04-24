@@ -43,7 +43,7 @@ begin
 end;
 
 begin
-  Init1;
+  Init2;
   ToPoint(x0,y0);
   SetWidth(0.5);
   //SetColor(Colors.Red);

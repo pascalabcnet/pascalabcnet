@@ -43,10 +43,9 @@ begin
 end;
 
 begin
-  Init1;
+  Init4;
   ToPoint(x0,y0);
   SetWidth(0.5);
-  //SetColor(Colors.Red);
   Down;
   RunStr(Atom,n);
   Up;
