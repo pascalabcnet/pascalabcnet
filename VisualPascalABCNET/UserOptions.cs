@@ -20,7 +20,7 @@ namespace VisualPascalABC
         public bool PauseInRunModeIfConsole = true;
         public string DefaultSourceFileNameFormat = "Program{0}.pas";
         public int TabIndent = 2;
-        public int EditorFontSize = 10;
+        public int EditorFontSize = 12;
         public bool AllowCodeCompletion = true;
         public bool CodeCompletionHint = true;
         public bool CodeCompletionDot = true;
@@ -35,11 +35,22 @@ namespace VisualPascalABC
         public bool AllowCodeFormatting = false;
         public bool SkipStackTraceItemIfSourceFileInSystemDirectory = true;
         public bool AlwaysAttachDebuggerAtStart = false;
-        public string CurrentFontFamily = "Courier New";
+        public string CurrentFontFamily = "Consolas";
         public bool HighlightOperatorBrackets=true;
         public bool UseDllForSystemUnits = true;
         public bool PABCDllChecked = false;
         public bool AutoInsertCodeIsEnabledOnStartup = true;
+
+        public UserOptions()
+        {
+            try
+            {
+                var installedFontCollection = new System.Drawing.Text.InstalledFontCollection();
+                if (!Array.Exists(installedFontCollection.Families, f => f.Name == CurrentFontFamily))
+                    CurrentFontFamily = "Courier New";
+            }
+            catch { }
+        }
 
         public bool DeleteEXEAfterExecute
         {
