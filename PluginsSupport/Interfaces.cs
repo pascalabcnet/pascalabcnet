@@ -295,7 +295,7 @@ namespace VisualPascalABCPlugins
     {
         bool IsRun();
         bool IsRun(string FileName);
-        bool Run(bool Debug);
+        bool Run(bool RedirectConsoleIO);
         bool Stop();
         void Stop(string FileName);
         bool Run(bool forDebugging, bool startWithGoto, bool need_first_brpt);

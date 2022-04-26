@@ -43,7 +43,7 @@ namespace VisualPascalABC
 
         public UserOptions()
         {
-            try
+            try // SSM 25/04/22
             {
                 var installedFontCollection = new System.Drawing.Text.InstalledFontCollection();
                 if (!Array.Exists(installedFontCollection.Families, f => f.Name == CurrentFontFamily))

@@ -45,9 +45,9 @@ namespace VisualPascalABC
             DocumentService = WorkbenchServiceFactory.DocumentService;
         }
 
-        public bool Run(bool Debug)
+        public bool Run(bool RedirectConsoleIO)
         {
-            Workbench.UserOptions.RedirectConsoleIO = Debug;
+            Workbench.UserOptions.RedirectConsoleIO = RedirectConsoleIO;
 
             if (Workbench.UserOptions.RedirectConsoleIO)
                 if (!DebuggerManager.IsRunning)

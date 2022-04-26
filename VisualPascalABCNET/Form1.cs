@@ -812,7 +812,12 @@ namespace VisualPascalABC
 
         private void miNew_Click(object sender, EventArgs e)
         {
-            WorkbenchServiceFactory.FileService.OpenFile(null, null);         
+            // SSM 26/04/22 - новый файл создается в папке текущего открытого файла
+            var CurrentFileNameDirectory = Path.GetDirectoryName(CurrentSourceFileName);
+            WorkbenchStorage.WorkingDirectory = CurrentFileNameDirectory;
+            Environment.CurrentDirectory = CurrentFileNameDirectory;
+
+            WorkbenchServiceFactory.FileService.OpenFile(null, null);
         }
 
         private void miSaveAs_Click(object sender, EventArgs e)
