@@ -234,6 +234,7 @@ namespace VisualPascalABC
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            
             InitializeComponent();
+            tsAutoInsertCode.Visible = false;
 
             VisualPABCSingleton.MainForm = this;
             WorkbenchStorage.MainProgramThread = System.Threading.Thread.CurrentThread;

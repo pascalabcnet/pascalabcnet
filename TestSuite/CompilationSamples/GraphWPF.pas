@@ -39,6 +39,7 @@ type
   GRect = System.Windows.Rect;
   /// Тип окна
   GWindow = System.Windows.Window;
+  /// Тип пера
   GPen = System.Windows.Media.Pen;
   /// Тип точки
   Point = System.Windows.Point;
@@ -48,6 +49,12 @@ type
   Vector = System.Windows.Vector;
   /// Тип кисти
   GBrush = System.Windows.Media.Brush;
+  /// Набор предопределенных кистей
+  Brushes = System.Windows.Media.Brushes;
+  /// Контекст рисования
+  DrawingContext = System.Windows.Media.DrawingContext;
+  /// Визуальный объект для отрисовки с помощью контекста рисования
+  DrawingVisual = System.Windows.Media.DrawingVisual;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
 
@@ -478,6 +485,8 @@ function Pnt(x,y: real): GPoint;
 function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): GBrush;
+/// Возвращает однотонную цветную кисть случайного цвета
+function RandomColorBrush: GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
 /// Возвращает однотонное цветное перо, заданное цветом и толщиной
@@ -704,12 +713,24 @@ function TextWidthPFont(text: string; f: FontOptions): real;
 function TextHeightPFont(text: string; f: FontOptions): real; 
 /// Размер текста (совместно с FastDraw)
 function TextSizePFont(text: string; f: FontOptions): Size;
+/// Создает визуальный объект и добавляет его к отображаемым объектам  
+function CreateVisual: DrawingVisual;
+/// Удаляет визуальный объект из отображаемых
+procedure RemoveVisual(visual: DrawingVisual);
+/// Рисует на визуальном объекте с помощью контекста рисования
+procedure DrawOnVisual(visual: DrawingVisual; proc: DrawingContext->());
+/// Рисует все визуальные объекты на битмапе рендеринга и очищает список визуальных объектов
+procedure FlushDrawingToBitmap;
 
-procedure AddToHost(v: Visual);
 
-{function GetDC: DrawingContext;
-procedure ReleaseDC(dc: DrawingContext);
-procedure FastClear(var dc: DrawingContext);}
+//procedure AddToHost(v: Visual);
+//procedure RemoveFromHost(v: Visual);
+
+function GetDC: DrawingContext;
+//procedure ReleaseDC(dc: DrawingContext);
+//procedure FastClear(var dc: DrawingContext);
+//procedure HostToRenderBitmap;
+
 
 procedure __InitModule__;
 procedure __FinalizeModule__;
@@ -741,8 +762,17 @@ function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 function ColorBrush(c: Color) := GetBrush(c);
-function ColorPen(c: Color) := new GPen(GetBrush(c),Pen.Width);
-function ColorPen(c: Color; w: real) := new GPen(GetBrush(c),w);
+function RandomColorBrush := GetBrush(RandomColor);
+function ColorPen(c: Color): GPen;
+begin
+  Result := new GPen(GetBrush(c),Pen.Width);
+  Result.Freeze
+end;
+function ColorPen(c: Color; w: real): GPen;
+begin
+  Result := new GPen(GetBrush(c),w);
+  Result.Freeze
+end;
 
 function RandomPoint(w: real): Point := Pnt(Random(w,Window.Width-w),Random(w,Window.Height-w));
 
@@ -797,6 +827,11 @@ begin
   Host.children.Add(v);
 end;
 
+procedure RemoveFromHost(v: Visual);
+begin
+  Host.children.Remove(v);
+end;
+
 function GetDC: DrawingContext;
 begin
   var visual := new DrawingVisual();
@@ -817,6 +852,31 @@ begin
   if host.Children.Count > 1000 then
     HostToRenderBitmap
 end;
+
+/// Создает визуальный объект и добавляет его к отображаемым объектам  
+function CreateVisual: DrawingVisual;
+begin
+  var visual: DrawingVisual;
+  Redraw(()->begin visual := new DrawingVisual; AddToHost(visual) end );
+  Result := visual;
+end;
+
+/// Удаляет визуальный объект из отображаемых
+procedure RemoveVisual(visual: DrawingVisual) := Redraw(()->RemoveFromHost(visual));
+
+/// Рисует на визуальном объекте с помощью контекста рисования
+procedure DrawOnVisual(visual: DrawingVisual; proc: DrawingContext->());
+begin
+  Redraw(()->begin
+    var dc := visual.RenderOpen();
+    proc(dc);
+    dc.Close;
+  end);
+end;
+
+/// Рисует все визуальные объекты на битмапе рендеринга и очищает список визуальных объектов
+procedure FlushDrawingToBitmap := Redraw(()->HostToRenderBitmap());
+
 
 procedure FastDraw(commands: DrawingContext->());
 begin

@@ -1205,12 +1205,15 @@ type
   private 
     function CreateStoryboard: StoryBoard;
     begin
+      //Println('CreateStoryboard');
       sb := new StoryBoard;
       var storyboardName := 's' + sb.GetHashCode;
       MainWindow.Resources.Add(storyboardName, sb);
       var an := AnimationCompleted;
       sb.Completed += (o, e) -> begin
+        //Println('CompletedStoryBoardStart');
         MainWindow.Resources.Remove(storyboardName);
+        //Println('CompletedStoryBoardEnd');
         if an <> nil then
           an;
       end;
@@ -1742,10 +1745,8 @@ type
         // Клонируем. Надо еще списки клонировать! А то в a+a во втором списке последний элемент - клонированный - в обоих списках!
         //lf := lf.Clone;
         llf[lli] := lf;
-        lf.Completed += procedure -> 
+        lf.Completed := procedure -> 
         begin
-          //Print('Completed '+lf.GetType.ToString); 
-          //Println(i+1);
           lll[i+1].Begin;
         end;  
       end;
@@ -3498,7 +3499,8 @@ var
 
 //{{{--doc: Конец секции 1 }}} 
 
-
+procedure Proba2;
+function Any(x, y, z: real; c: Color): ObjectWithMaterial3D;
 
 ///--
 procedure __InitModule__;
@@ -4609,8 +4611,8 @@ type
       a.Points := Arr(P3D(0, 0, 0), P3D(3, 0, 0), P3D(3, 0, 0), P3D(3, 3, 0), P3D(3, 3, 0), P3D(3, 3, 3));
       a.Color := c;}
       
-      var a := new My13D;
-      a.Material := c;
+      {var a := new My13D;
+      a.Material := c;}
       
       
       {var aa := 1;
@@ -4630,10 +4632,10 @@ type
       a.EndAngle := 360;
       a.ThetaDiv := 60;}
       
-      {var a := new HelixToolkit.Wpf.TubeVisual3D;
-      var p := new Point3DCollection(Arr(P3D(1,2,0),P3D(2,1,0),P3D(3,1,0)));
-      a.Diameter := 0.05;
-      a.Path := p;}
+      var a := new HelixToolkit.Wpf.TubeVisual3D;
+      var p := new Point3DCollection(Arr(P3D(0,0,0),P3D(2,0,0),P3D(2,2,0),P3D(2,2,2)));
+      a.Diameter := 0.3;
+      a.Path := p;
       
       {var a := new LegoVisual3D();
       a.Rows := 1;
@@ -4650,7 +4652,7 @@ function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x
 
 function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
 
-function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
+function Any(x, y, z: real; c: Color): ObjectWithMaterial3D := Inv(()->AnyT.Create(x, y, z, c));
 
 // Сервисные функции и классы
 

@@ -174,7 +174,7 @@ namespace SyntaxVisitors.SugarVisitors
                 var stat = new statement_list(indexvar,fe2);
                 ReplaceUsingParent(fe, stat);
                 ProcessNode(fe2.in_what);
-                ProcessNode(forstat.list[0]);
+                ProcessNode(forstat);
             }
             else DefaultVisit(fe);
         }
