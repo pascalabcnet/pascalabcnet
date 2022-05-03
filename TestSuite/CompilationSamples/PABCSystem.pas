@@ -8275,13 +8275,13 @@ function Sign(x: uint64): integer := 1;
 
 function Sign(x: real): integer := Math.Sign(x);
 
-function Abs(x: shortint): shortint := Math.Abs(x);
+function Abs(x: shortint): shortint := if x >= 0 then x else -x;
 
-function Abs(x: smallint): smallint := Math.Abs(x);
+function Abs(x: smallint): smallint := if x >= 0 then x else -x;
 
-function Abs(x: integer): integer := Math.Abs(x);
+function Abs(x: integer): integer := if x >= 0 then x else -x;
 
-function Abs(x: int64): int64 := Math.Abs(x);
+function Abs(x: int64): int64 := if x >= 0 then x else -x;
 
 function Abs(x: BigInteger): BigInteger := BigInteger.Abs(x);
 
