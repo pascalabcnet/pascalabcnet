@@ -4095,6 +4095,7 @@ namespace CodeCompletion
         public bool is_final;
         public bool aliased = false;
         internal bool lazy_instance = false;
+        private static Dictionary<TypeScope, List<TypeScope>> instance_cache = new Dictionary<TypeScope, List<TypeScope>>();
 
         public TypeScope() { }
         public TypeScope(SymbolKind kind, SymScope topScope, SymScope baseScope)

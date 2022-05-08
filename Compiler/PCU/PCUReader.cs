@@ -67,6 +67,7 @@ namespace PascalABCCompiler.PCU
         private SortedDictionary<int, common_type_node> interf_type_list = new SortedDictionary<int, common_type_node>();
         private SortedDictionary<int, common_type_node> impl_type_list = new SortedDictionary<int, common_type_node>();
         private Dictionary<common_method_node, int> waited_method_codes = new Dictionary<common_method_node, int>();
+        private bool waited_method_restoring = false;
         internal static Dictionary<definition_node, int> AllReadOrWritedDefinitionNodesOffsets = new Dictionary<definition_node, int>();
         internal void AddMember(definition_node dn, int offset)
         {
@@ -696,8 +697,10 @@ namespace PascalABCCompiler.PCU
 
         public void RestoreWaitedMethodCodes()
         {
+            waited_method_restoring = true;
             foreach (common_method_node cmn in waited_method_codes.Keys)
                 cmn.function_code = GetCode(waited_method_codes[cmn]);
+            waited_method_restoring = false;
         }
 
         //получение кода метода
@@ -1880,10 +1883,10 @@ namespace PascalABCCompiler.PCU
             type_node type = GetTypeReference();
             common_method_node get_meth = null;
             if (br.ReadByte() == 1) 
-                get_meth = GetClassMethod(br.ReadInt32(), true);
+                get_meth = GetClassMethod(br.ReadInt32(), !waited_method_restoring);
             common_method_node set_meth = null;
             if (br.ReadByte() == 1) 
-                set_meth = GetClassMethod(br.ReadInt32(), true);
+                set_meth = GetClassMethod(br.ReadInt32(), !waited_method_restoring);
             int num = br.ReadInt32();
             parameter_list pl = new parameter_list();
             for (int i = 0; i < num; i++)
