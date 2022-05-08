@@ -1,4 +1,4 @@
-﻿unit u_records6;
+﻿unit u_records7;
 
 type
   intr = interface
