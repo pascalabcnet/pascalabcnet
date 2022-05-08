@@ -371,7 +371,6 @@ UNICODEARROW \x890
     case (int)Tokens.tkEvent:
     case (int)Tokens.tkDefault:
     case (int)Tokens.tkTemplate:
-    case (int)Tokens.tkPacked:
     case (int)Tokens.tkExports:
     case (int)Tokens.tkResourceString:
     case (int)Tokens.tkThreadvar:

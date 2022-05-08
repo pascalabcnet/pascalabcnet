@@ -36,7 +36,7 @@
 %token <ti> tkBackSlashRoundOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
-%token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
+%token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
 %token <ti> tkSequence tkYield tkShortProgram tkVertParen tkShortSFProgram
 %token <id> tkNew
@@ -156,7 +156,7 @@
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_type_expr as_expr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type simple_type_question/*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
-%type <td> template_param template_empty_param structured_type unpacked_structured_type empty_template_type_reference simple_or_template_type_reference simple_or_template_or_question_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
+%type <td> template_param template_empty_param structured_type empty_template_type_reference simple_or_template_type_reference simple_or_template_or_question_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
 %type <stn> try_handler  
@@ -1511,13 +1511,6 @@ pointer_type
     ;
                             
 structured_type
-    : unpacked_structured_type
-		{ $$ = $1; }
-    | tkPacked unpacked_structured_type
-		{ $$ = $2; }
-    ;
-
-unpacked_structured_type
     : array_type
 		{ $$ = $1; }
     | record_type
