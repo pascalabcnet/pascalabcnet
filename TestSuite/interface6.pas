@@ -12,6 +12,7 @@
 procedure p1<T>(o: T); where T: I1;
 begin
   assert(o.GetHashCode(5) = 5);
+  assert(o.GetHashCode() = o.GetHashCode());
 end;
 
 begin 
