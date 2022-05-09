@@ -76,12 +76,18 @@ namespace SyntaxVisitors.SugarVisitors
                 // var @tpar := Tuple.Create(все параметры)
                 var tupleIdent = new ident("@tpar" + UniqueNumStr());
                 // SSM 08.05.22 - один параметр не надо оборачивать в кортеж
+
+                // SSM 09.05.22 - для реализации кортежа используется ValueTuple если он определен
+                var TupleName = "Tuple";
+                if (System.Type.GetType("System.ValueTuple") != null)
+                    TupleName = "ValueTuple";
+
                 var_statement vs;
                 if (pp.Length == 1)
                     vs = new var_statement(tupleIdent, pp[0].Item1 as expression);
                 else vs = new var_statement(tupleIdent,
                   new method_call(
-                      new dot_node(new dot_node("?System", "Tuple"),new ident("Create")),
+                      new dot_node(new dot_node("?System", TupleName),new ident("Create")),
                       new expression_list(pp.Select(pair => pair.Item1 as expression).ToList())
                   )
                 );
@@ -103,7 +109,7 @@ namespace SyntaxVisitors.SugarVisitors
                 if (pp.Length == 1)
                     ttr_tuple = pp[0].Item2 as type_definition;
                 else
-                    ttr_tuple = new template_type_reference(new named_type_reference(new List<ident> { new ident("System"), new ident("Tuple") }),
+                    ttr_tuple = new template_type_reference(new named_type_reference(new List<ident> { new ident("System"), new ident(TupleName) }),
                     ttp
                     );
 
