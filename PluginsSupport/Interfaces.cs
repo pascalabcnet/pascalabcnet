@@ -64,7 +64,9 @@ namespace VisualPascalABCPlugins
         ProcessExited
     }
     public delegate void ChangeVisualEnvironmentStateDelegate(VisualEnvironmentState State, object obj);
-    
+    // SSM 16/05/22 - перенес сюда из RunManager
+    public delegate void RunnerManagerActionDelegate(string fileName);
+
     public enum SourceLocationAction
     {
         SelectAndGotoBeg,
@@ -293,6 +295,8 @@ namespace VisualPascalABCPlugins
 
     public interface IWorkbenchRunService
     {
+        event RunnerManagerActionDelegate Starting; // можно вызывать из плагина
+        event RunnerManagerActionDelegate Exited;   // можно вызывать из плагина
         bool IsRun();
         bool IsRun(string FileName);
         bool Run(bool RedirectConsoleIO);

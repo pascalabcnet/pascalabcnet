@@ -7,6 +7,7 @@ using System.Text;
 using PascalABCCompiler.Errors;
 using System.IO;
 using System.Diagnostics;
+using VisualPascalABCPlugins;
 
 namespace VisualPascalABC
 {
@@ -204,8 +205,6 @@ namespace VisualPascalABC
             */
         }
 
-
-        public delegate void RunnerManagerActionDelegate(string fileName);
         public event RunnerManagerActionDelegate Exited;
         public event RunnerManagerActionDelegate Starting;
 
