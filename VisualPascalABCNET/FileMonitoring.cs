@@ -88,7 +88,7 @@ namespace VisualPascalABC
             }
         }
 
-        void MainForm_Activated(object sender, EventArgs e)
+        void MainForm_Activated(object sender, EventArgs e) => System.Threading.Tasks.Task.Run(() =>
         {
             try
             {
@@ -122,11 +122,11 @@ namespace VisualPascalABC
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
-        }
+        });
 
     }
 }
