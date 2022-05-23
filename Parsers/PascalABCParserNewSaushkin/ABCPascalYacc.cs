@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 10.05.2022 19:00:28
+// DateTime: 23.05.2022 8:03:08
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -6514,10 +6514,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			foreach (var ex in (ValueStack[ValueStack.Depth-4].stn as expression_list).expressions)
 				if (ex is unpacked_list_of_ident_or_list)
 					parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",ex.source_context);
-			/*if ($5 != null) 
-				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
-			if ($6 != null) 
-				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
+			if (!(ValueStack[ValueStack.Depth-3].td is lambda_inferred_type)) 
+				parsertools.AddErrorFromResource("BAD_TUPLE",LocationStack[LocationStack.Depth-3]);
+			if (ValueStack[ValueStack.Depth-2].stn != null) 
+				parsertools.AddErrorFromResource("BAD_TUPLE",LocationStack[LocationStack.Depth-2]);
 
 			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).Count>6) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);

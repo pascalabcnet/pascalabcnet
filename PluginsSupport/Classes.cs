@@ -43,6 +43,7 @@ namespace VisualPascalABCPlugins
         public string Hint
         {
             get { return hint; }
+            set { hint = value; }
         }
         public Image Image
         {

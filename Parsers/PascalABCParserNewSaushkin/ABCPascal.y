@@ -4060,10 +4060,10 @@ tuple
 			foreach (var ex in ($4 as expression_list).expressions)
 				if (ex is unpacked_list_of_ident_or_list)
 					parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",ex.source_context);
-			/*if ($5 != null) 
+			if (!($5 is lambda_inferred_type)) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
 			if ($6 != null) 
-				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
+				parsertools.AddErrorFromResource("BAD_TUPLE",@6);
 
 			if (($4 as expression_list).Count>6) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
