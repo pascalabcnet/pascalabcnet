@@ -1758,6 +1758,15 @@ begin
   end;  
 end;
 
+procedure DrawWPFObjects(dc: DrawingContext);
+begin
+  var bmp := CreateRenderTargetBitmap;
+
+  var rr := Rect(0,0,bmp.Width,bmp.Height);
+  bmp.Render(host);
+  dc.DrawImage(bmp,rr);
+end;
+
 procedure __InitModule;
 begin
   AdditionalInit := procedure ->
@@ -1792,6 +1801,7 @@ begin
     var g := MainWindow.Content as DockPanel;
     (g.children[0] as Canvas).ClipToBounds := False; // SSM 04/08/20 - возвращаем в False иначе графику GraphWPF становится не видно
     g.children.Add(host); // Слой графики WPF - последний
+    AdditionalDrawOnDC += DrawWPFObjects;
   end;
   app.Dispatcher.Invoke(AdditionalInit);
 end;

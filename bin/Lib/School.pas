@@ -873,7 +873,7 @@ begin
             Result[i, 1] := b;
             Result[i, 2] := c;
             Result[i, 3] := d;
-            Result[i, 4] := d;
+            Result[i, 4] := e;
             Result[i, 5] := f(a, b, c, d, e);
             i += 1
           end;

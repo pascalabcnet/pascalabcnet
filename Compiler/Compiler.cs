@@ -3316,7 +3316,9 @@ namespace PascalABCCompiler
                 // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
 
                 var ccu = CurrentUnit.SyntaxTree;
-                foreach (SyntaxTree.compiler_directive cd in ccu.compiler_directives)
+                // !!!!!!!!!!!!!!!!!!!!!!
+                if (ccu != null) // SSM 06.06.22 - здесь была ошибка - ccu может быть null и тогда исключение!!! Добавил if
+                    foreach (SyntaxTree.compiler_directive cd in ccu.compiler_directives)
                     if (string.Compare(cd.Name.text, "apptype", true) == 0 && string.Compare(cd.Directive.text, "dll", true) == 0)
                     {
                         if (!(ccu is SyntaxTree.unit_module) ||
