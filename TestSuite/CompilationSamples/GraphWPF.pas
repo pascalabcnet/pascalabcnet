@@ -727,10 +727,13 @@ procedure FlushDrawingToBitmap;
 //procedure RemoveFromHost(v: Visual);
 
 function GetDC: DrawingContext;
+function CreateRenderTargetBitmap: RenderTargetBitmap;
+
+var AdditionalDrawOnDC: procedure(dc: DrawingContext);
+
 //procedure ReleaseDC(dc: DrawingContext);
 //procedure FastClear(var dc: DrawingContext);
 //procedure HostToRenderBitmap;
-
 
 procedure __InitModule__;
 procedure __FinalizeModule__;
@@ -1934,6 +1937,9 @@ begin
     rr := Rect(r.Left,r.Top,rtbmap.Width/m1.M11,rtbmap.Height/-m1.M22)
   else rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
   dc.DrawImage(rtbmap,rr);
+  
+  if AdditionalDrawOnDC <> nil then
+    AdditionalDrawOnDC(dc);
   dc.Close;
   (canvas as MyVisualHost).children.Insert(0,myvis);
   
@@ -2272,6 +2278,18 @@ begin
   FrameRate := 61;
 end;  
 
+function CreateRenderTargetBitmap: RenderTargetBitmap;
+begin
+  var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
+  var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
+  
+  var dpiX := integer(dpiXProperty.GetValue(nil, nil));
+  var dpiY := integer(dpiYProperty.GetValue(nil, nil));
+
+  var (scalex, scaley) := (dpiX/96,dpiY/96);
+  Result := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
+end;
+
 var mre := new ManualResetEvent(false);
 
 type 
@@ -2294,16 +2312,9 @@ public
     end;
     // Всегда последнее
     
-    var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
-    var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
-    
-    var dpiX := integer(dpiXProperty.GetValue(nil, nil));
-    var dpiY := integer(dpiYProperty.GetValue(nil, nil));
-  
+    RTbmap := CreateRenderTargetBitmap;
+
     var im := new Image();
-    
-    var (scalex, scaley) := (dpiX/96,dpiY/96);
-    RTbmap := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
     im.Source := RTbmap;
     
     // Рисуем на host
@@ -2334,6 +2345,7 @@ public
   
   procedure InitHandlers; override;
   begin
+    AdditionalDrawOnDC := procedure(dc) -> begin end;
     Closed += (sender,e) -> begin 
       if OnClose<>nil then
         OnClose;

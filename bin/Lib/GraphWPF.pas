@@ -729,11 +729,11 @@ procedure FlushDrawingToBitmap;
 function GetDC: DrawingContext;
 function CreateRenderTargetBitmap: RenderTargetBitmap;
 
+var AdditionalDrawOnDC: procedure(dc: DrawingContext);
+
 //procedure ReleaseDC(dc: DrawingContext);
 //procedure FastClear(var dc: DrawingContext);
 //procedure HostToRenderBitmap;
-
-var AdditionalDrawOnDC: procedure(dc: DrawingContext) := procedure -> begin end;
 
 procedure __InitModule__;
 procedure __FinalizeModule__;
@@ -2345,6 +2345,7 @@ public
   
   procedure InitHandlers; override;
   begin
+    AdditionalDrawOnDC := procedure(dc) -> begin end;
     Closed += (sender,e) -> begin 
       if OnClose<>nil then
         OnClose;
