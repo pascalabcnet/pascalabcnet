@@ -835,15 +835,7 @@ namespace PascalABCCompiler.NETGenerator
                 ConvertGenericFunctionInstance(igfi);
             }
 
-            for (int iii = 0; iii < cnns.Length; iii++)
-            {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
-                cur_type = NamespacesTypes[cnns[iii]];
-                cur_unit_type = NamespacesTypes[cnns[iii]];
-                //генерим инциализацию для полей
-                foreach (SemanticTree.ICommonTypeNode ctn in cnns[iii].types)
-                    GenerateInitCodeForFields(ctn);
-            }
+            
 
             ConstructorBuilder unit_cci = null;
 
@@ -897,6 +889,16 @@ namespace PascalABCCompiler.NETGenerator
                 }
 
                 cur_unit = tmp_unit_name;
+            }
+
+            for (int iii = 0; iii < cnns.Length; iii++)
+            {
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                cur_type = NamespacesTypes[cnns[iii]];
+                cur_unit_type = NamespacesTypes[cnns[iii]];
+                //генерим инциализацию для полей
+                foreach (SemanticTree.ICommonTypeNode ctn in cnns[iii].types)
+                    GenerateInitCodeForFields(ctn);
             }
 
             if (p.InitializationCode != null)
@@ -4656,6 +4658,8 @@ namespace PascalABCCompiler.NETGenerator
         {
             //Console.WriteLine(is_in_unit);
             //if (is_in_unit && helper.IsUsed(var)==false) return;
+            if (helper.GetVariable(var) != null)
+                return;
             TypeInfo ti = helper.GetTypeReference(var.type);
             FieldBuilder fb = cur_type.DefineField(var.name, ti.tp, FieldAttributes.Public | FieldAttributes.Static);
             helper.AddGlobalVariable(var, fb);
