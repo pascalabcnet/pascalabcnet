@@ -2799,9 +2799,9 @@ namespace PascalABCCompiler.TreeConverter
                     return set_of_possible_functions[0];
                 }
             }
-            if (set_of_possible_functions.Count == 2)
+            if (set_of_possible_functions.Count == 2 && set_of_possible_functions[0].return_value_type == set_of_possible_functions[1].return_value_type)
             {
-                if (set_of_possible_functions[0].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[1].semantic_node_type != semantic_node_type.basic_function_node)
+                if (set_of_possible_functions[0].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[1].semantic_node_type != semantic_node_type.basic_function_node )
                     return set_of_possible_functions[1];
                 else if (set_of_possible_functions[1].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[0].semantic_node_type != semantic_node_type.basic_function_node)
                     return set_of_possible_functions[0];
