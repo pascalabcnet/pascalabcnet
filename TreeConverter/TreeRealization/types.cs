@@ -2437,7 +2437,20 @@ namespace PascalABCCompiler.TreeRealization
         	if (sil != null)
         	{
         		function_node fn = null;
-        		foreach(var si in sil)
+                foreach (var si in sil)
+                {
+                    fn = si.sym_info as function_node;
+                    if (fn != null && fn.parameters.Count == 1 && type_table.is_type_or_original_generics_equal(fn.parameters[0].type, ctn) && type_table.is_type_or_original_generics_equal(fn.return_value_type, this))
+                    {
+                        if (!fn.is_generic_function)
+                        {
+                            if (fn.parameters[0].type.is_generic_parameter && type_table.is_derived(ctn, this))
+                                continue;
+                            return fn;
+                        }
+                    }
+                }
+                foreach (var si in sil)
         		{
         			fn = si.sym_info as function_node;
         			if (fn != null && fn.parameters.Count == 1 && type_table.is_type_or_original_generics_equal(fn.parameters[0].type, ctn) && type_table.is_type_or_original_generics_equal(fn.return_value_type, this))
