@@ -92,6 +92,10 @@ namespace PascalABCCompiler
                     co.SearchDirectory.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
                     return true;
 
+                case "locale":
+                    co.Locale = value;
+                    return true;
+
                 default:
                     Console.WriteLine("No such directive name: '{0}'", name);
                     return false;
@@ -119,12 +123,14 @@ namespace PascalABCCompiler
             Console.WriteLine("  /Define:<name>");
             Console.WriteLine("  /Output:<[path\\]name>");
             Console.WriteLine("  /SearchDir:<path>");
+            Console.WriteLine("  /Locale:<locale>");
             Console.WriteLine("  /Version:");
             Console.WriteLine();
             Console.WriteLine("/Help show this message");
             Console.WriteLine("/Output:<[path\\]name> compile into an executable called \"name\" and save it in \"path\" directory");
             Console.WriteLine("/Debug:0 generates code with all .NET optimizations");
             Console.WriteLine("/SearchDir:<path> add \"path\" to list of standart unit search directories. Last added paths would be searched first");
+            Console.WriteLine("/Locale:<locale> set locale of main thread of compiled program executable");
             Console.WriteLine("/Version: outputs PascalABC.NET version");
         }
 
