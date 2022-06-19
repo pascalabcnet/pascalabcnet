@@ -2195,6 +2195,47 @@ namespace PascalABCCompiler.TreeRealization
                                     if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
                                         && sil.FindIndex(ssi=> ssi.sym_info == si.sym_info)==-1)  // SSM 12.12.18 - за счёт методов интерфейсов тоже могут добавляться одинаковые - исключаем их
                                         sil.Add(si);
+                                    else if (si.sym_info is common_property_node && (si.sym_info as common_property_node).common_comprehensive_type is generic_instance_type_node
+                                        && sil.FindIndex(ssi => ssi.sym_info == si.sym_info) == -1)
+                                    {
+                                        bool insert = false;
+                                        var cmpn = si.sym_info as common_property_node;
+                                        foreach (var si2 in sil)
+                                        {
+                                            if (si2.sym_info is compiled_property_node)
+                                            {
+                                                var cppn = si2.sym_info as compiled_property_node;
+                                                if (string.Compare(cppn.name, cmpn.name, true) == 0 && cppn.compiled_comprehensive_type.original_generic == cmpn.common_comprehensive_type.original_generic)
+                                                {
+                                                    insert = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (insert)
+                                            sil.Insert(0, si);
+                                    }
+                                    else if (si.sym_info is common_method_node && (si.sym_info as common_method_node).common_comprehensive_type is generic_instance_type_node
+                                        && sil.FindIndex(ssi => ssi.sym_info == si.sym_info) == -1)
+                                    {
+                                        bool insert = false;
+                                        var cmn = si.sym_info as common_method_node;
+                                        foreach (var si2 in sil)
+                                        {
+                                            if (si2.sym_info is compiled_function_node)
+                                            {
+                                                var cfn = si2.sym_info as compiled_function_node;
+                                                if (string.Compare(cmn.name, cfn.name, true) == 0 && cfn.cont_type.original_generic == cmn.cont_type.original_generic && convertion_data_and_alghoritms.function_eq_params_and_result(cmn, cfn))
+                                                {
+                                                    insert = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (insert)
+                                            sil.Insert(0, si);
+                                    }
+
                                     cache.Add(si.sym_info, si.sym_info);
                                 }
                             }
