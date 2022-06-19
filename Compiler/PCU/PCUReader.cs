@@ -1738,6 +1738,8 @@ namespace PascalABCCompiler.PCU
                 cmn.function_code = GetCodeWithOverridedMethod(cmn, br.ReadInt32());
             else if (not_restore_code && cmn.name != "get_val" && cmn.name != "set_val")//ignore pascal array property accessors
                 AddWaitedMethodCode(cmn, br.ReadInt32());
+            else if (cmn.name == "<>") // for conform_basic_function
+                AddWaitedMethodCode(cmn, br.ReadInt32());
             else
                 cmn.function_code = GetCode(br.ReadInt32());
             cmn.cont_type.methods.AddElement(cmn);
