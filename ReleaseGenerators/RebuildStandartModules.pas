@@ -15,7 +15,7 @@
    ABCDatabases,PT4Databases,BlockFileOfT,Controls,
    OpenCLABC, OpenCL,
    OpenGLABC, OpenGL,
-   BBCMicroBit, School, SF, TwoPanelsWindow, NUnitABC, PlotWPF, XLSX
+   BBCMicroBit, School, SF, TwoPanelsWindow, NUnitABC, PlotWPF, XLSX, LightPT, Tasks
    ;
    
 begin

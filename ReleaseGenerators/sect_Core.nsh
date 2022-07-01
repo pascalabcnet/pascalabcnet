@@ -136,6 +136,8 @@
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
     File ..\bin\Lib\Turtle.pcu
+    File ..\bin\Lib\LightPT.pcu
+    File ..\bin\Lib\Tasks.pcu
     File ..\bin\Lib\TwoPanelsWindow.pcu
     File ..\bin\Lib\NUnitABC.pcu
     File ..\bin\Lib\PlotWPF.pcu
@@ -212,6 +214,8 @@
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
     ${AddFile} "Turtle.pcu"
+    ${AddFile} "LightPT.pcu"
+    ${AddFile} "Tasks.pcu"
     ${AddFile} "TwoPanelsWindow.pcu"
     ${AddFile} "NUnitABC.pcu"
     ${AddFile} "PlotWPF.pcu"
@@ -306,6 +310,8 @@
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
     File ..\bin\Lib\Turtle.pas
+    File ..\bin\Lib\LightPT.pas
+    File ..\bin\Lib\Tasks.pas
     File ..\bin\Lib\TwoPanelsWindow.pas
     File ..\bin\Lib\NUnitABC.pas
     File ..\bin\Lib\PlotWPF.pas
@@ -376,6 +382,8 @@
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
     ${AddFile} "Turtle.pas"
+    ${AddFile} "LightPT.pas"
+    ${AddFile} "Tasks.pas"
     ${AddFile} "TwoPanelsWindow.pas"
     ${AddFile} "NUnitABC.pas"
     ${AddFile} "PlotWPF.pas"
