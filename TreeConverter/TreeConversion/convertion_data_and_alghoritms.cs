@@ -668,7 +668,7 @@ namespace PascalABCCompiler.TreeConverter
 
 			if (pct.first==null)
 			{
-                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null)
+                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
                 {
                     return convert_type(en, (to as delegated_methods).empty_param_method.ret_type, loc);
                 }

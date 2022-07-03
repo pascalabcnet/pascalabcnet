@@ -18618,7 +18618,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 delegated_methods del_left = left.type as delegated_methods;
                 delegated_methods del_right = right.type as delegated_methods;
-                if (del_left != null && del_right != null && del_left.empty_param_method == null && del_right.empty_param_method == null)
+                if (del_left != null && del_right != null && (del_left.empty_param_method == null && del_right.empty_param_method == null || del_left.empty_param_method.ret_type == null && del_right.empty_param_method.ret_type == null))
                 {
                     base_function_call bfc = del_left.proper_methods[0];
                     common_type_node del =
