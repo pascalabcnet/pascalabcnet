@@ -145,8 +145,10 @@ begin
           _a[i-1] := _CommandLineArgs[i];
         _CommandLineArgs := _a;
         
-        Console.OutputEncoding := System.Text.Encoding.UTF8;
-        Console.InputEncoding := System.Text.Encoding.UTF8;
+        //Console.OutputEncoding := System.Text.Encoding.UTF8;
+        //Console.InputEncoding := System.Text.Encoding.UTF8;
+        Console.OutputEncoding := new System.Text.UTF8Encoding(false);
+        Console.InputEncoding := new System.Text.UTF8Encoding(false);
     end;
   except
   end;

@@ -66,6 +66,8 @@ namespace VisualPascalABCPlugins
     public delegate void ChangeVisualEnvironmentStateDelegate(VisualEnvironmentState State, object obj);
     // SSM 16/05/22 - перенес сюда из RunManager
     public delegate void RunnerManagerActionDelegate(string fileName);
+    // SSM 02.07.22 - перед стартом компил€ции дл€ плагинов
+    public delegate void BuildServiceActionDelegate(string fileName);
 
     public enum SourceLocationAction
     {
@@ -321,6 +323,7 @@ namespace VisualPascalABCPlugins
 
     public interface IWorkbenchBuildService
     {
+        BuildServiceActionDelegate BeforeCompile { get; set; }
         string Compile(string FileName, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment);
         string Compile(PascalABCCompiler.IProjectInfo project, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment);
         bool Build();

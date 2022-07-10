@@ -509,6 +509,8 @@ namespace VisualPascalABC
 
         void AddTextToOutputWindow(string ExeFileName, string Text)
         {
+            //OutputWindow.outputTextBox.SelectionColor = System.Drawing.Color.Green;
+            //MessageBox.Show(Text + " ! " + Text.Length.ToString());
             //if ((DateTime.Now - dt).TotalSeconds >= 1)
             //  Application.DoEvents()
             ExeFileName = Tools.FileNameToLower(ExeFileName);
@@ -545,6 +547,7 @@ namespace VisualPascalABC
 
         private void AppendTextInternalAsync(TextBoxBase textBox, string Text)
         {
+            //MessageBox.Show(string.Join(" ", Text.Select(c => ((int)c).ToString())));
             textBox.AppendText(Text);
         }
 

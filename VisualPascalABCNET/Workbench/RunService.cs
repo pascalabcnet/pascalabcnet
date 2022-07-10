@@ -143,6 +143,12 @@ namespace VisualPascalABC
                     Workbench.UserOptions.RedirectConsoleIO = true;
                 }
                 string OutputFileName = null;
+
+                if (BuildService.BeforeCompile != null)
+                {
+                    BuildService.BeforeCompile(tabPage.FileName);
+                }
+                
                 if (!forDebugging)
                 {
                     if (!ProjectFactory.Instance.ProjectLoaded)

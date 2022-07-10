@@ -49,6 +49,8 @@ namespace VisualPascalABC
             }
         }
 
+        public BuildServiceActionDelegate BeforeCompile { get; set; } = null;
+
         //kompilacija proekta
         public string Compile(PascalABCCompiler.IProjectInfo project, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment)
         {

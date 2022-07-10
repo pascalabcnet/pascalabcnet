@@ -222,11 +222,6 @@ namespace VisualPascalABC
             System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("!PASCALABCNET_FORUM_LINK"));
         }
 
-        private void label12_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
         }

@@ -3,36 +3,70 @@ unit LightPT;
 
 uses __RedirectIOMode;
 
+// ToDo: 
+
 type 
   PTException = class(Exception) end;
-  InputCountException = class(PTException)
-    Count,n: integer;
+  InputCountException = class(PTException) // Ровно Count 
+    Count: integer; // Count - сколько введено
+    n: integer;     // n - сколько требуется ввести
     constructor (Count,n: integer);
     begin
       Self.Count := Count;
       Self.n := n;
     end;
   end;
-  InputCount2Exception = class(InputCountException) 
+  InputCount2Exception = class(PTException) // Не меньше Count
+    Count: integer; // Count - сколько введено
+    i: integer;     // i - какой номер требуется ввести (с нуля)
+    constructor (Count,i: integer);
+    begin
+      Self.Count := Count;
+      Self.i := i;
+    end;
   end;
   InputTypeException = class(PTException)
-    n: integer;
-    ExpectedType, InputType: string;
-    constructor (n: integer; ExpectedType, InputType: string);
+    n: integer; // номер параметра
+    ExpectedType, ActualType: string;
+    constructor (n: integer; ExpectedType, ActualType: string);
     begin
       Self.n := n;
       Self.ExpectedType := ExpectedType;
-      Self.InputType := InputType;
+      Self.ActualType := ActualType;
     end;
   end;
-  TaskStatus = (Completed,NotCompleted,AbsentTask);
+  OutputCountException = class(PTException) // Ровно Count 
+    Count: integer; // Count - сколько выведено
+    n: integer;     // n - сколько требуется вывести
+    constructor (Count,n: integer);
+    begin
+      Self.Count := Count;
+      Self.n := n;
+    end;
+  end;
+  OutputTypeException = class(PTException)
+    n: integer; // номер параметра
+    ExpectedType, ActualType: string;
+    constructor (n: integer; ExpectedType, ActualType: string);
+    begin
+      Self.n := n;
+      Self.ExpectedType := ExpectedType;
+      Self.ActualType := ActualType;
+    end;
+  end;
+  TaskStatus = (Completed,NotCompleted,AbsentTask,OriginalTask); 
+    // AbsentTask - задача не под контролем правильности
+    // OriginalTask - ввод-вывод задачи не менялся по сравнению с постановкой
+  MessageColor = (MsgColorGreen,MsgColorRed,MsgColorOrange,MsgColorMagenta,MsgColorGray);
 
 var 
   OutputString := new StringBuilder;
   OutputList := new List<object>;
   InputList := new List<object>;
 
-var Cur := 0;
+  CheckTask: function(name: string): TaskStatus;
+ 
+  Cur := 0;
   
 function TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe','');
 
@@ -144,6 +178,12 @@ begin
   Result := PABCSystem.Random(a,b);
   InputList.Add(Result);
 end;
+
+function Random: real;
+begin  
+  Result := PABCSystem.Random;
+  InputList.Add(Result);
+end;  
 
 function Random(a, b: real): real;
 begin
@@ -324,18 +364,27 @@ function ToObjArray(a: array of boolean) := a.Select(x->object(x)).ToArray;
 function CompareWithOutput(params a: array of object): TaskStatus;
 begin
   Result := NotCompleted;
-  if a.Length <> OutputList.Count then
+  {if a.Length <> OutputList.Count then
     exit;
   Result := if a.Zip(OutputList,(x,y) -> CompareElements(x,y)).All(x->x) 
               then Completed 
-              else NotCompleted;
-  {Result := Completed;
-  for var i:=0 to a.Length-1 do
+              else NotCompleted;}
+  var mn := Min(a.Length,OutputList.Count);
+  Result := Completed;
+  for var i:=0 to mn-1 do
+    if a[i].GetType <> OutputList[i].GetType then
+    begin
+      Result := NotCompleted; // неважно. Как то это надо передать
+      raise new OutputTypeException(i+1,TypeName(a[i]),TypeName(OutputList[i]))
+    end;
+  if a.Length <> OutputList.Count then
+    raise new OutputCountException(OutputList.Count,a.Length);
+  for var i:=0 to mn-1 do
     if not CompareElements(a[i],OutputList[i]) then
     begin
       Result := NotCompleted;
       exit;           
-    end;}
+    end;
 end;
 
 function CompareSeqWithOutput(a: sequence of integer) := CompareWithOutput(ToObjArray(a.ToArray));
@@ -354,7 +403,32 @@ begin
   OutputList := OutputList.Where(x -> (x is integer) or (x is real)).ToList;
 end;
 
-var CheckTask: function(name: string): TaskStatus;
+function MsgColorCode(color: MessageColor): char;
+begin
+  Result := #65530; // Black
+  case color of
+    MsgColorGreen:   Result := #65535;
+    MsgColorRed:     Result := #65534;
+    MsgColorOrange:  Result := #65533;
+    MsgColorMagenta: Result := #65532;
+    MsgColorGray:    Result := #65531;
+  end;
+end;
+
+procedure ColoredMessage(msg: string; color: MessageColor := MsgColorRed);
+begin
+  Writeln;
+  Writeln(MsgColorCode(color)+msg);
+end;
+
+function NValues(n: integer): string;
+begin
+  case n of
+    1: Result := n + ' значение';
+    2,3,4: Result := n + ' значения';
+    5..20: Result := n + ' значений';
+  end;
+end;
 
 procedure CheckMyPT;
 begin
@@ -363,26 +437,37 @@ begin
  try 
   var b := CheckTask(TaskName);
   case b of
-    Completed: Writeln(#10'Задание выполнено');
-    NotCompleted: Writeln(#10'Задание не выполнено');
+    Completed: ColoredMessage('Задание выполнено',MsgColorGreen);
+    NotCompleted: ColoredMessage('Неверное решение');
   end;
  except
-   on e: InputCount2Exception do
+   on e: OutputTypeException do
+   begin
+     //Writeln(#10+$'Неверно указан тип при выводе данных'); 
+     ColoredMessage($'Ошибка вывода. При выводе {e.n}-го элемента типа {e.ExpectedType} выведено значение типа {e.ActualType}'); 
+   end;
+   on e: OutputCountException do
    begin
      if e.Count = 0 then
-       Writeln(#10+$'Требуется ввести по крайней мере {e.n} значения')
-     else Writeln(#10+$'Введено {e.Count} значения, а требуется ввести по крайней мере {e.n}'); 
+       ColoredMessage($'Требуется вывести {NValues(e.n)}',MsgColorGray)
+     else ColoredMessage($'Выведено {NValues(e.Count)}, а требуется вывести {e.n}',MsgColorOrange); 
    end;
    on e: InputCountException do
    begin
      if e.Count = 0 then
-       Writeln(#10+$'Требуется ввести {e.n} значения')
-     else Writeln(#10+$'Введено {e.Count} значения, а требуется ввести {e.n}'); 
+       ColoredMessage($'Требуется ввести {NValues(e.n)}',MsgColorGray)
+     else ColoredMessage($'Введено {NValues(e.Count)}, а требуется ввести {e.n}',MsgColorOrange); 
+   end;
+   on e: InputCount2Exception do
+   begin
+     if e.Count = 0 then
+       ColoredMessage($'Требуется ввести по крайней мере {NValues(e.i)}',MsgColorGray)
+     else ColoredMessage($'Введено {NValues(e.Count)}, а требуется ввести по крайней мере {e.i}',MsgColorOrange); 
    end;
    on e: InputTypeException do
    begin
-     Writeln(#10+$'Неверно указан тип при вводе исходных данных'); 
-     Writeln($'При вводе {e.n}-го элемента типа {e.ExpectedType} использована переменная типа {e.InputType}'); 
+     //Writeln(#10+$'Неверно указан тип при вводе исходных данных'); 
+     ColoredMessage($'Ошибка ввода. При вводе {e.n}-го элемента типа {e.ExpectedType} использована переменная типа {e.ActualType}'); 
    end;
  end;
 end;  
