@@ -167,15 +167,11 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				&& Environment.OSVersion.Platform != PlatformID.MacOSX
 				)
             {
-				//MessageBox.Show("TextEditorLostFocus.Close()");
-				// SSM 22/06/22 - убрал - и в Моно стала работать
-				//Close(); 
+				Close(); 
 			}
 			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
-				//MessageBox.Show("control.Focus()");
 				control.Focus(); // Да, именно так!!!!!!!!!!!!!! Не удалять!!!
-				//control.ActiveTextAreaControl.TextArea.Focus();
 			}
                 
 		}

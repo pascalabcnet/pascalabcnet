@@ -22,161 +22,170 @@ namespace ICSharpCode.TextEditor
 {
 	public delegate bool KeyEventHandler(char ch);
 	public delegate bool DialogKeyProcessor(Keys keyData);
-	
-	/// <summary>
-	/// This class paints the textarea.
-	/// </summary>
-	[ToolboxItem(false)]
-	public class TextArea : Control
-	{
-		bool hiddenMouseCursor = false;
-		/// <summary>
-		/// The position where the mouse cursor was when it was hidden. Sometimes the text editor gets MouseMove
-		/// events when typing text even if the mouse is not moved.
-		/// </summary>
-		Point mouseCursorHidePosition;
-		
-		Point virtualTop        = new Point(0, 0);
-		TextAreaControl         motherTextAreaControl;
-		TextEditorControl       motherTextEditorControl;
-		
-		List<BracketHighlightingSheme> bracketshemes  = new List<BracketHighlightingSheme>();
-		TextAreaClipboardHandler  textAreaClipboardHandler;
-		bool autoClearSelection = false;
-		
-		List<AbstractMargin> leftMargins = new List<AbstractMargin>();
-		
-		TextView      textView;
-		GutterMargin  gutterMargin;
-		FoldMargin    foldMargin;
+
+    /// <summary>
+    /// This class paints the textarea.
+    /// </summary>
+    [ToolboxItem(false)]
+    public class TextArea : Control
+    {
+        bool hiddenMouseCursor = false;
+        /// <summary>
+        /// The position where the mouse cursor was when it was hidden. Sometimes the text editor gets MouseMove
+        /// events when typing text even if the mouse is not moved.
+        /// </summary>
+        Point mouseCursorHidePosition;
+
+        Point virtualTop = new Point(0, 0);
+        TextAreaControl motherTextAreaControl;
+        TextEditorControl motherTextEditorControl;
+
+        List<BracketHighlightingSheme> bracketshemes = new List<BracketHighlightingSheme>();
+        TextAreaClipboardHandler textAreaClipboardHandler;
+        bool autoClearSelection = false;
+
+        List<AbstractMargin> leftMargins = new List<AbstractMargin>();
+
+        TextView textView;
+        GutterMargin gutterMargin;
+        FoldMargin foldMargin;
         IconBarMargin iconBarMargin;
-		
-		SelectionManager selectionManager;
-		Caret            caret;
 
-		internal Point mousepos = new Point(0, 0);
-		//public Point selectionStartPos = new Point(0,0);
+        SelectionManager selectionManager;
+        Caret caret;
 
-		bool disposed;
-		
-		[Browsable(false)]
-		public IList<AbstractMargin> LeftMargins {
-			get {
-				return leftMargins.AsReadOnly();
-			}
-		}
-		
-		public void InsertLeftMargin(int index, AbstractMargin margin)
+        internal Point mousepos = new Point(0, 0);
+        //public Point selectionStartPos = new Point(0,0);
+
+        bool disposed;
+
+        [Browsable(false)]
+        public IList<AbstractMargin> LeftMargins {
+            get {
+                return leftMargins.AsReadOnly();
+            }
+        }
+
+        public void InsertLeftMargin(int index, AbstractMargin margin)
+        {
+            leftMargins.Insert(index, margin);
+            Refresh();
+        }
+
+        public TextEditorControl MotherTextEditorControl {
+            get {
+                return motherTextEditorControl;
+            }
+        }
+
+        public TextAreaControl MotherTextAreaControl {
+            get {
+                return motherTextAreaControl;
+            }
+        }
+
+        public SelectionManager SelectionManager {
+            get {
+                return selectionManager;
+            }
+        }
+
+        public Caret Caret {
+            get {
+                return caret;
+            }
+        }
+
+        public TextView TextView {
+            get {
+                return textView;
+            }
+        }
+
+        public GutterMargin GutterMargin {
+            get {
+                return gutterMargin;
+            }
+        }
+
+        public FoldMargin FoldMargin {
+            get {
+                return foldMargin;
+            }
+        }
+
+        public IconBarMargin IconBarMargin {
+            get {
+                return iconBarMargin;
+            }
+        }
+
+        public Encoding Encoding {
+            get {
+                return motherTextEditorControl.Encoding;
+            }
+        }
+        public int MaxVScrollValue {
+            get {
+                return (Document.GetVisibleLine(Document.TotalNumberOfLines - 1) + 1 + TextView.VisibleLineCount * 2 / 3) * TextView.FontHeight;
+            }
+        }
+
+        public Point VirtualTop {
+            get {
+                return virtualTop;
+            }
+            set {
+                Point newVirtualTop = new Point(value.X, Math.Min(MaxVScrollValue, Math.Max(0, value.Y)));
+                if (virtualTop != newVirtualTop) {
+                    virtualTop = newVirtualTop;
+                    motherTextAreaControl.VScrollBar.Value = virtualTop.Y;
+                    Invalidate();
+                }
+            }
+        }
+
+        public bool AutoClearSelection {
+            get {
+                return autoClearSelection;
+            }
+            set {
+                autoClearSelection = value;
+            }
+        }
+
+        [Browsable(false)]
+        public IDocument Document {
+            get {
+                return motherTextEditorControl.Document;
+            }
+        }
+
+        public TextAreaClipboardHandler ClipboardHandler {
+            get {
+                return textAreaClipboardHandler;
+            }
+        }
+
+
+        public ITextEditorProperties TextEditorProperties {
+            get {
+                return motherTextEditorControl.TextEditorProperties;
+            }
+        }
+
+        // У каждого редактора - свой таймер
+        // Альтернатива - сделать создание таймера по OnHover и удаление его в конце своего срока
+        private Timer HoverTimer = null;
+
+        public TextArea(TextEditorControl motherTextEditorControl, TextAreaControl motherTextAreaControl)
 		{
-			leftMargins.Insert(index, margin);
-			Refresh();
-		}
-		
-		public TextEditorControl MotherTextEditorControl {
-			get {
-				return motherTextEditorControl;
-			}
-		}
-		
-		public TextAreaControl MotherTextAreaControl {
-			get {
-				return motherTextAreaControl;
-			}
-		}
-		
-		public SelectionManager SelectionManager {
-			get {
-				return selectionManager;
-			}
-		}
-		
-		public Caret Caret {
-			get {
-				return caret;
-			}
-		}
-		
-		public TextView TextView {
-			get {
-				return textView;
-			}
-		}
-		
-		public GutterMargin GutterMargin {
-			get {
-				return gutterMargin;
-			}
-		}
-		
-		public FoldMargin FoldMargin {
-			get {
-				return foldMargin;
-			}
-		}
-		
-		public IconBarMargin IconBarMargin {
-			get {
-				return iconBarMargin;
-			}
-		}
-		
-		public Encoding Encoding {
-			get {
-				return motherTextEditorControl.Encoding;
-			}
-		}
-		public int MaxVScrollValue {
-			get {
-				return (Document.GetVisibleLine(Document.TotalNumberOfLines - 1) + 1 + TextView.VisibleLineCount * 2 / 3) * TextView.FontHeight;
-			}
-		}
-		
-		public Point VirtualTop {
-			get {
-				return virtualTop;
-			}
-			set {
-				Point newVirtualTop = new Point(value.X, Math.Min(MaxVScrollValue, Math.Max(0, value.Y)));
-				if (virtualTop != newVirtualTop) {
-					virtualTop = newVirtualTop;
-					motherTextAreaControl.VScrollBar.Value = virtualTop.Y;
-					Invalidate();
-				}
-			}
-		}
-		
-		public bool AutoClearSelection {
-			get {
-				return autoClearSelection;
-			}
-			set {
-				autoClearSelection = value;
-			}
-		}
-		
-		[Browsable(false)]
-		public IDocument Document {
-			get {
-				return motherTextEditorControl.Document;
-			}
-		}
-		
-		public TextAreaClipboardHandler ClipboardHandler {
-			get {
-				return textAreaClipboardHandler;
-			}
-		}
-		
-		
-		public ITextEditorProperties TextEditorProperties {
-			get {
-				return motherTextEditorControl.TextEditorProperties;
-			}
-		}
-		
-		public TextArea(TextEditorControl motherTextEditorControl, TextAreaControl motherTextAreaControl)
-		{
-			this.motherTextAreaControl      = motherTextAreaControl;
+            HoverTimer = new Timer();
+            HoverTimer.Interval = 400;
+            HoverTimer.Tick += new EventHandler(HoverTimerEventProcessor);
+            HoverTimer.Start();
+
+            this.motherTextAreaControl      = motherTextAreaControl;
 			this.motherTextEditorControl    = motherTextEditorControl;
 			
 			caret            = new Caret(this);
@@ -212,7 +221,8 @@ namespace ICSharpCode.TextEditor
 			caret.PositionChanged += new EventHandler(SearchMatchingBracket);
 			Document.TextContentChanged += new EventHandler(TextContentChanged);
 			Document.FoldingManager.FoldingsChanged += new EventHandler(DocumentFoldingsChanged);
-		}
+
+        }
 		
 		public void UpdateMatchingBracket()
 		{
@@ -308,14 +318,24 @@ namespace ICSharpCode.TextEditor
 				}
 			return false;
 		}
-		
-		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
+
+        // SSM 11.07.22
+        protected MouseButtons MyMouseButtons = MouseButtons.None;
+        protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
+        {
+            MyMouseButtons = MouseButtons.None;
+            base.OnMouseUp(e);
+        }
+
+        protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			// this corrects weird problems when text is selected,
 			// then a menu item is selected, then the text is
 			// clicked again - it correctly synchronises the
 			// click position
 			mousepos = new Point(e.X, e.Y);
+            // SSM 11.07.22
+            MyMouseButtons = e.Button;
 //			if (e.Button == MouseButtons.Right)
 //			{
 //				foreach (AbstractMargin margin in leftMargins) {
@@ -362,7 +382,7 @@ namespace ICSharpCode.TextEditor
 				toolTip = new DeclarationViewWindow(this.FindForm());
 			if (oldToolTip == text)
 				return;
-			if (text == null) {
+			if (text == null || text.Trim().Length == 0) {
 				toolTip.Hide();
 			} else {
 				Point p = Control.MousePosition;
@@ -400,30 +420,27 @@ namespace ICSharpCode.TextEditor
 		void CloseToolTip()
 		{
 			if (toolTipActive) {
-				//Console.WriteLine("Closing tooltip");
 				toolTipActive = false;
 				SetToolTip(null, -1);
 			}
 			ResetMouseEventArgs();
 		}
-		
-		protected override void OnMouseHover(EventArgs e)
-		{
-			//System.IO.File.AppendAllText("d:\\logP.txt", "OnMouseHover" + $" {Control.MousePosition.ToString()} {DateTime.Now}\n");
-			//MessageBox.Show("OnMHOne");
-			//MessageBox.Show(MouseButtons.ToString());
-			// Под Mono MouseButtons возвращает цену на дрова
-			//if (MouseButtons == MouseButtons.None) {
 
-			//MessageBox.Show("P:"+ Control.MousePosition.ToString());
-				RequestToolTip(PointToClient(Control.MousePosition));
-			//} else {
-			//	CloseToolTip();
-			//}
-			base.OnMouseHover(e);
-			//toolTipRectangle = new Rectangle(- 40, - 40, 8, 8);
-			//toolTipRectangle = Rectangle.Empty;
-			//toolTipActive = true;
+        protected override void OnMouseHover(EventArgs e)
+		{
+            //System.IO.File.AppendAllText("d:\\logP.txt", "OnMouseHover" + $" {Control.MousePosition.ToString()} {DateTime.Now}\n");
+            //MessageBox.Show("OnMHOne");
+            //MessageBox.Show(MouseButtons.ToString());
+            // Под Mono MouseButtons возвращает цену на дрова
+
+            // SSM 11/07/22 - в Mono OnMouseHower вызывается единожды
+
+            base.OnMouseHover(e);
+            if (MyMouseButtons == MouseButtons.None) {
+                RequestToolTip(PointToClient(Control.MousePosition));
+			} else {
+				CloseToolTip();
+			}
 		}
 
 		protected void RequestToolTip(Point mousePos)
@@ -432,7 +449,7 @@ namespace ICSharpCode.TextEditor
 			if (toolTipRectangle.Contains(mousePos)) {
 				if (!toolTipActive)
 					ResetMouseEventArgs();
-				//return;
+				return;
 			}
 			
 			//Console.WriteLine("Request tooltip for " + mousePos);
@@ -460,17 +477,35 @@ namespace ICSharpCode.TextEditor
 			OnMouseMove(e);
 		}
 
-		//private int mx = -1;
-		//private int my = -1;
-		private DateTime dt0 = DateTime.Now;
-		int deltaTime = 0;
+		private int mx = -1;
+		private int my = -1;
+        private int prevmx = -2;
+        private int prevmy = -2;
+        //private DateTime dt0 = DateTime.Now;
+        //int deltaTime = 0;
 
-		protected override void OnMouseMove(MouseEventArgs e)
+        private void HoverTimerEventProcessor(Object myObject, EventArgs myEventArgs)
+        {
+            if (mx == prevmx && my == prevmy)
+            {
+                OnMouseHover(EventArgs.Empty);
+            }
+            prevmx = mx;
+            prevmy = my;
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-			/*if (e.X == mx && e.Y == my)
+            mx = e.X;
+            my = e.Y;
+            // Эмуляция MouseHower. Создадим таймер и будем его проверять каждые 400 мс. 
+            // Если координаты мыши за это время не меняются, то генерим событие OnMouseHower
+            // 
+
+            /*if (e.X == mx && e.Y == my)
             {
-				if (deltaTime < 400)
+				if (deltaTime < 2000)
                 {
 					deltaTime = (DateTime.Now - dt0).Milliseconds;
 					//System.IO.File.AppendAllText("d:\\logP.txt", "OnMouseMove" + $" {deltaTime} {DateTime.Now}\n");
@@ -487,16 +522,19 @@ namespace ICSharpCode.TextEditor
             {
 				deltaTime = 0;
 				// Снова ждать 400 мс
-			}*/
+			}
 
-			//mx = e.X;
-			//my = e.Y;
+            mx = e.X;
+            my = e.Y;*/
 
 
-			if (!toolTipRectangle.Contains(e.Location)) 
+            if (!toolTipRectangle.Contains(e.Location)) 
 			{
+                // Так было в оригинальном коде
 				toolTipRectangle = Rectangle.Empty;
-				if (deltaTime < 400)
+                if (toolTipActive)
+                    RequestToolTip(e.Location);
+                /*if (deltaTime < 400)
 				{
 					deltaTime = (DateTime.Now - dt0).Milliseconds;
 				}
@@ -504,10 +542,13 @@ namespace ICSharpCode.TextEditor
                 {
 					deltaTime = 0;
 					dt0 = DateTime.Now;
-					//if (toolTipActive) // Что то с этим условием не так
-					toolTipActive = true;
-					RequestToolTip(e.Location);
-				}
+                    //if (toolTipActive) // Что то с этим условием не так
+                    //toolTipActive = true;
+                    //MessageBox.Show("RequestToolTip");
+                    //-------------------- ssm 11/07/22 - пока закомментил эту ерунду
+                    // пока вернулся к старой проблеме - OnMouseHover срабатывает лишь 1 раз
+                    //RequestToolTip(e.Location);
+				}*/
 			}
 			foreach (AbstractMargin margin in leftMargins) {
 				if (margin.DrawingPosition.Contains(e.X, e.Y) && margin.IsVisible) {
@@ -944,7 +985,9 @@ namespace ICSharpCode.TextEditor
 					textView.Dispose();
 				}
 			}
-		}
+            HoverTimer.Stop();
+            HoverTimer.Dispose();
+        }
 		
 		#region UPDATE Commands
 		internal void UpdateLine(int line)
