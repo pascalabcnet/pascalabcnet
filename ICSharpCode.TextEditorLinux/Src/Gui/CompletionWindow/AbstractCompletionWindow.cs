@@ -167,7 +167,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				&& Environment.OSVersion.Platform != PlatformID.MacOSX
 				)
             {
-				Close(); 
+				//Close(); // Под Mono начинает показываться окно по скобке
 			}
 			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
