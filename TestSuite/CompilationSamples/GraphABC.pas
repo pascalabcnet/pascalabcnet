@@ -1126,6 +1126,8 @@ type
     function peek: integer;          override;
   end;
 
+var IsRunningOnMono := System.Type.GetType('Mono.Runtime') <> nil;
+
 function SetProcessDPIAware(): boolean; external 'user32.dll';
 
 function operator*(s: Size; r: real): Size; extensionmethod;
