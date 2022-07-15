@@ -6,6 +6,28 @@ uses __RedirectIOMode;
 // ToDo: 
 
 type 
+  MessageColorT = (MsgColorGreen,MsgColorRed,MsgColorOrange,MsgColorMagenta,MsgColorGray);
+  TaskStatus = (Solved,IOErrorSolution,BadSolution,PartialSolution,Initial,BadInitial,NotUnderControl); // Короткий результат для БД
+  // IOError - могут быть такие варианты:
+  //   Введены не все данные (введено, надо ввести)
+  //   Введены лишние данные (введено, надо ввести) - м.б. это не ошибка, а сообщение если задача решена верно
+  //   Тип i-того введенного данного не соответствует запланированному (i, введенный тип, запланированный тип)
+  //   Тип i-того выведенного данного не соответствует запланированному (i, выведенный тип, запланированный тип) 
+  IOErrorStatus = (InputCountError, InputCountGreaterError, InputTypeError, OutputTypeError);
+  IOErrorParamsType = record
+    // InputList.Count - это известно - сколько было введено
+    // OutputList.Count - это известно - сколько было выведено
+    // RequiredInputList - Сколько и какие типы надо ввести - по идее надо спец. список делать
+    // Сколько и какие типы надо вывести - по идее становится известно только в специализированной функции
+    ParamNum: integer;
+    InputType,PlannedInputType: string;
+    OutputType,PlannedOutputType: string;
+  end;
+  
+var 
+  TaskResult: TaskStatus := NotUnderControl;
+
+type
   PTException = class(Exception) end;
   InputCountException = class(PTException) // Ровно Count 
     Count: integer; // Count - сколько введено
@@ -54,17 +76,16 @@ type
       Self.ActualType := ActualType;
     end;
   end;
-  TaskStatus = (Completed,NotCompleted,AbsentTask,OriginalTask); 
     // AbsentTask - задача не под контролем правильности
-    // OriginalTask - ввод-вывод задачи не менялся по сравнению с постановкой
-  MessageColor = (MsgColorGreen,MsgColorRed,MsgColorOrange,MsgColorMagenta,MsgColorGray);
+    // InitialTask - ввод-вывод задачи не менялся по сравнению с постановкой
+    // BadInitialTask - исходный ввод-вывод задачи был удалён по незнанию 
 
 var 
   OutputString := new StringBuilder;
   OutputList := new List<object>;
   InputList := new List<object>;
 
-  CheckTask: function(name: string): TaskStatus;
+  CheckTask: procedure(name: string);
  
   Cur := 0;
   
@@ -343,7 +364,7 @@ type
     end;
   end;
   
-function CompareElements(o1,o2: Object): boolean;
+function CompareValues(o1,o2: Object): boolean;
 begin
   if (o1 is real) and (o2 is real) then
   begin
@@ -352,7 +373,7 @@ begin
     Result := Abs(r1-r2)<0.0001;
     exit;
   end;
-  Result := (o1.GetType = o2.GetType) and o1.Equals(o2);
+  Result := (*(o1.GetType = o2.GetType) and*) o1.Equals(o2);
 end;
 
 function ToObjArray(a: array of integer) := a.Select(x->object(x)).ToArray;
@@ -361,37 +382,37 @@ function ToObjArray(a: array of string) := a.Select(x->object(x)).ToArray;
 function ToObjArray(a: array of char) := a.Select(x->object(x)).ToArray;
 function ToObjArray(a: array of boolean) := a.Select(x->object(x)).ToArray;
 
-function CompareWithOutput(params a: array of object): TaskStatus;
+procedure CompareWithOutput(params a: array of object);
 begin
-  Result := NotCompleted;
+  //Result := NotCompleted;
   {if a.Length <> OutputList.Count then
     exit;
   Result := if a.Zip(OutputList,(x,y) -> CompareElements(x,y)).All(x->x) 
               then Completed 
               else NotCompleted;}
   var mn := Min(a.Length,OutputList.Count);
-  Result := Completed;
+  TaskResult := Solved;
   for var i:=0 to mn-1 do
     if a[i].GetType <> OutputList[i].GetType then
     begin
-      Result := NotCompleted; // неважно. Как то это надо передать
+      TaskResult := IOErrorSolution; // неважно. Как то это надо передать
       raise new OutputTypeException(i+1,TypeName(a[i]),TypeName(OutputList[i]))
     end;
   if a.Length <> OutputList.Count then
     raise new OutputCountException(OutputList.Count,a.Length);
   for var i:=0 to mn-1 do
-    if not CompareElements(a[i],OutputList[i]) then
+    if not CompareValues(a[i],OutputList[i]) then
     begin
-      Result := NotCompleted;
+      TaskResult := BadSolution; // На самом деле если типы разные, то другая ошибка
       exit;           
     end;
 end;
 
-function CompareSeqWithOutput(a: sequence of integer) := CompareWithOutput(ToObjArray(a.ToArray));
-function CompareSeqWithOutput(a: sequence of real) := CompareWithOutput(ToObjArray(a.ToArray));
-function CompareSeqWithOutput(a: sequence of string) := CompareWithOutput(ToObjArray(a.ToArray));
-function CompareSeqWithOutput(a: sequence of char) := CompareWithOutput(ToObjArray(a.ToArray));
-function CompareSeqWithOutput(a: sequence of boolean) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CompareSeqWithOutput(a: sequence of integer) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CompareSeqWithOutput(a: sequence of real) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CompareSeqWithOutput(a: sequence of string) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CompareSeqWithOutput(a: sequence of char) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CompareSeqWithOutput(a: sequence of boolean) := CompareWithOutput(ToObjArray(a.ToArray));
 
 procedure ClearOutputListFromSpaces;
 begin
@@ -403,7 +424,7 @@ begin
   OutputList := OutputList.Where(x -> (x is integer) or (x is real)).ToList;
 end;
 
-function MsgColorCode(color: MessageColor): char;
+function MsgColorCode(color: MessageColorT): char;
 begin
   Result := #65530; // Black
   case color of
@@ -415,7 +436,7 @@ begin
   end;
 end;
 
-procedure ColoredMessage(msg: string; color: MessageColor := MsgColorRed);
+procedure ColoredMessage(msg: string; color: MessageColorT := MsgColorRed);
 begin
   Writeln;
   Writeln(MsgColorCode(color)+msg);
@@ -435,10 +456,10 @@ begin
  if CheckTask = nil then
    exit;
  try 
-  var b := CheckTask(TaskName);
-  case b of
-    Completed: ColoredMessage('Задание выполнено',MsgColorGreen);
-    NotCompleted: ColoredMessage('Неверное решение');
+  CheckTask(TaskName);
+  case TaskResult of
+    Solved: ColoredMessage('Задание выполнено',MsgColorGreen);
+    BadSolution: ColoredMessage('Неверное решение');
   end;
  except
    on e: OutputTypeException do
@@ -452,6 +473,11 @@ begin
        ColoredMessage($'Требуется вывести {NValues(e.n)}',MsgColorGray)
      else ColoredMessage($'Выведено {NValues(e.Count)}, а требуется вывести {e.n}',MsgColorOrange); 
    end;
+   on e: InputTypeException do
+   begin
+     //Writeln(#10+$'Неверно указан тип при вводе исходных данных'); 
+     ColoredMessage($'Ошибка ввода. При вводе {e.n}-го элемента типа {e.ExpectedType} использована переменная типа {e.ActualType}'); 
+   end;
    on e: InputCountException do
    begin
      if e.Count = 0 then
@@ -463,11 +489,6 @@ begin
      if e.Count = 0 then
        ColoredMessage($'Требуется ввести по крайней мере {NValues(e.i)}',MsgColorGray)
      else ColoredMessage($'Введено {NValues(e.Count)}, а требуется ввести по крайней мере {e.i}',MsgColorOrange); 
-   end;
-   on e: InputTypeException do
-   begin
-     //Writeln(#10+$'Неверно указан тип при вводе исходных данных'); 
-     ColoredMessage($'Ошибка ввода. При вводе {e.n}-го элемента типа {e.ExpectedType} использована переменная типа {e.ActualType}'); 
    end;
  end;
 end;  

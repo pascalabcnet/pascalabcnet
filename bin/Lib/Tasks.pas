@@ -3,10 +3,10 @@ unit Tasks;
 
 uses LightPT;
 
-function CheckTaskT(name: string): TaskStatus;
+procedure CheckTaskT(name: string);
 begin
-  Result := AbsentTask;
-  WriteInfoToDatabase(name, result);
+  TaskResult := NotUnderControl;
+  WriteInfoToDatabase(name, TaskResult);
 end;
 
 initialization

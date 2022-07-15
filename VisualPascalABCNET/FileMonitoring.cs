@@ -88,20 +88,19 @@ namespace VisualPascalABC
             }
         }
 
-        void MainForm_Activated(object sender, EventArgs e) => System.Threading.Tasks.Task.Run(() =>
+        void MainForm_Activated(object sender, EventArgs e)
         {
-            if (!wasChangedExternally) return;
-            wasChangedExternally = false;
             try
             {
-                string mes = null;
-                if (!File.Exists(fileName))
+                if (wasChangedExternally)
                 {
-                    mes = Form1StringResources.Get("FILE_NOT_EXIST_MESSAGE");
-                    var dr = MessageBox.Show(fileName + "\n\n" + mes, Form1StringResources.Get("CHANGED_FILE"), MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    VisualPABCSingleton.MainForm.Invoke((Action)(() =>
+                    wasChangedExternally = false;
+
+                    string mes = null;
+                    if (!File.Exists(fileName))
                     {
-                        if (dr == DialogResult.Yes)
+                        mes = Form1StringResources.Get("FILE_NOT_EXIST_MESSAGE");
+                        if (MessageBox.Show(fileName + "\n\n" + mes, Form1StringResources.Get("CHANGED_FILE"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
                             WorkbenchServiceFactory.FileService.SetFileAsChanged(fileName);
                         }
@@ -109,28 +108,25 @@ namespace VisualPascalABC
                         {
                             WorkbenchServiceFactory.FileService.CloseFile(fileName);
                         }
-                    }));
-                }
-                else
-                {
+                        return;
+                    }
+
                     mes = Form1StringResources.Get("FILE_CHANGED_MESSAGE");
-                    var dr = MessageBox.Show(fileName + "\n\n" + mes, Form1StringResources.Get("CHANGED_FILE"), MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    VisualPABCSingleton.MainForm.Invoke((Action)(() =>
+                    if (MessageBox.Show(fileName + "\n\n" + mes, Form1StringResources.Get("CHANGED_FILE"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        if (dr == DialogResult.Yes)
-                        {
-                            WorkbenchServiceFactory.FileService.ReloadFile(fileName);
-                        }
-                        else
-                        {
-                            WorkbenchServiceFactory.FileService.SetFileAsChanged(fileName);
-                        }
-                    }));
+                        WorkbenchServiceFactory.FileService.ReloadFile(fileName);
+                    }
+                    else
+                    {
+                        WorkbenchServiceFactory.FileService.SetFileAsChanged(fileName);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
 
             }
-            catch (Exception) {}
-        });
+        }
 
     }
 }
