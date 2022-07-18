@@ -20,6 +20,7 @@ type
   end;
 
 var
+  NewLineBeforeMessage := True;
   TaskResult: TaskStatus := NotUnderControl; // Записывается в БД
   TaskException: PTException := new PTException;
 
@@ -296,6 +297,7 @@ function ReadString: string;
 begin
   Result := PABCSystem.ReadString;
   InputList.Add(Result);
+  NewLineBeforeMessage := True;
 end;
 
 function ReadlnString := ReadString;
@@ -309,6 +311,7 @@ begin
   Result := PABCSystem.ReadInteger(prompt);
   OutputList.RemoveAt(OutputList.Count - 1);
   OutputList.RemoveAt(OutputList.Count - 1);
+  NewLineBeforeMessage := True;
 end;
 
 function ReadInteger2(prompt: string): (integer, integer);
@@ -316,6 +319,7 @@ begin
   Result := PABCSystem.ReadInteger2(prompt);
   OutputList.RemoveAt(OutputList.Count - 1);
   OutputList.RemoveAt(OutputList.Count - 1);
+  NewLineBeforeMessage := True;
 end;
 
 
@@ -326,24 +330,28 @@ begin
     PABCSystem.Print(ob);
     OutputList.RemoveAt(OutputList.Count - 1)
   end;
+  NewLineBeforeMessage := False;
 end;
 
 procedure Println(params args: array of object);
 begin
   Print(args);
   Writeln;
+  NewLineBeforeMessage := True;
 end;
 
 procedure Print(ob: object);
 begin
   PABCSystem.Print(ob);
-  OutputList.RemoveAt(OutputList.Count - 1)
+  OutputList.RemoveAt(OutputList.Count - 1);
+  NewLineBeforeMessage := False;
 end;
 
 procedure Print(s: string);
 begin
   PABCSystem.Print(s);
-  OutputList.RemoveAt(OutputList.Count - 1)
+  OutputList.RemoveAt(OutputList.Count - 1);
+  NewLineBeforeMessage := False;
 end;
 
 type
@@ -354,96 +362,124 @@ type
       inherited write(obj);
       OutputString += obj.ToString;
       OutputList += obj;
+      NewLineBeforeMessage := False;
     end;
     
     procedure writeln; override;
     begin
       inherited writeln;
       OutputString += NewLine;
+      NewLineBeforeMessage := True;
+    end;
+    
+    function ReadLine: string; override;
+    begin
+      Result := inherited ReadLine;
+      NewLineBeforeMessage := True;
+    end;
+    
+    procedure readln; virtual;
+    begin
+      inherited readln;
+      NewLineBeforeMessage := True;
     end;
     
     procedure read(var x: integer); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: real); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: char); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: string); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: byte); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: shortint); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: smallint); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: word); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: longword); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: int64); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: uint64); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: single); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: boolean); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
     
     procedure read(var x: BigInteger); override;
     begin
       inherited Read(x);
       InputList.Add(x);
+      NewLineBeforeMessage := False;
     end;
   end;
 
@@ -548,7 +584,8 @@ end;
 
 procedure ColoredMessage(msg: string; color: MessageColorT := MsgColorRed);
 begin
-  Writeln;
+  if not NewLineBeforeMessage then
+    Writeln;
   Writeln(MsgColorCode(color) + msg);
 end;
 
@@ -558,6 +595,21 @@ begin
     1: Result := n + ' значение';
     2, 3, 4: Result := n + ' значения';
     5..20: Result := n + ' значений';
+  end;
+end;
+
+procedure RobotCheckSolution;
+begin
+  TaskResult := BadSolution;
+  var a := System.Reflection.Assembly.GetExecutingAssembly();
+  var t := a.GetType('RobotField.RobotField');
+  if t<>nil then
+  begin
+    var f := t.GetField('RobField',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Static);
+    var IsSol := f.FieldType.GetMethod('IsSolution');
+    var bool := IsSol.Invoke(f.GetValue(nil),nil);
+    if boolean(bool) then
+      TaskResult := Solved;
   end;
 end;
 

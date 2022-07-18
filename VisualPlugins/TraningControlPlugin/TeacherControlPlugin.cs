@@ -8,7 +8,7 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace VisualPascalABCPlugins
 {
-    public class TeacherContolConverter: ISyntaxTreeConverter
+    /*public class TeacherContolConverter: ISyntaxTreeConverter
     {
         public string Name { get => "TeacherContolConverter"; }
         public syntax_tree_node Convert(syntax_tree_node root)
@@ -16,13 +16,21 @@ namespace VisualPascalABCPlugins
             var program = root as program_module;
             if (program == null) // если это не главная программа, то не преобразовывать
                 return root;
+            var FileName = program.file_name;
+            var fi = new System.IO.FileInfo(FileName);
+            var SourceFileDirectory = fi.DirectoryName;
+
+            var FullLightPTName = System.IO.Path.Combine(SourceFileDirectory, "lightpt.dat");
+            if (!System.IO.File.Exists(FullLightPTName))
+                return root;
+
             if (program.used_units == null)
                 program.used_units = new uses_list();
             program.used_units.Add(new unit_or_namespace("LightPT", null));
             program.used_units.Add(new unit_or_namespace("Tasks", null));
             return root;
         }
-    }
+    }*/
 
     //имя класса *_VisualPascalABCPlugin
     public class VisualPascalABCPlugin_TeacherControlPlugin : IVisualPascalABCPlugin
@@ -31,8 +39,6 @@ namespace VisualPascalABCPlugins
         private const string LabelNotEntered = "Личный кабинет: вход не выполнен";
         public static string StringsPrefix = "VPP_REGISTER_AND_CONTROL_PLUGIN_";
         IVisualEnvironmentCompiler VisualEnvironmentCompiler;
-
-        PascalABCCompiler.Compiler compiler;
 
         IWorkbench Workbench;
         private TeacherControlForm RegisterForm = new TeacherControlForm();
@@ -57,12 +63,9 @@ namespace VisualPascalABCPlugins
             VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler;
 
-
-            compiler = VisualEnvironmentCompiler.Compiler as PascalABCCompiler.Compiler;
-            //compiler.SyntaxTreeConvertersController
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
-            Workbench.ServiceContainer.BuildService.BeforeCompile += BeforeCompileHandler;
+            //Workbench.ServiceContainer.BuildService.BeforeCompile += BeforeCompileHandler;
         }
         public void GetGUI(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems)
         {
@@ -71,25 +74,27 @@ namespace VisualPascalABCPlugins
             ToolBarItems.Add(Item);
         }
 
-        private void BeforeCompileHandler(string filename) // filename - pas-файл
+        /*private void BeforeCompileHandler(string filename) // filename - pas-файл
         {
             // Проверяем присутствие файла lightpt.dat
-
             var fi = new System.IO.FileInfo(filename);
             var SourceFileDirectory = fi.DirectoryName;
 
             var FullLightPTName = System.IO.Path.Combine(SourceFileDirectory, "lightpt.dat");
 
+            // VisualEnvironmentCompiler.Compiler.SyntaxTreeConvertersController возвращает NotSupportedException для RemoteCompiler. Странно... И как это вообще срабатывает?
+
+            var SyntaxTreeConverters = VisualEnvironmentCompiler.Compiler.SyntaxTreeConvertersController.SyntaxTreeConverters;
             // Если осталось с прошлого раза
-            compiler.SyntaxTreeConvertersController.SyntaxTreeConverters.RemoveAll(st => st.Name == "TeacherContolConverter");
-            if (System.IO.File.Exists(FullLightPTName)) // Если в папке есть файл lightpt.dat
+            SyntaxTreeConverters.RemoveAll(st => st.Name == "TeacherContolConverter");
+            //if (System.IO.File.Exists(FullLightPTName)) // Если в папке есть файл lightpt.dat
             {
-                compiler.SyntaxTreeConvertersController.SyntaxTreeConverters.Add(new TeacherContolConverter());
+                //SyntaxTreeConverters.Add(new TeacherContolConverter());
             }
 
             //System.IO.File.AppendAllText("d:\\Stmd.txt", string.Join(" ", StandartModules.Select(sm => sm.Name)) + '\n');
             //System.IO.File.AppendAllText("d:\\Stmd.txt", FullLightPTName + " " + DateTime.Now + '\n');
-        }
+        }*/
 
         private void RunStartingHandler(string filename)
         {

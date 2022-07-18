@@ -86,6 +86,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             CacheFunctionVisitor.New.ProcessNode(root);
 
+            // При наличии файла lightpt.dat подключает модули LightPT и Tasks
+            root = TeacherContolConverter.New.Convert(root);
+
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:\\Tree.txt").ProcessNode(root);
             //FillParentNodeVisitor.New.ProcessNode(root);
