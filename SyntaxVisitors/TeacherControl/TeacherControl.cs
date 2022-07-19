@@ -8,11 +8,11 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
-    public class TeacherContolConverter : WalkingVisitorNew
+    public class TeacherControlConverter : WalkingVisitorNew
     {
-        public static TeacherContolConverter New
+        public static TeacherControlConverter New
         {
-            get { return new TeacherContolConverter(); }
+            get { return new TeacherControlConverter(); }
         }
 
         public string Name { get => "TeacherContolConverter"; }
@@ -33,12 +33,16 @@ namespace SyntaxVisitors
 
                 if (program.used_units == null)
                     program.used_units = new uses_list();
+                // Добавляем в начало, а секции инициализации вызываются последними
+                // Проверять, какой CurrentIOSystem подключен, и если не стандартный, то не подключать Light
+                // Пробуем добавить последними, тогда секции инициализации LightPT вызываются первыми,
+                // что переключает ввод на LightPT,
+                // а секции финализации - последними (хорошо)
                 program.used_units.Add(new unit_or_namespace("LightPT", null));
                 program.used_units.Add(new unit_or_namespace("Tasks", null));
             }
             catch
-            {
-
+            { 
             }
             return root;
         }

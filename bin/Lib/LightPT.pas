@@ -25,7 +25,7 @@ var
   TaskException: PTException := new PTException;
 
   WriteInfoCallBack: procedure (name: string; result: TaskStatus; AdditionalInfo: string);
-
+  
 type
   InputCountException = class(PTException) // Ровно Count 
     Count: integer; // Count - сколько введено
@@ -107,6 +107,8 @@ var
   Cur := 0;
 
 function TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe', '');
+
+function IsPT := TypeName(CurrentIOSystem) = 'IOPT4System';
 
 function cInt := typeof(integer);
 function cRe := typeof(real);
@@ -264,24 +266,28 @@ function ReArr(n: integer): array of real := (1..n).Select(x -> Re).ToArray;
 function Random(a, b: integer): integer;
 begin
   Result := PABCSystem.Random(a, b);
+  if IsPT then exit;
   InputList.Add(Result);
 end;
 
 function Random: real;
 begin
   Result := PABCSystem.Random;
+  if IsPT then exit;
   InputList.Add(Result);
 end;
 
 function Random(a, b: real): real;
 begin
   Result := PABCSystem.Random(a, b);
+  if IsPT then exit;
   InputList.Add(Result);
 end;
 
 function Random2(a, b: integer): (integer, integer);
 begin
   Result := PABCSystem.Random2(a, b);
+  if IsPT then exit;
   InputList.Add(Result[0]);
   InputList.Add(Result[1]);
 end;
@@ -289,6 +295,7 @@ end;
 function Random2(a, b: real): (real, real);
 begin
   Result := PABCSystem.Random2(a, b);
+  if IsPT then exit;
   InputList.Add(Result[0]);
   InputList.Add(Result[1]);
 end;
@@ -296,6 +303,7 @@ end;
 function ReadString: string;
 begin
   Result := PABCSystem.ReadString;
+  if IsPT then exit;
   InputList.Add(Result);
   NewLineBeforeMessage := True;
 end;
@@ -309,6 +317,7 @@ function ReadlnString2 := ReadString2;
 function ReadInteger(prompt: string): integer;
 begin
   Result := PABCSystem.ReadInteger(prompt);
+  if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
   OutputList.RemoveAt(OutputList.Count - 1);
   NewLineBeforeMessage := True;
@@ -317,6 +326,7 @@ end;
 function ReadInteger2(prompt: string): (integer, integer);
 begin
   Result := PABCSystem.ReadInteger2(prompt);
+  if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
   OutputList.RemoveAt(OutputList.Count - 1);
   NewLineBeforeMessage := True;
@@ -328,7 +338,8 @@ begin
   foreach var ob in args do
   begin
     PABCSystem.Print(ob);
-    OutputList.RemoveAt(OutputList.Count - 1)
+    if not IsPT then
+      OutputList.RemoveAt(OutputList.Count - 1)
   end;
   NewLineBeforeMessage := False;
 end;
@@ -337,12 +348,14 @@ procedure Println(params args: array of object);
 begin
   Print(args);
   Writeln;
+  if IsPT then exit;
   NewLineBeforeMessage := True;
 end;
 
 procedure Print(ob: object);
 begin
   PABCSystem.Print(ob);
+  if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
   NewLineBeforeMessage := False;
 end;
@@ -350,6 +363,7 @@ end;
 procedure Print(s: string);
 begin
   PABCSystem.Print(s);
+  if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
   NewLineBeforeMessage := False;
 end;
@@ -378,7 +392,7 @@ type
       NewLineBeforeMessage := True;
     end;
     
-    procedure readln; virtual;
+    procedure readln; override;
     begin
       inherited readln;
       NewLineBeforeMessage := True;
@@ -585,8 +599,8 @@ end;
 procedure ColoredMessage(msg: string; color: MessageColorT := MsgColorRed);
 begin
   if not NewLineBeforeMessage then
-    Writeln;
-  Writeln(MsgColorCode(color) + msg);
+    Console.WriteLine;
+  Console.WriteLine(MsgColorCode(color) + msg);
 end;
 
 function NValues(n: integer): string;
@@ -660,9 +674,15 @@ begin
 end;
 
 initialization
-  CurrentIOSystem := new IOLightSystem; 
+  // Если LightPT добавляется в конец uses, то ее секция инициализации вызывается первой
+  // В этом случае ввод-вывод обязательно переключается, но потом он перекрывается и в основной программе не срабатывает
+  // Но в CheckPT используется ColoredMessage, которая выводит с помощью Console.WriteLine - ей всё равно
+  var tn := TypeName(CurrentIOSystem);
+  if (tn = 'IOStandardSystem') or (tn = '__ReadSignalOISystem') or (tn = 'IOGraphABCSystem') then
+    CurrentIOSystem := new IOLightSystem;
+  {if tn = 'IOPT4System' then
+    IsPT := True;}
   WriteInfoCallBack := WriteInfoToLocalDatabase;
 finalization
-  CurrentIOSystem := new IOLightSystem; // Для Robot - т.к. он переопределяет. Лучше вставлять uses LightPT после Робота
   CheckMyPT  
 end.

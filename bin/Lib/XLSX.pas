@@ -25,8 +25,17 @@ begin
   Result := DateTime.Parse(Self);
 end;
 
-function ToCR(Self: string); extensionmethod 
-:= (self[2:].ToI - 1, self[1] - 'A'); // 'B3' -> [1,2]
+function ToCR(Self: string):(integer,integer); extensionmethod; // 'AA7' -> (6,26)
+begin 
+  var clm := 0;
+  var row := 0;
+  foreach var c in Self do
+    if c in 'A'..'Z' then
+      clm := clm*26 + (c - 'A'+1)
+    else 
+      row := row*10 + (c - '0');
+  Result := (row-1,clm-1); 
+end;
 
 function Load(path: string): XmlElement;
 begin
@@ -64,30 +73,34 @@ begin
   
   var (w, h) := (RD[1] - LU[1] + 1, RD[0] - LU[0] + 1);
   var sheet: array of array of string;
-  setLength(sheet, h);
-  for var i := 0 to h - 1 do sheet[i] := new string[w];
-  
-  foreach var node: XmlNode in elms.Item['sheetData'].ChildNodes do
-  begin
-    foreach var cell: XmlNode in node.ChildNodes do
+  if (w<0)or(h<0) then 
+    setLength(sheet,0)
+  else begin
+    setLength(sheet, h);
+    for var i := 0 to h - 1 do sheet[i] := new string[w];
+    
+    foreach var node: XmlNode in elms.Item['sheetData'].ChildNodes do
     begin
-      var (i, j) := cell.Attributes.GetNamedItem('r').Value.ToCR;
-      i -= LU[0];
-      j -= LU[1];
-      var typ := cell.Attributes.GetNamedItem('t');
-      var st := cell.Attributes.GetNamedItem('s');
-      var shared := false;
-      if (typ <> nil) and (typ.Value = 's') then 
-        shared := true;
-      var value := '';
-      foreach var vl: XmlNode in cell.ChildNodes do
-        if vl.Name = 'v' then value := vl.InnerText;
-      if shared then 
-        sheet[i, j] := shStr[value.ToInteger]
-      else if (st <> nil) and (numFmt[st.Value.ToI] in DateTypeId) then
-        sheet[i, j] := (new DateTime(1900, 1, 1)).AddDays(value.ToI - 2).ToString('dd.MM.yyyy')
-      else
-        sheet[i, j] := value;
+      foreach var cell: XmlNode in node.ChildNodes do
+      begin
+        var (i, j) := cell.Attributes.GetNamedItem('r').Value.ToCR;
+        i -= LU[0];
+        j -= LU[1];
+        var typ := cell.Attributes.GetNamedItem('t');
+        var st := cell.Attributes.GetNamedItem('s');
+        var shared := false;
+        if (typ <> nil) and (typ.Value = 's') then 
+          shared := true;
+        var value := '';
+        foreach var vl: XmlNode in cell.ChildNodes do
+          if vl.Name = 'v' then value := vl.InnerText;
+        if shared then 
+          sheet[i, j] := shStr[value.ToInteger]
+        else if (st <> nil) and (numFmt[st.Value.ToI] in DateTypeId) then
+          sheet[i, j] := (new DateTime(1900, 1, 1)).AddDays(value.ToI - 2).ToString('dd.MM.yyyy')
+        else
+          sheet[i, j] := value;
+      end;
     end;
   end;
   Result := sheet;
