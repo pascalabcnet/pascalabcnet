@@ -6,7 +6,7 @@ uses LightPT;
 procedure CheckTaskT(name: string);
 begin
   TaskResult := NotUnderControl;
-  WriteInfoToLocalDatabase(name, TaskResult);
+
 end;
 
 initialization

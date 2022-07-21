@@ -12,7 +12,7 @@ uses __RedirectIOMode;
 
 type
   MessageColorT = (MsgColorGreen, MsgColorRed, MsgColorOrange, MsgColorMagenta, MsgColorGray);
-  TaskStatus = (Solved, IOError, BadSolution, PartialSolution, InitialTask, BadInitialTask, NotUnderControl); // Короткий результат для БД
+  TaskStatus = (Solved, IOError, BadSolution, PartialSolution, InitialTask, BadInitialTask, NotUnderControl, InitialTaskPT4); // Короткий результат для БД
 
 type
   PTException = class(Exception) 
@@ -22,6 +22,7 @@ type
 var
   NewLineBeforeMessage := True;
   TaskResult: TaskStatus := NotUnderControl; // Записывается в БД
+  TaskResultInfo: string; // доп. информация о результате. Как правило пуста. Или содержит TaskException.Info. Или содержит для Solved и BadSolution информацию о модуле: Robot, Drawman, PT4
   TaskException: PTException := new PTException;
 
   WriteInfoCallBack: procedure (name: string; result: TaskStatus; AdditionalInfo: string);
@@ -78,7 +79,7 @@ type
       TaskException := Self;
     end;
     
-    function Info: string; override := $'InputType({Count},{n})';
+    function Info: string; override := $'OutputCount({Count},{n})';
   end;
   OutputTypeException = class(PTException)
     n: integer; // номер параметра
@@ -92,7 +93,7 @@ type
       TaskException := Self;
     end;
     
-    function Info: string; override := $'InputType({n},{ExpectedType},{ActualType})';
+    function Info: string; override := $'OutputType({n},{ExpectedType},{ActualType})';
   end;
 
 var
@@ -108,7 +109,11 @@ var
 
 function TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe', '');
 
-function IsPT := TypeName(CurrentIOSystem) = 'IOPT4System';
+function IsPT := System.Type.GetType('PT4.PT4') <> nil;
+
+function IsRobot := System.Type.GetType('RobotField.RobotField');
+
+function IsDrawman := System.Type.GetType('DrawManField.DrawManField');
 
 function cInt := typeof(integer);
 function cRe := typeof(real);
@@ -152,6 +157,10 @@ begin
   InitialInput(a);
   CheckInitialIO;
 end;
+
+procedure CheckInitialOutputSeq(a: sequence of System.Type) := CheckInitialOutput(a.Select(x->object(x)).ToArray);
+
+procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(a.Select(x->object(x)).ToArray);
 
 procedure WriteInfoToLocalDatabase(name: string; result: TaskStatus; AdditionalInfo: string := '');
 begin
@@ -615,10 +624,10 @@ end;
 procedure RobotCheckSolution;
 begin
   TaskResult := BadSolution;
-  var a := System.Reflection.Assembly.GetExecutingAssembly();
-  var t := a.GetType('RobotField.RobotField');
+  var t := System.Type.GetType('RobotField.RobotField');
   if t<>nil then
   begin
+    TaskResultInfo := 'Robot';
     var f := t.GetField('RobField',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Static);
     var IsSol := f.FieldType.GetMethod('IsSolution');
     var bool := IsSol.Invoke(f.GetValue(nil),nil);
@@ -627,12 +636,213 @@ begin
   end;
 end;
 
+procedure DrawmanCheckSolution;
+begin
+  TaskResult := BadSolution;
+  var t := System.Type.GetType('DrawManField.DrawManField');
+  if t<>nil then
+  begin
+    TaskResultInfo := 'Drawman';
+    var f := t.GetField('DMField',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Static);
+    var IsSol := f.FieldType.GetMethod('IsSolution');
+    var bool := IsSol.Invoke(f.GetValue(nil),nil);
+    if boolean(bool) then
+      TaskResult := Solved;
+  end;
+end;
+
+// Вызов PT4.PT4.__FinalizeModule__ отражением
+procedure FinalizeModulePT4;
+begin
+  var t := System.Type.GetType('PT4.PT4');
+  if t<>nil then
+  begin
+    var meth := t.GetMethod('__FinalizeModule__',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Static);
+    if meth <> nil then
+      meth.Invoke(nil,nil);
+  end;
+end;
+
+// Вызов PT4.PT4.GetSolutionInfo отражением
+function GetSolutionInfoPT4: string;
+begin
+  var t := System.Type.GetType('PT4.PT4');
+  if t<>nil then
+  begin
+    var meth := t.GetMethod('GetSolutionInfo',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Static);
+    if meth <> nil then
+      Result := string(meth.Invoke(nil,nil))
+    else Result := '';
+  end;
+end;
+
+procedure CalcPT4Result(info: string; var TaskResult: TaskStatus; var TaskResultInfo: string);
+// info - строка, возвращаемая GetSolutionInfoPT4
+  
+  function HasSubstr(s_ru, s_en: string): boolean;
+  begin
+    result := false;
+    if Pos(s_ru, info) > 0 then
+      result := true
+    else if Pos(s_en, info) > 0 then
+      result := true
+  end;
+  
+  function TypeNamePT(s: string): string;
+  begin
+    result := '';
+    case s of
+      'логического типа', 'of logical type':
+      result := 'boolean';
+      'целого типа', 'of integer type':
+      result := 'integer';
+      'вещественного типа', 'of real-number type':
+      result := 'real';
+      'символьного типа', 'of character type':
+      result := 'char';
+      'строкового типа', 'of string type':
+      result := 'string';
+    end;
+    if result = '' then
+      if s.startswith('типа') then
+        result := copy(s, 6, 100)
+      else if s.startswith('of') then
+      begin
+        delete(s, 1, 3);
+        delete(s, length(s) - 4, 100);
+        result := s;
+      end; 
+  end;
+  
+  procedure ExtractParts(var p1, p2, p3: string);
+  begin
+    var m := Regex.Match(info, 'Для ввода (.*)-го элемента \((.*)\) использована переменная (.*).');
+    if m.Success then
+    begin
+      p1 := m.Groups[1].Value;
+      p2 := TypeNamePT(m.Groups[2].Value);
+      p3 := TypeNamePT(m.Groups[3].Value);
+      exit;
+    end;
+    m := Regex.Match(info, 'A variable (.*) is used for input of data item with the order number (.*) \((.*)\).');
+    if m.Success then
+    begin
+      p1 := m.Groups[2].Value;
+      p2 := TypeNamePT(m.Groups[3].Value);
+      p3 := TypeNamePT(m.Groups[1].Value);
+      exit;
+    end;
+    
+    m := Regex.Match(info, 'Для вывода (.*)-го элемента \((.*)\) использовано выражение (.*).');
+    if m.Success then
+    begin
+      p1 := m.Groups[1].Value;
+      p2 := TypeNamePT(m.Groups[2].Value);
+      p3 := TypeNamePT(m.Groups[3].Value);
+      exit;
+    end;
+    m := Regex.Match(info, 'An expression (.*) is used for output of data item with the order number (.*) \((.*)\).');
+    if m.Success then
+    begin
+      p1 := m.Groups[2].Value;
+      p2 := TypeNamePT(m.Groups[3].Value);
+      p3 := TypeNamePT(m.Groups[1].Value);
+      exit;
+    end;  
+    
+    m := Regex.Match(info, 'Количество выведенных данных: (.*) \(из (.*)\).');
+    if m.Success then
+    begin
+      p1 := m.Groups[1].Value;
+      p2 := m.Groups[2].Value;
+      p3 := '';
+      exit;
+    end;
+    m := Regex.Match(info, 'The program has output (.*) data item\(s\) \(the amount of the required items is (.*)\).');
+    if m.Success then
+    begin
+      p1 := m.Groups[1].Value;
+      p2 := m.Groups[2].Value;
+      p3 := '';
+      exit;
+    end;
+    
+    m := Regex.Match(info, 'Количество прочитанных данных: (.*) \(из (.*)\).');
+    if m.Success then
+    begin
+      p1 := m.Groups[1].Value;
+      p2 := m.Groups[2].Value;
+      p3 := '';
+      exit;
+    end;
+    m := Regex.Match(info, 'The program has used (.*) input data item\(s\) \(the amount of the required items is (.*)\).');
+    if m.Success then
+    begin
+      p1 := m.Groups[1].Value;
+      p2 := m.Groups[2].Value;
+      p3 := '';
+      exit;
+    end;
+  end;
+
+begin
+  // Если мы сюда зашли, то TaskResult уже под контролем. Но она и так должна быть TaskStatus.InitialTaskPT4
+  TaskResult := TaskStatus.InitialTaskPT4;
+  TaskResultInfo := 'PT4';
+  var p1, p2, p3: string;
+  if info = '' then
+    exit;
+  if HasSubstr('Задание выполнено', 'The task is solved') then
+    //ColoredMessage('Задание выполнено', MsgColorGreen)
+    TaskResult := TaskStatus.Solved
+  else if HasSubstr('Ошибочное решение', 'Wrong solution') then
+    //ColoredMessage('Неверное решение')
+    TaskResult := TaskStatus.BadSolution
+  else if HasSubstr('Неверно указан тип при выводе результатов', 'Invalid type is used for an output data item') then
+  begin
+    ExtractParts(p1, p2, p3);
+    TaskResult := TaskStatus.IOError;
+    TaskResultInfo := $'OutputType({p1},{p2},{p3})';
+    //ColoredMessage($'Ошибка вывода. При выводе {p1}-го элемента типа {p2} выведено значение типа {p3}');
+  end
+  else if HasSubstr('Выведены не все результирующие данные', 'Some data are not output') then  
+  begin
+    ExtractParts(p1, p2, p3);
+    TaskResult := TaskStatus.IOError;
+    TaskResultInfo := $'OutputCount({p1},{p2})';
+    //ColoredMessage($'Выведено {p1}, а требуется вывести {p2}', MsgColorOrange);
+  end
+  else if HasSubstr('Неверно указан тип при вводе исходных данных', 'Invalid type is used for an input data item') then
+  begin
+    ExtractParts(p1, p2, p3);
+    TaskResult := TaskStatus.IOError;
+    TaskResultInfo := $'InputType({p1},{p2},{p3})';
+    //ColoredMessage($'Ошибка ввода. При вводе {p1}-го элемента типа {p2} использована переменная типа {p3}');
+  end
+  else if HasSubstr('Введены не все требуемые исходные данные', 'Some required data are not input.') then  
+  begin
+    ExtractParts(p1, p2, p3);
+    TaskResult := TaskStatus.IOError;
+    TaskResultInfo := $'InputCount({p1},{p2})';
+    //ColoredMessage($'Введено {p1}, а требуется ввести {p2}', MsgColorOrange);
+  end
+  else if HasSubstr('Запуск с правильным вводом данных', 'Correct data input') then  
+  begin
+    TaskResult := TaskStatus.PartialSolution;
+    //ColoredMessage('Запуск с правильным вводом данных', MsgColorGray)
+  end;
+  {else
+        ColoredMessage('PT4: '+info.Replace(#13#10, ' ').TrimStart().TrimEnd('.',' '));}
+end;
+
+
 procedure CheckMyPT;
 begin
   if CheckTask = nil then
     exit;
   try
     CheckTask(TaskName);
+    // Если это задача из задачника, то результат будет NotUnderControl. И дальше необходимо это преобразовывать
     case TaskResult of
       Solved: ColoredMessage('Задание выполнено', MsgColorGreen);
       BadSolution: ColoredMessage('Неверное решение');
@@ -669,8 +879,23 @@ begin
       else ColoredMessage($'Введено {NValues(e.Count)}, а требуется ввести по крайней мере {e.i}', MsgColorOrange); 
     end;
   end;
+  // Для задачника надо вызывать процедуру __FinalizeModule__ из модуля PT4 jnhf;tybtv, а в модуле PT4 эту процедуру тогда не вызывть
+  // Для задачника в CheckTaskPT надо сказать, что проверяется задача из задачника. И выводить на экран ничего не надо - только в базу.
+  TaskResultInfo := TaskException.Info;
+  
+  // Теперь тщательно проверяем задачник и исполнителей
+  if IsPT then
+  begin
+    FinalizeModulePT4;
+    var info := GetSolutionInfoPT4;
+    CalcPT4Result(info,TaskResult,TaskResultInfo);
+  end
+  else if IsRobot then
+    RobotCheckSolution
+  else if IsDrawman then
+    DrawmanCheckSolution;
   if WriteInfoCallBack<>nil then
-    WriteInfoCallBack(TaskName, TaskResult, TaskException.Info);
+    WriteInfoCallBack(TaskName, TaskResult, TaskResultInfo);
 end;
 
 initialization

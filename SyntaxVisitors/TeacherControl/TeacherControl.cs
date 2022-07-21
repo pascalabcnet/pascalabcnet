@@ -35,9 +35,12 @@ namespace SyntaxVisitors
                     program.used_units = new uses_list();
                 // Добавляем в начало, а секции инициализации вызываются последними
                 // Проверять, какой CurrentIOSystem подключен, и если не стандартный, то не подключать Light
+
                 // Пробуем добавить последними, тогда секции инициализации LightPT вызываются первыми,
                 // что переключает ввод на LightPT,
                 // а секции финализации - последними (хорошо)
+                // Проблема - LightPT Print перекрывает PT4.Print и - ошибка, а флаг IsPT не установлен
+
                 program.used_units.Add(new unit_or_namespace("LightPT", null));
                 program.used_units.Add(new unit_or_namespace("Tasks", null));
             }

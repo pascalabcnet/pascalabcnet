@@ -2147,8 +2147,13 @@ begin
   end;
 end;
 
+var finalized := False;
+
 procedure __FinalizeModule__;
 begin
+  if finalized then
+    exit;
+  finalized := True;
   InfoS := CheckPT(InfoT);
   if InfoT=0 then 
     Console.WriteLine(InfoS);
