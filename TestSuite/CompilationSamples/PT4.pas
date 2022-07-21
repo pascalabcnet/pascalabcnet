@@ -802,6 +802,7 @@ procedure PrintMatr<T>(a: List<List<T>>);
 
 // == Конец дополнений к версии 4.14 ==
 
+function GetSolutionInfo: string;
 
 implementation
 
@@ -847,6 +848,7 @@ procedure _GetP(var param: IntPtr);     external '%PABCSYSTEM%\PT4\PT4PABC.dll' 
 procedure _PutP(param: IntPtr); external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putp';
 procedure DisposeP(sNode: IntPtr);      external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'disposep';
 function FinishPT(): integer;      external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'finishpt';  // == 4.13 ==
+procedure _GetSolutionInfo(info: System.Text.StringBuilder);external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getsolutioninfo';
 
 procedure Dispose(p: pointer);
 begin
@@ -2145,8 +2147,13 @@ begin
   end;
 end;
 
+var finalized := False;
+
 procedure __FinalizeModule__;
 begin
+  if finalized then
+    exit;
+  finalized := True;
   InfoS := CheckPT(InfoT);
   if InfoT=0 then 
     Console.WriteLine(InfoS);
@@ -3096,8 +3103,16 @@ end;
 
 // == Конец дополнений к версии 4.14 ==
 
+function GetSolutionInfo: string;
+begin
+  var val := new System.Text.StringBuilder(500);
+  _getsolutioninfo(val);
+  result := val.ToString;
+end;
+
 initialization
   __InitModule;
 finalization
   __FinalizeModule__;
+  GetSolutionInfo;
 end.
