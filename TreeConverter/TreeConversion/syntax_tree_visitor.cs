@@ -12899,6 +12899,7 @@ namespace PascalABCCompiler.TreeConverter
             List<common_type_node> used_types = new List<common_type_node>(where_list.defs.Count);
             foreach (SyntaxTree.where_definition wd in where_list.defs)
             {
+                int ind = 0;
                 foreach (SyntaxTree.ident wd_id in wd.names.idents)
                 {
                     bool param_not_found = true;
@@ -12919,8 +12920,9 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if (param_not_found)
                     {
-                        AddError(new UndefinedNameReference(wd.names.idents[0].name, get_location(wd.names)));
+                        AddError(new UndefinedNameReference(wd.names.idents[ind].name, get_location(wd.names.idents[ind])));
                     }
+                    ind++;
                 }
             }
             context.EndSkipGenericInstanceChecking();
