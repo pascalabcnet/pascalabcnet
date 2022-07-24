@@ -46374,6 +46374,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			yield_unknown_ident copy = new yield_unknown_ident();
 			copy.Parent = this.Parent;
+			copy.UnknownID = this.UnknownID;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
 			if (attributes != null)
