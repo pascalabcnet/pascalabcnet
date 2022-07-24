@@ -763,7 +763,7 @@ namespace PascalABCCompiler.PCU
                     return t;
                 template_types[i] = tt;
             }
-            if (template_types.Length > 0)
+            if (template_types.Length > 0 && t.IsGenericTypeDefinition)
                 return t.MakeGenericType(template_types);
             return t;
         }
