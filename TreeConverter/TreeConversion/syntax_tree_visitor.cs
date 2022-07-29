@@ -16783,6 +16783,16 @@ namespace PascalABCCompiler.TreeConverter
             return expr;
         }
         
+        private bool is_delegate_wrapper_with_generics(type_node tn)
+        {
+            var del = tn as delegated_methods;
+            if (del == null)
+                return false;
+            if (del.proper_methods[0].ret_type != null && del.proper_methods[0].ret_type.is_generic_parameter)
+                return true;
+            return false;
+        }
+
         public override void visit(SyntaxTree.var_def_statement _var_def_statement)
         {
             var_def_statement_converting = true;
@@ -16920,9 +16930,11 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     foreach (parameter p in bfc.simple_function_node.parameters)
                     {
-                        if (p.type.is_generic_parameter)
-                            AddError(inital_value.location, "USE_ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
+                        if (p.type.is_generic_parameter || is_instance_of_generic_parameter(p.type))
+                            AddError(get_location(_var_def_statement), "ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED");
                     }
+                    if (bfc.simple_function_node.return_value_type != null && (bfc.simple_function_node.return_value_type.is_generic_parameter || is_instance_of_generic_parameter(bfc.simple_function_node.return_value_type)))
+                        AddError(get_location(_var_def_statement), "ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED");
                     common_type_node del =
             			convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
             		context.converted_namespace.types.AddElement(del);
