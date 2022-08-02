@@ -10,9 +10,11 @@ uses __RedirectIOMode;
 // Эту строку также можно писать в БД как доп параметры TaskResult
 // Чем хороши исключения - их можно делать разными с абсолютно разными параметрами
 
+const lightptname = 'lightpt.dat';
+
 type
   MessageColorT = (MsgColorGreen, MsgColorRed, MsgColorOrange, MsgColorMagenta, MsgColorGray);
-  TaskStatus = (Solved, IOError, BadSolution, PartialSolution, InitialTask, BadInitialTask, NotUnderControl, InitialTaskPT4); // Короткий результат для БД
+  TaskStatus = (Solved, IOError, BadSolution, PartialSolution, InitialTask, BadInitialTask, NotUnderControl, InitialTaskPT4, ErrFix, Demo); // Короткий результат для БД
 
 type
   PTException = class(Exception) 
@@ -20,12 +22,15 @@ type
   end;
 
 var
-  NewLineBeforeMessage := True;
+  DoNewLineBeforeMessage := False;
   TaskResult: TaskStatus := NotUnderControl; // Записывается в БД
   TaskResultInfo: string; // доп. информация о результате. Как правило пуста. Или содержит TaskException.Info. Или содержит для Solved и BadSolution информацию о модуле: Robot, Drawman, PT4
   TaskException: PTException := new PTException;
 
   WriteInfoCallBack: procedure (name: string; result: TaskStatus; AdditionalInfo: string);
+
+  LessonName: string := '';
+  TaskNamesMap := new Dictionary<string,string>;
   
 type
   InputCountException = class(PTException) // Ровно Count 
@@ -95,6 +100,26 @@ type
     
     function Info: string; override := $'OutputType({n},{ExpectedType},{ActualType})';
   end;
+  
+  ObjectList = class
+    lst := new List<object>;
+  public
+    static function New: ObjectList := ObjectList.Create;
+    procedure Add(o: object) := lst.Add(o);
+    function AddRange(sq: sequence of integer): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of real): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of string): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of char): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of boolean): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddFill(n: integer; elem: object): ObjectList; begin lst.AddRange(ArrFill(n,elem)); Result := Self end;
+    function AddArithm(n: integer; a0,step: integer): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x+step).Select(x -> object(x))); Result := Self end;
+    function AddArithm(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x+step).Select(x -> object(x))); Result := Self end;
+    function AddFib(n: integer): ObjectList; begin lst.AddRange(ArrGen(n,1,1,(x,y)->x+y).Select(x -> object(x))); Result := Self end;
+    function AddGeom(n: integer; a0,step: integer): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
+    function AddGeom(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
+  end;
+
+
 
 var
   OutputString := new StringBuilder;
@@ -144,6 +169,39 @@ procedure InitialInput(params a: array of object);
 begin
   InitialInputList.Clear;
   InitialInputList.AddRange(a);
+end;
+
+function CompareValues(o1, o2: Object): boolean;
+begin
+  if (o1 is real) and (o2 is real) then
+  begin
+    var r1 := real(o1);
+    var r2 := real(o2);
+    Result := Abs(r1 - r2) < 0.0001;
+    exit;
+  end;
+  Result := o1.Equals(o2);
+end;
+
+function CompareArrValues(a,lst: array of object): boolean;
+begin
+  Result := True;
+  if a.Length <> OutputList.Count then
+    Result := False;
+  for var i := 0 to a.Length - 1 do
+    if not CompareValues(a[i], lst[i]) then
+    begin
+      Result := False; 
+      exit;           
+    end;
+end;
+
+function CompareValuesWithOutput(params a: array of object): boolean := CompareArrValues(a,OutputList.ToArray);
+
+procedure CheckInitialOutputValues(params a: array of object);
+begin
+  if CompareArrValues(a,OutputList.ToArray) then
+    TaskResult := InitialTask;   
 end;
 
 procedure CheckInitialOutput(params a: array of object);
@@ -314,7 +372,7 @@ begin
   Result := PABCSystem.ReadString;
   if IsPT then exit;
   InputList.Add(Result);
-  NewLineBeforeMessage := True;
+  DoNewLineBeforeMessage := False;
 end;
 
 function ReadlnString := ReadString;
@@ -329,7 +387,7 @@ begin
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
   OutputList.RemoveAt(OutputList.Count - 1);
-  NewLineBeforeMessage := True;
+  DoNewLineBeforeMessage := False;
 end;
 
 function ReadInteger2(prompt: string): (integer, integer);
@@ -338,7 +396,7 @@ begin
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
   OutputList.RemoveAt(OutputList.Count - 1);
-  NewLineBeforeMessage := True;
+  DoNewLineBeforeMessage := False;
 end;
 
 
@@ -350,7 +408,7 @@ begin
     if not IsPT then
       OutputList.RemoveAt(OutputList.Count - 1)
   end;
-  NewLineBeforeMessage := False;
+  DoNewLineBeforeMessage := True;
 end;
 
 procedure Println(params args: array of object);
@@ -358,7 +416,7 @@ begin
   Print(args);
   Writeln;
   if IsPT then exit;
-  NewLineBeforeMessage := True;
+  DoNewLineBeforeMessage := False;
 end;
 
 procedure Print(ob: object);
@@ -366,7 +424,7 @@ begin
   PABCSystem.Print(ob);
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
-  NewLineBeforeMessage := False;
+  DoNewLineBeforeMessage := True;
 end;
 
 procedure Print(s: string);
@@ -374,7 +432,15 @@ begin
   PABCSystem.Print(s);
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
-  NewLineBeforeMessage := False;
+  DoNewLineBeforeMessage := True;
+end;
+
+procedure Print(c: char);
+begin
+  PABCSystem.Print(object(c));
+  if IsPT then exit;
+  OutputList.RemoveAt(OutputList.Count - 1);
+  DoNewLineBeforeMessage := True;
 end;
 
 type
@@ -385,138 +451,126 @@ type
       inherited write(obj);
       OutputString += obj.ToString;
       OutputList += obj;
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure writeln; override;
     begin
       inherited writeln;
       OutputString += NewLine;
-      NewLineBeforeMessage := True;
+      DoNewLineBeforeMessage := False;
     end;
     
     function ReadLine: string; override;
     begin
       Result := inherited ReadLine;
-      NewLineBeforeMessage := True;
+      DoNewLineBeforeMessage := False;
     end;
     
     procedure readln; override;
     begin
       inherited readln;
-      NewLineBeforeMessage := True;
+      DoNewLineBeforeMessage := False;
     end;
     
     procedure read(var x: integer); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: real); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: char); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: string); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: byte); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: shortint); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: smallint); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: word); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: longword); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: int64); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: uint64); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: single); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: boolean); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: BigInteger); override;
     begin
       inherited Read(x);
       InputList.Add(x);
-      NewLineBeforeMessage := False;
+      DoNewLineBeforeMessage := True;
     end;
   end;
-
-function CompareValues(o1, o2: Object): boolean;
-begin
-  if (o1 is real) and (o2 is real) then
-  begin
-    var r1 := real(o1);
-    var r2 := real(o2);
-    Result := Abs(r1 - r2) < 0.0001;
-    exit;
-  end;
-  Result := (*(o1.GetType = o2.GetType) and*) o1.Equals(o2);
-end;
 
 function ToObjArray(a: array of integer) := a.Select(x -> object(x)).ToArray;
 
@@ -543,12 +597,7 @@ procedure CompareWithOutput(params a: array of object);
 begin
   if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
     exit;
-  //Result := NotCompleted;
-  {if a.Length <> OutputList.Count then
-    exit;
-  Result := if a.Zip(OutputList,(x,y) -> CompareElements(x,y)).All(x->x) 
-              then Completed 
-              else NotCompleted;}
+
   var mn := Min(a.Length, OutputList.Count);
   TaskResult := Solved;
   // Несоответствие типов
@@ -583,6 +632,10 @@ procedure CompareSeqWithOutput(a: sequence of char) := CompareWithOutput(ToObjAr
 
 procedure CompareSeqWithOutput(a: sequence of boolean) := CompareWithOutput(ToObjArray(a.ToArray));
 
+procedure CompareSeqWithOutput(a: sequence of object) := CompareWithOutput(a.ToArray);
+
+procedure CompareSeqWithOutput(a: ObjectList) := CompareWithOutput(a.lst.ToArray);
+
 procedure ClearOutputListFromSpaces;
 begin
   OutputList := OutputList.Where(s -> (not (s is string)) or ((s as string) <> ' ')).ToList;
@@ -607,9 +660,10 @@ end;
 
 procedure ColoredMessage(msg: string; color: MessageColorT := MsgColorRed);
 begin
-  if not NewLineBeforeMessage then
+  if DoNewLineBeforeMessage then
     Console.WriteLine;
   Console.WriteLine(MsgColorCode(color) + msg);
+  DoNewLineBeforeMessage := False;
 end;
 
 function NValues(n: integer): string;
@@ -617,7 +671,7 @@ begin
   case n of
     1: Result := n + ' значение';
     2, 3, 4: Result := n + ' значения';
-    5..20: Result := n + ' значений';
+    5..1000: Result := n + ' значений';
   end;
 end;
 
@@ -841,7 +895,10 @@ begin
   if CheckTask = nil then
     exit;
   try
-    CheckTask(TaskName);
+    var TName := TaskName;
+    if TName.ToLower in TaskNamesMap then
+      TName := TaskNamesMap[TName.ToLower];
+    CheckTask(TName);
     // Если это задача из задачника, то результат будет NotUnderControl. И дальше необходимо это преобразовывать
     case TaskResult of
       Solved: ColoredMessage('Задание выполнено', MsgColorGreen);
@@ -898,6 +955,27 @@ begin
     WriteInfoCallBack(TaskName, TaskResult, TaskResultInfo);
 end;
 
+procedure LoadLightPTInfo;
+begin
+  try
+    var lines := ReadAllLines(lightptname);
+    foreach var line in lines do
+    begin
+      if line.Trim = '' then 
+        continue;
+      if LessonName = '' then
+        LessonName := line
+      else begin
+        var (name1,name2) := Regex.Split(line,'->');
+        TaskNamesMap[name1.Trim.ToLower] := name2.Trim;
+      end;
+        
+    end;
+  except
+    
+  end;
+end;
+
 initialization
   // Если LightPT добавляется в конец uses, то ее секция инициализации вызывается первой
   // В этом случае ввод-вывод обязательно переключается, но потом он перекрывается и в основной программе не срабатывает
@@ -905,9 +983,9 @@ initialization
   var tn := TypeName(CurrentIOSystem);
   if (tn = 'IOStandardSystem') or (tn = '__ReadSignalOISystem') or (tn = 'IOGraphABCSystem') then
     CurrentIOSystem := new IOLightSystem;
-  {if tn = 'IOPT4System' then
-    IsPT := True;}
   WriteInfoCallBack := WriteInfoToLocalDatabase;
+  // Расшифровка LightPT.dat  
+  LoadLightPTInfo;
 finalization
   CheckMyPT  
 end.
