@@ -593,7 +593,7 @@ begin
     raise new OutputCountException(OutputList.Count, a.Length);
 end;
 
-procedure CompareWithOutput(params a: array of object);
+procedure CheckOutput(params a: array of object);
 begin
   if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
     exit;
@@ -622,19 +622,19 @@ begin
     end;
 end;
 
-procedure CompareSeqWithOutput(a: sequence of integer) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CheckOutputSeq(a: sequence of integer) := CheckOutput(ToObjArray(a.ToArray));
 
-procedure CompareSeqWithOutput(a: sequence of real) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CheckOutputSeq(a: sequence of real) := CheckOutput(ToObjArray(a.ToArray));
 
-procedure CompareSeqWithOutput(a: sequence of string) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CheckOutputSeq(a: sequence of string) := CheckOutput(ToObjArray(a.ToArray));
 
-procedure CompareSeqWithOutput(a: sequence of char) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CheckOutputSeq(a: sequence of char) := CheckOutput(ToObjArray(a.ToArray));
 
-procedure CompareSeqWithOutput(a: sequence of boolean) := CompareWithOutput(ToObjArray(a.ToArray));
+procedure CheckOutputSeq(a: sequence of boolean) := CheckOutput(ToObjArray(a.ToArray));
 
-procedure CompareSeqWithOutput(a: sequence of object) := CompareWithOutput(a.ToArray);
+procedure CheckOutputSeq(a: sequence of object) := CheckOutput(a.ToArray);
 
-procedure CompareSeqWithOutput(a: ObjectList) := CompareWithOutput(a.lst.ToArray);
+procedure CheckOutputSeq(a: ObjectList) := CheckOutput(a.lst.ToArray);
 
 procedure ClearOutputListFromSpaces;
 begin
