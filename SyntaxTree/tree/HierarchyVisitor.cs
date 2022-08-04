@@ -3910,6 +3910,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_unknown_ident);
 			pre_do_visit(_yield_unknown_ident);
+			visit(yield_unknown_ident.UnknownID);
 			post_do_visit(_yield_unknown_ident);
 		}
 

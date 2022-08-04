@@ -2757,7 +2757,9 @@
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="yield_unknown_ident" BaseName="ident">
-      <Fields />
+      <Fields>
+        <SyntaxField Name="UnknownID" SyntaxType="ident" />
+      </Fields>
       <Methods />
       <Tags>
         <CategoryIndices>
@@ -4944,6 +4946,7 @@
       <HelpData Key="yield_unknown_foreach_type_ident.unknown_foreach" Value="" />
       <HelpData Key="yield_unknown_ident" Value="Неопознанный идентификатор. Откладывает определение необходимости захвата имени как поля класса до этапа семантики." />
       <HelpData Key="yield_unknown_ident.ClassName" Value="" />
+      <HelpData Key="yield_unknown_ident.IsYieldInStaticMethod" Value="" />
       <HelpData Key="yield_unknown_ident.UnknownID" Value="" />
       <HelpData Key="yield_var_def_statement_with_unknown_type" Value="Узел-обертка для yield для определения типов локальных переменных в var_def_statement" />
       <HelpData Key="yield_var_def_statement_with_unknown_type.vars" Value="" />
