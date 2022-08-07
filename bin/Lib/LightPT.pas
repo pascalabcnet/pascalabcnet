@@ -119,8 +119,6 @@ type
     function AddGeom(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
   end;
 
-
-
 var
   OutputString := new StringBuilder;
   OutputList := new List<object>;
@@ -132,7 +130,7 @@ var
   
   Cur := 0;
 
-function TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe', '');
+var TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe', '');
 
 function IsPT := System.Type.GetType('PT4.PT4') <> nil;
 
@@ -687,6 +685,13 @@ begin
     var bool := IsSol.Invoke(f.GetValue(nil),nil);
     if boolean(bool) then
       TaskResult := Solved;
+  // RobField.TaskName
+    var RBTaskNameInfo := f.FieldType.GetField('TaskName');
+    var v := string(RBTaskNameInfo.GetValue(f.GetValue(nil)));
+    // Добавлять RB к имени задания если его там нет
+    if not v.ToLower.StartsWith('rb') then
+      v := v.Insert(0,'RB');
+    TaskName := v;
   end;
 end;
 
@@ -702,11 +707,18 @@ begin
     var bool := IsSol.Invoke(f.GetValue(nil),nil);
     if boolean(bool) then
       TaskResult := Solved;
+  // DMField.TaskName
+    var DMTaskNameInfo := f.FieldType.GetField('TaskName');
+    var v := string(DMTaskNameInfo.GetValue(f.GetValue(nil)));
+    // Добавлять DM к имени задания если его там нет
+    if not v.ToLower.StartsWith('dm') then
+      v := v.Insert(0,'DM');
+    TaskName := v;
   end;
 end;
 
 // Вызов PT4.PT4.__FinalizeModule__ отражением
-procedure FinalizeModulePT4;
+procedure PT4CheckSolution;
 begin
   var t := System.Type.GetType('PT4.PT4');
   if t<>nil then
@@ -714,6 +726,9 @@ begin
     var meth := t.GetMethod('__FinalizeModule__',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Static);
     if meth <> nil then
       meth.Invoke(nil,nil);
+    //
+    var f := t.GetField('TaskName',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Static);
+    TaskName := string(f.GetValue(nil));
   end;
 end;
 
@@ -889,15 +904,27 @@ begin
         ColoredMessage('PT4: '+info.Replace(#13#10, ' ').TrimStart().TrimEnd('.',' '));}
 end;
 
+function ConvertTaskName(tn: string): string;
+begin
+  var TName := tn;
+  // Если есть номер с подчеркиванием в начале, то отбросить его
+  var ind := TName.IndexOf('_');
+  if (ind >= 0) and TName[1].IsDigit then // Значит, в начале - номер, он служит лишь для упорядочения файлов
+    TName := TName.Remove(0,ind + 1);
+  if TName.ToLower in TaskNamesMap then
+    TName := TaskNamesMap[TName.ToLower];
+  Result := TName;
+end;
+
 
 procedure CheckMyPT;
 begin
   if CheckTask = nil then
     exit;
+  var TName := TaskName;
   try
-    var TName := TaskName;
-    if TName.ToLower in TaskNamesMap then
-      TName := TaskNamesMap[TName.ToLower];
+    TName := ConvertTaskName(TaskName);
+
     CheckTask(TName);
     // Если это задача из задачника, то результат будет NotUnderControl. И дальше необходимо это преобразовывать
     case TaskResult of
@@ -943,16 +970,24 @@ begin
   // Теперь тщательно проверяем задачник и исполнителей
   if IsPT then
   begin
-    FinalizeModulePT4;
+    PT4CheckSolution;
+    TName := TaskName;
     var info := GetSolutionInfoPT4;
     CalcPT4Result(info,TaskResult,TaskResultInfo);
   end
   else if IsRobot then
-    RobotCheckSolution
+  begin  
+    RobotCheckSolution;
+    TName := TaskName;
+  end  
   else if IsDrawman then
+  begin  
     DrawmanCheckSolution;
+    TName := TaskName;
+  end;
+  // Хотелось бы писать в БД для Робота и др. имя задания в Task
   if WriteInfoCallBack<>nil then
-    WriteInfoCallBack(TaskName, TaskResult, TaskResultInfo);
+    WriteInfoCallBack(TName, TaskResult, TaskResultInfo);
 end;
 
 procedure LoadLightPTInfo;

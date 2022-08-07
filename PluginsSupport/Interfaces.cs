@@ -32,6 +32,13 @@ namespace VisualPascalABCPlugins
         {
             get;
         }
+
+        /// SSM 07.08.22 кнопка пункта меню. В плагине преобразовать к ToolStripMenuItem
+        object menuItem { get; set; }
+
+        /// SSM 07.08.22 кнопка панели инструментов. В плагине преобразовать к ToolStripButton
+        object toolStripButton { get; set; } 
+
         void Execute();
     }
 

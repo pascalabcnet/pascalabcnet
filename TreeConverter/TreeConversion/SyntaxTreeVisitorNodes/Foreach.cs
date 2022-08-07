@@ -48,6 +48,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             // SSM 29.07.16 - если in_what - одномерный массив, то заменить код foreach на for
+            // Лямбды обходят старое дерево, поэтому не работает. Кстати, почему? SSM 04/08/22
             // if (OptimizeForeachInCase1DArray(_foreach_stmt, foreachCollection)) return;
 
             statements_list sl = new statements_list(get_location(_foreach_stmt.stmt));

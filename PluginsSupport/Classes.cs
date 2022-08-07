@@ -17,6 +17,9 @@ namespace VisualPascalABCPlugins
         System.Windows.Forms.Keys shortcutKeys = System.Windows.Forms.Keys.None;
         string shortcutKeyDisplayString = null;
 
+        public object menuItem { get; set; }
+        public object toolStripButton { get; set; }
+
         public PluginGUIItem(string text, string hint, Image image, Color imageTransparentColor, PluginGUIItemExecuteDelegate executeDelegate)
         {
             this.text = text;

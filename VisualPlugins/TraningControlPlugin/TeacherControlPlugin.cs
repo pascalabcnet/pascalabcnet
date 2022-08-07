@@ -5,43 +5,24 @@ using System.Text;
 using System.Linq;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SyntaxTree;
+using DBAccessPluginNamespace;
 
 namespace VisualPascalABCPlugins
 {
-    /*public class TeacherContolConverter: ISyntaxTreeConverter
-    {
-        public string Name { get => "TeacherContolConverter"; }
-        public syntax_tree_node Convert(syntax_tree_node root)
-        {
-            var program = root as program_module;
-            if (program == null) // если это не главная программа, то не преобразовывать
-                return root;
-            var FileName = program.file_name;
-            var fi = new System.IO.FileInfo(FileName);
-            var SourceFileDirectory = fi.DirectoryName;
-
-            var FullLightPTName = System.IO.Path.Combine(SourceFileDirectory, "lightpt.dat");
-            if (!System.IO.File.Exists(FullLightPTName))
-                return root;
-
-            if (program.used_units == null)
-                program.used_units = new uses_list();
-            program.used_units.Add(new unit_or_namespace("LightPT", null));
-            program.used_units.Add(new unit_or_namespace("Tasks", null));
-            return root;
-        }
-    }*/
-
     //имя класса *_VisualPascalABCPlugin
     public class VisualPascalABCPlugin_TeacherControlPlugin : IVisualPascalABCPlugin
     {
-        private const string LabelEntered = "Личный кабинет: ";
-        private const string LabelNotEntered = "Личный кабинет: вход не выполнен";
+        private const string LabelEntered = "Авторизация: ";
+        private const string LabelNotEntered = "Авторизация: вход не выполнен";
         public static string StringsPrefix = "VPP_REGISTER_AND_CONTROL_PLUGIN_";
         IVisualEnvironmentCompiler VisualEnvironmentCompiler;
 
         IWorkbench Workbench;
-        private TeacherControlForm RegisterForm = new TeacherControlForm();
+        //private TeacherControlForm RegisterForm = new TeacherControlForm(); // старая форма авторизации
+        //private LoginForm RegisterFormNew = new LoginForm(); // новая форма авторизации
+        // User
+        SiteAccessProvider User = new SiteAccessProvider();
+
         private PluginGUIItem Item;
         public string Name { get => "Teacher Control Plugin"; }
         public string Version { get => "0.1"; }
@@ -49,27 +30,53 @@ namespace VisualPascalABCPlugins
 
         public string Login = null;
         public string Password = null;
-        public void Execute()
-        {
-            var dr = RegisterForm.ShowDialog();
-            if (RegisterForm.Registered)
-                Item.Hint = LabelEntered + RegisterForm.Login;
-            else Item.Hint = LabelNotEntered;
-        }
+
+        public LoginForm loginForm;
+
+        bool firstTime = true;
+        public ToolStripMenuItem menuItem = null;
+        public ToolStripButton toolStripButton = null;
 
         public VisualPascalABCPlugin_TeacherControlPlugin(IWorkbench Workbench)
         {
+            loginForm = new LoginForm(this);
             this.Workbench = Workbench;
             VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
-            RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler;
+            //var tbitem = Workbench.MainForm.Controls.Find("", true);
+            // RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler; // Пока форма регистрации никак не связана с компилятором
 
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
             //Workbench.ServiceContainer.BuildService.BeforeCompile += BeforeCompileHandler;
         }
+        public void Execute()
+        {
+            if (firstTime)
+            {
+                firstTime = false;
+                menuItem = (ToolStripMenuItem)Item.menuItem;
+                toolStripButton = (ToolStripButton)Item.toolStripButton;
+            }
+
+            User.ServAddr = "https://air.mmcs.sfedu.ru/pascalabc";
+            loginForm.SiteProvider = User;
+
+            loginForm.ShowDialog(); // OK никогда не будет
+            /*if (loginForm.Authorized)
+            {
+                toolStripButton.ToolTipText = "Авторизация выполнена";
+                toolStripButton.Image = loginForm.PluginImageAuthorized.Image;
+            }
+            else
+            {
+                toolStripButton.ToolTipText = "Авторизация: вход не выполнен";
+                toolStripButton.Image = loginForm.PluginImage.Image;
+            }*/
+        }
+
         public void GetGUI(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems)
         {
-            Item = new PluginGUIItem(StringsPrefix + "NAME", StringsPrefix + "DESCRIPTION", RegisterForm.PluginImage.Image, RegisterForm.PluginImage.BackColor, Execute);
+            Item = new PluginGUIItem(StringsPrefix + "NAME", StringsPrefix + "DESCRIPTION", loginForm.PluginImage.Image, loginForm.PluginImage.BackColor, Execute);
             MenuItems.Add(Item);
             ToolBarItems.Add(Item);
         }
@@ -99,10 +106,10 @@ namespace VisualPascalABCPlugins
         private void RunStartingHandler(string filename)
         {
 
-            if (RegisterForm.Registered)
+            /*if (RegisterForm.Registered)
             {
                 System.IO.File.AppendAllText("d:\\runs.txt", filename + " " + DateTime.Now + '\n');
-            }
+            }*/
         }
     }
 }

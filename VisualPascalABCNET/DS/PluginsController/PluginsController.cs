@@ -76,8 +76,9 @@ namespace VisualPascalABCPlugins
                     menuItem.Image = Item.Image;
                     menuItem.ImageTransparentColor = Item.ImageTransparentColor;
                     menuItem.Text = Item.Text;
-                    menuItem.ToolTipText = Item.Hint;
+                    //menuItem.ToolTipText = Item.Hint; 
                     menuItem.Tag = Item;
+                    Item.menuItem = menuItem;
                     menuItem.ShortcutKeys = Item.ShortcutKeys;
                     if (Item.ShortcutKeyDisplayString != null)
                         menuItem.ShortcutKeyDisplayString = Item.ShortcutKeyDisplayString;
@@ -110,6 +111,7 @@ namespace VisualPascalABCPlugins
                     button.ToolTipText = Item.Hint;
                     button.Click += new EventHandler(button_Click);
                     button.Tag = Item;
+                    Item.toolStripButton = button;
                     ToolStrip.Items.Add(button);
                     PascalABCCompiler.StringResources.SetTextForObject(button, "");
                 }
