@@ -27,7 +27,7 @@ var
   TaskResultInfo: string; // доп. информация о результате. Как правило пуста. Или содержит TaskException.Info. Или содержит для Solved и BadSolution информацию о модуле: Robot, Drawman, PT4
   TaskException: PTException := new PTException;
 
-  WriteInfoCallBack: procedure (name: string; result: TaskStatus; AdditionalInfo: string);
+  WriteInfoCallBack: procedure (LessonName,TaskName: string; result: TaskStatus; AdditionalInfo: string);
 
   LessonName: string := '';
   TaskNamesMap := new Dictionary<string,string>;
@@ -218,10 +218,10 @@ procedure CheckInitialOutputSeq(a: sequence of System.Type) := CheckInitialOutpu
 
 procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(a.Select(x->object(x)).ToArray);
 
-procedure WriteInfoToLocalDatabase(name: string; result: TaskStatus; AdditionalInfo: string := '');
+procedure WriteInfoToLocalDatabase(LessonName,TaskName: string; result: TaskStatus; AdditionalInfo: string := '');
 begin
   try
-    System.IO.File.AppendAllText('db.txt', $'{name} {dateTime.Now.ToString(''u'')} {Result.ToString} {AdditionalInfo}' + #10);
+    System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {Result.ToString} {AdditionalInfo}' + #10);
   except
     on e: Exception do
       Print(e.Message);
@@ -987,7 +987,7 @@ begin
   end;
   // Хотелось бы писать в БД для Робота и др. имя задания в Task
   if WriteInfoCallBack<>nil then
-    WriteInfoCallBack(TName, TaskResult, TaskResultInfo);
+    WriteInfoCallBack(LessonName,TName, TaskResult, TaskResultInfo);
 end;
 
 procedure LoadLightPTInfo;
@@ -999,12 +999,20 @@ begin
       if line.Trim = '' then 
         continue;
       if LessonName = '' then
-        LessonName := line
+        LessonName := line.ToWords.First // первое слово
       else begin
         var (name1,name2) := Regex.Split(line,'->');
         TaskNamesMap[name1.Trim.ToLower] := name2.Trim;
       end;
-        
+    end;
+    if LessonName = '' then
+    begin
+      // Имя текущей папки. Плохо - в lightpt забыли написать имя урока
+      var ttt := ExtractFileDir(System.Environment.GetCommandLineArgs[0]);
+      var LastDir := ttt.ToWords(System.IO.Path.DirectorySeparatorChar).LastOrDefault;
+      // Каталог может содержать пробелы. Брать первое слово
+      if LastDir<>nil then
+        LessonName := LastDir.ToWords.First;
     end;
   except
     

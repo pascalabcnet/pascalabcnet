@@ -44,6 +44,7 @@ namespace DBAccessPluginNamespace
 
             //  Если клиент ещё не создан был, пересоздаём
             if (client == null) client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
             //  Словарик для параметров запроса
             var values = new Dictionary<string, string>
                 {
@@ -79,6 +80,7 @@ namespace DBAccessPluginNamespace
         {
             //  Если клиент ещё не создан был, пересоздаём
             if (client == null) client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
             //  Тут не столь важно что отправлять, можно и пустой список параметров
             var values = new Dictionary<string, string>
                 {
@@ -102,6 +104,7 @@ namespace DBAccessPluginNamespace
             
             //  Если клиент ещё не создан был, пересоздаём
             if (client == null) client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
             var values = new Dictionary<string, string>();
             var content = new FormUrlEncodedContent(values);
             var response = await client.PostAsync(ServAddr + "/groupslist.php", content);
@@ -120,6 +123,7 @@ namespace DBAccessPluginNamespace
             if (ServAddr == "") return "Error";
             //  Если клиент ещё не создан был, пересоздаём
             if (client == null) client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
             Group = GroupName;
             var values = new Dictionary<string, string>
                 {
@@ -145,6 +149,7 @@ namespace DBAccessPluginNamespace
             FullFIO = fullFIO;
             Password = password;
             if (client == null) client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
 
             //  Словарик для параметров запроса
             var values = new Dictionary<string, string>

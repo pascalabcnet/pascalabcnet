@@ -59,6 +59,11 @@ namespace VisualPascalABCPlugins
         void GetGUI(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems);
     }
 
+    public interface IExtendedVisualPascalABCPlugin: IVisualPascalABCPlugin
+    {
+        void AfterAddInGUI();
+    }
+
 
     public enum VisualEnvironmentState
     {
