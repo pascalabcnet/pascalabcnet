@@ -1,13 +1,23 @@
 ﻿/// Модуль LightPT автоматической легковесной проверки заданий
 unit LightPT;
-
+{$reference System.Net.Http.dll}
+{$reference System.Security.dll}
+{$reference System.Management.dll}
 uses __RedirectIOMode;
+
+uses System.Management;
+uses System.Security.Cryptography;
+uses System.IO;
+
+uses System;
+uses System.Net.Http;
+uses System.Threading.Tasks;
 
 // Исключения - для вывода сообщения
 // TaskResult - для базы данных
 // Запоминать исключение в глобальной переменной TaskException - для доп. параметров для БД в формате 
 //   ПодтипИсключения(парам1,...,парамn)
-// Эту строку также можно писать в БД как доп параметры TaskResult
+// Эту строку также можно писать в БД как доп параметры TaskResultInfo
 // Чем хороши исключения - их можно делать разными с абсолютно разными параметрами
 
 const lightptname = 'lightpt.dat';
@@ -32,7 +42,44 @@ var
   LessonName: string := '';
   TaskNamesMap := new Dictionary<string,string>;
   
-type
+  ServerAddr := 'https://air.mmcs.sfedu.ru/pascalabc';
+
+type 
+  UserTypeEnum = (None, Student, Teacher, Admin);
+  ServerAccessProvider = class
+  private
+    client: HTTPClient;
+  public
+    ServerAddr: string;
+    auto property ShortFIO: string; 
+    auto property FullFIO: string; 
+    auto property Password: string; 
+    auto property Group: string; 
+    auto property UserType: UserTypeEnum; 
+    constructor (ServerAddr: string);
+    begin
+      Self.ServerAddr := ServerAddr;
+      client := new HttpClient();
+      client.Timeout := TimeSpan.FromSeconds(10);
+    end;
+    
+    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskStatus: string): Task<string>;
+    begin
+      var values := Dict(
+        ( 'shortFIO', '' ),  
+        ( 'FIO', FullFIO ),
+        ( 'taskName', TaskName ),
+        ( 'lessonName', LessonName ),
+        ( 'type', TaskStatus ),
+        ( 'content', '' ),
+        ( 'password', Password )
+      );
+      var content := new FormUrlEncodedContent(values);
+      var response := client.PostAsync(ServerAddr + '/add.php', content);
+      Result := response.Result.Content.ReadAsStringAsync();
+    end;
+  end;
+
   InputCountException = class(PTException) // Ровно Count 
     Count: integer; // Count - сколько введено
     n: integer;     // n - сколько требуется ввести
@@ -144,6 +191,81 @@ function cStr := typeof(string);
 function cBool := typeof(boolean);
 function cChar := typeof(char);
 
+function FindAuthDat: string;
+begin
+  var auth := 'auth.dat';
+  Result := '';
+  // В текущем каталоге
+  if FileExists(auth) then
+    Result := ExpandFileName(auth)
+  // Если нет, в каталоге уровня выше
+  else if FileExists(System.IO.Path.Combine('..',auth)) then
+  begin  
+    Result := ExpandFileName(System.IO.Path.Combine('..',auth))
+  end
+  // Если нет, в корневом каталоге сетевого диска
+  else begin
+    var fullname := ExpandFileName(auth);
+    var drive := ExtractFileDrive(fullname);
+    var di := new System.IO.DriveInfo(drive);
+    if di.DriveType = System.IO.DriveType.Network then
+    begin
+      var af := System.IO.Path.Combine(di.RootDirectory.FullName,auth);
+      if FileExists(af) then
+        Result := af;
+    end  
+  end;
+end;
+
+function ProcessorId: string;
+begin
+  var mbs := new ManagementObjectSearcher('Select ProcessorId From Win32_processor');
+  var mbsList := mbs.Get();
+  Result := '';
+  foreach var mo: ManagementObject in mbsList do
+  begin
+    Result := mo['ProcessorId'].ToString();
+    break;
+  end;
+end;
+
+function Encrypt(src: string): array of byte; // записать в файл
+begin
+  var ae := Aes.Create();
+  var key := Encoding.UTF8.GetBytes(ProcessorId);
+  var encrypted: array of byte;
+  var crypt := ae.CreateEncryptor(key, key);
+  var ms := new MemoryStream();
+  var cs := new CryptoStream(ms, crypt, CryptoStreamMode.Write);
+  var sw := new StreamWriter(cs);
+  sw.Write(src);
+  sw.Close;
+  cs.Close;
+  ms.Close;
+  Result := ms.ToArray;
+end;
+
+function Decrypt(data: array of byte): string;
+begin
+  if data = nil then
+  begin
+    Result := '';
+    exit
+  end;
+  var ae := Aes.Create();
+  var key := Encoding.UTF8.GetBytes(ProcessorId);
+  var encrypted: array of byte;
+  var crypt := ae.CreateDecryptor(key, key);
+  var ms := new MemoryStream(data);
+  var cs := new CryptoStream(ms, crypt, CryptoStreamMode.Read);
+  var sr := new StreamReader(cs);
+  var text := sr.ReadToEnd;
+  sr.Close;
+  cs.Close;
+  ms.Close;
+  Result := text;
+end;
+
 procedure CheckInitialIO;
 begin
   if (OutputList.Count = InitialOutputList.Count) and (InputList.Count = InitialInputList.Count) then
@@ -217,16 +339,6 @@ end;
 procedure CheckInitialOutputSeq(a: sequence of System.Type) := CheckInitialOutput(a.Select(x->object(x)).ToArray);
 
 procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(a.Select(x->object(x)).ToArray);
-
-procedure WriteInfoToLocalDatabase(LessonName,TaskName: string; result: TaskStatus; AdditionalInfo: string := '');
-begin
-  try
-    System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {Result.ToString} {AdditionalInfo}' + #10);
-  except
-    on e: Exception do
-      Print(e.Message);
-  end;  
-end;
 
 procedure CheckInputCount(n: integer);
 begin
@@ -988,6 +1100,18 @@ begin
   // Хотелось бы писать в БД для Робота и др. имя задания в Task
   if WriteInfoCallBack<>nil then
     WriteInfoCallBack(LessonName,TName, TaskResult, TaskResultInfo);
+end;
+
+procedure WriteInfoToLocalDatabase(LessonName,TaskName: string; result: TaskStatus; AdditionalInfo: string := '');
+begin
+  try
+    System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {Result.ToString} {AdditionalInfo}' + #10);
+    var auth := FindAuthDat;
+    // Console.WriteLine(auth);
+  except
+    on e: Exception do
+      Console.WriteLine(e.Message);
+  end;  
 end;
 
 procedure LoadLightPTInfo;

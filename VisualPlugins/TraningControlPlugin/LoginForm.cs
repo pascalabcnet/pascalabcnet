@@ -220,7 +220,6 @@ namespace DBAccessPluginNamespace
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             panelUnAuthorized.BringToFront();
             labelUserName.Text = "";
-
         }
 
         private async void enterButton_Click(object sender, EventArgs e)
