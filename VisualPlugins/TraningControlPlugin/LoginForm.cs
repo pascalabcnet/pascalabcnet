@@ -29,11 +29,18 @@ namespace DBAccessPluginNamespace
             var res = true;
             try
             {
-                using (var sw = new System.IO.StreamWriter(filename))
+                var encryptedstring = login + (char)10 + pass;
+                var encr = LoginUtils.Encrypt(encryptedstring);
+                using (var fs = new FileStream(filename, FileMode.Create))
+                {
+                    fs.Write(encr, 0, encr.Length);
+                }
+                // записать массив байт в бинарный файл
+                /*using (var sw = new System.IO.StreamWriter(filename))
                 {
                     sw.WriteLine(login);
                     sw.WriteLine(pass);
-                }
+                }*/
             }
             catch (Exception)
             {

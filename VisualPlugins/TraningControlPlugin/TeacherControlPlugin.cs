@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text;
+using System.IO;
 using System.Linq;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SyntaxTree;
@@ -165,6 +166,22 @@ namespace VisualPascalABCPlugins
             }
         }
 
+        string[] ReadLoginPassFromAuth(string AuthFileFullName)
+        {
+            var n = 10000;
+            var arr = new byte[n];
+            int nbytes;
+            using (var fs = new FileStream(AuthFileFullName, FileMode.Open))
+            {
+                nbytes = fs.Read(arr, 0, n);
+            }
+            var data = new byte[nbytes];
+            System.Array.Copy(arr, data, nbytes);
+            var lp = LoginUtils.Decrypt(data);
+            var lparr = lp.Split((char)10);
+            return lparr;
+        }
+
         public void AfterAddInGUI()
         {
             menuItem = (ToolStripMenuItem)Item.menuItem;
@@ -191,12 +208,18 @@ namespace VisualPascalABCPlugins
                         // искать auth в папке на уровень выше
                         auth = System.IO.Path.Combine(WorkingDir, "..", "auth.dat");
                         if (System.IO.File.Exists(auth))
-                            AuthFileFullName = auth;
+                        {
+                            var fi = new System.IO.FileInfo(auth);
+                            AuthFileFullName = fi.FullName;
+                        }
+
                     }
                 }
+                // Попытка автоматического входа
                 if (AuthFileFullName != "")
                 {
-                    var ss = System.IO.File.ReadAllLines(AuthFileFullName);
+                    //var ss = System.IO.File.ReadAllLines(AuthFileFullName);
+                    var ss = ReadLoginPassFromAuth(AuthFileFullName);
                     if (ss.Length >= 2)
                     {
                         var login = ss[0];
@@ -205,8 +228,10 @@ namespace VisualPascalABCPlugins
                     }
                 }
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                e = e;
+            }
         }
 
         private void RunStartingHandler(string filename)
