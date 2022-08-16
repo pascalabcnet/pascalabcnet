@@ -42,8 +42,9 @@ namespace DBAccessPluginNamespace
                     sw.WriteLine(pass);
                 }*/
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Plugin.AddMessage(e);
                 res = false;
             }
             return res;
@@ -59,7 +60,10 @@ namespace DBAccessPluginNamespace
                 if (full == root)
                     isroot = true;
             }
-            catch { }
+            catch (Exception e)
+            {
+                Plugin.AddMessage(e);
+            }
             return isroot;
         }
 
@@ -75,7 +79,10 @@ namespace DBAccessPluginNamespace
                 parent = Directory.GetParent(full).FullName;
                 hasparent = true;
             }
-            catch { }
+            catch (Exception e)
+            {
+                Plugin.AddMessage(e);
+            }
             return hasparent;
         }
 
@@ -202,8 +209,7 @@ namespace DBAccessPluginNamespace
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                e = e;
+                Plugin.AddMessage(e);
             }
         }
 
@@ -256,7 +262,7 @@ namespace DBAccessPluginNamespace
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    Plugin.AddMessage(ex);
                 }
             }
             else
@@ -291,7 +297,7 @@ namespace DBAccessPluginNamespace
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                Plugin.AddMessage(ex);
             }
         }
 
@@ -321,7 +327,7 @@ namespace DBAccessPluginNamespace
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                Plugin.AddMessage(ex);
             }
         }
 

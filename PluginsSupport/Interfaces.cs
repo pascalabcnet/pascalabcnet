@@ -485,6 +485,7 @@ namespace VisualPascalABCPlugins
 
     public interface ICompilerConsoleWindow
     {
+        void AddTextToCompilerMessages(string text);
         void ClearConsole();
     }
 

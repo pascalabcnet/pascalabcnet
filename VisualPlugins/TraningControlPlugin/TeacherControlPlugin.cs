@@ -45,6 +45,7 @@ namespace VisualPascalABCPlugins
             loginForm = new LoginForm(this);
             this.Workbench = Workbench;
             VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
+            //Workbench.CompilerConsoleWindow.
             //var tbitem = Workbench.MainForm.Controls.Find("", true);
             // RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler; // Пока форма регистрации никак не связана с компилятором
 
@@ -55,18 +56,7 @@ namespace VisualPascalABCPlugins
         public void Execute()
         {
             loginForm.SiteProvider = User;
-
             loginForm.ShowDialog(); // OK никогда не будет
-            /*if (loginForm.Authorized)
-            {
-                toolStripButton.ToolTipText = "Авторизация выполнена";
-                toolStripButton.Image = loginForm.PluginImageAuthorized.Image;
-            }
-            else
-            {
-                toolStripButton.ToolTipText = "Авторизация: вход не выполнен";
-                toolStripButton.Image = loginForm.PluginImage.Image;
-            }*/
         }
 
         public string FullAuthNameFromNETDisk()
@@ -84,11 +74,18 @@ namespace VisualPascalABCPlugins
                         authName = auth;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                AddMessage(e);
             }
             return authName;
         }
+
+        public void AddMessage(string text)
+        {
+            Workbench.CompilerConsoleWindow.AddTextToCompilerMessages(text + Environment.NewLine);
+        }
+        public void AddMessage(Exception e) => AddMessage(e.ToString());
 
         public string WorkingDirectory()
         {
@@ -107,10 +104,18 @@ namespace VisualPascalABCPlugins
 
         public /*async*/ void TryLogin(string login, string pass)
         {
-            var answer = User.Login("", login, pass);
-            if (answer.Result == "Success")
+            // Гасим все исключения
+            try
             {
-                loginForm.ChangeControlsAfterLogin(login);
+                var answer = User.Login("", login, pass);
+                if (answer.Result == "Success")
+                {
+                    loginForm.ChangeControlsAfterLogin(login);
+                }
+            }
+            catch (Exception e)
+            {
+                AddMessage(e);
             }
         }
 
@@ -168,22 +173,37 @@ namespace VisualPascalABCPlugins
 
         string[] ReadLoginPassFromAuth(string AuthFileFullName)
         {
-            var n = 10000;
-            var arr = new byte[n];
-            int nbytes;
-            using (var fs = new FileStream(AuthFileFullName, FileMode.Open))
-            {
-                nbytes = fs.Read(arr, 0, n);
+            string[] lparr = new string[0];
+            try
+            { 
+                var n = 10000;
+                var arr = new byte[n];
+                int nbytes;
+                // Здесь может быть ьисключение если с файлом или путем проблемы
+                using (var fs = new FileStream(AuthFileFullName, FileMode.Open))
+                {
+                    nbytes = fs.Read(arr, 0, n);
+                }
+                var data = new byte[nbytes];
+                System.Array.Copy(arr, data, nbytes);
+                // Здесь может быть исключение если ключ неправильный
+                var lp = LoginUtils.Decrypt(data);
+                lparr = lp.Split((char)10);
             }
-            var data = new byte[nbytes];
-            System.Array.Copy(arr, data, nbytes);
-            var lp = LoginUtils.Decrypt(data);
-            var lparr = lp.Split((char)10);
+            catch (Exception e)
+            {
+                AddMessage(e);
+            }
             return lparr;
         }
 
         public void AfterAddInGUI()
         {
+            if (Item == null)
+            {
+                AddMessage("Плагин Teacher Control отключён. Не выполнено условие LightPTExists || AuthExists");
+                return;
+            }
             menuItem = (ToolStripMenuItem)Item.menuItem;
             toolStripButton = (ToolStripButton)Item.toolStripButton;
             // Попытка выполнить автоматический вход из информации в auth.dat
@@ -224,13 +244,14 @@ namespace VisualPascalABCPlugins
                     {
                         var login = ss[0];
                         var pass = ss[1];
+                        // В TryLogin может быть исключение, которое не перехватывается этим кодом, т.к.в другом потоке
                         System.Threading.Tasks.Task.Run(() => TryLogin(login, pass));
                     }
                 }
             }
             catch (Exception e)
             {
-                e = e;
+                AddMessage(e);
             }
         }
 
