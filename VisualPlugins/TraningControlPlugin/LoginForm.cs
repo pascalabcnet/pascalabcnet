@@ -30,7 +30,7 @@ namespace DBAccessPluginNamespace
             try
             {
                 var encryptedstring = login + (char)10 + pass;
-                var encr = LoginUtils.Encrypt(encryptedstring);
+                var encr = TeacherPluginUtils.Encrypt(encryptedstring);
                 using (var fs = new FileStream(filename, FileMode.Create))
                 {
                     fs.Write(encr, 0, encr.Length);
