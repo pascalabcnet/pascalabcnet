@@ -8,7 +8,7 @@ using System.IO;
 
 namespace VisualPascalABCPlugins
 {
-    public static class LoginUtils
+    public static class TeacherPluginUtils
     {
         public static string ProcessorId()
         {
@@ -54,6 +54,26 @@ namespace VisualPascalABCPlugins
                 text = sr.ReadToEnd();
             }
             return text;
+        }
+
+        public static string[] ReadLoginPassFromAuth(string AuthFileFullName)
+        {
+            // Исключения обрабатываются уровнем выше
+            string[] lparr = new string[0];
+            var n = 10000;
+            var arr = new byte[n];
+            int nbytes;
+            // Здесь может быть исключение если с файлом или путем проблемы
+            using (var fs = new FileStream(AuthFileFullName, FileMode.Open))
+            {
+                nbytes = fs.Read(arr, 0, n);
+            }
+            var data = new byte[nbytes];
+            System.Array.Copy(arr, data, nbytes);
+            // Здесь может быть исключение если ключ неправильный
+            var lp = Decrypt(data);
+            lparr = lp.Split((char)10);
+            return lparr;
         }
     }
 }

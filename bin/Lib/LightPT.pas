@@ -70,8 +70,8 @@ type
         ( 'FIO', FullFIO ),
         ( 'taskName', TaskName ),
         ( 'lessonName', LessonName ),
-        ( 'type', TaskResult ),
-        ( 'resultInfo', TaskResultInfo ),
+        ( 'taskResult', TaskResult ),
+        ( 'taskResultInfo', TaskResultInfo ),
         ( 'content', '' ),
         ( 'password', Password )
       );
@@ -1101,27 +1101,34 @@ begin
     WriteInfoCallBack(LessonName,TName, TaskResult, TaskResultInfo);
 end;
 
+procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskResult, AdditionalInfo: string);
+begin
+  // Считать логин пароль из auth
+  var f: file of byte;
+  Reset(f,auth);
+  var data := f.Elements.ToArray;
+  var arr := Decrypt(data).Split(#10);
+  var login,pass: string;
+  if arr.Length >= 2 then
+  begin
+    login := arr[0];
+    pass := arr[1];
+    // Теперь как-то записать в БД информацию
+    var User := new ServerAccessProvider(ServerAddr);
+    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskResult, AdditionalInfo);
+    var v := t2.Result;
+    //Console.WriteLine(v);
+  end;
+end;
+
 procedure WriteInfoToDatabases(LessonName,TaskName: string; TaskResult: TaskStatus; AdditionalInfo: string := '');
 begin
   try
     System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {TaskResult.ToString} {AdditionalInfo}' + #10);
-    var auth := FindAuthDat;
-    // Считать логин пароль из auth
-    var f: file of byte;
-    Reset(f,auth);
-    var data := f.Elements.ToArray;
-    var arr := Decrypt(data).Split(#10);
-    var login,pass: string;
-    if arr.Length >= 2 then
-    begin
-      login := arr[0];
-      pass := arr[1];
-      // Теперь как-то записать в БД информацию
-      var User := new ServerAccessProvider(ServerAddr);
-      var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskResult.ToString, AdditionalInfo);
-      var v := t2.Result;
-      //Console.WriteLine(v);
-    end;
+    var auth := FindAuthDat();
+    if auth<>'' then
+      // Есть проблема паузы при плохой сети 
+      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskResult.ToString, AdditionalInfo);
   except
     on e: Exception do
       Console.WriteLine(e.Message);
@@ -1146,7 +1153,8 @@ begin
     if LessonName = '' then
     begin
       // Имя текущей папки. Плохо - в lightpt забыли написать имя урока
-      var ttt := ExtractFileDir(System.Environment.GetCommandLineArgs[0]);
+      //var ttt := ExtractFileDir(System.Environment.GetCommandLineArgs[0]);
+      var ttt := ExpandFileName('.');
       var LastDir := ttt.ToWords(System.IO.Path.DirectorySeparatorChar).LastOrDefault;
       // Каталог может содержать пробелы. Брать первое слово
       if LastDir<>nil then

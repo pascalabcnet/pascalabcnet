@@ -30,17 +30,11 @@ namespace DBAccessPluginNamespace
             try
             {
                 var encryptedstring = login + (char)10 + pass;
-                var encr = TeacherPluginUtils.Encrypt(encryptedstring);
-                using (var fs = new FileStream(filename, FileMode.Create))
+                var encr = TeacherPluginUtils.Encrypt(encryptedstring); // Здесь м.б. исключение
+                using (var fs = new FileStream(filename, FileMode.Create)) // Здесь м.б. исключение
                 {
                     fs.Write(encr, 0, encr.Length);
                 }
-                // записать массив байт в бинарный файл
-                /*using (var sw = new System.IO.StreamWriter(filename))
-                {
-                    sw.WriteLine(login);
-                    sw.WriteLine(pass);
-                }*/
             }
             catch (Exception e)
             {
@@ -52,7 +46,7 @@ namespace DBAccessPluginNamespace
 
         public bool IsRootDirectory(string path)
         {
-            var isroot = false;
+            /*var isroot = false;
             try
             {
                 var full = Path.GetFullPath(path);
@@ -64,7 +58,8 @@ namespace DBAccessPluginNamespace
             {
                 Plugin.AddMessage(e);
             }
-            return isroot;
+            return isroot;*/
+            return Directory.GetParent(path) == null;
         }
 
         public bool CalcParentDirectory(string path, out string parent)
@@ -73,16 +68,14 @@ namespace DBAccessPluginNamespace
             if (IsRootDirectory(path))
                 return false;
             var hasparent = false;
-            try
-            {
-                var full = Path.GetFullPath(path);
-                parent = Directory.GetParent(full).FullName;
-                hasparent = true;
-            }
-            catch (Exception e)
-            {
-                Plugin.AddMessage(e);
-            }
+
+            var full = Path.GetFullPath(path);
+
+            var di = Directory.GetParent(full);
+            if (di != null)
+                parent = di.FullName;
+
+            hasparent = true;
             return hasparent;
         }
 
@@ -96,7 +89,7 @@ namespace DBAccessPluginNamespace
             // После этого перейти в корень диска и там создать этот файл
 
             // SSM 11.08.22 При ручной авторизации - сохранение
-            // Мехмат: auth сохраняется в корень сетевого диска
+            // Мехмат: auth сохраняется в корень сетевого диска. Думаю, достаточно того же алгоритма что и дома!!!
             // Дома: auth сохраняется в папке на уровень выше текущей. Если это невозможно, то в текущей папке. 
             // Если это диск C, то тоже не сохранять и тогда сохранять в текущей
 
@@ -106,8 +99,11 @@ namespace DBAccessPluginNamespace
             // это происходит тогда когда школьник смонтировал сетевой диск, но зашел в Паскаль по кнопке Пуск или с рабочего стола
             // можно попробовать поискать сетевой диск
 
-            var AuthFileFullName = "";
-            if (Plugin.IsMechmath())
+            // Упрощаем. Дома сохраняем на уровень выше, а если нельзя или это корень, то в текущий
+            // На мехмате если в текущем есть lightpt.dat - сохраняем на уровень выше, а если нельзя или это корень, то в текущий
+            //            Если в текущем нет lightpt.dat - сохраняем в корень первого сетевого диска
+
+            /*if (Plugin.IsMechmath)
             {
                 // Найти корень сетевого диска
                 // Если сетевой - текущий, то в него (это как правило)
@@ -117,7 +113,7 @@ namespace DBAccessPluginNamespace
                 bool b = false;
                 if (di.DriveType == System.IO.DriveType.Network)
                 {
-                    var auth = System.IO.Path.Combine(root, "auth.dat");
+                    var auth = Path.Combine(root, "auth.dat");
                     b = TryCreateAuthFile(auth, login, pass);
                 }
 
@@ -125,13 +121,13 @@ namespace DBAccessPluginNamespace
                 if (!b) // Если не удалось записать
                 {
                     string authName = "";
-                    foreach (var drive in System.IO.DriveInfo.GetDrives())
+                    foreach (var drive in DriveInfo.GetDrives())
                     {
-                        if (drive.DriveType != System.IO.DriveType.Network)
+                        if (drive.DriveType != DriveType.Network)
                             continue;
                         // Проверять, что диск сетевой!!! Для несетевых - нет!
-                        var auth = System.IO.Path.Combine(drive.Name, "auth.dat");
-                        if (System.IO.File.Exists(auth))
+                        var auth = Path.Combine(drive.Name, "auth.dat");
+                        if (File.Exists(auth))
                             authName = auth;
                     }
                     b = TryCreateAuthFile(authName, login, pass);
@@ -145,7 +141,7 @@ namespace DBAccessPluginNamespace
                         if (drive.DriveType != System.IO.DriveType.Network)
                             continue;
                         // Найти первый сетевой куда можно записать
-                        b = TryCreateAuthFile(authName, login, pass);
+                        b = TryCreateAuthFile(authName, login, pass); // тут ошибка!!!
                         if (b)
                             break;
                     }
@@ -154,21 +150,17 @@ namespace DBAccessPluginNamespace
             }
             else // это домашний компьютер
             {
-                //System.IO.Directory.GetParent
-
                 var workDir = Plugin.WorkingDirectory();
-                //Path.GetFullPath
-
                 ///
                 // сохранить пароль в каталоге на уровень выше WorkingDir. Если это корни дисков или уровнем выше нельзя, то в текущем
                 // 
                 //var auth = System.IO.Path.Combine(workDir, "auth.dat");
                 var b1 = CalcParentDirectory(workDir, out string parent);
                 bool b = false;
-                if (b1 && !IsRootDirectory(parent))
+                if (b1 && !IsRootDirectory(parent)) // IsRootDirectory - parent = null !!
                 {
                     // пытаемся в родительском
-                    var auth = System.IO.Path.Combine(parent, "auth.dat");
+                    var auth = Path.Combine(parent, "auth.dat");
                     b = TryCreateAuthFile(auth, login, pass);
                     if (b)
                         AuthFileFullName = auth; // Эта информация нигде не используется - только для тестирования
@@ -176,10 +168,72 @@ namespace DBAccessPluginNamespace
                 if (!b)
                 {
                     // пытаемся в текущем. Если он корень - ну, человек так хотел
-                    var auth = System.IO.Path.Combine(workDir, "auth.dat");
+                    var auth = Path.Combine(workDir, "auth.dat");
                     b = TryCreateAuthFile(auth, login, pass);
                     if (b)
                         AuthFileFullName = auth; // Эта информация нигде не используется - только для тестирования
+                }
+            }*/
+
+            // ПО НОВОМУ SSM 19.08.22
+            var AuthFileFullName = "";
+            var workDir = Plugin.WorkingDirectory();
+            var parentDir = "";
+            var parentDirExists = false;
+            var parentIsRoot = true;
+
+            var fullworkDir = Path.GetFullPath(workDir);
+
+            var di = Directory.GetParent(fullworkDir);
+            if (di != null)
+            {
+                parentDir = di.FullName;
+                parentDirExists = true;
+                parentIsRoot = Directory.GetParent(parentDir) != null;
+            }
+            
+            // На мехмате проверяем lightPT
+            var isLightPT = Plugin.IsLightPTInWorkingDirectiry();
+            // Первый вариант - в родительский или текущий
+            var authCreated = false;
+
+            // Если в текущем есть lightpt.dat то мехмат или не мехмат - пытаемся создать файл авторизации в родительском или в текущем
+            if (isLightPT)
+            {
+                // пытаемся создать в родительском
+                if (parentDirExists)
+                {
+                    var auth = Path.Combine(parentDir, "auth.dat");
+                    authCreated = TryCreateAuthFile(auth, login, pass);
+                    if (authCreated)
+                        AuthFileFullName = auth; // Эта информация нигде не используется - только для тестирования
+                }
+                // если не получилось, пытаемся создать в текущем
+                if (!authCreated)
+                {
+                    var auth = Path.Combine(workDir, "auth.dat");
+                    authCreated = TryCreateAuthFile(auth, login, pass);
+                    if (authCreated)
+                        AuthFileFullName = auth; // Эта информация нигде не используется - только для тестирования
+                }
+            }
+            // Бывает так, что auth файл не создался. Обычно это означает, что в текущем нет lightPT.
+            // Но может записать нельзя
+            // Тогда остается последняя возможность. Если это мехмат, то ищем сетевой диск и пишем в корень туда
+            if (!authCreated && Plugin.IsMechmath)
+            {
+                foreach (var drive in DriveInfo.GetDrives())
+                {
+                    if (drive.DriveType != System.IO.DriveType.Network)
+                        continue;
+                    var auth = Path.Combine(drive.Name, "auth.dat");
+                    // Найти первый сетевой куда можно записать
+                    authCreated = TryCreateAuthFile(auth, login, pass);
+                    if (authCreated)
+                    {
+                        AuthFileFullName = auth; // Эта информация нигде не используется - только для тестирования
+                        break;
+                    }
                 }
             }
         }
@@ -246,6 +300,7 @@ namespace DBAccessPluginNamespace
                 {
                     if (Text.StartsWith("Авторизация: нет связи с сервером"))
                         Text = "Авторизация";
+
 
                     var answer = await SiteProvider.Login("", usersNamesBox.Text, passwordBox.Text);
                     if (answer == "Success")
