@@ -3943,6 +3943,14 @@ namespace PascalABCCompiler.TreeConverter
             cmn.overrided_method = FindMethodToOverride(cmn);
             if (cmn.overrided_method == null)
                 AddError(cmn.loc, "NO_METHOD_TO_OVERRIDE");
+            for (int i = 0; i < cmn.parameters.Count; i++)
+            {
+                var cp = cmn.parameters[i];
+                if (cp.type.IsDelegate && cp.type is common_type_node && (cp.type as common_type_node).name.IndexOf("$") != -1)
+                {
+                    cp.type = cmn.overrided_method.parameters[i].type;
+                }
+            }
             cmn.SetName(cmn.overrided_method.name);
         }
 
