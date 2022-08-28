@@ -2981,6 +2981,7 @@ namespace CodeCompletion
                 if (_program_module.program_block.program_code.right_logical_bracket == null || _program_module.program_block.program_code.right_logical_bracket.source_context == null)
                 {
                     right_line_num += 2;
+                    right_column_num += 2;
                     _program_module.program_block.program_code.source_context = new SourceContext(_program_module.program_block.program_code.source_context.begin_position.line_num,
                                _program_module.program_block.program_code.source_context.begin_position.column_num, right_line_num, right_column_num);
                 }
@@ -2988,6 +2989,7 @@ namespace CodeCompletion
                                                   left_column_num,
                                                   right_line_num, right_column_num,
                                                  doc);
+                cur_scope.loc = new location(cur_scope.loc.begin_line_num, cur_scope.loc.end_line_num, right_line_num, right_column_num, doc);
                 _program_module.program_block.program_code.visit(this);
             }
         }
