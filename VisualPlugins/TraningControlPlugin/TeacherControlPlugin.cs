@@ -192,9 +192,11 @@ namespace VisualPascalABCPlugins
             // При запуске кнопки плагина показываются
             //  Дома: всегда у тех, у кого установлен плагин
             //  Мехмат: при наличии lightpt в текущей папке или при наличии auth.dat в корне сетевого диска !!!
-            if (!IsMechmath) // дома - всегда
-                InitItems(MenuItems, ToolBarItems);
-            else // это мехмат
+            //if (!IsMechmath) // дома - всегда
+            //    InitItems(MenuItems, ToolBarItems);
+            //else // это мехмат
+
+            // SSM 20/06/22 Решил включить плагин в инсталлят и показывать кнопки только если есть lightpt.dat в текущем или auth.dat в корне сетевого
             {
                 if (IsLightPTInWorkingDirectiry()) // если lightpt.dat существует в текущем
                     InitItems(MenuItems, ToolBarItems);
@@ -211,7 +213,7 @@ namespace VisualPascalABCPlugins
         {
             if (Item == null) // Если не показали кнопки, то нет смысла в дальнейших действиях - плагин неактивен
             {
-                AddMessage("Плагин Teacher Control отключён. Не выполнено условие LightPTExists || AuthExists");
+                AddMessage("TeacherControlPlugin deactivated"); // Не выполнено условие LightPTExists || AuthExists
                 return;
             }
             menuItem = (ToolStripMenuItem)Item.menuItem;

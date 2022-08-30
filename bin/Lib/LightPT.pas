@@ -5,6 +5,9 @@ unit LightPT;
 {$reference System.Management.dll}
 uses __RedirectIOMode;
 
+// Любые существенные изменения в этом модуле влияют на все Tasks, составленные всеми.
+// Они перестанут компилироваться, что плохо !!!
+
 uses System.Management;
 uses System.Security.Cryptography;
 uses System.IO;
@@ -24,7 +27,7 @@ const lightptname = 'lightpt.dat';
 
 type
   MessageColorT = (MsgColorGreen, MsgColorRed, MsgColorOrange, MsgColorMagenta, MsgColorGray);
-  TaskStatus = (Solved, IOError, BadSolution, PartialSolution, InitialTask, BadInitialTask, NotUnderControl, InitialTaskPT4, ErrFix, Demo); // Короткий результат для БД
+  TaskStatus = (NotUnderControl, Solved, IOError, BadSolution, PartialSolution, InitialTask, BadInitialTask, InitialTaskPT4, ErrFix, Demo); // Короткий результат для БД
 
 type
   PTException = class(Exception) 
@@ -159,6 +162,8 @@ type
     function AddRange(sq: sequence of string): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
     function AddRange(sq: sequence of char): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
     function AddRange(sq: sequence of boolean): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of object): ObjectList; begin lst.AddRange(sq); Result := Self end;
+    function AddRange(sq: sequence of System.Type): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
     function AddFill(n: integer; elem: object): ObjectList; begin lst.AddRange(ArrFill(n,elem)); Result := Self end;
     function AddArithm(n: integer; a0,step: integer): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x+step).Select(x -> object(x))); Result := Self end;
     function AddArithm(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x+step).Select(x -> object(x))); Result := Self end;
@@ -323,6 +328,7 @@ begin
     TaskResult := InitialTask;   
 end;
 
+// По сути отдельные функции - это неправильно. Необходим CheckInitialInputOutput
 procedure CheckInitialOutput(params a: array of object);
 begin
   InitialOutput(a);
@@ -460,6 +466,13 @@ begin
   InputList.Add(Result);
 end;
 
+function Random(a, b: char): char;
+begin
+  Result := PABCSystem.Random(a, b);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
 function Random2(a, b: integer): (integer, integer);
 begin
   Result := PABCSystem.Random2(a, b);
@@ -474,6 +487,58 @@ begin
   if IsPT then exit;
   InputList.Add(Result[0]);
   InputList.Add(Result[1]);
+end;
+
+function Random2(a, b: char): (char, char);
+begin
+  Result := PABCSystem.Random2(a, b);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+function Random3(a, b: integer): (integer, integer, integer);
+begin
+  Result := PABCSystem.Random3(a, b);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+function Random3(a, b: real): (real, real, real);
+begin
+  Result := PABCSystem.Random3(a, b);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+function Random3(a, b: char): (char, char, char);
+begin
+  Result := PABCSystem.Random3(a, b);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+/// Возвращает массив размера n, заполненный случайными целыми значениями
+function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
+begin
+  Result := PABCSystem.ArrRandomInteger(n, a, b);
+  if IsPT then exit;
+  for var i:=0 to n-1 do
+    InputList.Add(Result[i]);
+end;
+
+/// Возвращает массив размера n, заполненный случайными вещественными значениями
+function ArrRandomReal(n: integer; a: real; b: real): array of real;
+begin
+  Result := PABCSystem.ArrRandomReal(n, a, b);
+  if IsPT then exit;
+  for var i:=0 to n-1 do
+    InputList.Add(Result[i]);
 end;
 
 function ReadString: string;
@@ -507,7 +572,6 @@ begin
   OutputList.RemoveAt(OutputList.Count - 1);
   DoNewLineBeforeMessage := False;
 end;
-
 
 procedure Print(params args: array of object);
 begin
@@ -711,7 +775,7 @@ begin
   TaskResult := Solved;
   // Несоответствие типов
   for var i := 0 to mn - 1 do
-  begin  
+  begin 
     if (a[i].GetType.Name = 'RuntimeType') and (a[i] <> OutputList[i].GetType) then
       raise new OutputTypeException(i + 1, TypeToTypeName(a[i] as System.Type), TypeName(OutputList[i]))
     else if (a[i].GetType.Name <> 'RuntimeType') and (a[i].GetType <> OutputList[i].GetType) then
@@ -729,6 +793,17 @@ begin
       TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
       exit;           
     end;
+end;
+
+/// Не меняет TaskResult если типы правильные
+procedure CheckInputTypes(a: array of System.Type);
+begin
+  // Несоответствие количества вводимых параметров
+  if a.Length <> InputList.Count then
+    raise new InputCountException(InputList.Count, a.Length);
+  for var i := 0 to a.Length - 1 do
+    if a[i] <> InputList[i].GetType then
+      raise new InputTypeException(i + 1, TypeToTypeName(a[i]), TypeName(InputList[i]));
 end;
 
 procedure CheckOutputSeq(a: sequence of integer) := CheckOutput(ToObjArray(a.ToArray));
@@ -752,7 +827,7 @@ end;
 
 procedure FilterOnlyNumbers;
 begin
-  OutputList := OutputList.Where(x -> (x is integer) or (x is real)).ToList;
+  OutputList := OutputList.Where(x -> (x is integer) or (x is real) or (x is int64)).ToList;
 end;
 
 function MsgColorCode(color: MessageColorT): char;
@@ -1130,8 +1205,15 @@ begin
       // Есть проблема паузы при плохой сети 
       WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskResult.ToString, AdditionalInfo);
   except
+    on e: System.AggregateException do
+    begin
+      foreach var x in e.InnerExceptions do
+        if x is HTTPRequestException then
+          ColoredMessage(x.InnerException?.Message??'',MsgColorGray)
+        else ColoredMessage(x.Message,MsgColorGray); 
+    end;
     on e: Exception do
-      Console.WriteLine(e.Message);
+      ColoredMessage(e.Message,MsgColorGray);
   end;  
 end;
 

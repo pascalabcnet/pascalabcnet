@@ -3,6 +3,7 @@
 interface
 
 function ReadXLSX(fileName: string): Dictionary<string, array of array of string>;
+function ReadXlsxAsInts(fileName: string; sheetNum: integer := 0): array of array of integer;
 function ToDate(Self: string): DateTime;
 
 implementation
@@ -25,7 +26,7 @@ begin
   Result := DateTime.Parse(Self);
 end;
 
-function ToCR(Self: string):(integer,integer); extensionmethod; // 'AA7' -> (6,26)
+function ToCR(Self: string): (integer,integer); extensionmethod; // 'AA7' -> (6,26)
 begin 
   var clm := 0;
   var row := 0;
@@ -68,8 +69,15 @@ begin
     end;
     LU := (l, u);
     RD := (r, d);
-  end else // готовые габариты из таблицы
-    (LU, RD) := dim.GetAttribute('ref').Split(':').Sel(s -> s.ToCR);
+  end else begin // готовые габариты из таблицы
+    var ref := dim.GetAttribute('ref');
+    if ':' in ref then 
+      (LU, RD) := ref.Split(':').Sel(s -> s.ToCR)
+    else begin
+      RD := ref.ToCR;
+      LU := RD;
+    end;
+  end;
   
   var (w, h) := (RD[1] - LU[1] + 1, RD[0] - LU[0] + 1);
   var sheet: array of array of string;
@@ -134,5 +142,8 @@ begin
     Result[name] := LoadSheet($'xl/worksheets/sheet{sheetId}.xml');
   end;
 end;
+
+function ReadXlsxAsInts(fileName: string; sheetNum: integer) 
+  := ReadXLSX(fileName).Values.Skip(sheetNum).First.Select(r->r.Select(c->c.ToInteger).ToArray).ToArray;
 
 end.
