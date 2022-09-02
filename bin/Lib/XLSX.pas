@@ -2,45 +2,47 @@
 
 interface
 
-type 
+type
   exCellBorder = class
-    IsLeft, IsRight, IsBottom, IsTop, IsDiagonal:boolean;
+    IsLeft, IsRight, IsBottom, IsTop, IsDiagonal: boolean;
   end;
   
   exCell = class
-    constructor(scheet:array of array of exCell;row,col:integer);
+    constructor(sheet: array of array of exCell; row, col: integer);
     begin
-      _scheet := scheet; 
+      _sheet := sheet; 
       Self.row := row; 
       Self.col := col;
     end;
+  
   private
-    row,col:integer;
-    _scheet: array of array of exCell;
-    function getBorders:(boolean,boolean,boolean,boolean);// (left,top,right,bottom)
+    row, col: integer;
+    _sheet: array of array of exCell;
+    function getBorders: (boolean, boolean, boolean, boolean);// (left,top,right,bottom)
     begin
-      var left := Border.IsLeft or (col>0) and _scheet[row,col-1].Border.IsRight;
-      var top := Border.IsTop or (row>0) and _scheet[row-1,col].Border.IsBottom;
-      var right := Border.IsRight or (col+1<_scheet.First.Length) 
-        and (_scheet[row,col+1].Border<>nil) and _scheet[row,col+1].Border.IsLeft;
-      var bottom := Border.IsBottom or (row+1<_scheet.Length) 
-        and _scheet[row+1,col].Border.IsTop;
-      Result := (left,top,right,bottom);
+      var left := Border.IsLeft or (col > 0) and _sheet[row, col - 1].Border.IsRight;
+      var top := Border.IsTop or (row > 0) and _sheet[row - 1, col].Border.IsBottom;
+      var right := Border.IsRight or (col + 1 < _sheet.First.Length) 
+        and (_sheet[row, col + 1].Border <> nil) and _sheet[row, col + 1].Border.IsLeft;
+      var bottom := Border.IsBottom or (row + 1 < _sheet.Length) 
+        and _sheet[row + 1, col].Border.IsTop;
+      Result := (left, top, right, bottom);
     end;
+  
   public
-    Border : exCellBorder;
-    Value:string;
-    property AsInt:integer read Value.ToInteger;
-    property Index:(integer,integer) read (row,col);
-    property Scheet:array of array of exCell read _scheet;
-    property Borders:(boolean,boolean,boolean,boolean) read getBorders;
+    Border: exCellBorder;
+    Value: string;
+    property AsInt: integer read Value.ToInteger;
+    property Index: (integer, integer) read (row, col);
+    property Sheet: array of array of exCell read _sheet;
+    property Borders: (boolean, boolean, boolean, boolean) read getBorders;
   end;
 
 function ReadXLSX(fileName: string): Dictionary<string, array of array of string>;
-function ReadXlsxAsCells(fileName: string;sheetNum: integer := 0): array of array of exCell;
-function ReadXlsxAsInts(fileName: string; sheetNum: integer := 0): array of array of integer;
+function ReadXLSXAsCells(fileName: string; sheetNum: integer := 0): array of array of exCell;
+function ReadXLSXAsInts(fileName: string; sheetNum: integer := 0): array of array of integer;
 function ToDate(Self: string): DateTime;
-  
+
 implementation
 
 {$reference System.IO.Compression.dll}
@@ -51,8 +53,8 @@ uses System.IO.Compression;
 uses System.Xml,sf;
 
 var
-  numFmt,numBrd : List<int>;
-  brdStyles : List<exCellBorder>;
+  numFmt, numBrd: List<int>;
+  brdStyles: List<exCellBorder>;
   arxiv: System.IO.Compression.ZipArchive;
   shStr := new List<string>;
   DateTypeId := |14, 15, 16, 17, 22, 27, 30, 36, 50, 55, 57|.ToHS;
@@ -62,16 +64,16 @@ begin
   Result := DateTime.Parse(Self);
 end;
 
-function ToCR(Self: string): (integer,integer); extensionmethod; // 'AA7' -> (6,26)
-begin 
+function ToCR(Self: string): (integer, integer); extensionmethod; // 'AA7' -> (6,26)
+begin
   var clm := 0;
   var row := 0;
   foreach var c in Self do
     if c in 'A'..'Z' then
-      clm := clm*26 + (c - 'A'+1)
+      clm := clm * 26 + (c - 'A' + 1)
     else 
-      row := row*10 + (c - '0');
-  Result := (row-1,clm-1); 
+      row := row * 10 + (c - '0');
+  Result := (row - 1, clm - 1); 
 end;
 
 function Load(path: string): XmlElement;
@@ -84,9 +86,9 @@ begin
   end;
 end;
 
-function ShteetRange(elms:XmlElement):((int,int),(int,int));
+function SheetRange(elms: XmlElement): ((int, int), (int, int));
 begin
-  var LU, RD: (int,int);
+  var LU, RD: (int, int);
   var dim := elms.Item['dimension'];
   if dim = nil then begin // собираем габариты таблицы
     var (l, u) := (maxint, maxint);
@@ -113,18 +115,18 @@ begin
       LU := RD;
     end;
   end;
-  Result := (LU,RD);
+  Result := (LU, RD);
 end;
 
 function LoadSheet(path: string): array of array of string;
 begin
   var elms := Load(path);
-  var (LU, RD) := ShteetRange(elms);
-
+  var (LU, RD) := SheetRange(elms);
+  
   var (w, h) := (RD[1] - LU[1] + 1, RD[0] - LU[0] + 1);
   var sheet: array of array of string;
-  if (w<0)or(h<0) then 
-    setLength(sheet,0)
+  if (w < 0) or (h < 0) then 
+    setLength(sheet, 0)
   else begin
     setLength(sheet, h);
     for var i := 0 to h - 1 do sheet[i] := new string[w];
@@ -159,12 +161,12 @@ end;
 function LoadSheetAsCells(path: string): array of array of exCell;
 begin
   var elms := Load(path);
-  var (LU, RD) := ShteetRange(elms);
+  var (LU, RD) := SheetRange(elms);
   
   var (w, h) := (RD[1] - LU[1] + 1, RD[0] - LU[0] + 1);
   var sheet: array of array of exCell;
-  if (w<0)or(h<0) then 
-    setLength(sheet,0)
+  if (w < 0) or (h < 0) then 
+    setLength(sheet, 0)
   else begin
     setLength(sheet, h);
     for var i := 0 to h - 1 do sheet[i] := new exCell[w];
@@ -186,8 +188,8 @@ begin
         foreach var vl: XmlNode in cell.ChildNodes do 
           if vl.Name = 'v' then 
             value := vl.InnerText;
-
-        var cellValue := new exCell(sheet,i,j);
+        
+        var cellValue := new exCell(sheet, i, j);
         sheet[i, j] := cellValue;
         if st <> nil then 
           cellValue.Border := brdStyles[numBrd[st.Value.ToI]];
@@ -204,7 +206,7 @@ begin
   Result := sheet;
 end;
 
-function ReadXLSXAsCells(fileName: string;sheetNum: integer):array of array of exCell;
+function ReadXLSXAsCells(fileName: string; sheetNum: integer): array of array of exCell;
 begin
   arxiv := ZipFile.OpenRead(fileName);
   
@@ -217,20 +219,22 @@ begin
   // бордюры
   elms := Load('xl/styles.xml');
   brdStyles := new List<exCellBorder>;
-  foreach var node: XmlNode in elms.Item['borders'].ChildNodes do begin
+  foreach var node: XmlNode in elms.Item['borders'].ChildNodes do
+  begin
     var brd := new exCellBorder;
-    brd.IsLeft := node.Item['left'].Attributes.Count>0;
-    brd.IsRight := node.Item['right'].Attributes.Count>0;
-    brd.IsTop := node.Item['top'].Attributes.Count>0;
-    brd.IsBottom := node.Item['bottom'].Attributes.Count>0;
-    brd.IsDiagonal := node.Item['diagonal'].Attributes.Count>0;
+    brd.IsLeft := node.Item['left'].Attributes.Count > 0;
+    brd.IsRight := node.Item['right'].Attributes.Count > 0;
+    brd.IsTop := node.Item['top'].Attributes.Count > 0;
+    brd.IsBottom := node.Item['bottom'].Attributes.Count > 0;
+    brd.IsDiagonal := node.Item['diagonal'].Attributes.Count > 0;
     brdStyles.Add(brd);
   end;
-    
+  
   // стили
   numFmt := new List<int>;
   numBrd := new List<int>;
-  foreach var node: XmlNode in elms.Item['cellXfs'].ChildNodes do begin
+  foreach var node: XmlNode in elms.Item['cellXfs'].ChildNodes do
+  begin
     numFmt.Add(node.Attributes.GetNamedItem('numFmtId').Value.ToI);
     numBrd.Add(node.Attributes.GetNamedItem('borderId').Value.ToI);
   end;
@@ -245,7 +249,7 @@ begin
     var sheetId := node.Attributes.GetNamedItem('r:id').Value[4:];
     Result := LoadSheetAsCells($'xl/worksheets/sheet{sheetId}.xml');
     sheetNum -= 1;
-    if sheetNum=0 then 
+    if sheetNum = 0 then 
       break;
   end;
 end;
@@ -280,7 +284,7 @@ begin
 end;
 
 
-function ReadXlsxAsInts(fileName: string; sheetNum: integer) 
-  := ReadXLSX(fileName).Values.Skip(sheetNum).First.Select(r->r.Select(c->c.ToInteger).ToArray).ToArray;
+function ReadXLSXAsInts(fileName: string; sheetNum: integer) 
+:= ReadXLSX(fileName).Values.Skip(sheetNum).First.Select(r -> r.Select(c -> c.ToInteger).ToArray).ToArray;
 
 end.
