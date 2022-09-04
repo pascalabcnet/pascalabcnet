@@ -6335,6 +6335,7 @@ namespace PascalABCCompiler.NETGenerator
                 if (save_debug_info)
                     MarkSequencePoint(il, 0xFFFFFF, 0, 0xFFFFFF, 0);
                 ConvertStatement((value.function_code as IStatementsListNode).statements[0]);
+                
                 il.Emit(OpCodes.Ldarg_0);
                 IParameterNode[] parameters = value.parameters;
                 for (int i = 0; i < parameters.Length; i++)
@@ -6415,7 +6416,10 @@ namespace PascalABCCompiler.NETGenerator
                 il = methb.GetILGenerator();
                 if (save_debug_info)
                     MarkSequencePoint(il, 0xFFFFFF, 0, 0xFFFFFF, 0);
-                il.Emit(OpCodes.Ldarg_0);
+                if (value.polymorphic_state == polymorphic_state.ps_static)
+                    il.Emit(OpCodes.Ldnull);
+                else
+                    il.Emit(OpCodes.Ldarg_0);
                 IParameterNode[] parameters = value.parameters;
                 for (int i = 0; i < parameters.Length; i++)
                 {

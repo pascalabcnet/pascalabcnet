@@ -13283,7 +13283,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             //\ssyy
-            if (context.converted_type != null && context.converted_type.IsStatic && !_procedure_definition.proc_header.class_keyword)
+            if (context.converted_type != null && context.converted_type.IsStatic && !_procedure_definition.proc_header.class_keyword && context.func_stack.Empty)
                 AddError(get_location(_procedure_definition), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (_procedure_definition.proc_body == null)
             {
