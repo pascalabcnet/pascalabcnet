@@ -18583,7 +18583,7 @@ namespace PascalABCCompiler.TreeConverter
 
 
             //right = convertion_data_and_alghoritms.convert_type(right, left.type);
-            return_value(new double_question_colon_expression(condition, right, get_location(node)));
+            return_value(new double_question_colon_expression(left, right, get_location(node)));
         }
 
         public override void visit(SyntaxTree.question_colon_expression node)
