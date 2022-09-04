@@ -7454,6 +7454,7 @@ namespace PascalABCCompiler.NETGenerator
                 && !(value.obj is ICommonMethodCallNode) && !(value.obj is ICommonStaticMethodCallNode) 
                 && !(value.obj is ICommonConstructorCall) && !(value.obj is ICommonNamespaceFunctionCallNode) 
                 && !(value.obj is ICommonNestedInFunctionFunctionCallNode)
+                && !(value.obj is IQuestionColonExpressionNode)
                 && !(value.obj.conversion_type != null && !value.obj.conversion_type.is_value_type))
             {
                 LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.obj.type).tp);
@@ -10792,7 +10793,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
                 value.condition.visit(this);
-            
+
             is_dot_expr = tmp_is_dot_expr;
             is_addr = tmp_is_addr;
             il.Emit(OpCodes.Brfalse, FalseLabel);
@@ -10811,6 +10812,8 @@ namespace PascalABCCompiler.NETGenerator
                 EmitBox(value.ret_if_true, ti.tp);
             il.Emit(OpCodes.Br, EndLabel);
             il.MarkLabel(FalseLabel);
+            is_dot_expr = tmp_is_dot_expr;
+            is_addr = tmp_is_addr;
             if (value.ret_if_false is INullConstantNode && value.ret_if_false.type.is_nullable_type)
             {
                 Type tp = helper.GetTypeReference(value.ret_if_false.type).tp;
