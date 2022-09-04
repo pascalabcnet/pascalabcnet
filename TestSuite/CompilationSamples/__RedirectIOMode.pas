@@ -76,9 +76,9 @@ begin
   if not ReadlnSignalSended then
     SendReadlnRequest;
   c := inherited read_symbol;
-  if (LastReadSymbol=N) and (c=R) then
+  if {(LastReadSymbol=#13) and} (c=#10) then // Fix SSM 30.08.22 for Linux
     ReadlnSignalSended := false;  
-  LastReadSymbol := c;
+  LastReadSymbol := c; // Не используется после Fix
   result := c;
 end;
 
@@ -88,7 +88,7 @@ begin
     SendReadlnRequest;
   var s := inherited ReadLine;
   ReadlnSignalSended := false;
-  LastReadSymbol := R;
+  LastReadSymbol := #10;
   Result := s;
 end;
 

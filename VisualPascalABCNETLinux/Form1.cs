@@ -20,8 +20,8 @@ using System.ComponentModel.Design;
 
 //using ICSharpCode.FormsDesigner;
 //using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+//using ICSharpCode.Core;
+//using ICSharpCode.SharpDevelop;
 
 namespace VisualPascalABC
 {
