@@ -1481,10 +1481,9 @@ simple_type_identifier
     ;
 
 enumeration_id_list
-    : enumeration_id tkComma enumeration_id  
+    : enumeration_id
         { 
 			$$ = new enumerator_list($1 as enumerator, @$);
-			($$ as enumerator_list).Add($3 as enumerator, @$);
         }      
     | enumeration_id_list tkComma enumeration_id
         { 
