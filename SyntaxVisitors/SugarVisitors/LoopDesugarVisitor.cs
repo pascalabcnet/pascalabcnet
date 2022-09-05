@@ -116,7 +116,9 @@ namespace SyntaxVisitors.SugarVisitors
                 ProcessNode(avar);
                 ProcessNode(bvar);
                 ProcessNode(hvar);
-                ProcessNode(stlist.list[0]);
+                // ProcessNode(stlist.list[0]); // это было сделано чтобы выводилась ошибка Нельзя менять переменную цикла в теле цикла. 
+                // Но во вложенных циклах все равно не срабатывает - убрал. Буду думать - что делать
+                ProcessNode(stlist); // К сожалению, из-за этого не выводится ошибка при попытке изменения переменной цикла внутри цикла
                 // Надо обойти подкомпоненты - вдруг там в лямбдах for со stepом
             }
             else DefaultVisit(fn);
