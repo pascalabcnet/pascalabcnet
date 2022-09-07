@@ -27,9 +27,9 @@ namespace VisualPascalABC
                 OutputWindow = new OutputWindowForm(this);
                 Form1StringResources.SetTextForAllControls(OutputWindow);
             }
-            BottomPane = null;
+            //BottomPane = null;
             //AddWindowToDockPanel(OutputWindow, MainDockPanel, DockStyle.Fill, DockState.DockBottom, OutputWindow.IsFloat, BottomPane, -1);
-            AddWindowToDockPanel(OutputWindow, BottomDockPanel, DockStyle.Fill, DockState.Document, OutputWindow.IsFloat, BottomPane, -1);
+            AddWindowToDockPanel(OutputWindow, BottomDockPanel, DockStyle.None, DockState.Document, false, null, -1);
             //BottomPane = OutputWindow.Pane;
         }
 
@@ -40,7 +40,7 @@ namespace VisualPascalABC
                 ErrorsListWindow = new ErrorsListWindowForm(this);
                 Form1StringResources.SetTextForAllControls(ErrorsListWindow);
             }
-            AddWindowToDockPanel(ErrorsListWindow, BottomDockPanel, OutputWindow.Dock, DockState.Document, OutputWindow.IsFloat, null, int.MaxValue);
+            AddWindowToDockPanel(ErrorsListWindow, BottomDockPanel, OutputWindow.Dock, DockState.Document, false, null, int.MaxValue);
         }
 
         private void AddCompilerConsoleWindow()
@@ -50,7 +50,7 @@ namespace VisualPascalABC
                 CompilerConsoleWindow = new CompilerConsoleWindowForm(this);
                 Form1StringResources.SetTextForAllControls(CompilerConsoleWindow);
             }
-            AddWindowToDockPanel(CompilerConsoleWindow, BottomDockPanel, OutputWindow.Dock, DockState.Document, OutputWindow.IsFloat, null, int.MaxValue);
+            AddWindowToDockPanel(CompilerConsoleWindow, BottomDockPanel, OutputWindow.Dock, DockState.Document, false, null, int.MaxValue);
         }
 
         private void AddFindSymbolsResultWindow()

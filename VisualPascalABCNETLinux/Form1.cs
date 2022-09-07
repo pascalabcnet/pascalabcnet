@@ -351,16 +351,20 @@ namespace VisualPascalABC
             WorkbenchStorage.StandartDirectories = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
             WorkbenchStorage.StandartDirectories.Add(Constants.SystemDirectoryIdent, System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName));
 
+            //---------------------------------------------
+            BottomDockPanel.Size = new Size(1920, 1080);
             RestoreDesktop();
+            //---------------------------------------------
+
             OutputWindow.CloseButton = false;
             ErrorsListWindow.CloseButton = false;
             CompilerConsoleWindow.CloseButton = false;
 
-            menuStrip1.Font = new Font(menuStrip1.Font.Name, 8.25f);
+            // menuStrip1.Font = new Font(menuStrip1.Font.Name, 8.25f);
 
             // SSM 06.06.22 - это только для Линукса!!!
             MainDockPanel.AllowEndUserDocking = false;
-            BottomDockPanel.AllowEndUserDocking = false;
+            BottomDockPanel.AllowEndUserDocking = false; 
 
             LoadOptions();
 
@@ -406,8 +410,11 @@ namespace VisualPascalABC
             NavigationManager.StateChanged += new NavigationManager.NavigationManagerStateChanged(NavigationManager_StateChanged);
 
             string newFileName = InstNameNewProgramm(MainDockPanel);
+            //---------------------------------------------
+            MainDockPanel.Size = new Size(1920, 1080);
             AddNewProgramToTab(MainDockPanel, newFileName);
-            
+            //---------------------------------------------
+
             AddOptionsContent();
             Application.AddMessageFilter(this);
 
@@ -644,8 +651,11 @@ namespace VisualPascalABC
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-
-            if(_mainFormWindowStateMaximized)
+            MPanel_Resize(null, EventArgs.Empty);
+            BPanel_Resize(null, EventArgs.Empty);
+            //MPanel_.OnResize(EventArgs.Empty);
+            //BPanel.OnResize(EventArgs.Empty);
+            if (_mainFormWindowStateMaximized)
                 this.WindowState = FormWindowState.Maximized;
             //PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = "Russi         
 
@@ -1976,6 +1986,22 @@ namespace VisualPascalABC
         private void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            //MainDockPanel.Size = new Size(MPanel.Width, MPanel.Height);
+            //BottomDockPanel.Size = new Size(BPanel.Width, BPanel.Height - 3);
+        }
+
+        private void MPanel_Resize(object sender, EventArgs e)
+        {
+            MainDockPanel.Size = new Size(MPanel.Width, MPanel.Height);
+        }
+
+        private void BPanel_Resize(object sender, EventArgs e)
+        {
+            BottomDockPanel.Size = new Size(BPanel.Width-3, BPanel.Height - 3);
         }
 
         private void tsHelp_Click(object sender, EventArgs e)

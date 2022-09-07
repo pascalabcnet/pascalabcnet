@@ -134,14 +134,6 @@ namespace VisualPascalABC
             this.miBringToFront = new System.Windows.Forms.ToolStripMenuItem();
             this.miSendToBack = new System.Windows.Forms.ToolStripMenuItem();
             this.miTabOrder = new System.Windows.Forms.ToolStripMenuItem();
-            this.mrHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mMAINFEATURESToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.miCheckUpdates = new System.Windows.Forms.ToolStripMenuItem();
-            this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.mrService = new System.Windows.Forms.ToolStripMenuItem();
             this.mOPTIONSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tssmIntellisence = new System.Windows.Forms.ToolStripSeparator();
@@ -153,6 +145,14 @@ namespace VisualPascalABC
             this.mFORMATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mUNITTESTSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miPlugins = new System.Windows.Forms.ToolStripMenuItem();
+            this.mrHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.mMAINFEATURESToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.miCheckUpdates = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbNew = new System.Windows.Forms.ToolStripButton();
             this.tbOpen = new System.Windows.Forms.ToolStripButton();
@@ -1192,68 +1192,6 @@ namespace VisualPascalABC
             this.miTabOrder.Text = "M_TAB_ORDER";
             this.miTabOrder.Click += new System.EventHandler(this.miTabOrder_Click);
             // 
-            // mrHelp
-            // 
-            this.mrHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsHelp,
-            this.mMAINFEATURESToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.toolStripMenuItem5,
-            this.toolStripSeparator6,
-            this.miCheckUpdates,
-            this.miAbout});
-            this.mrHelp.Name = "mrHelp";
-            this.mrHelp.Size = new System.Drawing.Size(70, 20);
-            this.mrHelp.Text = "MR_HELP";
-            // 
-            // tsHelp
-            // 
-            this.tsHelp.Name = "tsHelp";
-            this.tsHelp.ShortcutKeyDisplayString = "F1";
-            this.tsHelp.Size = new System.Drawing.Size(179, 22);
-            this.tsHelp.Text = "M_HELP";
-            this.tsHelp.Click += new System.EventHandler(this.tsHelp_Click);
-            // 
-            // mMAINFEATURESToolStripMenuItem
-            // 
-            this.mMAINFEATURESToolStripMenuItem.Name = "mMAINFEATURESToolStripMenuItem";
-            this.mMAINFEATURESToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-            this.mMAINFEATURESToolStripMenuItem.Text = "M_MAINFEATURES";
-            this.mMAINFEATURESToolStripMenuItem.Click += new System.EventHandler(this.mMAINFEATURESToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(179, 22);
-            this.toolStripMenuItem1.Text = "M_OPENSAMPLES";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click_1);
-            // 
-            // toolStripMenuItem5
-            // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(179, 22);
-            this.toolStripMenuItem5.Text = "M_OPENTUTORIAL";
-            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(176, 6);
-            // 
-            // miCheckUpdates
-            // 
-            this.miCheckUpdates.Name = "miCheckUpdates";
-            this.miCheckUpdates.Size = new System.Drawing.Size(179, 22);
-            this.miCheckUpdates.Text = "M_CHECKUPDATES";
-            this.miCheckUpdates.Click += new System.EventHandler(this.miCheckUpdates_Click);
-            // 
-            // miAbout
-            // 
-            this.miAbout.Name = "miAbout";
-            this.miAbout.Size = new System.Drawing.Size(179, 22);
-            this.miAbout.Text = "M_ABOUT";
-            this.miAbout.Click += new System.EventHandler(this.miAboutToolStripMenuItem_Click);
-            // 
             // mrService
             // 
             this.mrService.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1352,6 +1290,68 @@ namespace VisualPascalABC
             this.miPlugins.Size = new System.Drawing.Size(90, 20);
             this.miPlugins.Text = "MR_PLUGINS";
             this.miPlugins.Visible = false;
+            // 
+            // mrHelp
+            // 
+            this.mrHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsHelp,
+            this.mMAINFEATURESToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.toolStripMenuItem5,
+            this.toolStripSeparator6,
+            this.miCheckUpdates,
+            this.miAbout});
+            this.mrHelp.Name = "mrHelp";
+            this.mrHelp.Size = new System.Drawing.Size(70, 20);
+            this.mrHelp.Text = "MR_HELP";
+            // 
+            // tsHelp
+            // 
+            this.tsHelp.Name = "tsHelp";
+            this.tsHelp.ShortcutKeyDisplayString = "F1";
+            this.tsHelp.Size = new System.Drawing.Size(179, 22);
+            this.tsHelp.Text = "M_HELP";
+            this.tsHelp.Click += new System.EventHandler(this.tsHelp_Click);
+            // 
+            // mMAINFEATURESToolStripMenuItem
+            // 
+            this.mMAINFEATURESToolStripMenuItem.Name = "mMAINFEATURESToolStripMenuItem";
+            this.mMAINFEATURESToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.mMAINFEATURESToolStripMenuItem.Text = "M_MAINFEATURES";
+            this.mMAINFEATURESToolStripMenuItem.Click += new System.EventHandler(this.mMAINFEATURESToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(179, 22);
+            this.toolStripMenuItem1.Text = "M_OPENSAMPLES";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click_1);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(179, 22);
+            this.toolStripMenuItem5.Text = "M_OPENTUTORIAL";
+            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(176, 6);
+            // 
+            // miCheckUpdates
+            // 
+            this.miCheckUpdates.Name = "miCheckUpdates";
+            this.miCheckUpdates.Size = new System.Drawing.Size(179, 22);
+            this.miCheckUpdates.Text = "M_CHECKUPDATES";
+            this.miCheckUpdates.Click += new System.EventHandler(this.miCheckUpdates_Click);
+            // 
+            // miAbout
+            // 
+            this.miAbout.Name = "miAbout";
+            this.miAbout.Size = new System.Drawing.Size(179, 22);
+            this.miAbout.Text = "M_ABOUT";
+            this.miAbout.Click += new System.EventHandler(this.miAboutToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -2060,7 +2060,6 @@ namespace VisualPascalABC
             // 
             this.MainDockPanel.BackColor = System.Drawing.SystemColors.Control;
             this.MainDockPanel.ContextMenuStrip = this.contextMenuStrip1;
-            this.MainDockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainDockPanel.DockBottomPortion = 0.35D;
             this.MainDockPanel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.MainDockPanel.Location = new System.Drawing.Point(0, 0);
@@ -2348,38 +2347,38 @@ namespace VisualPascalABC
             // 
             // BottomDockPanel
             // 
-            this.BottomDockPanel.AutoSize = true;
             this.BottomDockPanel.BackColor = System.Drawing.SystemColors.Control;
-            this.BottomDockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BottomDockPanel.DocumentTabStripLocation = WeifenLuo.WinFormsUI.Docking.DocumentTabStripLocation.Bottom;
             this.BottomDockPanel.Location = new System.Drawing.Point(0, 0);
             this.BottomDockPanel.Name = "BottomDockPanel";
-            this.BottomDockPanel.Size = new System.Drawing.Size(876, 207);
+            this.BottomDockPanel.Size = new System.Drawing.Size(876, 204);
             this.BottomDockPanel.TabIndex = 15;
             // 
             // MPanel
             // 
-            this.MPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.MPanel.BackColor = System.Drawing.SystemColors.Control;
             this.MPanel.Controls.Add(this.MainDockPanel);
             this.MPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MPanel.Location = new System.Drawing.Point(0, 0);
             this.MPanel.Name = "MPanel";
             this.MPanel.Size = new System.Drawing.Size(876, 279);
             this.MPanel.TabIndex = 17;
+            this.MPanel.Resize += new System.EventHandler(this.MPanel_Resize);
             // 
             // BPanel
             // 
-            this.BPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.BPanel.BackColor = System.Drawing.SystemColors.Control;
             this.BPanel.Controls.Add(this.BottomDockPanel);
             this.BPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.BPanel.Location = new System.Drawing.Point(0, 284);
             this.BPanel.Name = "BPanel";
             this.BPanel.Size = new System.Drawing.Size(876, 207);
             this.BPanel.TabIndex = 18;
+            this.BPanel.Resize += new System.EventHandler(this.BPanel_Resize);
             // 
             // AllPanel
             // 
-            this.AllPanel.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.AllPanel.BackColor = System.Drawing.SystemColors.Control;
             this.AllPanel.Controls.Add(this.MPanel);
             this.AllPanel.Controls.Add(this.splitter1);
             this.AllPanel.Controls.Add(this.BPanel);
@@ -2424,6 +2423,7 @@ namespace VisualPascalABC
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
@@ -2438,7 +2438,6 @@ namespace VisualPascalABC
             this.cm_Designer.ResumeLayout(false);
             this.MPanel.ResumeLayout(false);
             this.BPanel.ResumeLayout(false);
-            this.BPanel.PerformLayout();
             this.AllPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

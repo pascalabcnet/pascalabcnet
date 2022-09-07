@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 //using ICSharpCode.FormsDesigner;
 using VisualPascalABCPlugins;
 using WeifenLuo.WinFormsUI.Docking;
@@ -27,7 +28,11 @@ namespace VisualPascalABC
             CodeFileDocumentControl tp = FindTab(FileName);
             if (tp != null)
                 return tp;
+
+            MainDockPanel.Size = new Size(1920, 1080);
             tp = AddNewProgramToTab(MainDockPanel, FileName);
+            MPanel_Resize(null, EventArgs.Empty);
+
             AddLastFile(FileName);
             tp.LoadFromFile(FileName);
             tp.DocumentSavedToDisk = true;
@@ -56,7 +61,9 @@ namespace VisualPascalABC
                             FileName = InstNameNewProgramm(MainDockPanel);
                         else
                             FileName = PreferedFileName;
+                    MainDockPanel.Size = new Size(1920, 1080);
                     tp = AddNewProgramToTab(MainDockPanel, FileName);
+                    MPanel_Resize(null, EventArgs.Empty);
 
                 }
                 else
@@ -184,7 +191,9 @@ namespace VisualPascalABC
                 {
                     if (IsNewFile)
                         FileName = InstNameNewProgramm(MainDockPanel);
+                    MainDockPanel.Size = new Size(1920, 1080);
                     tp = AddNewProgramToTab(MainDockPanel, FileName);
+                    MPanel_Resize(null, EventArgs.Empty);
                 }
                 else
                     if (!IsNewFile)
