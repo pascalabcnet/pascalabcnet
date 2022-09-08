@@ -360,7 +360,7 @@ namespace VisualPascalABC
             ErrorsListWindow.CloseButton = false;
             CompilerConsoleWindow.CloseButton = false;
 
-            // menuStrip1.Font = new Font(menuStrip1.Font.Name, 8.25f);
+            menuStrip1.Font = new Font(menuStrip1.Font.Name, 9.0f);
 
             // SSM 06.06.22 - это только для Линукса!!!
             MainDockPanel.AllowEndUserDocking = false;
@@ -412,7 +412,9 @@ namespace VisualPascalABC
             string newFileName = InstNameNewProgramm(MainDockPanel);
             //---------------------------------------------
             MainDockPanel.Size = new Size(1920, 1080);
+            BottomDockPanel.Size = new Size(1920, 1080);
             AddNewProgramToTab(MainDockPanel, newFileName);
+            //AddNewProgramToTab(BottomDockPanel, "gdsfj");
             //---------------------------------------------
 
             AddOptionsContent();
@@ -1990,8 +1992,8 @@ namespace VisualPascalABC
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            //MainDockPanel.Size = new Size(MPanel.Width, MPanel.Height);
-            //BottomDockPanel.Size = new Size(BPanel.Width, BPanel.Height - 3);
+            MainDockPanel.Size = new Size(MPanel.Width, MPanel.Height);
+            BottomDockPanel.Size = new Size(BPanel.Width, BPanel.Height - 3);
         }
 
         private void MPanel_Resize(object sender, EventArgs e)

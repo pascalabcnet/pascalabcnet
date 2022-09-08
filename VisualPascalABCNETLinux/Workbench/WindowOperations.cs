@@ -91,7 +91,7 @@ namespace VisualPascalABC
                 Form1StringResources.SetTextForAllControls(DisassemblyWindow);
             }
 
-            AddWindowToDockPanel(DisassemblyWindow, BottomDockPanel, OutputWindow.Dock, DockState.Document, OutputWindow.IsFloat, BottomPane, int.MaxValue);
+            AddWindowToDockPanel(DisassemblyWindow, MainDockPanel, OutputWindow.Dock, DockState.Document, OutputWindow.IsFloat, BottomPane, int.MaxValue);
         }
 
         void AddDebugWatchListWindow()
@@ -336,30 +336,33 @@ namespace VisualPascalABC
             AddOutputWindow();
             AddErrorsListWindow();
             AddCompilerConsoleWindow();
+
             AddFindSymbolsResultWindow();
-            AddImmediateWindow();
-            AddDisassemblyWindow();
-            AddDebugVariablesListWindow();
-            AddDebugWatchListWindow();
+            AddDisassemblyWindow(); // Это нельзя убирать - почему то оболочка закрывается при запуске программы!!!
+            HideContent(FindSymbolsResultWindow);
+            HideContent(DisassemblyWindow);
+
+            /*AddImmediateWindow();
+            //AddDebugVariablesListWindow();
+            //AddDebugWatchListWindow();
             if (!Tools.IsUnix())
             {
                 AddProjectExplorerWindow();
                 AddPropertiesWindow();
             }
-            SelectContent(OutputWindow, false);
-            if (!Tools.IsUnix())
-                SelectContent(ProjectExplorerWindow, false);
+            //SelectContent(OutputWindow, false);
+            //if (!Tools.IsUnix())
+            //    SelectContent(ProjectExplorerWindow, false);
 
-            HideContent(ImmediateWindow);
-            HideContent(DebugVariablesListWindow);
-            HideContent(DebugWatchListWindow);
-            HideContent(FindSymbolsResultWindow);
-            HideContent(DisassemblyWindow);
+            //HideContent(ImmediateWindow);
+            //HideContent(DebugVariablesListWindow);
+            //HideContent(DebugWatchListWindow);
+
             if (!Tools.IsUnix())
             {
                 //HideContent(PropertiesWindow);
                 HideContent(ProjectExplorerWindow);
-            }
+            }*/
             OutputWindow.Activate();
         }
 
