@@ -18669,7 +18669,7 @@ namespace PascalABCCompiler.TreeConverter
                             else
                             {
                                 right = convertion_data_and_alghoritms.convert_type(right, lub);
-                                left = convertion_data_and_alghoritms.convert_type(right, lub);
+                                left = convertion_data_and_alghoritms.convert_type(left, lub);
                             }
                         }
                         else if (left.type == SystemLibrary.SystemLibrary.float_type && right.type == SystemLibrary.SystemLibrary.double_type)
