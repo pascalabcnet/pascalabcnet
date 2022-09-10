@@ -1201,7 +1201,8 @@ begin
   try
     System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {TaskResult.ToString} {AdditionalInfo}' + #10);
     var auth := FindAuthDat();
-    if auth<>'' then
+    var args := System.Environment.GetCommandLineArgs;
+    if (auth <> '') and (args.Length = 3) and (args[2].ToLower = 'true') then
       // Есть проблема паузы при плохой сети 
       WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskResult.ToString, AdditionalInfo);
   except

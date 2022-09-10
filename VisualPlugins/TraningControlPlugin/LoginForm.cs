@@ -16,7 +16,7 @@ namespace DBAccessPluginNamespace
     {
         public SiteAccessProvider SiteProvider = null;
         public VisualPascalABCPlugin_TeacherControlPlugin Plugin = null;
-        public bool Authorized = false;
+        public bool Authorized { get; set; } = false;
 
         public LoginForm(VisualPascalABCPlugin_TeacherControlPlugin Plugin)
         {

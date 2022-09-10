@@ -30,6 +30,17 @@ namespace VisualPascalABC
         private Dictionary<string, string> RunArgumentsTable = new Dictionary<string, string>();
         bool RunActiveTabPage = false;
 
+        public event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun
+        {
+            add
+            {
+                RunnerManager.ChangeArgsBeforeRun += value;
+            }
+            remove
+            {
+                RunnerManager.ChangeArgsBeforeRun -= value;
+            }
+        }
         // SSM 16/05/22 - добавил чтобы иметь возможность добавлять обработчики во внешнем плагине
         public event RunnerManagerActionDelegate Starting
         {

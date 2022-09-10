@@ -80,6 +80,8 @@ namespace VisualPascalABCPlugins
     public delegate void RunnerManagerActionDelegate(string fileName);
     // SSM 02.07.22 - перед стартом компиляции для плагинов
     public delegate void BuildServiceActionDelegate(string fileName);
+    // SSM 02.07.22 - перед запуском изменить параметры командной строки
+    public delegate void ChangeArgsBeforeRunDelegate(ref string args);
 
     public enum SourceLocationAction
     {
@@ -311,6 +313,7 @@ namespace VisualPascalABCPlugins
     {
         event RunnerManagerActionDelegate Starting; // можно вызывать из плагина
         event RunnerManagerActionDelegate Exited;   // можно вызывать из плагина
+        event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun;
         bool IsRun();
         bool IsRun(string FileName);
         bool Run(bool RedirectConsoleIO);

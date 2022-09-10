@@ -51,6 +51,7 @@ namespace VisualPascalABCPlugins
 
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
+            this.Workbench.ServiceContainer.RunService.ChangeArgsBeforeRun += ChangeArgsBeforeRunHandler;
             //Workbench.ServiceContainer.BuildService.BeforeCompile += BeforeCompileHandler;
         }
         public void Execute()
@@ -265,6 +266,11 @@ namespace VisualPascalABCPlugins
 
         private void RunStartingHandler(string filename)
         {
+        }
+
+        private void ChangeArgsBeforeRunHandler(ref string args)
+        {
+            args += " " + loginForm.Authorized.ToString();
         }
     }
 }
