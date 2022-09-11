@@ -1112,6 +1112,12 @@ namespace PascalABCCompiler.TreeConverter
 
             type_node left_type = left.type;
             type_node right_type = right.type;
+            if (left_type == null && left is enum_const_node)
+            {
+                left_type = SystemLibrary.SystemLibrary.integer_type;
+                left.type = left_type;
+            }
+                
 
             if (left_type.semantic_node_type == semantic_node_type.delegated_method)
             {

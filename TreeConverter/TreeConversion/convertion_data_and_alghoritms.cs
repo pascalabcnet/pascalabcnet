@@ -679,9 +679,11 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
                     else
                         return en;
-                } 
+                }
                 else if (en.type is undefined_type && en is base_function_call bfc)
                     throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", bfc.function.name);
+                else if (en is enum_const_node && (en as enum_const_node).constant_value != 0)
+                    return new int_const_node((en as enum_const_node).constant_value, loc);
                 else AddError(new CanNotConvertTypes(en, en.type, to, loc));
 			}
 
