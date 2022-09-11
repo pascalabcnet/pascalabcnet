@@ -2313,6 +2313,8 @@ typed_var_init_expression
 			var formalPars = new formal_parameters(new typed_parameters(idList, any, parametr_kind.none, null, @2), @2);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, any, $5 as statement_list, @$);
 		}
+	| new_question_expr
+		{ $$ = $1; }		
 	;
 
 typed_const_plus
