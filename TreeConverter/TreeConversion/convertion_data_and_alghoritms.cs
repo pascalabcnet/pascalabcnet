@@ -3033,9 +3033,10 @@ namespace PascalABCCompiler.TreeConverter
                 tn1 = tn2;
                 tn2 = t;
             }
+            if (n1 == n2) return tn1;
             // Первый тип  - меньше или равен
             if ((int)n1 <= (int)int_types.integer_type && (int)n2 <= (int)int_types.integer_type) return SystemLibrary.SystemLibrary.integer_type;
-            if (n1 == n2) return tn1;
+            
             // Первый тип  - меньше
             if ((int)n2 == (int)int_types.uint64_type)
                 return SystemLibrary.SystemLibrary.uint64_type;
