@@ -18580,7 +18580,6 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             right = convertion_data_and_alghoritms.convert_type(right, left.type);
                         }
-
                     }
 
                 }

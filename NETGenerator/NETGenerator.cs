@@ -10900,7 +10900,6 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Br, EndLabel);
             il.MarkLabel(NullLabel);
             value.ret_if_null.visit(this);
-            ti = helper.GetTypeReference(value.ret_if_null.type);
             if (ti != null)
                 EmitBox(value.ret_if_null, ti.tp);
             il.MarkLabel(EndLabel);
