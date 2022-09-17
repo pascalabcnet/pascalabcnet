@@ -9104,7 +9104,7 @@ end;
 
 function Trim(s: string): string;
 begin
-  Result := s.Trim(' ');
+  Result := s.Trim(|' '|);
 end;
 
 function TrimLeft(s: string): string;

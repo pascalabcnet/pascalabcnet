@@ -1,5 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Модуль предоставляет константы, типы, процедуры, функции и классы для рисования в графическом окне
 unit GraphABC;
@@ -3495,9 +3494,13 @@ function ScreenScale: real;
 begin
   if scale <= 0 then
     try
-      var dpiXProperty := typeof(System.Windows.SystemParameters).GetProperty('DpiX', System.Reflection.BindingFlags.NonPublic or System.Reflection.BindingFlags.Static);
-      var dpiX := integer(dpiXProperty.GetValue(nil, nil));
+      var g := MainForm.CreateGraphics;
+      var dpiX := g.DpiX;
       scale := dpiX / 96;
+      g.Dispose;
+      //var dpiXProperty := typeof(System.Windows.SystemParameters).GetProperty('DpiX', System.Reflection.BindingFlags.NonPublic or System.Reflection.BindingFlags.Static);
+      //var dpiX := integer(dpiXProperty.GetValue(nil, nil));
+      //scale := dpiX / 96;
     except
       scale := 1;
     end;
@@ -3506,8 +3509,10 @@ end;
 
 function ScreenSize: System.Drawing.Size;
 begin
-  var (w,h) := (System.Windows.SystemParameters.PrimaryScreenWidth,System.Windows.SystemParameters.PrimaryScreenHeight);
-  Result := new System.Drawing.Size(Round(w*ScreenScale),Round(h*ScreenScale))
+  //var (w,h) := (ScreenWidth,ScreenHeight);
+  //var (w,h) := (System.Windows.SystemParameters.PrimaryScreenWidth,System.Windows.SystemParameters.PrimaryScreenHeight);
+  //Result := new System.Drawing.Size(Round(w*ScreenScale),Round(h*ScreenScale))
+  Result := new Size(ScreenWidth,ScreenHeight)
 end;
 
 function ScreenWidth: integer;
