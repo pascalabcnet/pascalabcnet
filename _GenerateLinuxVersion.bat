@@ -1,3 +1,13 @@
+rmdir Release\Samples\ /s /q
+rmdir Release\PascalABCNETLinux\ /s /q
+mkdir Release\PascalABCNETLinux\
+mkdir Release\PascalABCNETLinux\Lib\
+mkdir Release\PascalABCNETLinux\Lng\Rus
+mkdir Release\PascalABCNETLinux\Lng\Eng
+mkdir Release\PascalABCNETLinux\Highlighting\
+del Release\PascalABCNETLinux.zip
+
+
 copy bin\CodeCompletion.dll Release\PascalABCNETLinux\CodeCompletion.dll
 copy bin\Compiler.dll Release\PascalABCNETLinux\Compiler.dll
 copy bin\CompilerTools.dll Release\PascalABCNETLinux\CompilerTools.dll
@@ -65,10 +75,12 @@ copy bin\Lib\FilesOperations.pas Release\PascalABCNETLinux\Lib\FilesOperations.p
 copy bin\Lib\FilesOperations.pcu Release\PascalABCNETLinux\Lib\FilesOperations.pcu
 copy bin\Lib\FormsABC.pas Release\PascalABCNETLinux\Lib\FormsABC.pas
 copy bin\Lib\FormsABC.pcu Release\PascalABCNETLinux\Lib\FormsABC.pcu
+copy bin\Lib\GraphABC.pas Release\PascalABCNETLinux\Lib\GraphABC.pas
 copy bin\Lib\GraphABC.pcu Release\PascalABCNETLinux\Lib\GraphABC.pcu
+copy bin\Lib\ABCObjects.pas Release\PascalABCNETLinux\Lib\ABCObjects.pas
+copy bin\Lib\ABCObjects.pcu Release\PascalABCNETLinux\Lib\ABCObjects.pcu
+copy bin\Lib\GraphABCHelper.pas Release\PascalABCNETLinux\Lib\GraphABCHelper.pas
 copy bin\Lib\GraphABCHelper.pcu Release\PascalABCNETLinux\Lib\GraphABCHelper.pcu
-copy bin\Lib\GraphABCLinux.pas Release\PascalABCNETLinux\Lib\GraphABCLinux.pas
-copy bin\Lib\GraphABCLinuxHelper.pas Release\PascalABCNETLinux\Lib\GraphABCLinuxHelper.pas
 copy bin\Lib\IniFile.pas Release\PascalABCNETLinux\Lib\IniFile.pas
 copy bin\Lib\IniFile.pcu Release\PascalABCNETLinux\Lib\IniFile.pcu
 copy bin\Lib\LightPT.pas Release\PascalABCNETLinux\Lib\LightPT.pas
@@ -185,8 +197,25 @@ copy bin\Lng\Rus\Warning_ib.dat Release\PascalABCNETLinux\Lng\Rus\Warning_ib.dat
 copy bin\Lng\Rus\_Global Release\PascalABCNETLinux\Lng\Rus\_Global
 copy bin\Lng\Rus\_Global_loc Release\PascalABCNETLinux\Lng\Rus\_Global_loc
 
+xcopy InstallerSamples\!MainFeatures\ Release\Samples\!MainFeatures\ /s /e
+
+xcopy InstallerSamples\!Tutorial\           Release\Samples\!Tutorial\           /s /e
+xcopy InstallerSamples\!РусскиеИсполнители\ Release\Samples\!РусскиеИсполнители\ /s /e 
+xcopy InstallerSamples\Algorithms\          Release\Samples\Algorithms\          /s /e
+xcopy InstallerSamples\Applications\        Release\Samples\Applications\        /s /e
+xcopy InstallerSamples\Games\               Release\Samples\Games\               /s /e
+xcopy InstallerSamples\LanguageFeatures\    Release\Samples\LanguageFeatures\    /s /e
+xcopy InstallerSamples\LINQ\                Release\Samples\LINQ\                /s /e
+xcopy InstallerSamples\NETLibraries\        Release\Samples\NETLibraries\        /s /e
+xcopy InstallerSamples\Other\               Release\Samples\Other\               /s /e
+xcopy InstallerSamples\StandardUnits\       Release\Samples\StandardUnits\       /s /e
+xcopy InstallerSamples\WhatsNew\            Release\Samples\WhatsNew\            /s /e
+
+xcopy InstallerSamples\Graphics\GraphABC\   Release\Samples\Graphics\GraphABC\   /s /e
+
 cd Release
 
 ..\Utils\pkzipc\pkzipc.exe -add -dir=current PascalABCNETLinux.zip PascalABCNETLinux\*.*
+..\Utils\pkzipc\pkzipc.exe -add -dir=current PascalABCNETLinux.zip Samples\*.*
 
 cd ..

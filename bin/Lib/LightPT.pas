@@ -137,6 +137,19 @@ type
     
     function Info: string; override := $'OutputCount({Count},{n})';
   end;
+  OutputCount2Exception = class(PTException) // Ровно Count 
+    Count: integer; // Count - сколько выведено
+    i: integer;     // n - какой номер требуется вывести
+    constructor(Count, i: integer);
+    begin
+      Self.Count := Count;
+      Self.i := i;
+      TaskResult := IOError;
+      TaskException := Self;
+    end;
+    
+    function Info: string; override := $'Output2Count({Count},{i})';
+  end;
   OutputTypeException = class(PTException)
     n: integer; // номер параметра
     ExpectedType, ActualType: string;
@@ -176,14 +189,16 @@ var
   OutputString := new StringBuilder;
   OutputList := new List<object>;
   InputList := new List<object>;
-  InitialOutputList := new List<object>;
-  InitialInputList := new List<object>;
+  InitialOutputList := new List<object>; // тут только типы и количество
+  InitialInputList := new List<object>;  // тут только типы и количество
   
   CheckTask: procedure(name: string);
   
   Cur := 0;
 
 var TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe', '');
+
+// Сервисные функции
 
 function IsPT := System.Type.GetType('PT4.PT4') <> nil;
 
@@ -197,6 +212,7 @@ function cStr := typeof(string);
 function cBool := typeof(boolean);
 function cChar := typeof(char);
 
+/// Полный путь к папке auth-файла
 function FindAuthDat: string;
 begin
   var auth := 'auth.dat';
@@ -222,6 +238,8 @@ begin
     end  
   end;
 end;
+
+// Шифрование-дешифрование
 
 function ProcessorId: string;
 begin
@@ -357,15 +375,24 @@ begin
     raise new InputCount2Exception(InputList.Count, i + 1)
 end;
 
+procedure CheckOutput2Count(i: integer);
+begin
+  if OutputList.Count <= i then
+    raise new OutputCount2Exception(OutputList.Count, i + 1)
+end;
+
 function IsInt(i: integer) := InputList[i] is integer;
-
 function IsRe(i: integer) := InputList[i] is real;
-
 function IsStr(i: integer) := InputList[i] is string;
-
 function IsBoo(i: integer) := InputList[i] is boolean;
-
 function IsChr(i: integer) := InputList[i] is char;
+
+function OutIsInt(i: integer) := OutputList[i] is integer;
+function OutIsRe(i: integer) := OutputList[i] is real;
+function OutIsStr(i: integer) := OutputList[i] is string;
+function OutIsBoo(i: integer) := OutputList[i] is boolean;
+function OutIsChr(i: integer) := OutputList[i] is char;
+
 
 function Int(i: integer): integer;
 begin
@@ -407,6 +434,46 @@ begin
   Result := char(InputList[i]);
 end;
 
+function OutAsInt(i: integer): integer;
+begin
+  CheckOutput2Count(i);
+  if not OutIsInt(i) then
+    raise new OutputTypeException(i + 1, 'integer', TypeName(OutputList[i]));
+  Result := integer(OutputList[i]);
+end;
+
+function OutAsRe(i: integer): real;
+begin
+  CheckOutput2Count(i);
+  if not OutIsRe(i) then
+    raise new OutputTypeException(i + 1, 'real', TypeName(OutputList[i]));
+  Result := real(OutputList[i]);
+end;
+
+function OutAsBoo(i: integer): boolean;
+begin
+  CheckOutput2Count(i);
+  if not OutIsBoo(i) then
+    raise new OutputTypeException(i + 1, 'boolean', TypeName(OutputList[i]));
+  Result := boolean(OutputList[i]);
+end;
+
+function OutAsChr(i: integer): char;
+begin
+  CheckOutput2Count(i);
+  if not OutIsChr(i) then
+    raise new OutputTypeException(i + 1, 'char', TypeName(OutputList[i]));
+  Result := char(OutputList[i]);
+end;
+
+function OutAsStr(i: integer): string;
+begin
+  CheckOutput2Count(i);
+  if not OutIsStr(i) then
+    raise new OutputTypeException(i + 1, 'string', TypeName(OutputList[i]));
+  Result := string(OutputList[i]);
+end;
+
 function Int: integer;
 begin
   Result := Int(Cur);
@@ -444,6 +511,55 @@ function Re2: (real, real) := (Re, Re);
 function IntArr(n: integer): array of integer := (1..n).Select(x -> Int).ToArray;
 
 function ReArr(n: integer): array of real := (1..n).Select(x -> Re).ToArray;
+
+// функции, возвращающие входные и выходные списки, а также их срезы, приведенные к нужному типу
+
+function InputListAsIntegers: array of integer := InputList.Select((x,i) -> Int(i)).ToArray;
+function InputListAsReals: array of real := InputList.Select((x,i) -> Re(i)).ToArray;
+function InputListAsBooleans: array of boolean := InputList.Select((x,i) -> Boo(i)).ToArray;
+function InputListAsChars: array of char := InputList.Select((x,i) -> Chr(i)).ToArray;
+function InputListAsStrings: array of string := InputList.Select((x,i) -> Str(i)).ToArray;
+
+function OutputListAsIntegers: array of integer := OutputList.Select((x,i) -> OutAsInt(i)).ToArray;
+function OutputListAsReals: array of real := OutputList.Select((x,i) -> OutAsRe(i)).ToArray;
+function OutputListAsBooleans: array of boolean := OutputList.Select((x,i) -> OutAsBoo(i)).ToArray;
+function OutputListAsChars: array of char := OutputList.Select((x,i) -> OutAsChr(i)).ToArray;
+function OutputListAsStrings: array of string := OutputList.Select((x,i) -> OutAsStr(i)).ToArray;
+
+function InputListSliceAsIntegers(a,b: integer): array of integer := (a..b).Select(i->Int(i)).ToArray;
+function InputListSliceAsReals(a,b: integer): array of real := (a..b).Select(i->Re(i)).ToArray;
+function InputListSliceAsBooleans(a,b: integer): array of boolean := (a..b).Select(i->Boo(i)).ToArray;
+function InputListSliceAsChars(a,b: integer): array of char := (a..b).Select(i->Chr(i)).ToArray;
+function InputListSliceAsStrings(a,b: integer): array of string := (a..b).Select(i->Str(i)).ToArray;
+
+function OutputListSliceAsIntegers(a,b: integer): array of integer := (a..b).Select(i->OutAsInt(i)).ToArray;
+function OutputListSliceAsReals(a,b: integer): array of real := (a..b).Select(i->OutAsRe(i)).ToArray;
+function OutputListSliceAsBooleans(a,b: integer): array of boolean := (a..b).Select(i->OutAsBoo(i)).ToArray;
+function OutputListSliceAsChars(a,b: integer): array of char := (a..b).Select(i->OutAsChr(i)).ToArray;
+function OutputListSliceAsStrings(a,b: integer): array of string := (a..b).Select(i->OutAsStr(i)).ToArray;
+
+function ConvertOne(ob: Object): Object;
+begin
+  Result := ob;
+  if ob is string then
+  begin
+    var s := string(ob);
+    var ival: integer;
+    var rval: real;
+    if s.TryToInteger(ival) then
+      Result := ival
+    else if s.TryToReal(rval) then
+      Result := rval
+  end
+end;
+
+procedure ConvertStringsToNumbersInOutputList;
+begin
+  for var i:=0 to OutputList.Count - 1 do
+    OutputList[i] := ConvertOne(OutputList[i]);
+end;
+
+// -------------- Переопределенные функции с заполнением ввода и вывода
 
 function Random(a, b: integer): integer;
 begin
@@ -532,6 +648,9 @@ begin
     InputList.Add(Result[i]);
 end;
 
+/// Возвращает массив размера n, заполненный случайными целыми значениями
+function ArrRandomInteger(n: integer): array of integer := ArrRandomInteger(n,0,100);
+
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
 function ArrRandomReal(n: integer; a: real; b: real): array of real;
 begin
@@ -539,6 +658,114 @@ begin
   if IsPT then exit;
   for var i:=0 to n-1 do
     InputList.Add(Result[i]);
+end;
+
+/// Возвращает массив размера n, заполненный случайными вещественными значениями
+function ArrRandomReal(n: integer): array of real := ArrRandomReal(n,0,10);
+
+/// Возвращает массив из count элементов, заполненных значениями gen(i)
+function ArrGen<T>(count: integer; gen: integer->T): array of T;
+begin
+  Result := PABCSystem.ArrGen(count,gen);
+  if IsPT then exit;
+  for var i:=0 to Result.Length-1 do
+    InputList.Add(Result[i]);
+end;
+
+/// Возвращает массив из count элементов, заполненных значениями gen(i), начиная с i=from
+function ArrGen<T>(count: integer; gen: integer->T; from: integer): array of T;
+begin
+  Result := PABCSystem.ArrGen(count,gen,from);
+  if IsPT then exit;
+  for var i:=0 to Result.Length-1 do
+    InputList.Add(Result[i]);
+end;
+
+/// Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему 
+function ArrGen<T>(count: integer; first: T; next: T->T): array of T;
+begin
+  Result := PABCSystem.ArrGen(count,first,next);
+  if IsPT then exit;
+  for var i:=0 to Result.Length-1 do
+    InputList.Add(Result[i]);
+end;
+
+/// Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему 
+function ArrGen<T>(count: integer; first, second: T; next: (T,T) ->T): array of T;
+begin
+  Result := PABCSystem.ArrGen(count,first,second,next);
+  if IsPT then exit;
+  for var i:=0 to Result.Length-1 do
+    InputList.Add(Result[i]);
+end;
+
+/// Возвращает массив из n целых, введенных с клавиатуры
+function ReadArrInteger(n: integer): array of integer;
+begin
+  Result := PABCSystem.ReadArrInteger(n);
+  if IsPT then exit;
+  for var i:=0 to Result.Length-1 do
+    InputList.Add(Result[i]);
+end;
+
+/// Возвращает массив из n вещественных, введенных с клавиатуры
+function ReadArrReal(n: integer): array of real;
+begin
+  Result := PABCSystem.ReadArrReal(n);
+  if IsPT then exit;
+  for var i:=0 to Result.Length-1 do
+    InputList.Add(Result[i]);
+end;
+
+/// Возвращает массив из n строк, введенных с клавиатуры
+function ReadArrString(n: integer): array of string;
+begin
+  Result := PABCSystem.ReadArrString(n);
+  if IsPT then exit;
+  for var i:=0 to Result.Length-1 do
+    InputList.Add(Result[i]);  
+end;
+
+/// Возвращает матрицу m на n целых, введенных с клавиатуры
+function ReadMatrInteger(m, n: integer): array [,] of integer;
+begin
+  Result := PABCSystem.ReadMatrInteger(m,n);
+  if IsPT then exit;
+  foreach var x in Result.ElementsByRow do
+    InputList.Add(x);
+end;
+
+/// Возвращает матрицу m на n вещественных, введенных с клавиатуры
+function ReadMatrReal(m, n: integer): array [,] of real;
+begin
+  Result := PABCSystem.ReadMatrReal(m,n);
+  if IsPT then exit;
+  foreach var x in Result.ElementsByRow do
+    InputList.Add(x);
+end;
+
+/// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
+function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
+begin
+  Result := PABCSystem.MatrRandomInteger(m,n,a,b);
+  if IsPT then exit;
+  foreach var x in Result.ElementsByRow do
+    InputList.Add(x);
+end;
+
+/// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
+function MatrRandomInteger(m: integer; n: integer): array [,] of integer := MatrRandomInteger(m,n,0,100);
+
+/// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
+function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
+begin
+  
+end;
+
+/// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
+function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
+begin
+  
 end;
 
 function ReadString: string;
@@ -622,7 +849,7 @@ type
     procedure write(obj: object); override;
     begin
       inherited write(obj);
-      OutputString += obj.ToString;
+      OutputString += _ObjectToString(obj);
       OutputList += obj;
       DoNewLineBeforeMessage := True;
     end;
@@ -744,6 +971,8 @@ type
       DoNewLineBeforeMessage := True;
     end;
   end;
+  
+// конец переопределенных функций с заполнением ввода-вывода  
 
 function ToObjArray(a: array of integer) := a.Select(x -> object(x)).ToArray;
 
@@ -766,29 +995,61 @@ begin
     raise new OutputCountException(OutputList.Count, a.Length);
 end;
 
-procedure CheckOutput(params a: array of object);
+procedure CheckOutput(params arr: array of object);
 begin
   if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
     exit;
 
-  var mn := Min(a.Length, OutputList.Count);
+  var mn := Min(arr.Length, OutputList.Count);
   TaskResult := Solved;
   // Несоответствие типов
   for var i := 0 to mn - 1 do
   begin 
-    if (a[i].GetType.Name = 'RuntimeType') and (a[i] <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeToTypeName(a[i] as System.Type), TypeName(OutputList[i]))
-    else if (a[i].GetType.Name <> 'RuntimeType') and (a[i].GetType <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeName(a[i]), TypeName(OutputList[i]));
+    if (arr[i].GetType.Name = 'RuntimeType') and (arr[i] <> OutputList[i].GetType) then
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i] as System.Type), TypeName(OutputList[i]))
+    else if (arr[i].GetType.Name <> 'RuntimeType') and (arr[i].GetType <> OutputList[i].GetType) then
+      raise new OutputTypeException(i + 1, TypeName(arr[i]), TypeName(OutputList[i]));
   end;  
   
   // Несоответствие количества выводимых параметров
-  if a.Length <> OutputList.Count then
-    raise new OutputCountException(OutputList.Count, a.Length);
+  if arr.Length <> OutputList.Count then
+    raise new OutputCountException(OutputList.Count, arr.Length);
   
   // Несоответствие значений
   for var i := 0 to mn - 1 do
-    if (a[i].GetType.Name <> 'RuntimeType') and not CompareValues(a[i], OutputList[i]) then
+    if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
+    begin
+      TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
+      exit;           
+    end;
+end;
+
+procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
+begin
+  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+    exit;
+  
+  // Здесь всегда OutputList.Count > InitialOutputList.Count
+  // Если arr.Length > OutputList.Count - InitialOutputList.Count, то мы не вывели часть данных
+  // Если arr.Length < OutputList.Count - InitialOutputList.Count, то мы вывели больше чем надо
+  
+  if arr.Length <> OutputList.Count - InitialOutputList.Count then
+    raise new OutputCountException(OutputList.Count, InitialOutputList.Count + arr.Length);
+    
+  TaskResult := Solved;
+  // Несоответствие типов
+  var a := OutputList.Count - arr.Length;
+  for var i := a to OutputList.Count - 1 do
+  begin 
+    if (arr[i-a].GetType.Name = 'RuntimeType') and (arr[i-a] <> OutputList[i].GetType) then
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i-a] as System.Type), TypeName(OutputList[i]))
+    else if (arr[i-a].GetType.Name <> 'RuntimeType') and (arr[i-a].GetType <> OutputList[i].GetType) then
+      raise new OutputTypeException(i + 1, TypeName(arr[i-a]), TypeName(OutputList[i]));
+  end;
+  
+  // Несоответствие значений
+  for var i := a to OutputList.Count - 1 do
+    if (arr[i-a].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i-a], OutputList[i]) then
     begin
       TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
       exit;           
@@ -819,6 +1080,15 @@ procedure CheckOutputSeq(a: sequence of boolean) := CheckOutput(ToObjArray(a.ToA
 procedure CheckOutputSeq(a: sequence of object) := CheckOutput(a.ToArray);
 
 procedure CheckOutputSeq(a: ObjectList) := CheckOutput(a.lst.ToArray);
+
+procedure CheckOutputAfterInitialSeq(seq: sequence of integer) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of real) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of string) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of boolean) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of char) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of object) := CheckOutputAfterInitial(seq.ToArray);
+procedure CheckOutputAfterInitialSeq(seq: ObjectList) := CheckOutputAfterInitial(seq.lst.ToArray);
+
 
 procedure ClearOutputListFromSpaces;
 begin
@@ -1130,6 +1400,12 @@ begin
       if e.Count = 0 then
         ColoredMessage($'Требуется вывести {NValues(e.n)}', MsgColorGray)
       else ColoredMessage($'Выведено {NValues(e.Count)}, а требуется вывести {e.n}', MsgColorOrange); 
+    end;
+    on e: OutputCount2Exception do
+    begin
+      if e.Count = 0 then
+        ColoredMessage($'Требуется вывести по крайней мере {NValues(e.i)}', MsgColorGray)
+      else ColoredMessage($'Выведено {NValues(e.Count)}, а требуется вывести по крайней мере {e.i}', MsgColorOrange); 
     end;
     on e: InputTypeException do
     begin

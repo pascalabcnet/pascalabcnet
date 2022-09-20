@@ -55,7 +55,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-uses DMTaskMaker,DMZadan,DrawmanField;
+uses DMTaskMaker,DMZadan,DrawManField;
 
 procedure SetDrawmanWidth(w: integer);
 begin

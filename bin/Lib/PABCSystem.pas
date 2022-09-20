@@ -2310,9 +2310,13 @@ function Arr(a: CharRange): array of char;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
-function ArrRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
+function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
+/// Возвращает массив размера n, заполненный случайными целыми значениями
+function ArrRandomInteger(n: integer := 10): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
-function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
+function ArrRandomReal(n: integer; a: real; b: real): array of real;
+/// Возвращает массив размера n, заполненный случайными вещественными значениями
+function ArrRandomReal(n: integer := 10): array of real;
 /// Возвращает массив из count элементов, заполненных значениями gen(i)
 function ArrGen<T>(count: integer; gen: integer->T): array of T;
 /// Возвращает массив из count элементов, заполненных значениями gen(i), начиная с i=from
@@ -2381,22 +2385,22 @@ function MatrByCol<T>(a: sequence of sequence of T): array [,] of T;
 /// Генерирует двумерный массив по столбцам из последовательности
 function MatrByCol<T>(m,n: integer; a: sequence of T): array [,] of T;
 
+/// Возвращает матрицу m на n целых, введенных с клавиатуры
+function ReadMatrInteger(m, n: integer): array [,] of integer;
+/// Возвращает матрицу m на n вещественных, введенных с клавиатуры
+function ReadMatrReal(m, n: integer): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
-/// Возвращает двумерный массив размера m x n, заполненный элементами x 
-function MatrFill<T>(m, n: integer; x: T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
 function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
+/// Возвращает двумерный массив размера m x n, заполненный элементами x 
+function MatrFill<T>(m, n: integer; x: T): array [,] of T;
 /// Транспонирует двумерный массив 
 function Transpose<T>(a: array [,] of T): array [,] of T;
-/// Возвращает матрицу m на n целых, введенных с клавиатуры
-function ReadMatrInteger(m, n: integer): array [,] of integer;
-/// Возвращает матрицу m на n вещественных, введенных с клавиатуры
-function ReadMatrReal(m, n: integer): array [,] of real;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
@@ -4782,12 +4786,16 @@ begin
   Result := ArrRandom(n, a, b);
 end;
 
+function ArrRandomInteger(n: integer) := ArrRandomInteger(n,0,100);
+
 function ArrRandomReal(n: integer; a: real; b: real): array of real;
 begin
   Result := new real[n];
   for var i := 0 to Result.Length - 1 do
     Result[i] := Random() * (b - a) + a;
 end;
+
+function ArrRandomReal(n: integer) := ArrRandomReal(n,0,10);
 
 function SeqRandom(n: integer; a: integer; b: integer): sequence of integer;
 begin
@@ -12145,11 +12153,28 @@ begin
   end;  
 end;
 
-/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+/// Возвращает n-тую декартову степень множества элементов, заданного последовательностью
 function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin
   Result := Self.ToArray.Cartesian(n);
 end;
+
+/// Возвращает все перестановки букв в строке в виде последовательности строк
+function Permutations(Self: string): sequence of string; extensionmethod 
+:= Self.ToCharArray.Permutations.Select(p -> new string(p));
+
+/// Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк
+function Permutations(Self: string; m: integer): sequence of string; extensionmethod 
+:= Self.ToCharArray.Permutations(m).Select(p -> new string(p));
+
+/// Возвращает n-тую декартову степень множества символов, заданного строкой
+function Cartesian(Self: string; n: integer): sequence of string; extensionmethod
+:= Self.ToCharArray.Cartesian(n).Select(p -> new string(p));
+
+/// Возвращает все сочетания по m элементов
+function Combinations(Self: string; m: integer): sequence of string; extensionmethod
+:= Self.ToCharArray.Combinations(m).Select(p -> new string(p));
+
 
 // Внутренние функции для одномерных массивов
 

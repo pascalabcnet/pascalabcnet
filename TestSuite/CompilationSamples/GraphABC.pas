@@ -2051,7 +2051,8 @@ end;
 procedure Picture.CopyRect(dst: System.Drawing.Rectangle; bmp: Bitmap; src: System.Drawing.Rectangle);
 begin
   // Copy src portion of bmp on dst rectangle of this picture  
-  var tempbmp := GetView(bmp, src);
+  //var tempbmp := GetView(bmp, src); // SSM 17/09/22 заменил это сложное - не работает под Linux
+  var tempbmp := bmp.Clone(src,bmp.PixelFormat);
   //  gb.DrawImage(bmp,dst,src,GraphicsUnit.Pixel);
   gb.DrawImage(tempbmp, dst);
   tempbmp.Dispose;
