@@ -4,6 +4,7 @@ using System;
 using PascalABCCompiler.SemanticTree;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 
@@ -359,6 +360,12 @@ namespace PascalABCCompiler.NetHelper
 			else 
 			return false;
 		}
+
+        public static Assembly PreloadAssembly(string name)
+        {
+            var bytes = File.ReadAllBytes(name);
+            return Assembly.Load(bytes);
+        }
 		
 		public static Assembly LoadAssembly(string name)
 		{
@@ -408,20 +415,10 @@ namespace PascalABCCompiler.NetHelper
 			    }
 			}
 			//if (!System.IO.Path.GetFileName(name).ToLower().Contains("microsoft.directx"))
-			try
+            try
             {
-				System.IO.FileStream fs = System.IO.File.OpenRead(name);
-				byte[] buf = new byte[fs.Length];
-           		fs.Read(buf, 0, (int)fs.Length);
-            	fs.Close();
-                curr_inited_assm_path = name;
-                a = System.Reflection.Assembly.Load(buf);      
-                
-                a.GetTypes();
-            	buf = null;
-            	//Thread th = new Thread(new ThreadStart(collect_internal));
-            	//th.Start();
-			}
+                a = PreloadAssembly(name);
+            }
             catch (Exception ex)
             {
                 a = System.Reflection.Assembly.LoadFrom(name);
