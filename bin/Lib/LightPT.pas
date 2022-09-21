@@ -40,7 +40,7 @@ var
   TaskResultInfo: string; // доп. информация о результате. Как правило пуста. Или содержит TaskException.Info. Или содержит для Solved и BadSolution информацию о модуле: Robot, Drawman, PT4
   TaskException: PTException := new PTException;
 
-  WriteInfoCallBack: procedure (LessonName,TaskName: string; result: TaskStatus; AdditionalInfo: string);
+  WriteInfoCallBack: procedure (LessonName,TaskName,TaskPlatform: string; result: TaskStatus; AdditionalInfo: string);
 
   LessonName: string := '';
   TaskNamesMap := new Dictionary<string,string>;
@@ -66,13 +66,14 @@ type
       client.Timeout := TimeSpan.FromSeconds(10);
     end;
     
-    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskResult, TaskResultInfo: string): Task<string>;
+    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskPlatform, TaskResult, TaskResultInfo: string): Task<string>;
     begin
       var values := Dict(
         ( 'shortFIO', '' ),  
         ( 'FIO', FullFIO ),
         ( 'taskName', TaskName ),
         ( 'lessonName', LessonName ),
+        ( 'taskPlatform', TaskPlatform ),
         ( 'taskResult', TaskResult ),
         ( 'taskResultInfo', TaskResultInfo ),
         ( 'content', '' ),
@@ -365,7 +366,7 @@ procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(
 
 procedure CheckInputCount(n: integer);
 begin
-  if InputList.Count < n then
+  if InputList.Count <> n then
     raise new InputCountException(InputList.Count, n)
 end;
 
@@ -757,15 +758,24 @@ end;
 function MatrRandomInteger(m: integer; n: integer): array [,] of integer := MatrRandomInteger(m,n,0,100);
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
-function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
+function MatrRandomReal(m: integer; n: integer; a: real; b: real): array [,] of real;
 begin
-  
+  Result := PABCSystem.MatrRandomReal(m,n,a,b);
+  if IsPT then exit;
+  foreach var x in Result.ElementsByRow do
+    InputList.Add(x);
 end;
+
+/// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
+function MatrRandomReal(m: integer; n: integer): array [,] of real := MatrRandomReal(m,n,0,10);
 
 /// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
 function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
 begin
-  
+  Result := PABCSystem.MatrGen(m,n,gen);
+  if IsPT then exit;
+  foreach var x in Result.ElementsByRow do
+    InputList.Add(x);
 end;
 
 function ReadString: string;
@@ -1066,6 +1076,11 @@ begin
     if a[i] <> InputList[i].GetType then
       raise new InputTypeException(i + 1, TypeToTypeName(a[i]), TypeName(InputList[i]));
 end;
+
+/// Смноним CheckInputTypes
+procedure CheckInput(a: array of System.Type) := CheckInputTypes(a);
+
+procedure CheckInput(seq: sequence of System.Type) := CheckInputTypes(seq.ToArray);
 
 procedure CheckOutputSeq(a: sequence of integer) := CheckOutput(ToObjArray(a.ToArray));
 
@@ -1416,7 +1431,9 @@ begin
     begin
       if e.Count = 0 then
         ColoredMessage($'Требуется ввести {NValues(e.n)}', MsgColorGray)
-      else ColoredMessage($'Введено {NValues(e.Count)}, а требуется ввести {e.n}', MsgColorOrange); 
+      else if e.n <> 0 then 
+        ColoredMessage($'Введено {NValues(e.Count)}, а требуется ввести {e.n}', MsgColorOrange)
+      else ColoredMessage($'Введено {NValues(e.Count)}, хотя ничего вводить не требуется', MsgColorOrange); 
     end;
     on e: InputCount2Exception do
     begin
@@ -1429,6 +1446,8 @@ begin
   // Для задачника в CheckTaskPT надо сказать, что проверяется задача из задачника. И выводить на экран ничего не надо - только в базу.
   TaskResultInfo := TaskException.Info;
   
+  var TaskPlatform := 'LT';
+  
   // Теперь тщательно проверяем задачник и исполнителей
   if IsPT then
   begin
@@ -1436,23 +1455,26 @@ begin
     TName := TaskName;
     var info := GetSolutionInfoPT4;
     CalcPT4Result(info,TaskResult,TaskResultInfo);
+    TaskPlatform := 'PT';
   end
   else if IsRobot then
   begin  
     RobotCheckSolution;
     TName := TaskName;
+    TaskPlatform := 'RB';
   end  
   else if IsDrawman then
   begin  
     DrawmanCheckSolution;
     TName := TaskName;
+    TaskPlatform := 'DM';
   end;
   // Хотелось бы писать в БД для Робота и др. имя задания в Task
   if WriteInfoCallBack<>nil then
-    WriteInfoCallBack(LessonName,TName, TaskResult, TaskResultInfo);
+    WriteInfoCallBack(LessonName,TName,TaskPlatform,TaskResult,TaskResultInfo);
 end;
 
-procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskResult, AdditionalInfo: string);
+procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo: string);
 begin
   // Считать логин пароль из auth
   var f: file of byte;
@@ -1466,13 +1488,13 @@ begin
     pass := arr[1];
     // Теперь как-то записать в БД информацию
     var User := new ServerAccessProvider(ServerAddr);
-    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskResult, AdditionalInfo);
+    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo);
     var v := t2.Result;
     //Console.WriteLine(v);
   end;
 end;
 
-procedure WriteInfoToDatabases(LessonName,TaskName: string; TaskResult: TaskStatus; AdditionalInfo: string := '');
+procedure WriteInfoToDatabases(LessonName,TaskName,TaskPlatform: string; TaskResult: TaskStatus; AdditionalInfo: string := '');
 begin
   try
     System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {TaskResult.ToString} {AdditionalInfo}' + #10);
@@ -1480,7 +1502,7 @@ begin
     var args := System.Environment.GetCommandLineArgs;
     if (auth <> '') and (args.Length = 3) and (args[2].ToLower = 'true') then
       // Есть проблема паузы при плохой сети 
-      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskResult.ToString, AdditionalInfo);
+      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskPlatform,TaskResult.ToString, AdditionalInfo);
   except
     on e: System.AggregateException do
     begin
