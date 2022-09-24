@@ -1477,9 +1477,7 @@ end;
 procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo: string);
 begin
   // Считать логин пароль из auth
-  var f: file of byte;
-  Reset(f,auth);
-  var data := f.Elements.ToArray;
+  var data := System.IO.File.ReadAllBytes(auth);
   var arr := Decrypt(data).Split(#10);
   var login,pass: string;
   if arr.Length >= 2 then
