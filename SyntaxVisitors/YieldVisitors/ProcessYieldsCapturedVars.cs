@@ -528,7 +528,7 @@ namespace SyntaxVisitors
                 {
                     cu.visit(methodsVis);
                     // Collect
-                    collectedMethods.UnionWith(methodsVis.CollectedMethods.Select(id => id.name.ToLower()));
+                    collectedMethods.UnionWith(methodsVis.CollectedMethods.Select(id => id.name != null ? id.name.ToLower() : null));
                 }
             }
         }
