@@ -14319,7 +14319,10 @@ begin
   end;
   try
     if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
-      System.Console.OutputEncoding := Encoding.UTF8;
+    begin
+      Console.InputEncoding := Encoding.Unicode;
+      Console.OutputEncoding := Encoding.Unicode;
+    end;
   except
   end;
   rnd := new System.Random;

@@ -248,20 +248,26 @@ namespace VisualPascalABC.Utils
             if (RedirectIO)
             {
                 process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardInput = true;
-                process.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
+                process.StartInfo.RedirectStandardOutput = true;
+
+                // Надо, потому что "ProcessStartInfo.StandardInputEncoding" не существует до .Net Core 2.1
+                Console.InputEncoding = Encoding.Unicode;
+				// Но весь смысл смены UTF8 на UTF16 как раз в том,
+				// Что с UTF8 ввод может криво работать, а с UTF16 он всегда нормальный
+
+                process.StartInfo.StandardOutputEncoding = Encoding.Unicode;
             }
             if (redirectErrors)
             {
                 process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.StandardErrorEncoding = System.Text.Encoding.UTF8;
+                process.StartInfo.StandardErrorEncoding = Encoding.Unicode;
             }
             if (ProcessExited != null)
             {
                 process.EnableRaisingEvents = true;
                 process.Exited += new EventHandler(OnProcessExited);
-			}
+            }
             process.Start();
             //ssyy
             process.PriorityClass = ProcessPriorityClass.BelowNormal;

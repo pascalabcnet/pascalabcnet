@@ -125,6 +125,16 @@ begin
   try
     if (CommandLineArgs.Length > 0) and ((CommandLineArgs[0] = RedirectIOModeArg) or (AppDomain.CurrentDomain.GetData('_RedirectIO_SpecialArgs') <> nil)) and not ExecuteAssemlyIsDll then 
     begin
+        
+//        Console.InputEncoding := System.Text.Encoding.UTF8;
+//        Console.OutputEncoding := System.Text.Encoding.UTF8;
+        
+//        Console.InputEncoding := new System.Text.UTF8Encoding(false);
+//        Console.OutputEncoding := new System.Text.UTF8Encoding(false);
+        
+        Console.InputEncoding := System.Text.Encoding.Unicode;
+        Console.OutputEncoding := System.Text.Encoding.Unicode;
+        
         if AppDomain.CurrentDomain.GetData('_RedirectIO_SpecialArgs') = nil then
           Console.ReadLine;
         RedirectIOInDebugMode := true;
@@ -145,10 +155,6 @@ begin
           _a[i-1] := _CommandLineArgs[i];
         _CommandLineArgs := _a;
         
-        //Console.OutputEncoding := System.Text.Encoding.UTF8;
-        //Console.InputEncoding := System.Text.Encoding.UTF8;
-        Console.OutputEncoding := new System.Text.UTF8Encoding(false);
-        Console.InputEncoding := new System.Text.UTF8Encoding(false);
     end;
   except
   end;

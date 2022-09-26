@@ -18,7 +18,7 @@ namespace VisualPascalABC
         PascalABCCompiler.EventedStreamReaderList EventedStreamReaderList;
         //EventedEventWaitHandleList ReadSignalList;
         //Encoding InputEncoding = Encoding.GetEncoding(866);
-        Encoding InputEncoding = Encoding.UTF8;
+        Encoding InputEncoding = Encoding.Unicode;
 		
         string OutputStreamId = "OUT";
         string ErrorStreamId = "ERR";

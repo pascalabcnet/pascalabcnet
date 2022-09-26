@@ -250,12 +250,12 @@ namespace VisualPascalABC.Utils
                 process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardInput = true;
-                process.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
+                process.StartInfo.StandardOutputEncoding = System.Text.Encoding.Unicode;
             }
             if (redirectErrors)
             {
                 process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.StandardErrorEncoding = System.Text.Encoding.UTF8;
+                process.StartInfo.StandardErrorEncoding = System.Text.Encoding.Unicode;
             }
             if (ProcessExited != null)
             {
