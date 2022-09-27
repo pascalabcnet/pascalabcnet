@@ -3983,7 +3983,7 @@ namespace PascalABCCompiler.TreeConverter
                         else
                             AddError(get_location(_class_definition), converted_type.AbstractReason.Explanation, converted_type.name, converted_type.AbstractReason.ObjName);
                     }
-                    return;
+                    break;
                 case PascalABCCompiler.SyntaxTree.class_keyword.Record:
 
                     if (context.CurrentScope is SymbolTable.BlockScope)
@@ -4032,7 +4032,7 @@ namespace PascalABCCompiler.TreeConverter
                     }*/
                     context.leave_record();
                     return_value(converted_type);
-                    return;
+                    break;
                 //ssyy owns
                 case PascalABCCompiler.SyntaxTree.class_keyword.Interface:
                     if (converted_type.is_value || !converted_type.IsInterface)
@@ -4070,7 +4070,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     //hard_node_test_and_visit(_class_definition.body);
                     context.leave_block();
-                    return;
+                    break;
                 //\ssyy owns
                 default:
                     throw new NotSupportedError(get_location(_class_definition));
