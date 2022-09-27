@@ -3808,7 +3808,7 @@ namespace PascalABCCompiler.TreeConverter
                     location loc = get_location(syntax_tn);
 
                     var tn = (type_node)ret.visit(syntax_tn);
-                    if (tn.is_generic_type_definition) need_recheck_where.Add(syntax_tn);
+                    if (tn.is_generic_type_definition || tn.is_generic_type_instance) need_recheck_where.Add(syntax_tn);
 
                     if ((tn.original_generic??tn).ForwardDeclarationOnly)
                         AddError(loc, "FORWARD_DECLARATION_{0}_AS_BASE_TYPE", tn.PrintableName);
