@@ -1,4 +1,4 @@
-﻿//!Type 't1<T>' inherits from itself
+﻿//!Тип 't1<T>' наследует от самого себя
 type
   t1<T> = partial class
     
