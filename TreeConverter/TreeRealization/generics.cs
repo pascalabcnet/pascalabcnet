@@ -168,7 +168,7 @@ namespace PascalABCCompiler.TreeRealization
                     // tn - не generic параметр - закомментировал
                     if (base_type != tn && !type_table.is_derived(base_type, tn) /*&& !tn.is_generic_parameter*/)
                     {
-                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.name);
+                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.PrintableName);
                     }
                 }
                 if (gpe.is_class && !tn.is_class)
@@ -186,7 +186,7 @@ namespace PascalABCCompiler.TreeRealization
                         (tn.ImplementingInterfaces == null ||
                         !type_table.is_derived(di, tn)))
                     {
-                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_IMPLEMENT_INTERFACE_{1}", tn.PrintableName, di.name);
+                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_IMPLEMENT_INTERFACE_{1}", tn.PrintableName, di.PrintableName);
                     }
                 }
                 if (tn.IsStatic)
