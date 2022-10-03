@@ -379,7 +379,11 @@ namespace ICSharpCode.TextEditor
 		void SetToolTip(string text, int lineNumber)
 		{
 			if (toolTip == null || toolTip.IsDisposed)
+			{
 				toolTip = new DeclarationViewWindow(this.FindForm());
+				toolTip.TextEditorControl = motherTextEditorControl;
+			}
+				
 			if (oldToolTip == text)
 				return;
 			if (text == null || text.Trim().Length == 0) {
@@ -392,6 +396,7 @@ namespace ICSharpCode.TextEditor
 					p.Y = (p.Y - cp.Y) + (lineNumber * this.TextView.FontHeight) - this.virtualTop.Y;
 				}
 				p.Offset(3, 3);
+				
 				toolTip.Location = p;
 				toolTip.Description = text;
 				toolTip.HideOnClick = true;
