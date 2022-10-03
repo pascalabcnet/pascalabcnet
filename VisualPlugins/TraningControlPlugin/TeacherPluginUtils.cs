@@ -16,7 +16,10 @@ namespace VisualPascalABCPlugins
             var mbsList = mbs.Get();
             foreach (ManagementObject mo in mbsList)
             {
-                return mo["ProcessorId"].ToString();
+                var pId = mo["ProcessorId"];
+                if (pId != null)
+                    return pId.ToString();
+                else return "AAAAAAAAAAAAAAAA";
             }
             return "";
         }
