@@ -136,10 +136,11 @@ namespace VisualPascalABC
                     {
                         dvw = new DeclarationWindow(VisualPABCSingleton.MainForm);
                         dvw.Font = new System.Drawing.Font(Constants.CompletionWindowDeclarationViewWindowFontName, dvw.Font.Size);
-
                         dvw.HideOnClick = true;
+						
                         //dvw.ShowDeclarationViewWindow();
                     }
+					dvw.TextEditorControl = textArea.MotherTextEditorControl;
                     int ypos = (textArea.Document.GetVisibleLine(e.LogicalPosition.Y) + 1) * textArea.TextView.FontHeight - textArea.VirtualTop.Y;
                     System.Drawing.Point p = new System.Drawing.Point(0, ypos);
                     p = textArea.PointToScreen(p);
@@ -148,7 +149,6 @@ namespace VisualPascalABC
                     string txt = GetPopupHintText(textArea, e);
                     dvw.Location = choose_location(p, txt);
                     dvw.Description = txt;
-
                     _hint_hide_d = dvw.Font.Height / 2;
                     _mouse_hint_x = e.MousePosition.X;
                     _mouse_hint_y = e.MousePosition.Y;

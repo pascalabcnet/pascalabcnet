@@ -13,6 +13,8 @@ using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
+	
+	
 	public interface IDeclarationViewWindow
 	{
 		string Description {
@@ -25,6 +27,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 	
 	public class DeclarationViewWindow : Form, IDeclarationViewWindow
 	{
+		private ICSharpCode.TextEditor.TextEditorControl textEditorControl;
+	
 		string description = String.Empty;
 		
 		public string Description {
@@ -38,7 +42,20 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				} else if (value != null) {
 					if (!Visible) ShowDeclarationViewWindow();
 					Refresh();
+					
 				}
+			}
+		}
+		
+		public ICSharpCode.TextEditor.TextEditorControl TextEditorControl
+		{
+			get
+			{
+				return textEditorControl;
+			}
+			set
+			{
+				textEditorControl = value;
 			}
 		}
 		
@@ -69,15 +86,41 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
+
+		
 		protected override void OnClick(EventArgs e)
 		{
 			base.OnClick(e);
 			if (HideOnClick) Hide();
 		}
 		
+		protected void TextEditorLostFocus(object sender, EventArgs e)
+		{
+			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+            {
+				if (textEditorControl != null)
+					textEditorControl.Focus(); // Да, именно так!!!!!!!!!!!!!! Не удалять!!!
+			}
+		}
+		
 		public void ShowDeclarationViewWindow()
 		{
+			if (textEditorControl != null)
+			{
+				textEditorControl.ActiveTextAreaControl.TextArea.LostFocus += new EventHandler(this.TextEditorLostFocus);
+			}
 			Show();
+			
+		}
+		
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			
+			if (textEditorControl != null)
+			{
+				textEditorControl.ActiveTextAreaControl.TextArea.LostFocus -= new EventHandler(this.TextEditorLostFocus);
+			}
 		}
 		
 		public void CloseDeclarationViewWindow()

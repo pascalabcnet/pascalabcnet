@@ -2081,7 +2081,7 @@ namespace PascalABCCompiler.NetHelper
 		
 		public static Type FindTypeOrCreate(string name)
 		{
-			TypeInfo ti = (TypeInfo)types[name];
+			TypeInfo ti = types[name] as TypeInfo;
 			if (ti != null /*&& cur_used_assemblies.ContainsKey(t.Assembly)*/) return ti.type;
 			//ivan added - runtime types adding
 			Type t = Type.GetType(name, false, true);

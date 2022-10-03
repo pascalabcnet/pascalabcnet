@@ -352,16 +352,15 @@ namespace PascalABCCompiler.TreeRealization
             {
                 throw new TreeConverter.SimpleSemanticError(loc, "FORWARD_DECLARATION_{0}_AS_IMPLEMENTING_INTERFACE", _interface.name);
             }
-            if (!cnode.ImplementingInterfaces.Contains(_interface))
+
+            if (cnode.ImplementingInterfaces.Contains(_interface))
+                return;
+            cnode.ImplementingInterfaces.Add(_interface);
+            foreach (type_node tn in _interface.ImplementingInterfaces)
             {
-                cnode.ImplementingInterfaces.Add(_interface);
-                foreach (type_node tn in _interface.ImplementingInterfaces)
-                {
-                    if (!cnode.ImplementingInterfaces.Contains(tn))
-                    {
-                        cnode.ImplementingInterfaces.Add(tn);
-                    }
-                }
+                if (cnode.ImplementingInterfaces.Contains(tn))
+                    continue;
+                cnode.ImplementingInterfaces.Add(tn);
             }
         }
 

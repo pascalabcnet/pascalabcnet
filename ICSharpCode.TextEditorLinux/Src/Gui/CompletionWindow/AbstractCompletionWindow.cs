@@ -100,6 +100,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
             if (shadowStatus == 1 || Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
 				createParams.ClassStyle |= 0x00020000; // set CS_DROPSHADOW
+				
 			}
 		}
 		

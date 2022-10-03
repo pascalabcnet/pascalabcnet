@@ -18,6 +18,7 @@ namespace PascalABCCompiler
         private bool condition_block = false;
         private bool has_returns = false;
         private bool has_goto = false;
+        private Dictionary<common_method_node, common_method_node> processed_methods = new Dictionary<common_method_node, common_method_node>();
         private bool no_infinite_recursion;
 
         public Optimizer()
@@ -140,6 +141,9 @@ namespace PascalABCCompiler
 
         private void VisitMethod(common_method_node cmn)
         {
+            if (processed_methods.ContainsKey(cmn))
+                return;
+            processed_methods.Add(cmn, cmn);
             if (extended_mode)
                 VisitVariables(cmn.var_definition_nodes_list);
             foreach (var_definition_node vdn in cmn.var_definition_nodes_list)
