@@ -86,7 +86,14 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
-
+		protected override void OnGotFocus(EventArgs e)
+		{
+			base.OnGotFocus(e);
+			if (textEditorControl != null)
+			{
+				textEditorControl.Focus(); // Да, именно так!!!!!!!!!!!!!! Не удалять!!!
+			}
+		}
 		
 		protected override void OnClick(EventArgs e)
 		{
@@ -94,33 +101,14 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (HideOnClick) Hide();
 		}
 		
-		protected void TextEditorLostFocus(object sender, EventArgs e)
-		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-            {
-				if (textEditorControl != null)
-					textEditorControl.Focus(); // Да, именно так!!!!!!!!!!!!!! Не удалять!!!
-			}
-		}
-		
 		public void ShowDeclarationViewWindow()
 		{
-			if (textEditorControl != null)
-			{
-				textEditorControl.ActiveTextAreaControl.TextArea.LostFocus += new EventHandler(this.TextEditorLostFocus);
-			}
 			Show();
-			
 		}
 		
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			
-			if (textEditorControl != null)
-			{
-				textEditorControl.ActiveTextAreaControl.TextArea.LostFocus -= new EventHandler(this.TextEditorLostFocus);
-			}
 		}
 		
 		public void CloseDeclarationViewWindow()
