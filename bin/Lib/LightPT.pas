@@ -226,8 +226,8 @@ begin
   begin  
     Result := ExpandFileName(System.IO.Path.Combine('..',auth))
   end
-  // Если нет, в корневом каталоге сетевого диска
-  else begin
+  // Если нет, в корневом каталоге сетевого диска - Это не работает на старых Win 10 куда не устанавливается NET 4/7/1
+  {else begin
     var fullname := ExpandFileName(auth);
     var drive := ExtractFileDrive(fullname);
     var di := new System.IO.DriveInfo(drive);
@@ -236,8 +236,8 @@ begin
       var af := System.IO.Path.Combine(di.RootDirectory.FullName,auth);
       if FileExists(af) then
         Result := af;
-    end  
-  end;
+    end
+  end;}
 end;
 
 // Шифрование-дешифрование
@@ -249,7 +249,10 @@ begin
   Result := '';
   foreach var mo: ManagementObject in mbsList do
   begin
-    Result := mo['ProcessorId'].ToString();
+    var pId := mo['ProcessorId'];
+    if pId <> nil then
+      Result := pId.ToString()
+    else Result := 'AAAAAAAAAAAAAAAA';
     break;
   end;
 end;
@@ -703,55 +706,37 @@ end;
 /// Возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(n: integer): array of integer;
 begin
-  Result := PABCSystem.ReadArrInteger(n);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);
+  Result := PABCSystem.ReadArrInteger(n); // и всё!!! Данные в InputList уже внесены!
 end;
 
 /// Возвращает массив из n вещественных, введенных с клавиатуры
 function ReadArrReal(n: integer): array of real;
 begin
   Result := PABCSystem.ReadArrReal(n);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);
 end;
 
 /// Возвращает массив из n строк, введенных с клавиатуры
 function ReadArrString(n: integer): array of string;
 begin
   Result := PABCSystem.ReadArrString(n);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);  
 end;
 
 /// Возвращает матрицу m на n целых, введенных с клавиатуры
 function ReadMatrInteger(m, n: integer): array [,] of integer;
 begin
-  Result := PABCSystem.ReadMatrInteger(m,n);
-  if IsPT then exit;
-  foreach var x in Result.ElementsByRow do
-    InputList.Add(x);
+  Result := PABCSystem.ReadMatrInteger(m,n); // и всё!!! Данные в InputList уже внесены!
 end;
 
 /// Возвращает матрицу m на n вещественных, введенных с клавиатуры
 function ReadMatrReal(m, n: integer): array [,] of real;
 begin
   Result := PABCSystem.ReadMatrReal(m,n);
-  if IsPT then exit;
-  foreach var x in Result.ElementsByRow do
-    InputList.Add(x);
 end;
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
 begin
   Result := PABCSystem.MatrRandomInteger(m,n,a,b);
-  if IsPT then exit;
-  foreach var x in Result.ElementsByRow do
-    InputList.Add(x);
 end;
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
@@ -1127,11 +1112,19 @@ begin
   end;
 end;
 
-procedure ColoredMessage(msg: string; color: MessageColorT := MsgColorRed);
+procedure ColoredMessage(msg: string; color: MessageColorT);
 begin
   if DoNewLineBeforeMessage then
     Console.WriteLine;
   Console.WriteLine(MsgColorCode(color) + msg);
+  DoNewLineBeforeMessage := False;
+end;
+
+procedure ColoredMessage(msg: string);
+begin
+  if DoNewLineBeforeMessage then
+    Console.WriteLine;
+  Console.WriteLine(MsgColorCode(MsgColorRed) + msg);
   DoNewLineBeforeMessage := False;
 end;
 
