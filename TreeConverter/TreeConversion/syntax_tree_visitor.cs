@@ -3872,9 +3872,13 @@ namespace PascalABCCompiler.TreeConverter
                 // "t1<T> = class(i1<T>)" => "t1<byte>" реализует "i1<byte>" а не "i1<T>"
                 gti.pseudo_instance.SetBaseType(generic_convertions.determine_type(converted_type.base_type, gti.param_types, false));
 
+                // Сбрасываем на null, чтобы их вычислило заново, если понадобится
+                gti.pseudo_instance.SetImplementingInterfaces(null);
+                /**
                 gti.pseudo_instance.ImplementingInterfaces.Clear();
                 foreach (type_node t in converted_type.ImplementingInterfaces)
                     gti.pseudo_instance.ImplementingInterfaces.Add(generic_convertions.determine_type(t, gti.param_types, false));
+                /**/
 
             }
 

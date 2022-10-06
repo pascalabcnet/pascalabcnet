@@ -316,8 +316,11 @@ namespace PascalABCCompiler.TreeRealization
             return null;
         }
 
-        public static void init_generic_instance(type_node original, generic_instance_type_node instance, /*SymbolTable.ClassScope instance_scope,*/ List<type_node> param_types)
+        public static void init_generic_instance(generic_instance_type_node instance/*, SymbolTable.ClassScope instance_scope*/)
         {
+            var original = instance.original_generic;
+            var param_types = instance.instance_params;
+
             instance.IsInterface = original.IsInterface;
             instance.is_class = original.is_class;
             instance.internal_is_value = original.is_value;
@@ -334,12 +337,15 @@ namespace PascalABCCompiler.TreeRealization
             
             //instance._scope = new SymbolTable.GenericTypeInstanceScope(instance, instance.original_generic.Scope, btype.Scope);
 
+            // Создаются лениво
+            /**
             foreach (type_node interf in original.ImplementingInterfaces)
             {
                 instance.ImplementingInterfaces.Add(
                     determine_type(interf, param_types, false)
                     );
             }
+            /**/
 
             SystemLibrary.SystemLibrary.init_reference_type(instance);
             instance.conform_basic_functions();
@@ -1577,6 +1583,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             _original_generic = original_generic_type;
             _instance_params = param_types;
+            SetImplementingInterfaces(null);
         }
 
         public List<SemanticTree.ITypeNode> generic_parameters
@@ -1592,6 +1599,29 @@ namespace PascalABCCompiler.TreeRealization
                     }
                 }
                 return _generic_parameters;
+            }
+        }
+
+        public override List<SemanticTree.ITypeNode> ImplementingInterfaces
+        {
+            get
+            {
+                var res = base.ImplementingInterfaces;
+                if (res==null)
+                {
+                    res = new List<SemanticTree.ITypeNode>();
+                    foreach (type_node interf in original_generic.ImplementingInterfaces)
+                        res.Add(generic_convertions.determine_type(interf, this.instance_params, false));
+                    SetImplementingInterfaces(res);
+                }
+                return res;
+            }
+        }
+        public override List<SemanticTree.ITypeNode> ImplementingInterfacesOrEmpty
+        {
+            get
+            {
+                return base.ImplementingInterfaces ?? new List<SemanticTree.ITypeNode>();
             }
         }
 
