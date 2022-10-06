@@ -3789,12 +3789,12 @@ namespace PascalABCCompiler.TreeConverter
 
             // Для записей базовый класс устанавливает на SemanticRules.StructBaseType ещё в context.create_record_type
             var need_set_base = _class_definition.keyword != PascalABCCompiler.SyntaxTree.class_keyword.Record;
+            // Ограничение шаблонов предка и интерфейсов нельзя проверять
+            // на первом проходе, когда ещё не все предки добавлены в converted_type
+            var need_recheck_where = new List<syntax_tree_node>();
             if (_class_definition.class_parents != null)
             {
-                // Ограничение шаблонов предка и интерфейсов нельзя проверять
-                // на первом проходе, когда они не добавлены в converted_type
-                var need_recheck_where = new List<syntax_tree_node>(_class_definition.class_parents.Count);
-
+                need_recheck_where.Capacity = _class_definition.class_parents.Count;
                 // В случае partial классов можно (и желательно) указывать интерфейсы, которые уже были в предыдущем описании
                 // Поэтому проверять нужно только уникальное среди списка интерфейсов в этом описании
                 var curr_def_interfaces = new List<type_node>(need_recheck_where.Capacity);
@@ -3854,13 +3854,6 @@ namespace PascalABCCompiler.TreeConverter
 
                 }
                 context.skip_check_where_sections = false;
-
-                // Проверяем секции where предка/интерфейсов
-                // В самом конце, когда converted_type
-                // уже содержит всю информацию о предке и интерфейсах
-                foreach (var syntax_tn in need_recheck_where)
-                    ret.visit(syntax_tn);
-
             }
 
             if (need_set_base)
@@ -3871,12 +3864,21 @@ namespace PascalABCCompiler.TreeConverter
                 converted_type.SetBaseType(bt);
             }
 
-            if (_class_definition.keyword==PascalABCCompiler.SyntaxTree.class_keyword.Class)
-                foreach (generic_type_instance_info gti in generic_convertions.get_type_instances(converted_type))
-                {
-                    if (!(gti.pseudo_instance.base_type != null && gti.pseudo_instance.base_type.is_generic_type_instance && converted_type.IsPartial))
-                        gti.pseudo_instance.SetBaseType(converted_type.base_type);
-                }
+            foreach (generic_type_instance_info gti in generic_convertions.get_type_instances(converted_type))
+            {
+                //TODO Зачем?
+                if (gti.pseudo_instance.base_type != null && gti.pseudo_instance.base_type.is_generic_type_instance && converted_type.IsPartial) continue;
+                //TODO "t1<T> = class(i1<T>)" => "t1<byte>" реализует "i1<T>" вместо "i1<byte>"???
+                gti.pseudo_instance.SetBaseType(converted_type.base_type);
+                gti.pseudo_instance.ImplementingInterfaces.Clear();
+                gti.pseudo_instance.ImplementingInterfaces.AddRange(converted_type.ImplementingInterfaces);
+            }
+
+            // Проверяем секции where предка/интерфейсов
+            // В самом конце, когда converted_type
+            // уже содержит всю информацию о предке и интерфейсах
+            foreach (var syntax_tn in need_recheck_where)
+                ret.visit(syntax_tn);
 
             switch (_class_definition.keyword)
             {
