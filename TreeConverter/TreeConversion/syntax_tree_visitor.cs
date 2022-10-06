@@ -3866,12 +3866,16 @@ namespace PascalABCCompiler.TreeConverter
 
             foreach (generic_type_instance_info gti in generic_convertions.get_type_instances(converted_type))
             {
-                //TODO Зачем?
-                if (gti.pseudo_instance.base_type != null && gti.pseudo_instance.base_type.is_generic_type_instance && converted_type.IsPartial) continue;
-                //TODO "t1<T> = class(i1<T>)" => "t1<byte>" реализует "i1<T>" вместо "i1<byte>"???
-                gti.pseudo_instance.SetBaseType(converted_type.base_type);
+                //TODO Было для #2524, но с generic_convertions.determine_type оно не нужно
+                //if (gti.pseudo_instance.base_type != null && gti.pseudo_instance.base_type.is_generic_type_instance && converted_type.IsPartial) continue;
+
+                // "t1<T> = class(i1<T>)" => "t1<byte>" реализует "i1<byte>" а не "i1<T>"
+                gti.pseudo_instance.SetBaseType(generic_convertions.determine_type(converted_type.base_type, gti.param_types, false));
+
                 gti.pseudo_instance.ImplementingInterfaces.Clear();
-                gti.pseudo_instance.ImplementingInterfaces.AddRange(converted_type.ImplementingInterfaces);
+                foreach (type_node t in converted_type.ImplementingInterfaces)
+                    gti.pseudo_instance.ImplementingInterfaces.Add(generic_convertions.determine_type(t, gti.param_types, false));
+
             }
 
             // Проверяем секции where предка/интерфейсов
