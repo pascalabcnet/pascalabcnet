@@ -219,6 +219,13 @@ namespace PascalABCCompiler.TreeRealization
                 return null;
             }
         }
+        public virtual List<SemanticTree.ITypeNode> ImplementingInterfacesOrEmpty
+        {
+            get
+            {
+                return ImplementingInterfaces;
+            }
+        }
 
         //true, если на данный момент имеется только предописание класса
         public virtual bool ForwardDeclarationOnly
@@ -2601,7 +2608,7 @@ namespace PascalABCCompiler.TreeRealization
                 generic_convertions.MakePseudoInstanceName(name, param_types, true),
                 SemanticTree.type_access_level.tal_public, null, this.loc);
             _generic_instances.Add(new generic_type_instance_info(param_types, ctnode));
-            generic_convertions.init_generic_instance(this, ctnode, param_types);
+            generic_convertions.init_generic_instance(ctnode);
             return ctnode;
         }
 
@@ -3175,7 +3182,7 @@ namespace PascalABCCompiler.TreeRealization
                 generic_convertions.MakePseudoInstanceName(name, param_types, true),
                 SemanticTree.type_access_level.tal_public, null, /*ct_scope,*/ this.loc);
             _generic_instances.Add(new generic_type_instance_info(param_types, ctnode));
-            generic_convertions.init_generic_instance(this, ctnode, /*ct_scope,*/ param_types);
+            generic_convertions.init_generic_instance(ctnode/*, ct_scope*/);
             return ctnode;
         }
         //\ssyy

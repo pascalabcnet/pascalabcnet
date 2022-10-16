@@ -1063,6 +1063,8 @@ function ReadChar(prompt: string): char;
 function ReadString(prompt: string): string;
 /// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры
 function ReadBoolean(prompt: string): boolean;
+/// Выводит приглашение к вводу и возвращает значение типа BigInteger, введенное с клавиатуры
+function ReadBigInteger(prompt: string): BigInteger;
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
@@ -6242,6 +6244,12 @@ function ReadBoolean(prompt: string): boolean;
 begin
   Print(prompt);
   Result := ReadBoolean;
+end;
+
+function ReadBigInteger(prompt: string) : BigInteger;
+begin
+  Print(prompt);
+  Result := ReadBigInteger;
 end;
 
 function ReadlnInteger(prompt: string): integer;

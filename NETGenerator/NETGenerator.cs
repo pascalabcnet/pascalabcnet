@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Linq;
@@ -1523,7 +1523,10 @@ namespace PascalABCCompiler.NETGenerator
             {
                 AddTypeWithoutConvert(t);
             }
-            foreach (ITypeNode interf in t.ImplementingInterfaces)
+            // ImplementingInterfacesOrEmpty, потому что если интерфейсы небыли лениво-посчитаны семантикой
+            // То и тут их обходить нет смысла
+            // А в ошибочных ситуациях (как err0303.pas) может ещё и зациклится
+            foreach (ITypeNode interf in t.ImplementingInterfacesOrEmpty)
                 if (!(interf is ICompiledTypeNode))
                     ConvertTypeHeaderInSpecialOrder((ICommonTypeNode)interf);
             if (t.base_type != null && !(t.base_type is ICompiledTypeNode))
