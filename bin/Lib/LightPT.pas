@@ -703,7 +703,7 @@ begin
     InputList.Add(Result[i]);
 end;
 
-/// Возвращает массив из n целых, введенных с клавиатуры
+{/// Возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(n: integer): array of integer;
 begin
   Result := PABCSystem.ReadArrInteger(n); // и всё!!! Данные в InputList уже внесены!
@@ -731,12 +731,15 @@ end;
 function ReadMatrReal(m, n: integer): array [,] of real;
 begin
   Result := PABCSystem.ReadMatrReal(m,n);
-end;
+end;}
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
 begin
   Result := PABCSystem.MatrRandomInteger(m,n,a,b);
+  if IsPT then exit;
+  foreach var x in Result.ElementsByRow do
+    InputList.Add(x);
 end;
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
@@ -763,7 +766,7 @@ begin
     InputList.Add(x);
 end;
 
-function ReadString: string;
+{function ReadString: string;
 begin
   Result := PABCSystem.ReadString;
   if IsPT then exit;
@@ -775,7 +778,7 @@ function ReadlnString := ReadString;
 
 function ReadString2 := (ReadString, ReadString);
 
-function ReadlnString2 := ReadString2;
+function ReadlnString2 := ReadString2;}
 
 function ReadInteger(prompt: string): integer;
 begin
@@ -859,6 +862,7 @@ type
     function ReadLine: string; override;
     begin
       Result := inherited ReadLine;
+      InputList.Add(Result);
       DoNewLineBeforeMessage := False;
     end;
     

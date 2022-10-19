@@ -3268,6 +3268,8 @@ expr_l1
 		{ $$ = $1; }
     | new_question_expr
 		{ $$ = $1; }
+//    | var_stmt tkComma expr_l1 
+//		{ $$ = $3; }
     ;
     
 expr_l1_for_question_expr
