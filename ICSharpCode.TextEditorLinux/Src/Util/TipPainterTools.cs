@@ -64,6 +64,8 @@ namespace ICSharpCode.TextEditor.Util
 					}
 				}
 			}
+			if (string.IsNullOrEmpty(documentation))
+				documentation = " ";
 			
 			return DrawHelpTip(control, graphics, font, countMessage,
 			            basicDescription, documentation);
@@ -87,6 +89,8 @@ namespace ICSharpCode.TextEditor.Util
 				
 				TipSpacer countSpacer = new TipSpacer(graphics, new SizeF(IsVisibleText(countMessage) ? 4 : 0, 0));
 				
+				if (basicDescription.Length < 30)
+					basicDescription = basicDescription.PadRight(30);
 				TipText descriptionTip = new TipText(graphics, font, basicDescription);
 				
 				TipSpacer docSpacer = new TipSpacer(graphics, new SizeF(0, IsVisibleText(documentation) ? 4 : 0));
