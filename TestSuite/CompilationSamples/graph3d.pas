@@ -562,6 +562,50 @@ type
     end;
   /// Цвет 3D-объекта
     property Color: GColor read GetColor write SetColor; virtual;
+    
+  /// Локальная ось X в глобальных координатах
+    property LocalAxisX: Vector3D 
+      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(1,0,0)));
+  /// Локальная ось X в глобальных координатах
+    property LocalAxisY: Vector3D 
+      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(0,1,0)));
+  /// Локальная ось X в глобальных координатах
+    property LocalAxisZ: Vector3D 
+      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(0,0,1)));
+    
+  /// Перемещает 3D-объект к точке (x,y,z) в локальных координатах
+    procedure MoveToLocal(x,y,z: real);
+    begin
+      var p := Invoke&<Point3D>(()->model.GetTransform.Transform(new Point3D(x,y,z)));
+      MoveTo(p);
+    end;
+  /// Перемещает 3D-объект к точке p в локальных координатах  
+    procedure MoveToLocal(p: Point3D) := MoveToLocal(p.x,p.y,p.z);
+  /// Перемещает 3D-объект на вектор (dx,dy,dz) в локальных координатах
+    procedure MoveByLocal(dx,dy,dz: real);
+    begin
+      // x,y,z в локальных координатах всегда нули
+      MoveToLocal(dx, dy, dz);
+    end;
+  /// Перемещает 3D-объект на вектор v в локальных координатах
+    procedure MoveByLocal(v: Vector3D) := MoveByLocal(v.x,v.y,v.z);
+/// Возвращает анимацию перемещения объекта к точке (x, y, z) за seconds секунд в локальных координатах
+    function AnimMoveToLocal(x, y, z: real; seconds: real := 1): AnimationBase;
+    begin
+      var p := Invoke&<Point3D>(()->model.GetTransform.Transform(new Point3D(x,y,z)));
+      Result := AnimMoveTo(p);
+    end;
+/// Возвращает анимацию перемещения объекта к точке p за seconds секунд в локальных координатах
+    function AnimMoveToLocal(p: Point3D; seconds: real := 1): AnimationBase 
+      := AnimMoveToLocal(p.x,p.y,p.z,seconds);
+/// Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд в локальных координатах
+    function AnimMoveByLocal(dx, dy, dz: real; seconds: real := 1): AnimationBase;
+    begin
+      Result := AnimMoveToLocal(dx, dy, dz, seconds);
+    end;
+/// Возвращает анимацию перемещения объекта на вектор v за seconds секунд в локальных координатах
+    function AnimMoveByLocal(v: Vector3D; seconds: real := 1): AnimationBase
+      := AnimMoveByLocal(v.x,v.y,v.z,seconds);
   private
     procedure MoveToProp(p: Point3D) := MoveTo(p);
   
@@ -3577,6 +3621,7 @@ begin
     a := typeof(PyramidTWireframe);
     a := typeof(SegmentsT);
     a := typeof(TorusT);
+    a := a;
   end;
   var res: Object3D;
   Invoke(procedure -> begin

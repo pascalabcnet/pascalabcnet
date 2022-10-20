@@ -26,7 +26,11 @@ namespace VisualPascalABC
             try
             {
                 if (th != null)
-                    th.Abort();
+                {
+                    IsDone = true;
+                    th.Abort(); // надо бы заменить на что то современное
+                    th.Join();
+                }
             }
             catch
             {
@@ -133,11 +137,15 @@ namespace VisualPascalABC
             }
         }
 
+        private volatile bool IsDone = false;
+
         private void InternalParsing()
         {
-            while (true)
+            while (!IsDone)
             {
                 ParseInThread();
+                if (IsDone)
+                    break;
                 System.Threading.Thread.Sleep(2000);
             }
         }

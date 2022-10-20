@@ -26,7 +26,10 @@ namespace VisualPascalABC
             try
             {
                 if (th != null)
+                {
                     th.Abort();
+                    th.Join(); // Это обязательно. По большому счету вообще Abort надо заменить на современное завершение потоков
+                }
             }
             catch
             {

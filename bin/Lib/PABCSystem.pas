@@ -1084,6 +1084,9 @@ function ReadlnString(prompt: string): string;
 /// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
 function ReadlnBoolean(prompt: string): boolean;
+/// Выводит приглашение к вводу и возвращает значение типа BigInteger, введенное с клавиатуры,
+///и осуществляет переход на следующую строку ввода
+function ReadlnBigInteger(prompt: string): BigInteger;
 
 
 ///--
@@ -6286,6 +6289,12 @@ function ReadlnBoolean(prompt: string): boolean;
 begin
   Print(prompt);
   Result := ReadlnBoolean;
+end;
+
+function ReadlnBigInteger(prompt: string): BigInteger;
+begin
+  Print(prompt);
+  Result := ReadlnInteger;
 end;
 
 procedure ReadShortStringFromFile(f: Text; var s: string; n: integer);
