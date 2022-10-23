@@ -76,7 +76,6 @@ namespace VisualPascalABC
                         end_pos = GetPositionOfUntil(textArea, end_off);
                     if (end_pos != null)
                     {
-                        textArea.BeginUpdate();
                         TextLocation Beg = textArea.Document.OffsetToPosition(beg_off);
                         TextLocation End = textArea.Document.OffsetToPosition(end_off);
                         TextMarker marker = new TextMarker(beg_off, word.Length, TextMarkerType.SolidBlock, System.Drawing.Color.FromArgb(219, 224, 204));
@@ -85,7 +84,6 @@ namespace VisualPascalABC
                         marks.Add(marker);
                         textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, textArea.Document.GetLineNumberForOffset(beg_off)));
                         textArea.EndUpdate();
-                        textArea.BeginUpdate();
                         Beg = textArea.Document.OffsetToPosition(end_pos.start_pos);
                         End = textArea.Document.OffsetToPosition(end_pos.start_pos + end_pos.len);
                         marker = new TextMarker(end_pos.start_pos, end_pos.len, TextMarkerType.SolidBlock, System.Drawing.Color.FromArgb(219, 224, 204));
@@ -106,7 +104,6 @@ namespace VisualPascalABC
                         beg_pos = GetPositionOfRepeat(textArea, beg_off);
                     if (beg_pos != null)
                     {
-                        textArea.BeginUpdate();
                         TextLocation Beg = textArea.Document.OffsetToPosition(beg_off);
                         TextLocation End = textArea.Document.OffsetToPosition(end_off);
                         TextMarker marker = new TextMarker(beg_off, word.Length, TextMarkerType.SolidBlock, System.Drawing.Color.FromArgb(219, 224, 204));
@@ -115,7 +112,6 @@ namespace VisualPascalABC
                         marks.Add(marker);
                         textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, textArea.Document.GetLineNumberForOffset(beg_off)));
                         textArea.EndUpdate();
-                        textArea.BeginUpdate();
                         Beg = textArea.Document.OffsetToPosition(beg_pos.start_pos);
                         End = textArea.Document.OffsetToPosition(beg_pos.start_pos + beg_pos.len);
                         marker = new TextMarker(beg_pos.start_pos, beg_pos.len, TextMarkerType.SolidBlock, System.Drawing.Color.FromArgb(219, 224, 204));
@@ -272,7 +268,6 @@ namespace VisualPascalABC
                 {
                     try
                     {
-                        textArea.BeginUpdate();
                         textArea.Document.MarkerStrategy.RemoveMarker(marker);
                         textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, textArea.Document.GetLineNumberForOffset(marker.Offset)));
                         textArea.EndUpdate();
@@ -471,7 +466,7 @@ namespace VisualPascalABC
                 else if (c == '\'')
                 {
                     beg_off--;
-                    while (beg_off >= 0 && text[beg_off] != '\'')
+                    while (beg_off >= 0 && text[beg_off] != '\'' && text[beg_off] != '/')
                         beg_off--;
                 }
                 else
