@@ -5445,6 +5445,10 @@ namespace CodeCompletion
             this.ctn = ctn;
             this.si = si;
             this.instances = new List<TypeScope>();
+            if (ctn == null)
+            {
+
+            }
             if (ctn.BaseType != null)
                 baseScope = TypeTable.get_compiled_type(ctn.BaseType);
             Type t = ctn.GetElementType();
@@ -5681,7 +5685,13 @@ namespace CodeCompletion
             if (!ctn.IsGenericType)
                 return this;
             if (!ctn.IsGenericTypeDefinition)
+            {
                 t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name);
+                if (t == null && this.instances != null && this.instances.Count > 0 && ctn.DeclaringType != null && this.ctn.DeclaringType.IsGenericTypeDefinition)
+                {
+                    t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.DeclaringType.Name.Substring(0, this.ctn.DeclaringType.Name.IndexOf('`')) + "`" + this.instances.Count + "+" + ctn.Name);
+                }
+            }
             else if (this.instances != null && this.instances.Count > 0)
             {
                 if (this.instances.Count != ctn.GetGenericArguments().Length)
@@ -5690,6 +5700,7 @@ namespace CodeCompletion
                     if (t2 != null)
                         t = t2;
                 }
+                
             }
             else if (gen_args.Count != ctn.GetGenericArguments().Length)
             {

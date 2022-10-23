@@ -2707,7 +2707,7 @@ namespace PascalABCCompiler
             var SourceFileExists = SourceFileName != null;
             //ToDo то есть Rebuild режим игнорирует .pcu, даже если нет .pas файла?
             // а ещё ниже стоит ещё 1 проверка Rebuild...
-            var PCUFileExists = !CompilerOptions.Rebuild && PCUFileName != null;
+            var PCUFileExists = (!CompilerOptions.Rebuild || !SourceFileExists) && PCUFileName != null;
 
             if (!PCUFileExists && !SourceFileExists)
                 if (UnitName == null)
