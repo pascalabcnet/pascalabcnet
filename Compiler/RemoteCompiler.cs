@@ -189,6 +189,8 @@ namespace PascalABCCompiler
                     //Encoding enc = (Encoding)sourceFilesProvider(arg, SourceFileOperation.FileEncoding);
                     //text = Tools.ChangeEncoding(text, enc, Encoding.UTF8);
                     //text = Tools.ChangeEncoding(text, Encoding.GetEncoding(1251), Encoding.UTF8);
+                    if (pabcnetcProcess == null)
+                        Reload();
                     Process pr = pabcnetcProcess;
                     sendCommand(ConsoleCompilerConstants.SourceFileText, text.Length);
                     byte[] buf = Encoding.UTF8.GetBytes(text);
@@ -316,12 +318,16 @@ namespace PascalABCCompiler
 
         void sendCommand(int command, object arg)
         {
+            if (pabcnetcProcess == null)
+                Reload();
             pabcnetcProcess.StandardInput.WriteLine(string.Format("{0} {1}", command, arg));
             pabcnetcProcess.StandardInput.Flush();
         }
 
         void sendObjectAsByteArray(int command, string obj)
         {
+            if (pabcnetcProcess == null)
+                Reload();
             pabcnetcProcess.StandardInput.WriteLine(string.Format("{0} {1}", command, obj.Length));
             pabcnetcProcess.StandardInput.Flush();
             byte[] buf = Encoding.UTF8.GetBytes(obj);
@@ -339,6 +345,8 @@ namespace PascalABCCompiler
         
         void sendCommand(int command)
         {
+            if (pabcnetcProcess == null)
+                Reload();
             pabcnetcProcess.StandardInput.WriteLine(command);
         }
         
@@ -554,7 +562,8 @@ namespace PascalABCCompiler
         {
             if (!compilerReloading)
             {
-                Reload();
+                pabcnetcProcess = null;
+                //Reload();
             }
         }
 
