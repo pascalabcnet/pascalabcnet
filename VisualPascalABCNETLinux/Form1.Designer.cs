@@ -1011,6 +1011,7 @@ namespace VisualPascalABC
             | System.Windows.Forms.Keys.F9)));
             this.miRebuild.Size = new System.Drawing.Size(228, 22);
             this.miRebuild.Text = "M_REBUILD";
+            this.miRebuild.Visible = false;
             this.miRebuild.Click += new System.EventHandler(this.toolStripButton12_Click);
             // 
             // miAddExpr
@@ -1040,7 +1041,7 @@ namespace VisualPascalABC
             // miShowGrid
             // 
             this.miShowGrid.Name = "miShowGrid";
-            this.miShowGrid.Size = new System.Drawing.Size(180, 22);
+            this.miShowGrid.Size = new System.Drawing.Size(178, 22);
             this.miShowGrid.Text = "M_SHOW_GRID";
             this.miShowGrid.Visible = false;
             this.miShowGrid.Click += new System.EventHandler(this.miShowGrid_Click);
@@ -1048,7 +1049,7 @@ namespace VisualPascalABC
             // miSnapToGrid
             // 
             this.miSnapToGrid.Name = "miSnapToGrid";
-            this.miSnapToGrid.Size = new System.Drawing.Size(180, 22);
+            this.miSnapToGrid.Size = new System.Drawing.Size(178, 22);
             this.miSnapToGrid.Text = "M_SNAP_TO_GRID";
             this.miSnapToGrid.Visible = false;
             this.miSnapToGrid.Click += new System.EventHandler(this.miSnapToGrid_Click);
@@ -1064,7 +1065,7 @@ namespace VisualPascalABC
             this.miAlignCenters,
             this.miAlignToGrid});
             this.miAlign.Name = "miAlign";
-            this.miAlign.Size = new System.Drawing.Size(180, 22);
+            this.miAlign.Size = new System.Drawing.Size(178, 22);
             this.miAlign.Text = "M_ALIGN";
             // 
             // miAlignLefts
@@ -1115,7 +1116,7 @@ namespace VisualPascalABC
             this.miCenterHorizontally,
             this.miCenterVertically});
             this.miCenter.Name = "miCenter";
-            this.miCenter.Size = new System.Drawing.Size(180, 22);
+            this.miCenter.Size = new System.Drawing.Size(178, 22);
             this.miCenter.Text = "M_CENTER";
             // 
             // miCenterHorizontally
@@ -1138,7 +1139,7 @@ namespace VisualPascalABC
             this.miSizeToControlHeight,
             this.miSizeToGrid});
             this.miSizeTo.Name = "miSizeTo";
-            this.miSizeTo.Size = new System.Drawing.Size(180, 22);
+            this.miSizeTo.Size = new System.Drawing.Size(178, 22);
             this.miSizeTo.Text = "M_SIZE_TO";
             // 
             // miSizeToControl
@@ -1171,7 +1172,7 @@ namespace VisualPascalABC
             this.miBringToFront,
             this.miSendToBack});
             this.miZOrder.Name = "miZOrder";
-            this.miZOrder.Size = new System.Drawing.Size(180, 22);
+            this.miZOrder.Size = new System.Drawing.Size(178, 22);
             this.miZOrder.Text = "M_Z_ORDER";
             // 
             // miBringToFront
@@ -1189,7 +1190,7 @@ namespace VisualPascalABC
             // miTabOrder
             // 
             this.miTabOrder.Name = "miTabOrder";
-            this.miTabOrder.Size = new System.Drawing.Size(180, 22);
+            this.miTabOrder.Size = new System.Drawing.Size(178, 22);
             this.miTabOrder.Text = "M_TAB_ORDER";
             this.miTabOrder.Click += new System.EventHandler(this.miTabOrder_Click);
             // 
