@@ -117,10 +117,18 @@ namespace PascalABCCompiler
             string arg = null;
             if (line.Length < 3)
                 return;
+            if ((int)line[0] == 65279 && (int)line[1] == 65279)
+            {
+                line = line.Substring(2);
+                if (line.Length < 3)
+                    return;
+            }
+                
             if (line.Length > 3)
                 arg = line.Substring(4);
             string[] args = Tools.SplitString(arg, ConsoleCompilerConstants.MessageSeparator);
             int command = Convert.ToInt32(line.Substring(0, 3));
+            
             if (command < sendCommandStartNumber + 50)
             {
                 ChangeCompilerState((CompilerState)(command - sendCommandStartNumber), arg);
@@ -340,6 +348,7 @@ namespace PascalABCCompiler
             string s = args[0].ToString();
             for (int i = 1; i < args.Length; i++)
                 s += ConsoleCompilerConstants.MessageSeparator + args[i].ToString();
+            File.WriteAllText("log.log", command+" "+s);
             sendCommand(command, s);
         }
         
@@ -382,7 +391,7 @@ namespace PascalABCCompiler
                 sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
             foreach (PascalABCCompiler.CompilerOptions.StandartModule sm in compilerOptions.StandartModules)
                 sendCommand(
-                    ConsoleCompilerConstants.CompilerOptionsStandartModule, 
+                    ConsoleCompilerConstants.CompilerOptionsStandartModule,
                     sm.Name,(int)sm.AddMethod,(int)sm.AddToLanguages);
         }
 
@@ -542,8 +551,18 @@ namespace PascalABCCompiler
             compilerReloading = true;
             stopCompiler();
             pabcnetcProcess = new Process();
-            pabcnetcProcess.StartInfo.FileName = Path.Combine(Tools.GetExecutablePath(), pabcnetcFileName);
-            pabcnetcProcess.StartInfo.Arguments = "commandmode";
+            if (!IsUnix())
+            {
+                pabcnetcProcess.StartInfo.FileName = Path.Combine(Tools.GetExecutablePath(), pabcnetcFileName);
+                pabcnetcProcess.StartInfo.Arguments = "commandmode";
+            }
+            else
+            {
+                pabcnetcProcess.StartInfo.FileName = "mono";
+                pabcnetcProcess.StartInfo.Arguments = Path.Combine(Tools.GetExecutablePath(), pabcnetcFileName)+" commandmode";
+                
+            }
+                
             pabcnetcProcess.StartInfo.UseShellExecute = false;
             pabcnetcProcess.StartInfo.CreateNoWindow = true;
             pabcnetcProcess.StartInfo.RedirectStandardOutput = true;
@@ -556,6 +575,11 @@ namespace PascalABCCompiler
             //pabcnetcProcess.StandardInput.Encoding;
             pabcnetcStreamReader.Add(pabcnetcProcess.StandardOutput, inputId, inputEncoding);
             compilerReloading = false;
+        }
+
+        public static bool IsUnix()
+        {
+            return System.Environment.OSVersion.Platform == System.PlatformID.Unix || System.Environment.OSVersion.Platform == System.PlatformID.MacOSX;
         }
 
         void pabcnetcProcess_Exited(object sender, EventArgs e)
