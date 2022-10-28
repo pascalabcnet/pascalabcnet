@@ -128,40 +128,44 @@ namespace VisualPascalABC
                     try
                     {
                         foreach (string StackItemData in StackItemsData)
-                    {
-                            StackTraceItem StackTraceItem = new StackTraceItem();
-                        string str = StackItemData.TrimStart(' ');
-                        int beg = str.IndexOf(' ');
-                        int end = str.IndexOf(") ");
-                        if (end == -1)
-                            end = str.IndexOf(")");
-                        if (end == -1)
-                            end = str.Length-1;
-                        StackTraceItem.FunctionName = str.Substring(beg + 1, end - beg);
-                        if (end + 1 < str.Length)
                         {
-                            str = str.Substring(end + 1);
-                            str = str.TrimStart(' ');
-                            beg = str.IndexOf(' ');
-                            end = str.IndexOf(':');
-                            end = str.IndexOf(':', end + 1);
+                            StackTraceItem StackTraceItem = new StackTraceItem();
+                            string str = StackItemData.TrimStart(' ');
+                            int beg = str.IndexOf(' ');
+                            int end = str.IndexOf(") ");
                             if (end == -1)
-                                continue;
-                            StackTraceItem.SourceFileName = str.Substring(beg + 1, end - beg-1);
-                            beg = str.IndexOf(' ',end);
-                            if (beg > 0)
+                                end = str.IndexOf(")");
+                            if (end == -1)
+                                end = str.Length - 1;
+                            StackTraceItem.FunctionName = str.Substring(beg + 1, end - beg);
+                            
+                            if (end + 1 < str.Length)
                             {
-                                string slnum = str.Substring(beg + 1).Replace(".", "");                                
-                                StackTraceItem.LineNumber = Convert.ToInt32(slnum);
-                                if (StackTraceItem.LineNumber >= 16777214)
+                                str = str.Substring(end + 1);
+                                
+                                str = str.TrimStart(' ');
+                                beg = str.IndexOf("in ");
+                                end = str.IndexOf(':');
+                                //end = str.IndexOf(':', end + 1);
+                                
+                                if (end == -1)
+                                    continue;
+                                StackTraceItem.SourceFileName = str.Substring(beg + 3, end - beg - 3);
+                                //Console.WriteLine(StackTraceItem.SourceFileName);
+                                beg = end;
+                                if (beg > 0)
                                 {
-                                    StackTraceItem.LineNumber = 0;
-                                    StackTraceItem.SourceFileName = null;
+                                    string slnum = str.Substring(beg + 1).Replace(".", "");
+                                    StackTraceItem.LineNumber = Convert.ToInt32(slnum);
+                                    if (StackTraceItem.LineNumber >= 16777214)
+                                    {
+                                        StackTraceItem.LineNumber = 0;
+                                        StackTraceItem.SourceFileName = null;
+                                    }
                                 }
                             }
+                            StackTrace.Add(StackTraceItem);
                         }
-                        StackTrace.Add(StackTraceItem);
-                    }
                     }
                     catch (Exception e)
                     {

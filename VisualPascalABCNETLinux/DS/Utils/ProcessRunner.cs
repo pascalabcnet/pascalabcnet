@@ -239,9 +239,12 @@ namespace VisualPascalABC.Utils
                 else
                 #endif
                 {
-                	process.StartInfo.FileName = command;
+					string dbg = "";
+					if (WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.Debug)
+						dbg = " --debug ";
+                	process.StartInfo.FileName = "mono";
                 	process.StartInfo.WorkingDirectory = workingDirectory;
-               	 	process.StartInfo.Arguments = arguments;
+               	 	process.StartInfo.Arguments = dbg+command+" "+arguments;
                 }
             }
             //process.StartInfo.Domain = Domain.FriendlyName;
