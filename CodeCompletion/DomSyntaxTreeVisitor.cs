@@ -2218,7 +2218,6 @@ namespace CodeCompletion
                     generic_params.Add(id.name);
                 }
             }
-            
             _type_declaration.type_def.visit(this);
             if (returned_scope != null && returned_scope is PointerScope && (returned_scope as PointerScope).ref_type is UnknownScope)
             {
@@ -2244,15 +2243,32 @@ namespace CodeCompletion
                         string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword(cl_def.keyword);
                         if (cl_def.attribute == class_attribute.Auto)
                             key = "auto " + key;
-                        else if (cl_def.attribute == class_attribute.Abstract)
+                        else if ((cl_def.attribute & class_attribute.Abstract) == class_attribute.Abstract)
                             key = "abstract " + key;
-                        else if (cl_def.attribute == class_attribute.Sealed)
+                        else if ((cl_def.attribute & class_attribute.Sealed) == class_attribute.Sealed)
                             key = "sealed " + key;
-                        else if (cl_def.attribute == class_attribute.Static)
+                        else if ((cl_def.attribute & class_attribute.Static) == class_attribute.Static)
                             key = "static " + key;
                         if (key != null && returned_scope.body_loc != null)
                         {
                             returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc);
+                        }
+                        if ((cl_def.attribute & class_attribute.Partial) == class_attribute.Partial)
+                        {
+                            List<SymScope> lst = cur_scope.FindOverloadNames(cur_type_name);
+                            if (lst != null)
+                            {
+                                var this_ts = returned_scope as TypeScope;
+                                foreach (SymScope ss in lst)
+                                {
+                                    var ts = ss as TypeScope;
+                                    if (ts != null)
+                                    {
+                                        ts.AddPartial(this_ts);
+                                        this_ts.AddPartial(ts);
+                                    }
+                                }
+                            }
                         }
                     }
                     if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))

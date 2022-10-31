@@ -4091,6 +4091,7 @@ namespace CodeCompletion
         private List<TypeScope> static_indexers;
         public List<TypeScope> implemented_interfaces;
         public List<TypeScope> instances;
+        public List<TypeScope> other_partials;
         public List<string> generic_params;
         public bool is_final;
         public bool aliased = false;
@@ -4150,6 +4151,21 @@ namespace CodeCompletion
             base.Clear();
             if (generic_params != null)
                 generic_params.Clear();
+        }
+
+        public bool HasPartial(TypeScope ts)
+        {
+            if (other_partials == null)
+                return false;
+            return other_partials.Contains(ts);
+        }
+
+        public void AddPartial(TypeScope ts)
+        {
+            if (other_partials == null)
+                other_partials = new List<TypeScope>();
+            if (!other_partials.Contains(ts))
+                other_partials.Add(ts);
         }
 
         public virtual List<TypeScope> GetInstances()
@@ -4282,7 +4298,7 @@ namespace CodeCompletion
         {
             if (members != null && !is_static)
             {
-                foreach (SymScope ss in members)
+                foreach (SymScope ss in GetMergedMembers())
                 {
                     ProcScope ps = ss as ProcScope;
                     if (ps != null && ps.is_constructor && (ps.parameters == null || ps.parameters.Count == 0) && !ps.is_static)
@@ -4358,6 +4374,8 @@ namespace CodeCompletion
         {
             if (ts is TemplateParameterScope || ts is UnknownScope)
             {
+                if (this.generic_params == null)
+                    return ts;
                 int ind = this.generic_params.IndexOf(ts.Name);
                 if (ind != -1)
                 {
@@ -4399,6 +4417,7 @@ namespace CodeCompletion
             TypeScope ts = new TypeScope(this.kind, this.topScope, this.baseScope);
             ts.original_type = this;
             ts.lazy_instance = true;
+            ts.other_partials = this.other_partials;
             ts.loc = this.loc;
             for (int i = 0; i < gen_args.Count; i++)
             {
@@ -4433,6 +4452,7 @@ namespace CodeCompletion
             TypeScope ts = new TypeScope(this.kind, this.topScope, this.baseScope);
             ts.original_type = this;
             ts.loc = this.loc;
+            ts.other_partials = this.other_partials;
             List<TypeScope> new_gen_args = new List<TypeScope>();
             for (int i = 0; i < gen_args.Count; i++)
             {
@@ -4655,7 +4675,7 @@ namespace CodeCompletion
 
         public virtual ProcScope GetConstructor()
         {
-            foreach (SymScope ss in members)
+            foreach (SymScope ss in GetMergedMembers())
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor()) return ss as ProcScope;
             if (baseScope != null)
                 return baseScope.GetConstructor();
@@ -4671,7 +4691,7 @@ namespace CodeCompletion
         {
             List<ProcScope> constrs = new List<ProcScope>();
             bool must_inherite = true;
-            foreach (SymScope ss in members)
+            foreach (SymScope ss in GetMergedMembers())
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor() && !ss.is_static)
                 {
                     if (ss.loc != null)
@@ -4705,7 +4725,7 @@ namespace CodeCompletion
                 SymScope sc = ht[s] as SymScope;
                 lst.Add(sc.si);
             }*/
-            foreach (SymScope ss in members)
+            foreach (SymScope ss in GetMergedMembers())
             {
                 if (!IsHiddenName(ss.si.name))
                 {
@@ -4725,7 +4745,7 @@ namespace CodeCompletion
         public override SymInfo[] GetNamesAsInBaseClass(ExpressionVisitor ev, bool is_static)
         {
             List<SymInfo> lst = new List<SymInfo>();
-            foreach (SymScope ss in members)
+            foreach (SymScope ss in GetMergedMembers())
             {
                 //if (ss is ProcScope && (ss as ProcScope).IsConstructor())
                 //    continue;
@@ -4764,7 +4784,7 @@ namespace CodeCompletion
                 SymScope sc = ht[s] as SymScope;
                 lst.Add(sc.si);
             }*/
-            foreach (SymScope ss in members)
+            foreach (SymScope ss in GetMergedMembers())
             {
                 if (!IsHiddenName(ss.si.name) && !ss.is_static)
                     if (!(ss is ProcScope) && !(ss is TemplateParameterScope))
@@ -4805,12 +4825,23 @@ namespace CodeCompletion
             return null;
         }
 
+        protected List<SymScope> GetMergedMembers()
+        {
+            if (other_partials == null)
+                return members;
+            List<SymScope> merged_members = new List<SymScope>();
+            merged_members.AddRange(members);
+            foreach (var ts in other_partials)
+                merged_members.AddRange(ts.members);
+            return merged_members;
+        }
+
         //esli naprimer nazhali ctrl-probel(all_name = treu) ili shift-probel (all_names = false)
         //visitor vsegda nuzhen tak kak hranit scope, gde my nazhali
         public override SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
         {
             List<SymInfo> lst = new List<SymInfo>();
-            foreach (SymScope ss in members)
+            foreach (SymScope ss in GetMergedMembers())
             {
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor())
                     continue;
@@ -4848,7 +4879,7 @@ namespace CodeCompletion
         public virtual SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
         {
             List<SymInfo> lst = new List<SymInfo>();
-            foreach (SymScope ss in members)
+            foreach (SymScope ss in GetMergedMembers())
             {
                 if (!IsHiddenName(ss.si.name))
                 {
@@ -4902,7 +4933,7 @@ namespace CodeCompletion
             //if (original_type != null)
             //	return original_type.GetNamesAsInObject(ev);
             List<SymInfo> lst = new List<SymInfo>();
-            foreach (SymScope ss in members)
+            foreach (SymScope ss in GetMergedMembers())
             {
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor()) continue;
                 if (!IsHiddenName(ss.si.name) && !ss.is_static && !(ss is TemplateParameterScope))
@@ -4973,6 +5004,13 @@ namespace CodeCompletion
             //SymScope sc = ht[name] as SymScope;
             SymScope sc = internal_find(name, true);
             if (sc != null) return sc;
+            if (other_partials != null)
+                foreach (TypeScope part in other_partials)
+                {
+                    sc = part.internal_find(name, true);
+                    if (sc != null)
+                        return sc;
+                }
             if (baseScope != null) sc = baseScope.FindNameOnlyInType(name);
             if (sc != null) return sc;
             if (topScope != null) return topScope.FindName(name);
@@ -4982,6 +5020,11 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNames(string name)
         {
             List<SymScope> names = internal_find_overloads(name, true);
+            if (other_partials != null)
+                foreach (TypeScope part in other_partials)
+                {
+                    names.AddRange(part.internal_find_overloads(name, true));
+                }
             if (baseScope != null)
                 names.AddRange(baseScope.FindOverloadNamesOnlyInType(name));
             if (topScope != null)
@@ -4994,6 +5037,13 @@ namespace CodeCompletion
             //SymScope sc = ht[name] as SymScope;
             SymScope sc = internal_find(name, false);
             if (sc != null) return sc;
+            if (other_partials != null)
+                foreach (TypeScope part in other_partials)
+                {
+                    sc = part.internal_find(name, true);
+                    if (sc != null)
+                        return sc;
+                }
             if (baseScope != null) sc = baseScope.FindNameOnlyInType(name);
             if (sc != null) return sc;
             if (topScope != null) return topScope.FindNameInAnyOrder(name);
@@ -5006,9 +5056,18 @@ namespace CodeCompletion
             SymScope sc = null;
             if (original_type != null)
                 return original_type.FindNameOnlyInThisType(name);
-            if (name != null) sc = internal_find(name, false);
-            //if (sc == null && topScope != null) return  topScope.FindNameOnlyInThisType(name);
-            return sc;
+            if (name != null) 
+                sc = internal_find(name, false);
+            if (sc != null)
+                return sc;
+            if (other_partials != null)
+                foreach (TypeScope part in other_partials)
+                {
+                    sc = part.internal_find(name, false);
+                    if (sc != null)
+                        return sc;
+                }
+            return null;
         }
 
         //poisk tolko v klasse i nadklassah
@@ -5019,7 +5078,13 @@ namespace CodeCompletion
                 sc = internal_find(name, false);
             if (sc != null)
                 return sc;
-            
+            if (other_partials != null)
+                foreach (TypeScope part in other_partials)
+                {
+                    sc = part.internal_find(name, false);
+                    if (sc != null)
+                        return sc;
+                }
             if (sc == null && baseScope != null)
                 sc = baseScope.FindNameOnlyInType(name);
             if (sc == null && implemented_interfaces != null)
@@ -5040,6 +5105,11 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
         {
             List<SymScope> names = internal_find_overloads(name, false);
+            if (other_partials != null)
+                foreach (TypeScope part in other_partials)
+                {
+                    names.AddRange(part.internal_find_overloads(name, false));
+                }
             if (baseScope != null)
                 names.AddRange(baseScope.FindOverloadNamesOnlyInType(name));
             if (implemented_interfaces != null)
