@@ -212,7 +212,7 @@ namespace CodeCompletion
                     ret_tn = ret_tn.FindNameOnlyInType(_named_type_reference.names[i].name);
                 else ret_tn = ret_tn.FindNameInAnyOrder(_named_type_reference.names[i].name);
                 if (ret_tn == null) break;
-                else if (founded_scope.IsEqual(ret_tn))
+                else if (founded_scope.IsEqual(ret_tn) && founded_scope is TypeScope)
                     pos_list.Add(get_position(_named_type_reference.names[i]));
             }
         }
