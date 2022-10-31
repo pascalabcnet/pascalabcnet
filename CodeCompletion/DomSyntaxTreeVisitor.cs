@@ -1404,6 +1404,7 @@ namespace CodeCompletion
             //throw new Exception("The method or operation is not implemented.");
             SymScope topScope;
             ProcScope ps = null;
+            ElementScope[] predef_params = null;
             bool not_def = false;
             ProcRealization pr = null;
             bool is_realization = false;
@@ -1457,7 +1458,12 @@ namespace CodeCompletion
                         }
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         else
+                        {
+                            if (ps.parameters != null)
+                                predef_params = ps.parameters.ToArray();
                             ps = select_function_definition(ps, _procedure_header.parameters, null, topScope as TypeScope);
+                        }
+                            
                         if (ps == null)
                         {
                             ps = new ProcScope(meth_name, cur_scope);
@@ -1465,6 +1471,7 @@ namespace CodeCompletion
                         }
                         if (ps.parameters.Count != 0 && _procedure_header.parameters != null && is_proc_realization)
                         {
+                            predef_params = ps.parameters.ToArray();
                             ps.parameters.Clear();
                             ps.already_defined = true;
                         }
@@ -1560,6 +1567,7 @@ namespace CodeCompletion
                                 ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
                                 if (ss != null && ss is ProcScope)
                                 {
+
                                     ps = select_function_definition(ss as ProcScope, _procedure_header.parameters, null, null);
                                     if (ps == null && _procedure_header.parameters == null)
                                         ps = ss as ProcScope;
@@ -1568,9 +1576,11 @@ namespace CodeCompletion
                                         ps = new ProcScope(meth_name, cur_scope);
                                         ps.head_loc = loc;
                                     }
+                                    
                                     //ps = ss as ProcScope;
                                     if (ps.parameters.Count != 0 && _procedure_header.parameters != null)
                                     {
+                                        predef_params = ps.parameters.ToArray();
                                         ps.parameters.Clear();
                                         ps.already_defined = true;
                                     }
@@ -1699,7 +1709,7 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             cur_scope = ps;
             if (_procedure_header.parameters != null)
-                add_parameters(ps, _procedure_header.parameters);
+                add_parameters(ps, _procedure_header.parameters, predef_params);
             cur_scope = tmp;
             if (cur_scope is TypeScope && !ps.is_static)
                 ps.AddName("self", new ElementScope(new SymInfo("self", SymbolKind.Parameter, "self"), cur_scope, ps));
@@ -1726,6 +1736,7 @@ namespace CodeCompletion
         {
             SymScope topScope;
             ProcScope ps = null;
+            ElementScope[] predef_params = null;
             bool is_realization = false;
             TypeScope return_type = null;
             bool not_def = false;
@@ -1788,7 +1799,10 @@ namespace CodeCompletion
                             }
                         }
                         else
+                        {
                             ps = select_function_definition(ps, _function_header.parameters, return_type, topScope as TypeScope, true);
+                        }
+                            
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         if (ps == null)
                         {
@@ -1798,6 +1812,7 @@ namespace CodeCompletion
                         }
                         if (ps.parameters.Count != 0 && _function_header.parameters != null && is_proc_realization)
                         {
+                            predef_params = ps.parameters.ToArray();
                             ps.parameters.Clear();
                             ps.already_defined = true;
                         }
@@ -1898,6 +1913,8 @@ namespace CodeCompletion
                                 {
                                     //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null) ss = (ss as ProcScope).nextProc;
                                     //ps = ss as ProcScope;
+                                    if (ps.parameters != null)
+                                        predef_params = ps.parameters.ToArray();
                                     ps = select_function_definition(ss as ProcScope, _function_header.parameters, return_type, null, true);
                                     if (ps == null && _function_header.parameters == null && _function_header.return_type == null)
                                         ps = ss as ProcScope;
@@ -2051,7 +2068,7 @@ namespace CodeCompletion
 
             cur_scope = ps;
             if (_function_header.parameters != null)
-                add_parameters(ps, _function_header.parameters);
+                add_parameters(ps, _function_header.parameters, predef_params);
             cur_scope = tmp;
             if (ps.procRealization == null || ps.return_type == null)
                 ps.return_type = return_type;
@@ -2066,8 +2083,9 @@ namespace CodeCompletion
                 pr.Complete();
         }
 		
-        private void add_parameters(ProcScope ps, formal_parameters parameters)
+        private void add_parameters(ProcScope ps, formal_parameters parameters, ElementScope[] predef_params)
         {
+            int i = 0;
             foreach (typed_parameters pars in parameters.params_list)
             {
                 pars.vars_type.visit(this);
@@ -2096,7 +2114,10 @@ namespace CodeCompletion
                         ps.AddName(id.name, si);
                         si.param_kind = pars.param_kind;
                         si.MakeDescription();
+                        if (si.cnst_val == null && predef_params != null && i < predef_params.Length)
+                            si.cnst_val = predef_params[i].cnst_val;
                         ps.AddParameter(si);
+                        i++;
                     }
                 }
             }
