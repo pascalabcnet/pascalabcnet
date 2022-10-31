@@ -4513,7 +4513,10 @@ namespace CodeCompletion
                             if (pars.inital_value != null)
                             {
                                 pars.inital_value.visit(this);
-                                si.cnst_val = cnst_val.prim_val;
+                                if (returned_scope is NullTypeScope)
+                                    si.cnst_val = "nil";
+                                else
+                                    si.cnst_val = cnst_val.prim_val;
                             }
                             si.param_kind = pars.param_kind;
                             si.MakeDescription();
