@@ -348,7 +348,6 @@ namespace PascalABCCompiler
             string s = args[0].ToString();
             for (int i = 1; i < args.Length; i++)
                 s += ConsoleCompilerConstants.MessageSeparator + args[i].ToString();
-            File.WriteAllText("log.log", command+" "+s);
             sendCommand(command, s);
         }
         
