@@ -4121,12 +4121,12 @@ namespace CodeCompletion
                 if (_class_definition.template_args != null)
                 {
                     foreach (ident id in _class_definition.template_args.idents)
-                        ss.AddGenericParameter(id.name);
+                        ss.AddGenericParameter(id.name, get_location(id));
                 }
                 else if (template_args != null)
                 {
                     foreach (ident id in template_args.idents)
-                        ss.AddGenericParameter(id.name);
+                        ss.AddGenericParameter(id.name, get_location(id));
                 }
             }
             

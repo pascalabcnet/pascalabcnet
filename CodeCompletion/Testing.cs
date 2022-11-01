@@ -146,6 +146,26 @@ namespace CodeCompletion
                     var positions = rf.FindPositions();
                     compare_positions(FileName, shouldPositions.ToArray(), positions);
                 }
+
+                ind = content.IndexOf("{@@}");
+                if (ind != -1)
+                {
+                    var pos = ind + 5;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    shouldPositions.Add(new Position(line + 1, col, 0, 0, null));
+                    string expr_without_brackets = null;
+                    PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
+                    string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+                    List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
+                    var errors = new List<PascalABCCompiler.Errors.Error>();
+                    expression expr = comp.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(FileName), full_expr, errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                    //expression expr = new ident(expr_without_brackets.Replace("{@}","").Replace("new ","").Trim());
+                    var fnd_scope = dc.GetSymDefinition(expr, line, col, keyw);
+                    var rf = new CodeCompletion.ReferenceFinder(fnd_scope, dc.visitor.entry_scope, cu, FileName, true);
+                    var positions = rf.FindPositions();
+                    compare_positions(FileName, shouldPositions.ToArray(), positions);
+                }
             }
         }
 

@@ -671,7 +671,7 @@ namespace CodeCompletion
         }
 
         //proverka na vhozhdenie v scope
-        public bool IsInScope(location loc, int line, int column)
+        public virtual bool IsInScope(location loc, int line, int column)
         {
             if (loc == null) return false;
             if (loc.begin_line_num < line && loc.end_line_num > line)
@@ -2306,6 +2306,16 @@ namespace CodeCompletion
         {
             members.Clear();
             //members
+        }
+
+        public override bool IsInScope(location loc, int line, int column)
+        {
+            bool res = base.IsInScope(loc, line, column);
+            if (res)
+                return res;
+            if (procRealization != null && procRealization != this)
+                return procRealization.IsInScope(loc, line, column);
+            return false;
         }
 
         public ProcScope GetInstance(List<TypeScope> gen_args)
@@ -4573,11 +4583,13 @@ namespace CodeCompletion
                 instances.Clear();
         }
 
-        public virtual void AddGenericParameter(string name)
+        public virtual void AddGenericParameter(string name, location loc)
         {
             if (generic_params == null) generic_params = new List<string>();
             generic_params.Add(name);
-            AddName(name, new TemplateParameterScope(name, TypeTable.obj_type, this));
+            var ts = new TemplateParameterScope(name, TypeTable.obj_type, this);
+            ts.loc = loc;
+            AddName(name, ts);
         }
 
         public virtual void AddGenericInstanceParameter(string name)
