@@ -140,7 +140,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void AddError(location loc, string ErrResourceString, params object[] values)
         {
             Errors.Error err = new SimpleSemanticError(loc, ErrResourceString, values);
-            if (ThrowCompilationError && !for_intellisense)
+            if ((ThrowCompilationError && !for_intellisense) || ErrResourceString == "FORWARD_DECLARATION_{0}_AS_BASE_TYPE")
             {
                 throw err;
             }

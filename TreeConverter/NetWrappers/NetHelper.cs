@@ -982,6 +982,13 @@ namespace PascalABCCompiler.NetHelper
                     return true;
         	return false;
 		}
+
+        public static bool IsNetNamespaceInAssembly(string name, Assembly a)
+        {
+            if (cur_used_assemblies != null && cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(name))
+                return true;
+            return false;
+        }
 		
 		public static bool IsNetNamespace(string name,PascalABCCompiler.TreeRealization.using_namespace_list _unar, out string full_ns)
 		{
