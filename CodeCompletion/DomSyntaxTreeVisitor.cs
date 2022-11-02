@@ -167,7 +167,8 @@ namespace CodeCompletion
                 var arr = tn.full_name.Split('.');
                 foreach (string s in arr)
                 {
-                    ntr.names.Add(new ident(s));
+                    if (s.IndexOf("implementation__") == -1)
+                        ntr.names.Add(new ident(s));
                 }
                 return ntr;
             }
