@@ -1031,14 +1031,18 @@ namespace CodeCompletion
         public virtual SymScope FindName(string name)
         {
             SymScope sc = internal_find(name, true);
-            if (sc != null) return sc;
-            if (topScope != null) return topScope.FindName(name);
+            if (sc != null && !(sc is InterfaceUnitScope)) 
+                return sc;
+            SymScope saved_sc = sc;
+            if (topScope != null) 
+                return topScope.FindName(name);
             for (int i = 0; i < used_units.Count; i++)
             {
                 sc = used_units[i].FindNameOnlyInType(name);
-                if (sc != null) return sc;
+                if (sc != null) 
+                    return sc;
             }
-            return null;
+            return saved_sc;
         }
 
         public virtual ProcScope FindNameOnlyInUses(string name)
@@ -1063,14 +1067,18 @@ namespace CodeCompletion
         public virtual SymScope FindNameInAnyOrder(string name)
         {
             SymScope sc = internal_find(name, false);
-            if (sc != null) return sc;
-            if (topScope != null) return topScope.FindName(name);
+            if (sc != null && !(sc is InterfaceUnitScope)) 
+                return sc;
+            SymScope saved_sc = sc;
+            if (topScope != null) 
+                return topScope.FindName(name);
             for (int i = 0; i < used_units.Count; i++)
             {
                 sc = used_units[i].FindNameOnlyInType(name);
-                if (sc != null) return sc;
+                if (sc != null) 
+                    return sc;
             }
-            return null;
+            return saved_sc;
         }
     }
 
