@@ -888,8 +888,11 @@ namespace VisualPascalABC
         {
             // SSM 26/04/22 - новый файл создается в папке текущего открытого файла
             var CurrentFileNameDirectory = Path.GetDirectoryName(CurrentSourceFileName);
-            WorkbenchStorage.WorkingDirectory = CurrentFileNameDirectory;
-            Environment.CurrentDirectory = CurrentFileNameDirectory;
+            if (CurrentFileNameDirectory != "")
+            {
+                WorkbenchStorage.WorkingDirectory = CurrentFileNameDirectory;
+                Environment.CurrentDirectory = CurrentFileNameDirectory;
+            }
 
             WorkbenchServiceFactory.FileService.OpenFile(null, null);
         }
