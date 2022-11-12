@@ -144,6 +144,7 @@
     File ..\bin\Lib\NUnitABC.pcu
     File ..\bin\Lib\PlotWPF.pcu
     File ..\bin\Lib\XLSX.pcu
+    File ..\bin\Lib\Мозаика.pcu
 
 
     File ..\bin\Lib\PABCRtl.dll
@@ -222,6 +223,7 @@
     ${AddFile} "NUnitABC.pcu"
     ${AddFile} "PlotWPF.pcu"
     ${AddFile} "XLSX.pcu"
+    ${AddFile} "Мозаика.pcu"
 
 
     ${AddFile} "PABCRtl.dll"
@@ -318,6 +320,7 @@
     File ..\bin\Lib\NUnitABC.pas
     File ..\bin\Lib\PlotWPF.pas
     File ..\bin\Lib\XLSX.pas
+    File ..\bin\Lib\Мозаика.pas
 
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
@@ -390,6 +393,7 @@
     ${AddFile} "NUnitABC.pas"
     ${AddFile} "PlotWPF.pas"
     ${AddFile} "XLSX.pas"
+    ${AddFile} "Мозаика.pas"
 
 
 	${AddFile} "__RedirectIOMode.vb"
