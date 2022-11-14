@@ -4,7 +4,7 @@
    DMCollect, DMTaskMaker, DMZadan, Drawman, DrawManField,
    Robot, RobotField, RobotTaskMaker, RobotZadan,
    Events, FilesOperations, 
-   NumLibABC,
+   //NumLibABC,
    IniFile, PointerTools, PointRect, 
    Sockets, Utils, Timers, 
    Collections, Arrays, Core, ClientServer, Countries,
