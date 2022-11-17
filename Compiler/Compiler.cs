@@ -1955,6 +1955,15 @@ namespace PascalABCCompiler
                         cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5linux;
                     else if (plt.Equals("dotnet5macos"))
                         cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5macos;
+                    else if (plt.Equals("native"))
+                    {
+                        if (Environment.OSVersion.Platform == PlatformID.Unix)
+                            cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetlinuxnative;
+                        else if (Environment.OSVersion.Platform == PlatformID.MacOSX)
+                            cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetmacosnative;
+                        else
+                            cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetwinnative;
+                    }
                 }
                 if (this.compilerOptions.Only32Bit)
                     cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
