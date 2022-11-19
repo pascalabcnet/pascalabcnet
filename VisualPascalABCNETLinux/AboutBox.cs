@@ -119,31 +119,37 @@ namespace VisualPascalABC
 
         private void AboutBox_Shown(object sender, EventArgs e)
         {
-            
-            lVersion.Text = string.Format("{0}, сборка {1} ({2})", PascalABCCompiler.Compiler.ShortVersion, RevisionClass.Revision, PascalABCCompiler.Compiler.VersionDateTime.ToShortDateString());
-            dgvModules.Items.Clear();
-            
-            string apppatch = Path.GetDirectoryName(Application.ExecutablePath);
-
-            VisualEnvironmentCompiler vec = (Owner as Form1).VisualEnvironmentCompiler;
-            PascalABCCompiler.ICompiler comp = vec.StandartCompiler;
-            if (comp != null)
+            try
             {
-                Assembly a = Assembly.GetAssembly(comp.GetType());
-                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2022 by Ivan Bondarev, Stanislav Mikhalkovich"));
-                foreach (PascalABCCompiler.Parsers.IParser parser in comp.ParsersController.Parsers)
-                    dgvModules.Items.Add(MakeItem("Parser",parser.Name, parser.Version, parser.Copyright));
-                foreach (PascalABCCompiler.SemanticTreeConverters.ISemanticTreeConverter conv in comp.SemanticTreeConvertersController.SemanticTreeConverters)
-                    dgvModules.Items.Add(MakeItem("Converter", conv.Name, conv.Version, conv.Copyright));
-                foreach (VisualPascalABCPlugins.IVisualPascalABCPlugin plugin in vec.PluginsController.Plugins)
-                    dgvModules.Items.Add(MakeItem("Plugin",plugin.Name, plugin.Version, plugin.Copyright));
+                lVersion.Text = string.Format("{0}, сборка {1} ({2})", PascalABCCompiler.Compiler.ShortVersion, RevisionClass.Revision, PascalABCCompiler.Compiler.VersionDateTime.ToShortDateString());
+                dgvModules.Items.Clear();
+
+                string apppatch = Path.GetDirectoryName(Application.ExecutablePath);
+
+                VisualEnvironmentCompiler vec = (Owner as Form1).VisualEnvironmentCompiler;
+                PascalABCCompiler.ICompiler comp = vec.StandartCompiler;
+                if (comp != null)
+                {
+                    Assembly a = Assembly.GetAssembly(comp.GetType());
+                    dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2022 by Ivan Bondarev, Stanislav Mikhalkovich"));
+                    foreach (PascalABCCompiler.Parsers.IParser parser in comp.ParsersController.Parsers)
+                        dgvModules.Items.Add(MakeItem("Parser", parser.Name, parser.Version, parser.Copyright));
+                    foreach (PascalABCCompiler.SemanticTreeConverters.ISemanticTreeConverter conv in comp.SemanticTreeConvertersController.SemanticTreeConverters)
+                        dgvModules.Items.Add(MakeItem("Converter", conv.Name, conv.Version, conv.Copyright));
+                    foreach (VisualPascalABCPlugins.IVisualPascalABCPlugin plugin in vec.PluginsController.Plugins)
+                        dgvModules.Items.Add(MakeItem("Plugin", plugin.Name, plugin.Version, plugin.Copyright));
+
+                }
+
+                //dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"ICSharpCode.TextEditor.dll"))));
+                //dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"Debugger.Core.dll"))));
+                //dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"WeifenLuo.WinFormsUI.Docking.dll")))); 
+                ActiveControl = button1;
+            }
+            catch
+            {
 
             }
-
-            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"ICSharpCode.TextEditor.dll"))));
-            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"Debugger.Core.dll"))));
-            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"WeifenLuo.WinFormsUI.Docking.dll")))); 
-            ActiveControl = button1;
             /*lbComponents.Items.Clear();
             PascalABCCompiler.Compiler comp = (Owner as Form1).VisualEnvironmentCompiler.Compiler;
             if (comp != null)
