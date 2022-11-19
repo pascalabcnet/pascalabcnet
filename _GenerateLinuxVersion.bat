@@ -200,10 +200,10 @@ copy bin\Lng\Rus\Warning_ib.dat Release\PascalABCNETLinux\Lng\Rus\Warning_ib.dat
 copy bin\Lng\Rus\_Global Release\PascalABCNETLinux\Lng\Rus\_Global
 copy bin\Lng\Rus\_Global_loc Release\PascalABCNETLinux\Lng\Rus\_Global_loc
 
+xcopy InstallerSamples\!РусскиеИсполнители\ Release\Samples\!РусскиеИсполнители\ /s /e 
 xcopy InstallerSamples\!MainFeatures\ Release\Samples\!MainFeatures\ /s /e
 
 xcopy InstallerSamples\!Tutorial\           Release\Samples\!Tutorial\           /s /e
-xcopy InstallerSamples\!РусскиеИсполнители\ Release\Samples\!РусскиеИсполнители\ /s /e 
 xcopy InstallerSamples\Algorithms\          Release\Samples\Algorithms\          /s /e
 xcopy InstallerSamples\Applications\        Release\Samples\Applications\        /s /e
 xcopy InstallerSamples\Games\               Release\Samples\Games\               /s /e
@@ -222,3 +222,4 @@ cd Release
 ..\Utils\pkzipc\pkzipc.exe -add -dir=current PascalABCNETLinux.zip Samples\*.*
 
 cd ..
+pause
