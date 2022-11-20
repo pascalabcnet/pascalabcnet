@@ -7093,7 +7093,8 @@ namespace PascalABCCompiler.NETGenerator
                 attrs |= MethodAttributes.NewSlot;
             }
             //\ssyy
-
+            if (value.name == "op_Implicit" || value.name == "op_Explicit")
+                attrs |= MethodAttributes.HideBySig | MethodAttributes.SpecialName;
             methb = cur_type.DefineMethod(method_name, attrs);
 
             if (value.is_generic_function)
