@@ -1435,6 +1435,41 @@ namespace PascalABCCompiler.NETGenerator
                             }
                                 
                         }
+                        else
+                        {
+                            bool has_meth_contrains = false;
+                            foreach (var meth in ctn.methods)
+                            {
+                                
+                                if (meth.generic_params != null && meth.generic_params.Count > 0)
+                                    foreach (var gp in meth.generic_params)
+                                    {
+                                        if (!(gp.base_type is ICommonTypeNode))
+                                            continue;
+                                        TypeBuilder tb = helper.GetTypeReference(gp.base_type).tp as TypeBuilder;
+                                        if (tb != null && !closed_types.Contains(tb))
+                                        {
+                                            try
+                                            {
+                                                tb.CreateType();
+                                                closed_types.Add(tb);
+                                                has_meth_contrains = true;
+                                            }
+                                            catch (TypeLoadException ex2)
+                                            {
+                                                throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                                            }
+                                        }
+                                    }
+                            }
+                            if (has_meth_contrains)
+                                continue;
+                            else
+                            {
+                                failed_types.Add(value_types[i]);
+                                continue;
+                            }
+                        }
                         throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                     }
                     else
