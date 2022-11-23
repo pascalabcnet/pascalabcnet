@@ -224,14 +224,21 @@ namespace VisualPascalABC
 
         public void Paste(bool canInsertInInputBox)
         {
-            if (MainForm.OutputWindow != null && MainForm.OutputWindow.InputTextBox != null &&
-                MainForm.OutputWindow.InputTextBox.Focused && canInsertInInputBox)
+            try
             {
-                MainForm.OutputWindow.InputTextBox.Paste();
-                return;
+                if (MainForm.OutputWindow != null && MainForm.OutputWindow.InputTextBox != null &&
+                    MainForm.OutputWindow.InputTextBox.Focused && canInsertInInputBox)
+                {
+                    MainForm.OutputWindow.InputTextBox.Paste();
+                    return;
+                }
+                ICSharpCode.TextEditor.Actions.Paste paste = new ICSharpCode.TextEditor.Actions.Paste();
+                paste.Execute(TextEditor.ActiveTextAreaControl.TextArea);
             }
-            ICSharpCode.TextEditor.Actions.Paste paste = new ICSharpCode.TextEditor.Actions.Paste();
-            paste.Execute(TextEditor.ActiveTextAreaControl.TextArea);
+            catch (Exception)
+            {
+
+            }
         }
 
         public void SetText(string text)
