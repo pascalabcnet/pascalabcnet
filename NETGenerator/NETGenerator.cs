@@ -830,7 +830,7 @@ namespace PascalABCCompiler.NETGenerator
                         cur_type.SetCustomAttribute(attr_ci, new byte[4] { 0x01, 0x00, 0x00, 0x00 });
                         attr_class.CreateType();
                     }
-                    else
+                    else if (!IsDotnetNative())
                     {   // SSM 05.02.20 here change
                         TypeBuilder attr_class = mb.DefineType(cnnsnamespace_name + "." + "$ClassUnitAttr", TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                         ConstructorInfo attr_ci = attr_class.DefineDefaultConstructor(MethodAttributes.Public);
@@ -2855,7 +2855,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
             }
 
-            if (func is ICommonNamespaceFunctionNode && (func as ICommonNamespaceFunctionNode).ConnectedToType != null)
+            if (func is ICommonNamespaceFunctionNode && (func as ICommonNamespaceFunctionNode).ConnectedToType != null && !IsDotnetNative())
             {
                 if (!marked_with_extension_attribute.ContainsKey(cur_unit_type))
                 {
