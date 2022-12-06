@@ -301,6 +301,10 @@ namespace VisualPascalABC
             this.menuStrip1.Size = new System.Drawing.Size(876, 24);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.MenuActivate += new System.EventHandler(this.menuStrip1_MenuActivate);
+            this.menuStrip1.MenuDeactivate += new System.EventHandler(this.menuStrip1_MenuDeactivate);
+            this.menuStrip1.Enter += new System.EventHandler(this.menuStrip1_Enter);
+            this.menuStrip1.Leave += new System.EventHandler(this.menuStrip1_Leave);
             // 
             // mrFile
             // 
@@ -1334,7 +1338,7 @@ namespace VisualPascalABC
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(179, 22);
             this.toolStripMenuItem5.Text = "M_OPENTUTORIAL";
             this.toolStripMenuItem5.Visible = false;
             this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
@@ -1895,8 +1899,10 @@ namespace VisualPascalABC
             this.cmHelp,
             this.cmSamples});
             this.cmEditor.Name = "cmEditor";
-            this.cmEditor.Size = new System.Drawing.Size(222, 336);
+            this.cmEditor.Size = new System.Drawing.Size(222, 358);
+            this.cmEditor.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.cmEditor_Closed);
             this.cmEditor.Opening += new System.ComponentModel.CancelEventHandler(this.cmEditor_Opening);
+            this.cmEditor.Opened += new System.EventHandler(this.cmEditor_Opened);
             // 
             // cmGotoDefinition
             // 

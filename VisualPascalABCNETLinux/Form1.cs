@@ -2009,6 +2009,44 @@ namespace VisualPascalABC
             BottomDockPanel.Size = new Size(BPanel.Width-3, BPanel.Height - 3);
         }
 
+        public bool MenuActive { get; set; } = false;
+
+        private void menuStrip1_MenuActivate(object sender, EventArgs e)
+        {
+            MenuActive = true;
+            //Text = "MenuActive = " + MenuActive.ToString();
+        }
+
+        private void menuStrip1_MenuDeactivate(object sender, EventArgs e)
+        {
+            MenuActive = false;
+            //Text = "MenuActive = " + MenuActive.ToString();
+        }
+
+        private void menuStrip1_Enter(object sender, EventArgs e)
+        {
+            MenuActive = true;
+            //Text = "MenuActive = " + MenuActive.ToString();
+        }
+
+        private void menuStrip1_Leave(object sender, EventArgs e)
+        {
+            MenuActive = false;
+            //Text = "MenuActive = " + MenuActive.ToString();
+        }
+
+        private void cmEditor_Opened(object sender, EventArgs e)
+        {
+            MenuActive = true;
+            //Text = "ContextMenuActive = " + MenuActive.ToString();
+        }
+
+        private void cmEditor_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            MenuActive = false;
+            //Text = "ContextMenuActive = " + MenuActive.ToString();
+        }
+
         private void tsHelp_Click(object sender, EventArgs e)
         {
             __showhelpinqueue();

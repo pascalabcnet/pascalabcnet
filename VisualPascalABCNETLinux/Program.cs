@@ -98,7 +98,7 @@ namespace VisualPascalABC
             try
             {
 
-                if (Environment.OSVersion.Version.Major >= 6) SetProcessDPIAware();
+                //if (Environment.OSVersion.Version.Major >= 6) SetProcessDPIAware();
                 CommandLineArgs = args;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
