@@ -8,7 +8,7 @@ type
   t1<T> = class
   where T: class;
     // Обязательно метод
-    function f1<TT>(o: T): sequence of byte;
+    function f1<TT>(o: TT): sequence of byte;
     where TT: record;
     begin
       //Ошибка: Невозможно инстанцировать, так как тип T не наследован от System.Exception
@@ -19,5 +19,5 @@ type
   end;
   
 begin
-  Assert(t1.Create.f1.Single=5);
+  Assert(t1&<object>.Create.f1(0).Single = 5);
 end.
