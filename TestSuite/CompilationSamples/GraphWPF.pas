@@ -643,6 +643,8 @@ var OnMouseDown: procedure(x, y: real; mousebutton: integer);
 var OnMouseUp: procedure(x, y: real; mousebutton: integer);
 /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
 var OnMouseMove: procedure(x, y: real; mousebutton: integer);
+/// Событие поворота колёсика мыши. delta - величина поворота: delta > 0 - от пользователя, delta < 0 - к пользователю
+var OnMouseWheel: procedure(delta: real);
 /// Событие нажатия клавиши
 var OnKeyDown: procedure(k: Key);
 /// Событие отжатия клавиши
@@ -2155,6 +2157,13 @@ begin
     OnMouseMove(p.x, p.y, mb);
 end;
 
+procedure SystemOnMouseWheel(sender: Object; e: MouseWheelEventArgs);
+begin
+  var delta := e.Delta;
+  if OnMouseWheel <> nil then  
+    OnMouseWheel(delta);
+end;
+
 /// --- SystemKeyEvents
 procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs) := 
   if OnKeyDown<>nil then
@@ -2354,6 +2363,7 @@ public
     MouseDown += SystemOnMouseDown;
     MouseUp += SystemOnMouseUp;
     MouseMove += SystemOnMouseMove;
+    MouseWheel += SystemOnMouseWheel;
     KeyDown += SystemOnKeyDown;
     KeyUp += SystemOnKeyUp;
     TextInput += SystemOnKeyPress;

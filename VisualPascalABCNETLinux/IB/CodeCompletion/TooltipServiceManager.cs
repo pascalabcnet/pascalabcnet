@@ -154,7 +154,7 @@ namespace VisualPascalABC
                     dvw.Location = choose_location(p, txt);
                     if (!VisualPABCSingleton.MainForm.MenuActive)
                     {
-                        dvw.ShowInTaskbar = false;
+                        //dvw.ShowInTaskbar = false;
                         dvw.Description = txt;
                     }                            
                     _hint_hide_d = dvw.Font.Height / 2;

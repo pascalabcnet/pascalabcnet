@@ -12649,7 +12649,7 @@ begin
 end;
 
 /// Возвращает квадрат числа
-function Sqr(Self: integer): integer; extensionmethod;
+function Sqr(Self: integer): int64; extensionmethod;
 begin
   Result := Sqr(Self);
 end;

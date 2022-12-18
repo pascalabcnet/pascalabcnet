@@ -1137,7 +1137,7 @@ begin
   case n of
     1: Result := n + ' значение';
     2, 3, 4: Result := n + ' значения';
-    5..1000: Result := n + ' значений';
+    5..100000: Result := n + ' значений';
   end;
 end;
 
