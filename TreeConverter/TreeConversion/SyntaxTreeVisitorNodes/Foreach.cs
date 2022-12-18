@@ -184,7 +184,7 @@ namespace PascalABCCompiler.TreeConverter
                 convertion_data_and_alghoritms.check_convert_type_with_inheritance(elem_type, foreachVariable.type,
                     get_location(_foreach_stmt.identifier));
             if (elem_type.IsDelegate && !foreachVariable.type.IsDelegate)
-                AddError(new CanNotConvertTypes(null, foreachVariable.type, elem_type, get_location(_foreach_stmt.identifier)));
+                AddError(new CanNotConvertTypes(null, elem_type, foreachVariable.type, get_location(_foreach_stmt.identifier)));
             return foreachVariable;
         }
 

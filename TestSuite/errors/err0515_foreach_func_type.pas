@@ -1,4 +1,4 @@
-﻿//!Нельзя преобразовать тип integer к Func<integer>
+﻿//!Нельзя преобразовать тип Func<integer> к integer
 procedure p1<T>(a: array of ()->T; v: T) :=
 a[0] := ()->v;
 begin
