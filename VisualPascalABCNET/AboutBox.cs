@@ -230,5 +230,10 @@ namespace VisualPascalABC
         {
             System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("!PASCALABCNET_DEVELOPERS_LINK"));
         }
+
+        private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("!PASCALABCNET_TELEGRAM_CHANNEL_LINK"));
+        }
     }
 }

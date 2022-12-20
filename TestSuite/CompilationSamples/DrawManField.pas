@@ -644,12 +644,15 @@ begin
 end;
 
 procedure CorrectWHLT;
-var mw,mh: integer;
 begin
+  if DMField = nil then
+    exit;
+  if GraphABCControl = nil then
+    exit;
   if (DMField.DimX=0) or (DMField.DimY=0) then
     exit;
-  mw := (GraphABCControl.Width - Zazx1 - ZazX2 - 30) div DMField.DimX;
-  mh := (GraphABCControl.Height - ZazY1 - ZazY2 - 20) div DMField.DimY;
+  var mw := (GraphABCControl.Width - Zazx1 - ZazX2 - 30) div DMField.DimX;
+  var mh := (GraphABCControl.Height - ZazY1 - ZazY2 - 20) div DMField.DimY;
   DMField.CellSize := min(mw,mh);
 {  if DMField.CellSize mod 2 = 1 then 
     DMField.CellSize := DMField.CellSize - 1;}

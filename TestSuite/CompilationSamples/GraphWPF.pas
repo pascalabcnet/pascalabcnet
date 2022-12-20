@@ -643,7 +643,7 @@ var OnMouseDown: procedure(x, y: real; mousebutton: integer);
 var OnMouseUp: procedure(x, y: real; mousebutton: integer);
 /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
 var OnMouseMove: procedure(x, y: real; mousebutton: integer);
-/// Событие поворота колёсика мыши. delta - величина поворота: delta > 0 - от пользователя, delta < 0 - к пользователю
+/// Событие прокрутки колёсика мыши. delta - величина прокрутки: delta > 0 - от пользователя, delta < 0 - к пользователю
 var OnMouseWheel: procedure(delta: real);
 /// Событие нажатия клавиши
 var OnKeyDown: procedure(k: Key);
