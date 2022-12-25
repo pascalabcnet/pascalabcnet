@@ -8170,7 +8170,7 @@ namespace PascalABCCompiler.NETGenerator
             //Массив присваиваем массиву=>надо вызвать копирование
             TypeInfo ti_l = helper.GetTypeReference(to.type);
             TypeInfo ti_r = helper.GetTypeReference(from.type);
-            if (ti_l.is_arr && ti_r.is_arr)
+            if (ti_l.is_arr && ti_r.is_arr && !(to is ILocalBlockVariableReferenceNode && (to as ILocalBlockVariableReferenceNode).Variable.name.StartsWith("$TV")))
             {
                 il.Emit(OpCodes.Call, ti_r.clone_meth);
             }
