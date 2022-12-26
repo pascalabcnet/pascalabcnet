@@ -485,7 +485,7 @@ namespace CodeCompletion
             for (int i = 0; i < elems.Length; i++)
                 if (pattern == null || pattern == "")
                 {
-                    if (!elems[i].name.StartsWith("$") && !elems[i].name.StartsWith("<"))
+                    if (!elems[i].name.StartsWith("$") && !elems[i].name.StartsWith("<") && !elems[i].name.StartsWith("get_<>") && !elems[i].name.StartsWith("set_<>"))
                         if (all_names)
                         {
                             if (elems[i].kind != SymbolKind.Namespace || nest_level == 0)
