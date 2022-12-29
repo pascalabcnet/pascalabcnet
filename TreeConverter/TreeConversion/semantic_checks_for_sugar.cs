@@ -20,15 +20,9 @@ namespace PascalABCCompiler.TreeConverter
             if (t == null)
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
-            var IsTuple = false;
-            var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"))
-                IsTuple = true;
-            if (!IsTuple)
-            {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
-            }
+            var IsTuple = IsTupleType(t);
+            var IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
@@ -52,15 +46,9 @@ namespace PascalABCCompiler.TreeConverter
             if (t == null)
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
-            var IsTuple = false;
-            var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"))
-                IsTuple = true;
-            if (!IsTuple)
-            {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
-            }
+            var IsTuple = IsTupleType(t);
+            var IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");

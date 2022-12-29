@@ -82,10 +82,6 @@
     <Reference Include="Debugger.Core">
       <HintPath>..\Libraries\Debugger.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop.Dom, Version=4.2.1.8805, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>FormsDesignerBinding\Libs\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Tasks" />

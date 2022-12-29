@@ -15939,7 +15939,7 @@ namespace PascalABCCompiler.TreeConverter
             if (ent != null)
             {
                 var t = ent.compiled_type;
-                if (t != null && !t.IsArray && t.FullName.StartsWith("System.Tuple"))
+                if (t != null && IsTupleType(t))
                 {
                     expression eee = parameters.expressions[0];
 
@@ -21421,6 +21421,16 @@ namespace PascalABCCompiler.TreeConverter
             ProcessNode(av.new_addr_value); // обойти десахарное 
         }
 
+        public bool IsTupleType(Type t)
+        {
+            return !t.IsArray && (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"));
+        }
+
+        public bool IsSequenceType(Type t)
+        {
+            return t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null;
+        }
+
         private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
         {
             sem_ex = convert_strong(ex);
@@ -21428,15 +21438,10 @@ namespace PascalABCCompiler.TreeConverter
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-            IsTuple = false;
-            IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple"))
-                IsTuple = true;
-            if (!IsTuple)
-            {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
-            }
+
+            IsTuple = IsTupleType(t);
+            IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
@@ -21508,11 +21513,11 @@ namespace PascalABCCompiler.TreeConverter
 
             var IsTuple = false;
             var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple"))
+            if (IsTupleType(t))
                 IsTuple = true;
             if (!IsTuple)
             {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
+                if (IsSequenceType(t))
                     IsSequence = true;
             }
             if (!IsTuple && !IsSequence)
@@ -21572,15 +21577,10 @@ namespace PascalABCCompiler.TreeConverter
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-            var IsTuple = false;
-            var IsSequence = false;
-            if ((t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple")) && !(t.IsArray)) // ошибка - не проходит, когда есть System.Tuple[,][] т.е. массив туплов!!!
-                IsTuple = true;
-            if (!IsTuple)
-            {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
-            }
+
+            var IsTuple = IsTupleType(t);
+            var IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");

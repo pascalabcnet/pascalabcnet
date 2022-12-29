@@ -10409,7 +10409,7 @@ begin
 end;
 
 /// Превращает последовательность в последовательность n-ок соседних элементов
-function Nwise<T>(Self: sequence of T; n: integer):sequence of array of T; extensionmethod;
+function Nwise<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin 
   var chunk := new Queue<T>(n);
   foreach var x in Self do 
