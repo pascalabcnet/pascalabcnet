@@ -30,10 +30,9 @@ begin
   var dataProcessPipeline := Context.Transforms.Concatenate('Features', 
     'SepalLength', 'SepalWidth', 'PetalLength', 'PetalWidth');
   
-  //var trainer: KMeansTrainer := Context.Clustering.Trainers.KMeans('Features', nil, 3);
   var trainer: IEstimator<ClusteringPredictionTransformer<KMeansModelParameters>>;
+  trainer := Context.Clustering.Trainers.KMeans('Features', nil, 3);
   //trainer := Context.Clustering.Trainers.KMeans('Features', nil, 3);
-  //dataProcessPipeline.Append(new KMeansTrainer);
-  //var trainingPipeline := dataProcessPipeline.Append(trainer);
+  var trainingPipeline := dataProcessPipeline.Append(trainer);
   //var trainedModel := trainingPipeline.Fit(trainingDataView);
 end.
