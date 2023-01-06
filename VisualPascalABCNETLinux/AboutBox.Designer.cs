@@ -51,8 +51,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.linkLabel3 = new System.Windows.Forms.LinkLabel();
+            this.label6 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.linkLabel4 = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
@@ -169,7 +169,7 @@
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(317, 13);
             this.label12.TabIndex = 17;
-            this.label12.Text = "Copyright (c) 2005, 2022   Ivan Bondarev, Stanislav Mikhalkovich";
+            this.label12.Text = "Copyright (c) 2005, 2023   Ivan Bondarev, Stanislav Mikhalkovich";
             this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
             // label9
@@ -318,16 +318,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "DEVELOPERS";
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(20, 79);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(85, 13);
-            this.label6.TabIndex = 29;
-            this.label6.Text = "DEVELOPERS2";
-            // 
             // linkLabel3
             // 
             this.linkLabel3.AutoSize = true;
@@ -339,6 +329,16 @@
             this.linkLabel3.TabStop = true;
             this.linkLabel3.Text = "!PASCALABCNET_DEVELOPERS";
             this.linkLabel3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel3_LinkClicked);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label6.Location = new System.Drawing.Point(20, 79);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(85, 13);
+            this.label6.TabIndex = 29;
+            this.label6.Text = "DEVELOPERS2";
             // 
             // label13
             // 

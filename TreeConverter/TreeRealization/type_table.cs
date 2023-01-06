@@ -575,6 +575,48 @@ namespace PascalABCCompiler.TreeRealization
                             implements = true;
                             break;
                         }
+                        // Тут можно проверить на ковариантность
+                        else if (interf is compiled_generic_instance_type_node cgitn && base_class is compiled_generic_instance_type_node bcgitn)
+                        {
+                            if (cgitn.original_generic != null && cgitn.original_generic == bcgitn.original_generic)
+                            {
+                                var ctcgi = cgitn.original_generic as compiled_type_node;
+                                if (ctcgi != null)
+                                {
+                                    // теперь надо проверить параметры на ковариантность - все
+                                    var n = bcgitn.instance_params.Count;
+                                    var n1 = cgitn.instance_params.Count;
+
+                                    var impl = true;
+                                    if (n != n1)
+                                        impl = false;
+                                    else
+                                        for (int i=0; i<n; i++)
+                                        {
+                                            if ((ctcgi.compiled_type.GetGenericArguments()[i].GenericParameterAttributes & System.Reflection.GenericParameterAttributes.Covariant) != 0)
+                                            {
+                                                if (is_derived(bcgitn.instance_params[i], cgitn.instance_params[i], false))
+                                                {
+                                                    // OK
+                                                }
+                                            }
+                                            // Почему то когда это закомментировано, то работает. А так не вызывается ??!
+                                            /*else if (bcgitn.instance_params[i] == cgitn.instance_params[i])
+                                            {
+                                                n = n;
+                                                // Тоже OK
+                                            }*/
+                                            else
+                                            {
+                                                impl = false;
+                                                break;
+                                            }
+                                        }
+                                    // то есть если все контравариантные или неважно какие, но равные то implements = true иначе false
+                                    implements = impl;
+                                }
+                            }
+                        }
                         else if (interf is compiled_type_node ictn && base_class is compiled_type_node bctn)
                         {
                             if (ictn.compiled_type.AssemblyQualifiedName != null &&  ictn.compiled_type.AssemblyQualifiedName == bctn.compiled_type.AssemblyQualifiedName)
