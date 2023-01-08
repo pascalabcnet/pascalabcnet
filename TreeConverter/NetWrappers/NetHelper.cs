@@ -415,7 +415,7 @@ namespace PascalABCCompiler.NetHelper
            		fs.Read(buf, 0, (int)fs.Length);
             	fs.Close();
                 curr_inited_assm_path = name;
-                if (!use_load_from)
+                if (!System.IO.Path.GetFileName(name).ToLower().Contains("microsoft."))
                     a = System.Reflection.Assembly.Load(buf);
                 else
                     a = System.Reflection.Assembly.LoadFrom(name);
