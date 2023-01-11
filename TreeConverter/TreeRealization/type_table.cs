@@ -576,6 +576,8 @@ namespace PascalABCCompiler.TreeRealization
                             break;
                         }
                         // Тут можно проверить на ковариантность
+                        // еще где то надо проверять, что IEnumerable<Derived> -> IEnumerable<Base>, но здесь base_class предполагает, 
+                        // что это - класс, и рассматривает все его интерфейсы, упуская ситуацию, когда base_class - это и есть интерфейс
                         else if (interf is compiled_generic_instance_type_node cgitn && base_class is compiled_generic_instance_type_node bcgitn)
                         {
                             if (cgitn.original_generic != null && cgitn.original_generic == bcgitn.original_generic)

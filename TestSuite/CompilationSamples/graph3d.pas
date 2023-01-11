@@ -1161,7 +1161,7 @@ type
 //>>     Graph3D: класс AnimationBase # Graph3D AnimationBase class
 // ----------------------------------------------------- 
   /// Базовый класс анимации 3D-объектов
-  AnimationBase = class
+  AnimationBase = class(Object)
   private 
     Element: Object3D;
     Seconds: real;

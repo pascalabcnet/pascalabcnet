@@ -208,14 +208,16 @@ namespace VisualPascalABC
                 }
                 else*/
                 {
-                    Help.ShowHelp(null, HelpFileName, HelpNavigator.TableOfContents);
-                    Help.ShowHelp(null, HelpFileName, HelpNavigator.KeywordIndex, tw.Word);
+                    ShowHelpLinux("-index "+ tw.Word);
+                    //Help.ShowHelp(null, HelpFileName, HelpNavigator.TableOfContents);
+                    //Help.ShowHelp(null, HelpFileName, HelpNavigator.KeywordIndex, tw.Word);
                 }
             }
             else
             {
-                Help.ShowHelp(null, HelpFileName, HelpNavigator.KeywordIndex, "PascalABC"); // ôèêòèâíûé âûçîâ. Íóæåí ÷òîáû îêíî ñïðàâêè íå ïîêàçûâàëîñü Always on Top
-                Help.ShowHelp(null, HelpFileName);
+                ShowHelpLinux();
+                //Help.ShowHelp(null, HelpFileName, HelpNavigator.KeywordIndex, "PascalABC"); // ôèêòèâíûé âûçîâ. Íóæåí ÷òîáû îêíî ñïðàâêè íå ïîêàçûâàëîñü Always on Top
+                //Help.ShowHelp(null, HelpFileName);
             }
         }
 
@@ -226,7 +228,8 @@ namespace VisualPascalABC
 
         void __showhelp(object state)
         {
-            Help.ShowHelp(null, HelpFileName);//zdes dolzhen stojat null, inache gluki pri perekluchenii okon
+            ShowHelpLinux();
+            //Help.ShowHelp(null, HelpFileName);//zdes dolzhen stojat null, inache gluki pri perekluchenii okon
         }
 
         void __showdotnethelp(object state)
@@ -238,6 +241,20 @@ namespace VisualPascalABC
         {
             if (!ThreadPool.QueueUserWorkItem(__showhelp))
                 __showhelp(null);
+        }
+
+        void ShowHelpLinux(string commandline = "")
+        {
+            try
+            {
+                if (commandline == "")
+                    System.Diagnostics.Process.Start("kchmviewer", HelpFileName);
+                else System.Diagnostics.Process.Start("kchmviewer", HelpFileName + " " + commandline);
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }
