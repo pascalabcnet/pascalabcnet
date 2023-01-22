@@ -11529,6 +11529,8 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 if (vi.lb.LocalType == TypeFactory.ObjectType && get_current_meth.ReturnType.IsValueType)
                     il.Emit(OpCodes.Box, get_current_meth.ReturnType);
+                else if (vi.lb.LocalType == TypeFactory.StringType && get_current_meth.ReturnType == TypeFactory.CharType)
+                    il.Emit(OpCodes.Call, TypeFactory.CharToString);
                 il.Emit(OpCodes.Stloc, vi.lb);
             }
             else if (vi.kind == VarKind.vkGlobal)
@@ -11542,6 +11544,8 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 if (vi.fb.FieldType == TypeFactory.ObjectType && get_current_meth.ReturnType.IsValueType)
                     il.Emit(OpCodes.Box, get_current_meth.ReturnType);
+                else if (vi.fb.FieldType == TypeFactory.StringType && get_current_meth.ReturnType == TypeFactory.CharType)
+                    il.Emit(OpCodes.Call, TypeFactory.CharToString);
                 il.Emit(OpCodes.Stsfld, vi.fb);
             }
             else
@@ -11555,6 +11559,8 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 if (vi.fb.FieldType == TypeFactory.ObjectType && get_current_meth.ReturnType.IsValueType)
                     il.Emit(OpCodes.Box, get_current_meth.ReturnType);
+                else if (vi.fb.FieldType == TypeFactory.StringType && get_current_meth.ReturnType == TypeFactory.CharType)
+                    il.Emit(OpCodes.Call, TypeFactory.CharToString);
                 il.Emit(OpCodes.Stfld, vi.fb);
             }
             labels.Push(leave_label);
