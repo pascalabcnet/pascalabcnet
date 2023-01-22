@@ -4,5 +4,5 @@
     l.Add(s);
   assert(l[0] = 'a');
   assert(l[1] = 'b');
-  assert(l[1] = 'c');
+  assert(l[2] = 'c');
 end.
