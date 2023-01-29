@@ -2618,7 +2618,7 @@ namespace PascalABCCompiler.PCU
             {
                 bw.Write((byte)0);
             }
-
+            bw.Write((byte)type.type_special_kind);
             int base_class_off = (int)bw.BaseStream.Position;
 
             bw.Seek(GetSizeOfReference(type.base_type), SeekOrigin.Current);
@@ -2634,7 +2634,7 @@ namespace PascalABCCompiler.PCU
                 seek_off += GetSizeOfReference(type.ImplementingInterfaces[k] as TreeRealization.type_node);
             bw.Seek(seek_off, SeekOrigin.Current);
             bw.Write((byte)type.type_access_level);
-            bw.Write((byte)type.type_special_kind);
+            
             bw.Write(type.IsSealed);
             bw.Write(type.IsAbstract);
             bw.Write(type.IsStatic);
