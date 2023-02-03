@@ -96,6 +96,8 @@ type
     th: real := 1;
     fx,fy: real;
     rc: boolean := false;
+  public
+    ///--
     function PenConstruct: GPen;
     begin
       Result := new GPen(GetBrush(c),th);
@@ -110,6 +112,7 @@ type
         Result.StartLineCap := PenLineCap.Flat;
         Result.EndLineCap := PenLineCap.Flat;
       end;
+      Result.Freeze;
     end;
   public  
     /// Цвет пера

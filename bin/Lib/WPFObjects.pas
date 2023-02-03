@@ -169,13 +169,13 @@ type
     ob: FrameworkElement;
     gr: Grid; // Grid связан только с текстом
     t: TextBlock;
+    ChildrenWPF := new List<ObjectWPF>;
+    procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True; Hidden: boolean := False);
+  protected  
     transfgroup: TransformGroup;
     rot: RotateTransform;
     sca: ScaleTransform;
     transl: TranslateTransform;
-
-    ChildrenWPF := new List<ObjectWPF>;
-    procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True; Hidden: boolean := False);
   public
     /// Направление движения по оси X. Используется методом Move
     auto property Dx: real;
@@ -1233,7 +1233,7 @@ type
 // -----------------------------------------------------
   /// Класс графических объектов "Рисунок"
   PictureWPF = class(ObjectWPF)
-  private
+  protected
     function CreateBitmapImage(fname: string) := new BitmapImage(new System.Uri(fname,System.UriKind.Relative)); 
     procedure Rest(x,y,w,h: real; b: BitmapImage);
     begin
@@ -1244,6 +1244,7 @@ type
 
       InitOb(x,y,w,h,im);
     end;
+  private
     procedure InitOb3(x,y,w,h: real; fname: string);
     begin
       var b := CreateBitmapImage(fname);

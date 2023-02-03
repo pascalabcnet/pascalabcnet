@@ -410,6 +410,12 @@ begin
   RegisterTask('pp7',pp7);
   RegisterTask('pp8',pp8);
 
+  RegisterTask('br1',br1);
+  RegisterTask('br2',br2);
+  RegisterTask('br3',br3);
+  RegisterTask('br4',br4);
+  RegisterTask('br5',br5);
+
   RegisterTask('examen1',examen1);
   RegisterTask('examen2',examen2);
   RegisterTask('examen3',examen3);
@@ -420,6 +426,7 @@ begin
   RegisterTask('examen8',examen8);
   RegisterTask('examen9',examen9);
   RegisterTask('examen10',examen10);
+  
 end;
 
 procedure Task(name: string);
