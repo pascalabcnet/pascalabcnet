@@ -1210,7 +1210,12 @@ namespace PascalABCCompiler.TreeConverter
                                 //return tc;
                             }
                             else if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                            {
                                 error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
+                                return null;
+                            }
+                            else
+                                return null;
 							//return null;
                             
 						}
