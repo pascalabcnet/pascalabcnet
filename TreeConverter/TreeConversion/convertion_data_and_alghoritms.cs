@@ -1207,11 +1207,11 @@ namespace PascalABCCompiler.TreeConverter
                                 ptci.to = formal_param_type;
                                 tc.AddElement(ptci);
                                 factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
-                                return tc;
+                                //return tc;
                             }
-                            if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                            else if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
                                 error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
-							return null;
+							//return null;
                             
 						}
 					}
@@ -1449,6 +1449,8 @@ namespace PascalABCCompiler.TreeConverter
 
 			for(int i=0;i<left.Count;i++)
 			{
+                if (i >= right.Count)
+                    break;
 				type_conversion_compare tcc=compare_type_conversions(left[i],right[i]);
 				if (tcc==type_conversion_compare.less_type_conversion)
 				{
