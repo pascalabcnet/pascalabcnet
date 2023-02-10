@@ -260,6 +260,7 @@ namespace DBAccessPluginNamespace
                 closeButton.Focus();
                 panelUnAuthorized.SendToBack();
                 labelUserName.Text = login;
+                //labelRating.Text = "Рейтинг: ";
             }
             catch (Exception e)
             {

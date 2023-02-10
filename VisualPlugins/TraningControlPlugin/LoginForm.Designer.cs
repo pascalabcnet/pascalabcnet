@@ -44,6 +44,7 @@
             this.panelUnAuthorized = new System.Windows.Forms.Panel();
             this.panelAuthorized = new System.Windows.Forms.Panel();
             this.labelUserName = new System.Windows.Forms.Label();
+            this.labelRating = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.userImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PluginImage)).BeginInit();
@@ -186,6 +187,7 @@
             // 
             // panelAuthorized
             // 
+            this.panelAuthorized.Controls.Add(this.labelRating);
             this.panelAuthorized.Controls.Add(this.labelUserName);
             this.panelAuthorized.Location = new System.Drawing.Point(0, 0);
             this.panelAuthorized.Name = "panelAuthorized";
@@ -200,6 +202,15 @@
             this.labelUserName.Size = new System.Drawing.Size(372, 26);
             this.labelUserName.TabIndex = 11;
             this.labelUserName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelRating
+            // 
+            this.labelRating.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelRating.Location = new System.Drawing.Point(25, 53);
+            this.labelRating.Name = "labelRating";
+            this.labelRating.Size = new System.Drawing.Size(372, 26);
+            this.labelRating.TabIndex = 12;
+            this.labelRating.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LoginForm
             // 
@@ -247,5 +258,6 @@
         private System.Windows.Forms.Panel panelUnAuthorized;
         private System.Windows.Forms.Label labelUserName;
         private System.Windows.Forms.Panel panelAuthorized;
+        private System.Windows.Forms.Label labelRating;
     }
 }
