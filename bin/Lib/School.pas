@@ -84,7 +84,7 @@ function Digits(n: int64; base: integer := 10): List<integer>;
 /// Возвращает целое десятичное число на основе его расширенного представления
 /// по основанию base (по умолчанию base=10).
 /// Функция выполняет действие, обратное функции Digits,
-function Refold(ext: List<integer>; base: integer := 10): int64;
+function DigitsToInt64(ext: List<integer>; base: integer := 10): int64;
 
 /// Возвращает список делителей натурального числа n
 function Divisors(n: integer): List<integer>;
@@ -703,7 +703,7 @@ function Digits(Self: int64; base: integer := 10): List<integer>;
 /// Возвращает целое десятичное число на основе его расширенного представления
 /// по основанию base (по умолчанию base=10).
 /// Функция выполняет действие, обратное функции Digits
-function Refold(ext: List<integer>; base: integer): int64;
+function DigitsToInt64(ext: List<integer>; base: integer): int64;
 begin
   Result := 0;
   var p := int64(1);
@@ -714,8 +714,8 @@ begin
   end
 end;
 
-function ReFold(Self: List<integer>; base: integer := 10): int64;
-    extensionmethod := Refold(Self, base);    
+function DigitsToInt64(Self: List<integer>; base: integer := 10): int64;
+    extensionmethod := DigitsToInt64(Self, base);    
 
 {$endregion}
 

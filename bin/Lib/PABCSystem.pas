@@ -1804,7 +1804,7 @@ function Min(a, b, c: integer): integer;
 function Min(a, b, c, d: integer): integer;
 
 ///-function Max(a,b,...: T): T;
-/// Возвращает максиимальное из a,b,...
+/// Возвращает максимальное из a,b,...
 function Max<T>(params a: array of T): T;
 ///--
 //function Max(params a: array of real): real;
