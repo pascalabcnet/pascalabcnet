@@ -1654,7 +1654,8 @@ namespace PascalABCCompiler.NETGenerator
             // То и тут их обходить нет смысла
             // А в ошибочных ситуациях (как err0303.pas) может ещё и зациклится
             foreach (ITypeNode interf in t.ImplementingInterfacesOrEmpty)
-                if (!(interf is ICompiledTypeNode))
+                if (!(interf is ICompiledTypeNode)  && (interf != t)) // SSM 15/02/23 (interf != t) добавил в связи с ковариантностью 
+                                                                      // т.к. в случае IEnumerable<object> = IEnumerable<Student> возникал сбой
                     ConvertTypeHeaderInSpecialOrder((ICommonTypeNode)interf);
             if (t.base_type != null && !(t.base_type is ICompiledTypeNode))
             {

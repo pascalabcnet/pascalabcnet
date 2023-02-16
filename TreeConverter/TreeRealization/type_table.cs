@@ -570,10 +570,17 @@ namespace PascalABCCompiler.TreeRealization
 
                     implements = false;
                     // Цикл по всем реализуемым интерфейсам. А если tnode сам является интерфейсом?
-                    foreach (var interf in tnode.ImplementingInterfaces)
+                    var ImplementingInterfaces = tnode.ImplementingInterfaces.ToList();
+                    //if (tnode.IsInterface)
+                    //    ImplementingInterfaces.Add(tnode);
+                    foreach (var interf in ImplementingInterfaces)
                     {
                         var ctn = interf as compiled_type_node;
-                        var bcctn = base_class as compiled_type_node;
+                        // if (ctn.generic_params == null || ctn.generic_params.Count == 0)
+                        //    ctn = null;
+                        var bcctn = base_class as compiled_type_node; // мне кажется, здесь надо проверять на наличие generic-параметров
+                        //if (bcctn.generic_params == null || bcctn.generic_params.Count == 0)
+                        //    bcctn = null;
                         var cgitn = interf as compiled_generic_instance_type_node;
                         var bcgitn = base_class as compiled_generic_instance_type_node;
                         // interf - IEnumerable<Student>, base_class - IEnumerable<Person>
@@ -590,12 +597,19 @@ namespace PascalABCCompiler.TreeRealization
                         // Тут можно проверить на ковариантность
                         // еще где то надо проверять, что IEnumerable<Derived> -> IEnumerable<Base>, но здесь base_class предполагает, 
                         // что это - класс, и рассматривает все его интерфейсы, упуская ситуацию, когда base_class - это и есть интерфейс
+                        //else if ((cgitn != null || ctn != null) && (bcgitn != null || bcctn != null))
+                        //else if ((cgitn != null || ctn != null) && bcgitn != null)
                         else if (cgitn != null && bcgitn != null)
                         {
-                            compiled_type_node interf_original_generic = cgitn.original_generic as compiled_type_node;
-                            compiled_type_node base_original_generic = bcgitn.original_generic as compiled_type_node;
-                            List<type_node> interf_instance_params = cgitn.instance_params;
-                            List<type_node> base_instance_params = bcgitn.instance_params;
+                            compiled_type_node interf_original_generic = cgitn != null ? cgitn.original_generic as compiled_type_node : ctn.original_generic as compiled_type_node;
+                            compiled_type_node base_original_generic = bcgitn != null ? bcgitn.original_generic as compiled_type_node : bcctn.original_generic as compiled_type_node;
+                            List<type_node> interf_instance_params = cgitn != null ? cgitn.instance_params : ctn.instance_params;
+                            List<type_node> base_instance_params = bcgitn != null ? bcgitn.instance_params : bcctn.instance_params;
+
+                            //compiled_type_node interf_original_generic = cgitn.original_generic as compiled_type_node;
+                            //compiled_type_node base_original_generic = bcgitn.original_generic as compiled_type_node;
+                            //List<type_node> interf_instance_params = cgitn.instance_params;
+                            //List<type_node> base_instance_params = bcgitn.instance_params;
 
                             if (interf_original_generic != null && interf_original_generic == base_original_generic)
                             {
@@ -636,6 +650,8 @@ namespace PascalABCCompiler.TreeRealization
                                     }
                                 // то есть если все контравариантные или неважно какие, но равные то implements = true иначе false
                                 implements = impl;
+                                if (implements)
+                                    break;
                             }
                         }
                         else if (interf is compiled_type_node ictn && base_class is compiled_type_node bctn)
