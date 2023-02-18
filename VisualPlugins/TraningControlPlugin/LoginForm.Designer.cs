@@ -43,8 +43,9 @@
             this.PluginImageAuthorized = new System.Windows.Forms.PictureBox();
             this.panelUnAuthorized = new System.Windows.Forms.Panel();
             this.panelAuthorized = new System.Windows.Forms.Panel();
-            this.labelUserName = new System.Windows.Forms.Label();
             this.labelRating = new System.Windows.Forms.Label();
+            this.labelUserName = new System.Windows.Forms.Label();
+            this.labelDetails = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.userImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PluginImage)).BeginInit();
@@ -188,29 +189,39 @@
             // panelAuthorized
             // 
             this.panelAuthorized.Controls.Add(this.labelRating);
+            this.panelAuthorized.Controls.Add(this.labelDetails);
             this.panelAuthorized.Controls.Add(this.labelUserName);
             this.panelAuthorized.Location = new System.Drawing.Point(0, 0);
             this.panelAuthorized.Name = "panelAuthorized";
             this.panelAuthorized.Size = new System.Drawing.Size(422, 132);
             this.panelAuthorized.TabIndex = 14;
             // 
+            // labelRating
+            // 
+            this.labelRating.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelRating.Location = new System.Drawing.Point(12, 50);
+            this.labelRating.Name = "labelRating";
+            this.labelRating.Size = new System.Drawing.Size(398, 26);
+            this.labelRating.TabIndex = 12;
+            this.labelRating.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // labelUserName
             // 
-            this.labelUserName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelUserName.Location = new System.Drawing.Point(25, 14);
+            this.labelUserName.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelUserName.Location = new System.Drawing.Point(0, 14);
             this.labelUserName.Name = "labelUserName";
-            this.labelUserName.Size = new System.Drawing.Size(372, 26);
+            this.labelUserName.Size = new System.Drawing.Size(419, 26);
             this.labelUserName.TabIndex = 11;
             this.labelUserName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // labelRating
+            // labelDetails
             // 
-            this.labelRating.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelRating.Location = new System.Drawing.Point(25, 53);
-            this.labelRating.Name = "labelRating";
-            this.labelRating.Size = new System.Drawing.Size(372, 26);
-            this.labelRating.TabIndex = 12;
-            this.labelRating.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelDetails.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelDetails.Location = new System.Drawing.Point(12, 86);
+            this.labelDetails.Name = "labelDetails";
+            this.labelDetails.Size = new System.Drawing.Size(398, 26);
+            this.labelDetails.TabIndex = 13;
+            this.labelDetails.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LoginForm
             // 
@@ -259,5 +270,6 @@
         private System.Windows.Forms.Label labelUserName;
         private System.Windows.Forms.Panel panelAuthorized;
         private System.Windows.Forms.Label labelRating;
+        private System.Windows.Forms.Label labelDetails;
     }
 }

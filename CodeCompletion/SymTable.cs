@@ -1291,7 +1291,7 @@ namespace CodeCompletion
 
         public override string ToString()
         {
-            return CodeCompletionController.CurrentParser.LanguageInformation.GetSimpleDescription(this);
+            return CodeCompletionController.CurrentParser?.LanguageInformation.GetSimpleDescription(this);
         }
     }
 
