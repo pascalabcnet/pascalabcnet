@@ -1,0 +1,13 @@
+//Aspects Tree Plugin
+
+%PREFIX%=VPP_ASPTRV_
+NAME=Aspects
+DESCRIPTION=Aspects 可视化
+FORMNAME=Aspects
+M_BUILD=构建 Aspects
+M_COMPILE=构建并编译
+SAVE=保存
+SAVE_CURRENT=保存当前
+CREATE_TEMPLATE=创建模板
+INSERT_AUTHOR=Aspects by author
+INSERT_VERSION=Aspects by version
