@@ -1804,7 +1804,7 @@ function Min(a, b, c: integer): integer;
 function Min(a, b, c, d: integer): integer;
 
 ///-function Max(a,b,...: T): T;
-/// Возвращает максиимальное из a,b,...
+/// Возвращает максимальное из a,b,...
 function Max<T>(params a: array of T): T;
 ///--
 //function Max(params a: array of real): real;
@@ -2271,6 +2271,8 @@ function SeqWhile<T>(first: T; next: T->T; pred: T->boolean): sequence of T;
 function SeqWhile<T>(first, second: T; next: (T,T) ->T; pred: T->boolean): sequence of T;
 /// Возвращает последовательность из count элементов x 
 function SeqFill<T>(count: integer; x: T): sequence of T;
+/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next
+function Iterate<T>(first: T; next: T->T): sequence of T;
 
 /// Возвращает последовательность из n целых, введенных с клавиатуры
 function ReadSeqInteger(n: integer): sequence of integer;
@@ -2438,6 +2440,10 @@ function Lst<T>(a: sequence of T): List<T>;
 function Lst(a: IntRange): List<integer>;
 /// Возвращает список, заполненный диапазоном значений 
 function Lst(a: CharRange): List<char>;
+/// Возвращает список, заполненный указанными целыми значениями
+function LstStr(params a: array of string): List<string>;
+/// Возвращает список, заполненный указанными целыми значениями
+function LstInt(params a: array of integer): List<integer>;
 
 /// Возвращает двусвязный список, заполненный указанными значениями
 function LLst<T>(params a: array of T): LinkedList<T>;
@@ -2456,8 +2462,12 @@ function HSet<T>(a: sequence of T): HashSet<T>;
 function HSet(a: IntRange): HashSet<integer>;
 /// Возвращает множество на базе хеш таблицы, заполненное заполненный диапазоном значений 
 function HSet(a: CharRange): HashSet<char>;
+/// Возвращает множество на базе хеш таблицы, заполненное целыми значениями
+function HSetInt(params a: array of integer): HashSet<integer>;
+/// Возвращает множество на базе хеш таблицы, заполненное строковыми значениями
+function HSetStr(params a: array of string): HashSet<string>;
 
-/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
+/// Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями 
 function SSet<T>(params a: array of T): SortedSet<T>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
 function SSet<T>(a: sequence of T): SortedSet<T>;
@@ -2465,18 +2475,26 @@ function SSet<T>(a: sequence of T): SortedSet<T>;
 function SSet(a: IntRange): SortedSet<integer>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное диапазоном значений 
 function SSet(a: CharRange): SortedSet<char>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное целыми значениями 
+function SSetInt(params a: array of integer): SortedSet<integer>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное строковыми значениями 
+function SSetStr(params a: array of string): SortedSet<string>;
 
 
 /// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 /// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
+/// Возвращает словарь пар элементов (ключ, значение), построенный на значениях последовательности
+function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal>;
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 /// Возвращает словарь пар элементов (строка, строка)
 function DictStr(params pairs: array of (string, string)): Dictionary<string, string>;
 /// Возвращает словарь пар элементов (строка, целое)
 function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>;
+/// Возвращает словарь пар элементов (целое, целое)
+function DictInt(params pairs: array of (integer, integer)): Dictionary<integer, integer>;
 
 
 //{{{--doc: Конец секции интерфейса для документации }}} 
@@ -5176,6 +5194,11 @@ function Lst(a: IntRange): List<integer> := a.ToList;
 
 function Lst(a: CharRange): List<char> := a.ToList;
 
+function LstStr(params a: array of string): List<string> := a.ToList;
+
+function LstInt(params a: array of integer): List<integer> := a.ToList;
+
+
 function LLst<T>(params a: array of T): LinkedList<T> := new LinkedList<T>(a);
 
 function LLst<T>(a: sequence of T): LinkedList<T> := new LinkedList<T>(a);
@@ -5193,9 +5216,19 @@ function HSet<T>(a: sequence of T): HashSet<T> := new HashSet<T>(a);
 
 function SSet<T>(a: sequence of T): SortedSet<T> := new SortedSet<T>(a);
 
+function HSetInt(params a: array of integer): HashSet<integer> := a.ToHashSet;
+
+function HSetStr(params a: array of string): HashSet<string> := a.ToHashSet;
+
+function SSetInt(params a: array of integer): SortedSet<integer> := new SortedSet<integer>(a);
+
+function SSetStr(params a: array of string): SortedSet<string> := new SortedSet<string>(a);
+
 function HSet(a: IntRange): HashSet<integer> := a.ToHashSet;
 
 function HSet(a: CharRange): HashSet<char> := a.ToHashSet;
+
+
 
 function SSet(a: IntRange): SortedSet<integer> := a.ToSortedSet;
 
@@ -5216,6 +5249,9 @@ begin
     Result.Add(pairs[i][0], pairs[i][1]);
 end;
 
+function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal> 
+  := Dict(pairs.ToArray); // внутренняя ошибка компилятора
+
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 begin
   Result := new KeyValuePair<TKey, TVal>(key, value);
@@ -5227,6 +5263,8 @@ function DictStr(params pairs: array of (string, string)): Dictionary<string, st
 function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>
   := Dict&<string, integer>(pairs);
 
+function DictInt(params pairs: array of (integer, integer)): Dictionary<integer, integer>
+  := Dict&<integer, integer>(pairs);
 
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 begin

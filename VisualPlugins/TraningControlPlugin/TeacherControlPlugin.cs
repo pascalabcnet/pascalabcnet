@@ -97,6 +97,8 @@ namespace VisualPascalABCPlugins
                 if (answer.Result == "Success")
                 {
                     loginForm.ChangeControlsAfterLogin(login);
+                    var Rating = User.GetRating("", login, pass);
+                    loginForm.SetRating(Rating.Result);
                 }
             }
             catch (Exception e)

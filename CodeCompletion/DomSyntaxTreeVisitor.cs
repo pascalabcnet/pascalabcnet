@@ -2706,7 +2706,7 @@ namespace CodeCompletion
         
 		private void add_system_unit()
 		{
-			string unit_file_name = this.converter.controller.Parser.LanguageInformation.SystemUnitName;
+			string unit_file_name = this.converter.controller.Parser?.LanguageInformation.SystemUnitName;
 			if (unit_file_name == null) return;
 			string unit_name = CodeCompletionNameHelper.FindSourceFileName(unit_file_name);
             if (unit_name != null)

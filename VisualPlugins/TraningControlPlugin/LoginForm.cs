@@ -238,6 +238,12 @@ namespace DBAccessPluginNamespace
             }
         }
 
+        public void SetRating(string rating)
+        {
+            var ss = rating.Split('|');
+            labelRating.Text = $"Рейтинг: {ss[0]} баллов";
+            labelDetails.Text = ss[1];
+        }
         public void ChangeControlsAfterLogin(string login)
         {
             try
@@ -260,6 +266,7 @@ namespace DBAccessPluginNamespace
                 closeButton.Focus();
                 panelUnAuthorized.SendToBack();
                 labelUserName.Text = login;
+                //labelRating.Text = "Рейтинг: ";
             }
             catch (Exception e)
             {
@@ -307,6 +314,9 @@ namespace DBAccessPluginNamespace
                     {
                         WriteLoginPassToAuthDat(usersNamesBox.Text, passwordBox.Text);
                         ChangeControlsAfterLogin(usersNamesBox.Text);
+                        var Rating = await SiteProvider.GetRating("", usersNamesBox.Text, passwordBox.Text);
+                        SetRating(Rating);
+                        //labelRating.Text = "Рейтинг: " + Rating.ToString();
                     }
                     else MessageBox.Show(answer, "Ошибка");
                 }
