@@ -2002,7 +2002,8 @@ namespace PascalABCCompiler
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.company_string) ||
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.trademark_string) ||
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.title_string) ||
-                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.description_string))
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.description_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.copyright_string)) 
                     {
                         ErrorsList.Add(new MainResourceNotAllowed(cds[0].location));
                     }
