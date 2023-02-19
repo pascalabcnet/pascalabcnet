@@ -12499,8 +12499,9 @@ namespace PascalABCCompiler.TreeConverter
                             check_for_strong_constant(cn, get_location(cnstr_args.expressions[i]));
                             args.AddElement(cn);
                         }
-
+                        context.save_var_definitions();
                         base_function_call bfc = create_constructor_call(tn, args, get_location(attr));
+                        context.restore_var_definitions();
                         if (ctn is common_type_node && tn == SystemLibrary.SystemLibrary.struct_layout_attribute_type)
                         {
                             if ((System.Runtime.InteropServices.LayoutKind)Convert.ToInt32((args[0] as constant_node).get_object_value()) == System.Runtime.InteropServices.LayoutKind.Explicit)
