@@ -212,7 +212,7 @@ namespace CodeCompletion
                     ret_tn = ret_tn.FindNameOnlyInType(_named_type_reference.names[i].name);
                 else ret_tn = ret_tn.FindNameInAnyOrder(_named_type_reference.names[i].name);
                 if (ret_tn == null) break;
-                else if (founded_scope.IsEqual(ret_tn))
+                else if (founded_scope.IsEqual(ret_tn) && founded_scope is TypeScope)
                     pos_list.Add(get_position(_named_type_reference.names[i]));
             }
         }
@@ -315,6 +315,10 @@ namespace CodeCompletion
 
         public override void visit(for_node _for_node)
         {
+            IBaseScope tmp = cur_scope;
+            cur_scope = entry_scope.FindScopeByLocation(_for_node.source_context.begin_position.line_num, _for_node.source_context.begin_position.column_num);
+            if (cur_scope == null)
+                cur_scope = tmp;
             if (_for_node.loop_variable != null)
             {
                 ret_tn = cur_scope.FindNameInAnyOrder(_for_node.loop_variable.name);
@@ -330,7 +334,10 @@ namespace CodeCompletion
             if (_for_node.increment_value != null)
                 _for_node.increment_value.visit(this);
             if (_for_node.statements != null)
+            {
                 _for_node.statements.visit(this);
+            }
+            cur_scope = tmp;
         }
 
         public override void visit(repeat_node _repeat_node)
@@ -519,6 +526,15 @@ namespace CodeCompletion
         {
             //SymScope ss = entry_scope.FindScopeByLocation(_type_declaration.source_context.begin_position.line_num,_type_declaration.source_context.begin_position.column_num);
             IBaseScope ss = entry_scope.FindNameInAnyOrder(_type_declaration.type_name.name);
+            if (for_refactoring && _type_declaration.type_name is template_type_name)
+            {
+                foreach (ident id in (_type_declaration.type_name as template_type_name).template_args.list)
+                {
+                    var targ_ss = entry_scope.FindScopeByLocation(id.source_context.begin_position.line_num, id.source_context.begin_position.column_num);
+                    if (targ_ss != null && targ_ss.IsEqual(founded_scope))
+                        pos_list.Add(get_position(id));
+                }
+            }
             if (ss == null && entry_scope is IInterfaceUnitScope && (entry_scope as IInterfaceUnitScope).ImplementationUnitScope != null)
                 ss = (entry_scope as IInterfaceUnitScope).ImplementationUnitScope.FindNameInAnyOrder(_type_declaration.type_name.name);
             if (for_refactoring && ss != null && ss.IsEqual(founded_scope) && string.Compare(ss.SymbolInfo.name, _type_declaration.type_name.name, true) == 0 && !(ss is ITypeSynonimScope && !(founded_scope is ITypeSynonimScope)))

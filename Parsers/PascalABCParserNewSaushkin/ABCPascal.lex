@@ -371,7 +371,6 @@ UNICODEARROW \x890
     case (int)Tokens.tkEvent:
     case (int)Tokens.tkDefault:
     case (int)Tokens.tkTemplate:
-    case (int)Tokens.tkPacked:
     case (int)Tokens.tkExports:
     case (int)Tokens.tkResourceString:
     case (int)Tokens.tkThreadvar:
@@ -389,6 +388,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkMatch:
     case (int)Tokens.tkWhen:
     case (int)Tokens.tkStatic:
+    case (int)Tokens.tkStep:
 		yylval = new Union();
         yylval.ti = new token_info(cur_yytext,currentLexLocation);
         break;
@@ -407,6 +407,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkInternal:
     case (int)Tokens.tkRead:
     case (int)Tokens.tkWrite:
+    case (int)Tokens.tkIndex:
 		yylval = new Union(); 
         yylval.id = new ident(cur_yytext,currentLexLocation);
         break;

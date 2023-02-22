@@ -13,12 +13,13 @@ _ReBuildDebug.bat builds the project in Debug-mode.
 
 PascalABC is being developed in Visual Studio Community 2019.
 
-## Building PascalABC.NET in Linux (Ubuntu)
+## Building PascalABC.NET in Linux (Ubuntu 20.04)
 Install Mono (http://www.mono-project.com/docs/getting-started/install/linux/)
 ```bash
+sudo apt install gnupg ca-certificates
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
-sudo apt-get update
+echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+sudo apt update
 sudo apt-get install mono-devel
 sudo apt-get install mono-complete
 ```
@@ -64,12 +65,13 @@ _ReBuildDebug.bat собирает проект в Debug-режиме.
 
 Разработка ведется в Visual Studio Community 2019.
 
-## Сборка проекта в Linux (Ubuntu)
+## Сборка проекта в Linux (Ubuntu 20.04)
 Установка Mono (http://www.mono-project.com/docs/getting-started/install/linux/)
 ```bash
+sudo apt install gnupg ca-certificates
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
-sudo apt-get update
+echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+sudo apt update
 sudo apt-get install mono-devel
 sudo apt-get install mono-complete
 ```

@@ -126,7 +126,9 @@ namespace PascalABCCompiler.TreeConverter
                 if (genericDeduceNeeded && (candidateParameter.is_generic_parameter || candidateParameter.is_generic_type_instance))
                     candidateParameter = InstantiateParameter(candidateParameter, deducedGenerics);
 
-                if (givenParameter != null && !AreTheSameType(candidateParameter, givenParameter))
+                if (givenParameter != null && !AreTheSameType(candidateParameter, givenParameter)
+                    && !(candidateParameter != null && givenParameter != null && candidateParameter.is_generic_parameter 
+                    && givenParameter.is_generic_parameter && candidateParameter.name == givenParameter.name && givenParameter.base_type == candidateParameter.base_type))
                     return false;
 
                 parameterTypes[i] = candidateParameter;

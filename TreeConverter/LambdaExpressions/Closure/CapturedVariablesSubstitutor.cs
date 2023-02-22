@@ -1056,20 +1056,23 @@ namespace TreeConverter.LambdaExpressions.Closure
                     types = new where_type_specificator_list()
                 };
 
-                if (el.is_class)
+                var base_describes_type = false;
+                if (el.base_class != SystemLibrary.object_type)
+                {
+                    base_describes_type = el.base_class != SystemLibrary.enum_base_type;
+                    var d = LambdaHelper.ConvertSemanticTypeToSyntaxType(el.base_class);
+                    whereDef.types.Add(d);
+                }
+
+                if (el.is_class && !base_describes_type)
                 {
                     var d = new declaration_specificator(DeclarationSpecificator.WhereDefClass, "class");
                     whereDef.types.Add(d);
                 }
                 if (el.is_value)
                 {
+                    if (base_describes_type) throw new InvalidOperationException($"where with record and base other then enum");
                     var d = new declaration_specificator(DeclarationSpecificator.WhereDefValueType, "record");
-                    whereDef.types.Add(d);
-                }
-
-                if (el.base_class != null && el.base_class != SystemLibrary.object_type)
-                {
-                    var d = LambdaHelper.ConvertSemanticTypeToSyntaxType(el.base_class);
                     whereDef.types.Add(d);
                 }
 

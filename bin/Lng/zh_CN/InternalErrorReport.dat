@@ -1,0 +1,35 @@
+//InternalErrorReport Plugin
+
+%PREFIX%=VPP_IER_
+NAME=报告错误
+DESCRIPTION=向开发人员报告错误
+
+%PREFIX%=VPP_IER_ERRORREPORT_
+FORMNAME=向开发人员报告错误
+CONTACT_INFORMATION=联系:
+EMAIL_ADRESS=E-mails:
+OK_BUTTON=确实
+ERROR_SEND_INFO=8LINES
+您关于编译器中发生的错误的信息可以帮助我们进行开发过程。
+如果您认为编译器有误，您可以在论坛上发帖，或发送电子邮件至以下任一邮箱。
+
+您的错误描述最好包含:
+1. 报告错误。
+2. 导致错误的操作顺序的描述。
+3. 程序的源代码，发生错误的地方。
+4. 有关编译器版本、目标平台等的信息。复制位于下方的文本并粘贴到顶部帖子。
+
+%PREFIX%=VPP_IER_INTERNALERRORREPORT_
+COMPILER_INTERNAL_ERROR=编译器内部错误
+IN_A_COMPILE_TIME_INTTERNAL_COMPILER_ERROR=发生了一个内部的错误:
+SAVE_REPORT_AS=报告另存为...
+SEND_TO_EMAIL=结果文件发送到邮箱
+CLOSE=关闭
+ADD_YUOR_COMMENT_HERE=3LINES
+//Here you can add your comment
+
+
+SEND_RPEPORT_AUTORS=2LINES
+您可以将错误报告发送给 PascalABC.NET 开发人员。
+要创建带有错误文件的 ZIP 存档，请按“报告另存为...”按钮
+

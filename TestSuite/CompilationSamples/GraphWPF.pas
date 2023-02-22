@@ -39,6 +39,7 @@ type
   GRect = System.Windows.Rect;
   /// Тип окна
   GWindow = System.Windows.Window;
+  /// Тип пера
   GPen = System.Windows.Media.Pen;
   /// Тип точки
   Point = System.Windows.Point;
@@ -48,6 +49,12 @@ type
   Vector = System.Windows.Vector;
   /// Тип кисти
   GBrush = System.Windows.Media.Brush;
+  /// Набор предопределенных кистей
+  Brushes = System.Windows.Media.Brushes;
+  /// Контекст рисования
+  DrawingContext = System.Windows.Media.DrawingContext;
+  /// Визуальный объект для отрисовки с помощью контекста рисования
+  DrawingVisual = System.Windows.Media.DrawingVisual;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
 
@@ -89,6 +96,8 @@ type
     th: real := 1;
     fx,fy: real;
     rc: boolean := false;
+  public
+    ///--
     function PenConstruct: GPen;
     begin
       Result := new GPen(GetBrush(c),th);
@@ -103,6 +112,7 @@ type
         Result.StartLineCap := PenLineCap.Flat;
         Result.EndLineCap := PenLineCap.Flat;
       end;
+      Result.Freeze;
     end;
   public  
     /// Цвет пера
@@ -354,6 +364,8 @@ procedure DrawSector(x, y, r, angle1, angle2: real);
 procedure FillSector(x, y, r, angle1, angle2: real);
 /// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
 procedure Sector(x, y, r, angle1, angle2: real; c: Color);
+/// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
+procedure Pie(x, y, r, angle1, angle2: real; c: Color);
 /// Рисует контур сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
 procedure DrawSector(x, y, r, angle1, angle2: real; c: Color);
 /// Рисует внутренность сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
@@ -476,6 +488,8 @@ function Pnt(x,y: real): GPoint;
 function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): GBrush;
+/// Возвращает однотонную цветную кисть случайного цвета
+function RandomColorBrush: GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
 /// Возвращает однотонное цветное перо, заданное цветом и толщиной
@@ -632,6 +646,8 @@ var OnMouseDown: procedure(x, y: real; mousebutton: integer);
 var OnMouseUp: procedure(x, y: real; mousebutton: integer);
 /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
 var OnMouseMove: procedure(x, y: real; mousebutton: integer);
+/// Событие прокрутки колёсика мыши. delta - величина прокрутки: delta > 0 - от пользователя, delta < 0 - к пользователю
+var OnMouseWheel: procedure(delta: real);
 /// Событие нажатия клавиши
 var OnKeyDown: procedure(k: Key);
 /// Событие отжатия клавиши
@@ -702,12 +718,27 @@ function TextWidthPFont(text: string; f: FontOptions): real;
 function TextHeightPFont(text: string; f: FontOptions): real; 
 /// Размер текста (совместно с FastDraw)
 function TextSizePFont(text: string; f: FontOptions): Size;
+/// Создает визуальный объект и добавляет его к отображаемым объектам  
+function CreateVisual: DrawingVisual;
+/// Удаляет визуальный объект из отображаемых
+procedure RemoveVisual(visual: DrawingVisual);
+/// Рисует на визуальном объекте с помощью контекста рисования
+procedure DrawOnVisual(visual: DrawingVisual; proc: DrawingContext->());
+/// Рисует все визуальные объекты на битмапе рендеринга и очищает список визуальных объектов
+procedure FlushDrawingToBitmap;
 
-procedure AddToHost(v: Visual);
 
-{function GetDC: DrawingContext;
-procedure ReleaseDC(dc: DrawingContext);
-procedure FastClear(var dc: DrawingContext);}
+//procedure AddToHost(v: Visual);
+//procedure RemoveFromHost(v: Visual);
+
+function GetDC: DrawingContext;
+function CreateRenderTargetBitmap: RenderTargetBitmap;
+
+var AdditionalDrawOnDC: procedure(dc: DrawingContext);
+
+//procedure ReleaseDC(dc: DrawingContext);
+//procedure FastClear(var dc: DrawingContext);
+//procedure HostToRenderBitmap;
 
 procedure __InitModule__;
 procedure __FinalizeModule__;
@@ -739,8 +770,17 @@ function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 function ColorBrush(c: Color) := GetBrush(c);
-function ColorPen(c: Color) := new GPen(GetBrush(c),Pen.Width);
-function ColorPen(c: Color; w: real) := new GPen(GetBrush(c),w);
+function RandomColorBrush := GetBrush(RandomColor);
+function ColorPen(c: Color): GPen;
+begin
+  Result := new GPen(GetBrush(c),Pen.Width);
+  Result.Freeze
+end;
+function ColorPen(c: Color; w: real): GPen;
+begin
+  Result := new GPen(GetBrush(c),w);
+  Result.Freeze
+end;
 
 function RandomPoint(w: real): Point := Pnt(Random(w,Window.Width-w),Random(w,Window.Height-w));
 
@@ -795,6 +835,11 @@ begin
   Host.children.Add(v);
 end;
 
+procedure RemoveFromHost(v: Visual);
+begin
+  Host.children.Remove(v);
+end;
+
 function GetDC: DrawingContext;
 begin
   var visual := new DrawingVisual();
@@ -815,6 +860,31 @@ begin
   if host.Children.Count > 1000 then
     HostToRenderBitmap
 end;
+
+/// Создает визуальный объект и добавляет его к отображаемым объектам  
+function CreateVisual: DrawingVisual;
+begin
+  var visual: DrawingVisual;
+  Redraw(()->begin visual := new DrawingVisual; AddToHost(visual) end );
+  Result := visual;
+end;
+
+/// Удаляет визуальный объект из отображаемых
+procedure RemoveVisual(visual: DrawingVisual) := Redraw(()->RemoveFromHost(visual));
+
+/// Рисует на визуальном объекте с помощью контекста рисования
+procedure DrawOnVisual(visual: DrawingVisual; proc: DrawingContext->());
+begin
+  Redraw(()->begin
+    var dc := visual.RenderOpen();
+    proc(dc);
+    dc.Close;
+  end);
+end;
+
+/// Рисует все визуальные объекты на битмапе рендеринга и очищает список визуальных объектов
+procedure FlushDrawingToBitmap := Redraw(()->HostToRenderBitmap());
+
 
 procedure FastDraw(commands: DrawingContext->());
 begin
@@ -1391,6 +1461,7 @@ procedure Pie(x, y, r, angle1, angle2: real) := InvokeVisual(SectorP,x, y, r, an
 procedure DrawSector(x, y, r, angle1, angle2: real) := InvokeVisual(DrawSectorP,x, y, r, angle1, angle2);
 procedure FillSector(x, y, r, angle1, angle2: real) := InvokeVisual(FillSectorP,x, y, r, angle1, angle2);
 procedure Sector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(SectorPC,x, y, r, angle1, angle2, c);
+procedure Pie(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(SectorPC,x, y, r, angle1, angle2, c);
 procedure DrawSector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(DrawSectorPC,x, y, r, angle1, angle2, c);
 procedure FillSector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(FillSectorPC,x, y, r, angle1, angle2, c);
 
@@ -1861,11 +1932,19 @@ begin
   var dc := myvis.RenderOpen;
   var r := Rect(0,0,Window.Width,Window.Height);
   var mm := (canvas as MyVisualHost).RenderTransform.Value;
+  var m1 := mm;
   mm.Invert;
   r.Transform(mm);
   dc.DrawRectangle(Brushes.White,nil,r);
-  var rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
+  
+  var rr: GRect;
+  if CurrentCoordType = MathematicalCoords then
+    rr := Rect(r.Left,r.Top,rtbmap.Width/m1.M11,rtbmap.Height/-m1.M22)
+  else rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
   dc.DrawImage(rtbmap,rr);
+  
+  if AdditionalDrawOnDC <> nil then
+    AdditionalDrawOnDC(dc);
   dc.Close;
   (canvas as MyVisualHost).children.Insert(0,myvis);
   
@@ -2081,6 +2160,13 @@ begin
     OnMouseMove(p.x, p.y, mb);
 end;
 
+procedure SystemOnMouseWheel(sender: Object; e: MouseWheelEventArgs);
+begin
+  var delta := e.Delta;
+  if OnMouseWheel <> nil then  
+    OnMouseWheel(delta);
+end;
+
 /// --- SystemKeyEvents
 procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs) := 
   if OnKeyDown<>nil then
@@ -2204,6 +2290,18 @@ begin
   FrameRate := 61;
 end;  
 
+function CreateRenderTargetBitmap: RenderTargetBitmap;
+begin
+  var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
+  var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
+  
+  var dpiX := integer(dpiXProperty.GetValue(nil, nil));
+  var dpiY := integer(dpiYProperty.GetValue(nil, nil));
+
+  var (scalex, scaley) := (dpiX/96,dpiY/96);
+  Result := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
+end;
+
 var mre := new ManualResetEvent(false);
 
 type 
@@ -2226,16 +2324,9 @@ public
     end;
     // Всегда последнее
     
-    var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
-    var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
-    
-    var dpiX := integer(dpiXProperty.GetValue(nil, nil));
-    var dpiY := integer(dpiYProperty.GetValue(nil, nil));
-  
+    RTbmap := CreateRenderTargetBitmap;
+
     var im := new Image();
-    
-    var (scalex, scaley) := (dpiX/96,dpiY/96);
-    RTbmap := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
     im.Source := RTbmap;
     
     // Рисуем на host
@@ -2266,6 +2357,7 @@ public
   
   procedure InitHandlers; override;
   begin
+    AdditionalDrawOnDC := procedure(dc) -> begin end;
     Closed += (sender,e) -> begin 
       if OnClose<>nil then
         OnClose;
@@ -2274,6 +2366,7 @@ public
     MouseDown += SystemOnMouseDown;
     MouseUp += SystemOnMouseUp;
     MouseMove += SystemOnMouseMove;
+    MouseWheel += SystemOnMouseWheel;
     KeyDown += SystemOnKeyDown;
     KeyUp += SystemOnKeyUp;
     TextInput += SystemOnKeyPress;

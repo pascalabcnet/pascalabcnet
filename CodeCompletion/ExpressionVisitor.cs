@@ -30,6 +30,7 @@ namespace CodeCompletion
         internal bool mouse_hover = false;
         private DomSyntaxTreeVisitor stv = null;
         private SymScope[] selected_methods = null;
+        private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
 
         public ExpressionVisitor(SymScope entry_scope, DomSyntaxTreeVisitor stv)
         {
@@ -574,7 +575,8 @@ namespace CodeCompletion
 
         public override void visit(if_node _if_node)
         {
-            throw new NotImplementedException();
+            _if_node.then_body.visit(this);
+            
         }
 
         public override void visit(ref_type _ref_type)
@@ -1144,6 +1146,11 @@ namespace CodeCompletion
         public override void visit(method_call _method_call)
         {
             returned_scopes.Clear();
+            if (method_call_cache.ContainsKey(_method_call))
+            {
+                returned_scope = method_call_cache[_method_call];
+                return;
+            }
             search_all = true;
             _method_call.dereferencing_value.visit(this);
             search_all = false;
@@ -1151,11 +1158,13 @@ namespace CodeCompletion
             if (names.Length > 0 && names[0] is ElementScope && (names[0] as ElementScope).sc is TypeScope && ((names[0] as ElementScope).sc as TypeScope).IsDelegate)
             {
                 returned_scope = names[0];
+                method_call_cache[_method_call] = returned_scope;
                 return;
             }
             if (names.Length > 0 && names[0] is TypeScope)
             {
                 returned_scope = new ElementScope(names[0]);
+                method_call_cache[_method_call] = returned_scope;
                 return;
             }
             TypeScope obj = null;
@@ -1252,6 +1261,7 @@ namespace CodeCompletion
 				}
 				else ret_tn = null;*/
             }
+            method_call_cache[_method_call] = returned_scope;
         }
 
         public override void visit(pascal_set_constant _pascal_set_constant)

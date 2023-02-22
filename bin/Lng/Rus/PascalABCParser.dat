@@ -79,3 +79,4 @@ NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN=Вложенные описания за
 NIL_IN_UNNAMED_OBJECT=Поле анонимного класса не может инициализироваться константой nil
 YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY=Оператор yield нельзя использовать в теле лямбда-выражения
 SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5=Срезы многомерных массивов разрешены только для массивов размерности < 5
+LEFT_SIDE_CANNOT_BE_ASSIGNED_TO=Нельзя присвоить левой части

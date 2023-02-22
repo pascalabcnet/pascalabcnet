@@ -75,8 +75,16 @@ function FirstPrimes(k: integer): List<integer>;
 /// Количество простых делителей числа n
 function PrimeDivisorsCount(n: integer): integer;
 
-/// Возвращает список, содержащий цифры числа n
-function Digits(n: int64): List<integer>;
+/// Возвращает целочисленный список расширенного представления
+/// десятичного числа n по основанию base.
+/// По умолчанию base=10 и возвращается список десятичных цифр числа n.
+/// Обратное действие выполняет функция Refold. 
+function Digits(n: int64; base: integer := 10): List<integer>;
+
+/// Возвращает целое десятичное число на основе его расширенного представления
+/// по основанию base (по умолчанию base=10).
+/// Функция выполняет действие, обратное функции Digits,
+function DigitsToInt64(ext: List<integer>; base: integer := 10): int64;
 
 /// Возвращает список делителей натурального числа n
 function Divisors(n: integer): List<integer>;
@@ -144,12 +152,6 @@ function ReplaceMany(s: string; source, target: IList<string>): string;
 
 /// В строке s меняет местами подстроки ss1 и ss2
 procedure SwapSubstr(var s: string; ss1, ss2: string);
-
-/// Выводит тип переменной или выражения
-procedure PrintType(o: Object);
-
-/// Выводит тип переменной или выражения, затем переходит к новой строке вывода
-procedure PrintlnType(o: Object);
 
 implementation
 
@@ -673,32 +675,47 @@ function PrimeDivisorsCount(Self: integer): integer; extensionmethod := PrimeDiv
 
 {$region Digits}
 
-/// Возвращает список, содержащий цифры числа n
-function Digits(n: int64): List<integer>;
+/// Возвращает целочисленный список расширенного представления
+/// десятичного числа n по основанию base.
+/// По умолчанию base=10 и возвращается список десятичных цифр числа n.
+/// Обратное действие выполняет функция Refold.
+function Digits(n: int64; base: integer): List<integer>;
 begin
   Result := new List<integer>;
-  n := Abs(n);
-  if n = 0 then Result := |0|.ToList
+  if (n < 0) or (base < 2) then exit;
+  if n = 0 then Result := Lst(0)
   else
-  begin
     while n > 0 do
     begin
-      Result.Add(n mod 10);
-      n := n div 10
+      var rem: integer := n mod base;
+      Result.Add(rem);
+      n := n div base
     end;
     Result.Reverse
+end;
+
+function Digits(Self: integer; base: integer := 10): List<integer>;
+    extensionmethod := Digits(Self, base);
+
+function Digits(Self: int64; base: integer := 10): List<integer>;
+    extensionmethod := Digits(Self, base);
+    
+/// Возвращает целое десятичное число на основе его расширенного представления
+/// по основанию base (по умолчанию base=10).
+/// Функция выполняет действие, обратное функции Digits
+function DigitsToInt64(ext: List<integer>; base: integer): int64;
+begin
+  Result := 0;
+  var p := int64(1);
+  for var i := ext.Count -1 downto 0 do
+  begin  
+    Result += ext[i] * p;
+    p *= base
   end
 end;
 
-/// Возвращает список, содержащий цифры числа
-function Digits(Self: integer): List<integer>;
-    extensionmethod :=
-Digits(Self);
-
-/// Возвращает список, содержащий цифры числа
-function Digits(Self: int64): List<integer>;
-    extensionmethod :=
-Digits(Self);
+function DigitsToInt64(Self: List<integer>; base: integer := 10): int64;
+    extensionmethod := DigitsToInt64(Self, base);    
 
 {$endregion}
 
@@ -879,7 +896,7 @@ begin
             Result[i, 1] := b;
             Result[i, 2] := c;
             Result[i, 3] := d;
-            Result[i, 4] := d;
+            Result[i, 4] := e;
             Result[i, 5] := f(a, b, c, d, e);
             i += 1
           end;
@@ -968,61 +985,7 @@ end;
 
 /// В строке s меняет местами подстроки ss1 и ss2
 procedure SwapSubstr(var Self: string; ss1, ss2: string);
-extensionmethod := SwapSubstr(Self, ss1, ss2);
-
-/// Выводит тип переменной или выражения
-procedure PrintType(o: Object);
-begin
-  var s := o.GetType.ToString;
-  s := s.Replace('System.Int32','integer');
-  s := s.Replace('System.Int64','int64');
-  s := s.Replace('System.Double','real');
-  s := s.Replace('System.String','string');
-  s := s.Replace('System.Char','char');
-  s := s.Replace('System.Numerics.BigInteger','BigInteger');
-  var tt := '([\w.`<>\[\],()]+?)';  
-  s := Regex.Replace(s,$'{tt}\[\]\[\]','array of array of $1');
-  s := Regex.Replace(s,$'{tt}\[\]','array of $1');
-  s := Regex.Replace(s,$'{tt}\[,\]','array [,] of $1');
-  s := Regex.Replace(s,$'System.Collections.Generic.(Dictionary|SortedDictionary)`2\[{tt},{tt}\]','$1<$2,$3>');
-  s := Regex.Replace(s,$'System.Collections.Generic.(List|Stack|Queue|HashSet|SortedSet)`1\[{tt}\]','$1<$2>');
-  s := Regex.Replace(s,$'System.Tuple`2\[{tt},{tt}\]','($1,$2)');
-  s := Regex.Replace(s,$'System.Tuple`3\[{tt},{tt},{tt}\]','($1,$2,$3)');
-  s := Regex.Replace(s,$'System.Tuple`4\[{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4)');
-  s := Regex.Replace(s,$'System.Tuple`5\[{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5)');
-  s := Regex.Replace(s,$'System.Tuple`6\[{tt},{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5,$6)');
-  s := Regex.Replace(s,$'System.Tuple`7\[{tt},{tt},{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5,$6,$7)');
-  s := Regex.Replace(s,$'System.Tuple`2\[{tt},{tt}\]','($1,$2)');
-  s := Regex.Replace(s,$'System.Tuple`3\[{tt},{tt},{tt}\]','($1,$2,$3)');
-  s := Regex.Replace(s,$'System.Tuple`4\[{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4)');
-  s := Regex.Replace(s,$'System.Tuple`5\[{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5)');
-  s := Regex.Replace(s,$'System.Tuple`6\[{tt},{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5,$6)');
-  s := Regex.Replace(s,$'System.Tuple`7\[{tt},{tt},{tt},{tt},{tt},{tt},{tt}\]','($1,$2,$3,$4,$5,$6,$7)');
-  Print(s);
-end;
-
-/// Выводит тип переменной или выражения, затем переходит к новой строке вывода
-procedure PrintlnType(o: Object);
-begin
-  PrintType(o);
-  Println;
-end;
-
-/// Возвращает все перестановки букв в строке в виде последовательности строк
-function Permutations(Self: string): sequence of string; extensionmethod 
-:= Self.ToCharArray.Permutations.Select(p -> new string(p));
-
-/// Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк
-function Permutations(Self: string; m: integer): sequence of string; extensionmethod 
-:= Self.ToCharArray.Permutations(m).Select(p -> new string(p));
-
-/// Возвращает n-тую декартову степень множества символов, заданного строкой
-function Cartesian(Self: string; n: integer): sequence of string; extensionmethod
-:= Self.ToCharArray.Cartesian(n).Select(p -> new string(p));
-
-/// Возвращает все сочетания по m элементов
-function Combinations(Self: string; m: integer): sequence of string; extensionmethod
-:= Self.ToCharArray.Combinations(m).Select(p -> new string(p));
+  extensionmethod := SwapSubstr(Self, ss1, ss2);
 
 {$endregion}
 

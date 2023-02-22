@@ -295,6 +295,8 @@ namespace PascalABCCompiler.TreeConverter
         
         public void reset()
         {
+            //CurrentHandlerList = null; // SSM 29/03/22 - не сработало
+            //CurrentHandlerListStack = new Stack<List<string>>(); // SSM 29/03/22 - не сработало
             _cmn = null;
             _ctn = null;
             _func_stack.clear();
@@ -331,12 +333,16 @@ namespace PascalABCCompiler.TreeConverter
             in_parameters_block = false;
             is_order_independed_method_description = false;
             _has_nested_functions = false;
+            finally_blocks_depth = 0;
+            static_variable_converted = false;
         }
         
         public void clear_type_prededinitions()
         {
             _types_predefined.Clear();
         }
+
+        public bool static_variable_converted;
 
         public bool inStaticArea()
         {
@@ -1407,6 +1413,7 @@ namespace PascalABCCompiler.TreeConverter
                 scope,def_loc);
             (scope as SymbolTable.ClassScope).class_type = tctn; // SSM 02.04.19 - каждый Scope пользовательского класса хранит свой type_node
 
+            tctn.is_class = true;
             tctn.IsPartial = is_partial;
             if (partial_class != null)
             {
@@ -1434,6 +1441,7 @@ namespace PascalABCCompiler.TreeConverter
                 scope, def_loc);
             _cmn.scope.AddSymbol(name, new SymbolInfo(tctn));
             tctn.IsInterface = false;
+            tctn.is_class = true;
             _cmn.types.AddElement(tctn);
             _ctn = tctn;
             SystemLibrary.SystemLibrary.init_reference_type(tctn);
@@ -3935,6 +3943,14 @@ namespace PascalABCCompiler.TreeConverter
             cmn.overrided_method = FindMethodToOverride(cmn);
             if (cmn.overrided_method == null)
                 AddError(cmn.loc, "NO_METHOD_TO_OVERRIDE");
+            for (int i = 0; i < cmn.parameters.Count; i++)
+            {
+                var cp = cmn.parameters[i];
+                if (cp.type.IsDelegate && cp.type is common_type_node && (cp.type as common_type_node).name.IndexOf("$") != -1)
+                {
+                    cp.type = cmn.overrided_method.parameters[i].type;
+                }
+            }
             cmn.SetName(cmn.overrided_method.name);
         }
 

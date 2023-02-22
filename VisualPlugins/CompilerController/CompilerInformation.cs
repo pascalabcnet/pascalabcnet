@@ -256,7 +256,8 @@ namespace VisualPascalABCPlugins
 
         private void Button4_Click(object sender, EventArgs e)
         {
-            CodeCompletion.CodeCompletionTester.TestRename(@"c:\Work\Miks\_PABCNETGitHub\TestSuite\refactoring_tests\rename_tests");
+            CodeCompletion.CodeCompletionTester.TestRename(@"c:\Work\Miks\_PABCNETGitHub\pascalabcnet\TestSuite\refactoring_tests\rename_tests");
+            MessageBox.Show("Done");
         }
 
         private void cbUseSemanticForIntellisense_CheckedChanged(object sender, EventArgs e)

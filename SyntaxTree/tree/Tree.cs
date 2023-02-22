@@ -30344,24 +30344,26 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public foreach_stmt(ident _identifier,type_definition _type_name,expression _in_what,statement _stmt)
+		public foreach_stmt(ident _identifier,type_definition _type_name,expression _in_what,statement _stmt,ident _index)
 		{
 			this._identifier=_identifier;
 			this._type_name=_type_name;
 			this._in_what=_in_what;
 			this._stmt=_stmt;
+			this._index=_index;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public foreach_stmt(ident _identifier,type_definition _type_name,expression _in_what,statement _stmt,SourceContext sc)
+		public foreach_stmt(ident _identifier,type_definition _type_name,expression _in_what,statement _stmt,ident _index,SourceContext sc)
 		{
 			this._identifier=_identifier;
 			this._type_name=_type_name;
 			this._in_what=_in_what;
 			this._stmt=_stmt;
+			this._index=_index;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
@@ -30369,6 +30371,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected type_definition _type_name;
 		protected expression _in_what;
 		protected statement _stmt;
+		protected ident _index;
 
 		///<summary>
 		///
@@ -30438,6 +30441,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public ident index
+		{
+			get
+			{
+				return _index;
+			}
+			set
+			{
+				_index=value;
+				if (_index != null)
+					_index.Parent = this;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -30471,6 +30491,11 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.stmt = (statement)stmt.Clone();
 				copy.stmt.Parent = copy;
 			}
+			if (index != null)
+			{
+				copy.index = (ident)index.Clone();
+				copy.index.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -30493,6 +30518,8 @@ namespace PascalABCCompiler.SyntaxTree
 				in_what.Parent = this;
 			if (stmt != null)
 				stmt.Parent = this;
+			if (index != null)
+				index.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -30504,6 +30531,7 @@ namespace PascalABCCompiler.SyntaxTree
 			type_name?.FillParentsInAllChilds();
 			in_what?.FillParentsInAllChilds();
 			stmt?.FillParentsInAllChilds();
+			index?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -30513,7 +30541,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 4;
+				return 5;
 			}
 		}
 		///<summary>
@@ -30523,7 +30551,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 4;
+				return 5;
 			}
 		}
 		///<summary>
@@ -30545,6 +30573,8 @@ namespace PascalABCCompiler.SyntaxTree
 						return in_what;
 					case 3:
 						return stmt;
+					case 4:
+						return index;
 				}
 				return null;
 			}
@@ -30565,6 +30595,9 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 3:
 						stmt = (statement)value;
+						break;
+					case 4:
+						index = (ident)value;
 						break;
 				}
 			}
@@ -46317,25 +46350,65 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_ident(string _name)
+		public yield_unknown_ident(ident _UnknownID)
 		{
-			this._name=_name;
+			this._UnknownID=_UnknownID;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_ident(string _name,SourceContext sc)
+		public yield_unknown_ident(ident _UnknownID,SourceContext sc)
 		{
-			this._name=_name;
+			this._UnknownID=_UnknownID;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(string _name,ident _UnknownID)
+		{
+			this._name=_name;
+			this._UnknownID=_UnknownID;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(string _name,ident _UnknownID,SourceContext sc)
+		{
+			this._name=_name;
+			this._UnknownID=_UnknownID;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident _UnknownID;
+
+		///<summary>
+		///
+		///</summary>
+		public ident UnknownID
+		{
+			get
+			{
+				return _UnknownID;
+			}
+			set
+			{
+				_UnknownID=value;
+				if (_UnknownID != null)
+					_UnknownID.Parent = this;
+			}
+		}
+
+
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -46349,6 +46422,11 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.attributes.Parent = copy;
 			}
 			copy.name = name;
+			if (UnknownID != null)
+			{
+				copy.UnknownID = (ident)UnknownID.Clone();
+				copy.UnknownID.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -46363,6 +46441,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (attributes != null)
 				attributes.Parent = this;
+			if (UnknownID != null)
+				UnknownID.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -46370,6 +46450,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			FillParentsInDirectChilds();
 			attributes?.FillParentsInAllChilds();
+			UnknownID?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -46379,7 +46460,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 0;
+				return 1;
 			}
 		}
 		///<summary>
@@ -46389,7 +46470,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 0;
+				return 1;
 			}
 		}
 		///<summary>
@@ -46401,12 +46482,23 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return UnknownID;
+				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						UnknownID = (ident)value;
+						break;
+				}
 			}
 		}
 		///<summary>
@@ -48708,7 +48800,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class is_pattern_expr : expression
+	public partial class is_pattern_expr : addressed_value
 	{
 
 		///<summary>
@@ -54535,28 +54627,31 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public foreach_stmt_formatting(ident_list _il,expression _in_what,statement _stmt)
+		public foreach_stmt_formatting(ident_list _il,expression _in_what,statement _stmt,ident _index)
 		{
 			this._il=_il;
 			this._in_what=_in_what;
 			this._stmt=_stmt;
+			this._index=_index;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public foreach_stmt_formatting(ident_list _il,expression _in_what,statement _stmt,SourceContext sc)
+		public foreach_stmt_formatting(ident_list _il,expression _in_what,statement _stmt,ident _index,SourceContext sc)
 		{
 			this._il=_il;
 			this._in_what=_in_what;
 			this._stmt=_stmt;
+			this._index=_index;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected ident_list _il;
 		protected expression _in_what;
 		protected statement _stmt;
+		protected ident _index;
 
 		///<summary>
 		///
@@ -54609,6 +54704,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public ident index
+		{
+			get
+			{
+				return _index;
+			}
+			set
+			{
+				_index=value;
+				if (_index != null)
+					_index.Parent = this;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -54637,6 +54749,11 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.stmt = (statement)stmt.Clone();
 				copy.stmt.Parent = copy;
 			}
+			if (index != null)
+			{
+				copy.index = (ident)index.Clone();
+				copy.index.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -54657,6 +54774,8 @@ namespace PascalABCCompiler.SyntaxTree
 				in_what.Parent = this;
 			if (stmt != null)
 				stmt.Parent = this;
+			if (index != null)
+				index.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -54667,6 +54786,7 @@ namespace PascalABCCompiler.SyntaxTree
 			il?.FillParentsInAllChilds();
 			in_what?.FillParentsInAllChilds();
 			stmt?.FillParentsInAllChilds();
+			index?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -54676,7 +54796,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 4;
 			}
 		}
 		///<summary>
@@ -54686,7 +54806,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 4;
 			}
 		}
 		///<summary>
@@ -54706,6 +54826,8 @@ namespace PascalABCCompiler.SyntaxTree
 						return in_what;
 					case 2:
 						return stmt;
+					case 3:
+						return index;
 				}
 				return null;
 			}
@@ -54723,6 +54845,9 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 2:
 						stmt = (statement)value;
+						break;
+					case 3:
+						index = (ident)value;
 						break;
 				}
 			}

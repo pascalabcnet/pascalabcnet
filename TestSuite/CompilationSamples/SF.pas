@@ -20,7 +20,7 @@ type
   PredI = int -> bool;
   PredR = real -> bool;
   PredS = string -> bool;
-  Act = () -> ();
+  Act = procedure;
   ProcI = int -> ();
   ProcR = real -> ();
   ProcS = string -> ();
@@ -61,7 +61,7 @@ function RR3 := ReadReal3;
 function RC3 := ReadChar3;
 function RS3 := ReadString3;
 
-function RlnI3 := ReadInteger3;
+function RlnI3 := ReadlnInteger3;
 function RlnR3 := ReadlnReal3;
 function RlnC3 := ReadlnChar3;
 function RlnS3 := ReadlnString3;
@@ -71,7 +71,7 @@ function RR4 := ReadReal4;
 function RC4 := ReadChar4;
 function RS4 := ReadString4;
 
-function RlnI4 := ReadInteger4;
+function RlnI4 := ReadlnInteger4;
 function RlnR4 := ReadlnReal4;
 function RlnC4 := ReadlnChar4;
 function RlnS4 := ReadlnString4;
@@ -147,6 +147,12 @@ function Dst<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Dis
 /// Преобразует последовательность в строку
 function ToS<T>(Self: sequence of T; delim: string): string; extensionmethod := Self.JoinToString(delim);
 
+/// Преобразует последовательность в строку
+function JtS<T>(Self: sequence of T; delim: string): string; extensionmethod := Self.JoinToString(delim);
+
+/// Преобразует последовательность в строку
+function JtS<T>(Self: sequence of T): string; extensionmethod := Self.JoinToString();
+
 /// Сливает последовательнсть строк в одну строку 
 function Concat(Self: sequence of string): string; extensionmethod := Self.JoinToString('');
 
@@ -207,6 +213,9 @@ function SelM<T,T1>(Self: sequence of T; transform: T->sequence of T1): sequence
 /// Преобразует последовательность, используя функцию transform
 function Sel<T,T1>(Self: sequence of T; transform: T->T1): sequence of T1; extensionmethod := Self.Select(transform);
 
+/// Преобразует последовательность, используя функцию transform с индексом
+function Sel<T,T1>(Self: sequence of T; transform: (T,int)->T1): sequence of T1; extensionmethod := Self.Select(transform);
+
 /// Создаёт словарь в ссответствии с заданными функциями проекции на ключ и значение
 function ToD<T,TKey,TValue>(Self: sequence of T; keySelector: T->TKey; valueSelector: T->TValue): Dictionary<TKey,TValue>; extensionmethod := 
   Self.ToDictionary(keySelector,valueSelector);
@@ -221,6 +230,9 @@ function Agr<T,TAcc>(Self: sequence of T; seed: TAcc; func: (TAcc,T)->TAcc): TAc
 
 /// Фильтрует последовательность по условию cond
 function Wh<T>(Self: sequence of T; cond: T->boolean): sequence of T; extensionmethod := Self.Where(cond);
+
+/// Фильтрует последовательность по условию cond с индексом
+function Wh<T>(Self: sequence of T; cond: (T,integer)->boolean); extensionmethod := Self.Where(cond);
 
 /// Группирует элементы последовательности в соответствии с заданной функцией проекции на ключ группы
 function GrBy<T,TKey>(Self: sequence of T; selector: T->TKey): sequence of System.Linq.IGrouping<TKey,T>; extensionmethod := Self.GroupBy(selector);

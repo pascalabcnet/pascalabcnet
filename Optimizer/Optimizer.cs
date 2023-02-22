@@ -18,6 +18,7 @@ namespace PascalABCCompiler
         private bool condition_block = false;
         private bool has_returns = false;
         private bool has_goto = false;
+        private Dictionary<common_method_node, common_method_node> processed_methods = new Dictionary<common_method_node, common_method_node>();
         private bool no_infinite_recursion;
 
         public Optimizer()
@@ -140,6 +141,9 @@ namespace PascalABCCompiler
 
         private void VisitMethod(common_method_node cmn)
         {
+            if (processed_methods.ContainsKey(cmn))
+                return;
+            processed_methods.Add(cmn, cmn);
             if (extended_mode)
                 VisitVariables(cmn.var_definition_nodes_list);
             foreach (var_definition_node vdn in cmn.var_definition_nodes_list)
@@ -561,7 +565,7 @@ namespace PascalABCCompiler
             bool tuple_decomp = false;
             foreach (local_block_variable lbv in stmt.local_variables)
             {
-                if (lbv.name.StartsWith("#fpl"))
+                if (lbv.name.StartsWith("#fpl") || lbv.name.StartsWith("#temp_var"))
                     tuple_decomp = true;
                 helper.AddVariable(lbv);
                 if (lbv.inital_value != null)
@@ -584,16 +588,30 @@ namespace PascalABCCompiler
                 if (!(i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type == semantic_node_type.empty_statement))
                     is_break_stmt = false;
             }
-            if (!tuple_decomp)
-                foreach (local_block_variable vdn in stmt.local_variables)
+            int tuples_num = 0;
+            foreach (local_block_variable vdn in stmt.local_variables)
+            {
+                if (vdn.name.StartsWith("#fpl") || vdn.name.StartsWith("#temp_var"))
                 {
-                    VarInfo vi = helper.GetVariable(vdn);
-                    if (isUnused(vi, vdn))
-                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-
-                    if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
-                        AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
+                    tuple_decomp = true;
+                    if (vdn.type is generic_instance_type_node)
+                        tuples_num = (vdn.type as generic_instance_type_node).generic_params.Count;
+                    else if (vdn.type is compiled_type_node)
+                        tuples_num = (vdn.type as compiled_type_node).compiled_type.GetGenericArguments().Length;
+                    continue;
                 }
+                else if (tuples_num > 0)
+                {
+                    tuples_num--;
+                    continue;
+                }    
+                VarInfo vi = helper.GetVariable(vdn);
+                if (isUnused(vi, vdn))
+                    warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+
+                if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
+                    AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
+            }
         }
 
         private void VisitExternalStatementNode(external_statement sn)
@@ -973,6 +991,9 @@ namespace PascalABCCompiler
                     VisitNonStaticPropertyReference((non_static_property_reference)en); break;
                 case semantic_node_type.simple_array_indexing:
                     VisitSimpleArrayIndexing((simple_array_indexing)en); break;
+                case semantic_node_type.double_question_colon_expression:
+                    VisitDoubleQuestionColon((double_question_colon_expression)en);
+                    break;
                 case semantic_node_type.this_node:
                     //VisitThisNode((this_node)en); 
                     break;
@@ -1015,6 +1036,12 @@ namespace PascalABCCompiler
                 CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
             }
+        }
+
+        private void VisitDoubleQuestionColon(double_question_colon_expression en)
+        {
+            VisitExpression(en.internal_condition);
+            VisitExpression(en.internal_ret_if_null);
         }
 
         private void VisitSimpleArrayIndexing(simple_array_indexing en)

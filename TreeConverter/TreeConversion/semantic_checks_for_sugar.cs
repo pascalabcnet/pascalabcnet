@@ -20,15 +20,9 @@ namespace PascalABCCompiler.TreeConverter
             if (t == null)
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
-            var IsTuple = false;
-            var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple"))
-                IsTuple = true;
-            if (!IsTuple)
-            {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
-            }
+            var IsTuple = IsTupleType(t);
+            var IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
@@ -52,15 +46,9 @@ namespace PascalABCCompiler.TreeConverter
             if (t == null)
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
-            var IsTuple = false;
-            var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"))
-                IsTuple = true;
-            if (!IsTuple)
-            {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
-            }
+            var IsTuple = IsTupleType(t);
+            var IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
@@ -71,6 +59,25 @@ namespace PascalABCCompiler.TreeConverter
                 var n = vars.idents.Count();
                 if (n > t.GetGenericArguments().Count())
                     AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            }
+        }
+
+        void CheckOrdinaryType(expression ex)
+        {
+            var expr = convert_strong(ex);
+            internal_interface ii = expr.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (ii == null)
+            {
+                AddError(new OrdinalTypeExpected(get_location(ex)));
+            }
+        }
+
+        void CheckOrdinaryType(expression_node expr)
+        {
+            internal_interface ii = expr.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (ii == null)
+            {
+                AddError(new OrdinalTypeExpected(expr.location));
             }
         }
 
@@ -97,7 +104,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (!b && !toIsIndex && !toIsIndex1)
             {
-                AddError(get_location(ex), "INTEGER_VALUE_EXPECTED" + semex);
+                AddError(get_location(ex), "INTEGER_VALUE_EXPECTED");
             }
         }
 

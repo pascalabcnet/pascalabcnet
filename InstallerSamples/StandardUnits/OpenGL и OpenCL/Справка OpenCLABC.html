@@ -1,0 +1,2802 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* ============================== *\
+			 page base
+\* ============================== */
+
+body {
+	background-color: #F0F0F0;
+	margin: 0px;
+	overflow: hidden;
+}
+
+.page-base {
+	position: absolute;
+	display: flex;
+}
+
+#splitter {
+	width: 5px;
+	cursor: col-resize;
+	box-shadow: 0 0 4px #B0B0B0;
+}
+
+.page-container {
+	margin: 7.5px;
+	background-color: white;
+	overflow: auto;
+	flex-grow: 1;
+}
+#page-select-container {
+	white-space: nowrap;
+}
+
+#page-display-container-body {
+	padding: 7px;
+	width: fit-content;
+}
+
+/* ============================== *\
+		    page select
+\* ============================== */
+
+.arrow-page-root {
+	cursor: pointer;
+}
+.dot-page-root {
+	cursor: default;
+	margin-left: 5px;
+	margin-right: 6px;
+}
+
+.ps-root-container {
+	margin: 7px;
+}
+
+.ps-folder {
+	display: table;
+}
+.ps-folder-name {
+	cursor: pointer;
+	padding: 1;
+}
+.ps-container {
+	margin-left: 7px;
+	padding-left: 7px;
+	border-left: thin solid;
+	border-color: #80808080;
+}
+
+.ps-page {
+}
+.ps-page-name {
+	cursor: pointer;
+	padding: 1px;
+}
+
+/* ============================== *\
+	       page display
+\* ============================== */
+
+blockquote > *:first-child {
+	margin-top: 0;
+}
+blockquote > *:last-child {
+	margin-bottom: 0;
+}
+blockquote {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 12px;
+	border-left: 5px solid #d0d0d0;
+	background-color: #f7f7f7;
+}
+
+.smart-link {
+	color: blue;
+	cursor: pointer;
+}
+
+.spoiler {
+	margin-left: 8px;
+}
+.spoiler-wrap {
+	border: solid;
+	border-width: 0px;
+	padding-left: 2px;
+}
+.spoiler-name {
+	border: solid;
+	border-width: 0px;
+}
+
+.code-block {
+	display: inline-block;
+	cursor: text;
+	border-radius: 3px;
+	
+	padding: 4px;
+	padding-right: 12px;
+	
+	margin: 0;
+	
+	position: relative;
+}
+.code-block-copier {
+	cursor: pointer;
+	padding: 2px;
+	
+	position: absolute;
+	top: 0;
+	
+	border: thin solid;
+	border-radius: 3.7px 0px 3.7px 3.7px;
+	box-shadow: -2px 2px 3px #0000004a;
+	background: linear-gradient(0deg, #f0f0f0, white);
+}
+.inline-code, .code-block {
+	background: #F0F0F0;
+}
+blockquote .inline-code,
+blockquote .code-block {
+	background: #DEDEDE;
+}
+
+.code-keyword {
+	font-weight: bold;
+}
+.code-build-in {
+	color: blue;
+}
+.code-red {
+	color: red;
+	font-weight: bold;
+}
+.code-glowing-bracket {
+	color: red;
+	background-color: #C0C0C0;
+}
+</style>
+</head>
+<body>
+<div class="page-base" id="page-select">
+	<div class="page-container" id="page-select-container"></div>
+</div>
+<div class="page-base" id="page-display">
+	<div class="page-container" id="page-display-container">
+		<div id="page-display-container-body"></div>
+	</div>
+</div>
+<div class="page-base" id="splitter"></div>
+<script>
+/* ============================== *\
+		        misc
+\* ============================== */
+
+const selected_name_color = "#eaeaea";
+const  pointed_name_color = "#d1faff";
+
+var localStorageKey = "";
+
+const get_style = (el)=>el.currentStyle || window.getComputedStyle(el);
+
+var spl_resize_event = [];
+
+/* ============================== *\
+		     page load
+\* ============================== */
+
+var root_folder = null;
+var currently_loading_folder = null;
+
+var prev_opened_folders = null;
+var opened_folders = [];
+
+var page_by_path = {};
+const define_page_with_path = (path, page)=>{
+	
+	if (page_by_path[path])
+		console.error(`page with path "${path}" defined multiple times`); else
+		page_by_path[path] = page;
+	
+	if (broken_links[path])
+	{
+		for (let lnk of broken_links[path])
+			lnk.fix(page);
+		delete broken_links[path];
+	}
+	
+}
+
+const on_start_folder = (folder_name, root_page)=>{
+	
+	let res = {
+		folders: [],
+		pages: [],
+		container: document.createElement("div"),
+		name: folder_name,
+	};
+	
+	if (!root_folder)
+	{
+		root_folder = res;
+		res.path = "";
+		
+		localStorageKey = `reference : ${folder_name} : `;
+		let prev_opened_folders_str = localStorage[localStorageKey+"opened_folders"];
+		prev_opened_folders = prev_opened_folders_str ? JSON.parse(prev_opened_folders_str) : [];
+		
+		res.container.className = "ps-root-container";
+		document.getElementById("page-select-container").append(res.container);
+	}
+	else
+	{
+		if (!root_page) {
+			res.auto_fill_content = true;
+			root_page = document.createElement("div");
+			root_page.hidden = true;
+		}
+		
+		currently_loading_folder.folders.push(res);
+		res.root = currently_loading_folder;
+		res.path = res.root.path + folder_name + '/';
+		
+		res.body = document.createElement("div");
+		res.body.className = "ps-folder";
+		{
+			let ind = prev_opened_folders.indexOf(res.path);
+			res.state = ind!==-1;
+			if (res.state)
+			{
+				prev_opened_folders.splice(ind,1);
+				opened_folders.push(res.path);
+			}
+		}
+		currently_loading_folder.container.append(res.body);
+		
+		res.update = ()=>{
+			res.state_span.innerHTML = String.fromCharCode( res.empty? 0x2022 : res.state ? 0x25BC : 0x25BA );
+			res.container.hidden = !res.state;
+		}
+		res.reverse_state = ()=>{
+			res.state = !res.state;
+			
+			if (res.state)
+				opened_folders.push(res.path); else
+				opened_folders.splice(opened_folders.indexOf(res.path), 1);
+			localStorage[localStorageKey+"opened_folders"] = JSON.stringify(opened_folders);
+			
+			res.update();
+		};
+		
+		res.state_span = document.createElement("span");
+		res.state_span.className = "dot-page-root";
+		res.state_span.innerHTML = String.fromCharCode( 0x2022 );
+		res.body.append(res.state_span);
+		
+		res.name_span = document.createElement("span");
+		res.name_span.className = "ps-folder-name";
+		res.name_span.innerHTML = folder_name;
+		root_page.name_span = res.name_span;
+		res.body.append(res.name_span);
+		//
+		res.name_span.addEventListener("click", ()=>select_page(root_page));
+		res.name_span.addEventListener("mouseenter", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor=pointed_name_color; });
+		res.name_span.addEventListener("mouseleave", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor="inherit"; });
+		
+		res.container.className = "ps-container";
+		res.body.append(res.container);
+		
+	}
+	currently_loading_folder = res;
+	
+	if (root_folder !== res) {
+		res.content_ref = root_page;
+		root_page.tree_obj = res;
+		document.getElementById("page-display-container-body").append(root_page);
+		add_to_switch_list(root_page);
+		if (!res.auto_fill_content)
+			fix_links(root_page);
+	}
+	
+}
+
+const on_page_added = (page)=>{
+	
+	let res = {
+		root: currently_loading_folder,
+		name: page.getAttribute("page_name"),
+	};
+	res.path = currently_loading_folder.path + res.name;
+	
+	res.cont_div = document.createElement("div");
+	res.cont_div.className = "ps-page";
+	currently_loading_folder.container.append(res.cont_div);
+	
+	res.dot_span = document.createElement("span");
+	res.dot_span.className = "dot-page-root";
+	res.dot_span.innerHTML = String.fromCharCode( 0x2022 );
+	res.cont_div.append(res.dot_span);
+	
+	res.name_span = document.createElement("span");
+	res.name_span.innerHTML = res.name + "<br>";
+	res.name_span.className = "ps-page-name";
+	res.name_span.addEventListener("click", ()=>select_page(page));
+	res.name_span.addEventListener("mouseenter", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor=pointed_name_color; });
+	res.name_span.addEventListener("mouseleave", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor="inherit"; });
+	res.cont_div.append(res.name_span);
+	page.name_span = res.name_span;
+	
+	res.content_ref = page;
+	page.tree_obj = res;
+	document.getElementById("page-display-container-body").append(page);
+	
+	currently_loading_folder.pages.push(res);
+	define_page_with_path(res.path, page);
+	add_to_switch_list(page);
+	fix_links(page);
+	
+	if (!selected_page && !document.location.hash) select_page(page);
+}
+
+const on_end_folder = ()=>{
+	
+	if (currently_loading_folder !== root_folder) {
+		let curr_folder = currently_loading_folder;
+		let root_page = curr_folder.content_ref;
+		
+		if ( curr_folder.folders.length || curr_folder.pages.length )
+		{
+			curr_folder.state_span.className = "arrow-page-root";
+			curr_folder.state_span.addEventListener("click", curr_folder.reverse_state);
+			curr_folder.name_span.addEventListener("dblclick", curr_folder.reverse_state);
+			curr_folder.update();
+		} else
+			curr_folder.empty = true;
+		
+		if (curr_folder.auto_fill_content) {
+			
+			if (curr_folder.folders.length)
+			{
+				let h = document.createElement("h1");
+				h.innerHTML = "Под-папки:";
+				root_page.append(h);
+				
+				let l = document.createElement("ul");
+				for (let folder of curr_folder.folders)
+				{
+					let li = document.createElement("li");
+					li.innerHTML = folder.name_span.innerHTML;
+					make_smart_link(li, folder.content_ref);
+					l.append(li);
+				}
+				root_page.append(l);
+				
+			}
+			
+			if (curr_folder.pages.length)
+			{
+				let h = document.createElement("h1");
+				h.innerHTML = "Страницы:";
+				root_page.append(h);
+				
+				let l = document.createElement("ul");
+				for (let page of curr_folder.pages)
+				{
+					let li = document.createElement("li");
+					li.innerHTML = page.name_span.innerHTML;
+					make_smart_link(li, page.content_ref);
+					l.append(li);
+				}
+				root_page.append(l);
+				
+			}
+			
+		}
+		
+		define_page_with_path(curr_folder.path, root_page);
+		currently_loading_folder = curr_folder.root;
+	} else if (!selected_page)
+		select_page(root_folder.content_ref);
+	
+}
+
+/* ============================== *\
+	        page display
+\* ============================== */
+
+var selected_page = null;
+var scroll_by_page = {};
+const is_selected = (name_span)=>(!selected_page || selected_page.name_span!==name_span);
+const select_page = (new_page)=>{
+	if (selected_page == new_page) return;
+	document.location.hash = new_page.tree_obj.path;
+	fix_element(new_page);
+	
+	let container = document.getElementById("page-display-container");
+	
+	if (selected_page)
+	{
+		scroll_by_page[selected_page.tree_obj.path] = container.scrollTop;
+		selected_page.hidden = true;
+		let name_span = selected_page.name_span;
+		if (name_span) name_span.style.backgroundColor = "inherit";
+	}
+	
+	selected_page = new_page;
+	if (selected_page)
+	{
+		selected_page.hidden = false;
+		container.focus({preventScroll: true});
+		let name_span = selected_page.name_span;
+		if (name_span) name_span.style.backgroundColor = selected_name_color;
+		
+		let tree_obj = new_page.tree_obj.root;
+		while (tree_obj)
+		{
+			if ( tree_obj.state==false && tree_obj.reverse_state ) tree_obj.reverse_state();
+			tree_obj = tree_obj.root;
+		}
+		
+		container.scrollTop = scroll_by_page[selected_page.tree_obj.path] || 0;
+	}
+}
+
+window.addEventListener("keyup", e=>{
+	if (e.code==="ArrowLeft") {
+		if (p = selected_page?.page_l) select_page(p);
+	} else
+	if (e.code==="ArrowRight") {
+		if (p = selected_page?.page_r) select_page(p);
+	}
+});
+
+const make_smart_link = (lnk, page)=>{
+	lnk.className = "smart-link";
+	lnk.addEventListener("click", ()=>select_page(page));
+}
+
+var broken_links = {};
+const define_broken_lnk = (path, source, fixer)=>{
+	if (!broken_links[path]) broken_links[path] = [];
+	broken_links[path].push({
+		source:	source,
+		fix:	fixer,
+	});
+}
+
+const add_to_switch_list = (o)=>{
+	
+	if (add_to_switch_list.last_o) {
+		o.page_l = add_to_switch_list.last_o;
+		add_to_switch_list.last_o.page_r = o;
+	}
+	add_to_switch_list.last_o = o;
+	
+}
+const fix_links = (page)=>{
+	
+	for (let lnk of page.getElementsByTagName('a'))
+	{
+		lnk.path = lnk.getAttribute("path");
+		if (!lnk.path) continue;
+		lnk.removeAttribute("path");
+		
+		start_folder = currently_loading_folder;
+		while (lnk.path.startsWith("../"))
+		{
+			start_folder = start_folder.root;
+			lnk.path = lnk.path.substr(3);
+		}
+		lnk.path = start_folder.path+lnk.path;
+		
+		let lnk_page = page_by_path[lnk.path];
+		if (lnk_page)
+			make_smart_link(lnk, lnk_page); else
+			define_broken_lnk(lnk.path, page.tree_obj.path, new_page=>make_smart_link(lnk, new_page))
+		
+	}
+	
+}
+
+const code_words_color = {
+	"pas": {
+		"keyword": [
+			"###", "##", "program", "unit", "library", "namespace",
+			"begin","end", "var", "uses", "as", "new", "try", "except", "on", "do", "finally", "const",
+			"procedure", "function", "lock", "type", "class","record", "sizeof","typeof", "external",
+			"static", "array", "where", "or","and", "public","private", "property","constructor", "default",
+			"of", "if","then","else", "div","mod", "extensionmethod", "while",
+		],
+		"build-in": [
+			"nil", "self", "true", "false", "value",
+			"string","char", "object", "pointer", "single","real",
+			"shortint", "smallint", "integer", "int64",
+			"byte", "word", "longword", "cardinal", "uint64",
+		],
+		"red": ["ToDo"],
+	},
+	"cl-c": {
+		"keyword": ["__kernel", "__global"],
+		"build-in": ["int", "void"],
+	},
+	"default": {
+		
+	}
+}
+
+const fix_element = (page)=>{
+	if (page.fixed) return;
+	page.fixed = true;
+	
+	for (let spoiler of page.getElementsByClassName('spoiler'))
+	{
+		let get_spoiler_text = ()=> + ' ' + spoiler.getAttribute('summary');
+		
+		let wrap = document.createElement('p');
+		wrap.className = "spoiler-wrap";
+		wrap.update = ()=>{
+			wrap.state_span.innerHTML = String.fromCharCode( 	spoiler.hidden ? 0x25BA	: 0x25BC );
+			wrap.style.borderLeftWidth = 						spoiler.hidden ? 0 		: 1;
+			wrap.name_span.style.borderBottomWidth = 			spoiler.hidden ? 1 		: 0;
+			wrap.style.marginLeft = 							spoiler.hidden ? 1		: 0;
+		}
+		
+		wrap.state_span = document.createElement("span");
+		wrap.append(wrap.state_span);
+		
+		wrap.name_span = document.createElement("span");
+		wrap.name_span.className = "spoiler-name";
+		wrap.name_span.innerHTML = spoiler.getAttribute("summary");
+		wrap.append(wrap.name_span);
+		
+		wrap.update();
+		wrap.reverse_state = ()=>{
+			spoiler.hidden = !spoiler.hidden;
+			wrap.update();
+		}
+		
+		wrap.state_span.addEventListener("click", wrap.reverse_state);
+		wrap.name_span.addEventListener("click", wrap.reverse_state);
+		
+		wrap.state_span.style.cursor = "pointer";
+		wrap.name_span.style.cursor = "pointer";
+		
+		spoiler.replaceWith(wrap);
+		wrap.append(spoiler);
+	}
+	
+	for (let code of page.getElementsByTagName('code'))
+	{
+		let w_to_regex = (w)=>`(?<!\\w)${w}(?!\\w)`;
+		
+		let code_html = code.innerHTML;
+		
+		// Автоопределение языка кода
+		if (!code.className)
+		{
+			let best = {lang: null, c: 0};
+			let multiple_best = true;
+			
+			for (let lang_name in code_words_color)
+			{
+				let c = 0;
+				for (let wordt in code_words_color[lang_name])
+					for (let w of code_words_color[lang_name][wordt])
+					{
+						var m = code_html.match(new RegExp( w_to_regex(w), "gi" ));
+						if (m) c += m.length;
+					}
+				
+				if (best.c == c)
+					multiple_best = true; else
+				if (best.c < c)
+				{
+					multiple_best = false;
+					best.lang = lang_name;
+					best.c = c;
+				}
+			}
+			
+			if (multiple_best)
+				code.className = "language-default"; else
+				code.className = "language-" + best.lang;
+		}
+		
+		// Подсветка особых слов в коде
+		{
+			let lang = code.className.substr("language-".length);
+			let curr_cw = code_words_color[lang];
+			if (!curr_cw) curr_cw = code_words_color["default"];
+			for (let wordt in curr_cw)
+				code_html = code_html.replace(
+					new RegExp(curr_cw[wordt].map(w_to_regex).join('|'),"gi"),
+					w=> `<span class="code-${wordt}">${w}</span>`
+				);
+		}
+		
+		// Выделение скобок
+		{
+			var br_types = {
+				op: ["(", "[", "{", "&lt;", "'"],
+				cl: [")", "]", "}", "&gt;", "'"],
+			}
+			for (let op in br_types)
+				for (let i=0; i<br_types[op].length; i++)
+					code_html = code_html.replace(
+						new RegExp('\\'+br_types[op][i], "g"),
+						`<span class=bracket ${ op=="op" ? "op=true" : "" } bt=${i}>${br_types[op][i]}</span>`
+					);
+			
+		}
+		
+		// Выделение первой строки
+		if (code.parentElement.tagName == "PRE")
+		{
+			let ind = code_html.indexOf('\n');
+			if (ind != code_html.length-1)
+				code_html = `<span class="code-first-line">${code_html.slice(0,ind)}</span>${code_html.slice(ind)}`;
+		}
+		
+		code.innerHTML = code_html;
+		code.firstLine = code.children[0];
+		if (code.firstLine && code.firstLine.className != "code-first-line") delete code.firstLine;
+		
+		// Подсветка скобок
+		{
+			let br_st = [];
+			for (let obj2 of code.getElementsByClassName("bracket"))
+			{
+				let b2t = obj2.getAttribute("bt");
+				
+				if (obj2.getAttribute("op"))
+					br_st.push({
+						obj: obj2,
+						bt: b2t,
+					}); else
+				{
+					let b1 = br_st.pop();
+					let b0 = null;
+					if (!b1) continue;
+					if (b1.obj == obj2.parentElement)
+					{
+						b0 = b1;
+						b1 = br_st.pop();
+					}
+					if (!b1) continue;
+					if (b1.bt == b2t)
+					{
+						let obj1 = b1.obj;
+						
+						let on_enter = ()=>{
+							obj1.className = "code-glowing-bracket";
+							obj2.className = "code-glowing-bracket";
+						}
+						let on_leave = ()=>{
+							obj1.className = null;
+							obj2.className = null;
+						}
+						
+						obj1.addEventListener("mouseenter", on_enter);
+						obj2.addEventListener("mouseenter", on_enter);
+						obj1.addEventListener("mouseleave", on_leave);
+						obj2.addEventListener("mouseleave", on_leave);
+					} else
+					{
+						br_st.push(b1);
+						if (b0) br_st.push(b0);
+					}
+				}
+				
+			}
+			
+		}
+		
+		if (code.parentElement.tagName == "PRE")
+		{
+			let pre = code.parentElement;
+			pre.className = 'code-block';
+			
+			let wrap = document.createElement('p');
+			pre.replaceWith(wrap);
+			wrap.append(pre);
+			
+		} else
+			code.className = "inline-code";
+		
+	}
+	
+	page.style.visibility = "hidden";
+	page.hidden = false;
+	
+	for (let code of page.getElementsByTagName('code'))
+	{
+		if (code.firstLine)
+		{
+			let pre = code.parentElement;
+			
+			let copy_button = document.createElement('div');
+			copy_button.className = "code-block-copier";
+			copy_button.innerText = "Копировать";
+			copy_button.style.visibility = "hidden";
+			pre.append(copy_button);
+			
+			copy_button.addEventListener("click", ()=>{
+				
+				if (document.selection) { // IE
+					var range = document.body.createTextRange();
+					range.moveToElementText(code);
+					range.select();
+				} else if (window.getSelection) { // other browsers
+					var range = document.createRange();
+					range.selectNode(code);
+					window.getSelection().removeAllRanges();
+					window.getSelection().addRange(range);
+				}
+				
+				var text = code.innerText;
+				navigator.clipboard.writeText(text.substring(0,text.length-1));
+			});
+			
+			copy_button.reset_right = ()=>{
+				pre_st = get_style(pre);
+				let container = document.getElementById("page-display-container");
+				let x = pre.getBoundingClientRect().right - (container.getBoundingClientRect().left+container.clientWidth);
+				if (x<0) x = 0; else
+				{
+					let max_x = pre.offsetWidth - copy_button.offsetWidth;
+					if (x>max_x) x = max_x;
+				}
+				copy_button.style.right = x;
+			};
+			let try_reset_right = ()=>{
+				if (!copy_button.hidden)
+					copy_button.reset_right();
+			};
+			spl_resize_event.push(try_reset_right);
+			window.addEventListener("resize", try_reset_right);
+			
+			pre.addEventListener("mouseenter", ()=>{
+				copy_button.hidden = false;
+				copy_button.reset_right();
+			});
+			pre.addEventListener("mouseleave", ()=>copy_button.hidden = true);
+			
+			copy_button.addEventListener("mousedown",	()=>copy_button.style.background = "linear-gradient(180deg, rgb(240, 240, 240), white)");
+			copy_button.addEventListener("mouseup",		()=>copy_button.style.background = "linear-gradient(  0deg, rgb(240, 240, 240), white)");
+			copy_button.addEventListener("mouseleave",	()=>copy_button.style.background = "linear-gradient(  0deg, rgb(240, 240, 240), white)");
+			
+			pre.style.minWidth =
+				code.firstLine.offsetWidth +
+				copy_button.offsetWidth +
+				0
+			;
+			
+			copy_button.hidden = true;
+			copy_button.style.visibility = null;
+		}
+		
+	}
+	
+	page.hidden = true;
+	page.style.visibility = null;
+}
+
+/* ============================== *\
+		        init
+\* ============================== */
+
+{
+	if (document.location.hash)
+	{
+		let get_hash = ()=>decodeURIComponent(document.location.hash.substr(1));
+		let define_hash_lnk = ()=>define_broken_lnk(
+			get_hash(),
+			"document.location.hash",
+			page=>select_page(page)
+		);
+		define_hash_lnk();
+		window.addEventListener("hashchange", ()=>{
+			let hash_page = page_by_path[get_hash()];
+			if (hash_page)
+				select_page(hash_page); else
+				define_hash_lnk();
+		});
+	}
+	
+	let page_select = document.getElementById("page-select");
+	let page_display = document.getElementById("page-display");
+	let splitter = document.getElementById("splitter");
+	
+	let ww = window.innerWidth;
+	let wh = window.innerHeight;
+	
+	for (let cont of document.getElementsByClassName("page-container"))
+	{
+		let par = cont.parentElement;
+		par.update_cont = (w)=>{
+			cont.style.width = w-15;
+			cont.style.height = wh-15;
+		};
+	}
+	
+	let spl_X = ww * 0.30;
+	const reset_spl = ()=>{
+		ww = window.innerWidth;
+		wh = window.innerHeight;
+		
+		page_select.style.height = wh + "px";
+		splitter.style.height = wh + "px";
+		page_display.style.height = wh + "px";
+		
+		if (ww-5<spl_X) spl_X = ww-5;
+		if (spl_X<5) spl_X = 5;
+		
+		page_select.style.width = spl_X + "px";
+		splitter.style.left = spl_X + "px";
+		let x2 = spl_X+splitter.clientWidth;
+		let w2 = ww - x2;
+		page_display.style.left = x2 + "px";
+		page_display.style.width = w2 + "px";
+		
+		page_select.update_cont(spl_X);
+		page_display.update_cont(w2);
+		
+		for (let handler of spl_resize_event)
+			handler();
+	}
+	reset_spl();
+	
+	window.addEventListener("resize", ()=>reset_spl());
+	
+	splitter.addEventListener("dblclick", ()=>{
+		let w = 0;
+		let psc = document.getElementsByClassName("page-container")[0];
+		let psc2 = psc.children[0];
+		for (let n of psc2.children)
+			if (n.clientWidth>w) w = n.clientWidth;
+		
+		let get_margin = (el)=>{
+			let style = get_style(el);
+			return parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+		}
+		
+		spl_X = w +
+			get_margin(psc) +
+			get_margin(psc2)
+		;
+		reset_spl();
+	});
+	
+	let spl_grabed = false;
+	splitter.addEventListener("mousedown", (e)=>{
+		spl_grabed=true;
+		e.preventDefault();
+	});
+	window.addEventListener("mousemove", (e)=>{if (spl_grabed) {
+		spl_X = e.clientX - splitter.clientWidth/2;
+		reset_spl();
+		e.preventDefault();
+	}});
+	window.addEventListener("mouseup", ()=>spl_grabed=false);
+	
+}
+
+window.onload = ()=>{
+	
+	for (path in broken_links)
+		console.error(`Page "${path}" referenced ${broken_links[path].length} times but not found:`, broken_links[path].map(lnk=>lnk.source));
+	
+	localStorage[localStorageKey+"opened_folders"] = JSON.stringify(opened_folders);
+	if (prev_opened_folders.length) console.log("folders were marked as opened, but not found:", prev_opened_folders);
+	delete prev_opened_folders;
+	
+}
+</script>
+<script>on_start_folder("CL ABC", null)</script>
+<script>on_start_folder("Общие сведения", null)</script>
+<div id="page-1" page_name="О справке" hidden=true>
+<p>Данная справка относится к модулю <code>OpenCLABC</code>, входящему в состав стандартных модулей языка <code>PascalABC.NET</code>.</p>
+<p>Модуль <code>OpenCLABC</code> это высокоуровневая обёртка модуля <code>OpenCL</code>.<br />
+Это значит, что с <code>OpenCLABC</code> можно писать гораздо меньше кода в больших и сложных программах,
+однако такой же уровень микроконтроля как с модулем <code>OpenCL</code> недоступен.
+Например, напрямую управлять <code>cl_event</code>'ами в <code>OpenCLABC</code> невозможно.
+Вместо этого надо использовать операции с очередями (например, сложение и умножение очередей)</p>
+<p>Справка модуля <code>OpenCL</code> отсутствует. Вместо неё смотрите:</p>
+<ul>
+<li><a href="%D0%93%D0%B0%D0%B9%D0%B4%20%D0%BF%D0%BE%20%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8E%20OpenGL%20%D0%B8%20OpenCL.html">Общий гайд по использованию модулей <code>OpenGL</code> и <code>OpenCL</code></a></li>
+<li><a href="https://www.khronos.org/registry/OpenCL/">Контейнер справок библиотеки <code>OpenCL</code>, на которой основан модуль <code>OpenCL</code></a></li>
+</ul>
+<p>Если в справке или модуле найдена ошибка, или чего-либо не хватает - пишите в <a href="https://github.com/SunSerega/POCGL/issues">issue</a>.</p>
+</div>
+<script>on_page_added(document.getElementById("page-1"))</script>
+<div id="page-2" page_name="Термины, которые часто путают новички" hidden=true>
+<ul>
+<li><p>CPU — Центральное Процессорное Устройство (процессор);</p>
+</li>
+<li><p>GPU — Графическое Процессорное Устройство (видеокарта);</p>
+</li>
+<li><p>RAM — Оперативная память;</p>
+</li>
+<li><p>Команда — запрос на выполнение чего-либо. К примеру:</p>
+<ul>
+<li>Запрос на запуск программы на GPU;</li>
+<li>Запрос на начало чтения данных из памяти GPU в оперативную память;</li>
+</ul>
+<p><strong>Называть процедуры и функции командами ошибочно!</strong></p>
+</li>
+<li><p>Подпрограмма — процедура или функция;</p>
+</li>
+<li><p>Метод — особая подпрограмма, вызываемая через экземпляр:</p>
+<ul>
+<li>К примеру, метод <code>Context.SyncInvoke</code> выглядит в коде как <code>cont.SyncInvoke(...)</code>, где <code>cont</code> — переменная типа <code>Context</code>;</li>
+</ul>
+</li>
+</ul>
+<p>Остальные непонятные термины можно найти в справке <code>PascalABC.NET</code> или в интернете.</p>
+</div>
+<script>on_page_added(document.getElementById("page-2"))</script>
+<script>on_end_folder()</script>
+<div id="page-3" page_name="" hidden=true>
+<p>Сам модуль <code>OpenCLABC</code> - обёртка модуля <code>OpenCL</code>. Это значит, что внутри он использует
+содержимое <code>OpenCL</code>, но при подключении - показывает только свой личный функционал.</p>
+<p>Так же множество типов из <code>OpenCLABC</code> являются обёртками типов из <code>OpenCL</code>.</p>
+<p>Тип <code>CommandQueue</code> использует тип <code>cl_command_queue</code>, но предоставляет очень много не связанного с <code>cl_command_queue</code> функционала.</p>
+<p>&quot;Простые&quot; типы-обёртки модуля <code>OpenCLABC</code> предоставляют только функционал соответствующего
+типа из модуля <code>OpenCL</code>... в более презентабельном виде. Из общего - у таких типов есть:</p>
+<ul>
+<li><p>Свойство <code>.Native</code>, возвращающее внутренний неуправляемый объект из модуля <code>OpenCL</code>.<br />
+Если вам не пришлось, по какой-либо причине, использовать <code>OpenCLABC</code> и <code>OpenCL</code> вместе - это свойство может понадобится только для дебага.</p>
+</li>
+<li><p>Свойство <code>.Properties</code>, возвращающее объект свойств внутреннего объекта.<br />
+Свойства неуправляемого объекта никак не обрабатываются и не имеют описаний.
+Но типы этих свойств всё равно преобразуются в управляемые (особо заметно на строках и массивах).</p>
+</li>
+</ul>
+<hr />
+<h1>Страницы:</h1>
+<ul>
+<li><a path="Platform/">		Platform	</a> - Платформа, объединяющая несколько совместимых устройств;</li>
+<li><a path="Device/">		Device		</a> - Устройство, поддерживающее OpenCL;</li>
+<li><a path="Context/">		Context		</a> - Контекст выполнения;</li>
+<li><a path="Память/">		Память		</a> - Обёртки памяти GPU;</li>
+<li><a path="Kernel/">		Kernel		</a> - Подпрограмма, выполняемая на GPU;</li>
+<li><a path="ProgramCode/">	ProgramCode	</a> - Контейнер kernel'ов.</li>
+</ul>
+</div>
+<script>on_start_folder("Простые обёртки", document.getElementById("page-3"))</script>
+<div id="page-4" page_name="" hidden=true>
+<p>В списке устройств контекста могут быть только совместимые друг с другом устройства.<br />
+Коллекция совместимых устройств называется платформой и хранится в объектах типа <code>Platform</code>.</p>
+<hr />
+<p>Обычно платформы получают из статического свойства <code>Platform.All</code>:</p>
+<pre><code>## uses OpenCLABC;
+var pls := Platform.All;
+pls.PrintLines;
+</code></pre>
+</div>
+<script>on_start_folder("Platform", document.getElementById("page-4"))</script>
+<script>on_end_folder()</script>
+<div id="page-5" page_name="" hidden=true>
+<p>Обычно устройства получают статическим методом <code>Device.GetAllFor</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+foreach var pl in Platform.All do
+begin
+  Writeln(pl);
+  var dvcs := Device.GetAllFor(pl, DeviceType.DEVICE_TYPE_ALL);
+  if dvcs&lt;&gt;nil then dvcs.PrintLines;
+  Writeln('='*30);
+end;
+</code></pre>
+<p>И в большинстве случаев - это всё что вам понадобится.</p>
+<hr />
+<p>Но если где то нужен более тонкий контроль - можно создать несколько виртуальных
+под-устройств, каждому из которых даётся часть ядер изначального устройства.<br />
+Для этого используются методы <code>.Split*</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var dvc := Context.Default.MainDevice;
+
+Writeln('Поддерживаемые типы .Spilt-ов:');
+var partition_properties := dvc.Properties.PartitionProperties;
+if (partition_properties.Length=0) or (partition_properties[0].val = System.IntPtr.Zero) then
+begin
+  Writeln('Ничего не поддерживается...');
+  exit;
+end else
+  partition_properties.PrintLines;
+Writeln('='*30);
+
+Writeln('Виртуальные устройства, по 1 ядру каждое:');
+if dvc.CanSplitEqually then
+  // Если упадёт потому что слишком много
+  // устройств - пожалуйста, напишите в issue
+  dvc.SplitEqually(1).PrintLines else
+  Writeln('Не поддерживается...');
+Writeln('='*30);
+
+Writeln('Два устройства, 1 и 2 ядра соответственно:');
+if dvc.CanSplitByCounts then
+  dvc.SplitByCounts(1,2).PrintLines else
+  Writeln('Не поддерживается...');
+Writeln('='*30);
+
+</code></pre>
+</div>
+<script>on_start_folder("Device", document.getElementById("page-5"))</script>
+<script>on_end_folder()</script>
+<div id="page-6" page_name="" hidden=true>
+<p>Контекст (объект типа <code>Context</code>) содержит информацию об устройствах,
+на которых надо выделяет области памяти <code>OpenCL</code> и выполнять код для GPU.</p>
+<hr />
+<p>Создать контекст можно конструктором (<code>new Context(...)</code>).<br />
+Контекст можно и не создавать, используя везде свойство <code>Context.Default</code>.</p>
+<p>Если в операции, требующей контекст (как выделение памяти GPU),
+его не указать - будет автоматически выбран <code>Context.Default</code>.<br />
+Неявные очереди всегда используют <code>Context.Default</code>.</p>
+<p>Изначально этому свойству присваивается контекст, использующий GPU, если оно имеется,
+или любое другое устройство, поддерживающее OpenCL, если GPU отсутствует.</p>
+<p>Если устройств поддерживающих <code>OpenCL</code> нет - <code>Context.Default</code> будет <code>nil</code>.<br />
+Однако такая ситуация на практике невозможна, потому что OpenCL поддерживается
+практически всеми современными устройствами, занимающимися выводом изображения на экран.<br />
+Если <code>Context.Default = nil</code> - переустановите графические драйверы.</p>
+<hr />
+<p><code>Context.Default</code> можно перезаписывать.<br />
+Используйте эту возможность только если во всей программе нужен общий контекст, но не стандартный.</p>
+<p>Если ваша программа достаточно сложная чтобы нуждаться в нескольких контекстах - лучше не использовать
+<code>Context.Default</code>. И присвоить ему <code>nil</code>, чтобы не использовать случайно (к примеру, неявной очередью).</p>
+</div>
+<script>on_start_folder("Context", document.getElementById("page-6"))</script>
+<script>on_end_folder()</script>
+<div id="page-7" page_name="" hidden=true>
+<p>Программам, выпоняемые на GPU, не удобно использовать оперативную память.
+Поэтому обычно лучше выделять память на самом GPU.</p>
+<h1>Виды памяти в OpenCLABC:</h1>
+<ul>
+<li><a path="CLArray">	   	    CLArray		    </a> - Память GPU в форме массива записей.</li>
+<li><a path="MemorySegment">		MemorySegment	</a> - Безформенная область памяти GPU;</li>
+<li><a path="MemorySubSegment">	MemorySubSegment</a> - Виртуальная область памяти внутри MemorySegment;</li>
+<li><a path="NativeValue">		NativeValue		</a> - Неуправляемая память RAM в форме одной записи;</li>
+</ul>
+</div>
+<script>on_start_folder("Память", document.getElementById("page-7"))</script>
+<div id="page-8" page_name="CLArray" hidden=true>
+<p>Всё преимущество GPU над CPU состоит в выполнении одинаковой программы на рое из процессорных ядер.<br />
+Каждое из этих ядер значительно медленнее ядер CPU, но используя весь рой вместе можно выполнять вычисления значительно быстрее.<br />
+Но раз все ядра GPU выполняют одну и ту же программу - им обычно приходится передавать массив из однотипных данных.</p>
+<p>Объект типа <code>CLArray&lt;T&gt;</code> (где <code>T</code> - почти любая запись) является массивом, содержимое которого хранится в памяти GPU, для более быстрого доступа из кода на GPU.</p>
+<hr />
+<p><code>CLArray&lt;T&gt;</code> создаётся конструктором:</p>
+<pre><code>## uses OpenCLABC;
+
+// Массив для 10 элементов типа integer
+var a1 := new CLArray&lt;integer&gt;(Context.Default, 10);
+// Заполняем нулями, потому что при создании CLArray может содержать мусорные данные
+a1.FillValue(0);
+a1.GetArray.Println;
+
+// Массив, в который при создании копируются данные из переданного массива
+var a2 := new CLArray&lt;byte&gt;(Context.Default, new byte[](1,2,3,4,5,6,7));
+a2.GetArray.Println;
+
+// Массив, в который при создании копируется часть данных из переданного массива
+// Точнее, копируется 2 элемента, начиная с элемента с индексом 3
+var cpu_array := |0,1,2,3,4,5,6,7|;
+var a3 := new CLArray&lt;integer&gt;(Context.Default, 3, 2, cpu_array);
+a3.GetArray.Println;
+</code></pre>
+<p>Кроме того, объект контекста можно не передавать, тогда для выделения памяти будет автоматически выбран <code>Context.Default</code>.</p>
+<hr />
+<p>Элементы этого массива, так же как у обычных массивов, можно читать через индексное свойство:</p>
+<pre><code>## uses OpenCLABC;
+var a := new CLArray&lt;integer&gt;(Context.Default, |0,1,4,9,16|);
+a[3].Println;
+a[4] := 5;
+a[4].Println;
+</code></pre>
+<p>Но имейте в виду - каждое обращение к индексному свойству - это новое выполнение неявной очереди, поэтому заполнять или читать такой массив по 1 элементу не эффективно.</p>
+<p>Лучше всего использовать полноценные очереди. Но если вы выполняете какое-то одноразовое заполнение - можно, хотя бы, использовать свойство <code>.Section</code>:</p>
+<pre><code>## uses OpenCLABC;
+var a := new CLArray&lt;integer&gt;(Context.Default, |0,1,4,9,16|);
+// Заполняем элементы с индексами от 2 до 3 массивом |-1,-2|
+a.Section[2..3] := |-1,-2|;
+// Читаем и выводим элементы с 0 по 2 индексы как массив
+a.Section[0..2].Println;
+</code></pre>
+</div>
+<script>on_page_added(document.getElementById("page-8"))</script>
+<div id="page-9" page_name="MemorySegment" hidden=true>
+<p>Некоторые данные, передаваемые в программы на GPU, могут быть общими (для всех ядер) или просто не однотипными.<br />
+Такие данные можно хранить в типе <code>MemorySegment</code>, представляющем область памяти GPU, для которой не определено ничего кроме размера.</p>
+<p>Область памяти <code>MemorySegment</code> создаётся конструктором (<code>new MemorySegment(...)</code>).<br />
+Основные конструкторы принимают размер области памяти и, опционально, контекст. Если контекст не указывается - память выделяется на <code>Context.Default</code>.</p>
+<p>Далее, в неё можно записывать и читать данные практически любого типа записи, в любой точке:</p>
+<pre><code>## uses OpenCLABC;
+
+var s := new MemorySegment(sizeof(int64));
+// $ Это запись числа в 16-ичной СС
+s.WriteValue&amp;&lt;int64&gt;($FEDCBA9876543210);
+// .ToString('X') преобразовывает число в строку в 16-ичной СС
+s.GetValue&amp;&lt;int64&gt;.ToString('X').Println;
+// Можно читать кусок данных одного типа, как данные другого типа
+s.GetValue&amp;&lt;integer&gt;.ToString('X').Println;
+// Читаем начиная с четвёртого байта
+// Я сделал 16-ичный вывод чтобы было видно, изначальное число разрезало пополам
+s.GetValue&amp;&lt;integer&gt;(4).ToString('X').Println;
+// Ну и никто не запретит прочитать как совершенно не совместимый тип данных
+// Но в ответ вы получите мусорные данные
+s.GetValue&amp;&lt;real&gt;.Println;
+</code></pre>
+<p>То есть, вам самим придётся заботится о типе внутренних данных, работая с <code>MemorySegment</code>, но взамен вы полностью контролируете содержимое области памяти.</p>
+<hr />
+<p>Память на GPU можно моментально освободить, вызвав метод <code>MemorySegment.Dispose</code>.<br />
+Но вызывать его не обязательно, потому что этот метод вызывается автоматически во время сборки мусора.</p>
+</div>
+<script>on_page_added(document.getElementById("page-9"))</script>
+<div id="page-10" page_name="MemorySubSegment" hidden=true>
+<p>Но кроме выделения памяти на GPU - OpenCL так же позволяет выделять память внутри другой области памяти.<br />
+Для этого используется тип <code>MemorySubSegment</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var c := Context.Default;
+
+// Не обязательно MainDevice, можно взять любое устройство из контекста
+var align := c.MainDevice.Properties.MemBaseAddrAlign;
+
+var s := new MemorySegment(align*2, c);
+// size может быть любым, но origin
+// должно быть align*N, где N - целое
+var s1 := new MemorySubSegment(s, 0, Min(123,align));
+var s2 := new MemorySubSegment(s, align, align);
+
+Writeln(s1);
+Writeln(s2);
+</code></pre>
+</div>
+<script>on_page_added(document.getElementById("page-10"))</script>
+<div id="page-11" page_name="NativeValue" hidden=true>
+<p>OpenCL это неуправляемая библиотека. Обычно можно заставить управляеммые типы данных работать с ней.<br />
+Но часто это приводит к дополнительным затратам производительности.<br />
+И обычно не значит всегда - <code>MemorySegment.ReadValue</code>, принимающее запись <code>var</code>-параметром не может быть безопасным из за сборщика мусора
+(и поэтому отсутствует).</p>
+<p>Более прямым будет передача неуправляемых типов - указателей - без преобразований в подпрограммы модуля <code>OpenCL</code>.<br />
+И эта возможность тоже существует, к примеру в виде <code>MemorySegment.WriteData</code>. Но такие указатели ещё более не_безопасны:<br />
+Как минимум они требуют освобождения в <code>try-finally</code> чтобы избежать утечек памяти.
+И защиты от дурака, не возволяющей записать значение типа <code>real</code> туда, где хранится <code>int64</code> - не существует.</p>
+<p>Как что-то среднее между этими двумя вариантами - существует <code>NativeValue&lt;T&gt;</code>:<br />
+Этот класс является обёрткой указателя на область памяти RAM.</p>
+<pre><code>## uses OpenCLABC;
+
+// В конструктор необходимо передавать значение,
+// потому что иначе неуправляемая память будет содержать мусор
+// Но можно передать default, чтобы заполнить выделяемую память нулями
+var nv := new NativeValue&lt;integer&gt;(default(integer));
+
+nv.Value := 5; // Перезаписываем значение,
+nv.Value.Println; // И читаем назад
+
+// Напрямую получать доступ к области памяти,
+// через свойство Pointer, не рекомендуется
+Writeln(nv.Pointer);
+// Кроме как передавать nv.Pointer^ var-параметром
+
+nv.Dispose; // Освобождение памяти - вызывается и само при сборке мусора
+</code></pre>
+</div>
+<script>on_page_added(document.getElementById("page-11"))</script>
+<script>on_end_folder()</script>
+<div id="page-12" page_name="" hidden=true>
+<p>Объект типа <code>Kernel</code> представляет одну подпрограмму в OpenCL-C коде,
+объявленную с ключевым словом <code>__kernel</code>.</p>
+<hr />
+<p>Обычно <code>Kernel</code> создаётся через индексное свойтсво <code>ProgramCode</code>:</p>
+<pre><code>var code: ProgramCode;
+...
+var k := code['KernelName'];
+</code></pre>
+<p>Тут <code>'KernelName'</code> — имя подпрограммы-kernel'а в исходном коде (регистр важен!).</p>
+<hr />
+<p>Так же можно получить список всех kernel'ов объекта <code>ProgramCode</code>, методом <code>ProgramCode.GetAllKernels</code>:</p>
+<pre><code>var code: ProgramCode;
+...
+var ks := code.GetAllKernels;
+ks.PrintLines;
+</code></pre>
+</div>
+<script>on_start_folder("Kernel", document.getElementById("page-12"))</script>
+<div id="page-13" page_name="KernelArg" hidden=true>
+<p>Методы, запускающие <code>Kernel</code> принимают специальные аргументы типа <code>KernelArg</code>, которые передаются в OpenCL-C код.<br />
+Экземпляр <code>KernelArg</code> может быть создан из нескольких типов значений, а точнее:</p>
+<pre><code>## uses OpenCLABC;
+
+var k: Kernel;
+var val1 := 3;
+var val2 := 5;
+var val3 := new NativeValue&lt;byte&gt;(7);
+var a: array of byte;
+
+k.Exec1(1,
+  // Передавать можно:
+  
+  // Области памяти
+  new CLArray&lt;byte&gt;(1),
+  new MemorySegment(1),
+  // Очереди возвращающие область памяти
+  HFQ(()-&gt;new MemorySegment(1)),
+  // В том числе CLArrayCCQ и т.п.
+  CLArray&amp;&lt;byte&gt;.Create(1).NewQueue,
+  
+  // Указатель на размерное значение
+  // (в kernel попадёт само значение, не указатель)
+  @val2,
+  // Так нельзя, потому что val1 была захвачена лямбдой из HFQ ниже
+//  @val1,
+  // Расширенный набор параметров для передачи адреса
+  KernelArg.FromData(new System.IntPtr(@val2), new System.UIntPtr(sizeof(integer))),
+  
+  // Размерное значение
+  val1,
+  HFQ(()-&gt;val1),
+  
+  // В том числе неуправляемое
+  val3,
+  HFQ(()-&gt;val3),
+  
+  // Массив размерных значений
+  a,
+  HFQ(()-&gt;a)
+  
+);
+</code></pre>
+<p>Обратите внимание, <code>KernelArg</code> из указателя на <code>val2</code> будет немного эффективнее
+чем <code>KernelArg</code> из самого значения <code>val2</code>. Но эту возможность стоит использовать
+только как тонкую оптимизацию, потому что много чего может пойти не так.
+Если передавать <code>@val2</code> в качестве <code>KernelArg</code> - надо знать все тонкости.</p>
+<hr />
+<p>Если <code>@x</code> передали вкачестве <code>KernelArg</code>:</p>
+<ol>
+<li><p><code>x</code> не может быть глобальной переменной или полем класса:</p>
+<pre><code>uses OpenCLABC;
+
+type
+  t1 = class
+    val1 := 1; // Не подходит, потому что поле класса
+    static val2 := 2; // И статических полей это тоже касается
+  end;
+
+var
+  val3 := 3; // Глобальные переменные - тоже статические поля
+  k: Kernel; // k не важно где объявлена
+
+procedure p1;
+// Теоретически подходит, но вообще это плохой стиль кода
+var val4 := 4;
+begin
+
+  // Однозначно подходит, потому что объявлена не только в той же
+  // подпрограмме, но и прямо перед использованием в k.Exec*
+  var val5 := 5;
+
+  k.Exec1(1,
+
+    // Это единственные 2 переменные, которые можно передавать адресом
+    @val4,
+    @val5
+
+  );
+
+end;
+
+begin end.
+</code></pre>
+</li>
+<li><p><code>x</code> не должно быть захвачего лямбдой.<br />
+Хотя указатель на <code>x</code> уже можно захватывать:</p>
+<pre><code>## uses OpenCLABC;
+
+var k: Kernel;
+var val1 := 3;
+
+// На val1 всё ещё накладываются все ограничения,
+// когда val1_ptr использована в качестве KernelArg
+// Но к самой val1_ptr эти ограничения не применяются
+var val1_ptr := @val1;
+
+k.Exec1(1,
+
+  val1,
+  HFQ(()-&gt;val1_ptr^), // Захватили переменную val1_ptr, а не val1
+
+  // val1 нигде не захвачена, поэтому теперь так можно
+  @val1,
+  val1_ptr // То же самое
+
+);
+</code></pre>
+</li>
+<li><p>Выходить из подпрограммы, где объявили <code>x</code> нельзя, пока <code>.Exec</code> не закончит выполнятся.
+Это так же значит, что возвращать очередь, содержащую <code>KernelArg</code> из <code>@x</code> обычно нельзя.<br />
+Но это можно обойти, если объявлять переменную в другой подпрограмме:</p>
+<pre><code>uses OpenCLABC;
+
+var k: Kernel; // Вообще лучше передавать параметром в p2
+
+function p2(var val: integer): CommandQueueBase;
+begin
+
+  Result := k.NewQueue.AddExec1(1,
+
+    @val
+
+  );
+
+end;
+
+procedure p1;
+begin
+  var val: integer;
+
+  var q := p2(val);
+  // Опять же, q не должна продолжать выпоняться
+  // после выхода из p1, потому что тут объявлена val
+  Context.Default.SyncInvoke(q);
+
+end;
+
+begin
+  p1;
+end.
+</code></pre>
+<p>Тут <code>val</code> объявлена в <code>p1</code>. При этом <code>val</code> в <code>p2</code> является синонимом <code>val</code> из <code>p1</code>,
+потому что объявлена <code>var</code>-параметром - передачей по ссылке.<br />
+Если передать без <code>var</code> перед параметром - <code>val</code> из <code>p2</code> будет копией,
+а значит перестанет существовать после выхода из <code>p2</code>.</p>
+</li>
+</ol>
+<p>Обратите внимание: Компилятор не заставит вас следовать описанным тут ограничениям.
+И показанные на этой странице коды могут работать не смотря на эти ограничения,
+потому что саму область памяти, на которую ссылается созданный <code>KernelArg</code>, никто никогда не уничтожает.</p>
+<p>Но в то же время эту же область памяти может использовать под другие данные, таким образом
+заменяя значение которое вы пытались передать в GPU на мусорные данные.</p>
+<p>Это плохо в первую очередь потому, что на перезапись этих данных может повлиять совершенно не связанная
+часть кода, или различие архитектур компьтеров, таким образом усложняя поиск источника ошибки.</p>
+<p>Поэтому, ещё раз, используйте передачу адреса в качестве <code>KernelArg</code> только как тонкую оптимизацию и только когда понимаете что делаете.</p>
+</div>
+<script>on_page_added(document.getElementById("page-13"))</script>
+<script>on_end_folder()</script>
+<div id="page-14" page_name="" hidden=true>
+<p>Обычные программы невозможно запустить на GPU. Для этого надо писать особые программы.<br />
+В контексте OpenCL - эти программы обычно пишутся на языке &quot;OpenCL C&quot; (основанном на языке &quot;C&quot;).</p>
+<p>Язык OpenCL-C это часть библиотеки OpenCL, поэтому его справку можно найти <a href="https://www.khronos.org/registry/OpenCL/">там же</a>, где и справку OpenCL.</p>
+<p>В <code>OpenCLABC</code> код на языке &quot;OpenCL C&quot; хранится в объектах типа <code>ProgramCode</code>.<br />
+Объекты этого типа используются только как контейнеры.
+Один объект ProgramCode может содержать любое количествово подпрограмм-kernel'ов.</p>
+<hr />
+<h1>Есть 2 способа создать объект типа <code>ProgramCode</code>:</h1>
+<ul>
+<li><p><a path="Создание из исходного кода">		Из исходного кода			</a></p>
+</li>
+<li><p><a path="Создание из бинарного файла">	Из прекомпилированного кода	</a></p>
+</li>
+</ul>
+</div>
+<script>on_start_folder("ProgramCode", document.getElementById("page-14"))</script>
+<div id="page-15" page_name="Создание из исходного кода" hidden=true>
+<p>Конструктор <code>ProgramCode</code> (<code>new ProgramCode(...)</code>) принимает тексты исходников программы на языке OpenCL-C.<br />
+<strong>Именно тексты исходников, не имена файлов!</strong></p>
+<p>Так же, как исходники паскаля хранят в .pas файлах, исходники OpenCL-C кода хранят в .cl файлах.
+Но вообще, это не принципиально, потому что код даже не обязательно должен быть в файле.</p>
+<p>Так как конструктор <code>ProgramCode</code> принимает текст - исходники программы на OpenCL-C можно хранить даже в
+строке в .pas программе. Тем не менее, храненить исходники OpenCL-C кода в .cl файлах обычно удобнее всего.</p>
+</div>
+<script>on_page_added(document.getElementById("page-15"))</script>
+<div id="page-16" page_name="Создание из бинарного файла" hidden=true>
+<p>После создания объекта типа <code>ProgramCode</code> из исходников можно вызвать
+метод <code>ProgramCode.SerializeTo</code>, чтобы сохранить код в бинарном и прекомпилированном виде.
+Обычно это делается отдельной программой (не той же самой, которая будет использовать этот бинарный код).</p>
+<p>После этого основная программа может создать объект <code>ProgramCode</code>,
+используя статический метод <code>ProgramCode.DeserializeFrom</code>.</p>
+<p>Пример можно найти в папке <code>Прекомпиляция ProgramCode</code> или <a href="https://github.com/SunSerega/POCGL/tree/master/Samples/OpenCLABC/%D0%9F%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%BF%D0%B8%D0%BB%D1%8F%D1%86%D0%B8%D1%8F%20ProgramCode">тут</a>.</p>
+</div>
+<script>on_page_added(document.getElementById("page-16"))</script>
+<script>on_end_folder()</script>
+<script>on_end_folder()</script>
+<div id="page-17" page_name="" hidden=true>
+<p>Передавать команды для GPU по одной не эффективно.
+Гораздо эффективнее передавать несколько команд сразу.</p>
+<p>Для этого существуют очереди (типы, наследующие от <code>CommandQueueBase</code>).
+Они хранят произвольное количество команд для GPU.
+А при необходимости также и части кода, выполняемые на CPU.</p>
+<hr />
+<h1>Страницы:</h1>
+<ul>
+<li><p><a path="Возвращаемое значение очередей/">	Возвращаемое значение	</a></p>
+</li>
+<li><p><a path="Выполнение очередей/">				Выполнение				</a></p>
+</li>
+<li><p><a path="Создание очередей/">					Создание				</a></p>
+</li>
+<li><p><a path="Вложенные очереди/">					Вложенные очереди		</a></p>
+</li>
+</ul>
+</div>
+<script>on_start_folder("Очередь [команд] (CommandQueue)", document.getElementById("page-17"))</script>
+<div id="page-18" page_name="" hidden=true>
+<p>Все типы очередей наследует от <code>CommandQueueBase</code>. Это значит что любую очередь можно сохранить в переменную типа <code>CommandQueueBase</code>.<br />
+Но о значении типа <code>CommandQueueBase</code> известно не на много больше чем о значении типа <code>object</code>.</p>
+<p>Так же, все очереди наследуют от одного из двух типов:</p>
+<ol>
+<li><code>CommandQueueNil</code> - очередь возващающая <code>nil</code> (именно нулевую ссылку, не пустое значение любого типа).</li>
+<li><code>CommandQueue&lt;T&gt;</code> (где <code>T</code> - любой тип) - очередь возвращающая значение типа <code>T</code>;</li>
+</ol>
+<p>После выполнения очереди <code>CommandQueue&lt;T&gt;</code> метод <code>Context.SyncInvoke</code> возвращает то, что вернула очередь.<br />
+А если использовать метод <code>Context.BeginInvoke</code> - возвращаемое значение можно получить с помощью метода <code>CLTask&lt;T&gt;.WaitRes</code>.</p>
+<hr />
+<p>Результат других типов очередей нельзя получить, но их можно преобразовать к <code>CommandQueue&lt;T&gt;</code> с произвольным <code>T</code> с помощью <code>.Cast</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+// Q объявлена как CommandQueueBase,
+// а значит в неё можно сохранить любую очередь
+var Q: CommandQueueBase;
+
+// В данном случае сохраняем CommandQueueNil
+Q := HPQ(()-&gt;Writeln('Q выполнилась'));
+
+// Преобразовывать nil можно в любой ссылочный тип
+Writeln(Context.Default.SyncInvoke( Q.Cast&amp;&lt;object&gt; ));
+// Exception тоже класс - поэтому можно и в него
+// Но в результате всё равно получится nil
+Writeln(Context.Default.SyncInvoke( Q.Cast&amp;&lt;Exception&gt; ));
+
+Sleep(1000); // Чтобы было видно предыдущий вывод
+//Ошибка времени выполнения: .Cast не может преобразовывать nil в integer
+// Ошибка кидается ещё в момент создания .Cast очереди
+Writeln(Context.Default.SyncInvoke( Q.Cast&amp;&lt;integer&gt; ));
+</code></pre>
+<p>Подробнее <a path="../Создание очередей/С кодом для CPU">тут</a>.</p>
+<hr />
+<p>В то же время, если результат выполнения очереди не нужен,
+от него можно избавится с помощью <code>.DiscardResult</code>.</p>
+<p>Это может понадобится если вы хотите:</p>
+<ul>
+<li>Защититься от случайного использования результата;</li>
+<li>Передать очередь туда, где ожидается <code>CommandQueueNil</code>;</li>
+<li>Сократить (мизерное, но не нулевое) использование ресурсов, выделяемых для передачи резутата. К примеру:</li>
+</ul>
+<pre><code>## uses OpenCLABC;
+
+var Q := HFQQ(()-&gt;
+begin
+  Writeln('Функция выполнилась');
+  Result := 5;
+end).DiscardResult;
+
+var t := Context.Default.BeginInvoke(Q as CommandQueueBase);
+$'Has result: {not (t is CLTaskNil)}'.Println;
+
+t.Wait;
+</code></pre>
+<p>Без <code>.DiscardResult</code> - <code>BeginInvoke</code> создаст <code>CLTask&lt;integer&gt;</code>,
+не смотря на то, что в него передают <code>CommandQueueBase</code>.</p>
+<p>А с <code>.DiscardResult</code> - <code>HFQQ</code> выполняется как будто это <code>HPQQ</code>.</p>
+<p>Обратите внимание, если результат очереди выкидывается, без
+какого-либо использования - ресурсы на него не выделяются. К примеру:</p>
+<pre><code>## uses OpenCLABC;
+
+Context.Default.SyncInvoke(
+  HFQQ(()-&gt;1) +
+  HFQQ(()-&gt;2)
+);
+</code></pre>
+<p>Первая <code>HFQQ</code> выполнится как будто это <code>HPQQ</code>, потому что
+из <code>SyncInvoke</code> можно получить только результат второй <code>HFQQ</code>.</p>
+<hr />
+<p>Очереди, созданные из областей памяти OpenCL или kernel'ов возващают свои области памяти/<code>Kernel</code>'ы соответственно, из которых были созданы;<br />
+Очереди, созданные с <code>HF[Q]Q</code> - значение, которое вернёт переданная функция;<br />
+Очереди, созданные с <code>HP[Q]Q</code> являются <code>CommandQueueNil</code>.</p>
+<p>Демонстрация:</p>
+<pre><code>## uses OpenCLABC;
+
+/// Вывод типа и значения объекта
+procedure OtpObject(o: object) :=
+$'{if o=nil then nil else TypeName(o)}[{_ObjectToString(o)}]'.Println;
+// _ObjectToString это функция, которую используют
+// Writeln и Println для форматирования значений
+
+procedure Test(q: CommandQueueBase) :=
+OtpObject(Context.Default.SyncInvoke(
+  // Преобразовываем результат к object, чтобы его вернула SyncInvoke
+  q.Cast&amp;&lt;object&gt;
+));
+
+var s := new MemorySegment(1);
+
+// Тип - MemorySegment, потому что очередь создали из него
+Test( s.NewQueue );
+
+// Тип - integer, потому что это тип по умолчанию для выражения (5)
+Test( HFQQ(()-&gt;5) );
+
+// Тип - string, по той же причине
+Test( HFQQ(()-&gt;'abc') );
+
+// Тип отсутствует, потому что HP[Q]Q возвращает nil
+Test( HPQQ(()-&gt;Print('Выполнилась HPQQ:')) );
+</code></pre>
+<hr />
+<p>Проверить что очередь ничего не возвращает очень просто:</p>
+<pre><code>var Q: CommandQueueBase;
+...
+if Q is CommandQueueNil(var cqn) then
+  p1(cqn) else
+  p2(Q);
+</code></pre>
+<p>Но для типа <code>CommandQueue&lt;T&gt;</code> надо указать конкретный тип, чтобы вызвать <code>is</code>.
+Другими словами, с помощью <code>is</code> можно проверять только по одному типу возвращаемого значения за раз:</p>
+<pre><code>var Q: CommandQueueBase;
+...
+if Q is CommandQueueNil(var cqn) then
+  p1(cqn) else
+if Q is CommandQueue&lt;byte&gt;(var cq) then
+  p2&amp;&lt;byte&gt;(cq) else
+if Q is CommandQueue&lt;word&gt;(var cq) then
+  p2&amp;&lt;word&gt;(cq) else
+  // Не должно происходить
+  raise new System.NotSupportedException;
+</code></pre>
+<p>Если надо вызвать <code>p2</code> для очереди с любым возвращаемым значением - используется <code>.UseTyped</code>:</p>
+<pre><code>uses OpenCLABC;
+
+procedure p1(cq: CommandQueueNil) := Writeln('nil');
+procedure p2&lt;T&gt;(cq: CommandQueue&lt;T&gt;) := Writeln($'&lt;{TypeToTypeName(typeof(T))}&gt;');
+
+type
+  // Не обязательно запись
+  TypedUser = record(ITypedCQUser)
+    
+    public procedure UseNil(cq: CommandQueueNil) := p1(cq);
+    public procedure Use&lt;T&gt;(cq: CommandQueue&lt;T&gt;) := p2(cq);
+    
+  end;
+  
+procedure Test(Q: CommandQueueBase) :=
+Q.UseTyped(new TypedUser);
+
+begin
+  Test(HPQ(()-&gt;begin end));
+  Test(HFQ(()-&gt;0));
+  Test(HFQ(()-&gt;0.0));
+end.
+</code></pre>
+<p>Объявлять дополнительный тип (<code>TypedUser</code> в этом коде) необходимо потому, что иначе
+передать подпрограмму <code>Use&lt;T&gt;</code>, не указывая её <code>&lt;T&gt;</code>, в <code>UseTyped</code> не получится.</p>
+<p>Так же, если нужно не только использовать очередь, но и что-то вернуть - используется <code>.ConvertTyped</code>:</p>
+<pre><code>uses OpenCLABC;
+
+type
+  // Получает имя типа результата очереди, или nil если он отсутствует
+  QueueConverterResTName = record(ITypedCQConverter&lt;string&gt;)
+    
+    public function ConvertNil(cq: CommandQueueNil): string := nil;
+    public function Convert&lt;T&gt;(cq: CommandQueue&lt;T&gt;): string := TypeToTypeName(typeof(T));
+    
+  end;
+  
+procedure Test(Q: CommandQueueBase) :=
+Writeln( Q.ConvertTyped(new QueueConverterResTName) );
+
+begin
+  Test(HPQ(()-&gt;begin end));
+  Test(HFQ(()-&gt;0));
+  Test(HFQ(()-&gt;0.0));
+end.
+</code></pre>
+<p>И <code>.UseTyped</code> и <code>.ConvertTyped</code> гарантируют что обязательно будет вызван ровно один
+из двух методов - либо принимающий <code>CommandQueueNil</code>, либо принимающий <code>CommandQueue&lt;T&gt;</code>.</p>
+</div>
+<script>on_start_folder("Возвращаемое значение очередей", document.getElementById("page-18"))</script>
+<script>on_end_folder()</script>
+<div id="page-19" page_name="" hidden=true>
+<p>Самый простой способ выполнить очередь - вызвать метод <code>Context.SyncInvoke</code>.</p>
+<p>У него есть три перегрузки, для <code>CommandQueueBase</code>, <code>CommandQueueNil</code> и <code>CommandQueue&lt;T&gt;</code>.
+Только последняя возвращает результат.</p>
+<p>Но если надо выполнить очередь асинхронно - лучше использовать метод <code>Context.BeginInvoke</code>,
+потому что его всё равно вызывает <code>Context.SyncInvoke</code>.</p>
+<p><code>Context.BeginInvoke</code> запускает асинхронное выполнение очереди.
+Как только очередь была полностью запущена он возвращает объект типа
+<code>CLTaskBase</code>, <code>CLTaskNil</code> или <code>CLTask&lt;T&gt;</code> для соответствующих типов очередей.</p>
+<p>Так же как в случае очередей, <code>CLTaskNil</code> и <code>CLTask&lt;T&gt;</code> наследуют от <code>CLTaskBase</code>.<br />
+У всех <code>CLTask</code>-ов есть:</p>
+<ul>
+<li>Свойства <code>.OrgContext</code> и <code>.OrgQueue</code>, возвращающие контекст выполнения и выполняемую очередь соответственно.</li>
+<li>Метод <code>.Wait</code> для ожидания окончания выполнения очереди.</li>
+</ul>
+<p>У <code>CLTask&lt;T&gt;</code> так же есть метод <code>.WaitRes</code>, вызывающий <code>.Wait</code> и затем возвращающий результат очереди.</p>
+<hr />
+<p>При выполнении очереди может произойти несколько исключений, поэтому, чтобы получить можно было все, их упаковывает в <code>System.AggregateException</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+try
+  
+  // Context.SyncInvoke или CLTask.Wait
+  Context.Default.SyncInvoke(Q);
+  
+except
+  on e: System.AggregateException do
+    e.InnerExceptions.PrintLines;
+end;
+</code></pre>
+<p>Но для более тонкого контроля лучше использовать
+<a path="../Создание очередей/Обработка исключений"><code>.Handle*</code> методы очередей</a>.</p>
+</div>
+<script>on_start_folder("Выполнение очередей", document.getElementById("page-19"))</script>
+<script>on_end_folder()</script>
+<div id="page-20" page_name="" hidden=true>
+<h1>Есть всего 10 базовых способов создать очередь:</h1>
+<ol>
+<li><p><a path="Из объекта с коммандами">				Из объекта с коммандами					</a></p>
+</li>
+<li><p><a path="Из готового результата">				Из готового результата					</a></p>
+</li>
+<li><p><a path="С кодом для CPU">						Из обычной подпрограммы					</a></p>
+</li>
+<li><p><a path="Комбинируя другие очереди">				Из нескольких других очередей			</a></p>
+</li>
+<li><p><a path="Из повторения очереди">					Из повторения одной очереди				</a></p>
+</li>
+<li><p><a path="Множественное использование очереди">	Несколько очередей с общим результатом	</a></p>
+</li>
+<li><p><a path="Общие методы CCQ объектов">				Общими методами CCQ объектов			</a></p>
+</li>
+<li><p><a path="Из ожидания очередей">					Из ожидания других очередей				</a></p>
+</li>
+<li><p><a path="Обработка исключений">					Из очереди + обработчика исключений		</a></p>
+</li>
+<li><p><a path="Не создавая явно">						Не пытаясь								</a></p>
+</li>
+</ol>
+</div>
+<script>on_start_folder("Создание очередей", document.getElementById("page-20"))</script>
+<div id="page-21" page_name="Из объекта с коммандами" hidden=true>
+<p>OpenCL используется для передачи комманд в GPU.
+Поэтому в первую очередь стоит поговорить об очередях <code>OpenCLABC</code>, содержащих комманды для GPU.</p>
+<p>Такие очереди создаются из некоторых типов-простых_обёрток методом <code>.NewQueue</code> и имеют тип с припиской <code>CCQ</code>.<br />
+(&quot;Command Container Queue&quot;, то есть очередь-контейнер для коман GPU)<br />
+К примеру, метод <code>CLArray&lt;byte&gt;.NewQueue</code> вернёт очередь типа <code>CLArrayCCQ&lt;byte&gt;</code>, наследующего от <code>CommandQueue&lt; CLArray&lt;byte&gt; &gt;</code>.</p>
+<p>Чтобы создать саму комманду - надо вызвать соответствующий ей метод <code>CCQ</code> объекта. К примеру:</p>
+<pre><code>## uses OpenCLABC;
+
+// Массив на 3 элемента типа integer
+var a := new CLArray&lt;integer&gt;(3);
+
+// Создаём очередь
+var q: CLArrayCCQ&lt;integer&gt; := a.NewQueue;
+
+Context.Default.SyncInvoke(q
+  .ThenWriteValue(1, 0)
+  // Записывать по 1 элементу не эффективно
+  // Лучше сначала создать массив в RAM
+  // А затем послать его целиком
+  .ThenWriteArray(|5,7|, 1, 2,0)
+  // .ThenGet методы особенные, потому что не возвращают CCQ объект
+  // В данном случае эта комманда читает весь CLArray как обычный массив в RAM
+  .ThenGetArray
+).Println;
+</code></pre>
+<p>Также, <code>CCQ</code> очереди можно создавать из очередей, возвращающих объект с командами. Для этого используется конструктор:</p>
+<pre><code>var q0: CommandQueue&lt;MemorySegment&gt;;
+...
+var q := new MemorySegmentCCQ(q0);
+</code></pre>
+<hr />
+<p>Команды объектов, представляющих память на GPU, можно разделить на группы.</p>
+<p>По направлению передачи:</p>
+<ol>
+<li><code>Write</code> и <code>Fill</code>: Из RAM в память GPU;</li>
+<li><code>Read</code> и <code>Get</code>: Из памяти GPU в RAM;</li>
+<li><code>Copy</code>: Между двумя областями памяти GPU.</li>
+</ol>
+<p>И по типу данных на стороне RAM:</p>
+<ol>
+<li><code>Data</code>: Используются данные, находящиеся в RAM по указанному адресу;</li>
+<li><code>Value</code>: Используется размерное значение;</li>
+<li><code>Array</code>: Используется содержимое указанного массива размерных значений.</li>
+</ol>
+<p>Но при этом отсутствуют некоторые комбинации.</p>
+<p>В первую очередь, в случае <code>Copy</code> нет понятия типа данных на стороне RAM, потому что RAM в принципе не задействуется.</p>
+<p>И нет <code>GetData</code>, потому что в случае ошибок будут утечки памяти.
+Вместо него выделяйте память явно и передавайте её в <code>ReadData</code>.</p>
+<p>Так же, <code>WriteValue</code> может принимать размерное значение и <code>NativeValue</code>, но <code>ReadValue</code> принимает только <code>NativeValue</code>.<br />
+Это потому, что принимать размерное значение в <code>ReadValue</code> <code>var</code>-параметром не безопасно,
+как и в случае передачи адреса в качестве <a path="../../Простые обёртки/Kernel/KernelArg"> <code>KernelArg</code> </a>.<br />
+Если вы понимаете что делаете - используйте <code>ReadData</code>, явно передавая в него адрес вашего значения (то есть указатель).<br />
+Но обычно лучше использовать <code>GetValue</code>, создающее и возвращающее новое размерное значение, либо <code>ReadValue</code> принимающее <code>NativeValue</code>.</p>
+<hr />
+<p>Кроме таких объектов, методы-команды для GPU есть только у <code>Kernel</code>. И все они представляют запуск kernel'а.</p>
+<hr />
+<p>Комманда <code>.ThenGet</code> не выполняется, если её результат выкидывается.
+Подробнее <a path="../Возвращаемое значение очередей/">тут</a>.</p>
+<p>Это оптимизация, которую вы можете заметить только в одном случае:
+Если параметры этой команды были неправильные - ошибка не возникнет.</p>
+</div>
+<script>on_page_added(document.getElementById("page-21"))</script>
+<div id="page-22" page_name="Из готового результата" hidden=true>
+<p>Константы в любом контексте позволяют проводить особые оптимизации.<br />
+В случае <code>OpenCLABC</code> - константные очереди являются константами только на время выполнения очереди.</p>
+<pre><code>## uses OpenCLABC;
+
+var cq := new ConstQueue&lt;integer&gt;(1);
+Context.Default.SyncInvoke(cq).Println;
+
+cq.Value := 2;
+Context.Default.SyncInvoke(cq).Println;
+</code></pre>
+<p>Обратите внимание, <code>.Value</code> нельзя изменять пока <code>.BeginInvoke</code> не досоздаст <code>CLTask</code>. Иначе поведение неопределено.</p>
+<hr />
+<p>Так же, константную очередь можно создать присвоив значение результата туда, где ожидается очередь:</p>
+<pre><code>var q: CommandQueue&lt;integer&gt; := 1;
+</code></pre>
+<p>Для этого тип значения (<code>1</code>) и результата очереди <code>&lt;integer&gt;</code> должны полностью совпадать. К примеру так сделать не позволит:</p>
+<pre><code>//Ошибка: Нельзя преобразовать тип integer к CommandQueue&lt;object&gt;
+var q: CommandQueue&lt;object&gt; := 1;
+</code></pre>
+<p>Чтобы можно было присвоить - значение надо явно преобразовать к <code>object</code>:</p>
+<pre><code>var q: CommandQueue&lt;object&gt; := object(1);
+</code></pre>
+<p>Этот способ создания константной очереди обычно используется подпрограммами, принимающими очереди:</p>
+<pre><code>## uses OpenCLABC;
+
+procedure p1(q: CommandQueue&lt;integer&gt;) :=
+Context.Default.SyncInvoke(q).Println;
+
+p1(1);
+p1(HFQQ(()-&gt;2));
+</code></pre>
+<p>В <code>OpenCLABC</code> есть множество подпрограмм, принимающий очередь вместо значения.
+<a path="../Вложенные очереди/">Подробнее</a>.</p>
+<hr />
+<p>Если нужно сохранить константную очередь в переменную, можно написать:</p>
+<pre><code>var q1 := new ConstQueue&lt;integer&gt;(1);
+var q2: CommandQueue&lt;integer&gt; := 3;
+</code></pre>
+<p>Но оба способа объёмны и, что важнее, требуют указать тип значения явно.</p>
+<p>Поэтому в <code>OpenCLABC</code> есть вспомогательная подпрограмма:</p>
+<pre><code>var q3 := CQ(3);
+</code></pre>
+<hr />
+<p>У очередей есть возвращаемое значение, но чтобы передавать в них данные при запуске - можно
+или создавать новую очередь на каждое выполнение (что очень не эффективно), или выкручиваться так:</p>
+<pre><code>uses OpenCLABC;
+
+type
+  MyQueueContainer = sealed class
+    private Q: CommandQueue&lt;integer&gt;;
+    private par1 := new ConstQueue&lt;integer&gt;(-1);
+    private par2 := new ConstQueue&lt;string&gt;(nil);
+    
+    // Эта очередь ничего полезного не делает, но это только пример
+    public constructor := self.Q :=
+    MemorySegment.Create(sizeof(integer)).NewQueue
+    .ThenWriteValue( self.par1 )
+    .ThenQueue( self.par2.ThenQuickUse(x-&gt;Writeln(x)) )
+    .ThenGetValue&amp;&lt;integer&gt;;
+    
+    public function Invoke(par1: integer; par2: string): integer;
+    begin
+      var tsk: CLTask&lt;integer&gt;;
+      // Нужна блокировка, чтобы если метод Invoke будет выполнен
+      // в нескольких потоках одновременно, .Value параметров
+      // не могло поменяться пока Context.BeginInvoke создаёт CLTask
+      lock self do
+      begin
+        self.par1.Value := par1;
+        self.par2.Value := par2;
+        tsk := Context.Default.BeginInvoke(Q);
+      end;
+      
+      Result := tsk.WaitRes;
+    end;
+    
+  end;
+  
+begin
+  var cont := new MyQueueContainer;
+  
+  cont.Invoke(1, 'abc').Println;
+  cont.Invoke(2, 'def').Println;
+  
+end.
+</code></pre>
+<p>Но это не очень красиво. Можно сделать красивее, используя специальную очередь-параметр.<br />
+<code>ParameterQueue&lt;T&gt;</code> тоже является константной во время выполнения очереди, но используется по-другому:</p>
+<pre><code>uses OpenCLABC;
+
+type
+  MyQueueContainer = sealed class
+    private Q: CommandQueue&lt;integer&gt;;
+    private par1 := new ParameterQueue&lt;integer&gt;('par1');
+    private par2 := new ParameterQueue&lt;string&gt;('par2');
+    
+    // Эта очередь ничего полезного не делает, но это только пример
+    public constructor := self.Q :=
+    MemorySegment.Create(sizeof(integer)).NewQueue
+    .ThenWriteValue( self.par1 )
+    .ThenQueue( self.par2.ThenQuickUse(x-&gt;Writeln(x)) )
+    .ThenGetValue&amp;&lt;integer&gt;;
+    
+    public function Invoke(par1: integer; par2: string) :=
+    Context.Default.SyncInvoke(self.Q,
+      self.par1.NewSetter(par1),
+      self.par2.NewSetter(par2)
+    );
+    
+  end;
+  
+begin
+  var cont := new MyQueueContainer;
+  
+  cont.Invoke(1, 'abc').Println;
+  cont.Invoke(2, 'def').Println;
+  
+end.
+</code></pre>
+<p>Таким образом код получается значительно чище.<br />
+Кроме того, при запуске очереди проводятся проверки, чтобы очереди-параметры
+не оказывались не_определены или установлены дважды.</p>
+</div>
+<script>on_page_added(document.getElementById("page-22"))</script>
+<div id="page-23" page_name="С кодом для CPU" hidden=true>
+<p>Иногда между командами для GPU надо вставить выполнение обычного кода на CPU.
+А разрывать для этого очередь на две части - плохо, потому что
+одна целая очередь всегда выполнится быстрее двух её частей.</p>
+<p>Поэтому существует множество типов очередей, хранящих обычный код для CPU.</p>
+<hr />
+<p>Чтобы создать самую простую такую очередь используются глобальные подпрограммы <code>HFQ</code> и <code>HPQ</code>:</p>
+<p>HFQ — Host Function Queue<br />
+HPQ — Host Procedure Queue<br />
+(Хост в контексте OpenCL - это CPU, потому что с него посылаются команды для GPU)</p>
+<p>Они возвращают очередь, выполняющую код (функцию/процедуру соотвественно) на CPU.<br />
+Пример применения приведён <a path="../Возвращаемое значение очередей/"> на странице выше</a>.</p>
+<hr />
+<p>Так же бывает нужно использовать результат предыдущей очереди в коде на CPU.
+Для этого используются методы <code>.ThenUse</code> и <code>.ThenConvert</code>:</p>
+<pre><code>## uses OpenCLABC;
+var Q := HFQ(()-&gt;5);
+
+Context.Default.SyncInvoke(Q
+  .ThenUse(x-&gt;Println($'x*2 = {x*2}'))
+  .ThenConvert(x-&gt;$'x^2 = {x**2}')
+).Println;
+</code></pre>
+<p><code>.ThenUse</code> дублирует возвращаемое значение предыдущей очереди (<code>Q</code> в примере).<br />
+А <code>.ThenConvert</code> возвращает результат выполнения переданной функции, как и <code>HFQ</code>.</p>
+<hr />
+<p><code>OpenCLABC</code> очереди существуют чтобы можно было удобно описывать параллельные процедуры.
+Поэтому, с расчётом на параллельность, обычные очереди с кодом для CPU создают себе по одному потоку выполнения (<code>Thread</code>) при запуске.</p>
+<p>Этот поток выполнения запускается до выхода из <code>Context.BeginInvoke</code> и остаётся в режиме ожидая.<br />
+Но даже если игнорировать затраты на запуск потока, выход из режима ожидания это не моментальня операция.</p>
+<p>Если надо выполнить очень простое действие, как в последнем примере выше, эти затраты неоправданны.<br />
+Для таких случаев используется <code>Quick</code> версии очередей:</p>
+<pre><code>## uses OpenCLABC;
+var Q := HFQQ(()-&gt;5);
+
+Context.Default.SyncInvoke(Q
+  .ThenQuickUse(x-&gt;Println($'x*2 = {x*2}'))
+  .ThenQuickConvert(x-&gt;$'x^2 = {x**2}')
+).Println;
+</code></pre>
+<p>В отличии от предыдущего примера, в данном будет создан только один поток выполнения (его всегда создаёт <code>Context.BeginInvoke</code>).</p>
+<p>В общем случае <code>Quick</code> очереди стараются выполняться на одном из уже существующих потоков выполнения, но так чтобы не нарушать порядок выполнения очередей.</p>
+<p>В случае <code>HFQ</code> и <code>HPQ</code>, их <code>Quick</code> варианты это <code>HFQQ</code> и <code>HPQQ</code> соответственно.</p>
+<hr />
+<p>Если вам необходимо быстро преобразовать тип возвращаемого значения очереди - можно использовать <code>.ThenQuickConvert</code>:</p>
+<pre><code>## uses OpenCLABC;
+var Q := HFQQ(()-&gt;1 as object);
+
+Context.Default.SyncInvoke(
+  Q.ThenQuickConvert(x-&gt;integer(x))
+).Println;
+</code></pre>
+<p>Но в <code>OpenCLABC</code> для случая простого преобразования существует особо-оптимизированный метод <code>.Cast</code>.<br />
+Он ограничен примерно так же, как метод последовательностей <code>.Cast</code>. То есть:</p>
+<pre><code>uses OpenCLABC;
+
+type t1 = class end;
+type t2 = class(t1) end;
+
+begin
+  var Q1: CommandQueue&lt;integer&gt; := 5;
+  var Q2: CommandQueueBase := Q1;
+  var Q3: CommandQueue&lt;t1&gt; := (new t2) as t1;
+  var Q4: CommandQueue&lt;t1&gt; := new t1;
+  var Q5: CommandQueue&lt;t2&gt; := new t2;
+  
+  // Можно, потому что к object можно преобразовать всё
+  Context.Default.SyncInvoke( Q1.Cast&amp;&lt;object&gt; );
+  
+  //Ошибка: .Cast не может преобразовывать integer в byte
+  // Преобразование записей меняет представление данных в памяти
+  // Можно преобразовывать только object в запись и назад
+//  Context.Default.SyncInvoke( Q1.Cast&amp;&lt;byte&gt; );
+  
+  // Можно, Q2 и так имеет тип CommandQueue&lt;integer&gt;,
+  // а значит тут Cast вернёт (Q2 as CommandQueue&lt;integer&gt;)
+  Context.Default.SyncInvoke( Q2.Cast&amp;&lt;integer&gt; );
+  
+  // Можно, потому что Q3 возвращает t2
+  Context.Default.SyncInvoke( Q3.Cast&amp;&lt;t2&gt; );
+  
+  //Ошибка: Не удалось привести тип объекта &quot;t1&quot; к типу &quot;t2&quot;.
+  // Q4 возвращает не t2 а именно t1
+//  Context.Default.SyncInvoke( Q4.Cast&amp;&lt;t2&gt;.HandleDefaultRes(e-&gt;e.Message.Println&lt;&gt;nil, new t2) );
+  
+  // Можно, потому что t2 наследует от t1
+  Context.Default.SyncInvoke( Q5.Cast&amp;&lt;t1&gt; );
+  
+end.
+</code></pre>
+<p>Кроме того, <code>.Cast</code> можно применять к очередям без типа результата:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQQ(()-&gt;begin end);
+var Q2 := HFQQ(()-&gt;5) as CommandQueueBase;
+
+// .Cast применимо к CommandQueueNil, но результат будет всегда nil
+Writeln( Context.Default.SyncInvoke(Q1.Cast&amp;&lt;object&gt;) );
+// .Cast применимо и к CommandQueueBase
+Writeln( Context.Default.SyncInvoke(Q2.Cast&amp;&lt;object&gt;) );
+</code></pre>
+<p>Ближайшей альтернативой к вызову <code>CommandQueueBase.Cast</code> будет вызов <code>.ConvertTyped</code> - но для этого надо на много больше кода.</p>
+<hr />
+<p>Основная оптимизация <code>.Cast</code> состоит в том, что преобразование не выполняется, если возможно.
+Но будьте осторожны, в некоторых случаях такая оптимизация приглушит ошибку:</p>
+<pre><code>uses OpenCLABC;
+
+type t1 = class end;
+type t2 = class(t1) end;
+
+begin
+  Context.Default.SyncInvoke( HFQ(()-&gt;new t1).Cast&amp;&lt;t2&gt;.Cast&amp;&lt;t1&gt; );
+end.
+</code></pre>
+<p>Преобразование в <code>t2</code> не выполняется из-за следующего <code>.Cast</code>, поэтому
+проверяется только преобразование <code>defalt(t1)</code> к <code>t2</code> (во время создания очереди) - а оно допустимое.</p>
+</div>
+<script>on_page_added(document.getElementById("page-23"))</script>
+<div id="page-24" page_name="Комбинируя другие очереди" hidden=true>
+<p>Если сложить две очереди A и B (<code>var C := A+B</code>) — получится очередь C, в которой сначала выполнится A, а затем B.<br />
+Очередь C будет считаться выполненной тогда, когда выполнится очередь B.</p>
+<p>Если умножить две очереди A и B (<code>var C := A*B</code>) — получится очередь C, в которой одновременно начнут выполняться A и B.<br />
+Очередь C будет считаться выполненной тогда, когда обе очереди (A и B) выполнятся.</p>
+<p>Как и в математике, умножение имеет бОльший приоритет чем сложение.</p>
+<p>В обоих случаях очередь C будет возвращать то, что вернула очередь B. То есть если складывать и умножать много очередей - результат будет всегда возвращать то, что вернула самая последняя очередь.</p>
+<p>Простейший пример:</p>
+<pre><code>## uses OpenCLABC;
+
+var q1 := HPQ(()-&gt;
+begin
+  // lock необходим чтобы при параллельном выполнении два потока
+  // не пытались использовать вывод одновременно. Иначе выведет кашу
+  lock output do Writeln('Очередь 1 начала выполняться');
+  Sleep(500);
+  lock output do Writeln('Очередь 1 закончила выполняться');
+end);
+var q2 := HPQ(()-&gt;
+begin
+  lock output do Writeln('Очередь 2 начала выполняться');
+  Sleep(500);
+  lock output do Writeln('Очередь 2 закончила выполняться');
+end);
+
+Writeln('Последовательное выполнение:');
+Context.Default.SyncInvoke( q1 + q2 );
+
+Writeln;
+Writeln('Параллельное выполнение:');
+Context.Default.SyncInvoke( q1 * q2 );
+</code></pre>
+<p>Операторы += и *= также применимы к очередям.<br />
+И как и для чисел - <code>A += B</code> работает как <code>A := A+B</code> (и аналогично с *=).<br />
+А значит, возвращаемые типы очередей A и B должны быть одинаковыми, чтобы к ним можно было применить +=/*=.</p>
+<hr />
+<p>Если надо сложить/умножить много очередей - лучше применять <code>CombineSyncQueue</code>/<code>CombineAsyncQueue</code> соответственно.<br />
+Точнее <code>A+B+C</code> это то же самое что <code>CombineSyncQueue(CombineSyncQueue(A, B), C)</code>.<br />
+Поэтому <code>CombineSyncQueue(A, B, C)</code> создаст очередь немного быстрее чем <code>A+B+C</code>.<br />
+Но скорость выполнения очереди будет абсолютно одинаковой в этих двух случаях.</p>
+<p>Чтобы складывать/умножать много <code>CommandQueueBase</code> и <code>CommandQueueNil</code> очередей
+используются <code>Combine*QueueBase</code> и <code>Combine*QueueNil</code> соответственно.</p>
+<hr />
+<p>Используя <code>CombineConv*Queue</code> можно указать функцию преобразования, принимающую результаты всех скомбинированных очередей:</p>
+<pre><code>## uses OpenCLABC;
+
+var q1 := HFQ( ()-&gt;1 );
+var q2 := HFQ( ()-&gt;2 );
+
+// Выводит 2, то есть только результат последней очереди
+// Так сделано из за вопросов производительности
+Context.Default.SyncInvoke( q1+q2 ).Println;
+// Но бывает так, что нужны результаты всех сложенных/умноженных очередей
+
+// В таком случае надо использовать CombineConv*Queue
+Context.Default.SyncInvoke(
+  CombineConvSyncQueue(
+    results-&gt;results.JoinToString, // Функция преобразования
+    q1, q2
+  )
+).Println;
+// Выводит строку &quot;1 2&quot;. Это то же самое, что вернёт &quot;Arr(1,2).JoinToString&quot;
+</code></pre>
+<p>И так же как с другими очередями с кодом на CPU - есть <code>Quick</code> версия:</p>
+<pre><code>## uses OpenCLABC;
+
+var q1 := HFQQ( ()-&gt;1 );
+var q2 := HFQQ( ()-&gt;2 );
+
+Context.Default.SyncInvoke( q1+q2 ).Println;
+
+Context.Default.SyncInvoke(
+  CombineQuickConvSyncQueue(
+    results-&gt;results.JoinToString,
+    q1, q2
+  )
+).Println;
+</code></pre>
+<hr />
+<p>Если надо скомбинировать несколько очередей с разными типами результатов, но при этом использовать все результаты, можно использовать <code>CombineConv*QueueN*</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var q1 := HFQQ( ()-&gt;1 );
+var q2 := HFQQ( ()-&gt;'abc' );
+
+Context.Default.SyncInvoke( q1+q2 ).Println;
+
+Context.Default.SyncInvoke(
+  CombineConvSyncQueueN2(
+    (r1,r2)-&gt;$'integer[{r1}]+string[{r2}]',
+    q1, q2
+  )
+).Println;
+</code></pre>
+<p>У каждой из <code>CombineConv*QueueN*</code> так же есть <code>CombineQuickConv*QueueN*</code> версия.</p>
+</div>
+<script>on_page_added(document.getElementById("page-24"))</script>
+<div id="page-25" page_name="Из повторения очереди" hidden=true>
+<p><del>В данный момент всё ещё не работает... Но уже совсем скоро, правда-правда!</del></p>
+</div>
+<script>on_page_added(document.getElementById("page-25"))</script>
+<div id="page-26" page_name="Множественное использование очереди" hidden=true>
+<p>Одну и ту же очередь можно использовать несколько раз, в том числе одновременно:</p>
+<pre><code>## uses OpenCLABC;
+var Q := HPQQ(()-&gt;lock output do Writeln('Q выполнилась'));
+
+var t1 := Context.Default.BeginInvoke(Q);
+var t2 := Context.Default.BeginInvoke(Q*Q);
+
+t1.Wait;
+t2.Wait;
+</code></pre>
+<p>Но эта программа выведет &quot;Q выполнилась&quot; три раза, потому что при каждом упоминании - Q запускается ещё раз.</p>
+<p>Это не всегда хорошо. К примеру, может быть так что <code>Q</code> содержит какой то затратный алгоритм. Или ввод значения с клавиатуры:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q := HFQ(()-&gt;
+begin
+  lock input do
+    Result := ReadInteger;
+end);
+
+Context.Default.SyncInvoke(CombineConvAsyncQueue(res-&gt;res,
+  Q,
+  Q.ThenQuickConvert(i-&gt;i*i),
+  Q.ThenQuickConvert(i-&gt;i*i*i)
+)).Println;
+</code></pre>
+<p>Эта программа запросит три разных значения, что не всегда то что надо.</p>
+<hr />
+<p>Чтобы использовать результат одной очереди несколько раз применяется <code>.Multiusable</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q := HFQ(()-&gt;
+begin
+  lock input do
+    Result := ReadInteger;
+end);
+var Qs := Q.Multiusable;
+
+// Теперь нет смысла в Async, потому что 
+Context.Default.SyncInvoke(CombineConvAsyncQueue(res-&gt;res,
+  Qs(),
+  Qs().ThenQuickConvert(i-&gt;i*i),
+  Qs().ThenQuickConvert(i-&gt;i*i*i)
+)).Println;
+</code></pre>
+<p><code>.Multiusable</code> создаёт новую функцию, вызывая которую можно получить любое количество очередей,
+у которых будет общий результат.</p>
+<p>Каждый вызов <code>.Multiusable</code> создаёт именно новую функцию.<br />
+Это значит, что если использовать результаты двух вызовов <code>.Multiusable</code> - исходная очередь выполнится два раза:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q := HFQ(()-&gt;
+begin
+  lock input do
+    Result := ReadInteger;
+end);
+var Q1s := Q.Multiusable;
+var Q2s := Q.Multiusable;
+
+Context.Default.SyncInvoke(CombineConvAsyncQueue(res-&gt;res,
+  Q1s(),
+  Q1s().ThenQuickConvert(i-&gt;i*i),
+  Q2s().ThenQuickConvert(i-&gt;i*i*i)
+)).Println;
+</code></pre>
+<hr />
+<p>Очередь для которой вызвали <code>.Multiusable</code> начинает выполняться не ожидая другие очереди:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q0 := HPQ(()-&gt;
+begin
+  Sleep(1000);
+  Writeln('Q0');
+end);
+
+var Q1s := HPQ(()-&gt;
+begin
+  Writeln('Q1');
+end).Multiusable;
+var Q1 := Q1s();
+
+// Q1 выполнит первым
+Context.Default.SyncInvoke( Q0 + Q1 );
+</code></pre>
+<p>Чтобы <code>Q1</code> выполнялась после <code>Q0</code> - они должны быть сумированны под <code>.Multiusable</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q0 := HPQ(()-&gt;
+begin
+  Sleep(1000);
+  Writeln('Q0');
+end);
+
+var Q1 := HPQ(()-&gt;
+begin
+  Writeln('Q1');
+end);
+
+var Qs := (Q0+Q1).Multiusable;
+Context.Default.SyncInvoke( Qs() );
+</code></pre>
+<hr />
+<p><code>.Multiusable</code> не работает между вызовами <code>Context.BeginInvoke</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q := HFQ(()-&gt;
+begin
+  lock input do
+    Result := ReadInteger;
+end);
+var Qs := Q.Multiusable;
+
+Context.Default.SyncInvoke( Qs()                          ).Println;
+Context.Default.SyncInvoke( Qs().ThenQuickConvert(i-&gt;i*i) ).Println;
+</code></pre>
+<p>Эта программа запросит ввод два раза.</p>
+<p>Если контекст у двух очередей общий - лучше объединить вызовы <code>Context.BeginInvoke</code>.
+Так не только <code>.Multiusable</code> будет работать, но и выполнение будет в целом быстрее.</p>
+<p>А если контекст разный - надо сохранять результат в переменную и использовать <code>Wait</code> очереди
+(<a path="Из ожидания очередей">подробнее на странице ниже</a>).</p>
+</div>
+<script>on_page_added(document.getElementById("page-26"))</script>
+<div id="page-27" page_name="Общие методы CCQ объектов" hidden=true>
+<p>Между командами в <code>CCQ</code> очередях бывает надо вставить выполнение другой очереди или кода для CPU.</p>
+<p>Это можно сделать, используя несколько <code>.NewQueue</code>:</p>
+<pre><code>var s: MemorySegment;
+var q0: CommandQueueBase;
+...
+var q :=
+  s.NewQueue.ThenWriteValue(...) +
+  
+  q0 +
+  HPQ(...) +
+  HPQQ(...) +
+  
+  s.NewQueue.ThenWriteValue(...)
+;
+</code></pre>
+<p>Однако можно сделать и красивее:</p>
+<pre><code>var s: MemorySegment;
+var q0: CommandQueueBase;
+...
+var q := s.NewQueue
+  .ThenWriteValue(...)
+  
+  .ThenQueue(q0)
+  .ThenProc(...)
+  .ThenQuickProc(...)
+  
+  .ThenWriteValue(...)
+;
+</code></pre>
+<p>(На самом деле процедура передаваемая в <code>.ThenProc</code>'а принимает исходную простую обёртку параметром, что делает его более похожим на <code>.ThenUse</code>, чем <code>HPQ</code>)</p>
+<p>Эти методы не имеют незаменимых применений, но позволяют сделать код значительно читабельнее.</p>
+</div>
+<script>on_page_added(document.getElementById("page-27"))</script>
+<div id="page-28" page_name="Из ожидания очередей" hidden=true>
+<p>Большинство деревьев выполнения очередей можно реализовать используя только сложение и умножение очередей. Но есть несколько проблем:</p>
+<ul>
+<li><p>Большинство но не все. Пример дерева которое нельзя реализовать через сложение и умножение можно найти <a href="https://github.com/SunSerega/POCGL/blob/master/Samples/OpenCLABC/Wait%20%D0%BE%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D0%B8/1.pas">тут</a> или в файле:<br />
+C:\PABCWork.NET\Samples\OpenGL и OpenCL\OpenCLABC\Wait очереди\1.pas</p>
+</li>
+<li><p>Даже если дерево реализуется сложением+умножением - такая реализация может выглядеть запутано и не похоже на график дерева выполнения, <a href="https://github.com/SunSerega/POCGL/blob/master/Samples/OpenCLABC/Wait%20%D0%BE%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D0%B8/2.pas">к примеру</a>:<br />
+C:\PABCWork.NET\Samples\OpenGL и OpenCL\OpenCLABC\Wait очереди\2.pas</p>
+</li>
+<li><p>Очереди, выполняемые на разных контекстах не могут эффективно взаимодействовать.</p>
+</li>
+</ul>
+<p>Эти проблемы решают <code>Wait</code>-очереди:</p>
+<pre><code>## uses OpenCLABC;
+
+var M := WaitMarker.Create;
+
+var t := Context.Default.BeginInvoke(
+  HPQ(()-&gt;Writeln('Начало .BeginInvoke')) +
+  WaitFor(M) +
+  HPQ(()-&gt;Writeln('Конец .BeginInvoke'))
+);
+
+Sleep(2000);
+Writeln('Посылаем сигнал маркера M');
+M.SendSignal;
+
+t.Wait;
+</code></pre>
+<p><code>WaitFor(M)</code> создаёт очень простую <code>Wait</code>-очередь.<br />
+Внутри вызова <code>.BeginInvoke</code> (до того как он вернёт <code>CLTask</code>)
+эта очередь входит в режим ожидания сигналов от маркера <code>M</code>.<br />
+В этом режиме она <strong>не</strong> тратит время процессора, но готова возобновить выполнение в любой момент.</p>
+<p>Далее, вызов <code>M.SendSignal</code> посылает по 1 сигналу всем <code>.BeginInvoke</code>, имеющим <code>Wait</code>-очереди в ожидании этого сигнала.</p>
+<hr />
+<p><code>WaitMarker</code> не является очередью, но может быть преобразован к типу <code>CommandQueueBase</code>, в своеобразную выполняемую форму.</p>
+<p>Преобразование к выполняемой форме обычно происходит автоматически, если складывать/умножать его с другими очередями,
+либо передавать в подпрограмму принимающую <code>CommandQueueBase</code>, как <code>.BeginInvoke</code>.<br />
+Так же его можно вызвать явно, написав <code>CommandQueueBase(M)</code>, где <code>M</code> - маркер.</p>
+<p>Выполняемая форма маркера вызывает метод <code>.SendSignal</code> своего макера.<br />
+То есть <code>CommandQueueBase(M)</code> обычно равноценна, но немного эффективнее чем <code>HPQQ(M.SendSignal)</code>.<br />
+Но не всегда - потому что <code>HPQ</code> возвращает <code>nil</code>, а выполняемая форма маркера может возвращать другие результаты (об этом ниже).</p>
+<p>И стоит так же сказать, прямой вызов <code>M.SendSignal</code> всё равно всегда эффективнее чем <code>Context.Default.SyncInvoke(M)</code>.<br />
+Используйте выполнение маркеров внутри <code>.BeginInvoke</code> только если вам надо активировать его сразу после других очередей:</p>
+<pre><code>var M := WaitMarker.Create;
+
+Context.Default.SyncInvoke(
+  HFQ(()-&gt;5) + M
+);
+</code></pre>
+<hr />
+<p>Но в этом же коде видно ещё одну проблему - сложение очередей возвращает последний результат,
+то есть результат маркера (который для простого макера из <code>WaitMarker.Create</code> - <code>nil</code>).</p>
+<p>Если нужно иметь сразу и маркер и возвращаемое значение предыдущей очереди,
+можно создать оторванный сигнал маркера методом <code>.ThenMarkerSignal</code>:</p>
+<pre><code>## uses OpenCLABC;
+var Q := HFQ(()-&gt;5).ThenMarkerSignal;
+
+var t := Context.Default.BeginInvoke(
+  WaitFor(Q) + HPQ(()-&gt;Writeln('Получен сигнал от Q'))
+);
+var res := Context.Default.SyncInvoke( Q );
+
+t.Wait;
+res.Println;
+</code></pre>
+<p>Тут выполнение <code>Q</code> сначала выполнит <code>HFQ</code>, затем пошлёт сигнал в
+<code>Wait</code>-очередь <code>WaitFor(Q)</code> и в конце вернёт то, что вернула <code>HFQ</code>.</p>
+<p>В общем случае, оторванный сигнал макера является очередью, и имеет то же возвращаемое значение, что очередь из которой он был создан.<br />
+Но в то же время его можно преобразовать типу <code>WaitMarker</code>, так же как <code>WaitMarker</code> преобразовывается в <code>CommandQueueBase</code>.<br />
+Более того, выполняемая форма полученного маркера - это оторванный сигнал, из которого создали этот маркер.
+Другими словами даже после преобразования в <code>WaitMarker</code> - оторванный сигнал можно выполнить и получить его результат:</p>
+<pre><code>## uses OpenCLABC;
+var Q := HFQ(()-&gt;5).ThenMarkerSignal;
+var M: WaitMarker := Q;
+
+Context.Default.SyncInvoke(
+  CommandQueueBase(M)
+  // CommandQueueBase надо всё равно как то преобразовать,
+  // чтобы SyncInvoke вернуло результат Q
+  .Cast&amp;&lt;integer&gt;
+).Println;
+</code></pre>
+<hr />
+<p>Того же эффекта можно добится используя <code>.Multiusable</code>:</p>
+<pre><code>## uses OpenCLABC;
+
+var Qs := HFQ(()-&gt;5).Multiusable;
+var M := WaitMarker.Create;
+
+var t := Context.Default.BeginInvoke(
+  WaitFor(M) + HPQ(()-&gt;Writeln('Получен сигнал от M'))
+);
+var res := Context.Default.SyncInvoke( Qs()+M+Qs() );
+
+t.Wait;
+res.Println;
+</code></pre>
+<p>То есть <code>.ThenMarkerSignal</code> не имеет незаменимых применений, но делает код читабельнее.</p>
+<hr />
+<p>Есть всего три подпрограммы, создающие <code>Wait</code>-очереди:</p>
+<ol>
+<li><p>Глобальная, <code>WaitFor</code>:<br />
+Ничего не делает сама, но блокирует выполнение, ожидая сигнала указанного маркера.</p>
+</li>
+<li><p>Ещё один общий метод CCQ объектов: <code>.ThenWait</code>:<br />
+Как и <code>.ThenQueue</code> и <code>.ThenProc</code>, <code>.ThenWait(...)</code> это всего лишь аналог
+<code>.ThenQueue(WaitFor(...))</code>, существующий только ради читабельности кода.</p>
+</li>
+<li><p>Метод очереди с результатом, <code>.ThenWaitFor</code>:<br />
+Как и <code>.ThenMarkerSignal</code>, сначала выполняет исходную очередь, потом ожидает и в конце возвращает результат исходной очереди.</p>
+</li>
+</ol>
+<hr />
+<p>Маркеры можно комбинировать:</p>
+<pre><code>## uses OpenCLABC;
+
+var M1 := WaitMarker.Create;
+var M2 := WaitMarker.Create;
+
+var Q1 := WaitFor(M1 and M2); // Ожидание обоих маркеров
+var Q2 := WaitFor(M1 or M2); // Ожидание любого из маркеров
+</code></pre>
+<p>При этом если надо применить <code>and</code> или <code>or</code> &gt;2 маркерам - лучше использовать <code>WaitAll</code>/<code>WaitAny</code> соответственно:</p>
+<pre><code>## uses OpenCLABC;
+
+var M1 := WaitMarker.Create;
+var M2 := WaitMarker.Create;
+var M3 := WaitMarker.Create;
+
+var Q1 := WaitFor(WaitAll(M1,M2,M3)); // Ожидание всех маркеров
+var Q2 := WaitFor(WaitAny(M1,M2,M3)); // Ожидание любого из маркеров
+</code></pre>
+<hr />
+<p><code>Wait</code>-очереди работают даже между вызовами <code>Context.BeginInvoke</code>, в отличии от всего остального в <code>OpenCLABC</code>.</p>
+<p>Это не всегда безопасно:</p>
+<pre><code>Context.Default.BeginInvoke(M);
+Context.Default.BeginInvoke(WaitFor(M) + Q);
+</code></pre>
+<p>Проблема этого кода в том, что <code>M</code> может послать сигнал ещё до того как <code>WaitFor(M)</code> начнёт ждать.</p>
+<p>Чтобы такое не происходило - надо всегда запускать <code>Wait</code>-очередь раньше маркера:</p>
+<pre><code>Context.Default.BeginInvoke(WaitFor(M) + Q);
+Context.Default.BeginInvoke(M);
+</code></pre>
+<p>Но, как всегда, лучше объединять вызовы <code>Context.BeginInvoke</code>:</p>
+<pre><code>Context.Default.BeginInvoke(
+  ( M ) *
+  ( WaitFor(M) + Q )
+);
+</code></pre>
+<p>Все <code>Wait</code>-очереди начинают ждать в самом начале вызова <code>Context.BeginInvoke</code>, перед началом выполнения очереди.
+Поэтому если <code>Wait</code>-очередь и вызов её маркера находятся в общем <code>Context.BeginInvoke</code> - использовать их можно в любом порядке.</p>
+<hr />
+<p>Все <code>Wait</code>-очереди в одном <code>Context.BeginInvoke</code>, ожидающие один и тот же маркер, образуют общую <code>Wait</code>-группу.<br />
+Когда ожидаемый этой группой маркер активируется - он удаляет из <code>Wait</code>-группы одну из <code>Wait</code>-очередей, посылая ей сигнал.</p>
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQ(()-&gt;
+begin
+  Sleep(10);
+  lock output do Writeln('Выполнилась Q1');
+end).ThenMarkerSignal;
+
+var Q2 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q2'));
+var Q3 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q3'));
+
+var t1 := Context.Default.BeginInvoke(
+  (WaitFor(Q1)+Q2) *
+  (WaitFor(Q1)+Q3)
+);
+Context.Default.SyncInvoke(Q1+Q1);
+
+// Все оставшиеся CLTask лучше ожидать, чтобы
+// вывести ошибки, если возникнут при выполнении очереди
+t1.Wait;
+</code></pre>
+<p>Тут <code>Q1</code> посылает 2 сигнала, сначала в первый <code>WaitFor(Q1)</code>, затем во второй.<br />
+В данный момент не рекомендуется расчитывать на порядок <code>Wait</code>-очередей в <code>Wait</code>-группе.</p>
+<p>Ну и, конечно, лучше совместить вызовы <code>Context.BeginInvoke</code>, раз контекст общий:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQ(()-&gt;
+begin
+  Sleep(10);
+  lock output do Writeln('Выполнилась Q1');
+end).ThenMarkerSignal;
+
+var Q2 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q2'));
+var Q3 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q3'));
+
+Context.Default.SyncInvoke(
+  (Q1+Q1) *
+  (WaitFor(Q1)+Q2) *
+  (WaitFor(Q1)+Q3)
+);
+</code></pre>
+<p>Будьте осторожны, лишняя <code>Wait</code>-очередь вызовет зависание:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HFQ(()-&gt;0).ThenMarkerSignal;
+
+var t1 := Context.Default.BeginInvoke(
+  WaitFor(Q1) +
+  // Второй запуск Q1 никогда не произойдёт,
+  // поэтому эта Wait очередь зависнет
+  WaitFor(Q1)
+);
+Context.Default.SyncInvoke(Q1);
+
+t1.Wait;
+</code></pre>
+<hr />
+<p><code>Wait</code>-очереди ожидающие один и тот же маркер в разных <code>Context.BeginInvoke</code> - образуют отдельные <code>Wait</code>-группы.<br />
+И при активации маркера - он посылает по 1 сигналу <strong>каждой</strong> (ожидающей его) <code>Wait</code>-группе:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQ(()-&gt;
+begin
+  Sleep(1000);
+  lock output do Writeln('Выполнилась Q1');
+end).ThenMarkerSignal;
+
+var Q2 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q2'));
+var Q3 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q3'));
+
+var Q4 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q4'));
+var Q5 := HPQ(()-&gt;lock output do Writeln('Выполнилась Q5'));
+
+var t1 := Context.Default.BeginInvoke(
+  ( WaitFor(Q1)+Q2 ) *
+  ( WaitFor(Q1)+Q3 )
+);
+var t2 := Context.Default.BeginInvoke(
+  ( WaitFor(Q1)+Q4 ) *
+  ( WaitFor(Q1)+Q5 )
+);
+// Каждый вызов Q1 тут - активирует по одному WaitFor(Q1) в каждом .BeginInvoke
+Context.Default.SyncInvoke(Q1+Q1);
+
+t1.Wait;
+t2.Wait;
+</code></pre>
+</div>
+<script>on_page_added(document.getElementById("page-28"))</script>
+<div id="page-29" page_name="Обработка исключений" hidden=true>
+<p>Для начала немного о распространении ошибок в очередях:</p>
+<p>Исключения в очереди Q отменяет выполнение всех очередей, ожидающих Q,
+но никак не влияет на параллельные к Q очереди:</p>
+<pre><code>## uses OpenCLABC;
+
+function make_q(i: integer) :=
+HPQ(()-&gt;lock output do Writeln(i));
+
+try
+  Context.Default.SyncInvoke(
+    make_q(1) +
+    (make_q(2) * HPQ(()-&gt;raise new Exception('3')))
+    + make_q(4)
+  );
+except
+  on e: System.AggregateException do
+    Writeln(e.InnerExceptions.Single);
+end;
+</code></pre>
+<p>Очередь 1 выполняется в любом случае, потому что очередь с ошибкой (3) находится позже;<br />
+Очередь 2 выполняется, потому что она стоит параллельно к очереди 3;<br />
+Очередь 3 выполняется и в процессе кидает исключение;<br />
+Очередь 4 пропускается, потому что ожидает успешного выполнения очередей 2 и 3.</p>
+<p>Может звучать тривиально - но это базовое правило, распространяющееся на более сложные случаи. К примеру:</p>
+<pre><code>## uses OpenCLABC;
+
+var M := WaitMarker.Create;
+
+try
+  Context.Default.SyncInvoke(
+    (HPQ(()-&gt;raise new Exception('Special error')) + WaitFor(M))
+  *
+    (HPQ(()-&gt;Sleep(100)) + WaitFor(M))
+  *
+    M
+  );
+except
+  on e: System.AggregateException do
+    Writeln(e.InnerExceptions.Single);
+end;
+</code></pre>
+<p>Из за исключения первое <code>WaitFor(M)</code> пропускается. Оно начинает ожидать
+ещё до выхода из <code>.BeginInvoke</code>, но затем отменяется, а значит не имеет
+шанса поглотить сигнал от <code>M</code>, оставляя его для второго <code>WaitFor(M)</code>.</p>
+<hr />
+<p>Так же надо сказать что <code>.Multiusable</code> даёт множественный доступ
+к любому результату выполнения очереди, будь то возвращаемое значение или ошибка:</p>
+<pre><code>## uses OpenCLABC;
+
+var Qs := HPQ(()-&gt;raise new Exception('Special error')).Multiusable;
+
+try
+  Context.Default.SyncInvoke( Qs()*Qs() );
+except
+  on e: System.AggregateException do
+    e.InnerExceptions.PrintLines;
+end;
+</code></pre>
+<p>Этот код выводит ошибку дважды, потому что она пришла из 2 параллельных веток, которые обе взяли её из общего источника.</p>
+<hr />
+<p>Самый простой обработчик ошибок это <code>.HandleWithoutRes</code>:<br />
+Он применим ко всем очередям, в том числе <code>CommandQueueBase</code>, потому что игнорирует любое предыдущее
+возвращаемое значение и создаёт <code>CommandQueueNil</code>.</p>
+<p>Есть два варианта вызова <code>.HandleWithoutRes</code>:</p>
+<ol>
+<li>Ловля всех исключений - аналог <code>on e: Exception do</code>:
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQ(()-&gt;raise new Exception('Expected error'));
+var Q2 := HPQ(()-&gt;raise new Exception('Unexpected error'));
+
+try
+  Context.Default.SyncInvoke( (Q1*Q2)
+    // Ловим все исключения с указанным сообщением
+    // Для реального случая это плохо, но для демонстрации нормально
+    .HandleWithoutRes(e-&gt;(e.Message.Print='Expected error').Println)
+  );
+except
+  on e: System.AggregateException do
+    e.InnerExceptions.PrintLines;
+end;
+</code></pre>
+</li>
+<li>Ловля исключений конкретного типа - аналог <code>on e: ... do</code>:
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQ(()-&gt;raise new System.InvalidOperationException);
+var Q2 := HPQ(()-&gt;raise new System.InvalidTimeZoneException);
+
+try
+  Context.Default.SyncInvoke( (Q1*Q2)
+    // Ловим все исключения типа InvalidOperationException
+    // Опять же, вообще плохо съедать исключения без полной диагностики
+    .HandleWithoutRes&amp;&lt;System.InvalidOperationException&gt;(e-&gt;true)
+  );
+except
+  on e: System.AggregateException do
+    e.InnerExceptions.PrintLines;
+end;
+</code></pre>
+</li>
+</ol>
+<hr />
+<p>Далее, обработчик <code>.HandleDefaultRes</code>:</p>
+<p>Если в очереди было кинуто исключение - возвращаемое значение не существует (не <code>nil</code>, а именно отсутствует).<br />
+Поэтому чтобы вернуть очередь с определённым типом возвращаемого значения,
+необходимо заменить результат после успешной обработки исключения:</p>
+<pre><code>## uses OpenCLABC;
+
+// Исключение, кидаемое при не_первых выполнениях этой очереди
+var need_error := false;
+var QErr := HPQ(()-&gt;
+begin
+  if need_error then
+    raise new Exception else
+    need_error := true;
+end);
+
+loop 3 do Context.Default.SyncInvoke( (QErr+HFQ(()-&gt;5))
+  // Ловим все исключения типа Exception
+  // И заменяем результат на 0, если он отсутствует
+  .HandleDefaultRes&amp;&lt;Exception&gt;(e-&gt;true, 0)
+).Println;
+</code></pre>
+<hr />
+<p>И последний - обработчик <code>.HandleReplaceRes</code>:</p>
+<p>Не всегда значение, которым надо заменять возвращаемое значение очереди, можно посчитать до выполнения этой очереди.<br />
+В более сложном случае это значение может вычисляться во время выполнения, скорее всего используя пойманные исключения.</p>
+<p>В таком случае нет смысла обрабатывать исключения по одному, потому что так
+можно получить несколько конфликтующих замен для возвращаемого значения:</p>
+<pre><code>## uses OpenCLABC;
+var QErr := HPQ(()-&gt;raise new Exception);
+
+Context.Default.SyncInvoke(
+  (QErr*QErr + HFQ(()-&gt;-1))
+  .HandleReplaceRes(lst-&gt;
+  begin
+    Result := lst.Count; // Возвращаемое значение
+    lst.Clear; // Считаем что обработали всё
+  end)
+).Println;
+</code></pre>
+<p><code>.HandleReplaceRes</code> нельзя вызывать на <code>Base</code> и <code>Nil</code> очередях, потому что непонятно что возвращать если ошибка <strong>не</strong> возникла.
+Но всегда можно прибавить константную очередь к обрабатываемой, таким образом указав результат по-умолчанию, на случай без ошибок:</p>
+<pre><code>## uses OpenCLABC;
+
+var Q1 := HPQQ(()-&gt;begin end);
+var Q2 := HPQQ(()-&gt;raise new Exception);
+
+Context.Default.SyncInvoke((Q1*Q2 + CQ(0)).HandleReplaceRes(err_lst-&gt;
+begin
+  err_lst.PrintLines;
+  err_lst.Clear;
+  Result := -1;
+end)).Println;
+</code></pre>
+<p>Результат очереди из этого примера можно передавать напрямую в <code>Halt</code>, если вы, к примеру, делаете инструмент для коммандной строки.</p>
+<hr />
+<p>Обратите внимание, обработчики исключений всегда действую по принципу <code>Quick</code> очередей.<br />
+То есть код выполняемый на CPU, который обрабатывает исключения, не должен содержать блокирующих вызовов модуля <code>OpenCL</code>.</p>
+<p>Но использовать затратные алгоритмы, или блокирующие вызовы как ввод с клавиатуры (<code>'Ошибка, всё равно продолжить? [Y/n]'</code>) вполне нормально:<br />
+Обработчики вызываются только если было кинуто исключение. А исключения должны кидаться только в исключительных ситуациях, когда что-то пошло не так.</p>
+<hr />
+<p>В паскале есть два типа блоков для обработки исключений, <code>try-except</code> - собственно обработчик,
+а так же <code>try-finally</code> - позволяющий выполнять код не зависимо от того, было ли кинуто исключение.</p>
+<p>В очередях <code>OpenCLABC</code> аналог последнего выглядит так:</p>
+<pre><code>## uses OpenCLABC;
+function QErr(i: integer) := HPQ(()-&gt;raise new Exception(i.ToString));
+
+Context.Default.SyncInvoke(
+  ( QErr(1)+QErr(2) &gt;= QErr(3)+QErr(4) &gt;= QErr(5)+QErr(6) )
+  .HandleWithoutRes(e-&gt;e.Message.Println&lt;&gt;nil)
+);
+</code></pre>
+<p>В этом коде:</p>
+<ul>
+<li>Выполняется очередь 1, кидая исключение.</li>
+<li>Очередь 2 пропускается, из за ошибки в очереди 1.</li>
+<li>Затем стоит <code>&gt;=</code>, работающий как <code>+</code>, но игнорирующий предыдущие исключения, поэтому очередь 3 выполняется.</li>
+<li>Очередь 4 пропускается, из за ошибки в очереди 3.</li>
+<li>Затем стоит ещё один <code>&gt;=</code>, игнорирующий исключения всех предыдущих очередей, то есть 1 и 3, а значит очередь 5 тоже выполняется.</li>
+<li>Очередь 6 пропускается, из за ошибки в очереди 5.</li>
+</ul>
+<p>Затем стоит обработчик, который съедает все исключения, но перед этим выводит их текст, показывая что выполнились очереди 1, 3 и 5.</p>
+<hr />
+<p>Обычные <code>.ThenMarkerSignal</code> и <code>.ThenWaitFor</code> посылают/съедают сигнал маркера только если перед ними небыло ошибок.<br />
+Это не всегда хорошо, потому что в случае ошибок будет сложно судить о количестве сигналов.</p>
+<p>Как общее правило - <code>Wait</code>-очереди и маркеры лучше ставить после <code>&gt;=</code>.
+Но <code>HFQ(()-&gt;5) &gt;= WaitFor(M)</code> вернёт результат последней очереди, то есть <code>nil</code>.</p>
+<p>Поэтому существуют методы <code>.ThenFinallyMarkerSignal</code> и <code>.ThenFinallyWaitFor</code>.<br />
+Эти методы так же как их варианты без <code>Finally</code> - возвращают то что вернула исходная очередь.<br />
+Но в отличии от них - посылают/поглащают сигнал не зависимо от ошибок в очереди, из которой их создали.</p>
+</div>
+<script>on_page_added(document.getElementById("page-29"))</script>
+<div id="page-30" page_name="Не создавая явно" hidden=true>
+<p>Передавать команды по одной, когда их несколько - ужасно не эффективно!<br />
+Но нередко бывает так, что команда всего одна. Или для отладки надо одноразово выполнить несколько команд.</p>
+<p>Для таких случаев можно создавать очередь неявно:<br />
+У каждого метода для создания комманды для GPU есть дублирующий метод в простой обёртке. Этот метод сам создаёт
+новую очередь, добавляет в неё одну соответствующую команду и выполняет полученную очередь в <code>Context.Default.SyncInvoke(...)</code>.</p>
+<p>Обычный код с очередями:</p>
+<pre><code>## uses OpenCLABC;
+
+var a := new CLArray&lt;integer&gt;(3);
+
+Context.Default.SyncInvoke(a.NewQueue
+  .ThenWriteValue(1, 0)
+  .ThenWriteArray(|5,7|, 1, 2,0)
+  .ThenGetArray
+).Println;
+</code></pre>
+<p>Он же, но с неявными очередями:</p>
+<pre><code>## uses OpenCLABC;
+
+var a := new CLArray&lt;integer&gt;(3);
+
+a.WriteValue(1, 0);
+a.WriteArray(|5,7|, 1, 2,0);
+a.GetArray.Println;
+</code></pre>
+<p>И в случае <code>CLArray</code> можно ещё красивее:</p>
+<pre><code>## uses OpenCLABC;
+
+var a := new CLArray&lt;integer&gt;(3);
+
+a[0] := 1;
+a.Section[1..2] := |5,7|;
+a.Section[0..2].Println;
+</code></pre>
+</div>
+<script>on_page_added(document.getElementById("page-30"))</script>
+<script>on_end_folder()</script>
+<div id="page-31" page_name="" hidden=true>
+<p>Все методы создающие одну команду (<code>*CCQ.Add*</code> методы и все методы неявных очередей)
+могут принимать очередь вместо значения в качестве практически любого параметра. Но в таком случае
+возвращаемый тип очереди должен совпадать с типом параметра. К примеру:</p>
+<pre><code>## uses OpenCLABC;
+
+var a := new CLArray&lt;integer&gt;(10);
+// Очищаем весь буфер нулями, чтобы не было мусора
+a.FillValue(0);
+
+// Второй параметр AddWriteItem - индекс в массиве
+// Он имеет тип integer, а значит можно передать и CommandQueue&lt;integer&gt;
+// Таким образом, в параметр сохраняется алгоритм, а не готовое значение
+// Поэтому 3 вызова ниже могут получится с 3 разными индексами
+var q := a.NewQueue
+  .ThenWriteValue(5, HFQQ(()-&gt; Random(a.Length) ))
+;
+
+Context.Default.SyncInvoke(q);
+Context.Default.SyncInvoke(q);
+Context.Default.SyncInvoke(q);
+
+a.GetArray.Println;
+</code></pre>
+<p>Все вложенные очереди начинают выполняться сразу при вызове метода <code>Context.BeginInvoke</code>, не ожидая других очередей.</p>
+<p>Обычно вложенные очереди особо полезны когда надо записать что-то в память GPU прямо перед вызовом kernel'а:</p>
+<pre><code>k.Exec1(N, a.NewQueue.ThenFillValue(1))
+</code></pre>
+<p>Вместо:</p>
+<pre><code>a.NewQueue.ThenFillValue(1) +
+k.Exec1(N, a)
+</code></pre>
+</div>
+<script>on_start_folder("Вложенные очереди", document.getElementById("page-31"))</script>
+<script>on_end_folder()</script>
+<script>on_end_folder()</script>
+<div id="page-32" page_name="" hidden=true>
+<p>В данной справке в нескольких местах можно встретить утверждения вроде</p>
+<blockquote>
+<p>Вызовы <code>Context.BeginInvoke</code> стоит, по возможности, объединять.</p>
+</blockquote>
+<p>Данный раздел подпробнее объясняет устройство модуля, что делает подобные утверждения более понятными.</p>
+<p>Читать его не необходимо для написания работающего кода, но желательно для написания качественного кода.</p>
+<p>Но стоит сказать заранее - это не полное объяснение внутренностей модуля. Объясняется только то, что скорее всего окажется нужным.
+Если хотите ещё более полное понимание - используйте Ctrl+клик в IDE по именам, чтобы смотреть исходный код.</p>
+<hr />
+<h1>Страницы:</h1>
+<ul>
+<li><a path="Внутренности BeginInvoke">	Что делает вызов <code>BeginInvoke</code>	</a></li>
+</ul>
+</div>
+<script>on_start_folder("Оптимизация", document.getElementById("page-32"))</script>
+<div id="page-33" page_name="Внутренности BeginInvoke" hidden=true>
+<p>Кроме самого выполнения очередей - им так же необходима инициализация и финализация.</p>
+<hr />
+<h3>Инициализация</h3>
+<p>Для начала, перед тем как любая из под-очередей в <code>BeginInvoke</code> начнёт выполняться - необходимо инициалировать <code>Wait</code> очереди.
+Иначе у ожидаемого маркера всегда будет шанс выполнится до того как ожидающая его очередь начнёт ожидать.</p>
+<p>Инициализация <code>Wait</code> очередей заключается в обходе всего дерева под-очередей.
+Для каждой <code>Wait</code>-группы (очередей, ожидающих общий маркер в общем <code>.BeginInvoke</code>),
+создаётся счётчик выполнений ожидаемого маркера.</p>
+<hr />
+<h3>Запуск очередей</h3>
+<p>Тоже заключается в обходе дерева под-очередей.</p>
+<p>Но в этот раз очереди по которым прошлись - уже начали выполнятся, не ожидая окончания обхода всего дерева.</p>
+<p>Как только этот обход закончен - метод <code>BeginInvoke</code> возвращает свой <code>CLTask</code> коду, вызвавшему его.</p>
+<hr />
+<h3>Финализация</h3>
+<p>Заключается в чистке после выполнения - к примеру удалении всех созданных <code>cl_command_queue</code>.<br />
+Так же тут собирается информация о всех исключениях, пойманных во время выполнения.</p>
+<hr />
+<p>Основное преимущество объединения вызовов <code>BeginInvoke</code> состоит в различии следующих 2 случаев:</p>
+<pre><code>Context.Default.SyncInvoke(A+B);
+</code></pre>
+<pre><code>Context.Default.SyncInvoke(A);
+Context.Default.SyncInvoke(B);
+</code></pre>
+<p>В первом случае пока выполнится <code>A</code> - <code>B</code> уже, скорее всего, окажется полностью запущено.
+А значит как только <code>A</code> закончит выполнятся - ход выполнения перейдёт на <code>B</code>.</p>
+<p>А во втором случае - между окончанием выполнения <code>A</code> и запуском <code>B</code> - будет произведено множество проверок,
+а так же выходов/входов в объёмные (что значит JIT их не инлайнит) подпрограммы, как конструктор <code>CLTask</code>.</p>
+<p>Так же, в первом случае многие ресурсы, как объекты <code>OpenCL.cl_command_queue</code>,
+выделенные при выполнении <code>A</code>, будут ещё раз использованы для выполнения <code>B</code>.</p>
+<p>Да, всё это мелочи. Но нулевая задержка всегда лучше ненулевой.</p>
+<hr />
+<p>Ну а когда всё же приходится вызывать 2 отдельных <code>BeginInvoke</code>, к примеру на 2 разных
+контекстах - можно использовать <code>Wait</code> очереди, чтобы добится того же эффекта:</p>
+<pre><code>c2.BeginInvoke(WaitFor(A)+B);
+c1.BeginInvoke(A);
+</code></pre>
+<p>Внутренние оптимизации <code>OpenCLABC</code> делают этот код практически не отличимым по скорости, от <code>BeginInvoke(A+B)</code>.</p>
+<p>Единственное различие - время инициализации. Потому что <code>A</code> не запустится, пока не закончится вызов <code>c2.BeginInvoke</code>.</p>
+</div>
+<script>on_page_added(document.getElementById("page-33"))</script>
+<script>on_end_folder()</script>
+<script>on_end_folder()</script>
+</body>
+</html>

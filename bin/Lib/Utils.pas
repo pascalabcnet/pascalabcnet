@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit Utils;
 
@@ -10,6 +10,8 @@ function RecordToByteArray(obj : object): array of byte;
 procedure ShowMessage(msg: string);
 procedure ShowMessage(msg,capt: string);
 function GetFunctionPointer(fnc : Delegate) : integer;
+/// Замеряет время работы процедуры p в миллисекундах. Производит n запусков и усредняет время работы
+function Benchmark(p: procedure; n: integer := 100): real;
 
 implementation
 
@@ -41,6 +43,16 @@ end;
 function GetFunctionPointer(fnc : Delegate) : integer;
 begin
   Result := System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(fnc).ToInt32;  
+end;
+
+function Benchmark(p: procedure; n: integer): real;
+begin
+  var sw := new Stopwatch;
+  sw.Start;
+  loop n do
+    p;
+  sw.Stop;
+  Result := sw.ElapsedMilliseconds/n;
 end;
 
 begin

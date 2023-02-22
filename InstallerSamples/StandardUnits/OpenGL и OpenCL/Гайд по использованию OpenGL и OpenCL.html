@@ -1,0 +1,2122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* ============================== *\
+			 page base
+\* ============================== */
+
+body {
+	background-color: #F0F0F0;
+	margin: 0px;
+	overflow: hidden;
+}
+
+.page-base {
+	position: absolute;
+	display: flex;
+}
+
+#splitter {
+	width: 5px;
+	cursor: col-resize;
+	box-shadow: 0 0 4px #B0B0B0;
+}
+
+.page-container {
+	margin: 7.5px;
+	background-color: white;
+	overflow: auto;
+	flex-grow: 1;
+}
+#page-select-container {
+	white-space: nowrap;
+}
+
+#page-display-container-body {
+	padding: 7px;
+	width: fit-content;
+}
+
+/* ============================== *\
+		    page select
+\* ============================== */
+
+.arrow-page-root {
+	cursor: pointer;
+}
+.dot-page-root {
+	cursor: default;
+	margin-left: 5px;
+	margin-right: 6px;
+}
+
+.ps-root-container {
+	margin: 7px;
+}
+
+.ps-folder {
+	display: table;
+}
+.ps-folder-name {
+	cursor: pointer;
+	padding: 1;
+}
+.ps-container {
+	margin-left: 7px;
+	padding-left: 7px;
+	border-left: thin solid;
+	border-color: #80808080;
+}
+
+.ps-page {
+}
+.ps-page-name {
+	cursor: pointer;
+	padding: 1px;
+}
+
+/* ============================== *\
+	       page display
+\* ============================== */
+
+blockquote > *:first-child {
+	margin-top: 0;
+}
+blockquote > *:last-child {
+	margin-bottom: 0;
+}
+blockquote {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 12px;
+	border-left: 5px solid #d0d0d0;
+	background-color: #f7f7f7;
+}
+
+.smart-link {
+	color: blue;
+	cursor: pointer;
+}
+
+.spoiler {
+	margin-left: 8px;
+}
+.spoiler-wrap {
+	border: solid;
+	border-width: 0px;
+	padding-left: 2px;
+}
+.spoiler-name {
+	border: solid;
+	border-width: 0px;
+}
+
+.code-block {
+	display: inline-block;
+	cursor: text;
+	border-radius: 3px;
+	
+	padding: 4px;
+	padding-right: 12px;
+	
+	margin: 0;
+	
+	position: relative;
+}
+.code-block-copier {
+	cursor: pointer;
+	padding: 2px;
+	
+	position: absolute;
+	top: 0;
+	
+	border: thin solid;
+	border-radius: 3.7px 0px 3.7px 3.7px;
+	box-shadow: -2px 2px 3px #0000004a;
+	background: linear-gradient(0deg, #f0f0f0, white);
+}
+.inline-code, .code-block {
+	background: #F0F0F0;
+}
+blockquote .inline-code,
+blockquote .code-block {
+	background: #DEDEDE;
+}
+
+.code-keyword {
+	font-weight: bold;
+}
+.code-build-in {
+	color: blue;
+}
+.code-red {
+	color: red;
+	font-weight: bold;
+}
+.code-glowing-bracket {
+	color: red;
+	background-color: #C0C0C0;
+}
+</style>
+</head>
+<body>
+<div class="page-base" id="page-select">
+	<div class="page-container" id="page-select-container"></div>
+</div>
+<div class="page-base" id="page-display">
+	<div class="page-container" id="page-display-container">
+		<div id="page-display-container-body"></div>
+	</div>
+</div>
+<div class="page-base" id="splitter"></div>
+<script>
+/* ============================== *\
+		        misc
+\* ============================== */
+
+const selected_name_color = "#eaeaea";
+const  pointed_name_color = "#d1faff";
+
+var localStorageKey = "";
+
+const get_style = (el)=>el.currentStyle || window.getComputedStyle(el);
+
+var spl_resize_event = [];
+
+/* ============================== *\
+		     page load
+\* ============================== */
+
+var root_folder = null;
+var currently_loading_folder = null;
+
+var prev_opened_folders = null;
+var opened_folders = [];
+
+var page_by_path = {};
+const define_page_with_path = (path, page)=>{
+	
+	if (page_by_path[path])
+		console.error(`page with path "${path}" defined multiple times`); else
+		page_by_path[path] = page;
+	
+	if (broken_links[path])
+	{
+		for (let lnk of broken_links[path])
+			lnk.fix(page);
+		delete broken_links[path];
+	}
+	
+}
+
+const on_start_folder = (folder_name, root_page)=>{
+	
+	let res = {
+		folders: [],
+		pages: [],
+		container: document.createElement("div"),
+		name: folder_name,
+	};
+	
+	if (!root_folder)
+	{
+		root_folder = res;
+		res.path = "";
+		
+		localStorageKey = `reference : ${folder_name} : `;
+		let prev_opened_folders_str = localStorage[localStorageKey+"opened_folders"];
+		prev_opened_folders = prev_opened_folders_str ? JSON.parse(prev_opened_folders_str) : [];
+		
+		res.container.className = "ps-root-container";
+		document.getElementById("page-select-container").append(res.container);
+	}
+	else
+	{
+		if (!root_page) {
+			res.auto_fill_content = true;
+			root_page = document.createElement("div");
+			root_page.hidden = true;
+		}
+		
+		currently_loading_folder.folders.push(res);
+		res.root = currently_loading_folder;
+		res.path = res.root.path + folder_name + '/';
+		
+		res.body = document.createElement("div");
+		res.body.className = "ps-folder";
+		{
+			let ind = prev_opened_folders.indexOf(res.path);
+			res.state = ind!==-1;
+			if (res.state)
+			{
+				prev_opened_folders.splice(ind,1);
+				opened_folders.push(res.path);
+			}
+		}
+		currently_loading_folder.container.append(res.body);
+		
+		res.update = ()=>{
+			res.state_span.innerHTML = String.fromCharCode( res.empty? 0x2022 : res.state ? 0x25BC : 0x25BA );
+			res.container.hidden = !res.state;
+		}
+		res.reverse_state = ()=>{
+			res.state = !res.state;
+			
+			if (res.state)
+				opened_folders.push(res.path); else
+				opened_folders.splice(opened_folders.indexOf(res.path), 1);
+			localStorage[localStorageKey+"opened_folders"] = JSON.stringify(opened_folders);
+			
+			res.update();
+		};
+		
+		res.state_span = document.createElement("span");
+		res.state_span.className = "dot-page-root";
+		res.state_span.innerHTML = String.fromCharCode( 0x2022 );
+		res.body.append(res.state_span);
+		
+		res.name_span = document.createElement("span");
+		res.name_span.className = "ps-folder-name";
+		res.name_span.innerHTML = folder_name;
+		root_page.name_span = res.name_span;
+		res.body.append(res.name_span);
+		//
+		res.name_span.addEventListener("click", ()=>select_page(root_page));
+		res.name_span.addEventListener("mouseenter", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor=pointed_name_color; });
+		res.name_span.addEventListener("mouseleave", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor="inherit"; });
+		
+		res.container.className = "ps-container";
+		res.body.append(res.container);
+		
+	}
+	currently_loading_folder = res;
+	
+	if (root_folder !== res) {
+		res.content_ref = root_page;
+		root_page.tree_obj = res;
+		document.getElementById("page-display-container-body").append(root_page);
+		add_to_switch_list(root_page);
+		if (!res.auto_fill_content)
+			fix_links(root_page);
+	}
+	
+}
+
+const on_page_added = (page)=>{
+	
+	let res = {
+		root: currently_loading_folder,
+		name: page.getAttribute("page_name"),
+	};
+	res.path = currently_loading_folder.path + res.name;
+	
+	res.cont_div = document.createElement("div");
+	res.cont_div.className = "ps-page";
+	currently_loading_folder.container.append(res.cont_div);
+	
+	res.dot_span = document.createElement("span");
+	res.dot_span.className = "dot-page-root";
+	res.dot_span.innerHTML = String.fromCharCode( 0x2022 );
+	res.cont_div.append(res.dot_span);
+	
+	res.name_span = document.createElement("span");
+	res.name_span.innerHTML = res.name + "<br>";
+	res.name_span.className = "ps-page-name";
+	res.name_span.addEventListener("click", ()=>select_page(page));
+	res.name_span.addEventListener("mouseenter", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor=pointed_name_color; });
+	res.name_span.addEventListener("mouseleave", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor="inherit"; });
+	res.cont_div.append(res.name_span);
+	page.name_span = res.name_span;
+	
+	res.content_ref = page;
+	page.tree_obj = res;
+	document.getElementById("page-display-container-body").append(page);
+	
+	currently_loading_folder.pages.push(res);
+	define_page_with_path(res.path, page);
+	add_to_switch_list(page);
+	fix_links(page);
+	
+	if (!selected_page && !document.location.hash) select_page(page);
+}
+
+const on_end_folder = ()=>{
+	
+	if (currently_loading_folder !== root_folder) {
+		let curr_folder = currently_loading_folder;
+		let root_page = curr_folder.content_ref;
+		
+		if ( curr_folder.folders.length || curr_folder.pages.length )
+		{
+			curr_folder.state_span.className = "arrow-page-root";
+			curr_folder.state_span.addEventListener("click", curr_folder.reverse_state);
+			curr_folder.name_span.addEventListener("dblclick", curr_folder.reverse_state);
+			curr_folder.update();
+		} else
+			curr_folder.empty = true;
+		
+		if (curr_folder.auto_fill_content) {
+			
+			if (curr_folder.folders.length)
+			{
+				let h = document.createElement("h1");
+				h.innerHTML = "Под-папки:";
+				root_page.append(h);
+				
+				let l = document.createElement("ul");
+				for (let folder of curr_folder.folders)
+				{
+					let li = document.createElement("li");
+					li.innerHTML = folder.name_span.innerHTML;
+					make_smart_link(li, folder.content_ref);
+					l.append(li);
+				}
+				root_page.append(l);
+				
+			}
+			
+			if (curr_folder.pages.length)
+			{
+				let h = document.createElement("h1");
+				h.innerHTML = "Страницы:";
+				root_page.append(h);
+				
+				let l = document.createElement("ul");
+				for (let page of curr_folder.pages)
+				{
+					let li = document.createElement("li");
+					li.innerHTML = page.name_span.innerHTML;
+					make_smart_link(li, page.content_ref);
+					l.append(li);
+				}
+				root_page.append(l);
+				
+			}
+			
+		}
+		
+		define_page_with_path(curr_folder.path, root_page);
+		currently_loading_folder = curr_folder.root;
+	} else if (!selected_page)
+		select_page(root_folder.content_ref);
+	
+}
+
+/* ============================== *\
+	        page display
+\* ============================== */
+
+var selected_page = null;
+var scroll_by_page = {};
+const is_selected = (name_span)=>(!selected_page || selected_page.name_span!==name_span);
+const select_page = (new_page)=>{
+	if (selected_page == new_page) return;
+	document.location.hash = new_page.tree_obj.path;
+	fix_element(new_page);
+	
+	let container = document.getElementById("page-display-container");
+	
+	if (selected_page)
+	{
+		scroll_by_page[selected_page.tree_obj.path] = container.scrollTop;
+		selected_page.hidden = true;
+		let name_span = selected_page.name_span;
+		if (name_span) name_span.style.backgroundColor = "inherit";
+	}
+	
+	selected_page = new_page;
+	if (selected_page)
+	{
+		selected_page.hidden = false;
+		container.focus({preventScroll: true});
+		let name_span = selected_page.name_span;
+		if (name_span) name_span.style.backgroundColor = selected_name_color;
+		
+		let tree_obj = new_page.tree_obj.root;
+		while (tree_obj)
+		{
+			if ( tree_obj.state==false && tree_obj.reverse_state ) tree_obj.reverse_state();
+			tree_obj = tree_obj.root;
+		}
+		
+		container.scrollTop = scroll_by_page[selected_page.tree_obj.path] || 0;
+	}
+}
+
+window.addEventListener("keyup", e=>{
+	if (e.code==="ArrowLeft") {
+		if (p = selected_page?.page_l) select_page(p);
+	} else
+	if (e.code==="ArrowRight") {
+		if (p = selected_page?.page_r) select_page(p);
+	}
+});
+
+const make_smart_link = (lnk, page)=>{
+	lnk.className = "smart-link";
+	lnk.addEventListener("click", ()=>select_page(page));
+}
+
+var broken_links = {};
+const define_broken_lnk = (path, source, fixer)=>{
+	if (!broken_links[path]) broken_links[path] = [];
+	broken_links[path].push({
+		source:	source,
+		fix:	fixer,
+	});
+}
+
+const add_to_switch_list = (o)=>{
+	
+	if (add_to_switch_list.last_o) {
+		o.page_l = add_to_switch_list.last_o;
+		add_to_switch_list.last_o.page_r = o;
+	}
+	add_to_switch_list.last_o = o;
+	
+}
+const fix_links = (page)=>{
+	
+	for (let lnk of page.getElementsByTagName('a'))
+	{
+		lnk.path = lnk.getAttribute("path");
+		if (!lnk.path) continue;
+		lnk.removeAttribute("path");
+		
+		start_folder = currently_loading_folder;
+		while (lnk.path.startsWith("../"))
+		{
+			start_folder = start_folder.root;
+			lnk.path = lnk.path.substr(3);
+		}
+		lnk.path = start_folder.path+lnk.path;
+		
+		let lnk_page = page_by_path[lnk.path];
+		if (lnk_page)
+			make_smart_link(lnk, lnk_page); else
+			define_broken_lnk(lnk.path, page.tree_obj.path, new_page=>make_smart_link(lnk, new_page))
+		
+	}
+	
+}
+
+const code_words_color = {
+	"pas": {
+		"keyword": [
+			"###", "##", "program", "unit", "library", "namespace",
+			"begin","end", "var", "uses", "as", "new", "try", "except", "on", "do", "finally", "const",
+			"procedure", "function", "lock", "type", "class","record", "sizeof","typeof", "external",
+			"static", "array", "where", "or","and", "public","private", "property","constructor", "default",
+			"of", "if","then","else", "div","mod", "extensionmethod", "while",
+		],
+		"build-in": [
+			"nil", "self", "true", "false", "value",
+			"string","char", "object", "pointer", "single","real",
+			"shortint", "smallint", "integer", "int64",
+			"byte", "word", "longword", "cardinal", "uint64",
+		],
+		"red": ["ToDo"],
+	},
+	"cl-c": {
+		"keyword": ["__kernel", "__global"],
+		"build-in": ["int", "void"],
+	},
+	"default": {
+		
+	}
+}
+
+const fix_element = (page)=>{
+	if (page.fixed) return;
+	page.fixed = true;
+	
+	for (let spoiler of page.getElementsByClassName('spoiler'))
+	{
+		let get_spoiler_text = ()=> + ' ' + spoiler.getAttribute('summary');
+		
+		let wrap = document.createElement('p');
+		wrap.className = "spoiler-wrap";
+		wrap.update = ()=>{
+			wrap.state_span.innerHTML = String.fromCharCode( 	spoiler.hidden ? 0x25BA	: 0x25BC );
+			wrap.style.borderLeftWidth = 						spoiler.hidden ? 0 		: 1;
+			wrap.name_span.style.borderBottomWidth = 			spoiler.hidden ? 1 		: 0;
+			wrap.style.marginLeft = 							spoiler.hidden ? 1		: 0;
+		}
+		
+		wrap.state_span = document.createElement("span");
+		wrap.append(wrap.state_span);
+		
+		wrap.name_span = document.createElement("span");
+		wrap.name_span.className = "spoiler-name";
+		wrap.name_span.innerHTML = spoiler.getAttribute("summary");
+		wrap.append(wrap.name_span);
+		
+		wrap.update();
+		wrap.reverse_state = ()=>{
+			spoiler.hidden = !spoiler.hidden;
+			wrap.update();
+		}
+		
+		wrap.state_span.addEventListener("click", wrap.reverse_state);
+		wrap.name_span.addEventListener("click", wrap.reverse_state);
+		
+		wrap.state_span.style.cursor = "pointer";
+		wrap.name_span.style.cursor = "pointer";
+		
+		spoiler.replaceWith(wrap);
+		wrap.append(spoiler);
+	}
+	
+	for (let code of page.getElementsByTagName('code'))
+	{
+		let w_to_regex = (w)=>`(?<!\\w)${w}(?!\\w)`;
+		
+		let code_html = code.innerHTML;
+		
+		// Автоопределение языка кода
+		if (!code.className)
+		{
+			let best = {lang: null, c: 0};
+			let multiple_best = true;
+			
+			for (let lang_name in code_words_color)
+			{
+				let c = 0;
+				for (let wordt in code_words_color[lang_name])
+					for (let w of code_words_color[lang_name][wordt])
+					{
+						var m = code_html.match(new RegExp( w_to_regex(w), "gi" ));
+						if (m) c += m.length;
+					}
+				
+				if (best.c == c)
+					multiple_best = true; else
+				if (best.c < c)
+				{
+					multiple_best = false;
+					best.lang = lang_name;
+					best.c = c;
+				}
+			}
+			
+			if (multiple_best)
+				code.className = "language-default"; else
+				code.className = "language-" + best.lang;
+		}
+		
+		// Подсветка особых слов в коде
+		{
+			let lang = code.className.substr("language-".length);
+			let curr_cw = code_words_color[lang];
+			if (!curr_cw) curr_cw = code_words_color["default"];
+			for (let wordt in curr_cw)
+				code_html = code_html.replace(
+					new RegExp(curr_cw[wordt].map(w_to_regex).join('|'),"gi"),
+					w=> `<span class="code-${wordt}">${w}</span>`
+				);
+		}
+		
+		// Выделение скобок
+		{
+			var br_types = {
+				op: ["(", "[", "{", "&lt;", "'"],
+				cl: [")", "]", "}", "&gt;", "'"],
+			}
+			for (let op in br_types)
+				for (let i=0; i<br_types[op].length; i++)
+					code_html = code_html.replace(
+						new RegExp('\\'+br_types[op][i], "g"),
+						`<span class=bracket ${ op=="op" ? "op=true" : "" } bt=${i}>${br_types[op][i]}</span>`
+					);
+			
+		}
+		
+		// Выделение первой строки
+		if (code.parentElement.tagName == "PRE")
+		{
+			let ind = code_html.indexOf('\n');
+			if (ind != code_html.length-1)
+				code_html = `<span class="code-first-line">${code_html.slice(0,ind)}</span>${code_html.slice(ind)}`;
+		}
+		
+		code.innerHTML = code_html;
+		code.firstLine = code.children[0];
+		if (code.firstLine && code.firstLine.className != "code-first-line") delete code.firstLine;
+		
+		// Подсветка скобок
+		{
+			let br_st = [];
+			for (let obj2 of code.getElementsByClassName("bracket"))
+			{
+				let b2t = obj2.getAttribute("bt");
+				
+				if (obj2.getAttribute("op"))
+					br_st.push({
+						obj: obj2,
+						bt: b2t,
+					}); else
+				{
+					let b1 = br_st.pop();
+					let b0 = null;
+					if (!b1) continue;
+					if (b1.obj == obj2.parentElement)
+					{
+						b0 = b1;
+						b1 = br_st.pop();
+					}
+					if (!b1) continue;
+					if (b1.bt == b2t)
+					{
+						let obj1 = b1.obj;
+						
+						let on_enter = ()=>{
+							obj1.className = "code-glowing-bracket";
+							obj2.className = "code-glowing-bracket";
+						}
+						let on_leave = ()=>{
+							obj1.className = null;
+							obj2.className = null;
+						}
+						
+						obj1.addEventListener("mouseenter", on_enter);
+						obj2.addEventListener("mouseenter", on_enter);
+						obj1.addEventListener("mouseleave", on_leave);
+						obj2.addEventListener("mouseleave", on_leave);
+					} else
+					{
+						br_st.push(b1);
+						if (b0) br_st.push(b0);
+					}
+				}
+				
+			}
+			
+		}
+		
+		if (code.parentElement.tagName == "PRE")
+		{
+			let pre = code.parentElement;
+			pre.className = 'code-block';
+			
+			let wrap = document.createElement('p');
+			pre.replaceWith(wrap);
+			wrap.append(pre);
+			
+		} else
+			code.className = "inline-code";
+		
+	}
+	
+	page.style.visibility = "hidden";
+	page.hidden = false;
+	
+	for (let code of page.getElementsByTagName('code'))
+	{
+		if (code.firstLine)
+		{
+			let pre = code.parentElement;
+			
+			let copy_button = document.createElement('div');
+			copy_button.className = "code-block-copier";
+			copy_button.innerText = "Копировать";
+			copy_button.style.visibility = "hidden";
+			pre.append(copy_button);
+			
+			copy_button.addEventListener("click", ()=>{
+				
+				if (document.selection) { // IE
+					var range = document.body.createTextRange();
+					range.moveToElementText(code);
+					range.select();
+				} else if (window.getSelection) { // other browsers
+					var range = document.createRange();
+					range.selectNode(code);
+					window.getSelection().removeAllRanges();
+					window.getSelection().addRange(range);
+				}
+				
+				var text = code.innerText;
+				navigator.clipboard.writeText(text.substring(0,text.length-1));
+			});
+			
+			copy_button.reset_right = ()=>{
+				pre_st = get_style(pre);
+				let container = document.getElementById("page-display-container");
+				let x = pre.getBoundingClientRect().right - (container.getBoundingClientRect().left+container.clientWidth);
+				if (x<0) x = 0; else
+				{
+					let max_x = pre.offsetWidth - copy_button.offsetWidth;
+					if (x>max_x) x = max_x;
+				}
+				copy_button.style.right = x;
+			};
+			let try_reset_right = ()=>{
+				if (!copy_button.hidden)
+					copy_button.reset_right();
+			};
+			spl_resize_event.push(try_reset_right);
+			window.addEventListener("resize", try_reset_right);
+			
+			pre.addEventListener("mouseenter", ()=>{
+				copy_button.hidden = false;
+				copy_button.reset_right();
+			});
+			pre.addEventListener("mouseleave", ()=>copy_button.hidden = true);
+			
+			copy_button.addEventListener("mousedown",	()=>copy_button.style.background = "linear-gradient(180deg, rgb(240, 240, 240), white)");
+			copy_button.addEventListener("mouseup",		()=>copy_button.style.background = "linear-gradient(  0deg, rgb(240, 240, 240), white)");
+			copy_button.addEventListener("mouseleave",	()=>copy_button.style.background = "linear-gradient(  0deg, rgb(240, 240, 240), white)");
+			
+			pre.style.minWidth =
+				code.firstLine.offsetWidth +
+				copy_button.offsetWidth +
+				0
+			;
+			
+			copy_button.hidden = true;
+			copy_button.style.visibility = null;
+		}
+		
+	}
+	
+	page.hidden = true;
+	page.style.visibility = null;
+}
+
+/* ============================== *\
+		        init
+\* ============================== */
+
+{
+	if (document.location.hash)
+	{
+		let get_hash = ()=>decodeURIComponent(document.location.hash.substr(1));
+		let define_hash_lnk = ()=>define_broken_lnk(
+			get_hash(),
+			"document.location.hash",
+			page=>select_page(page)
+		);
+		define_hash_lnk();
+		window.addEventListener("hashchange", ()=>{
+			let hash_page = page_by_path[get_hash()];
+			if (hash_page)
+				select_page(hash_page); else
+				define_hash_lnk();
+		});
+	}
+	
+	let page_select = document.getElementById("page-select");
+	let page_display = document.getElementById("page-display");
+	let splitter = document.getElementById("splitter");
+	
+	let ww = window.innerWidth;
+	let wh = window.innerHeight;
+	
+	for (let cont of document.getElementsByClassName("page-container"))
+	{
+		let par = cont.parentElement;
+		par.update_cont = (w)=>{
+			cont.style.width = w-15;
+			cont.style.height = wh-15;
+		};
+	}
+	
+	let spl_X = ww * 0.30;
+	const reset_spl = ()=>{
+		ww = window.innerWidth;
+		wh = window.innerHeight;
+		
+		page_select.style.height = wh + "px";
+		splitter.style.height = wh + "px";
+		page_display.style.height = wh + "px";
+		
+		if (ww-5<spl_X) spl_X = ww-5;
+		if (spl_X<5) spl_X = 5;
+		
+		page_select.style.width = spl_X + "px";
+		splitter.style.left = spl_X + "px";
+		let x2 = spl_X+splitter.clientWidth;
+		let w2 = ww - x2;
+		page_display.style.left = x2 + "px";
+		page_display.style.width = w2 + "px";
+		
+		page_select.update_cont(spl_X);
+		page_display.update_cont(w2);
+		
+		for (let handler of spl_resize_event)
+			handler();
+	}
+	reset_spl();
+	
+	window.addEventListener("resize", ()=>reset_spl());
+	
+	splitter.addEventListener("dblclick", ()=>{
+		let w = 0;
+		let psc = document.getElementsByClassName("page-container")[0];
+		let psc2 = psc.children[0];
+		for (let n of psc2.children)
+			if (n.clientWidth>w) w = n.clientWidth;
+		
+		let get_margin = (el)=>{
+			let style = get_style(el);
+			return parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+		}
+		
+		spl_X = w +
+			get_margin(psc) +
+			get_margin(psc2)
+		;
+		reset_spl();
+	});
+	
+	let spl_grabed = false;
+	splitter.addEventListener("mousedown", (e)=>{
+		spl_grabed=true;
+		e.preventDefault();
+	});
+	window.addEventListener("mousemove", (e)=>{if (spl_grabed) {
+		spl_X = e.clientX - splitter.clientWidth/2;
+		reset_spl();
+		e.preventDefault();
+	}});
+	window.addEventListener("mouseup", ()=>spl_grabed=false);
+	
+}
+
+window.onload = ()=>{
+	
+	for (path in broken_links)
+		console.error(`Page "${path}" referenced ${broken_links[path].length} times but not found:`, broken_links[path].map(lnk=>lnk.source));
+	
+	localStorage[localStorageKey+"opened_folders"] = JSON.stringify(opened_folders);
+	if (prev_opened_folders.length) console.log("folders were marked as opened, but not found:", prev_opened_folders);
+	delete prev_opened_folders;
+	
+}
+</script>
+<script>on_start_folder("Native Interop", null)</script>
+<script>on_start_folder("Общие сведения", null)</script>
+<div id="page-1" page_name="О справке" hidden=true>
+<p>Данная справка рассказывает про подводные камни при работе с неуправляемыми .dll,
+которые можно встретить при работе с модулями <code>OpenGL</code> и <code>OpenCL</code>, входящеми в состав стандартных модулей языка PascalABC.NET.</p>
+<p>Справки по соответствующим библиотекам:</p>
+<ul>
+<li><a href="https://www.khronos.org/registry/OpenGL/specs/gl/">OpenGL.dll</a></li>
+<li><a href="https://www.khronos.org/registry/OpenCL/">OpenCL.dll</a></li>
+</ul>
+<p>(Далее &quot;исходные библиотеки&quot; относится сразу к обеим этим библиотекам)</p>
+<p>Отдельных справок по модулям <code>OpenGL</code> и <code>OpenCL</code> (далее просто &quot;н.у. модули&quot;, что значит &quot;низко-уровневые&quot;)
+нет, потому что они сделаны по
+<a path="../Основные принципы/">
+общим принципам
+</a>
+.</p>
+<hr />
+<h3>Отношение к высоко-уровневым модулям</h3>
+<p>Н.у. модули созданы как промежуточная точка между исходными библиотеками и модулями
+<a href="%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B0%20OpenGLABC.html"><code>OpenGLABC</code></a>
+и
+<a href="%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B0%20OpenCLABC.html"><code>OpenCLABC</code></a>,
+на случай если вы хотите использовать OpenGL и/или OpenCL, но хотите написать свою высоко-уровневую оболочку.
+Возможно, ради опыта. Возможно, ради особых оптимизаций. И т.п.</p>
+<p>Если вы будете использовать только модули <code>OpenGLABC</code> и <code>OpenCLABC</code> - данная справка вам не нужна,
+потому что они специально созданы так, чтобы отстранить программиста от всех сложностей
+работы с неуправляемыми .dll и предоставить привычный ООП интерфейс со всевозможными удобствами.</p>
+<hr />
+<h3>Багтрагер</h3>
+<p>Если:</p>
+<ul>
+<li><p>В н.у. модулях или данной справке найдена ошибка или чего-либо не хватает;</p>
+</li>
+<li><p>Вы наткнулись на какую то особенностью работы с неуправляемыми .dll, которая тут не (или недо-) описана:</p>
+</li>
+</ul>
+<p>Пишите в <a href="https://github.com/SunSerega/POCGL/issues">issue</a>.</p>
+</div>
+<script>on_page_added(document.getElementById("page-1"))</script>
+<div id="page-2" page_name="О неуправляемых .dll" hidden=true>
+<p>Лучше прочитайте <a href="https://docs.microsoft.com/en-us/dotnet/standard/managed-code">оффициальный документ от microsoft</a>, если хотите точной и подробной информации.</p>
+<p>Если в кратце:</p>
+<p>Есть платформа .Net, объединяющая много языков программирования. В том числе C# и PascalABC.NET.</p>
+<p>.exe и .dll созданные такими языками содержат код в особом виде, позволяющем легко подключать
+.dll (и теоретически .exe, но это плохо) созданные на 1 .Net языке к программе на любом другом .Net языке.<br />
+(в паскале это делается с помощью <code>$reference</code>)</p>
+<p>Такие .exe и .dll называются управляемыми. .exe и .dll созданные на любом другом (то есть не .Net) языке называются неуправляемыми.</p>
+<p>OpenCL.dll и OpenGL.dll созданы на- и для языков C/C++, поэтому являются неуправляемыми.</p>
+</div>
+<script>on_page_added(document.getElementById("page-2"))</script>
+<div id="page-3" page_name="Участие в разработке н.у. модулей" hidden=true>
+<p>Большинство функций из н.у. модулей требует какой-либо чистки. В основном потому что
+при переводе с C++ тип <code>int*</code> может оказаться и указателем, и <code>var</code>-параметром, и массивом.</p>
+<p>При автоматическом переводе кода с C++ на паскаль - создаются все возможные перегрузки.
+А те перегрузки, которые не подходят конкретным подпрограммам - надо убирать вручную.
+В этом и состоит чистка подпрограмм.</p>
+<p>Все разом функции не почистишь, в одном только <code>OpenGL</code> их &gt;3000. Но сделать это, всё же, надо.
+Если хотите помочь - можно писать и в issue, но лучше (и проще для вас, когда разберётесь) создать fork репозитория,
+сделать там нужные изменения и послать pull-request. Могу объяснить подробнее в <a href="https://vk.com/sun_serega">vk</a> или по <code>sunserega2@gmail.com</code>.</p>
+<hr />
+<p>Чтобы чистить подпрограммы было проще - я написал несколько инструментов.
+Вся упаковка н.у. модулей находится <a href="https://github.com/SunSerega/POCGL/tree/master/Packing/Template">тут</a>.
+Откройте папку <code>OpenCL</code> или <code>OpenGL</code>. Они устроены одинаково, поэтому объяснять можно на любой из них.</p>
+<p>Все файлы (кроме .exe, .pdb и .pcu, которые создаёт паскаль) в
+этих папках открываются любым текстовым редактором.</p>
+<hr />
+<h3>Fixers</h3>
+<p>Контроль содержимого модуля находится в папке <code>Fixers</code>. В этой папке есть следующие подпапки:</p>
+<ul>
+<li><code>Funcs</code> - контроль подпрограмм;</li>
+<li><code>Enums</code> - контроль записей-перечислений;</li>
+<li><code>Structs</code> - контроль просто записей (записей-контейнеров, если хотите).</li>
+</ul>
+<p>Во всех папках находится файл <code>ReadMe.md</code>, объясняющий синтаксис.</p>
+<hr />
+<h3>MiscInput</h3>
+<p><code>MiscInput</code> содержит другие данные, используемые при создании модулей, которые имеют разные значения для OpenCL и OpenGL.</p>
+<p>Синтаксис у всех предельно прост. Не вижу смысла объяснять подробнее.</p>
+<hr />
+<h3>Log</h3>
+<p><code>Log</code> содержит логи последней сборки соответствующего модуля.</p>
+<p>Они в основном используются чтобы было проще увидеть на что именно
+повлияли ваши изменения и как (используя проверку изменений git'а).</p>
+<p>Но файл <code>FinalFuncOverloads.log</code> так же особо полезен перед
+началом чистки, чтобы увидеть какие перегрузки уже есть.</p>
+<hr />
+<p>Чтобы применить фиксеры и посмотреть на что они влияют - вызывайте <code>Pack Most.pas</code>.</p>
+<p>Ну а чтобы полностью собрать модули - вызывайте <code>PackAll.exe</code> в корне репозитория.<br />
+(или <code>.bat</code> файлы там же, для сборки отдельных компонентов)</p>
+</div>
+<script>on_page_added(document.getElementById("page-3"))</script>
+<script>on_end_folder()</script>
+<div id="page-4" page_name="" hidden=true>
+<h1>В кратце:</h1>
+<ul>
+<li>Н.у. модули представляют весь возможный функционал из своих соответствующих .dll;</li>
+<li>Но при этом балансируют между максимальными удобством и низко-уровневостью.</li>
+</ul>
+<p>Если нужна высоко-уровневость - используйте соответственно модули
+<a href="%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B0%20OpenGLABC.html">OpenGLABC</a>
+и
+<a href="%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B0%20OpenCLABC.html">OpenCLABC</a>
+.</p>
+<hr />
+<h1>Подробнее о структуре модулей:</h1>
+<ul>
+<li><a path="Записи-имена"					> Записи-имена					</a></li>
+<li><a path="Записи-перечисления"				> Записи-перечисления			</a></li>
+<li><a path="Классы-контейнеры подпрограмм"	> Классы-контейнеры подпрограмм	</a></li>
+</ul>
+<hr />
+<h1>Исключения из общих принципов:</h1>
+<ul>
+<li><a path="Особые типы модуля OpenGL"> Особые типы модуля <code>OpenGL</code>	</a></li>
+</ul>
+</div>
+<script>on_start_folder("Основные принципы", document.getElementById("page-4"))</script>
+<div id="page-5" page_name="Записи-имена" hidden=true>
+<p>В исходных библиотеках обращение ко всем объектам идёт по &quot;именам&quot; (их так же можно назвать дескрипторами или id этих объектов).</p>
+<p>Имена объектов - это числа (в OpenGL обычно на 32 бита, в OpenCL - зависит от битности системы).</p>
+<p>Чтобы в подпрограмму, принимающую имена объектов определённого типа нельзя было передать имя
+объекта неправильного типа - в н.у. модулях для каждого типа объектов описана подобная запись:</p>
+<pre><code>  gl_buffer = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    public static property Zero: gl_buffer read default(gl_buffer);
+    public static property Size: integer read Marshal.SizeOf&amp;&lt;UInt32&gt;;
+    public function ToString: string; override := $'gl_buffer[{val}]';
+  end;
+</code></pre>
+<p>Такой подход не замедляет готовую программу, но позволяет отловить некоторые ошибки на этапе компиляции.</p>
+<p>Поле <code>.val</code> и конструктор публичны только на случай ошибки в перегрузках,
+то есть если подпрограмма принемает неправильный тип имени.</p>
+<p>В обычной ситуации - вы будете взаимодействовать с именами только 3 способами:</p>
+<ol>
+<li><p>Объявление:</p>
+<pre><code>var name: gl_buffer;
+var names: array of gl_buffer := new gl_buffer[5];
+</code></pre>
+</li>
+<li><p>Передача исходным библиотекам:</p>
+<pre><code>gl.CreateBuffers(1, name);
+gl.CreateBuffers(names.Length, names);
+</code></pre>
+</li>
+<li><p>Использование статического свойства <code>.Zero</code>:</p>
+<pre><code>procedure MyProc(buff: gl_buffer);
+begin
+  ...
+end;
+...
+MyProc(gl_buffer.Zero);
+// То же самое, но с лишними скобками:
+MyProc(default(gl_buffer));
+</code></pre>
+<p>У настоящих объектов имя никогда не будет нулевым.</p>
+<p>Но бывает не мало случаев когда исходные библиотеки могут принимать нулевое имя.<br />
+К примеру, привязка шейдера с нулевым именем в OpenGL отменяет предыдущую привязку шейдера.</p>
+</li>
+</ol>
+</div>
+<script>on_page_added(document.getElementById("page-5"))</script>
+<div id="page-6" page_name="Записи-перечисления" hidden=true>
+<p>Многие параметры подпрограмм в исходных библиотеках принимают перечисления (enum'ы).</p>
+<p>Перечисления, как и имена, это числа. Но в отличии от имён - перечисления принимают заданные заранее константные значения.</p>
+<p>В качестве примера:</p>
+<pre><code>procedure gl.BeginQuery(target: QueryTarget; id: gl_query)
+</code></pre>
+<p>Параметр <code>target</code> принимает одно из значений, сгрупированных в записи <code>QueryTarget</code>:</p>
+<pre><code>  QueryTarget = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property TRANSFORM_FEEDBACK_OVERFLOW:           QueryTarget read new QueryTarget($82EC);
+    public static property VERTICES_SUBMITTED:                    QueryTarget read new QueryTarget($82EE);
+    public static property PRIMITIVES_SUBMITTED:                  QueryTarget read new QueryTarget($82EF);
+    public static property VERTEX_SHADER_INVOCATIONS:             QueryTarget read new QueryTarget($82F0);
+    public static property TIME_ELAPSED:                          QueryTarget read new QueryTarget($88BF);
+    public static property SAMPLES_PASSED:                        QueryTarget read new QueryTarget($8914);
+    public static property ANY_SAMPLES_PASSED:                    QueryTarget read new QueryTarget($8C2F);
+    public static property PRIMITIVES_GENERATED:                  QueryTarget read new QueryTarget($8C87);
+    public static property TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN: QueryTarget read new QueryTarget($8C88);
+    public static property ANY_SAMPLES_PASSED_CONSERVATIVE:       QueryTarget read new QueryTarget($8D6A);
+    
+    ...
+    
+  end;
+</code></pre>
+<p>То есть вызов может выглядеть так:</p>
+<pre><code>var name: gl_query;
+...
+gl.BeginQuery(QueryTarget.VERTICES_SUBMITTED, name);
+</code></pre>
+<p>Чтобы увидеть доступные значения - достаточно написать <code>QueryTarget</code> и поставить точку,
+после этого анализатор кода покажет список доступных имён.</p>
+<hr />
+<p>Так же бывают особые перечисления - битовые маски. Они могут принимать сразу несколько значений:</p>
+<pre><code>procedure gl.Clear(mask: ClearBufferMask);
+</code></pre>
+<pre><code>gl.Clear(
+  ClearBufferMask.COLOR_BUFFER_BIT + // Очистка поверхности рисования одним цветом
+  ClearBufferMask.DEPTH_BUFFER_BIT   // Очистка буфера глубины - нужна при рисовании 3D
+);
+</code></pre>
+</div>
+<script>on_page_added(document.getElementById("page-6"))</script>
+<div id="page-7" page_name="Классы-контейнеры подпрограмм" hidden=true>
+<p>Все подпрограммы исходных библиотек можно разделить на подпрограммы ядра + множество мелких расширений.</p>
+<hr />
+<p>Все подпрограммы ядра находятся в классе <code>gl</code>/<code>cl</code> для OpenGL/OpenCL соответственно.</p>
+<p>То есть если вы хотите вызвать функцию <code>clCreateBuffer</code> надо писать:</p>
+<pre><code>cl.CreateBuffer(...);
+</code></pre>
+<p>По нажатию точки после <code>cl</code> вам так же покажет список всех функций в ядре OpenCL.</p>
+<hr />
+<p>С OpenGL немного сложнее:</p>
+<ol>
+<li>В каждом контексте у каждой подпрограммы может быть свой адрес.</li>
+<li>Получение адреса подпрограммы выглядит по-разному на разных платформах.</li>
+</ol>
+<p>В модуле <code>OpenGL</code> это реализовано так:</p>
+<pre><code>//ToDo Создание контекста и привязка его к текущему потоку
+
+// Все адреса и экземпляры делегатов создаются в конструкторе
+// В &quot;&lt;&gt;&quot; указывается имя платформы
+// Можете написать &quot;Pl&quot; и нажать Ctrl+пробел, чтобы получить список платформ
+var gl := new OpenGL.gl&lt;PlWin&gt;;
+
+while true do
+begin
+  // Локальные переменные имеют бОльший приоритет чем классы
+  // Поэтому тут &quot;gl&quot; это не класс, а экземпляр, который создали выше
+  gl.Clear( ClearBufferMask.COLOR_BUFFER_BIT );
+  
+  //ToDo само рисование
+  
+end;
+</code></pre>
+<hr />
+<p>У каждого расширения есть свой класс. К примеру, так используется расширение <code>GL_AMD_debug_output</code>:</p>
+<pre><code>//ToDo Опять же, сначала контекст
+
+var glDebugOutputAMD := new OpenGL.glDebugOutputAMD&lt;PlWin&gt;;
+...
+glDebugOutputAMD.DebugMessageEnableAMD(...);
+</code></pre>
+<hr />
+<p>В модуле <code>OpenGL</code> так же есть особые классы, <code>wgl</code>, <code>gdi</code> и <code>glx</code>:</p>
+<ul>
+<li><p><code>gdi</code> содержит несколько методов библиотеки <code>gdi32.dll</code>. На этой библиотеке основано всё в <code>System.Windows.Forms</code>.<br />
+Подпрограммы включённые в класс <code>gdi</code> - это то, что может понадобиться вам, чтобы настроить и подготовить форму для рисования на ней с помощью OpenGL.</p>
+</li>
+<li><p><code>wgl</code> содержит методы для подключения OpenGL к окну Windows.</p>
+</li>
+<li><p><code>glx</code> содержит методы для подключения OpenGL к окну XWindow.</p>
+</li>
+</ul>
+<p>Все эти классы работают как класс <code>cl</code>, то есть им <strong>не</strong> надо создавать экземпляр.</p>
+<hr />
+<p>И последнее что вам надо знать об этих классах:<br />
+Если вы получаете <code>NullReferenceException</code>,
+при попытке вызова функции из инициализируемых классов, как <code>gl</code>:</p>
+<ol>
+<li><p>Скорее всего вы попытались вызвать подпрограмму, которой нет в реализации библиотеки на вашем компьютере.<br />
+Проверьте версию библиотеки, или, если это подпрограмма из расширения - проверьте существование у вас этого расширения.</p>
+</li>
+<li><p>Так же, возможно, проблема в н.у. модуле. Если вы уверены что п.1. вас не касается - напишите в issue.</p>
+</li>
+</ol>
+</div>
+<script>on_page_added(document.getElementById("page-7"))</script>
+<div id="page-8" page_name="Особые типы модуля OpenGL" hidden=true>
+<p>Библиотека <code>OpenGL.dll</code> имеет несколько функций, принимающих
+вектора и матрицы (в основном для передачи значений в шейдеры).</p>
+<p>В модуле <code>OpenGL</code> для каждого типа вектора и матрицы описана отдельная запись.
+Они особенны тем, что поддерживают некоторые математические операции, которые можно считать
+высокоуровневыми, а значит противоречущими основным принципам н.у. модулей.</p>
+<p>Но реализовывать их все в качестве <code>extensionmethod</code>'ов было бы сложно, не красиво,
+а в случае статических методов и свойств - ещё и невозможно.</p>
+<hr />
+<p><code>ToDo</code> сейчас все индексные свойства кроме <code>.ColPtr</code> (<code>.val</code>, <code>.Row</code> и <code>.Col</code>) убраны из релиза,
+потому что я не знаю как безопасно и эффективно их реализовывать. Постараюсь в ближайшее
+время придумать, что можно сделать.</p>
+<hr />
+<h1>Векторы</h1>
+<p>Все типы векторов можно описать разом как <code>Vec[1,2,3,4][ b,ub, s,us, i,ui, i64,ui64, f,d ]</code>.</p>
+<div class="spoiler" summary="Как это читать?" hidden="true"><p>Каждый тип вектора берёт по 1 из значений, перечисленных в <code>[]</code>, через запятую.</p>
+<p>К примеру, есть типы <code>Vec2d</code> и <code>Vec4ui64</code>.</p>
+<p>Число в первых скобках - значит кол-во измерений вектора.</p>
+<p>Буква (буквы) в следующих скобках - значат тип координат вектора:</p>
+<ul>
+<li><p><code>b=shortint</code>, <code>s=smallint</code>, <code>i=integer</code>, <code>i64=int64</code>: Все 4 типа - целые числа, имеющие бит знака (±) и занимающие 1, 2, 4 и 8 байт соответственно;</p>
+</li>
+<li><p>Они же но с приставкой <code>u</code> - целые числа без знака. К примеру <code>ui</code> значит целое на 4 байта без знака, то есть <code>longword</code> (он же <code>cardinal</code>);</p>
+</li>
+<li><p>f=<code>single</code> и d=<code>real</code> - числа с плавающей запятой, на 4 и 8 байт соответственно.</p>
+</li>
+</ul>
+<p>Таким образом <code>Vec2d</code> хранит 2 числа типа <code>real</code>, а <code>Vec4ui64</code> хранит 4 числа типа <code>uint64</code>.</p>
+</div>
+<h3>Свойства</h3>
+<p>У векторов есть только индексное свойство <code>val</code>. Оно принимает индекс, считаемый от 0,
+и возвращает или задаёт значение вектора для соответствующего измерения.</p>
+<p>К примеру:</p>
+<pre><code>var v: Vec4d;
+v[0] := 123.456; // Записываем 123.456 по индексу 0
+v[1].Println; // Читаем и выводим значение по индексу 1
+v.val[2] := 1; // Можно так же писать и имя свойства
+</code></pre>
+<p>Но использование этого свойства не рекомендуется. Прямое обращение
+к полю всегда будет быстрее. То есть аналогично предыдущему коду:</p>
+<pre><code>var v: Vec4d;
+v.val0 := 123.456;
+v.val1.Println;
+v.val2 := 1;
+</code></pre>
+<p>Используйте свойство <code>val</code> только тогда, когда индекс это НЕ константа.</p>
+<h3>Унарные операторы</h3>
+<pre><code>var v0: Vec3d;
+...
+// v1 будет иметь ту же длину, но
+// противоположное v0 направление
+var v1 := -v0;
+// А унарный + не делает ничего, он только
+// для красоты. То есть v2=v0 тут
+var v2 := +v0;
+</code></pre>
+<h3>Умножение/деление на скаляр</h3>
+<pre><code>var v1: Vec3d;
+var v2: Vec3i;
+...
+// Выведет вектор, имеющий то же
+// направление что v1, но в 2 раза длиннее
+(v1*2).Println;
+
+// Выведет вектор, имеющий то же
+// направление что v1, но в 2 раза короче
+(v1/2).Println;
+
+// К целочисленным векторам вместо
+// обычного деления надо применять div
+(v2 div 2).Println;
+</code></pre>
+<h3>Операции с 2 векторами</h3>
+<pre><code>var v1, v2: Vec3d;
+...
+// Скалярное произведение векторов
+(v1*v2).Println;
+
+// Сумма векторов, складывает
+// отдельно каждый элемент вектора
+(v1+v2).Println;
+
+// Разность векторов, тоже работает
+// отдельно на каждый элемент вектора
+(v1-v2).Println;
+</code></pre>
+<p>Чтобы применить 1 из этих операций к 2 векторам - их типы должны быть одинаковые.<br />
+Если это не так - 1 из них (или оба) надо явно преобразовать, так чтобы типы были одинаковые:</p>
+<pre><code>var v1: Vec3d;
+var v2: Vec2i;
+...
+( v1 + Vec3d(v2) ).Println;
+</code></pre>
+<h3>SqrLength</h3>
+<p>Метод <code>.SqrLength</code> возвращает квадрат длины (то есть модуля) вектора.<br />
+Возвращаемый тип <code>.SqrLength</code> совпадает с типом элементов вектора.<br />
+Каким образом находить корень полученного значения - дело программиста.</p>
+<pre><code>var v1: Vec3d;
+...
+v1.SqrLength.Println; // Квадрат длины
+v1.SqrLength.Sqrt.Println; // Сама длина
+</code></pre>
+<h3>Normalized</h3>
+<p>Метод <code>.Normalized</code> возвращает нормализированную (с длиной =1) версию вектора.<br />
+Так как эта операция требует деления (на длину вектора), она применима только
+к векторам с элементами типов <code>single</code> или <code>real</code> (<code>f</code> или <code>d</code>).</p>
+<pre><code>var v1 := new Vec3d(1,1,1);
+v1.Println;
+v1.SqrLength.Sqrt.Println;
+var v2 := v1.Normalized;
+v2.Println;
+v2.SqrLength.Sqrt.Println; // Обязательно будет 1
+</code></pre>
+<h3>Cross</h3>
+<p>Статичные методы <code>.Cross[CW,CCW]</code> возвращают векторное произведение двух
+3-х мерных векторов (&quot;Cross product&quot;, не путать со скалярным произведением).<br />
+Векторное произведение - это вектор, перпендикулярный обоим входным векторам и имеющий длину,
+равную площади параллелограмма, образованного входными векторами.</p>
+<p>Не работает для векторов с элементами-беззнаковыми_целыми, потому что даёт переполнение
+на практически любых входных значениях. Если найдёте нормальное применение - напишите в issue.</p>
+<p>В математике произведение векторов может вернуть один из двух противоположных друг-другу векторов,
+в зависимости от ориентации системы координат. В модуле <code>OpenGL</code> это решено следующим образом:</p>
+<ul>
+<li><p><code>Vec3d.CrossCW(new Vec3d(1,0,0), new Vec3d(0,1,0)) = new Vec3d(0,0,1)</code>.</p>
+</li>
+<li><p><code>Vec3d.CrossCCW(a,b) = -Vec3d.CrossCW(a,b)</code>;</p>
+</li>
+</ul>
+<h3>Генерация случайных значений</h3>
+<p>Статичный метод <code>.Random</code> создаёт новый вектор из случайных значений в заданном диапазоне:</p>
+<pre><code>// Вектор будет иметь значения из [0;1)
+Vec2d.Random(0,1).Println;
+</code></pre>
+<h3>Ввод с клавиатуры</h3>
+<p>Статичные методы <code>Read</code> и <code>Readln</code> создают новый вектор из элементов, прочитанных из стандартного ввода:</p>
+<pre><code>// Прочитать 2 числа из ввода
+Vec2d.Read('Введите 2 координаты:').Println;
+
+// Прочитать 2 числа из ввода
+// и затем пропустить всё до конца строки
+Vec2d.Readln.Println;
+</code></pre>
+<h3>Превращение в строку</h3>
+<pre><code>var v1: Vec4d;
+...
+v1.Println; // Вывод вектора
+// s присвоит ту же строку, что выводит .Println
+var s := v1.ToString;
+</code></pre>
+<p>Методы <code>.ToString</code> и <code>.Println</code> должны быть использованы
+только для чего то вроде дебага или красивого вывода,
+потому что операции со строками это в целом медленно.</p>
+<hr />
+<h1>Матрицы</h1>
+<p>Все типы матриц можно описать разом как <code>Mtr[2,3,4]x[2,3,4][f,d]</code>.</p>
+<p>У каждой квадратной матрицы есть короткий синоним.<br />
+К примеру вместо <code>Mtr3x3d</code> можно писать <code>Mtr3d</code>.</p>
+<p>Так же стоит заметить - конструктор матрицы принимает элементы по строкам,
+но в самой матрице элементы хранятся в транспонированном виде.</p>
+<p>Это потому, что в <code>OpenGL.dll</code> в шейдерах матрицы хранятся по столбцам.<br />
+Но если создавать матрицу конструктором - элементы удобнее передавать по строкам, вот так:</p>
+<pre><code>var m := new Mtr3d(
+  1,2,3, // (1;2;3) станет нулевой строкой матрицы
+  4,5,6,
+  7,8,9
+);
+</code></pre>
+<h3>Свойства</h3>
+<p>Как и у векторов, у матриц есть свойство <code>val</code>:</p>
+<pre><code>var m: Mtr4d;
+m[0,0] := 123.456;
+m[1,2].Println;
+m.val[3,1] := 1;
+</code></pre>
+<p>И как и у векторов - <code>val</code> всегда медленнее прямого обращения к полям:</p>
+<pre><code>var m: Mtr4d;
+m.val00 := 123.456;
+m.val12.Println;
+m.val31 := 1;
+</code></pre>
+<p>Но у матриц так же есть свойства для столбцов и строк:</p>
+<pre><code>var m: Mtr3d;
+...
+m.Row0.Println; // Вывод нулевой строчки в виде вектора
+m.Row1 := new Vec3d(1,2,3);
+m.Col2.Println;
+</code></pre>
+<p>И в качестве аналога <code>val</code> - строку и стобец тоже можно
+получать по динамическому индексу (но, опять же, это медленнее):</p>
+<pre><code>var m: Mtr3d;
+...
+m.Row[0].Println;
+m.Row[1] := new Vec3d(1,2,3);
+m.Col[2].Println;
+</code></pre>
+<p>Для столбцов так же есть особые свойства, возвращающие не столбец, а его адрес в памяти:</p>
+<pre><code>var m: Mtr3d;
+...
+var ptr1 := m.ColPtr0;
+var ptr2 := m.ColPtr[3];
+</code></pre>
+<p>Использовать это свойство
+<a path="../Маршлинг управляемых типов/Тесты эффектов сборщика мусора">
+не всегда безопасно</a>.</p>
+<p>Оно должно быть использовано только для записей,
+хранящихся на стеке или в неуправляемой памяти.</p>
+<p>Для более безопасной альтернативы - можно использовать методы <code>.UseColPtr*</code>.</p>
+<h3>Identity</h3>
+<p>Это тоже свойство, но статическое и применение совершенно другое:</p>
+<p><code>Identity</code> возвращает новую единичную матрицу. То есть матрицу, у
+которой главная диагональ заполнена 1, а всё останое заполнено 0.</p>
+<pre><code>Mtr3d.Identity.Println;
+// Работает и для не_квадратных матриц
+Mtr2x3d.Identity.Println;
+</code></pre>
+<h3>UseColPtr*</h3>
+<p>Методы <code>.UseColPtr*</code> принимают подпрограмму, принимающую
+адрес определённого столбца в виде <code>var</code>-параметра.</p>
+<p>В отличии от свойств <code>.ColPtr*</code>, методы <code>.UseColPtr*</code> безопасны для
+матриц, хранящихся в экземплярах классов и статических полях:</p>
+<pre><code>uses OpenGL;
+
+procedure p1(var v: Vec3d);
+begin
+  Writeln(v);
+end;
+
+function f1(var v: Vec3d): string :=
+v.ToString;
+
+begin
+  var o := new class(
+    m := Mtr3d.Identity
+  );
+  o.m.UseColPtr0(p1);
+  o.m.UseColPtr1(f1).Println;
+end.
+</code></pre>
+<h3>Scale</h3>
+<p>Статичный метод <code>.Scale</code> возвращает матрицу, при
+умножении на которую вектор маштабируется в k раз.</p>
+<pre><code>var m := Mtr3d.Scale(2);
+var v := new Vec3d(1,2,3);
+(m*v).Println; // (2;4;6)
+</code></pre>
+<h3>Translate</h3>
+<p>Статичный метод <code>.Translate</code> возвращает матрицу, при
+умножении на которую к вектору добавляется заданное значение.</p>
+<pre><code>var m := Mtr4d.Translate(1,2,3);
+
+// Последний элемент должен быть 1,
+// чтобы матрица из .Translate правильно работала
+var v := new Vec4d(0,0,0,1);
+
+(m*v).Println; // (1;2;3)
+</code></pre>
+<p>Так же есть статический метод <code>.TraslateTransposed</code>. Он возвращает
+ту же матрицу что <code>.Translate</code>, но в транспонированном виде.</p>
+<h3>2D вращение</h3>
+<p>Группа статических методов <code>.Rotate[XY,YZ,ZX][cw,ccw]</code> возвращает матрицу вращения в определённой плоскости.</p>
+<p>Первые скобки определяют плоскость.<br />
+(Но у 2x2 матриц есть только XY вариант)</p>
+<p>Вторые скобки определяют направление вращения:</p>
+<ul>
+<li>cw (clock wise): по часовой стрелке</li>
+<li>ccw (counter clock wise): против часовой стрелки</li>
+</ul>
+<h3>3D вращение</h3>
+<p>Группа статических методов <code>.Rotate3D[cw,ccw]</code> возвращает матрицу
+вращения вокруг нормализованного 3-х мерного вектора.<br />
+(разумеется, не существует для матриц 2x2,2x3 и 3x2)</p>
+<h3>Det</h3>
+<p>Метод <code>.Det</code> возвращает определитель матрицы. Существует только для квадратных матриц.</p>
+<h3>Transpose</h3>
+<p>Метод <code>.Transpose</code> возвращает транспонированную версию матрицы:</p>
+<pre><code>var m := new Mtr2x3d(
+  1,2,3,
+  4,5,6
+);
+m.Transpose.Println; // Выводит:
+// 1 4
+// 2 5
+// 3 6
+</code></pre>
+<h3>Умножение матрицы и вектора</h3>
+<p><code>m*v</code> - это обычное математическое умножение матрицы <code>m</code> и вектора <code>v</code>,
+возвращающее результат после применения преобразования из <code>m</code> к <code>v</code>.</p>
+<p>Но так же как в шейдерах - поддерживается и обратная запись:<br />
+<code>v*m</code> это то же самое что <code>m.Transpose*v</code>.</p>
+<h3>Умножение 2 матриц</h3>
+<p><code>m1*m2</code> - это математическое умножение матриц <code>m1</code> и <code>m2</code>.</p>
+<h3>Генерация случайных значений</h3>
+<p>Статичный метод <code>.Random</code> создаёт новую матрицу из случайных значений в заданном диапазоне:</p>
+<pre><code>// Матрица будет иметь значения из [0;1)
+Mtr3d.Random(0,1).Println;
+</code></pre>
+<h3>Ввод с клавиатуры</h3>
+<p>Статичные методы <code>Read[,ln][Rows,Cols]</code> создают новую матрицу из элементов, прочитанных из стандартного ввода:</p>
+<pre><code>// Прочитать 3*4=12 элементов из ввода
+// и сохранить в новую матрицу по строкам
+Mtr3x4d.ReadRows('Введите 12 элементов матрицы:').Println;
+
+// Прочитать 4 элемета из ввода, переходя на
+// следущую строку ввода после чтения каждого столбца
+Mtr2d.ReadlnCols(
+  'Введите столбцы матрицы...',
+  col -&gt; $'Столбец #{col}:'
+).Println;
+</code></pre>
+<h3>Превращение в строку</h3>
+<p>Как и у векторов - матрицы можно выводить и превращать в строку</p>
+<pre><code>var m: Mtr4d;
+...
+m.Println; // Вывод матрицы
+// s присвоит ту же строку, что выводит .Println
+var s := m.ToString;
+</code></pre>
+<p>Для того чтобы матрица выведенная 1 из этих методов выглядела красиво надо
+использовать моноширный шрифт и поддерживать юникод (потому что для матриц
+используются символы псевдографики).</p>
+<p>Обычно это не проблема для <code>.Println</code>, потому что и консоль, и окно вывода в IDE имеют моноширный шрифт и поддерживают юникод.</p>
+<p>Но если выводить на форму, то придётся специально поставить моноширный шрифт.<br />
+А если выводить в файл, надо выбрать кодировку файла - юникод (UTF).</p>
+</div>
+<script>on_page_added(document.getElementById("page-8"))</script>
+<script>on_end_folder()</script>
+<div id="page-9" page_name="" hidden=true>
+<p>Большинство проблем при использовании неуправляемых .dll вытекают из следующих 2 различий:</p>
+<ol>
+<li><p>В .Net строки и массивы это стандартные типы, доступные для всех .Net языков.</p>
+<p>А в C++ строки и массивы не только описаны не так же как в .Net .
+У них так же есть множество разных стандартов.
+Благо, исходные библиотеки придерживаются одного общего стандарта.</p>
+</li>
+<li><p>В управляемом коде оперативная память (дальше просто память) обычно управляется сборщиком мусора.
+Поэтому если создать массив - когда он стал не нужен о нём можно просто забыть.</p>
+<p>А в C++ память управляется только программистом, поэтому неуправляемую память нужно всегда освобождать после использования.<br />
+Забытая и не_освобождённая неуправляемая память называется утечкой памяти. И это один из самых сложно-ловимых багов,
+потому что у него нет явно видимых симптомов, вроде вызова ошибки, пока память окончательно не закончится.</p>
+</li>
+</ol>
+<p>В .Net так же можно выделять и освобождать неуправляемую память, статическими методами класса <code>Marshal</code>:
+<code>.AllocHGlobal</code> и <code>.FreeHGlobal</code> соответственно. Обычно это надо для п.1., для преобразований между
+управляемыми и неуправляемыми типами.</p>
+<p>Ещё одно отличие неуправляемой памяти - она не очищается нулями при выделении, а
+значит содержит мусорные данные. И память GPU (к примеру, содержимое буферов) тоже.</p>
+<p>Полное имя класса <code>Marshal</code> это <code>System.Runtime.InteropServices.Marshal</code>.
+Чтобы не писать его целиком - можно написать в начале файла <code>uses System.Runtime.InteropServices</code>, и дальше писать только <code>Marshal</code>.</p>
+<hr />
+<p>Стоит так же заметить, что в н.у. модулях все подпрограммы, напрямую вызывающие подпрограммы из неуправляемых
+.dll принимают параметрами как неуправляемые, так и управляемые типы массивов и строк, по мере необходимости.</p>
+<p>Если ваша необходимость не удовлетворена (то есть не хватает перегрузки с определённым типом) - это особо хороший повод написать в issue.</p>
+<hr />
+<h1>Страницы:</h1>
+<ul>
+<li><a path="Тесты эффектов сборщика мусора"	>	Тесты эффектов сборщика мусора	</a></li>
+<li><a path="var-параметры"					>	<code>var</code>-параметры					</a></li>
+<li><a path="Массивы"							>	Массивы							</a></li>
+<li><a path="Строки"							>	Строки							</a></li>
+<li><a path="Делегаты"						>	Делегаты						</a></li>
+</ul>
+</div>
+<script>on_start_folder("Маршлинг управляемых типов", document.getElementById("page-9"))</script>
+<div id="page-10" page_name="Тесты эффектов сборщика мусора" hidden=true>
+<p>Кроме удаления неиспользуемых экземпляров классов, сборщик мусора так же может произвольно
+перемещать используемые объекты, более плотно упаковая их в памяти.</p>
+<p>И он прекрасно справляется с тем, чтобы сделать эти перемещения незаметными, в обычных ситуациях.
+Но как только речь находит об указателях и неуправляемом коде - начинаются проблемы.
+Чтобы избежать их, надо очень хорошо понимать как работает сборщик мусора.</p>
+<div class="spoiler" summary="Страницы в данной папке опираются на результаты следующего теста:" hidden="true">
+<pre><code>uses System;
+uses System.Runtime.InteropServices;
+// Отдельный разбор:
+// http://forum.mmcs.sfedu.ru/t/testy-raboty-sborshhika-musora
+
+function get_addr(a: array of integer) := '$'+Marshal.UnsafeAddrOfPinnedArrayElement(a,0).ToString('X');
+
+// Заполняем память кучей разных мусорных объектов,
+// которые никогда не удалятся, чтобы
+// сборщик мусора засуетился когда его тыкнут
+// Не знаю почему надо именно массив массивов + массив их адресов
+var ___a := ArrGen(10000, i-&gt;|0|);
+var ___p := ___a.ConvertAll(get_addr);
+
+type
+  punch_gc_callback = procedure(ptr: pointer);
+  
+function ptr_adr&lt;T&gt;(var a: T) := new IntPtr(@a);
+
+{$region Safe}
+
+function copy_arr(var a: integer; punch_gc: punch_gc_callback): IntPtr;
+external 'Native\x64\Release\Native.dll';
+function copy_arr(var a: byte; punch_gc: punch_gc_callback): IntPtr;
+external 'Native\x64\Release\Native.dll';
+
+function copy_arr([MarshalAs(UnmanagedType.LPArray)] a: array of integer; punch_gc: punch_gc_callback): IntPtr;
+external 'Native\x64\Release\Native.dll';
+
+function copy_arr_recall2(a: array of integer; punch_gc: punch_gc_callback): IntPtr :=
+copy_arr(a, punch_gc);
+
+function copy_arr_recall3(var a: integer; punch_gc: punch_gc_callback): IntPtr :=
+copy_arr(a, punch_gc);
+
+function copy_arr_recall5(var a: integer; punch_gc: punch_gc_callback): IntPtr :=
+copy_arr(PByte(pointer(@a))^, punch_gc);
+
+{$endregion Safe}
+
+{$region Unsafe}
+
+function copy_arr(a: IntPtr; punch_gc: punch_gc_callback): IntPtr;
+external 'Native\x64\Release\Native.dll';
+function copy_arr(a: ^integer; punch_gc: punch_gc_callback): IntPtr;
+external 'Native\x64\Release\Native.dll';
+
+function copy_arr_recall1(var a: integer; punch_gc: punch_gc_callback): IntPtr :=
+copy_arr(@a, punch_gc);
+
+function copy_arr_recall4_helper(a: ^integer; punch_gc: punch_gc_callback): IntPtr;
+begin
+  punch_gc(a);
+  Result := copy_arr(a^, ptr-&gt;begin end); // Второй раз вызывать punch_gc и вывод - ни к чему, всё ломается уже на предыдущей строчке
+end;
+function copy_arr_recall4(var a: integer; punch_gc: punch_gc_callback): IntPtr :=
+copy_arr_recall4_helper(@a, punch_gc);
+
+function get_int(punch_gc: punch_gc_callback; var a: integer): integer;
+begin
+  punch_gc(@a);
+  Result := 4;
+end;
+function copy_arr_recall6(var a: integer; punch_gc: punch_gc_callback): IntPtr :=
+copy_arr(PByte(pointer(IntPtr(pointer(@a))+get_int(punch_gc, a)))^, ptr-&gt;begin end);
+
+{$endregion Unsafe}
+
+procedure punch_gc := GC.Collect;
+
+begin
+  var a := Arr(1,2,3,4,5,6);
+  var b := Arr(1,2,3,4,5);
+  Console.WriteLine('begin');
+  Console.WriteLine(get_addr(a));
+  Console.WriteLine(get_addr(b));
+  
+  // punch_gc работает только 1 раз, эти строчки только чтобы протестировать, работает ли он у вас вообще
+//  punch_gc;
+//  Console.WriteLine('after first gc');
+//  Console.WriteLine(get_addr(a));
+//  Console.WriteLine(get_addr(b));
+  
+  {$region заголовки вызова copy_arr}
+  
+  // Безопасно
+//  var ptr := copy_arr(a,              // Передавать как массив безопасно
+//  var ptr := copy_arr(a[0],           // Передавать элемент массива var-параметром безопасно
+//  var ptr := copy_arr(a[1],           // И это касается не только элемента [0]
+//  var ptr := copy_arr_recall2(a,      // Безопасно, потому что с точки зрения copy_arr_recall2 ситуация та же что &quot;copy_arr(a,&quot;
+//  var ptr := copy_arr_recall3(a[0],   // И var-параметры тоже безопасны через промежуточные подпрограммы
+//  var ptr := copy_arr_recall5(a[0],   // Тут указатели не попадают в готовый .exe, они только чтобы успокоить компилятор, поэтому безопасно
+  
+  // НЕ безопасно
+//  var ptr := copy_arr(Marshal.UnsafeAddrOfPinnedArrayElement(a,0), // GC не следит за содержимым IntPtr
+//  var ptr := copy_arr(ptr_adr(a[0]),  // И за другими формами указателей тоже
+//  var ptr := copy_arr_recall1(a[0],   // Проблема не в передаче адреса возвращаемым значением из ptr_adr в copy_arr
+//  var ptr := copy_arr_recall4(a[0],   // Кроме того, проблема вообще не в неуправляемом коде, в управляемом тоже воспроизводится
+//  var ptr := copy_arr_recall6(a[0],   // В отличии от recall5 - тут указатели попадают в готовый .exe, поэтому небезопасно
+  
+  {$endregion заголовки вызова copy_arr}
+  
+  ptr-&gt;
+  begin
+    Console.WriteLine('before gc');
+    Console.WriteLine(get_addr(a));
+    Console.WriteLine('$'+IntPtr(ptr).ToString('X'));
+    Console.WriteLine(get_addr(b));
+    
+    // &quot;b&quot; используется только чтобы видеть когда punch_gc успешно сработал
+    // (хотя всегда может переместить только &quot;a&quot;, или только &quot;b&quot;, поэтому не 100% показатель)
+    // Но главное тут - &quot;ptr&quot; это то, что хранит неуправляемый код, а &quot;get_addr(a)&quot; показывает текущий адрес &quot;a&quot;
+    // Если &quot;get_addr(a)&quot; изменился после вызова &quot;punch_gc&quot;, а &quot;ptr&quot; остался тем же - значит &quot;a&quot; не заблокирован
+    punch_gc;
+    Console.WriteLine('after gc');
+    Console.WriteLine(get_addr(a));
+    Console.WriteLine('$'+IntPtr(ptr).ToString('X'));
+    Console.WriteLine(get_addr(b));
+  end);
+  
+  Console.WriteLine('end');
+  Console.WriteLine(get_addr(a));
+  Console.WriteLine(get_addr(b));
+  
+//  punch_gc;
+//  Console.WriteLine('after last gc');
+//  Console.WriteLine(get_addr(a));
+//  Console.WriteLine(get_addr(b));
+  
+  // Показывает эффекты НЕ безопасного вызова
+  // Точнее если неуправляемый код потеряет адрес массива, то тут
+  // может быть мусор или ошибка доступа, правда я их ни разу не получил
+  var res := new byte[20];
+  Marshal.Copy(ptr,res,0,20);
+  res.Println;
+end.
+</code></pre>
+<p><code>Dll1.dll</code> должна быть неуправляемой библиотекой, содержащей следующую функцию (это C++):</p>
+<pre><code>extern &quot;C&quot; __declspec(dllexport) BYTE* copy_arr(int* a, void (*punch_gc)(void*))
+{
+    BYTE* res = new BYTE[20]; // Выделяем 20 байт неуправляемой памяти
+    punch_gc(a); // Вызываем ту подпрограмму, чей адрес сюда передали
+    memcpy(res, a, 20); // Копируем 20 байт из &quot;a&quot; в &quot;res&quot;
+    return res; // Плохо что неуправляемая память не освобождается, но в этом тесте не важно
+}
+</code></pre>
+<p>Подробнее о параметрах:</p>
+<ol>
+<li><p><code>a</code> принимает указатель на <code>integer</code>, что в C++ так же может являеться массивом с элементами типа <code>integer</code>;</p>
+</li>
+<li><p><code>punch_gc</code> принемает адрес подпрограммы, принемающей <code>void*</code> (безтиповый указатель)
+и возвращающей <code>void</code> (ничего не возвращающей, то есть это процедура);</p>
+</li>
+<li><p>Ну и возвращаемое значение - <code>BYTE*</code>. Так же как <code>a</code>, вообще указатель, но в данном случае массив.</p>
+</li>
+</ol>
+<p>Почитать более подробный разбор и скачать архив с упакованной библиотекой можно <a href="http://forum.mmcs.sfedu.ru/t/testy-raboty-sborshhika-musora">тут</a>.</p>
+<p>Пожалуйста, попробуйте поэксперементировать с этим кодом сами. И если найдёте
+что-то интересное - обязательно напишите в issue. В этом деле много тестов не бывает.</p>
+</div>
+<h3>В кратце</h3>
+<p>Вся безопасность зависит только от объявления параметра <code>external</code>-подпрограммы,
+через который передаётся управляемый объект. Если параметр принимает:</p>
+<ul>
+<li><p>Любой размерный тип (то есть запись):<br />
+При передаче в подпрограмму размерное значение копируется.
+Сборщик мусора тут не при чём. Поэтому передача записи всегда безопасна.</p>
+</li>
+<li><p>Массив или <code>var</code>-параметр:<br />
+Пока вызов неуправляемой подпрограммы не завершится - сборщик мусора НЕ будет передвигать объект в памяти.<br />
+Но обратите внимание, есть неуправляемые подпрограммы, использующие переданные вами данные после завершения вызова <code>external</code>-подпрограммы.<br />
+К примеру <code>gl.Uniform1iv</code> скопирует данные из вашего массива в память GPU, поэтому он безопасен.<br />
+Но <code>cl.CreateBuffer</code> в который передали <code>MemFlags.MEM_USE_HOST_PTR</code> создаст буфер, который
+будет ссылаться на ваш массив. В таком случае надо использовать <code>GCHandle</code> с <code>GCHandleType.Pinned</code>, чтобы массив не двигался в памяти.<br />
+Поэтому очень внимательно читайте документацию того, что вызываете.</p>
+</li>
+<li><p>Указатель в любом виде (типизированный, безтиповый или даже обёрнутый в запись вроде <code>IntPtr</code>):<br />
+Передавать адрес содержимого класса НЕ безопасно.<br />
+Можно передавать только адрес локальной переменной, которая <strong>не</strong> была захвачена лямбдой.<br />
+Ну или адрес заведомо неуправляемого куска памяти, к примеру выделенного с помощью <code>Marshal.AllocHGlobal</code>.</p>
+</li>
+</ul>
+<hr />
+<h3>Другие ОС</h3>
+<p>Так же протестировал <code>mono</code> (версия .Net для линукса) на arch-linux и Windows10.<br />
+Среда выполнения <code>mono</code> блокирует управляемые объекта не зависимо от типа параметра,
+даже если <code>external</code> подпрограмма принимает указатель или <code>IntPtr</code>.</p>
+<p>То есть при запуске из под <code>mono</code> волноваться о блокировке объектов надо только в случае,
+если неуправляемый код будет использовать данные этого объекта после выхода из вызова <code>external</code>-подпрограммы.</p>
+<p>Ну и нельзя забывать о случае, когда данные объекта имеют сложный тип, требующий маршлинга
+перед передачей в неуправляемый код. Подробнее <a path="Массивы">на странице ниже</a>.</p>
+</div>
+<script>on_page_added(document.getElementById("page-10"))</script>
+<div id="page-11" page_name="var-параметры" hidden=true>
+<p>В .Net <code>var</code>-параметры реализованы через указатели. То есть эти 2 кода:</p>
+<pre><code>procedure p1(var i: integer);
+begin
+  i.Println;
+  i := 5;
+end;
+
+begin
+  var i := 3;
+  p1(i);
+  i.Println;
+end.
+</code></pre>
+<pre><code>procedure p1(i: ^integer);
+begin
+  i^.Println;
+  i^ := 5;
+end;
+
+begin
+  var i := 3;
+  p1(@i);
+  i.Println;
+end.
+</code></pre>
+<p>Генерируют практически одинаковые .exe .</p>
+<p>Отличие состоит в том, что передавать содержимое класса (в том числе массива) указателем
+опасно - сборщик мусора может в любой момент переместить память, ломая указатель.</p>
+<p>В то же время если передавать это же значение <code>var</code>-параметром - сборщик мусора
+поправит адрес при перемещении памяти.</p>
+<p>Статические поля так же могут быть перемещены, как и содержимое экземпляров, даже если они имеют размерный тип.<br />
+И глобальные переменные это, на самом деле, тоже статические поля.<br />
+А захваченные лямбдой локальные переменные превращаются в поля специального анонимного класса.</p>
+</div>
+<script>on_page_added(document.getElementById("page-11"))</script>
+<div id="page-12" page_name="Массивы" hidden=true>
+<p>В .Net массивы хранят не только содержимое, но и данные о своём размере.</p>
+<p>А в C++ вместо обычных массивов используется безформенная область памяти.<br />
+При её выделении - в переменную записывается указатель <code>[0]</code> элемента.
+А о том чтобы сохранить данные о размере этой области - должен позаботится программист.<br />
+(на самом деле обычно в C++ используют обёртки, хранящие длину так же как .Net массивы. Но OpenGL.dll и OpenCL.dll это не касается)</p>
+<hr />
+<p>Если вы видели старые коды с использованием OpenGL из какого то-из паскалей - наверняка видели что то такое:</p>
+<pre><code>glИмяПодпрограммы(@a[0]);
+</code></pre>
+<p>Но в PascalABC.Net так делать нельзя! Получение указателя на элемент массива моментально создаёт утечку памяти,
+потому что компилятор, на всякий случай, вставляет полную блокировку массива в памяти, используя <code>GCHandle</code> с <code>GCHandleType.Pinned</code>.</p>
+<p>Такая блокировка нужна, потому что иначе полученный указатель может в любой момент стать устаревшим.</p>
+<p>Обычно <code>GCHandle</code> освобождают методом <code>.Free</code>. Но если позволить компилятору использовать
+<code>GCHandle</code> - освобождение никогда не произойдёт, потому что компилятор не знает когда указатель станет не нужен.</p>
+<hr />
+<p>Из очевидных вариантов - использовать <code>GCHandle</code> самостоятельно:</p>
+<pre><code>## uses System.Runtime.InteropServices;
+var a := |1,2,3|;
+
+var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
+try
+  var ptr: ^integer := gc_hnd.AddrOfPinnedObject.ToPointer;
+  Writeln(ptr);
+  Writeln(ptr^);
+finally
+  // Освобождение в finally, чтобы оно произошло не зависимо ошибок при выполнении
+  gc_hnd.Free;
+end;
+</code></pre>
+<p>Но на него наложенны некоторые ограничения, связанные с тем как среда .Net работает с памятью:</p>
+<pre><code>uses System;
+
+type
+  r1 = record
+    b1: byte;
+    i: integer;
+    b2: byte;
+//    s: string[5];
+  end;
+  
+function Offset(p1,p2: pointer) := int64(p2)-int64(p1);
+
+begin
+  var a: r1;
+  Offset(@a,@a.b1).Println;
+  Offset(@a,@a.i ).Println;
+  Offset(@a,@a.b2).Println;
+//  Offset(@a,@a.s).Println;
+end.
+</code></pre>
+<p>Пока запись содержит только размерные поля - их хранит в памяти в том порядке, которые описали вы.<br />
+Ну и в данном случае если бы <code>i</code> хранилось сразу за <code>b1</code> - его адрес не делился бы поровну на <code>sizeof(integer)=4</code>,
+а значит процессору было бы неудобно читать и записывать <code>i</code>, поэтому его отодвигает на 3 байта от <code>b1</code>.</p>
+<p>Но если раскомментировать объявление поля <code>s</code>, являющегося строкой (то есть имеющего ссылочный тип),
+среда .Net решает что эта запись не может быть передана в неуправляемый код как есть,
+(потому что каждая реализация .Net может по-своему решать как хранить содержимое классов)
+а значит можно спокойно перетасовать поля так, чтобы плотнее их упаковать.</p>
+<p>Эта запись всё ещё может быть передана параметром в неуправляемый код, даже <code>var</code>-параметром.
+Но в таком случае данные из неё копирует в отдельную область памяти, так чтобы в этой области
+поля были в том порядке, в котором их описали в записи. Это копирование можно симулировать вручную:</p>
+<pre><code>uses System;
+uses System.Runtime.InteropServices;
+
+type
+  // Чтобы класс был форматированным, то есть совместимым
+  // с неуправляемым кодом, надо или
+  // LayoutKind.Sequential или LayoutKind.Explicit
+  [StructLayout(LayoutKind.Sequential)]
+  MyFormattedClass = class
+    b1: byte := $BA;
+    i: integer := $87654321;
+    b2: byte := $DC;
+  end;
+  
+  // LayoutKind.Sequential влияет на StructureToPtr,
+  // но не на то как хранятся данные в переменной &quot;a&quot;
+  // CharSet.Unicode указывает как должен работать UnmanagedType.ByValTStr
+  [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+  r1 = record
+    b1: byte := $AB;
+    i: integer := $12345678;
+    b2: byte := $CD;
+    o := new MyFormattedClass;
+    
+    // Явно указываем как неуправляемый код
+    // должен видеть массив и строку:
+    
+    // Из массива берём первые 2 значения и сохраняем в саму запись
+    // В массиве должно быть хотя бы 2 элемента при вызове StructureToPtr
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst=2)]
+    arr := new byte[]($EF,$FE);
+    // А из строки берём максимум 2 первых символа
+    // То есть не больше двух, в строке может быть и меньше
+    // В конце всегда добавляется нулевой символ, чтобы
+    // указать неуправляемому коду где строка заканчивается
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=2+1)]
+    s := char($CC11)+char($CC22);
+    
+  end;
+  
+function Offset(p1,p2: pointer) := int64(p2)-int64(p1);
+
+begin
+  var a: r1;
+  
+  'Содержимое r1:'.Println;
+  Writeln('Начало: ',@a);
+  Offset(@a,@a.b1).Println;
+  Offset(@a,@a.i ).Println;
+  Offset(@a,@a.b2).Println;
+  Offset(@a,@a.o).Println;
+  
+  'Содержимое класса:'.Println;
+  // Будем надеятся что содержимое класса не переместит пока выводим
+  // Конечно, в реальной ситуации такая надежда не годится
+  var po := PPointer(pointer(@a.o))^;
+  Writeln('Начало: ',po);
+  Offset(po,@a.o.b1).Println;
+  Offset(po,@a.o.i ).Println;
+  Offset(po,@a.o.b2).Println;
+  
+  var sz := Marshal.SizeOf&amp;&lt;r1&gt;;
+  var ptr := Marshal.AllocHGlobal(sz);
+  // Делаем неуправляемую версию этой записи
+  Marshal.StructureToPtr(a, ptr, false);
+  
+  'Содержимое неуправляемой копии:'.Println;
+  for var i := 1 to sz do
+  begin
+    // X2 указывает 16-ричный вывод, по 2 символа на каждое значение
+    PByte((ptr+(i-1)).ToPointer)^.ToString('X2').Print;
+    if i.Divs(8) then Println;
+  end;
+  
+end.
+</code></pre>
+<p>Поля записи <code>r1</code> опять перемешиваются, даже с явным указанием <code>LayoutKind.Sequential</code>,
+потому что эта запись всё равно не может использоваться неуправляемым кодом как-есть.</p>
+<p>В то же время поля класса оказались в том порядке, как мы указали. Потому что, на самом деле,
+этот класс можно передавать в неуправляемый код отдельно от <code>r1</code>. Такое объявление:</p>
+<pre><code>procedure p1(o: MyFormattedClass); external 'some_lib.dll';
+</code></pre>
+<p>Будет эквивалентно:</p>
+<pre><code>procedure p1(var o: SomeRecord); external 'some_lib.dll';
+</code></pre>
+<p>Где <code>SomeRecord</code> - запись с таким же полями. Но есть одно но: первое объявление <code>p1</code> будет блокировать
+содержимое <code>MyFormattedClass</code> с помощью <code>GCHandle</code>, тратя на это немного времени процессора.</p>
+<p>Но если бы в <code>MyFormattedClass</code> были ссылочные поля - все его поля перемешались бы так же, как и поля <code>r1</code>.</p>
+<p>Далее, вызывается <code>StructureToPtr</code>, копирующее содержимое записи в область неуправляемой памяти.<br />
+И в данном случае, то что сохраняется в неуправляемую память это не копия содержимого переменной <code>a</code>,
+а совершенно новое значение, в которое влили копии содержимого <code>MyFormattedClass</code>, массива и строки,
+не смотря на то что оригиналы этих значений хранились в разных частях оперативной памяти.</p>
+<p>Кроме того, в данном примере не показано, но есть некоторые типы записей, как <code>boolean</code>, <code>char</code> и <code>DateTime</code>,
+которые можно по-разному интерпретировать при передаче в неуправляемый код.
+Их тоже преобразовывает при копировании в неуправляемую память.</p>
+<p>Возвращаясь к <code>GCHandle</code>: Он принципиально используется не для копирования, а для закрепления в памяти существующего содержимого.<br />
+Поэтому когда он встречает запись, которую надо преобразовывать при передаче в неуправляемый код,
+<code>GCHandle</code> наотрез отказывается загреплять её с <code>GCHandleType.Pinned</code>.<br />
+(но в качестве исключения разрешает закреплять некоторые особые случаи, как массив символов)</p>
+<p>И это хорошо - это защита от дурака, потому что случаи когда запись,
+поля которой среда .Net могла перетасовать, передают в неуправляемый код как есть - заведомо неправильны.</p>
+<hr />
+<p>Но с другой стороны - эта проверка типов происходит во время выполнения программы.
+А если надо делать много быстрых неуправляемых вызовов - это плохо.<br />
+Поэтому н.у модули используют другой способ:</p>
+<p>Как видно в тестах на странице выше - массив можно заблокировать в памяти без <code>GCHandle</code>,
+если передавать его параметром-массивом или <code>var</code>-параметром.</p>
+<p>И, в отличии от <code>GCHandle</code>, такой способ будет работать с массивами с любым размерным типом элементов.<br />
+Это значит что следить за адекватностью содержимого записи должны вы сами.<br />
+Но в то же время это значит что вы сами решаете, какие проверки делать.</p>
+<p>К примеру, если имеем процедуру <code>p1</code> из неуправляемой .dll, принимающую массив из двух чисел типа <code>integer</code>:</p>
+<pre><code>var a := new integer[5](...);
+p1(a); // Передача массива целиком
+p1(a[3]); // Передача [3] элемента var-параметром
+</code></pre>
+<p>Из первого вызова <code>p1</code> возьмёт только элементы <code>a[0]</code> и <code>a[1]</code>,
+потому что <code>p1</code> по условию требует только два элемента.</p>
+<p>Из второго вызова <code>p1</code> возьмёт <code>a[3]</code> и <code>a[4]</code>, потому что в неуправляемом коде
+нет разницы между указателем на один из элементов и указателем на начало массива.</p>
+<p>Но, обратите внимание, на случай, когда тип требует особого преобразования.<br />
+Для примера возьмём параметр, который объявили как <code>var b: boolean</code> и передали в него элемент массива:</p>
+<p><code>boolean</code> занимает 1 байт в .Net, но по-умолчанию преобразовывается в <code>BOOL</code> из C++, занимающий 4 байта.<br />
+Поэтому, в данном случае, среда .Net выделит новую неуправляемую область памяти в 4 байта
+и передаст её неуправляемому коду. А остальные элементы массива неуправляемому коду не достанутся.</p>
+<hr />
+<p>Обычнно эти два способа передать массив в неуправляемый код - всё что вам понадобится.</p>
+<p>Но, допустим, вы хотите написать подпрограмму для создания OpenGL буфера из массива векторов.
+Можно сделать перегрузку для каждого типа вектора, но тогда получится очень много дублей кода.
+Этого довольно просто избежать, используя шаблоны:</p>
+<pre><code>// Это не настоящая подпрограмма, а только пример
+procedure FillBuffer(var data: byte);
+external 'some.dll';
+
+// external подпрограммы не могут быть шаблонными, поэтому нужна ещё одна промежуточная перегрузка
+// &quot;where T: record;&quot; делает так, что FillBuffer будет можно вызвать только для размерных типов T
+procedure FillBuffer&lt;T&gt;(var data: T); where T: record;
+begin
+  // Компилятор развернёт это в &quot;FillBuffer(data)&quot;
+  // То есть никакие преобразования в .exe не попадут
+  // Но указатели всё равно нужны, чтобы компилятор не ругался на несовместимость типов
+  FillBuffer(PByte(pointer(@data))^);
+end;
+
+procedure FillBuffer&lt;T&gt;(data: array of T); where T: record;
+begin
+  // В неуправляемом коде нет разницы между массивом и адресом начала его содержимого
+  // Поэтому можно передавать массив в виде [0] элемента-var-параметра.
+  FillBuffer(data[0]);
+end;
+</code></pre>
+<p>Но это для одномерных массивов. А что насчёт многомерных?</p>
+<p>Сделать перегрузку для заданного кол-ва измерений не сложно:</p>
+<pre><code>procedure FillBuffer&lt;T&gt;(data: array[,] of T); where T: record;
+begin
+  // Многомерные массивы расположены в памяти как одномерные,
+  // Но обращение к элементам идёт по нескольким индексам
+  // Элемент [0,0,...] в любом случае будет в самом начале,
+  // Поэтому код одинаковый для любого кол-ва измерений
+  FillBuffer(data[0,0]);
+end;
+</code></pre>
+<p>Но, опять же, получается так, что для каждой размерности - приходится добавлять перегрузку.</p>
+<p>И, к сожалению, в данном случае я не знаю красивого способа обхода.<br />
+Лучшее что я могу придумать - создать <code>Dictionary&lt;integer, Action&lt;System.Array&gt;&gt;</code>,
+где ключи - размерности массивов, а значения - делегаты, работающие с соответствующей размерностью.<br />
+Когда происходит вызов с массивом определённой размерности - создавать новый делегат
+в виде динамичного метода, с помощью <code>System.Reflection.Emit</code>, если его ещё нет в словаре.</p>
+</div>
+<script>on_page_added(document.getElementById("page-12"))</script>
+<div id="page-13" page_name="Строки" hidden=true>
+<p>Как и массивы - неуправляемые строки это указатель на первый символ строки.<br />
+Но со строками ещё сложнее - исходные библиотеки хранят строки в кодировке ANSI (1 байт на символ).<br />
+А управляемые строки - хранят символы в кодировке Unicode (2 байта на символ).</p>
+<p>Кроме того, у неуправляемых строк принятно добавлять в конце строки символ <code>#0</code>.
+Это позволяет вообще не хранить длину строки. Вместо этого конец строки считается там, где первый раз встретится символ <code>#0</code>.</p>
+<hr />
+<p>Благо, для перевода между этими типами уже есть <code>Marshal.StringToHGlobalAnsi</code> и <code>Marshal.PtrToStringAnsi</code>.</p>
+<p>Но будьте осторожны - <code>Marshal.StringToHGlobalAnsi</code> выделяет неуправляемую память для хранения неуправляемого варианта строки.<br />
+Когда неуправляемая память стала не нужна - её надо обязательно удалить методом <code>Marshal.FreeHGlobal</code>, иначе получите утечку памяти.</p>
+<hr />
+<p>В отличии от массивов - пытаться передавать строки в виде символа-<code>var</code>-параметра безсмысленно, из за разницы форматов содержимого.</p>
+<p>Более того, передача символа строки <code>var</code>-параметром, в отличии от массивов, всё равно вызывает копирование строки,
+на всякий случай, потому что в .Net строки неизменяемы, а компилятор не может знать,
+будет неуправляемый код только читать, или ещё и перезаписывать строку.</p>
+<p>Единственный способ не выполнять лишних копирований - написать свою обёртку неуправляемых строк. Обычно оно того не стоит.</p>
+<p>Но если вы, к примеру, создаёте много OpenGL шейдеров из исходников - можно перед компиляцией программы:</p>
+<ol>
+<li>Прочитать все текстовые файлы исходников шейдеров;</li>
+<li>Использовать <code>Marshal.StringToHGlobalAnsi</code> чтобы получить неуправляемые строки;</li>
+<li>Пересохранить их в бинарном виде (то есть как массив байт содержимого неуправляемой строки);</li>
+<li>Полученные бинарные файлы подключать в виде <code>$resource</code>, читать как массив байт и его уже передавать неуправляемому коду вместо строки.</li>
+</ol>
+</div>
+<script>on_page_added(document.getElementById("page-13"))</script>
+<div id="page-14" page_name="Делегаты" hidden=true>
+<p>Делегат - это адрес подпрограммы:</p>
+<pre><code>procedure p1(i: integer);
+begin
+  Writeln(i);
+end;
+
+begin
+  
+  var d: System.Delegate := p1; // Это не вызов, а получение адреса p1
+  d.DynamicInvoke(5); // Вообще .DynamicInvoke это очень медленно
+  
+  var p: integer-&gt;();
+  // Такое же объявление как на предыдущей строчке, но в другом стиле
+//  var p: Action&lt;integer&gt;;
+  // И ещё один стиль. Этот особенный, потому что
+  // Он неявно создаёт новый тип делегата
+//  var p: procedure(i: integer);
+  p := p1;
+  
+  // Типизированные делегаты можно вызывать быстрее и проще,
+  // так же как обычные подпрограммы
+  p(5);
+  
+end.
+</code></pre>
+<hr />
+<p>Так же как обычные подпрограммы - подпрограммы из неуправляемых .dll могут принимать делегаты параметром.<br />
+Далее всё будет рассматриваться на примере <code>cl.SetEventCallback</code> из модуля <code>OpenCL</code>, потому что с ним есть особые проблемы.</p>
+<div class="spoiler" summary="Объявления" hidden="true"><p>Объявление <code>cl.SetEventCallback</code>:</p>
+<pre><code>    static function SetEventCallback(&amp;event: cl_event; command_exec_callback_type: CommandExecutionStatus; pfn_notify: EventCallback; user_data: IntPtr): ErrorCode;
+</code></pre>
+<p>Объявление <code>EventCallback</code>:</p>
+<pre><code>  EventCallback = procedure(&amp;event: cl_event; event_command_status: CommandExecutionStatus; user_data: IntPtr);
+</code></pre>
+</div>
+<p>Рассмотрим следующий пример:</p>
+<pre><code>uses System;
+uses OpenCL;
+
+begin
+  
+  var cb: EventCallback := (ev,st,data)-&gt;
+  begin
+    Writeln($'Активация обработчика ивента {ev}, зарегестрированного для состояния {st}');
+  end;
+  
+  var ev: cl_event; //ToDo := ...
+  
+  cl.SetEventCallback(ev, CommandExecutionStatus.COMPLETE, cb, IntPtr.Zero).RaiseIfError;
+end.
+</code></pre>
+<p>Этот код может время от времени вылетать, потому что:</p>
+<ol>
+<li><p><code>cl.SetEventCallback</code> вызывает свой коллбек тогда, когда посчитает нужным (но обычно после того как вызов <code>cl.SetEventCallback</code> завершился);</p>
+</li>
+<li><p>Делегаты - это классы. А сборщик мусора распоряжается памятью классов и удаляет их, тоже когда посчитает нужным.</p>
+</li>
+</ol>
+<p>Раз после вызова <code>cl.SetEventCallback</code> делегат <code>cb</code> больше нигде не используется - сборщик мусора может в любой момент
+решить удалить его. Но, опять же, это редко случается сразу после вызова <code>cl.SetEventCallback</code>,
+поэтому ошибки связанные с этим удалением могут быть плавающие.</p>
+<p>Если сборщик мусора удалит делегат, а затем .dll попытается его вызвать -
+это приведёт или к ошибке доступа, или к моментальному беззвучному вылету.</p>
+<p>Чтобы запретить сборщику мусора удалять делегать - нужно создать <code>GCHandle</code>, привязанный к нему.<br />
+Но в отличии от массивов - <code>GCHandleType.Pinned</code> не нужно, потому что сборщик мусора
+не может перемещать адрес исполняемого кода (а он единственное что передаётся в .dll).
+Это потому, что этот адрес хранится в виде указателя на неуправляемый код.</p>
+<pre><code>uses System.Runtime.InteropServices;
+uses System;
+uses OpenCL;
+
+begin
+  
+  var gc_hnd: GCHandle;
+  var cb: EventCallback := (ev,st,data)-&gt;
+  begin
+    // В данном случае делегат вызывается одноразово
+    // И пока он выполняется - сборщик мусора его не удалит
+    // Поэтому освобождение GCHandle можно поставить в любой части самого обработчика
+    gc_hnd.Free;
+    
+    Writeln($'Активация обработчика ивента {ev}, зарегестрированного для состояния {st}');
+    
+  end;
+  gc_hnd := GCHandle.Alloc(cb);
+  
+  var ev: cl_event; //ToDo := ...
+  
+  cl.SetEventCallback(ev, CommandExecutionStatus.COMPLETE, cb, IntPtr.Zero).RaiseIfError;
+end.
+</code></pre>
+</div>
+<script>on_page_added(document.getElementById("page-14"))</script>
+<script>on_end_folder()</script>
+<script>on_end_folder()</script>
+</body>
+</html>

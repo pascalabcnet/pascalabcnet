@@ -19,7 +19,7 @@ procedure ToPoint(x,y: integer);
 procedure OnVector(a,b: integer);
 /// Вызывать задание с именем name
 procedure Task(name: string);
-/// Создать пустое поле размера 9 на 11 клеток
+/// Создать пустое поле размера 9 на 7 клеток
 procedure StandardField;
 /// Создать пустое поле размера n на m клеток
 procedure Field(n,m: integer);
@@ -29,9 +29,9 @@ procedure Start;
 /// Остановить Чертежника
 procedure Stop;
 
-/// Поднять перо
-procedure ОпуститьПеро;
 /// Опустить перо
+procedure ОпуститьПеро;
+/// Поднять перо
 procedure ПоднятьПеро;
 /// Переместиться к точке (x,y)
 procedure КТочке(x,y: integer);
@@ -55,7 +55,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-uses DMTaskMaker,DMZadan,DrawmanField;
+uses DMTaskMaker,DMZadan,DrawManField;
 
 procedure SetDrawmanWidth(w: integer);
 begin

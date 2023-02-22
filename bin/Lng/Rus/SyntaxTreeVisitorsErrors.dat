@@ -52,3 +52,5 @@ FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_COMPOUND_NAME=Функции с �
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_VAR_CONST_PARAMS_MODIFIERS=Функции с атрибутом [Cache] не должны иметь var, const и params-параметры
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_BE_DEFINED_GLOBALLY=Функции с атрибутом [Cache] должны быть определены глобально
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_CANNOT_HAVE_YIELD=Функции с атрибутом [Cache] не должны содержать оператор yield
+FOR_LOOP_WITH_STEP_CANNOT_USE_DOWNTO=В цикле for с шагом нельзя использовать направление downto
+STEP_CANNOT_BE_0=Шаг в цикле for не может быть равным 0

@@ -1,0 +1,14 @@
+[OPTIONS]
+Auto Index=Yes
+Compatibility=1.1 or later
+Compiled file=PascalABCNET.chm
+Contents file=Table of Contents New.hhc
+Default Font=Arial,9,0
+Default topic=Common\main.html
+Display compile progress=No
+Index file=Index.hhk
+Language=0x419 Русский (Россия)
+
+
+[INFOTYPES]
+

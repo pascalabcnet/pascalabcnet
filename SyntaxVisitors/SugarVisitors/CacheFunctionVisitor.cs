@@ -75,9 +75,19 @@ namespace SyntaxVisitors.SugarVisitors
 
                 // var @tpar := Tuple.Create(все параметры)
                 var tupleIdent = new ident("@tpar" + UniqueNumStr());
-                var vs = new var_statement(tupleIdent,
+                // SSM 08.05.22 - один параметр не надо оборачивать в кортеж
+
+                // SSM 09.05.22 - для реализации кортежа используется ValueTuple если он определен
+                var TupleName = "Tuple";
+                if (System.Type.GetType("System.ValueTuple") != null)
+                    TupleName = "ValueTuple";
+
+                var_statement vs;
+                if (pp.Length == 1)
+                    vs = new var_statement(tupleIdent, pp[0].Item1 as expression);
+                else vs = new var_statement(tupleIdent,
                   new method_call(
-                      new dot_node(new dot_node("?System", "Tuple"),new ident("Create")),
+                      new dot_node(new dot_node("?System", TupleName),new ident("Create")),
                       new expression_list(pp.Select(pair => pair.Item1 as expression).ToList())
                   )
                 );
@@ -88,12 +98,23 @@ namespace SyntaxVisitors.SugarVisitors
 
                 // var @ИмяФункцииDict := new Dictionary<типTuple, тип возвр значения функции>
                 // var d := new PABCSystem.Dictionary<System.Tuple<integer,integer,real>,integer>;
-                var ttp = new template_param_list(new List<type_definition>(pp.Select(pair => pair.Item2 as type_definition)));
-                var ttr_tuple = new template_type_reference(new named_type_reference(new List<ident> { new ident("System"), new ident("Tuple") }),
+                // SSM 08.05.22 - один параметр не надо оборачивать в кортеж
+                template_param_list ttp;
+                if (pp.Length == 1)
+                    ttp = new template_param_list(pp[0].Item2 as type_definition);
+                else
+                    ttp = new template_param_list(new List<type_definition>(pp.Select(pair => pair.Item2 as type_definition)));
+
+                type_definition ttr_tuple;
+                if (pp.Length == 1)
+                    ttr_tuple = pp[0].Item2 as type_definition;
+                else
+                    ttr_tuple = new template_type_reference(new named_type_reference(new List<ident> { new ident("System"), new ident(TupleName) }),
                     ttp
                     );
+
                 var ttr_dict = new template_type_reference(new named_type_reference(new List<ident> { new ident("PABCSystem"), new ident("Dictionary") }),
-                    new template_param_list(new List<type_definition> { ttr_tuple,(pd.proc_header as function_header).return_type }));
+                new template_param_list(new List<type_definition> { ttr_tuple,(pd.proc_header as function_header).return_type }));
 
                 var new_ex = new new_expr(ttr_dict, new expression_list());
                 var sug_ex = new sugared_expression(ttp, new_ex, new_ex.source_context); // семантическая проверка выражения

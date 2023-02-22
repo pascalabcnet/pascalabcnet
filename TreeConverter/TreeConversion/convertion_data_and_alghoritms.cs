@@ -658,12 +658,17 @@ namespace PascalABCCompiler.TreeConverter
 
 			if (pct.second!=null)
 			{
+                if (pct.second.to == null && en is typed_expression && !to.IsDelegate)
+                {
+                    syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref en);
+                    return en;
+                }
                 AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
 			}
 
 			if (pct.first==null)
 			{
-                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null)
+                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
                 {
                     return convert_type(en, (to as delegated_methods).empty_param_method.ret_type, loc);
                 }
@@ -674,9 +679,11 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
                     else
                         return en;
-                } 
+                }
                 else if (en.type is undefined_type && en is base_function_call bfc)
                     throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", bfc.function.name);
+                else if (en is enum_const_node && (en as enum_const_node).constant_value != 0)
+                    return new int_const_node((en as enum_const_node).constant_value, loc);
                 else AddError(new CanNotConvertTypes(en, en.type, to, loc));
 			}
 
@@ -1200,11 +1207,16 @@ namespace PascalABCCompiler.TreeConverter
                                 ptci.to = formal_param_type;
                                 tc.AddElement(ptci);
                                 factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
-                                return tc;
+                                //return tc;
                             }
-                            if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                            else if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                            {
                                 error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
-							return null;
+                                return null;
+                            }
+                            else
+                                return null;
+							//return null;
                             
 						}
 					}
@@ -1350,7 +1362,7 @@ namespace PascalABCCompiler.TreeConverter
         public enum MoreSpecific { Left, Right, None}
 
         // SSM 04/07/2021
-        public MoreSpecific compare_more_specific(function_node left_func, function_node right_func)
+        public MoreSpecific compare_more_specific(function_node left_func, function_node right_func, possible_type_convertions_list left, possible_type_convertions_list right)
         {
             bool LeftIsMoreSpecific = false;
             bool RightIsMoreSpecific = false;
@@ -1369,11 +1381,23 @@ namespace PascalABCCompiler.TreeConverter
                     if (ltt.is_generic_parameter && !rtt.is_generic_parameter)
                     {
                         RightIsMoreSpecific = true;
+                        if (left != null && right != null && left.Count > 0 && right.Count > 0)
+                        {
+                            type_conversion_compare tcc = compare_type_conversions(left[0], right[0]);
+                            if (tcc == type_conversion_compare.greater_type_conversion && right[0].first != null && right[0].first.convertion_method != null && !(right[0].first.convertion_method is basic_function_node))
+                                RightIsMoreSpecific = false;//ignore user defined implicit conversions
+                        }
                         continue;
                     }
                     if (rtt.is_generic_parameter && !ltt.is_generic_parameter)
                     {
                         LeftIsMoreSpecific = true;
+                        if (left != null && right != null && left.Count > 0 && right.Count > 0)
+                        {
+                            type_conversion_compare tcc = compare_type_conversions(left[0], right[0]);
+                            if (tcc == type_conversion_compare.less_type_conversion && left[0].first != null && left[0].first.convertion_method != null && !(left[0].first.convertion_method is basic_function_node))
+                                LeftIsMoreSpecific = false;//ignore user defined implicit conversions
+                        }
                         continue;
                     }
                     var lt = ltt as generic_instance_type_node;
@@ -1394,6 +1418,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+
             if (RightIsMoreSpecific && !LeftIsMoreSpecific)
                 return MoreSpecific.Right;
             if (LeftIsMoreSpecific && !RightIsMoreSpecific)
@@ -1406,11 +1431,12 @@ namespace PascalABCCompiler.TreeConverter
             possible_type_convertions_list left,possible_type_convertions_list right)
 		{
             // Нет распознавания глубоко вложенных типов на IsMoreSpecific - только на глубину 1 или 2
-            var moreSpec = compare_more_specific(left_func, right_func);
+            var moreSpec = compare_more_specific(left_func, right_func, left, right);
             if (moreSpec == MoreSpecific.Left)
                 return method_compare.greater_method;
             if (moreSpec == MoreSpecific.Right)
                 return method_compare.less_method;
+                
             // а иначе пока ничего не возвращать
 
             function_compare fc = function_node.compare_functions(left_func, right_func);
@@ -1428,6 +1454,8 @@ namespace PascalABCCompiler.TreeConverter
 
 			for(int i=0;i<left.Count;i++)
 			{
+                if (i >= right.Count)
+                    break;
 				type_conversion_compare tcc=compare_type_conversions(left[i],right[i]);
 				if (tcc==type_conversion_compare.less_type_conversion)
 				{
@@ -1817,7 +1845,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				if (ptc.second!=null)
 				{
-                    if (ptc.first.from is null_type_node || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
+                    if (ptc.first.from is null_type_node || ptc.second.to == null || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
                         continue; // SSM 9/12/20 fix 2363
 					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
@@ -1866,10 +1894,16 @@ namespace PascalABCCompiler.TreeConverter
                     exprs[i].type = fn.parameters[fn.parameters.Count - 1].type;
                     break;
                 }
+                if (ptcal.Count <= i)
+                {
+                    continue;
+                }
                 if ((ptcal[i] == null) || (ptcal[i].first == null) || (exprs[i] is null_const_node && exprs[i].conversion_type == null))
                 {
                     continue;
                 }
+                if (ptcal[i].second != null && ptcal[i].second.to == null)
+                    continue;
                 expression_node[] temp_arr = new expression_node[1];
                 temp_arr[0] = exprs[i];
                 if (ptcal[i].first.convertion_method is compiled_constructor_node)
@@ -1968,11 +2002,6 @@ namespace PascalABCCompiler.TreeConverter
 		public function_node is_exist_eq_method_in_list(function_node fn, List<function_node> funcs)
 		{
 			return find_eq_return_value_method_in_list(fn, funcs);
-		}
-
-		public void init_reference_type(type_node ctn)
-		{
-			SystemLibrary.SystemLibrary.init_reference_type(ctn);
 		}
 
         /// <summary>
@@ -2779,6 +2808,13 @@ namespace PascalABCCompiler.TreeConverter
                     return set_of_possible_functions[0];
                 }
             }
+            if (set_of_possible_functions.Count == 2 && set_of_possible_functions[0].return_value_type == set_of_possible_functions[1].return_value_type)
+            {
+                if (set_of_possible_functions[0].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[1].semantic_node_type != semantic_node_type.basic_function_node )
+                    return set_of_possible_functions[1];
+                else if (set_of_possible_functions[1].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[0].semantic_node_type != semantic_node_type.basic_function_node)
+                    return set_of_possible_functions[0];
+            }
 
             return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, set_of_possible_functions));
         }
@@ -3004,9 +3040,10 @@ namespace PascalABCCompiler.TreeConverter
                 tn1 = tn2;
                 tn2 = t;
             }
+            if (n1 == n2) return tn1;
             // Первый тип  - меньше или равен
             if ((int)n1 <= (int)int_types.integer_type && (int)n2 <= (int)int_types.integer_type) return SystemLibrary.SystemLibrary.integer_type;
-            if (n1 == n2) return tn1;
+            
             // Первый тип  - меньше
             if ((int)n2 == (int)int_types.uint64_type)
                 return SystemLibrary.SystemLibrary.uint64_type;
@@ -3028,19 +3065,6 @@ namespace PascalABCCompiler.TreeConverter
             return null; // это вхолостую
         }
 
-        public bool ContainsForward(type_node tn)
-        {
-            if (tn.ForwardDeclarationOnly || tn.original_generic != null && tn.original_generic.ForwardDeclarationOnly)
-                return true;
-            if (tn is generic_instance_type_node tni)
-                foreach (var t in tn.instance_params)
-                {
-                    var r = ContainsForward(t);
-                    if (r)
-                        return r;
-                }
-            return false;
-        }
     }
 
 }

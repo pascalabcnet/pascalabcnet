@@ -81,6 +81,8 @@ type
     property Parent: Node read getParent write SetParent;
     property Data: integer read getData write SetData;
   end;
+  
+var TaskName: string;
 
 /// Вывести формулировку задания
 procedure Task(name: string);
@@ -802,6 +804,7 @@ procedure PrintMatr<T>(a: List<List<T>>);
 
 // == Конец дополнений к версии 4.14 ==
 
+function GetSolutionInfo: string;
 
 implementation
 
@@ -832,7 +835,7 @@ procedure StartPT(options: integer);    external '%PABCSYSTEM%\PT4\PT4PABC.dll' 
 procedure FreePT;                                       external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'freept';
 function CheckPT(var res: integer):string;external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'checkptf';
 procedure RaisePT(s1,s2: string);       external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'raisept';
-procedure Task(name: string);           external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'task';
+procedure Task__(name: string);           external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'task';
 procedure GetR(var param: real);                external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getr';
 procedure PutR(param: real);                            external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putr';
 procedure GetN(var param: integer);     external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getn';
@@ -847,6 +850,13 @@ procedure _GetP(var param: IntPtr);     external '%PABCSYSTEM%\PT4\PT4PABC.dll' 
 procedure _PutP(param: IntPtr); external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putp';
 procedure DisposeP(sNode: IntPtr);      external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'disposep';
 function FinishPT(): integer;      external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'finishpt';  // == 4.13 ==
+procedure _GetSolutionInfo(info: System.Text.StringBuilder);external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getsolutioninfo';
+
+procedure Task(name: string);
+begin
+  Task__(name);
+  TaskName := name;
+end;
 
 procedure Dispose(p: pointer);
 begin
@@ -2145,8 +2155,13 @@ begin
   end;
 end;
 
+var finalized := False;
+
 procedure __FinalizeModule__;
 begin
+  if finalized then
+    exit;
+  finalized := True;
   InfoS := CheckPT(InfoT);
   if InfoT=0 then 
     Console.WriteLine(InfoS);
@@ -3096,8 +3111,16 @@ end;
 
 // == Конец дополнений к версии 4.14 ==
 
+function GetSolutionInfo: string;
+begin
+  var val := new System.Text.StringBuilder(500);
+  _getsolutioninfo(val);
+  result := val.ToString;
+end;
+
 initialization
   __InitModule;
 finalization
   __FinalizeModule__;
+  GetSolutionInfo;
 end.

@@ -1955,6 +1955,15 @@ namespace PascalABCCompiler
                         cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5linux;
                     else if (plt.Equals("dotnet5macos"))
                         cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5macos;
+                    else if (plt.Equals("native"))
+                    {
+                        if (Environment.OSVersion.Platform == PlatformID.Unix)
+                            cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetlinuxnative;
+                        else if (Environment.OSVersion.Platform == PlatformID.MacOSX)
+                            cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetmacosnative;
+                        else
+                            cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetwinnative;
+                    }
                 }
                 if (this.compilerOptions.Only32Bit)
                     cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
@@ -1993,11 +2002,12 @@ namespace PascalABCCompiler
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.company_string) ||
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.trademark_string) ||
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.title_string) ||
-                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.description_string))
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.description_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.copyright_string)) 
                     {
                         ErrorsList.Add(new MainResourceNotAllowed(cds[0].location));
                     }
-                    cdo.MainResourceFileName = cds[0].directive;
+                    cdo.MainResourceFileName = Path.Combine(Path.GetDirectoryName(cds[0].source_file), cds[0].directive);
                     if (!File.Exists(cdo.MainResourceFileName))
                     {
                         ErrorsList.Add(new ResourceFileNotFound(cds[0].directive, cds[0].location));
@@ -2193,7 +2203,7 @@ namespace PascalABCCompiler
                                 string pdb_file_name=Path.ChangeExtension(CompilerOptions.OutputFileName, ".pdb");
                                 if (File.Exists(pdb_file_name))
                                     File.Delete(pdb_file_name);
-                                    n = 5;
+                                n = 5; // PVS 01/2022
                             }
                             catch (Exception e)
                             {
@@ -2361,6 +2371,7 @@ namespace PascalABCCompiler
                 	p.AddInitFinalMethods();
                     SystemLibrary.SystemLibInitializer.RestoreStandardFunctions();
                     p.ProcessWaitedToRestoreFields();
+                    p.RestoreWaitedMethodCodes();
             	}
             	bool rest = true;
             	for (int i=0; i<PCUReader.AllReaders.Count; i++)
@@ -2619,12 +2630,13 @@ namespace PascalABCCompiler
             return null;
         }
 
-        public static string GetReferenceFileName(string FileName)
+        public static string GetReferenceFileName(string FileName, string curr_path=null)
         {
             // Вначале - кешированные стандартные dll
             if (standart_assembly_dict.ContainsKey(FileName))
                 return standart_assembly_dict[FileName];
-
+            if (curr_path != null && System.IO.File.Exists(Path.Combine(curr_path, FileName)))
+                return Path.Combine(curr_path, FileName);
             if (System.IO.File.Exists(FileName))
             {
                 return FileName;//.ToLower();//? а надо ли tolover?
@@ -2705,7 +2717,7 @@ namespace PascalABCCompiler
             var SourceFileExists = SourceFileName != null;
             //ToDo то есть Rebuild режим игнорирует .pcu, даже если нет .pas файла?
             // а ещё ниже стоит ещё 1 проверка Rebuild...
-            var PCUFileExists = !CompilerOptions.Rebuild && PCUFileName != null;
+            var PCUFileExists = (!CompilerOptions.Rebuild || !SourceFileExists) && PCUFileName != null;
 
             if (!PCUFileExists && !SourceFileExists)
                 if (UnitName == null)
@@ -3314,7 +3326,9 @@ namespace PascalABCCompiler
                 // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
 
                 var ccu = CurrentUnit.SyntaxTree;
-                foreach (SyntaxTree.compiler_directive cd in ccu.compiler_directives)
+                // !!!!!!!!!!!!!!!!!!!!!!
+                if (ccu != null) // SSM 06.06.22 - здесь была ошибка - ccu может быть null и тогда исключение!!! Добавил if
+                    foreach (SyntaxTree.compiler_directive cd in ccu.compiler_directives)
                     if (string.Compare(cd.Name.text, "apptype", true) == 0 && string.Compare(cd.Directive.text, "dll", true) == 0)
                     {
                         if (!(ccu is SyntaxTree.unit_module) ||

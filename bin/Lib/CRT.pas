@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 /// <summary>
@@ -59,11 +59,11 @@ function ReadKey: char;
 /// </summary>
 function KeyPressed: boolean;
 /// <summary>
-/// Возвращает высоту экрана
+/// Возвращает ширину экрана
 /// </summary>
 function WindowWidth: integer;
 /// <summary>
-/// Возвращает ширину экрана
+/// Возвращает высоту экрана
 /// </summary>
 /// <returns></returns>
 function WindowHeight: integer;

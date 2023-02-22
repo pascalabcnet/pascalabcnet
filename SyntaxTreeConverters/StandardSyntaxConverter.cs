@@ -40,12 +40,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
             VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
             FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
-#if DEBUG
-            //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
-#endif
 
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
+#if DEBUG
+            //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+#endif
 
             // tuple_node
             TupleVisitor.New.ProcessNode(root);
@@ -72,6 +72,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
             ExtendedIsDesugaringVisitor.New.ProcessNode(root); // Десахаризация расширенного is, который используется в сложных логических выражениях
             PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
+#if DEBUG
+            //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+#endif
 
             // simple_property
             PropertyDesugarVisitor.New.ProcessNode(root);
@@ -82,6 +85,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
             CacheFunctionVisitor.New.ProcessNode(root);
+
+            // При наличии файла lightpt.dat подключает модули LightPT и Tasks
+            root = TeacherControlConverter.New.Convert(root);
 
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:\\Tree.txt").ProcessNode(root);

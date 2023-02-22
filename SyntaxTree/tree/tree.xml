@@ -1884,6 +1884,7 @@
         <SyntaxField Name="type_name" SyntaxType="type_definition" />
         <SyntaxField Name="in_what" SyntaxType="expression" />
         <SyntaxField Name="stmt" SyntaxType="statement" />
+        <SyntaxField Name="index" SyntaxType="ident" />
       </Fields>
       <Methods />
       <Tags>
@@ -2756,7 +2757,9 @@
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="yield_unknown_ident" BaseName="ident">
-      <Fields />
+      <Fields>
+        <SyntaxField Name="UnknownID" SyntaxType="ident" />
+      </Fields>
       <Methods />
       <Tags>
         <CategoryIndices>
@@ -2893,7 +2896,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="is_pattern_expr" BaseName="expression">
+    <SyntaxNode Name="is_pattern_expr" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="left" SyntaxType="expression" />
         <SyntaxField Name="right" SyntaxType="pattern_node" />
@@ -3306,6 +3309,7 @@
         <SyntaxField Name="il" SyntaxType="ident_list" />
         <SyntaxField Name="in_what" SyntaxType="expression" />
         <SyntaxField Name="stmt" SyntaxType="statement" />
+        <SyntaxField Name="index" SyntaxType="ident" />
       </Fields>
       <Methods />
       <Tags>
@@ -3888,11 +3892,13 @@
       <HelpData Key="foreach_stmt.ext" Value="" />
       <HelpData Key="foreach_stmt.identifier" Value="" />
       <HelpData Key="foreach_stmt.in_what" Value="" />
+      <HelpData Key="foreach_stmt.index" Value="" />
       <HelpData Key="foreach_stmt.stmt" Value="" />
       <HelpData Key="foreach_stmt.type_name" Value="" />
       <HelpData Key="foreach_stmt_formatting" Value="// для форматирования только" />
       <HelpData Key="foreach_stmt_formatting.il" Value="" />
       <HelpData Key="foreach_stmt_formatting.in_what" Value="" />
+      <HelpData Key="foreach_stmt_formatting.index" Value="" />
       <HelpData Key="foreach_stmt_formatting.stmt" Value="" />
       <HelpData Key="foreach_stmt_formatting.type_name" Value="" />
       <HelpData Key="formal_parameters" Value="" />
@@ -4940,6 +4946,7 @@
       <HelpData Key="yield_unknown_foreach_type_ident.unknown_foreach" Value="" />
       <HelpData Key="yield_unknown_ident" Value="Неопознанный идентификатор. Откладывает определение необходимости захвата имени как поля класса до этапа семантики." />
       <HelpData Key="yield_unknown_ident.ClassName" Value="" />
+      <HelpData Key="yield_unknown_ident.IsYieldInStaticMethod" Value="" />
       <HelpData Key="yield_unknown_ident.UnknownID" Value="" />
       <HelpData Key="yield_var_def_statement_with_unknown_type" Value="Узел-обертка для yield для определения типов локальных переменных в var_def_statement" />
       <HelpData Key="yield_var_def_statement_with_unknown_type.vars" Value="" />

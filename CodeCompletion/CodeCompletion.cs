@@ -350,6 +350,15 @@ namespace CodeCompletion
             return PascalABCCompiler.Parsers.KeywordKind.None;
         }
 
+        public bool IsKeyword(string name)
+        {
+            if (CodeCompletionController.CurrentParser != null)
+            {
+                return CodeCompletionController.CurrentParser.LanguageInformation.IsKeyword(name);
+            }
+            return false;
+        }
+
         public string[] GetKeywords()
         {
             if (CodeCompletionController.CurrentParser != null)

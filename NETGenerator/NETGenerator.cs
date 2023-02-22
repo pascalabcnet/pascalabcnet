@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Linq;
@@ -37,7 +37,7 @@ namespace PascalABCCompiler.NETGenerator
     //compiler options class
     public class CompilerOptions
     {
-        public enum PlatformTarget { x64, x86, AnyCPU, dotnet5win, dotnet5linux, dotnet5macos };
+        public enum PlatformTarget { x64, x86, AnyCPU, dotnet5win, dotnet5linux, dotnet5macos, dotnetwinnative, dotnetlinuxnative, dotnetmacosnative };
 
         public TargetType target = TargetType.Exe;
         public DebugAttributes dbg_attrs = DebugAttributes.Release;
@@ -458,7 +458,24 @@ namespace PascalABCCompiler.NETGenerator
 
         bool IsDotnet5()
         {
-            return comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5win || comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5linux || comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5linux;
+            return 
+                comp_opt.platformtarget == 
+                  CompilerOptions.PlatformTarget.dotnet5win || 
+                comp_opt.platformtarget == 
+                  CompilerOptions.PlatformTarget.dotnet5linux || 
+                comp_opt.platformtarget == 
+                  CompilerOptions.PlatformTarget.dotnet5macos; // PVS 01/2022
+        }
+
+        bool IsDotnetNative()
+        {
+            return
+                comp_opt.platformtarget ==
+                  CompilerOptions.PlatformTarget.dotnetwinnative ||
+                comp_opt.platformtarget ==
+                  CompilerOptions.PlatformTarget.dotnetlinuxnative ||
+                comp_opt.platformtarget ==
+                  CompilerOptions.PlatformTarget.dotnetmacosnative; // PVS 01/2022
         }
 
         private void BuildDotnet5(string orig_dir, string dir, string publish_dir)
@@ -522,6 +539,74 @@ namespace PascalABCCompiler.NETGenerator
                 File.Copy(file, Path.Combine(orig_dir, Path.GetFileName(file)), true);
         }
 
+        private void BuildDotnetNative(string orig_dir, string dir, string publish_dir, string SourceFileName)
+        {
+            if (Directory.Exists(publish_dir))
+                Directory.Delete(publish_dir, true);
+            Directory.CreateDirectory(publish_dir);
+            StringBuilder sb = new StringBuilder();
+            string framework = "net7.0";
+            if (comp_opt.target == TargetType.WinExe)
+            {
+                framework = "net7.0-windows";
+                sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk.WindowsDesktop\">");
+                sb.AppendLine("<PropertyGroup><PublishAot>true</PublishAot><PublishTrimmed>false</PublishTrimmed><OutputType>WinExe</OutputType><TargetFramework>" + framework + "</TargetFramework><UseWindowsForms>true</UseWindowsForms></PropertyGroup>");
+                sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
+                sb.AppendLine("</Project>");
+            }
+            else
+            {
+                sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
+                sb.AppendLine("<PropertyGroup><PublishAot>true</PublishAot><PublishTrimmed>true</PublishTrimmed><OutputType>Exe</OutputType><TargetFramework>" + framework + "</TargetFramework></PropertyGroup>");
+                sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
+                sb.AppendLine("</Project>");
+            }
+
+            string csproj = Path.Combine(dir, Path.GetFileNameWithoutExtension(an.Name)+"___native" + ".csproj");
+            File.WriteAllText(csproj, sb.ToString());
+            sb = new StringBuilder();
+            sb.AppendLine("using System;");
+            sb.AppendLine("namespace StartApp");
+            sb.AppendLine("{");
+            sb.AppendLine("class StartProgram");
+            sb.AppendLine("{");
+            sb.AppendLine("static void Main(string[] args)");
+            sb.AppendLine("{");
+            sb.AppendLine(entry_meth.DeclaringType.FullName + "." + entry_meth.Name + "();");
+            sb.AppendLine("}");
+            sb.AppendLine("}");
+            sb.AppendLine("}");
+            File.WriteAllText(Path.Combine(dir, "Program.cs"), sb.ToString());
+            System.Diagnostics.Process p = new System.Diagnostics.Process();
+            p.StartInfo = new System.Diagnostics.ProcessStartInfo();
+            p.StartInfo.FileName = "dotnet";
+            string runtime = "win-x64";
+            if (comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnetlinuxnative)
+                runtime = "linux-x64";
+            else if (comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnetmacosnative)
+                runtime = "osx.10.11-x64";
+            string conf = "Debug";
+           // if (comp_opt.dbg_attrs == DebugAttributes.Release)
+                conf = "Release";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.Arguments = "publish -f " + framework + " --runtime " + runtime + " -c " + conf + " --self-contained true " + csproj;
+            p.Start();
+            p.WaitForExit();
+            try
+            {
+                var files = Directory.GetFiles(Path.Combine(dir, "bin" + Path.DirectorySeparatorChar + conf + Path.DirectorySeparatorChar + framework + Path.DirectorySeparatorChar + runtime + Path.DirectorySeparatorChar + "publish"));
+                foreach (var file in files)
+                    File.Copy(file, Path.Combine(publish_dir, Path.GetFileName(file)));
+                foreach (var file in files)
+                    File.Copy(file, Path.Combine(orig_dir, Path.GetFileName(file).Replace("___native", "")), true);
+            }
+            catch (Exception ex)
+            {
+                throw new TreeConverter.SaveAssemblyError(ex.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
+            }
+        }
+
         //Метод, переводящий семантическое дерево в сборку .NET
         public void ConvertFromTree(SemanticTree.IProgramNode p, string TargetFileName, string SourceFileName, CompilerOptions options, string[] ResourceFiles)
         {
@@ -566,6 +651,17 @@ namespace PascalABCCompiler.NETGenerator
             {
                 orig_dir = dir;
                 dir = Path.Combine(dir, an.Name + "_dotnet5");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                dotnet_publish_dir = Path.Combine(dir, "publish");
+                dir = Path.Combine(dir, "tmp");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+            }
+            else if (IsDotnetNative())
+            {
+                orig_dir = dir;
+                dir = Path.Combine(dir, an.Name + "_dotnetnative");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
                 dotnet_publish_dir = Path.Combine(dir, "publish");
@@ -620,7 +716,7 @@ namespace PascalABCCompiler.NETGenerator
                 mb = ab.DefineDynamicModule(name, save_debug_info);
             else
             {
-                if (!IsDotnet5() && (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe))
+                if (!IsDotnet5() && !IsDotnetNative() && (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe))
                     mb = ab.DefineDynamicModule(name + ".exe", an.Name + ".exe", save_debug_info); //определяем модуль (save_debug_info - флаг включать отладочную информацию)
                 else
                     mb = ab.DefineDynamicModule(name + ".dll", an.Name + ".dll", save_debug_info);
@@ -734,7 +830,7 @@ namespace PascalABCCompiler.NETGenerator
                         cur_type.SetCustomAttribute(attr_ci, new byte[4] { 0x01, 0x00, 0x00, 0x00 });
                         attr_class.CreateType();
                     }
-                    else
+                    else if (!IsDotnetNative())
                     {   // SSM 05.02.20 here change
                         TypeBuilder attr_class = mb.DefineType(cnnsnamespace_name + "." + "$ClassUnitAttr", TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                         ConstructorInfo attr_ci = attr_class.DefineDefaultConstructor(MethodAttributes.Public);
@@ -829,15 +925,7 @@ namespace PascalABCCompiler.NETGenerator
                 ConvertGenericFunctionInstance(igfi);
             }
 
-            for (int iii = 0; iii < cnns.Length; iii++)
-            {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
-                cur_type = NamespacesTypes[cnns[iii]];
-                cur_unit_type = NamespacesTypes[cnns[iii]];
-                //генерим инциализацию для полей
-                foreach (SemanticTree.ICommonTypeNode ctn in cnns[iii].types)
-                    GenerateInitCodeForFields(ctn);
-            }
+            
 
             ConstructorBuilder unit_cci = null;
 
@@ -891,6 +979,16 @@ namespace PascalABCCompiler.NETGenerator
                 }
 
                 cur_unit = tmp_unit_name;
+            }
+
+            for (int iii = 0; iii < cnns.Length; iii++)
+            {
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                cur_type = NamespacesTypes[cnns[iii]];
+                cur_unit_type = NamespacesTypes[cnns[iii]];
+                //генерим инциализацию для полей
+                foreach (SemanticTree.ICommonTypeNode ctn in cnns[iii].types)
+                    GenerateInitCodeForFields(ctn);
             }
 
             if (p.InitializationCode != null)
@@ -1076,7 +1174,7 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         if (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe)
                         {
-                            if (IsDotnet5())
+                            if (IsDotnet5() || IsDotnetNative())
                                 ab.Save(an.Name + ".dll");
                             else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x86)
                                 ab.Save(an.Name + ".exe", PortableExecutableKinds.Required32Bit, ImageFileMachine.I386);
@@ -1086,6 +1184,8 @@ namespace PascalABCCompiler.NETGenerator
                             //сохраняем сборку
                             if (IsDotnet5())
                                 BuildDotnet5(orig_dir, dir, dotnet_publish_dir);
+                            else if (IsDotnetNative())
+                                BuildDotnetNative(orig_dir, dir, dotnet_publish_dir, SourceFileName);
                         }
                         else
                         {
@@ -1272,6 +1372,7 @@ namespace PascalABCCompiler.NETGenerator
         private void CloseTypes()
         {
             //(ssyy) TODO: подумать, в каком порядке создавать типы
+            List<TypeBuilder> closed_types = new List<TypeBuilder>();
             for (int i = 0; i < types.Count; i++)
                 if (types[i].IsInterface)
                     try
@@ -1290,6 +1391,7 @@ namespace PascalABCCompiler.NETGenerator
                         
             for (int i = 0; i < enums.Count; i++)
                 enums[i].CreateType();
+            List<TypeBuilder> failed_types = new List<TypeBuilder>();
             for (int i = 0; i < value_types.Count; i++)
             {
                 try
@@ -1298,26 +1400,85 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 catch (TypeLoadException ex)
                 {
-
                     SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(value_types[i]);
                     if (ctn != null)
                     {
-                        IAttributeNode[] attrs = ctn.Attributes;
-                        if (attrs.Length > 0 && attrs[0].AttributeType is ICompiledTypeNode && (attrs[0].AttributeType as ICompiledTypeNode).compiled_type == typeof(System.Runtime.InteropServices.StructLayoutAttribute))
+                        if (ctn.is_generic_type_definition || ctn.ImplementingInterfaces != null && ctn.ImplementingInterfaces.Count > 0)
                         {
-                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                            bool has_class_contrains = false;
+                            if (ctn.generic_params != null)
+                            foreach (var gp in ctn.generic_params)
+                            {
+                                if (!(gp.base_type is ICommonTypeNode))
+                                    continue;
+                                TypeBuilder tb = helper.GetTypeReference(gp.base_type).tp as TypeBuilder;
+                                if (tb != null)
+                                {
+                                    try
+                                    {
+                                        tb.CreateType();
+                                        closed_types.Add(tb);
+                                        has_class_contrains = true;
+                                    }
+                                    catch (TypeLoadException ex2)
+                                    {
+
+                                    }
+                                }
+                            }
+                            if (has_class_contrains)
+                                continue;
+                            else
+                            {
+                                failed_types.Add(value_types[i]);
+                                continue;
+                            }
+                                
                         }
                         else
-                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
-                            //throw ex;
+                        {
+                            bool has_meth_contrains = false;
+                            foreach (var meth in ctn.methods)
+                            {
+                                
+                                if (meth.generic_params != null && meth.generic_params.Count > 0)
+                                    foreach (var gp in meth.generic_params)
+                                    {
+                                        if (!(gp.base_type is ICommonTypeNode))
+                                            continue;
+                                        TypeBuilder tb = helper.GetTypeReference(gp.base_type).tp as TypeBuilder;
+                                        if (tb != null && !closed_types.Contains(tb))
+                                        {
+                                            try
+                                            {
+                                                tb.CreateType();
+                                                closed_types.Add(tb);
+                                                has_meth_contrains = true;
+                                            }
+                                            catch (TypeLoadException ex2)
+                                            {
+                                                throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                                            }
+                                        }
+                                    }
+                            }
+                            if (has_meth_contrains)
+                                continue;
+                            else
+                            {
+                                failed_types.Add(value_types[i]);
+                                continue;
+                            }
+                        }
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                     }
                     else
                         throw ex;
                 }
             }
-            List<TypeBuilder> failed_types = new List<TypeBuilder>();
+           
             for (int i = 0; i < types.Count; i++)
-                if (!types[i].IsInterface)
+                if (!types[i].IsInterface && !closed_types.Contains(types[i]))
                 {
                     try
                     {
@@ -1329,7 +1490,19 @@ namespace PascalABCCompiler.NETGenerator
                     }
                 }
             for (int i = 0; i < failed_types.Count; i++)
-                failed_types[i].CreateType();
+                try
+                {
+                    failed_types[i].CreateType();
+                }
+                catch (TypeLoadException ex)
+                {
+                    SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(failed_types[i]);
+                    if (ctn != null)
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                    else
+                        throw ex;
+                }
+                
         }
 
         //перевод тела
@@ -1477,8 +1650,12 @@ namespace PascalABCCompiler.NETGenerator
             {
                 AddTypeWithoutConvert(t);
             }
-            foreach (ITypeNode interf in t.ImplementingInterfaces)
-                if (!(interf is ICompiledTypeNode))
+            // ImplementingInterfacesOrEmpty, потому что если интерфейсы небыли лениво-посчитаны семантикой
+            // То и тут их обходить нет смысла
+            // А в ошибочных ситуациях (как err0303.pas) может ещё и зациклится
+            foreach (ITypeNode interf in t.ImplementingInterfacesOrEmpty)
+                if (!(interf is ICompiledTypeNode)  && (interf != t)) // SSM 15/02/23 (interf != t) добавил в связи с ковариантностью 
+                                                                      // т.к. в случае IEnumerable<object> = IEnumerable<Student> возникал сбой
                     ConvertTypeHeaderInSpecialOrder((ICommonTypeNode)interf);
             if (t.base_type != null && !(t.base_type is ICompiledTypeNode))
             {
@@ -2645,7 +2822,7 @@ namespace PascalABCCompiler.NETGenerator
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });
                 if (default_value != null)
                 {
-                    if (default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum && (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX))
+                    if ((Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX) && default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum)
                         default_value = Enum.ToObject(param_types[i + num], default_value);
                     if (default_value is TreeRealization.null_const_node) // SSM 20/04/21
                         pb.SetConstant(null);
@@ -2679,7 +2856,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
             }
 
-            if (func is ICommonNamespaceFunctionNode && (func as ICommonNamespaceFunctionNode).ConnectedToType != null)
+            if (func is ICommonNamespaceFunctionNode && (func as ICommonNamespaceFunctionNode).ConnectedToType != null && !IsDotnetNative())
             {
                 if (!marked_with_extension_attribute.ContainsKey(cur_unit_type))
                 {
@@ -4612,6 +4789,8 @@ namespace PascalABCCompiler.NETGenerator
         {
             //Console.WriteLine(is_in_unit);
             //if (is_in_unit && helper.IsUsed(var)==false) return;
+            if (helper.GetVariable(var) != null)
+                return;
             TypeInfo ti = helper.GetTypeReference(var.type);
             FieldBuilder fb = cur_type.DefineField(var.name, ti.tp, FieldAttributes.Public | FieldAttributes.Static);
             helper.AddGlobalVariable(var, fb);
@@ -5412,9 +5591,9 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (value.type.is_value_type || value.type.is_generic_parameter)
                 {
-                    if (!(value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null))
+                    if (!(is_field_reference && value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null))
                         must_push_addr = true;
-                    else if (value.type.is_generic_parameter && virtual_method_call)
+                    else if (value.type.is_generic_parameter && virtual_method_call && !is_field_reference)
                     {
                         must_push_addr = true;
                         virtual_method_call = false;
@@ -5505,15 +5684,17 @@ namespace PascalABCCompiler.NETGenerator
             //если у поля нет постоянное значение
             if (!value.static_field.compiled_field.IsLiteral)
             {
-                if (is_addr == false)
+                if (!is_addr)
                 {
-                    if (is_dot_expr == true && value.static_field.compiled_field.FieldType.IsValueType)
+                    if (is_dot_expr && value.static_field.compiled_field.FieldType.IsValueType)
                     {
                         il.Emit(OpCodes.Ldsflda, value.static_field.compiled_field);
                     }
-                    else il.Emit(OpCodes.Ldsfld, value.static_field.compiled_field);
+                    else 
+                        il.Emit(OpCodes.Ldsfld, value.static_field.compiled_field);
                 }
-                else il.Emit(OpCodes.Ldsflda, value.static_field.compiled_field);
+                else 
+                    il.Emit(OpCodes.Ldsflda, value.static_field.compiled_field);
 
             }
             else
@@ -5534,8 +5715,9 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             if (!tmp_dot)
                 is_dot_expr = true;
-            if (value.field.compiled_field.IsLiteral == false)
+            if (!value.field.compiled_field.IsLiteral)
             {
+                is_field_reference = true;
                 value.obj.visit(this);
                 if (!is_addr)
                 {
@@ -5543,9 +5725,12 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         il.Emit(OpCodes.Ldflda, value.field.compiled_field);
                     }
-                    else il.Emit(OpCodes.Ldfld, value.field.compiled_field);
+                    else 
+                        il.Emit(OpCodes.Ldfld, value.field.compiled_field);
                 }
-                else il.Emit(OpCodes.Ldflda, value.field.compiled_field);
+                else 
+                    il.Emit(OpCodes.Ldflda, value.field.compiled_field);
+                is_field_reference = false;
             }
             else
             {
@@ -5555,7 +5740,7 @@ namespace PascalABCCompiler.NETGenerator
                     il.Emit(OpCodes.Box, value.field.compiled_field.FieldType);
                 }
             }
-            if (tmp_dot == false)
+            if (!tmp_dot)
             {
                 is_dot_expr = false;
             }
@@ -5593,8 +5778,10 @@ namespace PascalABCCompiler.NETGenerator
             is_addr = false;
             //is_dot_expr = false;
             is_field_reference = true;
+            bool tmp_virtual_method_call = virtual_method_call;
+            virtual_method_call = false;
             value.obj.visit(this);
-            
+            virtual_method_call = tmp_virtual_method_call;
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
 #if DEBUG
@@ -6279,6 +6466,7 @@ namespace PascalABCCompiler.NETGenerator
                 if (save_debug_info)
                     MarkSequencePoint(il, 0xFFFFFF, 0, 0xFFFFFF, 0);
                 ConvertStatement((value.function_code as IStatementsListNode).statements[0]);
+                
                 il.Emit(OpCodes.Ldarg_0);
                 IParameterNode[] parameters = value.parameters;
                 for (int i = 0; i < parameters.Length; i++)
@@ -6359,7 +6547,10 @@ namespace PascalABCCompiler.NETGenerator
                 il = methb.GetILGenerator();
                 if (save_debug_info)
                     MarkSequencePoint(il, 0xFFFFFF, 0, 0xFFFFFF, 0);
-                il.Emit(OpCodes.Ldarg_0);
+                if (value.polymorphic_state == polymorphic_state.ps_static)
+                    il.Emit(OpCodes.Ldnull);
+                else
+                    il.Emit(OpCodes.Ldarg_0);
                 IParameterNode[] parameters = value.parameters;
                 for (int i = 0; i < parameters.Length; i++)
                 {
@@ -6938,7 +7129,8 @@ namespace PascalABCCompiler.NETGenerator
                 attrs |= MethodAttributes.NewSlot;
             }
             //\ssyy
-
+            if (value.name == "op_Implicit" || value.name == "op_Explicit" || value.name == "op_Equality" || value.name == "op_Inequality")
+                attrs |= MethodAttributes.HideBySig | MethodAttributes.SpecialName;
             methb = cur_type.DefineMethod(method_name, attrs);
 
             if (value.is_generic_function)
@@ -7146,6 +7338,11 @@ namespace PascalABCCompiler.NETGenerator
                         is_addr = true;
                     }
                 }
+                if (parameters[i].type is ICompiledTypeNode && (parameters[i].type as ICompiledTypeNode).compiled_type == TypeFactory.CharType && parameters[i].parameter_type == parameter_type.var
+                    && real_parameters[i] is ISimpleArrayIndexingNode && helper.GetTypeReference((real_parameters[i] as ISimpleArrayIndexingNode).array.type).tp == TypeFactory.StringType)
+                {
+                    copy_string = true;
+                }
                 real_parameters[i].visit(this);
                 
                 if (mi.DeclaringType == TypeFactory.ArrayType && mi.Name == "Resize" && i == 1)
@@ -7239,7 +7436,10 @@ namespace PascalABCCompiler.NETGenerator
             	_box = value.obj.conversion_type.is_value_type;
             if (_box)
                 is_dot_expr = false;
+            if ((value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual || value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual_abstract || value.compiled_method.polymorphic_state == polymorphic_state.ps_common) && (value.obj is ICommonParameterReferenceNode || value.obj is ICommonClassFieldReferenceNode))
+                virtual_method_call = true;
             value.obj.visit(this);
+            virtual_method_call = false;
             if (value.obj.type.is_value_type && !value.compiled_method.method_info.DeclaringType.IsValueType)
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
@@ -7390,6 +7590,7 @@ namespace PascalABCCompiler.NETGenerator
                 && !(value.obj is ICommonMethodCallNode) && !(value.obj is ICommonStaticMethodCallNode) 
                 && !(value.obj is ICommonConstructorCall) && !(value.obj is ICommonNamespaceFunctionCallNode) 
                 && !(value.obj is ICommonNestedInFunctionFunctionCallNode)
+                && !(value.obj is IQuestionColonExpressionNode)
                 && !(value.obj.conversion_type != null && !value.obj.conversion_type.is_value_type))
             {
                 LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.obj.type).tp);
@@ -7970,7 +8171,7 @@ namespace PascalABCCompiler.NETGenerator
             //Массив присваиваем массиву=>надо вызвать копирование
             TypeInfo ti_l = helper.GetTypeReference(to.type);
             TypeInfo ti_r = helper.GetTypeReference(from.type);
-            if (ti_l.is_arr && ti_r.is_arr)
+            if (ti_l.is_arr && ti_r.is_arr && !(to is ILocalBlockVariableReferenceNode && (to as ILocalBlockVariableReferenceNode).Variable.name.StartsWith("$TV")))
             {
                 il.Emit(OpCodes.Call, ti_r.clone_meth);
             }
@@ -8275,7 +8476,9 @@ namespace PascalABCCompiler.NETGenerator
             FieldInfo fi = fi_info.fi;
             is_dot_expr = true;
             has_dereferences = false;
+            is_field_reference = true;
             value.obj.visit(this);
+            is_field_reference = false;
             bool has_dereferences_tmp = has_dereferences;
             has_dereferences = false;
             is_dot_expr = false;
@@ -8515,7 +8718,11 @@ namespace PascalABCCompiler.NETGenerator
             }
             //ICompiledTypeNode ctn = from.type as ICompiledTypeNode;
             ICompiledTypeNode ctn2 = to.type as ICompiledTypeNode;
-            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type.IsInterface)))
+            if ((from.type.is_value_type || from.type.is_generic_parameter) && 
+                ctn2 != null && 
+                (ctn2.compiled_type == TypeFactory.ObjectType || 
+                (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type.IsInterface))
+               )
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
             }
@@ -8905,14 +9112,40 @@ namespace PascalABCCompiler.NETGenerator
                         t1 = helper.GetTypeReference(real_parameters[0].type).tp;
                     if (real_parameters[1].type is ICompiledGenericTypeInstance)
                         t2 = helper.GetTypeReference(real_parameters[1].type).tp;
-                    MethodInfo mi = ctn1.compiled_type.GetMethod("Equals");
+                    MethodInfo mi = null;
+                    MemberInfo[] eq_members = ctn1.compiled_type.GetMember("Equals", BindingFlags.Public | BindingFlags.Instance);
+                    bool value_type_eq = false;
+                    foreach (MemberInfo member in eq_members)
+                        if (member is MethodInfo)
+                        {
+                            if (mi == null)
+                                mi = member as MethodInfo;
+                            else if ((member as MethodInfo).GetParameters()[0].ParameterType.IsValueType)
+                            {
+                                mi = member as MethodInfo;
+                                value_type_eq = true;
+                            }
+                        }
                     if (mi != null)
                     {
+                        
                         real_parameters[0].visit(this);
-                        il.Emit(OpCodes.Box, t1);
-                        real_parameters[1].visit(this);
-                        il.Emit(OpCodes.Box, t2);
-                        il.Emit(OpCodes.Callvirt, mi);
+                        if (value_type_eq)
+                        {
+                            var lb = il.DeclareLocal(t1);
+                            il.Emit(OpCodes.Stloc, lb);
+                            il.Emit(OpCodes.Ldloca, lb);
+                            real_parameters[1].visit(this);
+                        }
+                        else
+                        {
+                            il.Emit(OpCodes.Box, t1);
+                            real_parameters[1].visit(this);
+                            il.Emit(OpCodes.Box, t2);
+                            
+                        }
+
+                        il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objnoteq)
                         {
                             il.Emit(OpCodes.Ldc_I4_0);
@@ -8976,11 +9209,12 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            is_dot_expr = true;
                             TypeInfo ti = helper.GetTypeReference(real_parameters[0].type);
 
                             real_parameters[0].visit(this);
-                            is_dot_expr = tmp;
+                            LocalBuilder tmp_lb = il.DeclareLocal(ti.tp);
+                            il.Emit(OpCodes.Stloc, tmp_lb);
+                            il.Emit(OpCodes.Ldloca, tmp_lb);
                             
                             MethodInfo mi = null;
                             if (real_parameters[0].type is IGenericTypeInstance)
@@ -9007,10 +9241,11 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            is_dot_expr = true;
                             TypeInfo ti = helper.GetTypeReference(real_parameters[1].type);
                             real_parameters[1].visit(this);
-                            is_dot_expr = tmp;
+                            LocalBuilder tmp_lb = il.DeclareLocal(ti.tp);
+                            il.Emit(OpCodes.Stloc, tmp_lb);
+                            il.Emit(OpCodes.Ldloca, tmp_lb);
                             MethodInfo mi = null;
                             if (real_parameters[1].type is IGenericTypeInstance)
                                 mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
@@ -10694,7 +10929,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
                 value.condition.visit(this);
-            
+
             is_dot_expr = tmp_is_dot_expr;
             is_addr = tmp_is_addr;
             il.Emit(OpCodes.Brfalse, FalseLabel);
@@ -10713,6 +10948,8 @@ namespace PascalABCCompiler.NETGenerator
                 EmitBox(value.ret_if_true, ti.tp);
             il.Emit(OpCodes.Br, EndLabel);
             il.MarkLabel(FalseLabel);
+            is_dot_expr = tmp_is_dot_expr;
+            is_addr = tmp_is_addr;
             if (value.ret_if_false is INullConstantNode && value.ret_if_false.type.is_nullable_type)
             {
                 Type tp = helper.GetTypeReference(value.ret_if_false.type).tp;
@@ -10757,11 +10994,31 @@ namespace PascalABCCompiler.NETGenerator
             else
             {
                 value.condition.visit(this);
-                tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
-                il.Emit(OpCodes.Stloc, tmp_lb);
-                il.Emit(OpCodes.Ldloc, tmp_lb);
-                il.Emit(OpCodes.Ldnull);
-                il.Emit(OpCodes.Ceq);
+                if (value.condition.type.is_nullable_type)
+                {
+                    
+                    tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
+                    il.Emit(OpCodes.Stloc, tmp_lb);
+                    il.Emit(OpCodes.Ldloca, tmp_lb);
+                    MethodInfo mi = null;
+                    TypeInfo cond_ti = helper.GetTypeReference(value.condition.type);
+                    if (value.condition.type is IGenericTypeInstance)
+                        mi = TypeBuilder.GetMethod(cond_ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
+                    else
+                        mi = cond_ti.tp.GetMethod("get_HasValue");
+                    il.Emit(OpCodes.Call, mi);
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ceq);
+                }
+                else
+                {
+                    tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
+                    il.Emit(OpCodes.Stloc, tmp_lb);
+                    il.Emit(OpCodes.Ldloc, tmp_lb);
+                    il.Emit(OpCodes.Ldnull);
+                    il.Emit(OpCodes.Ceq);
+                }
+                
             }
                 
 
@@ -10775,7 +11032,6 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Br, EndLabel);
             il.MarkLabel(NullLabel);
             value.ret_if_null.visit(this);
-            ti = helper.GetTypeReference(value.ret_if_null.type);
             if (ti != null)
                 EmitBox(value.ret_if_null, ti.tp);
             il.MarkLabel(EndLabel);
@@ -11274,6 +11530,8 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 if (vi.lb.LocalType == TypeFactory.ObjectType && get_current_meth.ReturnType.IsValueType)
                     il.Emit(OpCodes.Box, get_current_meth.ReturnType);
+                else if (vi.lb.LocalType == TypeFactory.StringType && get_current_meth.ReturnType == TypeFactory.CharType)
+                    il.Emit(OpCodes.Call, TypeFactory.CharToString);
                 il.Emit(OpCodes.Stloc, vi.lb);
             }
             else if (vi.kind == VarKind.vkGlobal)
@@ -11287,6 +11545,8 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 if (vi.fb.FieldType == TypeFactory.ObjectType && get_current_meth.ReturnType.IsValueType)
                     il.Emit(OpCodes.Box, get_current_meth.ReturnType);
+                else if (vi.fb.FieldType == TypeFactory.StringType && get_current_meth.ReturnType == TypeFactory.CharType)
+                    il.Emit(OpCodes.Call, TypeFactory.CharToString);
                 il.Emit(OpCodes.Stsfld, vi.fb);
             }
             else
@@ -11300,6 +11560,8 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 if (vi.fb.FieldType == TypeFactory.ObjectType && get_current_meth.ReturnType.IsValueType)
                     il.Emit(OpCodes.Box, get_current_meth.ReturnType);
+                else if (vi.fb.FieldType == TypeFactory.StringType && get_current_meth.ReturnType == TypeFactory.CharType)
+                    il.Emit(OpCodes.Call, TypeFactory.CharToString);
                 il.Emit(OpCodes.Stfld, vi.fb);
             }
             labels.Push(leave_label);
@@ -11372,7 +11634,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (is_dot_expr == true) //если после перем. в выражении стоит точка
                 {
-                    if (lb.LocalType.IsValueType == true || value.type.is_generic_parameter)
+                    if (lb.LocalType.IsValueType || value.type.is_generic_parameter)
                     {
                         if (is_field_reference && value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null)
                             il.Emit(OpCodes.Ldloc, lb);

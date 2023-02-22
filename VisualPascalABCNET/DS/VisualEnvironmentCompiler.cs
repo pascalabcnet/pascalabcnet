@@ -90,8 +90,8 @@ namespace VisualPascalABC
             this.DebugHelper = DebugHelper;
             DebugHelper.Starting += new DebugHelper.DebugHelperActionDelegate(DebugHelper_Starting);
             DebugHelper.Exited += new DebugHelper.DebugHelperActionDelegate(DebugHelper_Exited);
-            RunnerManager.Starting += new RunManager.RunnerManagerActionDelegate(RunnerManager_Starting);
-            RunnerManager.Exited += new RunManager.RunnerManagerActionDelegate(RunnerManager_Exited);
+            RunnerManager.Starting += new RunnerManagerActionDelegate(RunnerManager_Starting);
+            RunnerManager.Exited += new RunnerManagerActionDelegate(RunnerManager_Exited);
             this.CodeCompletionParserController = WorkbenchServiceFactory.CodeCompletionParserController;
             this.CodeCompletionParserController.visualEnvironmentCompiler = this;
             this.UserOptions = UserOptions;

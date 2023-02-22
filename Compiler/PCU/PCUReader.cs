@@ -66,7 +66,8 @@ namespace PascalABCCompiler.PCU
 
         private SortedDictionary<int, common_type_node> interf_type_list = new SortedDictionary<int, common_type_node>();
         private SortedDictionary<int, common_type_node> impl_type_list = new SortedDictionary<int, common_type_node>();
-
+        private Dictionary<common_method_node, int> waited_method_codes = new Dictionary<common_method_node, int>();
+        private bool waited_method_restoring = false;
         internal static Dictionary<definition_node, int> AllReadOrWritedDefinitionNodesOffsets = new Dictionary<definition_node, int>();
         internal void AddMember(definition_node dn, int offset)
         {
@@ -666,7 +667,7 @@ namespace PascalABCCompiler.PCU
                 string tmp = s.Substring(0, s.IndexOf(','));
                 //if (tmp != "mscorlib")
                 //{
-                string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll");
+                string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll", Path.GetDirectoryName(this.FileName));
                 //Assembly a = Assembly.LoadFrom(name_with_path);
                 /*if (pcu_file.compiler_directives != null)
                 foreach (compiler_directive cd in pcu_file.compiler_directives)
@@ -687,8 +688,23 @@ namespace PascalABCCompiler.PCU
                     assemblies[s] = a;
             }
 		}
+
+        public void AddWaitedMethodCode(common_method_node cmn, int offset)
+        {
+            if (!waited_method_codes.ContainsKey(cmn))
+                waited_method_codes.Add(cmn, offset);
+        }
+
+        public void RestoreWaitedMethodCodes()
+        {
+            waited_method_restoring = true;
+            foreach (common_method_node cmn in waited_method_codes.Keys)
+                cmn.function_code = GetCode(waited_method_codes[cmn]);
+            waited_method_restoring = false;
+        }
+
         //получение кода метода
-		public statement_node GetCode(int offset)
+        public statement_node GetCode(int offset)
 		{
 			int tmp = (int)br.BaseStream.Position;
 			br.BaseStream.Seek(start_pos+offset,SeekOrigin.Begin);
@@ -747,7 +763,7 @@ namespace PascalABCCompiler.PCU
                     return t;
                 template_types[i] = tt;
             }
-            if (template_types.Length > 0)
+            if (template_types.Length > 0 && t.IsGenericTypeDefinition)
                 return t.MakeGenericType(template_types);
             return t;
         }
@@ -950,7 +966,13 @@ namespace PascalABCCompiler.PCU
                 return mi as FieldInfo;
             //FieldInfo mi = t.GetField(pcu_file.dotnet_names[off].name);
             List<MemberInfo> mis = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
-            FieldInfo fi = (FieldInfo)mis[0];
+            FieldInfo fi = null;
+            foreach (MemberInfo mi2 in mis)
+                if (mi2 is FieldInfo)
+                {
+                    fi = (FieldInfo)mi2;
+                    break;
+                }
             dot_net_cache[off] = fi;
             return fi;
         }
@@ -981,7 +1003,13 @@ namespace PascalABCCompiler.PCU
                 return mi as PropertyInfo;
             //FieldInfo mi = t.GetField(pcu_file.dotnet_names[off].name);
             List<MemberInfo> mis = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
-            PropertyInfo pi = (PropertyInfo)mis[0];
+            PropertyInfo pi = null;
+            foreach (MemberInfo mi2 in mis)
+                if (mi2 is PropertyInfo)
+                {
+                    pi = (PropertyInfo)mi2;
+                    break;
+                }
             dot_net_cache[off] = pi;
             return pi;
         }
@@ -1649,7 +1677,7 @@ namespace PascalABCCompiler.PCU
             return ccd;
         }
 
-        private common_method_node CreateInterfaceMethod(string name, int offset)
+        private common_method_node CreateInterfaceMethod(string name, int offset, bool not_restore_code = false)
         {
             definition_node dn = null;
             if (members.TryGetValue(offset, out dn))
@@ -1705,8 +1733,13 @@ namespace PascalABCCompiler.PCU
                 cmn.functions_nodes_list.AddElement(GetNestedFunction());
             //br.ReadInt32();//code;
             cmn.loc = ReadDebugInfo();
+            
             if (has_overrided_method)
                 cmn.function_code = GetCodeWithOverridedMethod(cmn, br.ReadInt32());
+            else if (not_restore_code && cmn.name != "get_val" && cmn.name != "set_val")//ignore pascal array property accessors
+                AddWaitedMethodCode(cmn, br.ReadInt32());
+            else if (cmn.name == "<>") // for conform_basic_function
+                AddWaitedMethodCode(cmn, br.ReadInt32());
             else
                 cmn.function_code = GetCode(br.ReadInt32());
             cmn.cont_type.methods.AddElement(cmn);
@@ -1761,7 +1794,7 @@ namespace PascalABCCompiler.PCU
 
         //все методы с именем на Get вызываются в процессе восстановления других сущностей
         //например, когда восст. код ф-ии, в нем вызывается другая ф-я, которая еще не восстановлена
-        private common_method_node GetClassMethod(int offset)
+        private common_method_node GetClassMethod(int offset, bool not_restore_code = false)
         {
             definition_node dn = null;
             if (members.TryGetValue(offset, out dn))
@@ -1771,7 +1804,7 @@ namespace PascalABCCompiler.PCU
             br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
             br.ReadByte();
 
-            cmn = (common_method_node)CreateInterfaceMethod(null, offset);
+            cmn = (common_method_node)CreateInterfaceMethod(null, offset, not_restore_code);
 
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
             return cmn;
@@ -1851,9 +1884,11 @@ namespace PascalABCCompiler.PCU
             int name_ref = br.ReadInt32();
             type_node type = GetTypeReference();
             common_method_node get_meth = null;
-            if (br.ReadByte() == 1) get_meth = GetClassMethod(br.ReadInt32());
+            if (br.ReadByte() == 1) 
+                get_meth = GetClassMethod(br.ReadInt32(), !waited_method_restoring);
             common_method_node set_meth = null;
-            if (br.ReadByte() == 1) set_meth = GetClassMethod(br.ReadInt32());
+            if (br.ReadByte() == 1) 
+                set_meth = GetClassMethod(br.ReadInt32(), !waited_method_restoring);
             int num = br.ReadInt32();
             parameter_list pl = new parameter_list();
             for (int i = 0; i < num; i++)
@@ -2061,6 +2096,7 @@ namespace PascalABCCompiler.PCU
                 scope = new WrappedClassScope(this, cun.scope, null);
             }
             ctn = new wrapped_common_type_node(this, null, name, SemanticTree.type_access_level.tal_public, cun.namespaces[0], scope, null, offset);
+            scope.class_type = ctn;
             scope.ctn = ctn;
             if (is_interface)
                 AddTypeToOrderList(ctn, ind);
@@ -2074,15 +2110,27 @@ namespace PascalABCCompiler.PCU
             AddMember(ctn, offset);
 
             int_members.Insert(0, ctn);
+            SemanticTree.type_special_kind tsk = (SemanticTree.type_special_kind)br.ReadByte();
+            ctn.type_special_kind = tsk;
             common_type_node saved_ctn = ctn;
+            if (ctn.full_name == "PABCSystem.BinaryFile")
+                ctn.type_special_kind = SemanticTree.type_special_kind.binary_file;
+            if (ctn.type_special_kind != SemanticTree.type_special_kind.set_type)
+            {
+                SystemLibrary.SystemLibrary.init_reference_type(ctn);
+            }
             type_node base_type = GetTypeReference();
             bool is_value_type = br.ReadBoolean();
-
+            ctn.SetBaseType(base_type);
+            ctn.internal_is_value = is_value_type;
+            
+            
             List<SemanticTree.ITypeNode> interf_implemented = ReadImplementingInterfaces();
+            
             constant_node low_val = null;
             constant_node upper_val = null;
             SemanticTree.type_access_level tal = (SemanticTree.type_access_level)br.ReadByte();
-            SemanticTree.type_special_kind tsk = (SemanticTree.type_special_kind)br.ReadByte();
+            
             ctn.SetIsSealed(br.ReadBoolean());
             ctn.SetIsAbstract(br.ReadBoolean(), null); // Причина null, потому что проблема пересечения sealed и abstract не может произойти после загрузки из .pcu
             ctn.SetIsStatic(br.ReadBoolean());
@@ -2104,19 +2152,12 @@ namespace PascalABCCompiler.PCU
                 }
                 iscope.TopInterfaceScopeArray = interf_scopes.ToArray();
             }
-            ctn.SetBaseType(base_type);
+            
             ctn.IsInterface = type_is_interface;
             ctn.IsDelegate = type_is_delegate;
             ctn.is_class = type_is_class;
             ctn.ImplementingInterfaces.AddRange(interf_implemented);
-            ctn.internal_is_value = is_value_type;
-            ctn.type_special_kind = tsk;
-            if (ctn.full_name == "PABCSystem.BinaryFile")
-                ctn.type_special_kind = SemanticTree.type_special_kind.binary_file;
-            if (ctn.type_special_kind != SemanticTree.type_special_kind.set_type)
-            {
-                SystemLibrary.SystemLibrary.init_reference_type(ctn);
-            }
+            
             if (type_is_generic_definition)
             {
                 foreach (common_type_node par in type_params)

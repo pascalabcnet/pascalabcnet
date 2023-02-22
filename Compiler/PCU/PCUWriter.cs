@@ -721,10 +721,14 @@ namespace PascalABCCompiler.PCU
 		{
             int pos = (int)bw.BaseStream.Position;
             members[dn] = pos;
-			name_pool[dn].offset = pos;
-            if (dn is common_namespace_function_node)
-                if ((dn as common_namespace_function_node).is_overload)
-                    name_pool[dn].symbol_kind = symbol_kind.sk_overload_function;
+			if (name_pool.ContainsKey(dn))
+            {
+                name_pool[dn].offset = pos;
+                if (dn is common_namespace_function_node)
+                    if ((dn as common_namespace_function_node).is_overload)
+                        name_pool[dn].symbol_kind = symbol_kind.sk_overload_function;
+            }
+            
 			gl_members[dn] = pos;
             List<PCUWriter> pwl = null;
             //если какой-то модуль ждет смещения от этой сущности, сообщаем ему
@@ -2614,7 +2618,7 @@ namespace PascalABCCompiler.PCU
             {
                 bw.Write((byte)0);
             }
-
+            bw.Write((byte)type.type_special_kind);
             int base_class_off = (int)bw.BaseStream.Position;
 
             bw.Seek(GetSizeOfReference(type.base_type), SeekOrigin.Current);
@@ -2630,7 +2634,7 @@ namespace PascalABCCompiler.PCU
                 seek_off += GetSizeOfReference(type.ImplementingInterfaces[k] as TreeRealization.type_node);
             bw.Seek(seek_off, SeekOrigin.Current);
             bw.Write((byte)type.type_access_level);
-            bw.Write((byte)type.type_special_kind);
+            
             bw.Write(type.IsSealed);
             bw.Write(type.IsAbstract);
             bw.Write(type.IsStatic);

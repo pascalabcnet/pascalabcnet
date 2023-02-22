@@ -113,7 +113,6 @@ namespace GPPGParserScanner
             keywords.Add(Convert("with"), (int)Tokens.tkWith);
             keywords.Add(Convert("program"), (int)Tokens.tkProgram);
             keywords.Add(Convert("template"), (int)Tokens.tkTemplate);
-            keywords.Add(Convert("packed"), (int)Tokens.tkPacked);
             keywords.Add(Convert("resourcestring"), (int)Tokens.tkResourceString);
             keywords.Add(Convert("threadvar"), (int)Tokens.tkThreadvar);
             keywords.Add(Convert("sealed"), (int)Tokens.tkSealed);
@@ -145,6 +144,8 @@ namespace GPPGParserScanner
             keywords.Add(Convert("when"), (int)Tokens.tkWhen);
             keywords.Add(Convert("namespace"), (int)Tokens.tkNamespace);
             keywords.Add(Convert("static"), (int)Tokens.tkStatic);
+            keywords.Add(Convert("step"), (int)Tokens.tkStep);
+            keywords.Add(Convert("index"), (int)Tokens.tkIndex);
         }
 
         static Keywords()

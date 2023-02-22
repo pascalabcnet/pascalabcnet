@@ -89,6 +89,7 @@ namespace PascalABCCompiler.TreeConverter
 			                                              compiler_string_consts.get_array_type_name(element_type.name,rank), SemanticTree.type_access_level.tal_public,
 			                                              cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope,SystemLibrary.SystemLibrary.array_base_type.Scope), loc);
 			comtn.internal_type_special_kind = SemanticTree.type_special_kind.array_kind;
+			comtn.is_class = true;
 			comtn.add_internal_interface(aii);
 			if (!types_unsized_arrays.TryGetValue(element_type,out ret))
 			{
@@ -127,7 +128,8 @@ namespace PascalABCCompiler.TreeConverter
 		
 		//TODO: Вообще-то здесь не должно быть этого кода. Не должен type_constructor знать о этих типах. Доступ к ним должен идти через StaticSystemLib.
 		//Здесь хэшируются типы, чтобы не создавать их каждый раз. При очистке compiled_type_node.compiled_types их желательно тоже очистить.
-		//Но compiled_type_node.compiled_types все равно никто никогда не чистит.
+		//Но compiled_type_node.compiled_types все равно никто никогда не чистит. 
+        // А зря! SSM 05/04/2022
 		private static type_node _IAsyncResultType;
 		private static type_node _AsyncCallbackType;
 		
@@ -250,7 +252,8 @@ namespace PascalABCCompiler.TreeConverter
                                                         SemanticTree.type_access_level.tal_public, cmn,
                                                         convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope, SystemLibrary.SystemLibrary.delegate_base_type.Scope, "delegate " + name),
                                                         loc);
-            ctn.IsDelegate = true;
+			ctn.IsDelegate = true;
+			ctn.is_class = true;
             return ctn;
         }
 
@@ -412,6 +415,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_type_node ctn = new common_type_node(null, name, SemanticTree.type_access_level.tal_public,
 			                                            _cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope, null, "array_type " + name), loc);
 
+			ctn.is_class = true;
 			ctn.SetBaseType(SystemLibrary.SystemLibrary.object_type);
 			//DarkStar Add
 			//loc не нужно мне это!  и некому не нужно!

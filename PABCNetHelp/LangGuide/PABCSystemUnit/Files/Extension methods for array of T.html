@@ -41,10 +41,14 @@
 <tr><td><code><b>function</b> Cartesian&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества элементов, заданного массивом</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества элементов, заданного массивом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества элементов, заданного последовательностью</td></tr>
+<tr><td><code><b>function</b> Cartesian(Self: string; n: integer): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества символов, заданного строкой</td></tr>
 <tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
 <tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
+<tr><td><code><b>function</b> Combinations(Self: string; m: integer): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b>  <b>of</b> T; converter: T-&gt;T1): <b>array</b>  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива и возвращает преобразованный массив</td></tr>
@@ -122,6 +126,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки из n элементов по m</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки из n элементов по m</td></tr>
+<tr><td><code><b>function</b> Permutations(Self: string): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки букв в строке в виде последовательности строк</td></tr>
+<tr><td><code><b>function</b> Permutations(Self: string; m: integer): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк</td></tr>
 <tr><td><code><b>function</b> RandomElement&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный элемент массива</td></tr>
 <tr><td><code><b>function</b> Shuffle&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>

@@ -1,0 +1,907 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* ============================== *\
+			 page base
+\* ============================== */
+
+body {
+	background-color: #F0F0F0;
+	margin: 0px;
+	overflow: hidden;
+}
+
+.page-base {
+	position: absolute;
+	display: flex;
+}
+
+#splitter {
+	width: 5px;
+	cursor: col-resize;
+	box-shadow: 0 0 4px #B0B0B0;
+}
+
+.page-container {
+	margin: 7.5px;
+	background-color: white;
+	overflow: auto;
+	flex-grow: 1;
+}
+#page-select-container {
+	white-space: nowrap;
+}
+
+#page-display-container-body {
+	padding: 7px;
+	width: fit-content;
+}
+
+/* ============================== *\
+		    page select
+\* ============================== */
+
+.arrow-page-root {
+	cursor: pointer;
+}
+.dot-page-root {
+	cursor: default;
+	margin-left: 5px;
+	margin-right: 6px;
+}
+
+.ps-root-container {
+	margin: 7px;
+}
+
+.ps-folder {
+	display: table;
+}
+.ps-folder-name {
+	cursor: pointer;
+	padding: 1;
+}
+.ps-container {
+	margin-left: 7px;
+	padding-left: 7px;
+	border-left: thin solid;
+	border-color: #80808080;
+}
+
+.ps-page {
+}
+.ps-page-name {
+	cursor: pointer;
+	padding: 1px;
+}
+
+/* ============================== *\
+	       page display
+\* ============================== */
+
+blockquote > *:first-child {
+	margin-top: 0;
+}
+blockquote > *:last-child {
+	margin-bottom: 0;
+}
+blockquote {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 12px;
+	border-left: 5px solid #d0d0d0;
+	background-color: #f7f7f7;
+}
+
+.smart-link {
+	color: blue;
+	cursor: pointer;
+}
+
+.spoiler {
+	margin-left: 8px;
+}
+.spoiler-wrap {
+	border: solid;
+	border-width: 0px;
+	padding-left: 2px;
+}
+.spoiler-name {
+	border: solid;
+	border-width: 0px;
+}
+
+.code-block {
+	display: inline-block;
+	cursor: text;
+	border-radius: 3px;
+	
+	padding: 4px;
+	padding-right: 12px;
+	
+	margin: 0;
+	
+	position: relative;
+}
+.code-block-copier {
+	cursor: pointer;
+	padding: 2px;
+	
+	position: absolute;
+	top: 0;
+	
+	border: thin solid;
+	border-radius: 3.7px 0px 3.7px 3.7px;
+	box-shadow: -2px 2px 3px #0000004a;
+	background: linear-gradient(0deg, #f0f0f0, white);
+}
+.inline-code, .code-block {
+	background: #F0F0F0;
+}
+blockquote .inline-code,
+blockquote .code-block {
+	background: #DEDEDE;
+}
+
+.code-keyword {
+	font-weight: bold;
+}
+.code-build-in {
+	color: blue;
+}
+.code-red {
+	color: red;
+	font-weight: bold;
+}
+.code-glowing-bracket {
+	color: red;
+	background-color: #C0C0C0;
+}
+</style>
+</head>
+<body>
+<div class="page-base" id="page-select">
+	<div class="page-container" id="page-select-container"></div>
+</div>
+<div class="page-base" id="page-display">
+	<div class="page-container" id="page-display-container">
+		<div id="page-display-container-body"></div>
+	</div>
+</div>
+<div class="page-base" id="splitter"></div>
+<script>
+/* ============================== *\
+		        misc
+\* ============================== */
+
+const selected_name_color = "#eaeaea";
+const  pointed_name_color = "#d1faff";
+
+var localStorageKey = "";
+
+const get_style = (el)=>el.currentStyle || window.getComputedStyle(el);
+
+var spl_resize_event = [];
+
+/* ============================== *\
+		     page load
+\* ============================== */
+
+var root_folder = null;
+var currently_loading_folder = null;
+
+var prev_opened_folders = null;
+var opened_folders = [];
+
+var page_by_path = {};
+const define_page_with_path = (path, page)=>{
+	
+	if (page_by_path[path])
+		console.error(`page with path "${path}" defined multiple times`); else
+		page_by_path[path] = page;
+	
+	if (broken_links[path])
+	{
+		for (let lnk of broken_links[path])
+			lnk.fix(page);
+		delete broken_links[path];
+	}
+	
+}
+
+const on_start_folder = (folder_name, root_page)=>{
+	
+	let res = {
+		folders: [],
+		pages: [],
+		container: document.createElement("div"),
+		name: folder_name,
+	};
+	
+	if (!root_folder)
+	{
+		root_folder = res;
+		res.path = "";
+		
+		localStorageKey = `reference : ${folder_name} : `;
+		let prev_opened_folders_str = localStorage[localStorageKey+"opened_folders"];
+		prev_opened_folders = prev_opened_folders_str ? JSON.parse(prev_opened_folders_str) : [];
+		
+		res.container.className = "ps-root-container";
+		document.getElementById("page-select-container").append(res.container);
+	}
+	else
+	{
+		if (!root_page) {
+			res.auto_fill_content = true;
+			root_page = document.createElement("div");
+			root_page.hidden = true;
+		}
+		
+		currently_loading_folder.folders.push(res);
+		res.root = currently_loading_folder;
+		res.path = res.root.path + folder_name + '/';
+		
+		res.body = document.createElement("div");
+		res.body.className = "ps-folder";
+		{
+			let ind = prev_opened_folders.indexOf(res.path);
+			res.state = ind!==-1;
+			if (res.state)
+			{
+				prev_opened_folders.splice(ind,1);
+				opened_folders.push(res.path);
+			}
+		}
+		currently_loading_folder.container.append(res.body);
+		
+		res.update = ()=>{
+			res.state_span.innerHTML = String.fromCharCode( res.empty? 0x2022 : res.state ? 0x25BC : 0x25BA );
+			res.container.hidden = !res.state;
+		}
+		res.reverse_state = ()=>{
+			res.state = !res.state;
+			
+			if (res.state)
+				opened_folders.push(res.path); else
+				opened_folders.splice(opened_folders.indexOf(res.path), 1);
+			localStorage[localStorageKey+"opened_folders"] = JSON.stringify(opened_folders);
+			
+			res.update();
+		};
+		
+		res.state_span = document.createElement("span");
+		res.state_span.className = "dot-page-root";
+		res.state_span.innerHTML = String.fromCharCode( 0x2022 );
+		res.body.append(res.state_span);
+		
+		res.name_span = document.createElement("span");
+		res.name_span.className = "ps-folder-name";
+		res.name_span.innerHTML = folder_name;
+		root_page.name_span = res.name_span;
+		res.body.append(res.name_span);
+		//
+		res.name_span.addEventListener("click", ()=>select_page(root_page));
+		res.name_span.addEventListener("mouseenter", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor=pointed_name_color; });
+		res.name_span.addEventListener("mouseleave", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor="inherit"; });
+		
+		res.container.className = "ps-container";
+		res.body.append(res.container);
+		
+	}
+	currently_loading_folder = res;
+	
+	if (root_folder !== res) {
+		res.content_ref = root_page;
+		root_page.tree_obj = res;
+		document.getElementById("page-display-container-body").append(root_page);
+		add_to_switch_list(root_page);
+		if (!res.auto_fill_content)
+			fix_links(root_page);
+	}
+	
+}
+
+const on_page_added = (page)=>{
+	
+	let res = {
+		root: currently_loading_folder,
+		name: page.getAttribute("page_name"),
+	};
+	res.path = currently_loading_folder.path + res.name;
+	
+	res.cont_div = document.createElement("div");
+	res.cont_div.className = "ps-page";
+	currently_loading_folder.container.append(res.cont_div);
+	
+	res.dot_span = document.createElement("span");
+	res.dot_span.className = "dot-page-root";
+	res.dot_span.innerHTML = String.fromCharCode( 0x2022 );
+	res.cont_div.append(res.dot_span);
+	
+	res.name_span = document.createElement("span");
+	res.name_span.innerHTML = res.name + "<br>";
+	res.name_span.className = "ps-page-name";
+	res.name_span.addEventListener("click", ()=>select_page(page));
+	res.name_span.addEventListener("mouseenter", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor=pointed_name_color; });
+	res.name_span.addEventListener("mouseleave", ()=>{ if (is_selected(res.name_span)) res.name_span.style.backgroundColor="inherit"; });
+	res.cont_div.append(res.name_span);
+	page.name_span = res.name_span;
+	
+	res.content_ref = page;
+	page.tree_obj = res;
+	document.getElementById("page-display-container-body").append(page);
+	
+	currently_loading_folder.pages.push(res);
+	define_page_with_path(res.path, page);
+	add_to_switch_list(page);
+	fix_links(page);
+	
+	if (!selected_page && !document.location.hash) select_page(page);
+}
+
+const on_end_folder = ()=>{
+	
+	if (currently_loading_folder !== root_folder) {
+		let curr_folder = currently_loading_folder;
+		let root_page = curr_folder.content_ref;
+		
+		if ( curr_folder.folders.length || curr_folder.pages.length )
+		{
+			curr_folder.state_span.className = "arrow-page-root";
+			curr_folder.state_span.addEventListener("click", curr_folder.reverse_state);
+			curr_folder.name_span.addEventListener("dblclick", curr_folder.reverse_state);
+			curr_folder.update();
+		} else
+			curr_folder.empty = true;
+		
+		if (curr_folder.auto_fill_content) {
+			
+			if (curr_folder.folders.length)
+			{
+				let h = document.createElement("h1");
+				h.innerHTML = "Под-папки:";
+				root_page.append(h);
+				
+				let l = document.createElement("ul");
+				for (let folder of curr_folder.folders)
+				{
+					let li = document.createElement("li");
+					li.innerHTML = folder.name_span.innerHTML;
+					make_smart_link(li, folder.content_ref);
+					l.append(li);
+				}
+				root_page.append(l);
+				
+			}
+			
+			if (curr_folder.pages.length)
+			{
+				let h = document.createElement("h1");
+				h.innerHTML = "Страницы:";
+				root_page.append(h);
+				
+				let l = document.createElement("ul");
+				for (let page of curr_folder.pages)
+				{
+					let li = document.createElement("li");
+					li.innerHTML = page.name_span.innerHTML;
+					make_smart_link(li, page.content_ref);
+					l.append(li);
+				}
+				root_page.append(l);
+				
+			}
+			
+		}
+		
+		define_page_with_path(curr_folder.path, root_page);
+		currently_loading_folder = curr_folder.root;
+	} else if (!selected_page)
+		select_page(root_folder.content_ref);
+	
+}
+
+/* ============================== *\
+	        page display
+\* ============================== */
+
+var selected_page = null;
+var scroll_by_page = {};
+const is_selected = (name_span)=>(!selected_page || selected_page.name_span!==name_span);
+const select_page = (new_page)=>{
+	if (selected_page == new_page) return;
+	document.location.hash = new_page.tree_obj.path;
+	fix_element(new_page);
+	
+	let container = document.getElementById("page-display-container");
+	
+	if (selected_page)
+	{
+		scroll_by_page[selected_page.tree_obj.path] = container.scrollTop;
+		selected_page.hidden = true;
+		let name_span = selected_page.name_span;
+		if (name_span) name_span.style.backgroundColor = "inherit";
+	}
+	
+	selected_page = new_page;
+	if (selected_page)
+	{
+		selected_page.hidden = false;
+		container.focus({preventScroll: true});
+		let name_span = selected_page.name_span;
+		if (name_span) name_span.style.backgroundColor = selected_name_color;
+		
+		let tree_obj = new_page.tree_obj.root;
+		while (tree_obj)
+		{
+			if ( tree_obj.state==false && tree_obj.reverse_state ) tree_obj.reverse_state();
+			tree_obj = tree_obj.root;
+		}
+		
+		container.scrollTop = scroll_by_page[selected_page.tree_obj.path] || 0;
+	}
+}
+
+window.addEventListener("keyup", e=>{
+	if (e.code==="ArrowLeft") {
+		if (p = selected_page?.page_l) select_page(p);
+	} else
+	if (e.code==="ArrowRight") {
+		if (p = selected_page?.page_r) select_page(p);
+	}
+});
+
+const make_smart_link = (lnk, page)=>{
+	lnk.className = "smart-link";
+	lnk.addEventListener("click", ()=>select_page(page));
+}
+
+var broken_links = {};
+const define_broken_lnk = (path, source, fixer)=>{
+	if (!broken_links[path]) broken_links[path] = [];
+	broken_links[path].push({
+		source:	source,
+		fix:	fixer,
+	});
+}
+
+const add_to_switch_list = (o)=>{
+	
+	if (add_to_switch_list.last_o) {
+		o.page_l = add_to_switch_list.last_o;
+		add_to_switch_list.last_o.page_r = o;
+	}
+	add_to_switch_list.last_o = o;
+	
+}
+const fix_links = (page)=>{
+	
+	for (let lnk of page.getElementsByTagName('a'))
+	{
+		lnk.path = lnk.getAttribute("path");
+		if (!lnk.path) continue;
+		lnk.removeAttribute("path");
+		
+		start_folder = currently_loading_folder;
+		while (lnk.path.startsWith("../"))
+		{
+			start_folder = start_folder.root;
+			lnk.path = lnk.path.substr(3);
+		}
+		lnk.path = start_folder.path+lnk.path;
+		
+		let lnk_page = page_by_path[lnk.path];
+		if (lnk_page)
+			make_smart_link(lnk, lnk_page); else
+			define_broken_lnk(lnk.path, page.tree_obj.path, new_page=>make_smart_link(lnk, new_page))
+		
+	}
+	
+}
+
+const code_words_color = {
+	"pas": {
+		"keyword": [
+			"###", "##", "program", "unit", "library", "namespace",
+			"begin","end", "var", "uses", "as", "new", "try", "except", "on", "do", "finally", "const",
+			"procedure", "function", "lock", "type", "class","record", "sizeof","typeof", "external",
+			"static", "array", "where", "or","and", "public","private", "property","constructor", "default",
+			"of", "if","then","else", "div","mod", "extensionmethod", "while",
+		],
+		"build-in": [
+			"nil", "self", "true", "false", "value",
+			"string","char", "object", "pointer", "single","real",
+			"shortint", "smallint", "integer", "int64",
+			"byte", "word", "longword", "cardinal", "uint64",
+		],
+		"red": ["ToDo"],
+	},
+	"cl-c": {
+		"keyword": ["__kernel", "__global"],
+		"build-in": ["int", "void"],
+	},
+	"default": {
+		
+	}
+}
+
+const fix_element = (page)=>{
+	if (page.fixed) return;
+	page.fixed = true;
+	
+	for (let spoiler of page.getElementsByClassName('spoiler'))
+	{
+		let get_spoiler_text = ()=> + ' ' + spoiler.getAttribute('summary');
+		
+		let wrap = document.createElement('p');
+		wrap.className = "spoiler-wrap";
+		wrap.update = ()=>{
+			wrap.state_span.innerHTML = String.fromCharCode( 	spoiler.hidden ? 0x25BA	: 0x25BC );
+			wrap.style.borderLeftWidth = 						spoiler.hidden ? 0 		: 1;
+			wrap.name_span.style.borderBottomWidth = 			spoiler.hidden ? 1 		: 0;
+			wrap.style.marginLeft = 							spoiler.hidden ? 1		: 0;
+		}
+		
+		wrap.state_span = document.createElement("span");
+		wrap.append(wrap.state_span);
+		
+		wrap.name_span = document.createElement("span");
+		wrap.name_span.className = "spoiler-name";
+		wrap.name_span.innerHTML = spoiler.getAttribute("summary");
+		wrap.append(wrap.name_span);
+		
+		wrap.update();
+		wrap.reverse_state = ()=>{
+			spoiler.hidden = !spoiler.hidden;
+			wrap.update();
+		}
+		
+		wrap.state_span.addEventListener("click", wrap.reverse_state);
+		wrap.name_span.addEventListener("click", wrap.reverse_state);
+		
+		wrap.state_span.style.cursor = "pointer";
+		wrap.name_span.style.cursor = "pointer";
+		
+		spoiler.replaceWith(wrap);
+		wrap.append(spoiler);
+	}
+	
+	for (let code of page.getElementsByTagName('code'))
+	{
+		let w_to_regex = (w)=>`(?<!\\w)${w}(?!\\w)`;
+		
+		let code_html = code.innerHTML;
+		
+		// Автоопределение языка кода
+		if (!code.className)
+		{
+			let best = {lang: null, c: 0};
+			let multiple_best = true;
+			
+			for (let lang_name in code_words_color)
+			{
+				let c = 0;
+				for (let wordt in code_words_color[lang_name])
+					for (let w of code_words_color[lang_name][wordt])
+					{
+						var m = code_html.match(new RegExp( w_to_regex(w), "gi" ));
+						if (m) c += m.length;
+					}
+				
+				if (best.c == c)
+					multiple_best = true; else
+				if (best.c < c)
+				{
+					multiple_best = false;
+					best.lang = lang_name;
+					best.c = c;
+				}
+			}
+			
+			if (multiple_best)
+				code.className = "language-default"; else
+				code.className = "language-" + best.lang;
+		}
+		
+		// Подсветка особых слов в коде
+		{
+			let lang = code.className.substr("language-".length);
+			let curr_cw = code_words_color[lang];
+			if (!curr_cw) curr_cw = code_words_color["default"];
+			for (let wordt in curr_cw)
+				code_html = code_html.replace(
+					new RegExp(curr_cw[wordt].map(w_to_regex).join('|'),"gi"),
+					w=> `<span class="code-${wordt}">${w}</span>`
+				);
+		}
+		
+		// Выделение скобок
+		{
+			var br_types = {
+				op: ["(", "[", "{", "&lt;", "'"],
+				cl: [")", "]", "}", "&gt;", "'"],
+			}
+			for (let op in br_types)
+				for (let i=0; i<br_types[op].length; i++)
+					code_html = code_html.replace(
+						new RegExp('\\'+br_types[op][i], "g"),
+						`<span class=bracket ${ op=="op" ? "op=true" : "" } bt=${i}>${br_types[op][i]}</span>`
+					);
+			
+		}
+		
+		// Выделение первой строки
+		if (code.parentElement.tagName == "PRE")
+		{
+			let ind = code_html.indexOf('\n');
+			if (ind != code_html.length-1)
+				code_html = `<span class="code-first-line">${code_html.slice(0,ind)}</span>${code_html.slice(ind)}`;
+		}
+		
+		code.innerHTML = code_html;
+		code.firstLine = code.children[0];
+		if (code.firstLine && code.firstLine.className != "code-first-line") delete code.firstLine;
+		
+		// Подсветка скобок
+		{
+			let br_st = [];
+			for (let obj2 of code.getElementsByClassName("bracket"))
+			{
+				let b2t = obj2.getAttribute("bt");
+				
+				if (obj2.getAttribute("op"))
+					br_st.push({
+						obj: obj2,
+						bt: b2t,
+					}); else
+				{
+					let b1 = br_st.pop();
+					let b0 = null;
+					if (!b1) continue;
+					if (b1.obj == obj2.parentElement)
+					{
+						b0 = b1;
+						b1 = br_st.pop();
+					}
+					if (!b1) continue;
+					if (b1.bt == b2t)
+					{
+						let obj1 = b1.obj;
+						
+						let on_enter = ()=>{
+							obj1.className = "code-glowing-bracket";
+							obj2.className = "code-glowing-bracket";
+						}
+						let on_leave = ()=>{
+							obj1.className = null;
+							obj2.className = null;
+						}
+						
+						obj1.addEventListener("mouseenter", on_enter);
+						obj2.addEventListener("mouseenter", on_enter);
+						obj1.addEventListener("mouseleave", on_leave);
+						obj2.addEventListener("mouseleave", on_leave);
+					} else
+					{
+						br_st.push(b1);
+						if (b0) br_st.push(b0);
+					}
+				}
+				
+			}
+			
+		}
+		
+		if (code.parentElement.tagName == "PRE")
+		{
+			let pre = code.parentElement;
+			pre.className = 'code-block';
+			
+			let wrap = document.createElement('p');
+			pre.replaceWith(wrap);
+			wrap.append(pre);
+			
+		} else
+			code.className = "inline-code";
+		
+	}
+	
+	page.style.visibility = "hidden";
+	page.hidden = false;
+	
+	for (let code of page.getElementsByTagName('code'))
+	{
+		if (code.firstLine)
+		{
+			let pre = code.parentElement;
+			
+			let copy_button = document.createElement('div');
+			copy_button.className = "code-block-copier";
+			copy_button.innerText = "Копировать";
+			copy_button.style.visibility = "hidden";
+			pre.append(copy_button);
+			
+			copy_button.addEventListener("click", ()=>{
+				
+				if (document.selection) { // IE
+					var range = document.body.createTextRange();
+					range.moveToElementText(code);
+					range.select();
+				} else if (window.getSelection) { // other browsers
+					var range = document.createRange();
+					range.selectNode(code);
+					window.getSelection().removeAllRanges();
+					window.getSelection().addRange(range);
+				}
+				
+				var text = code.innerText;
+				navigator.clipboard.writeText(text.substring(0,text.length-1));
+			});
+			
+			copy_button.reset_right = ()=>{
+				pre_st = get_style(pre);
+				let container = document.getElementById("page-display-container");
+				let x = pre.getBoundingClientRect().right - (container.getBoundingClientRect().left+container.clientWidth);
+				if (x<0) x = 0; else
+				{
+					let max_x = pre.offsetWidth - copy_button.offsetWidth;
+					if (x>max_x) x = max_x;
+				}
+				copy_button.style.right = x;
+			};
+			let try_reset_right = ()=>{
+				if (!copy_button.hidden)
+					copy_button.reset_right();
+			};
+			spl_resize_event.push(try_reset_right);
+			window.addEventListener("resize", try_reset_right);
+			
+			pre.addEventListener("mouseenter", ()=>{
+				copy_button.hidden = false;
+				copy_button.reset_right();
+			});
+			pre.addEventListener("mouseleave", ()=>copy_button.hidden = true);
+			
+			copy_button.addEventListener("mousedown",	()=>copy_button.style.background = "linear-gradient(180deg, rgb(240, 240, 240), white)");
+			copy_button.addEventListener("mouseup",		()=>copy_button.style.background = "linear-gradient(  0deg, rgb(240, 240, 240), white)");
+			copy_button.addEventListener("mouseleave",	()=>copy_button.style.background = "linear-gradient(  0deg, rgb(240, 240, 240), white)");
+			
+			pre.style.minWidth =
+				code.firstLine.offsetWidth +
+				copy_button.offsetWidth +
+				0
+			;
+			
+			copy_button.hidden = true;
+			copy_button.style.visibility = null;
+		}
+		
+	}
+	
+	page.hidden = true;
+	page.style.visibility = null;
+}
+
+/* ============================== *\
+		        init
+\* ============================== */
+
+{
+	if (document.location.hash)
+	{
+		let get_hash = ()=>decodeURIComponent(document.location.hash.substr(1));
+		let define_hash_lnk = ()=>define_broken_lnk(
+			get_hash(),
+			"document.location.hash",
+			page=>select_page(page)
+		);
+		define_hash_lnk();
+		window.addEventListener("hashchange", ()=>{
+			let hash_page = page_by_path[get_hash()];
+			if (hash_page)
+				select_page(hash_page); else
+				define_hash_lnk();
+		});
+	}
+	
+	let page_select = document.getElementById("page-select");
+	let page_display = document.getElementById("page-display");
+	let splitter = document.getElementById("splitter");
+	
+	let ww = window.innerWidth;
+	let wh = window.innerHeight;
+	
+	for (let cont of document.getElementsByClassName("page-container"))
+	{
+		let par = cont.parentElement;
+		par.update_cont = (w)=>{
+			cont.style.width = w-15;
+			cont.style.height = wh-15;
+		};
+	}
+	
+	let spl_X = ww * 0.30;
+	const reset_spl = ()=>{
+		ww = window.innerWidth;
+		wh = window.innerHeight;
+		
+		page_select.style.height = wh + "px";
+		splitter.style.height = wh + "px";
+		page_display.style.height = wh + "px";
+		
+		if (ww-5<spl_X) spl_X = ww-5;
+		if (spl_X<5) spl_X = 5;
+		
+		page_select.style.width = spl_X + "px";
+		splitter.style.left = spl_X + "px";
+		let x2 = spl_X+splitter.clientWidth;
+		let w2 = ww - x2;
+		page_display.style.left = x2 + "px";
+		page_display.style.width = w2 + "px";
+		
+		page_select.update_cont(spl_X);
+		page_display.update_cont(w2);
+		
+		for (let handler of spl_resize_event)
+			handler();
+	}
+	reset_spl();
+	
+	window.addEventListener("resize", ()=>reset_spl());
+	
+	splitter.addEventListener("dblclick", ()=>{
+		let w = 0;
+		let psc = document.getElementsByClassName("page-container")[0];
+		let psc2 = psc.children[0];
+		for (let n of psc2.children)
+			if (n.clientWidth>w) w = n.clientWidth;
+		
+		let get_margin = (el)=>{
+			let style = get_style(el);
+			return parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+		}
+		
+		spl_X = w +
+			get_margin(psc) +
+			get_margin(psc2)
+		;
+		reset_spl();
+	});
+	
+	let spl_grabed = false;
+	splitter.addEventListener("mousedown", (e)=>{
+		spl_grabed=true;
+		e.preventDefault();
+	});
+	window.addEventListener("mousemove", (e)=>{if (spl_grabed) {
+		spl_X = e.clientX - splitter.clientWidth/2;
+		reset_spl();
+		e.preventDefault();
+	}});
+	window.addEventListener("mouseup", ()=>spl_grabed=false);
+	
+}
+
+window.onload = ()=>{
+	
+	for (path in broken_links)
+		console.error(`Page "${path}" referenced ${broken_links[path].length} times but not found:`, broken_links[path].map(lnk=>lnk.source));
+	
+	localStorage[localStorageKey+"opened_folders"] = JSON.stringify(opened_folders);
+	if (prev_opened_folders.length) console.log("folders were marked as opened, but not found:", prev_opened_folders);
+	delete prev_opened_folders;
+	
+}
+</script>
+<div id="page-1" page_name="" hidden=true>
+<p><code>ToDo</code> модуль <code>OpenGLABC</code> пока что не существует. Когда то он появится, но пока что есть только это сообщение.</p>
+<p>Если хотите понять, было ли это сообщение оставлено тут 10 лет назад и забыто - вот дата, когда автор сообщения последний раз прочитал его:<br />
+10.01.2022</p>
+</div>
+<script>on_start_folder("GL ABC", document.getElementById("page-1"))</script>
+<script>on_end_folder()</script>
+</body>
+</html>

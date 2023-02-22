@@ -1,0 +1,686 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.ML.CpuMath</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.ML.Internal.CpuMath.AlignedArray">
+             <summary>
+             This implements a logical array of floats that is automatically aligned for SSE/AVX operations.
+             To pin and force alignment, call the GetPin method, typically wrapped in a using (since it
+             returns a Pin struct that is IDisposable). From the pin, you can get the IntPtr to pass to
+             native code.
+            
+             The ctor takes an alignment value, which must be a power of two at least sizeof(float).
+             </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.AlignedArray.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Allocate an aligned vector with the given alignment (in bytes).
+            The alignment must be a power of two and at least sizeof(Float).
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.CpuAlignedVector">
+            <summary>
+            This implements a logical array of Floats that is automatically aligned for SSE/AVX operations.
+            This is a thin wrapper around the AlignedArray type implemented in C++. This simply couples
+            the AlignedArray with a logical size, which does not include padding, while the AlignedArray
+            size does include padding.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.ValueCount">
+            <summary>
+            The value count.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.VectorSize">
+            <summary>
+            The logical size of the vector.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Allocate an aligned vector with the given alignment (in bytes).
+            The alignment must be a power of two and at least sizeof(Float).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.Items">
+            <summary>
+            The physical AligenedArray items.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.CbAlign">
+            <summary>
+            The alignment.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.Item(System.Int32)">
+            <summary>
+            Set and get the value of the vector at the given index.
+            </summary>
+            <param name="index">The index</param>
+            <returns>The value at the given index</returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.GetValue(System.Int32)">
+            <summary>
+            Get the value of the vector at the given index.
+            </summary>
+            <param name="i">The index</param>
+            <returns>The value at the given index</returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.Randomize(System.Func{System.Single})">
+            <summary>
+            Assign randomized values to the vector elements via the input function.
+            </summary>
+            <param name="rand">The input rand om function that takes no arguments and returns a float value</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.Zero">
+            <summary>
+            Assign zeros to the vector elements.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.CopyTo(System.Single[],System.Int32@)">
+            <summary>
+            Copy the values into dst, starting at slot ivDst and advancing ivDst.
+            </summary>
+            <param name="dst">The destination array</param>
+            <param name="ivDst">The starting index in the destination array</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.CopyTo(System.Int32,System.Single[],System.Int32,System.Int32)">
+            <summary>
+            Copy the values from this vector starting at slot ivSrc into dst, starting at slot ivDst.
+            The number of values that are copied is determined by count.
+            </summary>
+            <param name="ivSrc">The staring index in this vector</param>
+            <param name="dst">The destination array</param>
+            <param name="ivDst">The starting index in the destination array</param>
+            <param name="count">The number of elements to be copied</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.CopyFrom(System.Single[],System.Int32@)">
+            <summary>
+            Copy the values from src, starting at slot index and advancing index, into this vector.
+            </summary>
+            <param name="src">The source array</param>
+            <param name="index">The starting index in the source array</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.CopyFrom(System.Int32,System.Single[],System.Int32,System.Int32)">
+            <summary>
+            Copy the values from src, starting at slot index and advancing index, into this vector, starting at slot ivDst.
+            The number of values that are copied is determined by count.
+            </summary>
+            <param name="ivDst">The staring index in this vector</param>
+            <param name="src">The source array</param>
+            <param name="ivSrc">The starting index in the source array</param>
+            <param name="count">The number of elements to be copied</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.CopyFrom(Microsoft.ML.Internal.CpuMath.CpuAlignedVector)">
+            <summary>
+            Copy the values of src vector into this vector. The src vector must have the same size as this vector.
+            </summary>
+            <param name="src">The source vector</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedVector.GetEnumerator">
+            <summary>
+            Get the underlying AlignedArray as IEnumerator&lt;Float&gt;.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase">
+            <summary>
+            This implements a logical matrix of Floats that is automatically aligned for SSE/AVX operations.
+            The ctor takes an alignment value, which must be a power of two at least sizeof(Float).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.ValueCount">
+            <summary>
+            The logical number values in the matrix
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.RowCount">
+            <summary>
+            The logical number of rows
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.ColCount">
+            <summary>
+            The logical number of columns
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.RowCountPhy">
+            <summary>
+            The physical number of rows
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.ColCountPhy">
+            <summary>
+            The physical number of columns
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Allocate an aligned matrix with the given alignment (in bytes).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.Randomize(System.Func{System.Single})">
+            <summary>
+            Assign randomized values to the matrix elements via the input function.
+            </summary>
+            <param name="rand">The input rand om function that takes no arguments and returns a float value</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.Zero">
+            <summary>
+            Assign zeros to the matrix elements.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase.CopyFrom(Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixBase)">
+            <summary>
+            Copy the values of src matrix into this matrix. The src matrix must have the same physical and logical size as this matrix.
+            </summary>
+            <param name="src">The source matrix</param>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRowBase">
+            <summary>
+            This implements a logical row-major matrix of Floats that is automatically aligned for SSE/AVX operations.
+            The ctor takes an alignment value, which must be a power of two at least sizeof(Float).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRowBase.RowCount">
+            <summary>
+            The logical number of rows
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRowBase.ColCount">
+            <summary>
+            The logical number of columns
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRowBase.RowCountPhy">
+            <summary>
+            The physical number of rows
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRowBase.ColCountPhy">
+            <summary>
+            The physical number of columns
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRowBase.CopyTo(System.Single[],System.Int32@)">
+            <summary>
+            Copy the values into dst, starting at slot ivDst and advancing ivDst.
+            </summary>
+            <param name="dst">The destination array</param>
+            <param name="ivDst">The starting index in the destination array</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRowBase.CopyFrom(System.Single[],System.Int32@)">
+            <summary>
+            Copy the values from src, starting at slot ivSrc and advancing ivSrc.
+            </summary>
+            <param name="src">The source array</param>
+            <param name="ivSrc">The starting index in the source array</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRowBase.GetEnumerator">
+            <summary>
+            Get the underlying AlignedArray as IEnumerator&lt;Float&gt;.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRow">
+            <summary>
+            This implements a row-major matrix of Floats that is automatically aligned for SSE/AVX operations.
+            The ctor takes an alignment value, which must be a power of two at least sizeof(Float).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRow.RowCount">
+            <summary>
+            The logical number of rows
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRow.ColCount">
+            <summary>
+            The logical number of columns
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRow.RowCountPhy">
+            <summary>
+            The physical number of rows
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRow.ColCountPhy">
+            <summary>
+            The physical number of columns
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRow.CopyTo(System.Int32,System.Single[],System.Int32@)">
+            <summary>
+            Copy the values from this matrix, starting from the row into dst, starting at slot ivDst and advancing ivDst.
+            </summary>
+            <param name="row">The starting row in this matrix</param>
+            <param name="dst">The destination array</param>
+            <param name="ivDst">The starting index in the destination array</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixRow.ZeroItems(System.Int32[])">
+            <summary>
+            Assign zeros to the values at the indices
+            </summary>
+            <param name="indices">The indices</param>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol">
+            <summary>
+            This implements a logical matrix of Floats that is automatically aligned for SSE/AVX operations.
+            The ctor takes an alignment value, which must be a power of two at least sizeof(Float).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Allocate an aligned matrix with the given alignment (in bytes).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.RowCount">
+            <summary>
+            The logical number of rows
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.ColCount">
+            <summary>
+            The logical number of columns
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.RowCountPhy">
+            <summary>
+            The physical number of rows
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.ColCountPhy">
+            <summary>
+            The physical number of columns
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.CopyTo(System.Single[],System.Int32@)">
+            <summary>
+            Copy the values into dst, starting at slot ivDst and advancing ivDst.
+            </summary>
+            <param name="dst">The destination array</param>
+            <param name="ivDst">The starting index in the destination array</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.CopyTo(System.Int32,System.Single[],System.Int32@)">
+            <summary>
+            Copy the values from this matrix, starting from the row into dst, starting at slot ivDst and advancing ivDst.
+            </summary>
+            <param name="row">The starting row in this matrix</param>
+            <param name="dst">The destination array</param>
+            <param name="ivDst">The starting index in the destination array</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.CopyFrom(System.Single[],System.Int32@)">
+            <summary>
+            Copy the values from src, starting at slot ivSrc and advancing ivSrc.
+            </summary>
+            <param name="src">The source array</param>
+            <param name="ivSrc">The starting index in the source array</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.ZeroItems(System.Int32[])">
+            <summary>
+            Assign zeros to the values at the indices
+            </summary>
+            <param name="indices">The indices</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAlignedMatrixCol.GetEnumerator">
+            <summary>
+            Get the underlying AlignedArray as IEnumerator&lt;Float&gt;.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAligenedMathUtils`1.AssertCompatible(Microsoft.ML.Internal.CpuMath.ICpuFullMatrix)">
+            <summary>
+            Assert the compatibility of the underlying AlignedArray for the input matrix in terms of alignment amount.
+            </summary>
+            <param name="values">The input matrix</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAligenedMathUtils`1.AssertCompatible(Microsoft.ML.Internal.CpuMath.ICpuVector)">
+            <summary>
+            Assert the compatibility of the underlying AlignedArray for the input vector in terms of alignment amount.
+            </summary>
+            <param name="values">The input vector</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAligenedMathUtils`1.AssertCompatible(Microsoft.ML.Internal.CpuMath.ICpuFullMatrix,Microsoft.ML.Internal.CpuMath.ICpuVector,Microsoft.ML.Internal.CpuMath.ICpuVector)">
+            <summary>
+            Asserts the following:
+            1. The compatibility of the underlying AlignedArray for mat in terms of alignment amount.
+            2. The compatibility of the underlying AlignedArray for src in terms of alignment amount.
+            3. The compatibility of the underlying AlignedArray for dst in terms of alignment amount.
+            4. The compatibility of the matrix-vector multiplication mat * src = dst.
+            </summary>
+            <param name="mat"></param>
+            <param name="src"></param>
+            <param name="dst"></param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAligenedMathUtils`1.MatTimesSrc(Microsoft.ML.Internal.CpuMath.ICpuFullMatrix,Microsoft.ML.Internal.CpuMath.ICpuVector,Microsoft.ML.Internal.CpuMath.ICpuVector)">
+            <summary>
+            Matrix multiplication:
+            dst = mat * src
+            </summary>
+            <param name="mat">The multiplier matrix</param>
+            <param name="src">The source vector</param>
+            <param name="dst">The destination vector</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuAligenedMathUtils`1.MatTranTimesSrc(Microsoft.ML.Internal.CpuMath.ICpuFullMatrix,Microsoft.ML.Internal.CpuMath.ICpuVector,Microsoft.ML.Internal.CpuMath.ICpuVector)">
+            <summary>
+            Matrix transpose multiplication:
+            dst = mat' * src
+            </summary>
+            <param name="mat">The multiplier matrix</param>
+            <param name="src">The source vector</param>
+            <param name="dst">The destination vector</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.GeneralUtils.CbitLowZero(System.UInt32)">
+            <summary>
+            Count the number of zero bits in the lonest string of zero's from the lowest significant bit of the input integer.
+            </summary>
+            <param name="u">The input integer</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuMathUtils.Compat(Microsoft.ML.Internal.CpuMath.AlignedArray)">
+            <summary>
+            
+            
+            if <paramref name="a"/>'s alignment is suitable to SSE instructions. Returns <see langword="true"/>
+            if <paramref name="a"/>'s alignment is ok and <see langword="false"/> otherwise.
+            </summary>
+            <param name="a">The vector being checked.</param>
+            <returns>Whether <paramref name="a"/> is aligned well.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.CpuMathUtils.MatrixTimesSource(System.Boolean,Microsoft.ML.Internal.CpuMath.AlignedArray,Microsoft.ML.Internal.CpuMath.AlignedArray,Microsoft.ML.Internal.CpuMath.AlignedArray,System.Int32)">
+            <summary>
+            Compute the product of matrix <paramref name="mat"/> (the matrix is flattened because its type is <see cref="T:Microsoft.ML.Internal.CpuMath.AlignedArray"/> instead of a matrix)
+            and a vector <paramref name="src"/>.
+            </summary>
+            <param name="tran">Whether to transpose <paramref name="mat"/> before doing any computation.</param>
+            <param name="mat">If <paramref name="tran"/> is <see langword="false"/>, <paramref name="mat"/> is a m-by-n matrix, and the value at the i-th row and the j-th column is indexed by i * n + j in <paramref name="mat"/>.
+            If <paramref name="tran"/> is <see langword="true"/>, <paramref name="mat"/> would be viewed a n-by-m matrix, and the value at the i-th row and the j-th column in the transposed matrix is indexed by j * m + i in the
+            original <paramref name="mat"/>.</param>
+            <param name="src">A n-by-1 matrix, which is also a vector.</param>
+            <param name="dst">A m-by-1 matrix, which is also a vector.</param>
+            <param name="crun">The truncation level of <paramref name="dst"/>. For example, if <paramref name="crun"/> is 2, <paramref name="dst"/>
+            will be considered as a 2-by-1 matrix and therefore elements after its 2nd element will be ignored. If no truncation should happen,
+            set <paramref name="crun"/> to the length of <paramref name="dst"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ICpuBuffer`1.Randomize(System.Func{`0})">
+            <summary>
+            Assign random values using the given random function.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ICpuBuffer`1.Zero">
+            <summary>
+            Set all values to zero.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ICpuBuffer`1.CopyTo(`0[],System.Int32@)">
+            <summary>
+            Copy the values into dst, starting at slot ivDst and advancing ivDst.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ICpuBuffer`1.CopyFrom(`0[],System.Int32@)">
+            <summary>
+            Copy values from the given src array into this buffer, starting at the given index in src,
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.ICpuVector">
+            <summary>
+            A logical math vector.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.ICpuVector.VectorSize">
+            <summary>
+            The vector size
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ICpuVector.GetValue(System.Int32)">
+            <summary>
+            Get the i'th component of the vector.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.ICpuMatrix.RowCount">
+            <summary>
+            The row count
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.ICpuMatrix.ColCount">
+            <summary>
+            the column count
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.ICpuFullMatrix">
+            <summary>
+            A 2-dimensional matrix.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ICpuFullMatrix.CopyTo(System.Int32,System.Single[],System.Int32@)">
+            <summary>
+            Copy the values for the given row into dst, starting at slot ivDst.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ICpuFullMatrix.ZeroItems(System.Int32[])">
+            <summary>
+            Zero out the items with the given indices.
+            The indices contain the logical indices to the vectorized representation of the matrix,
+            which can be different depending on whether the matrix is row-major or column-major.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.IntUtils.Add(System.UInt64@,System.UInt64@,System.UInt64)">
+            <summary>
+            Add src to the 128 bits contained in dst. Ignores overflow, that is, the addition is done modulo 2^128.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.IntUtils.Add(System.UInt64@,System.UInt64@,System.UInt64,System.UInt64)">
+            <summary>
+            Add src to dst. Ignores overflow, that is, the addition is done modulo 2^128.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.IntUtils.Sub(System.UInt64@,System.UInt64@,System.UInt64)">
+            <summary>
+            Subtract src from the 128 bits contained in dst. Ignores overflow, that is, the subtraction is
+            done modulo 2^128.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.IntUtils.Sub(System.UInt64@,System.UInt64@,System.UInt64,System.UInt64)">
+            <summary>
+            Subtract src from dst. Ignores overflow, that is, the subtraction is done modulo 2^128.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.IntUtils.LessThan(System.UInt64,System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Return true if a is less than b.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.IntUtils.Mul64(System.UInt64,System.UInt64,System.UInt64@)">
+            <summary>
+            Multiple the two 64-bit values to produce 128 bit result.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.IntUtils.CbitHighZero(System.UInt64)">
+            <summary>
+            Return the number of zero bits on the high end.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.ProbabilityFunctions">
+            <summary>
+            Probability Functions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ProbabilityFunctions.Erfc(System.Double)">
+            <summary>
+            The approximate complimentary error function (i.e., 1-erf).
+            </summary>
+            <param name="x">The input parameter, of infinite range.</param>
+            <returns>Evaluation of the function</returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ProbabilityFunctions.Erf(System.Double)">
+            <summary>
+            The approximate error function.
+            </summary>
+            <param name="x">The input parameter, of infinite range.</param>
+            <returns>Evaluation of the function</returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ProbabilityFunctions.Erfinv(System.Double)">
+            <summary>
+            The inverse error function.
+            </summary>
+            <param name="x">Parameter in the range 1 to -1.</param>
+            <returns>Evaluation of the function.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.ProbabilityFunctions.Probit(System.Double)">
+            <summary>
+            The probit function. This has many applications, the most familiar being perhaps
+            that this is the point "x" at which the standard normal CDF evaluates to the indicated
+            p value. It is used in establishing confidence intervals.
+            </summary>
+            <param name="p">The input p value, so in the range 0 to 1.</param>
+            <returns>One interpretation is, the value at which the standard normal CDF evaluates to p.</returns>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.Core.IExceptionContext">
+            <summary>
+            Interface for "processing" exceptions before they are thrown. This can
+            be used to add context to the exception, wrap the exception in another one,
+            totally replace the exception, etc. It is not legal to return null from
+            Process (unless null was passed in, which really shouldn't happen).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Internal.CpuMath.Core.IExceptionContext.ContextDescription">
+            <summary>
+            A string describing the context itself.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.Process``1(``0,Microsoft.ML.Internal.CpuMath.Core.IExceptionContext)">
+            <summary>
+            Does standard processing of an exception (typically called after construction
+            but before it is thrown).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.Mark``1(``0)">
+            <summary>
+            Mark the exception by setting <see cref="F:Microsoft.ML.Internal.CpuMath.Core.Contracts.IsMarkedKey"/> in the exception
+            <see cref="P:System.Exception.Data"/> to 1.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.IsMarked(System.Exception)">
+            <summary>
+            Indicates whether the exception was "marked" the Contracts code.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.MarkSensitive``1(``0,Microsoft.ML.Internal.CpuMath.Core.MessageSensitivity)">
+            <summary>
+            Exceptions whose message communicates potentially sensitive information should be
+            marked using this method, before they are thrown. Note that if the exception already
+            had this flag set, the message will be flagged with the bitwise or of the existing
+            flag, alongside the passed in sensitivity.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.Sensitivity(System.Exception)">
+            <summary>
+            This is a convenience method to get the sensitivity of an exception,
+            as encoded with <see cref="F:Microsoft.ML.Internal.CpuMath.Core.Contracts.SensitivityKey"/>. If there is no key, then
+            the message is assumed to be of unknown sensitivity, i.e., it is assumed
+            that it might contain literally anything.
+            </summary>
+            <param name="ex">The exception to query</param>
+            <returns>The value encoded at the <see cref="F:Microsoft.ML.Internal.CpuMath.Core.Contracts.SensitivityKey"/>, if it is
+            a <see cref="T:Microsoft.ML.Internal.CpuMath.Core.MessageSensitivity"/> value. If neither of these conditions
+            hold then <see cref="F:Microsoft.ML.Internal.CpuMath.Core.MessageSensitivity.Unknown"/> is returned.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.SetAssertHandler(System.Action{System.String,Microsoft.ML.Internal.CpuMath.Core.IExceptionContext})">
+            <summary>
+            Sets the assert handler to the given function, returning the previous handler.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.Except">
+            <summary>
+            Default exception type (currently InvalidOperationException)
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptUserArg(System.String)">
+            <summary>
+            For signaling bad user input.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptParam(System.String)">
+            <summary>
+            For signaling bad function parameters.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptValue(System.String)">
+            <summary>
+            For signaling null function parameters.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptEmpty(System.String)">
+            <summary>
+            For signaling null or empty function parameters (strings, arrays, collections, etc).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptWhiteSpace(System.String)">
+            <summary>
+            For signaling null, empty or white-space function parameters (strings, arrays, collections, etc).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptDecode">
+            <summary>
+            For signaling errors in decoding information, whether while reading from a file,
+            parsing user input, etc.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptIO">
+            <summary>
+            For signaling IO failures.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptNotImpl">
+            <summary>
+            For signaling functionality that is not YET implemented.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptNotSupp">
+            <summary>
+            For signaling functionality that is not implemented by design.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.ExceptSchemaMismatch(System.String,System.String,System.String)">
+            <summary>
+            For signaling schema validation issues.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.CheckUserArg(System.Boolean,System.String)">
+            <summary>
+            CheckUserArg / ExceptUserArg should be used when the validation of user-provided arguments failed.
+            Typically, this is shortly after the arguments are parsed using CmdParser.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.CheckValueOrNull``1(``0)">
+            <summary>
+            This documents that the parameter can legally be null.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.CheckValueOrNull``1(Microsoft.ML.Internal.CpuMath.Core.IExceptionContext,``0)">
+            <summary>
+            This documents that the parameter can legally be null.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.CpuMath.Core.Contracts.AssertValueOrNull``1(``0)">
+            <summary>
+            This documents that the parameter can legally be null.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.Core.BestFriendAttribute">
+            <summary>
+            Intended to be applied to types and members with internal scope to indicate that friend access of this
+            internal item is OK from another assembly. This restriction applies only to assemblies that declare the
+            <see cref="T:Microsoft.ML.Internal.CpuMath.Core.WantsToBeBestFriendsAttribute"/> assembly level attribute. Note that this attribute is not
+            transferable: an internal member with this attribute does not somehow make a containing internal type
+            accessible. Conversely, neither does marking an internal type make any unmarked internal members accessible.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Internal.CpuMath.Core.WantsToBeBestFriendsAttribute">
+            <summary>
+            This is an assembly level attribute to signal that friend accesses on this assembly should be checked
+            for usage of <see cref="T:Microsoft.ML.Internal.CpuMath.Core.BestFriendAttribute"/>. If this attribute is missing, normal access rules for
+            friends should apply.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -2729,6 +2729,7 @@ namespace PascalABCCompiler.SyntaxTree
 			_foreach_stmt.type_name = _read_node() as type_definition;
 			_foreach_stmt.in_what = _read_node() as expression;
 			_foreach_stmt.stmt = _read_node() as statement;
+			_foreach_stmt.index = _read_node() as ident;
 		}
 
 
@@ -3877,6 +3878,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_ident(yield_unknown_ident _yield_unknown_ident)
 		{
 			read_ident(_yield_unknown_ident);
+			_yield_unknown_ident.UnknownID = _read_node() as ident;
 		}
 
 
@@ -4046,7 +4048,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_is_pattern_expr(is_pattern_expr _is_pattern_expr)
 		{
-			read_expression(_is_pattern_expr);
+			read_addressed_value(_is_pattern_expr);
 			_is_pattern_expr.left = _read_node() as expression;
 			_is_pattern_expr.right = _read_node() as pattern_node;
 		}
@@ -4477,6 +4479,7 @@ namespace PascalABCCompiler.SyntaxTree
 			_foreach_stmt_formatting.il = _read_node() as ident_list;
 			_foreach_stmt_formatting.in_what = _read_node() as expression;
 			_foreach_stmt_formatting.stmt = _read_node() as statement;
+			_foreach_stmt_formatting.index = _read_node() as ident;
 		}
 
 

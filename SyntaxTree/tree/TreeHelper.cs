@@ -1385,6 +1385,10 @@ namespace PascalABCCompiler.SyntaxTree
         {
         }
 
+        public var_statement(ident id, string type, expression iv, SourceContext sc) : this(new var_def_statement(new ident_list(id, id.source_context), new named_type_reference(type), iv, sc), sc)
+        {
+        }
+
         public override string ToString()
         {
             return "var " + var_def.ToString();
@@ -1584,15 +1588,15 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class yield_unknown_ident : ident
     {
-        protected ident _UnknownID;
+        //protected ident _UnknownID;
         protected ident _ClassName;
         protected bool _IsYieldInStaticMethod;
 
-        public ident UnknownID
+        /*public ident UnknownID
         {
             get { return _UnknownID; }
             set { _UnknownID = value; }
-        }
+        }*/
 
         public ident ClassName
         {

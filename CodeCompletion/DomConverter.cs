@@ -48,6 +48,8 @@ namespace CodeCompletion
         {
             try
             {
+                if (CodeCompletionController.comp == null)
+                    return;
                 string[] files = Directory.GetFiles(Path.Combine(CodeCompletionController.comp.CompilerOptions.SystemDirectory, "Lib"), "*.pas");
                 standard_units = new SymInfo[files.Length];
                 int i = 0;
@@ -111,7 +113,8 @@ namespace CodeCompletion
 
         public void ConvertToDom(compilation_unit cu)
         {
-            CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
+            if (CodeCompletionController.comp != null)
+                CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
             visitor.Convert(cu);
             is_compiled = true;
             cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();
@@ -483,7 +486,7 @@ namespace CodeCompletion
             for (int i = 0; i < elems.Length; i++)
                 if (pattern == null || pattern == "")
                 {
-                    if (!elems[i].name.StartsWith("$") && !elems[i].name.StartsWith("<"))
+                    if (!elems[i].name.StartsWith("$") && !elems[i].name.StartsWith("<") && !elems[i].name.StartsWith("get_<>") && !elems[i].name.StartsWith("set_<>"))
                         if (all_names)
                         {
                             if (elems[i].kind != SymbolKind.Namespace || nest_level == 0)

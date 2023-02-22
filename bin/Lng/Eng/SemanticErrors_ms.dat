@@ -39,8 +39,10 @@ PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT=Procedure type sh
 ACCESS_TO_ENUM_CONST_THROUGH_OBJECT=Enum constant can not be accessed through an object
 ONE_DIM_ARRAY_OR_LIST_EXPECTED=One-dimensional array or list expected
 TUPLE_TYPE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Number of elements in tuple type must be less than 8
-OVERRIDE_METHODS_CANNOT_CONTAIN_WHERE_SECTION=Methods with override modifier can't contain where section
-Методы с модификатором override не могут содержать собственную секцию where
+OVERRIDE_WHERE_TYPE_MUST_BE_SAME=Where section of inhereted method expects generic parameter {0} to inherete from exactly {1}
+OVERRIDE_WHERE_UNEXPECTED_TYPE=Where section of inhereted method does not guarantee generic parameter {0} to inherete from {1}
+OVERRIDE_WHERE_UNEXPECTED_INTERFACE=Where section of inhereted method does not guarantee generic parameter {0} to implement {1}
+OVERRIDE_WHERE_UNEXPECTED_X=Where section of inhereted method for generic parameter {0} didn't have {1} specifier
 EXPLICIT_CASTS_FOR_LAMBDA_EXPRESSIONS_ARE_FORBIDDEN=Explicit type casts for lambda expressions are forbidden
 STATIC_CLASS_CANNOT_HAVE_PREDEFINITION=Static class cannot be predefined
 OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX=Operations cannot be called using this syntax

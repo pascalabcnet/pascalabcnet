@@ -867,9 +867,9 @@ namespace SymbolTable
         private Scope FindClassScope(Scope scope)
         {
             while (scope != null && !(scope is ClassScope))
-                if(scope is ClassMethodScope)
+                /*if(scope is ClassMethodScope)
                     scope = scope.TopScope;
-                else
+                else*/ // PVS 01/2022
                     scope = scope.TopScope;
             return scope;
         }
@@ -1109,11 +1109,9 @@ namespace SymbolTable
                     {
                         FindAllInClass(Name, CurrentArea, OnlyInThisClass, Result);
 
-                        if (Result.Count > 0) //если что-то нашли то заканчиваем
-                            return Result;
+                        //if (Result.Count > 0) //если что-то нашли то заканчиваем
+                        //    return Result;
 
-                        //Зачем искать в интерфейсах?
-                        //(ssyy) Не понимаю вопрос. Спросившему подумать, зачем в компиляторе нужен поиск.
                         FindAllInAreaList(Name, (CurrentArea as IInterfaceScope).TopInterfaceScopeArray, true, Result);
 
                         if (Result.Count > 0 || OnlyInType) //если что-то нашли то заканчиваем

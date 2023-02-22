@@ -36,12 +36,13 @@
 %token <ti> tkBackSlashRoundOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
-%token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
+%token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
 %token <ti> tkSequence tkYield tkShortProgram tkVertParen tkShortSFProgram
 %token <id> tkNew
 %token <id> tkOn 
-%token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
+%token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite 
+%token <id> tkIndex
 %token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType tkBegin tkEnd 
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
 %token <ti> tkRepeat tkUntil tkDo tkComma tkFinally tkTry
@@ -52,7 +53,8 @@
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkBigInteger tkFloat tkHex
-%token <id> tkUnknown 
+%token <id> tkUnknown
+%token <ti> tkStep 
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 
@@ -154,7 +156,7 @@
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_type_expr as_expr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type simple_type_question/*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
-%type <td> template_param template_empty_param structured_type unpacked_structured_type empty_template_type_reference simple_or_template_type_reference simple_or_template_or_question_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
+%type <td> template_param template_empty_param structured_type empty_template_type_reference simple_or_template_type_reference simple_or_template_or_question_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
 %type <stn> try_handler  
@@ -184,6 +186,7 @@
 %type <stn> const_pattern_expression pattern deconstruction_or_const_pattern pattern_optional_var collection_pattern tuple_pattern collection_pattern_list_item tuple_pattern_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list const_pattern_expr_list
 %type <stn> var_with_init_for_expr_with_let var_with_init_for_expr_with_let_list
+%type <id> index_or_nothing
 
 %%
 
@@ -1478,10 +1481,9 @@ simple_type_identifier
     ;
 
 enumeration_id_list
-    : enumeration_id tkComma enumeration_id  
+    : enumeration_id
         { 
 			$$ = new enumerator_list($1 as enumerator, @$);
-			($$ as enumerator_list).Add($3 as enumerator, @$);
         }      
     | enumeration_id_list tkComma enumeration_id
         { 
@@ -1508,13 +1510,6 @@ pointer_type
     ;
                             
 structured_type
-    : unpacked_structured_type
-		{ $$ = $1; }
-    | tkPacked unpacked_structured_type
-		{ $$ = $2; }
-    ;
-
-unpacked_structured_type
     : array_type
 		{ $$ = $1; }
     | record_type
@@ -2318,6 +2313,8 @@ typed_var_init_expression
 			var formalPars = new formal_parameters(new typed_parameters(idList, any, parametr_kind.none, null, @2), @2);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, any, $5 as statement_list, @$);
 		}
+	| new_question_expr
+		{ $$ = $1; }		
 	;
 
 typed_const_plus
@@ -2794,6 +2791,8 @@ var_stmt
 assignment
     : var_reference assign_operator expr_with_func_decl_lambda           
         {      
+        	if (!($1 is addressed_value))
+        		parsertools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",@$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
         }
     | tkRoundOpen variable tkComma variable_list tkRoundClose assign_operator expr
@@ -2804,7 +2803,7 @@ assignment
 			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}	
-    | variable tkQuestionSquareOpen format_expr tkSquareClose assign_operator expr
+/*    | variable tkQuestionSquareOpen format_expr tkSquareClose assign_operator expr
 		{
 			var fe = $3 as format_expr;
             if (!parsertools.build_tree_for_formatter)
@@ -2816,7 +2815,7 @@ assignment
             }
       		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
             $$ = new assign(left, $6, $5.type, @$);
-		}
+		}*/
     ;
     
 variable_list
@@ -3025,39 +3024,46 @@ lock_stmt
         }
 	;
 	
+index_or_nothing
+	: tkIndex tkIdentifier
+		{ $$ = $2; }
+	| 
+		{ $$ = null; }
+	;
+	
 foreach_stmt
-    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr_l1 tkDo unlabelled_stmt
+    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
         { 
-			$$ = new foreach_stmt($2, $3, $5, $7 as statement, @$);
+			$$ = new foreach_stmt($2, $3, $5, $8 as statement, $6, @$);
             if ($3 == null)
                 parsertools.AddWarningFromResource("USING_UNLOCAL_FOREACH_VARIABLE", $2.source_context);
         }
-    | tkForeach tkVar identifier tkColon type_ref tkIn expr_l1 tkDo unlabelled_stmt
+    | tkForeach tkVar identifier tkColon type_ref tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
         { 
-			$$ = new foreach_stmt($3, $5, $7, $9 as statement, @$); 
+			$$ = new foreach_stmt($3, $5, $7, $10 as statement, $8, @$); 
         }
-    | tkForeach tkVar identifier tkIn expr_l1 tkDo unlabelled_stmt
+    | tkForeach tkVar identifier tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
         { 
-			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$7, @$); 
+			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$8, $6, @$); 
         }
-    | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 tkDo unlabelled_stmt // сахарное правило
+    | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt // сахарное правило
         { 
         	if (parsertools.build_tree_for_formatter)
         	{
         		var il = $4 as ident_list;
         		il.source_context = LexLocation.MergeAll(@4,@5); // нужно дл€ форматировани€
-        		$$ = new foreach_stmt_formatting(il,$7,$9 as statement,@$);
+        		$$ = new foreach_stmt_formatting(il,$7,$10 as statement,$8,@$);
         	}
         	else
         	{
-        		// ≈сть проблема - непон€тно, где здесь сделать семантческий узед дл€ проверки
+        		// ≈сть проблема - непон€тно, где здесь сделать семантческий узел дл€ проверки
         		// ѕроверить можно и в foreach, но где-то должен быть маркер, что это сахарный узел
         		// Ќапример, идентификатор #fe - но это плоха€ иде€
                 var id = NewId("#fe",@4);
                 var tttt = new assign_var_tuple($4 as ident_list, id, @$);
-                statement_list nine = $9 is statement_list ? $9 as statement_list : new statement_list($9 as statement,@9);
+                statement_list nine = $10 is statement_list ? $10 as statement_list : new statement_list($10 as statement,@9);
                 nine.Insert(0,tttt);
-			    var fe = new foreach_stmt(id, new no_type_foreach(), $7, nine, @$);
+			    var fe = new foreach_stmt(id, new no_type_foreach(), $7, nine, $8, @$);
 			    fe.ext = $4 as ident_list;
 			    $$ = fe;
 			}
@@ -3073,7 +3079,11 @@ foreach_stmt_ident_dype_opt
 for_stmt
     : tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 optional_tk_do unlabelled_stmt
         { 
-			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, @$);
+			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, null, @$);
+        }
+    | tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 tkStep expr_l1 optional_tk_do unlabelled_stmt  
+        { 
+			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $11 as statement, $9, @$);
         }
 	;
 	
@@ -3258,6 +3268,8 @@ expr_l1
 		{ $$ = $1; }
     | new_question_expr
 		{ $$ = $1; }
+//    | var_stmt tkComma expr_l1 
+//		{ $$ = $3; }
     ;
     
 expr_l1_for_question_expr
@@ -3410,7 +3422,7 @@ new_expr
         {
         // sugared node	
         	var l = $4 as name_assign_expr_list;
-        	var exprs = l.name_expr.Select(x=>x.expr).ToList();
+        	var exprs = l.name_expr.Select(x=>x.expr.Clone() as expression).ToList();
         	var typename = "AnonymousType#"+Guid();
         	var type = new named_type_reference(typename,@1);
         	
@@ -3422,13 +3434,13 @@ new_expr
     ;
     
 field_in_unnamed_object
-	: identifier tkAssign relop_expr
+	: identifier tkAssign expr_l1
 		{
 		    if ($3 is nil_const)
 				parsertools.AddErrorFromResource("NIL_IN_UNNAMED_OBJECT",@$);		    
 			$$ = new name_assign_expr($1,$3,@$);
 		}
-	| relop_expr
+	| expr_l1
 		{
 			ident name = null;
 			var id = $1 as ident;
@@ -3989,7 +4001,7 @@ is_type_expr
         }
     | term tkIs array_type
 	    {
-            $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
+            $$ = NewAsIsExpr($1, op_typecast.is_op, $3, @$);
 	    }
     ;
     
@@ -4051,10 +4063,10 @@ tuple
 			foreach (var ex in ($4 as expression_list).expressions)
 				if (ex is unpacked_list_of_ident_or_list)
 					parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",ex.source_context);
-			/*if ($5 != null) 
+			if (!($5 is lambda_inferred_type)) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
 			if ($6 != null) 
-				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
+				parsertools.AddErrorFromResource("BAD_TUPLE",@6);
 
 			if (($4 as expression_list).Count>6) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
@@ -4183,6 +4195,8 @@ dotted_identifier
 	: identifier { $$ = $1; }
 	| dotted_identifier tkPoint identifier_or_keyword
 		{
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
 		}
 	;
@@ -4251,7 +4265,9 @@ variable
     | typeof_expr
 		{ $$ = $1; }
     | literal_or_number tkPoint identifier_or_keyword
-        { 
+        {
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");		
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
     | variable_or_literal_or_number tkSquareOpen expr_list tkSquareClose                
@@ -4316,10 +4332,14 @@ variable
 		}
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
 			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
         }
     | variable tkPoint identifier_keyword_operatorname
         {
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
         }
     | tuple tkPoint identifier_keyword_operatorname
@@ -4460,6 +4480,10 @@ identifier
 		{ $$ = $1; }
     | non_reserved
 		{ $$ = $1; }
+    | tkStep
+        { $$ = new ident($1.text, @$); }
+    | tkIndex
+        { $$ = $1; }
     ;
 
 identifier_or_keyword
@@ -5157,7 +5181,7 @@ common_lambda_body
 		}
 	| tkRoundOpen assignment tkRoundClose
 		{
-			$$ = new statement_list($2 as statement, @$);
+			$$ = new statement_list($2 as statement, @2);
 		}
 	;
 

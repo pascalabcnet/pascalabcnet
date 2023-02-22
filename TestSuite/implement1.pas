@@ -1,4 +1,4 @@
-uses implement1u;
+﻿uses implement1u;
 
 type TClass = class(System._AppDomain)
 

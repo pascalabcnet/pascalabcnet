@@ -4019,6 +4019,15 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_foreach_stmt.stmt.visit(this);
 			}
+			if (_foreach_stmt.index == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt.index.visit(this);
+			}
 		}
 
 
@@ -5981,6 +5990,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_yield_unknown_ident(yield_unknown_ident _yield_unknown_ident)
 		{
 			write_ident(_yield_unknown_ident);
+			if (_yield_unknown_ident.UnknownID == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_yield_unknown_ident.UnknownID.visit(this);
+			}
 		}
 
 
@@ -6250,7 +6268,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_is_pattern_expr(is_pattern_expr _is_pattern_expr)
 		{
-			write_expression(_is_pattern_expr);
+			write_addressed_value(_is_pattern_expr);
 			if (_is_pattern_expr.left == null)
 			{
 				bw.Write((byte)0);
@@ -7008,6 +7026,15 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_foreach_stmt_formatting.stmt.visit(this);
+			}
+			if (_foreach_stmt_formatting.index == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.index.visit(this);
 			}
 		}
 

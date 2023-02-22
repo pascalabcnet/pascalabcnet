@@ -1,59 +1,37 @@
-// "Собачка". Иллюстрация использования таймера.
-uses GraphABC, Timers;
+﻿// "Собачка". Иллюстрация использования таймера.
+uses GraphWPF, Timers;
 
 var
-  t: Timer;
-  xx,yy,px,py: integer;
+  xx,yy,px,py: real;
   
 procedure Draw;
 begin
   FillCircle(xx,yy,11);
 end;
 
-procedure Show;
-begin
-  Brush.Color := clBlack;
-  Draw;
-end;
-
-procedure Hide;
-begin
-  Brush.Color := clWhite;
-  Draw;
-end;
-
-procedure Move(x,y: integer);
-begin
-  Hide;
-  xx := x; 
-  yy := y;
-  show;
-end;
-
-procedure Timer1;
+procedure TimerProc;
 begin
   if (xx<>px) or (yy<>py) then
   begin
     var t := 1/10;
     var newx := round((1-t)*xx+t*px);
     var newy := round((1-t)*yy+t*py);
-    Move(newx,newy);
+    (xx,yy) := (newx,newy);
   end;
 end;
 
-procedure MouseMove(x,y,mb: integer);
 begin
-  px := x; py := y;
-end;
+  Window.Title := '"Собачка"';
+  Brush.Color := Colors.Black;
 
-begin
-  SetWindowCaption('"Собачка"');
-  SetSmoothingOff;
-  OnMouseMove:=MouseMove;
   xx := 100; yy := 100;
-  px := xx; py := yy;
-  Show;
-  Timer1;
-  t := new Timer(20,Timer1);
+  
+  OnMouseMove := procedure(x,y,mb) -> (px,py) := (x,y);
+
+  OnDrawFrame := dt -> begin
+    FillCircle(xx,yy,11);
+  end;
+  
+  var t := new Timer(20,TimerProc);
   t.Start;
 end.

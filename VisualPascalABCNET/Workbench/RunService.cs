@@ -30,12 +30,47 @@ namespace VisualPascalABC
         private Dictionary<string, string> RunArgumentsTable = new Dictionary<string, string>();
         bool RunActiveTabPage = false;
 
+        public event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun
+        {
+            add
+            {
+                RunnerManager.ChangeArgsBeforeRun += value;
+            }
+            remove
+            {
+                RunnerManager.ChangeArgsBeforeRun -= value;
+            }
+        }
+        // SSM 16/05/22 - добавил чтобы иметь возможность добавлять обработчики во внешнем плагине
+        public event RunnerManagerActionDelegate Starting
+        {
+            add
+            {
+                RunnerManager.Starting += value;
+            }
+            remove
+            {
+                RunnerManager.Starting -= value;
+            }
+        }
+        public event RunnerManagerActionDelegate Exited
+        {
+            add
+            {
+                RunnerManager.Exited += value;
+            }
+            remove
+            {
+                RunnerManager.Exited -= value;
+            }
+        }
+
         public WorkbenchRunService()
         {
             Workbench = WorkbenchServiceFactory.Workbench;
             RunnerManager = new RunManager(ReadStringRequest);
-            RunnerManager.Exited += new RunManager.RunnerManagerActionDelegate(RunnerManager_Exited);
-            RunnerManager.Starting += new RunManager.RunnerManagerActionDelegate(RunnerManager_Started);
+            RunnerManager.Exited += new RunnerManagerActionDelegate(RunnerManager_Exited);
+            RunnerManager.Starting += new RunnerManagerActionDelegate(RunnerManager_Started);
             RunnerManager.OutputStringReceived += new RunManager.TextRecivedDelegate(RunnerManager_OutputStringReceived);
             RunnerManager.RunnerManagerUnhanledRuntimeException += new RunManager.RunnerManagerUnhanledRuntimeExceptionDelegate(RunnerManager_RunnerManagerUnhanledRuntimeException);
             DesignerService = WorkbenchServiceFactory.DesignerService;
@@ -45,9 +80,9 @@ namespace VisualPascalABC
             DocumentService = WorkbenchServiceFactory.DocumentService;
         }
 
-        public bool Run(bool Debug)
+        public bool Run(bool RedirectConsoleIO)
         {
-            Workbench.UserOptions.RedirectConsoleIO = Debug;
+            Workbench.UserOptions.RedirectConsoleIO = RedirectConsoleIO;
 
             if (Workbench.UserOptions.RedirectConsoleIO)
                 if (!DebuggerManager.IsRunning)
@@ -119,6 +154,12 @@ namespace VisualPascalABC
                     Workbench.UserOptions.RedirectConsoleIO = true;
                 }
                 string OutputFileName = null;
+
+                if (BuildService.BeforeCompile != null)
+                {
+                    BuildService.BeforeCompile(tabPage.FileName);
+                }
+                
                 if (!forDebugging)
                 {
                     if (!ProjectFactory.Instance.ProjectLoaded)

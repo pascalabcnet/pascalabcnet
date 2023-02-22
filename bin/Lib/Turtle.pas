@@ -3,12 +3,14 @@ unit Turtle;
 
 uses GraphWPF;
 
+type Colors = GraphWPF.Colors;
+
 var 
   tp: Point;
   a: real := 0;
   dr := False;
 
-/// Поворачивает Черепаху на угол da против часовой стрелки
+/// Поворачивает Черепаху на угол da по часовой стрелке
 procedure Turn(da: real);
 begin
   a += da;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Здесь описана реализация generic-типов
 //Файлом владеет ssyy.
@@ -84,28 +84,35 @@ namespace PascalABCCompiler.TreeRealization
 
         public static List<generic_parameter_eliminations> make_eliminations_compiled(Type[] pars)
         {
-            List<generic_parameter_eliminations> _parameters_eliminations = new List<generic_parameter_eliminations>();
+            List<generic_parameter_eliminations> _parameters_eliminations = new List<generic_parameter_eliminations>(pars.Length);
             foreach (Type t in pars)
             {
                 generic_parameter_eliminations gpe = new generic_parameter_eliminations();
+
                 gpe.has_default_ctor =
                     ((t.GenericParameterAttributes &
                     GenericParameterAttributes.DefaultConstructorConstraint) != 0);
                 if (gpe.has_default_ctor)
                     gpe.has_explicit_default_ctor = true;
+
                 gpe.is_class =
                     ((t.GenericParameterAttributes &
                     GenericParameterAttributes.ReferenceTypeConstraint) != 0);
                 gpe.is_value =
                     ((t.GenericParameterAttributes &
                     GenericParameterAttributes.NotNullableValueTypeConstraint) != 0);
+
                 gpe.base_class = compiled_type_node.get_type_node(t.BaseType);
+                if (gpe.is_value && gpe.base_class == SystemLibrary.SystemLibrary.value_type)
+                    gpe.base_class = SystemLibrary.SystemLibrary.object_type;
+
                 Type[] net_interf = t.GetInterfaces();
                 gpe.implementing_interfaces = new List<type_node>(net_interf.Length);
                 foreach (Type net_t in net_interf)
                 {
                     gpe.implementing_interfaces.Add(compiled_type_node.get_type_node(net_t));
                 }
+
                 _parameters_eliminations.Add(gpe);
             }
             return _parameters_eliminations;
@@ -153,15 +160,7 @@ namespace PascalABCCompiler.TreeRealization
                 generic_parameter_eliminations gpe = gpe_list[i];
                 type_node tn = tparams[i];
                 
-                if (gpe.is_class && !tn.is_class && !(tn.is_generic_parameter && tn.base_type != null && tn.base_type.is_class))
-                {
-                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
-                }
-                if (gpe.is_value && (!tn.is_value || tn.BaseFullName != null && tn.BaseFullName.StartsWith("System.Nullable")) /*&& !tn.is_generic_parameter*/)
-                {
-                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_VALUE_TYPE", tn.PrintableName);
-                }
-                if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type && !tn.is_value)
+                if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type)
                 {
                     type_node base_type = generic_convertions.determine_type(gpe.base_class, tparams, method_param_types);
                     // Если tn не соврадает со своим базовым типом и
@@ -169,12 +168,16 @@ namespace PascalABCCompiler.TreeRealization
                     // tn - не generic параметр - закомментировал
                     if (base_type != tn && !type_table.is_derived(base_type, tn) /*&& !tn.is_generic_parameter*/)
                     {
-                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.name);
+                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.PrintableName);
                     }
                 }
-                if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type && tn.is_value && !gpe.base_class.is_value && gpe.base_class != SystemLibrary.SystemLibrary.value_type && gpe.base_class != SystemLibrary.SystemLibrary.enum_base_type)
+                if (gpe.is_class && !tn.is_class)
                 {
                     return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
+                }
+                if (gpe.is_value && (!tn.is_value || tn.BaseFullName != null && tn.BaseFullName.StartsWith("System.Nullable")) /*&& !tn.is_generic_parameter*/)
+                {
+                    return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_VALUE_TYPE", tn.PrintableName);
                 }
                 foreach (type_node interf in gpe.implementing_interfaces)
                 {
@@ -183,7 +186,7 @@ namespace PascalABCCompiler.TreeRealization
                         (tn.ImplementingInterfaces == null ||
                         !type_table.is_derived(di, tn)))
                     {
-                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_IMPLEMENT_INTERFACE_{1}", tn.PrintableName, di.name);
+                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_IMPLEMENT_INTERFACE_{1}", tn.PrintableName, di.PrintableName);
                     }
                 }
                 if (tn.IsStatic)
@@ -313,8 +316,11 @@ namespace PascalABCCompiler.TreeRealization
             return null;
         }
 
-        public static void init_generic_instance(type_node original, generic_instance_type_node instance, /*SymbolTable.ClassScope instance_scope,*/ List<type_node> param_types)
+        public static void init_generic_instance(generic_instance_type_node instance/*, SymbolTable.ClassScope instance_scope*/)
         {
+            var original = instance.original_generic;
+            var param_types = instance.instance_params;
+
             instance.IsInterface = original.IsInterface;
             instance.is_class = original.is_class;
             instance.internal_is_value = original.is_value;
@@ -331,12 +337,15 @@ namespace PascalABCCompiler.TreeRealization
             
             //instance._scope = new SymbolTable.GenericTypeInstanceScope(instance, instance.original_generic.Scope, btype.Scope);
 
+            // Создаются лениво
+            /**
             foreach (type_node interf in original.ImplementingInterfaces)
             {
                 instance.ImplementingInterfaces.Add(
                     determine_type(interf, param_types, false)
                     );
             }
+            /**/
 
             SystemLibrary.SystemLibrary.init_reference_type(instance);
             instance.conform_basic_functions();
@@ -427,7 +436,7 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     catch(Exception e)
                     {
-                        e = e;
+                        // e = e; // PVS 01/2022
                     }
                 }
                 else
@@ -878,10 +887,20 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         //Проверяем фактические, попадающие под params...
                         type_node tn = fact[i].type;
+                        bool deduce_empty_func_call = false;
+                        if (tn is delegated_methods && (tn as delegated_methods).empty_param_method != null && last_params_type.is_generic_parameter)
+                        {
+                            tn = (tn as delegated_methods).empty_param_method.ret_type;
+                            deduce_empty_func_call = true;
+                        }
+                            
                         if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper)
                             tn = tn.element_type;
+                        
                         if (!DeduceInstanceTypes(last_params_type, tn, deduced, nils, generic_params))
                         {
+                            if (deduce_empty_func_call && DeduceInstanceTypes(last_params_type, fact[i].type, deduced, nils, generic_params))
+                                continue;
                             if (alone)
                                 throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
                             return null;
@@ -1062,6 +1081,8 @@ namespace PascalABCCompiler.TreeRealization
         public static bool DeduceInstanceTypes(type_node formal_type, type_node fact_type, type_node[] deduced, List<int> nils, List<type_node> generic_params)
         {
             if (fact_type == null)//issue #347
+                return false;
+            if (formal_type == null)
                 return false;
             if (formal_type.generic_function_container == null && fact_type.generic_function_container != null)
             {
@@ -1562,6 +1583,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             _original_generic = original_generic_type;
             _instance_params = param_types;
+            SetImplementingInterfaces(null);
         }
 
         public List<SemanticTree.ITypeNode> generic_parameters
@@ -1577,6 +1599,29 @@ namespace PascalABCCompiler.TreeRealization
                     }
                 }
                 return _generic_parameters;
+            }
+        }
+
+        public override List<SemanticTree.ITypeNode> ImplementingInterfaces
+        {
+            get
+            {
+                var res = base.ImplementingInterfaces;
+                if (res==null)
+                {
+                    res = new List<SemanticTree.ITypeNode>();
+                    foreach (type_node interf in original_generic.ImplementingInterfaces)
+                        res.Add(generic_convertions.determine_type(interf, this.instance_params, false));
+                    SetImplementingInterfaces(res);
+                }
+                return res;
+            }
+        }
+        public override List<SemanticTree.ITypeNode> ImplementingInterfacesOrEmpty
+        {
+            get
+            {
+                return base.ImplementingInterfaces ?? new List<SemanticTree.ITypeNode>();
             }
         }
 
@@ -1736,7 +1781,7 @@ namespace PascalABCCompiler.TreeRealization
                 cmn.overrided_method = common_orig.overrided_method;
             if (orig_fn.is_generic_function)
             {
-                cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true);
+                cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true, orig_tpars);
             }
             if (orig_fn is common_function_node)
             {
