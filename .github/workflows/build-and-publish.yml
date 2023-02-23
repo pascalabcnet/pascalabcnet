@@ -14,17 +14,17 @@ defaults:
 jobs:
   build:
 
-    name: Prepare and build on Windows Server 2019 VM
-    runs-on: windows-2019
+    name: Prepare and build on Windows Server VM
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies into Virtual Environment...
       run: _RegisterHelixNUnit.bat
 
     - name: Build project in Release-mode, compile Pas-units, create install packages...
       run: _GenerateAllSetups.bat
-      timeout-minutes: 30
+      timeout-minutes: 35
       env:
         PABCNET_BUILD_MODE: Release
         PABCNET_RUN_TESTS:  false
@@ -32,31 +32,36 @@ jobs:
         PABCNET_VERBOSE:    false
 
     - name: Publish artifacts (1/4)...
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: PascalABCNET_Win7_IDE_Full
         path: Release/PascalABCNETSetup.exe
+      if-no-files-found: error
 
     - name: Publish artifacts (2/4)...
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: PascalABCNET_Win7_IDE_Mini
         path: Release/PascalABCNETMiniSetup.exe
+      if-no-files-found: error
 
     - name: Publish artifacts (3/4)...
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: PascalABCNET_WinXP_IDE_Full
         path: Release/PascalABCNETWithDotNet40Setup.exe
+      if-no-files-found: error
 
     - name: Publish artifacts (4/4)...
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: PascalABCNET_Win_Mac_Linux_console
         path: Release/PABCNETC.zip
+      if-no-files-found: error
 
     #- name: Publish artifacts (5/5)...
-    #  uses: actions/upload-artifact@v2
+    #  uses: actions/upload-artifact@v3
     #  with:
     #    name: All_distros
     #    path: Release
+    #  if-no-files-found: error
