@@ -598,6 +598,7 @@ namespace PascalABCCompiler.TreeRealization
                         // еще где то надо проверять, что IEnumerable<Derived> -> IEnumerable<Base>, но здесь base_class предполагает, 
                         // что это - класс, и рассматривает все его интерфейсы, упуская ситуацию, когда base_class - это и есть интерфейс
                         //else if ((cgitn != null || ctn != null) && (bcgitn != null || bcctn != null))
+                        //else if (cgitn != null && (bcgitn != null || bcctn != null))
                         //else if ((cgitn != null || ctn != null) && bcgitn != null)
                         else if (cgitn != null && bcgitn != null)
                         {
@@ -656,7 +657,7 @@ namespace PascalABCCompiler.TreeRealization
                         }
                         else if (interf is compiled_type_node ictn && base_class is compiled_type_node bctn)
                         {
-                            if (ictn.compiled_type.AssemblyQualifiedName != null &&  ictn.compiled_type.AssemblyQualifiedName == bctn.compiled_type.AssemblyQualifiedName)
+                            if (ictn.compiled_type.AssemblyQualifiedName != null && ictn.compiled_type.AssemblyQualifiedName == bctn.compiled_type.AssemblyQualifiedName)
                             {
                                 implements = true;
                                 break;

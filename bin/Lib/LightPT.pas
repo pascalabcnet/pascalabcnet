@@ -2,7 +2,7 @@
 unit LightPT;
 {$reference System.Net.Http.dll}
 {$reference System.Security.dll}
-{$reference System.Management.dll}
+//{reference System.Management.dll}
 uses __RedirectIOMode;
 
 // Любые существенные изменения в этом модуле влияют на все Tasks, составленные всеми.
@@ -244,7 +244,7 @@ end;
 
 function ProcessorId: string;
 begin
-  var mbs := new ManagementObjectSearcher('Select ProcessorId From Win32_processor');
+  {var mbs := new ManagementObjectSearcher('Select ProcessorId From Win32_processor');
   var mbsList := mbs.Get();
   Result := '';
   foreach var mo: ManagementObject in mbsList do
@@ -254,7 +254,8 @@ begin
       Result := pId.ToString()
     else Result := 'AAAAAAAAAAAAAAAA';
     break;
-  end;
+  end;}
+  Result := 'AAAAAAAAAAAAAAAA';
 end;
 
 function Encrypt(src: string): array of byte; // записать в файл

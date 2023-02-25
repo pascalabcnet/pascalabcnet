@@ -12,7 +12,7 @@ namespace VisualPascalABCPlugins
     {
         public static string ProcessorId()
         {
-            var mbs = new ManagementObjectSearcher("Select ProcessorId From Win32_processor");
+            /*var mbs = new ManagementObjectSearcher("Select ProcessorId From Win32_processor");
             var mbsList = mbs.Get();
             foreach (ManagementObject mo in mbsList)
             {
@@ -20,8 +20,8 @@ namespace VisualPascalABCPlugins
                 if (pId != null)
                     return pId.ToString();
                 else return "AAAAAAAAAAAAAAAA";
-            }
-            return "";
+            }*/
+            return "AAAAAAAAAAAAAAAA";
         }
 
         public static byte[] Encrypt(string src)
