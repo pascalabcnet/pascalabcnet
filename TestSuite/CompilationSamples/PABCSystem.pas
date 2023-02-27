@@ -8586,9 +8586,9 @@ begin
   if d > Result then Result := d;
 end;
 
-function Max(params a: array of integer): integer := a.Max;
+//function Max(params a: array of integer): integer := a.Max;
 
-function Max(params a: array of real): real := a.Max;
+//function Max(params a: array of real): real := a.Max;
 
 
 function Min(a, b: byte) := Math.Min(a, b);
