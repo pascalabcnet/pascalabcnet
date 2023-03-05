@@ -173,5 +173,6 @@ ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED=Нельзя вывести 
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Очікувався модуль, а зустріли бібліотеку
 ASSEMBLY_{0}_READING_ERROR=Помилка при читанні збірки '{0}'
 INVALID_ASSEMBLY_PATH=Шлях до збірки має неприпустимі символи
+INVALID_PATH=Шлях має неприпустимі символи
 INCLUDE_NAMESPACE_IN_UNIT=Использование includenamespace в модулях недопустимо
 NAMESPACE_MODULE_EXPECTED=Ожидалось пространство имен
