@@ -1,4 +1,4 @@
-name: Build & Publish (release)
+Тоname: Build & Publish (release)
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
 
     - name: Build project in Release-mode, compile Pas-units, create install packages...
       run: _GenerateAllSetups.bat
-      timeout-minutes: 35
+      timeout-minutes: 45
       env:
         PABCNET_BUILD_MODE: Release
         PABCNET_RUN_TESTS:  false
