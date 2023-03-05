@@ -2686,7 +2686,7 @@ namespace PascalABCCompiler
             }
             //\MikhailoMMX
 
-            var FullFileName = CombinePathWithCheck(curr_path, FileName, new location(sc.begin_position.line_num, sc.begin_position.column_num, sc.end_position.line_num, sc.end_position.column_num, new document(sc.FileName)));
+            var FullFileName = Path.Combine(curr_path, FileName);
             if (System.IO.File.Exists(FullFileName))
             {
                 var NewFileName = Path.Combine(compilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
