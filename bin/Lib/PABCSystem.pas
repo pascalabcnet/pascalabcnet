@@ -258,6 +258,9 @@ type
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
+  /// Преобразует значение одного базового типа к другому базовому типу
+  Convert = System.Convert;
+  
   /// Указывает на возможность сериализации класса
   Serializable = System.SerializableAttribute;
   
