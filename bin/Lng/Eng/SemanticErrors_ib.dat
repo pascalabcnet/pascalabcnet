@@ -181,5 +181,6 @@ ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED=Cannot deduce type of anonym
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'
 INVALID_ASSEMBLY_PATH=Assembly path has invalid characters
+INVALID_PATH=The path has invalid characters
 INCLUDE_NAMESPACE_IN_UNIT=Cannot use includenamespace in units
 NAMESPACE_MODULE_EXPECTED=namespace expected

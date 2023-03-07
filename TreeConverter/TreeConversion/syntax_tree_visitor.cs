@@ -12496,6 +12496,8 @@ namespace PascalABCCompiler.TreeConverter
                         for (int i = 0; i < cnstr_args.expressions.Count; i++)
                         {
                             constant_node cn = convert_strong_to_constant_node(cnstr_args.expressions[i]);
+                            if (cn is basic_function_call_as_constant && (cn as basic_function_call_as_constant).method_call.function_node.compile_time_executor != null)
+                                cn = (cn as basic_function_call_as_constant).method_call.function_node.compile_time_executor(cn.location, (cn as basic_function_call_as_constant).method_call.parameters.ToArray()) as constant_node;
                             check_for_strong_constant(cn, get_location(cnstr_args.expressions[i]));
                             args.AddElement(cn);
                         }

@@ -270,6 +270,15 @@ namespace PascalABCCompiler
         }
     }
 
+    public class InvalidPathError : CompilerCompilationError
+    {
+        public InvalidPathError(SyntaxTree.SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_INVALID_PATH")))
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class ResourceFileNotFound : CompilerCompilationError
     {
         public ResourceFileNotFound(string ResFileName, TreeRealization.location sl)
@@ -1812,7 +1821,19 @@ namespace PascalABCCompiler
             CompilerOptions.OutputDirectory = project.output_directory;
         }
         
-		public string Compile()
+        private static string CombinePathWithCheck(string path1, string path2, location loc)
+        {
+            try
+            {
+                return Path.Combine(path1, path2);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidPathError(loc);
+            }
+        }
+
+        public string Compile()
         {
 			
 			try
@@ -2007,7 +2028,7 @@ namespace PascalABCCompiler
                     {
                         ErrorsList.Add(new MainResourceNotAllowed(cds[0].location));
                     }
-                    cdo.MainResourceFileName = Path.Combine(Path.GetDirectoryName(cds[0].source_file), cds[0].directive);
+                    cdo.MainResourceFileName = CombinePathWithCheck(Path.GetDirectoryName(cds[0].source_file), cds[0].directive, cds[0].location);
                     if (!File.Exists(cdo.MainResourceFileName))
                     {
                         ErrorsList.Add(new ResourceFileNotFound(cds[0].directive, cds[0].location));
@@ -2021,7 +2042,7 @@ namespace PascalABCCompiler
                     List<TreeRealization.compiler_directive> ResourceDirectives = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_resource];
                     foreach (TreeRealization.compiler_directive cd in ResourceDirectives)
                     {
-                        var resource_fname = Path.Combine(Path.GetDirectoryName(cd.source_file), cd.directive);
+                        var resource_fname = CombinePathWithCheck(Path.GetDirectoryName(cd.source_file), cd.directive, cd.location);
                         
                         if (File.Exists(resource_fname))
                             ResourceFiles.Add(resource_fname);
@@ -2275,6 +2296,7 @@ namespace PascalABCCompiler
             }
             catch (Exception err)
             {
+                
             	string fn = "Compiler";
                 if (CurrentCompilationUnit != null && this.CurrentCompilationUnit.SyntaxTree != null) fn = Path.GetFileName(this.CurrentCompilationUnit.SyntaxTree.file_name);
                 Errors.CompilerInternalError comp_err = new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", fn), err);
