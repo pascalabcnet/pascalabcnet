@@ -81,6 +81,8 @@ namespace PascalABCCompiler
                     return true;
 
                 case "output":
+                    if (!Compiler.CheckPathValid(value))
+                        return false;
                     co.OutputFileName = Path.GetFileName(value);
                     if (Path.IsPathRooted(value))
                     {
