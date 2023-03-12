@@ -5219,7 +5219,7 @@ namespace PascalABCCompiler.TreeConverter
                 foreach (SymbolInfo func in funcs)
                 {
                     function_node f = func.sym_info as function_node;
-                    if (f.is_generic_function)
+                    if (f != null && f.is_generic_function)
                     {
                         //Проверяем на совпадение
                         bool found = false;
