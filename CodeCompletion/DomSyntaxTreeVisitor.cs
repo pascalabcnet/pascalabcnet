@@ -2585,6 +2585,7 @@ namespace CodeCompletion
                     else if (dir.Name.text.ToLower() == "includenamespace")
                     {
                         string directive = dir.Directive.text.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+                        Compiler.TryThrowInvalidPath(directive, dir.source_context);
 
                         if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
                         {
@@ -2843,6 +2844,7 @@ namespace CodeCompletion
                     else if (dir.Name.text.ToLower() == "includenamespace")
                     {
                         string directive = dir.Directive.text.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+                        Compiler.TryThrowInvalidPath(directive, dir.source_context);
 
                         if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
                         {
