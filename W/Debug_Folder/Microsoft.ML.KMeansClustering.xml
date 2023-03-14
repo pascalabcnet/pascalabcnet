@@ -1,0 +1,383 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.ML.KMeansClustering</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.ML.KMeansClusteringExtensions">
+            <summary>
+            Collection of extension methods for the <see cref="T:Microsoft.ML.ClusteringCatalog.ClusteringTrainers"/> to create
+            instances of KMeans trainers.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.KMeansClusteringExtensions.KMeans(Microsoft.ML.ClusteringCatalog.ClusteringTrainers,System.String,System.String,System.Int32)">
+            <summary>
+            Train a KMeans++ clustering algorithm using <see cref="T:Microsoft.ML.Trainers.KMeansTrainer"/>.
+            </summary>
+            <param name="catalog">The clustering catalog trainer object.</param>
+            <param name="featureColumnName">The name of the feature column.</param>
+            <param name="exampleWeightColumnName">The name of the example weight column (optional).</param>
+            <param name="numberOfClusters">The number of clusters to use for KMeans.</param>
+            <example>
+            <format type="text/markdown">
+            <![CDATA[
+             [!code-csharp[KMeans](~/../docs/samples/docs/samples/Microsoft.ML.Samples/Dynamic/Trainers/Clustering/KMeans.cs)]
+            ]]></format>
+            </example>
+        </member>
+        <member name="M:Microsoft.ML.KMeansClusteringExtensions.KMeans(Microsoft.ML.ClusteringCatalog.ClusteringTrainers,Microsoft.ML.Trainers.KMeansTrainer.Options)">
+            <summary>
+            Train a KMeans++ clustering algorithm using <see cref="T:Microsoft.ML.Trainers.KMeansTrainer"/>.
+            </summary>
+            <param name="catalog">The clustering catalog trainer object.</param>
+            <param name="options">Algorithm advanced options.</param>
+            <example>
+            <format type="text/markdown">
+            <![CDATA[
+             [!code-csharp[KMeans](~/../docs/samples/docs/samples/Microsoft.ML.Samples/Dynamic/Trainers/Clustering/KMeansWithOptions.cs)]
+            ]]></format>
+            </example>
+        </member>
+        <member name="T:Microsoft.ML.Trainers.KMeansModelParameters">
+            <example>
+            <format type="text/markdown">
+            <![CDATA[
+             [!code-csharp[KMeans](~/../docs/samples/docs/samples/Microsoft.ML.Samples/Dynamic/Trainers/Clustering/KMeans.cs)]
+            ]]></format>
+            </example>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansModelParameters.GetVersionInfo">
+            <summary>
+            Version information to be saved in binary format
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansModelParameters.#ctor(Microsoft.ML.Runtime.IHostEnvironment,System.Int32,Microsoft.ML.Data.VBuffer{System.Single}[],System.Boolean)">
+            <summary>
+            Initialize predictor with a trained model.
+            </summary>
+            <param name="env">The host environment</param>
+            <param name="k">Number of centroids</param>
+            <param name="centroids">Coordinates of the centroids</param>
+            <param name="copyIn">If true then the <paramref name="centroids"/> vectors will be subject to
+            a deep copy, if false then this constructor will take ownership of the passed in centroid vectors.
+            If false then the caller must take care to not use or modify the input vectors once this object
+            is constructed, and should probably remove all references.</param>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansModelParameters.#ctor(Microsoft.ML.Runtime.IHostEnvironment,Microsoft.ML.ModelLoadContext)">
+            <summary>
+            Initialize predictor from a binary file.
+            </summary>
+            <param name="ctx">The load context</param>
+            <param name="env">The host environment</param>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansModelParameters.SaveCore(Microsoft.ML.ModelSaveContext)">
+            <summary>
+            Save the predictor in binary format.
+            </summary>
+            <param name="ctx">The context to save to</param>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansModelParameters.Create(Microsoft.ML.Runtime.IHostEnvironment,Microsoft.ML.ModelLoadContext)">
+            <summary>
+            This method is called by reflection to instantiate a predictor.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansModelParameters.InitPredictor">
+            <summary>
+            Initialize internal parameters: L2 norms of the _centroids.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansModelParameters.GetClusterCentroids(Microsoft.ML.Data.VBuffer{System.Single}[]@,System.Int32@)">
+            <summary>
+            Copies the centroids to a set of provided buffers.
+            </summary>
+            <param name="centroids">The buffer to which to copy. Will be extended to
+            an appropriate length, if necessary.</param>
+            <param name="k">The number of clusters, corresponding to the logical size of
+            <paramref name="centroids"/>.</param>
+        </member>
+        <member name="T:Microsoft.ML.Trainers.KMeansTrainer">
+             <summary>
+             The <see cref="T:Microsoft.ML.IEstimator`1"/> for training a KMeans clusterer
+             </summary>
+             <remarks>
+             <format type="text/markdown"><![CDATA[
+             To create this trainer, use [KMeans](xref:Microsoft.ML.KMeansClusteringExtensions.KMeans(Microsoft.ML.ClusteringCatalog.ClusteringTrainers,System.String,System.String,System.Int32))
+             or [Kmeans(Options)](xref:Microsoft.ML.KMeansClusteringExtensions.KMeans(Microsoft.ML.ClusteringCatalog.ClusteringTrainers,Microsoft.ML.Trainers.KMeansTrainer.Options)).
+            
+             [!include[io](~/../docs/samples/docs/api-reference/io-columns-clustering.md)]
+            
+             ### Trainer Characteristics
+             |  |  |
+             | -- | -- |
+             | Machine learning task | Clustering |
+             | Is normalization required? | Yes |
+             | Is caching required? | Yes |
+             | Required NuGet in addition to Microsoft.ML | None |
+             | Exportable to ONNX | Yes |
+            
+             ### Training Algorithm Details
+             [K-means](https://en.wikipedia.org/wiki/K-means_clustering) is a popular clustering algorithm.
+             With K-means, the data is clustered into a specified number of clusters in order to minimize the within-cluster sum of squared distances.
+             This implementation follows the [Yinyang K-means method](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/ding15.pdf).
+             For choosing the initial cluster centeroids, one of three options can be used:
+             - Random initialization. This might lead to potentially bad approximations of the optimal clustering.
+             - The K-means++ method. This is an [improved initialization algorithm](https://en.wikipedia.org/wiki/K-means%2b%2b#Improved_initialization_algorithm)
+             introduced [here](http://ilpubs.stanford.edu:8090/778/1/2006-13.pdf) by Ding et al., that guarantees to find
+             a solution that is $O(log K)$ competitive to the optimal K-means solution.
+             - The K-means|| method. This method was introduced [here](https://theory.stanford.edu/~sergei/papers/vldb12-kmpar.pdf) by Bahmani et al., and uses
+             a parallel method that drastically reduces the number of passes needed to obtain a good initialization.
+            
+             K-means|| is the default initialization method. The other methods can be specified in the [Options](xref:Microsoft.ML.Trainers.KMeansTrainer.Options)
+             when creating the trainer using
+             [KMeansTrainer(Options)](xref:Microsoft.ML.KMeansClusteringExtensions.KMeans(Microsoft.ML.ClusteringCatalog.ClusteringTrainers,Microsoft.ML.Trainers.KMeansTrainer.Options)).
+            
+             ### Scoring Function
+             The output Score column contains the square of the $L_2$-norm distance (i.e., [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)) of the given input vector $\textbf{x}\in \mathbb{R}^n$ to each cluster's centroid.
+             Assume that the centriod of the $c$-th cluster is $\textbf{m}_c \in \mathbb{R}^n$.
+             The $c$-th value at the Score column would be $d_c = || \textbf{x} - \textbf{m}\_c ||\_2^2$.
+             The predicted label is the index with the smallest value in a $K$ dimensional vector $[d\_{0}, \dots, d\_{K-1}]$, where $K$ is the number of clusters.
+            
+             For more information on K-means, and K-means++ see:
+             [K-means](https://en.wikipedia.org/wiki/K-means_clustering)
+             [K-means++](https://en.wikipedia.org/wiki/K-means%2b%2b)
+            
+             Check the See Also section for links to usage examples.
+             ]]>
+             </format>
+             </remarks>
+             <seealso cref="T:Microsoft.ML.Trainers.KMeansTrainer" />
+        </member>
+        <member name="F:Microsoft.ML.Trainers.KMeansTrainer.Defaults.NumberOfClusters">
+            <value>The number of clusters.</value>
+        </member>
+        <member name="T:Microsoft.ML.Trainers.KMeansTrainer.Options">
+            <summary>
+            Options for the <see cref="T:Microsoft.ML.Trainers.KMeansTrainer"/> as used in [KMeansTrainer(Options)](xref:Microsoft.ML.KMeansClusteringExtensions.KMeans(Microsoft.ML.ClusteringCatalog.ClusteringTrainers,Microsoft.ML.Trainers.KMeansTrainer.Options)).
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Trainers.KMeansTrainer.Options.NumberOfClusters">
+            <summary>
+            The number of clusters.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Trainers.KMeansTrainer.Options.InitializationAlgorithm">
+            <summary>
+            Cluster initialization algorithm.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Trainers.KMeansTrainer.Options.OptimizationTolerance">
+            <summary>
+            Tolerance parameter for trainer convergence. Low = slower, more accurate.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Trainers.KMeansTrainer.Options.MaximumNumberOfIterations">
+            <summary>
+            Maximum number of iterations.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Trainers.KMeansTrainer.Options.AccelerationMemoryBudgetMb">
+            <summary>
+            Memory budget (in MBs) to use for KMeans acceleration.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Trainers.KMeansTrainer.Options.NumberOfThreads">
+            <summary>
+            Degree of lock-free parallelism. Defaults to automatic. Determinism not guaranteed.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansTrainer.#ctor(Microsoft.ML.Runtime.IHostEnvironment,Microsoft.ML.Trainers.KMeansTrainer.Options)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.ML.Trainers.KMeansTrainer"/>
+            </summary>
+            <param name="env">The <see cref="T:Microsoft.ML.Runtime.IHostEnvironment"/> to use.</param>
+            <param name="options">The advanced options of the algorithm.</param>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansPlusPlusInit.Initialize(Microsoft.ML.Runtime.IHost,System.Int32,Microsoft.ML.Runtime.IChannel,Microsoft.ML.Trainers.FeatureFloatVectorCursor.Factory,System.Int32,System.Int32,Microsoft.ML.Data.VBuffer{System.Single}[],System.Int64@,System.Int64@,System.Boolean)">
+            <summary>
+            Initialize starting centroids via KMeans++ algorithm. This algorithm will always run single-threaded,
+            regardless of the value of <paramref name="numThreads" />.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Trainers.KMeansAcceleratedRowMap">
+            <summary>
+            An instance of this class is used by SharedStates in YinYangTrainer
+            and KMeansBarBarInitialization. It effectively bounds MaxInstancesToAccelerate and
+            initializes RowIndexGetter.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansAcceleratedRowMap.BuildParallelIndexLookup(Microsoft.ML.Trainers.FeatureFloatVectorCursor.Factory)">
+            <summary>
+            Initializes the parallel index lookup HashArray using a sequential RowCursor. We
+            preinitialize the HashArray so we can perform lock-free lookup operations during
+            the primary KMeans pass.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Trainers.KMeansBarBarInitialization.SharedState">
+             <summary>
+             Data for optimizing KMeans|| initialization. Very similar to SharedState class
+             For every instance, there is a space for the best weight and best cluster computed.
+            
+             In this class, new clusters mean the clusters that were added to the cluster set
+             in the previous round of KMeans|| and old clusters are the rest of them (the ones
+             that were added in the rounds before the previous one).
+            
+             In every round of KMeans||, numSamplesPerRound new clusters are added to the set of clusters.
+             There are 'numRounds' number of rounds. We compute and store the distance of each new
+             cluster from every round to all of the previous clusters and use it
+             to avoid unnecessary computation by applying the triangle inequality.
+             </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansBarBarInitialization.SharedState.SetInstanceCluster(System.Int32,System.Single,System.Int32)">
+            <summary>
+            When assigning an accelerated row to a cluster, we store away the weight
+            to its closest cluster, as well as the identity of the new
+            closest cluster. Note that bestWeight can be negative since it is
+            corresponding to the weight of a distance which does not have
+            the L2 norm of the point itself.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansBarBarInitialization.SharedState.SetClusterDistance(System.Int32,Microsoft.ML.Data.VBuffer{System.Single}@,System.Single,System.Int32,Microsoft.ML.Data.VBuffer{System.Single}@,System.Single)">
+            <summary>
+            Computes and stores the distance of a new cluster to an old cluster
+            <paramref name="newClusterFeatures"/> must be between 0..numSamplesPerRound-1.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansBarBarInitialization.SharedState.CanWeightComputationBeAvoided(System.Single,System.Int32,System.Int32)">
+            <summary>
+            This function is the key to use triangle inequality. Given an instance x distance to the best
+            old cluster, cOld, and distance of a new cluster, cNew, to cOld, this function evaluates whether
+            the distance computation of dist(x,cNew) can be avoided.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansBarBarInitialization.FindBestCluster(Microsoft.ML.Data.VBuffer{System.Single}@,System.Int32,Microsoft.ML.Trainers.KMeansBarBarInitialization.SharedState,System.Int32,System.Int32,Microsoft.ML.Data.VBuffer{System.Single}[],System.Single[],System.Boolean,System.Boolean,System.Single@,System.Int32@)">
+             <summary>
+             This function finds the best cluster and the best weight for an instance using
+             smart triangle inequality to avoid unnecessary weight computations.
+            
+             Note that <paramref name="needToStoreWeight"/> is used to avoid the storing the new cluster in
+             final round. After the final round, best cluster information will be ignored.
+             </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansBarBarInitialization.ComputeAccelerationMemoryRequirement(System.Int64,System.Int32,System.Int32,System.Boolean,System.Int64@,System.Int64@)">
+            <summary>
+            This method computes the memory requirement for _clusterDistances in SharedState (clusterBytes) and
+            the maximum number of instances whose weight to the closest cluster can be memorized in order to avoid
+            recomputation later.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansBarBarInitialization.Initialize(Microsoft.ML.Runtime.IHost,System.Int32,Microsoft.ML.Runtime.IChannel,Microsoft.ML.Trainers.FeatureFloatVectorCursor.Factory,System.Int32,System.Int32,Microsoft.ML.Data.VBuffer{System.Single}[],System.Int64,System.Int64@,System.Int64@)">
+             <summary>
+             KMeans|| Implementation, see https://theory.stanford.edu/~sergei/papers/vldb12-kmpar.pdf
+             This algorithm will require:
+             - (k * overSampleFactor * rounds * dimensionality * 4) bytes for the final sampled clusters.
+             - (k * overSampleFactor * numThreads * dimensionality * 4) bytes for the per-round sampling.
+            
+             Uses memory in initializationState to cache distances and avoids unnecessary distance computations
+             akin to YinYang-KMeans paper.
+            
+             Everywhere in this function, weight of an instance x from a cluster c means weight(x,c) = dist(x,c)^2-norm(x)^2.
+             We store weight in most cases to avoid unnecessary computation of norm(x).
+             </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansRandomInit.Initialize(Microsoft.ML.Runtime.IHost,System.Int32,Microsoft.ML.Runtime.IChannel,Microsoft.ML.Trainers.FeatureFloatVectorCursor.Factory,System.Int32,Microsoft.ML.Data.VBuffer{System.Single}[],System.Int64@,System.Int64@)">
+            <summary>
+            Initialize starting centroids via reservoir sampling.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.WorkChunkStateBase.Reduce(Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.WorkChunkState[],Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.ReducedWorkChunkState)">
+            <summary>
+            Reduces the array of work chunks into this chunk, coalescing the
+            results from multiple worker threads partitioned over a parallel cursor set and
+            clearing their values to prepare them for the next iteration.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.ReducedWorkChunkState.UpdateClusters(Microsoft.ML.Data.VBuffer{System.Single}[],System.Single[],System.Single[],System.Single@)">
+            <summary>
+            Updates all the passed in variables with the results of the most recent iteration
+            of cluster assignment. It is assumed that centroids will contain the previous results
+            of this call.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.SharedState.SetYinYangCluster(System.Int32,Microsoft.ML.Data.VBuffer{System.Single}@,System.Single,System.Int32,System.Single)">
+            <summary>
+            When assigning an accelerated row to a cluster, we store away the distance
+            to its closer and second closed cluster, as well as the identity of the new
+            closest cluster. This method returns the last known closest cluster.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.SharedState.UpdateYinYangBounds(System.Int32)">
+            <summary>
+            Updates the known YinYang bounds for the given row using the centroid position
+            deltas from the previous iteration.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.SharedState.IsYinYangGloballyBound(System.Int32)">
+            <summary>
+            Determines if the triangle distance inequality still applies to the given row,
+            allowing us to avoid per-cluster distance computation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.ProcessChunk(Microsoft.ML.Trainers.FeatureFloatVectorCursor,Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.SharedState,Microsoft.ML.Trainers.KMeansLloydsYinYangTrain.WorkChunkStateBase,System.Int32,Microsoft.ML.Data.VBuffer{System.Single}[],System.Single[])">
+            <summary>
+            Performs the 'update' step of KMeans. This method is passed a WorkChunkState. In the parallel version
+            this chunk will be one of _numThreads chunks and the RowCursor will be part of a RowCursorSet. In the
+            unthreaded version, this chunk will be the final chunk and hold state for the entire data set.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansUtils.ParallelWeightedReservoirSample(Microsoft.ML.Runtime.IHost,System.Int32,System.Int32,Microsoft.ML.Trainers.FeatureFloatVectorCursor.Factory,Microsoft.ML.Trainers.KMeansUtils.WeightFunc,Microsoft.ML.Trainers.KMeansUtils.RowIndexGetter,Microsoft.ML.Data.VBuffer{System.Single}[]@,Microsoft.ML.Internal.Utilities.Heap{Microsoft.ML.Trainers.KMeansUtils.WeightedPoint}[]@)">
+             <summary>
+             Performs a multithreaded version of weighted reservoir sampling, returning
+             an array of numSamples, where each sample has been selected from the
+             data set with a probability of numSamples/N * weight/(sum(weight)). Buffer
+             is sized to the number of threads plus one and stores the minheaps needed to
+             perform the per-thread reservoir samples.
+            
+             This method assumes that the numSamples is much smaller than the full dataset as
+             it expects to be able to sample numSamples * numThreads.
+            
+             This is based on the 'A-Res' algorithm in 'Weighted Random Sampling', 2005; Efraimidis, Spirakis:
+             https://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
+             </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansUtils.ParallelMapReduce``2(System.Int32,Microsoft.ML.Runtime.IHost,Microsoft.ML.Trainers.FeatureFloatVectorCursor.Factory,Microsoft.ML.Trainers.KMeansUtils.RowIndexGetter,Microsoft.ML.Trainers.KMeansUtils.InitAction{``0},Microsoft.ML.Trainers.KMeansUtils.MapAction{``0},Microsoft.ML.Trainers.KMeansUtils.ReduceAction{``0,``1},``0[]@,``1@)">
+            <summary>
+            Takes a data cursor and perform an in-memory parallel aggregation operation on it. This
+            helper wraps some of the behavior common to parallel operations over a <see cref="T:Microsoft.ML.DataViewRowCursor"/> set,
+            including building the set, creating separate Random instances, and <see cref="T:Microsoft.ML.DataViewRowCursor"/> disposal.
+            </summary>
+            <typeparam name="TPartitionState">The type that each parallel cursor will be expected to aggregate to.</typeparam>
+            <typeparam name="TGlobalState">The type of the final output from combining each per-thread instance of TInterAgg.</typeparam>
+            <param name="numThreads"></param>
+            <param name="baseHost"></param>
+            <param name="factory"></param>
+            <param name="rowIndexGetter"></param>
+            <param name="initChunk">Initializes an instance of TInterAgg, or prepares/clears it if it is already allocated.</param>
+            <param name="mapper">Invoked for every row, should update TInterAgg using row cursor data.</param>
+            <param name="reducer">Invoked after all row cursors have completed, combines the entire array of TInterAgg instances into a final TAgg result.</param>
+            <param name="buffer">A reusable buffer array of TInterAgg.</param>
+            <param name="result">A reusable reference to the final result.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansUtils.FindBestCluster(Microsoft.ML.Data.VBuffer{System.Single}@,Microsoft.ML.Data.VBuffer{System.Single}[],System.Single[],System.Int32,System.Boolean,System.Single@,System.Int32@,System.Single@,System.Int32@)">
+            <summary>
+            Given a point and a set of centroids this method will determine the closest centroid
+            using L2 distance. It will return a value equivalent to that distance, the index of the
+            closest cluster, and a value equivalent to the distance to the second-nearest cluster.
+            </summary>
+            <param name="features"></param>
+            <param name="centroids"></param>
+            <param name="centroidL2s">The L2 norms of the centroids. Used for efficiency and expected to be computed up front.</param>
+            <param name="centroidCount">The number of centroids. Must be less than or equal to the length of the centroid array.</param>
+            <param name="needRealDistance">Whether to return a real L2 distance, or a value missing the L2 norm of <paramref name="features"/>.</param>
+            <param name="minDistance">The distance between <paramref name="features"/> and the nearest centroid in <paramref name="centroids" />.</param>
+            <param name="cluster">The index of the nearest centroid.</param>
+            <param name="secMinDistance">The second nearest distance, or PosInf if <paramref name="centroids" /> only contains a single point.</param>
+            <param name="secCluster">The index of the second nearest centroid, or -1 if <paramref name="centroids" /> only contains a single point.</param>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.KMeansUtils.VerifyModelConsistency(Microsoft.ML.Data.VBuffer{System.Single}[])">
+            <summary>
+            Checks that all coordinates of all centroids are finite, and throws otherwise
+            </summary>
+        </member>
+    </members>
+</doc>

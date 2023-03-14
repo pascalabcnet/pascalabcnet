@@ -1299,6 +1299,13 @@ namespace VisualPascalABC
                                     return new ValueItem(nv, null);
                             }
                         }
+                    }
+                    foreach (NamedValue nv in val_list)//smotrim sredi lokalnyh peremennyh
+                    {
+                        if (nv.Name.IndexOf(':') != -1)
+                        {
+                            continue;
+                        }
                         if (string.Compare(nv.Name, var, true) == 0)
                         {
                             return new ValueItem(nv, null);

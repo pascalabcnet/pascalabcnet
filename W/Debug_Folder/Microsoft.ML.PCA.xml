@@ -1,0 +1,330 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.ML.PCA</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.ML.PcaCatalog">
+            <summary>
+            Collection of extension methods used by the <see cref="T:Microsoft.ML.AnomalyDetectionCatalog.AnomalyDetectionTrainers"/>,
+            and <see cref="T:Microsoft.ML.TransformsCatalog"/> catalogs to create instances of Principal Component Analysis (PCA) components.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.PcaCatalog.ProjectToPrincipalComponents(Microsoft.ML.TransformsCatalog,System.String,System.String,System.String,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32})">
+            <summary>Initializes a new instance of <see cref="T:Microsoft.ML.Transforms.PrincipalComponentAnalyzer"/>.</summary>
+            <param name="catalog">The transform's catalog.</param>
+            <param name="outputColumnName">Name of the column resulting from the transformation of <paramref name="inputColumnName"/>.</param>
+            <param name="inputColumnName">Name of column to transform. If set to <see langword="null"/>, the value of the <paramref name="outputColumnName"/> will be used as source.</param>
+            <param name="exampleWeightColumnName">The name of the example weight column (optional).</param>
+            <param name="rank">The number of principal components.</param>
+            <param name="overSampling">Oversampling parameter for randomized PrincipalComponentAnalysis training.</param>
+            <param name="ensureZeroMean">If enabled, data is centered to be zero mean.</param>
+            <param name="seed">The seed for random number generation.</param>
+        </member>
+        <member name="M:Microsoft.ML.PcaCatalog.ProjectToPrincipalComponents(Microsoft.ML.TransformsCatalog,Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions[])">
+            <summary>Initializes a new instance of <see cref="T:Microsoft.ML.Transforms.PrincipalComponentAnalyzer"/>.</summary>
+            <param name="catalog">The transform's catalog.</param>
+            <param name="columns">Input columns to apply PrincipalComponentAnalysis on.</param>
+        </member>
+        <member name="M:Microsoft.ML.PcaCatalog.RandomizedPca(Microsoft.ML.AnomalyDetectionCatalog.AnomalyDetectionTrainers,System.String,System.String,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32})">
+            <summary>
+            Create <see cref="T:Microsoft.ML.Trainers.RandomizedPcaTrainer"/>, which trains an approximate principal component analysis (PCA) model using randomized singular value decomposition (SVD) algorithm.
+            </summary>
+            <param name="catalog">The anomaly detection catalog trainer object.</param>
+            <param name="featureColumnName">The name of the feature column. The column data must be a known-sized vector of <see cref="T:System.Single"/>.</param>
+            <param name="exampleWeightColumnName">The name of the example weight column (optional). To use the weight column, the column data
+            must be of type <see cref="T:System.Single"/>.</param>
+            <param name="rank">The number of components in the PCA.</param>
+            <param name="oversampling">Oversampling parameter for randomized PCA training.</param>
+            <param name="ensureZeroMean">If enabled, data is centered to be zero mean.</param>
+            <param name="seed">The seed for random number generation.</param>
+            <remarks>
+            By default the threshold used to determine the label of a data point based on the predicted score is 0.5. Scores range from 0 to 1. A data point with predicted
+            score higher than 0.5 is considered an outlier. Use <see cref="M:Microsoft.ML.AnomalyDetectionCatalog.ChangeModelThreshold``1(Microsoft.ML.Data.AnomalyPredictionTransformer{``0},System.Single)"/> to change this threshold.
+            </remarks>
+            <example>
+            <format type="text/markdown">
+            <![CDATA[
+             [!code-csharp[RPCA](~/../docs/samples/docs/samples/Microsoft.ML.Samples/Dynamic/Trainers/AnomalyDetection/RandomizedPcaSample.cs)]
+            ]]></format>
+            </example>
+        </member>
+        <member name="M:Microsoft.ML.PcaCatalog.RandomizedPca(Microsoft.ML.AnomalyDetectionCatalog.AnomalyDetectionTrainers,Microsoft.ML.Trainers.RandomizedPcaTrainer.Options)">
+            <summary>
+            Create <see cref="T:Microsoft.ML.Trainers.RandomizedPcaTrainer"/> with advanced options, which trains an approximate principal component analysis (PCA) model using randomized singular value decomposition (SVD) algorithm.
+            </summary>
+            <param name="catalog">The anomaly detection catalog trainer object.</param>
+            <param name="options">Advanced options to the algorithm.</param>
+            <remarks>
+            By default the threshold used to determine the label of a data point based on the predicted score is 0.5. Scores range from 0 to 1. A data point with predicted
+            score higher than 0.5 is considered an outlier. Use <see cref="M:Microsoft.ML.AnomalyDetectionCatalog.ChangeModelThreshold``1(Microsoft.ML.Data.AnomalyPredictionTransformer{``0},System.Single)"/> to change this threshold.
+            </remarks>
+            <example>
+            <format type="text/markdown">
+            <![CDATA[
+             [!code-csharp[RPCA](~/../docs/samples/docs/samples/Microsoft.ML.Samples/Dynamic/Trainers/AnomalyDetection/RandomizedPcaSampleWithOptions.cs)]
+            ]]></format>
+            </example>
+        </member>
+        <member name="T:Microsoft.ML.Trainers.RandomizedPcaTrainer">
+             <summary>
+             The <see cref="T:Microsoft.ML.IEstimator`1"/> for training an approximate PCA using Randomized SVD algorithm.
+             </summary>
+             <remarks>
+             <format type="text/markdown"><![CDATA[
+             To create this trainer, use [RandomizedPca](xref:Microsoft.ML.PcaCatalog.RandomizedPca(Microsoft.ML.AnomalyDetectionCatalog.AnomalyDetectionTrainers,System.String,System.String,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32}))
+             or [RandomizedPca(Options)](xref:Microsoft.ML.PcaCatalog.RandomizedPca(Microsoft.ML.AnomalyDetectionCatalog.AnomalyDetectionTrainers,Microsoft.ML.Trainers.RandomizedPcaTrainer.Options)).
+            
+             [!include[io](~/../docs/samples/docs/api-reference/io-columns-anomaly-detection.md)]
+            
+             ### Trainer Characteristics
+             |  |  |
+             | -- | -- |
+             | Machine learning task | Anomaly Detection |
+             | Is normalization required? | Yes |
+             | Is caching required? | No |
+             | Required NuGet in addition to Microsoft.ML | None |
+             | Exportable to ONNX | No |
+            
+             ### Training Algorithm Details
+             This trainer uses the top eigenvectors to approximate the subspace containing the normal class.
+             For each new instance, it computes the norm difference between the raw feature vector and the projected feature on that subspace.
+             If the error is close to 0, the instance is considered normal (non-anomaly).
+            
+             More specifically, this trainer trains an approximate PCA using a randomized method for computing the singular value decomposition (SVD) of
+             the matrix whose rows are the input vectors.
+             The model generated by this trainer contains three parameters:
+             - A projection matrix $U$
+             - The mean vector in the original feature space $m$
+             - The mean vector in the projected feature space $p$
+            
+             For an input feature vector $x$, the anomaly score is computed by comparing the $L_2$
+             norm of the original input vector, and the $L_2$ norm of the projected vector:
+             $\sqrt{\left(\|x-m\|_2^2 - \|Ux-p\|_2^2\right)\|x-m\|_2^2}$.
+            
+             The method is described [here](https://web.stanford.edu/group/mmds/slides2010/Martinsson.pdf).
+            
+             Note that the algorithm can be made into Kernel PCA by applying the <xref:Microsoft.ML.Transforms.ApproximatedKernelTransformer>
+             to the data before passing it to the trainer.
+            
+             Check the See Also section for links to usage examples.
+             ]]>
+             </format>
+             </remarks>
+             <seealso cref="M:Microsoft.ML.PcaCatalog.RandomizedPca(Microsoft.ML.AnomalyDetectionCatalog.AnomalyDetectionTrainers,System.String,System.String,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32})"/>
+             <seealso cref="M:Microsoft.ML.PcaCatalog.RandomizedPca(Microsoft.ML.AnomalyDetectionCatalog.AnomalyDetectionTrainers,Microsoft.ML.Trainers.RandomizedPcaTrainer.Options)"/>
+             <seealso cref="T:Microsoft.ML.Trainers.RandomizedPcaTrainer.Options"/>
+        </member>
+        <member name="T:Microsoft.ML.Trainers.RandomizedPcaTrainer.Options">
+            <summary>
+            Options for the <see cref="T:Microsoft.ML.Trainers.RandomizedPcaTrainer"/> as used in
+            [RandomizedPca(Options)](xref:Microsoft.ML.PcaCatalog.RandomizedPca(Microsoft.ML.AnomalyDetectionCatalog.AnomalyDetectionTrainers,Microsoft.ML.Trainers.RandomizedPcaTrainer.Options)).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.RandomizedPcaTrainer.#ctor(Microsoft.ML.Runtime.IHostEnvironment,System.String,System.String,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32})">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.ML.Trainers.RandomizedPcaTrainer"/>.
+            </summary>
+            <param name="env">The local instance of the <see cref="T:Microsoft.ML.Runtime.IHostEnvironment"/>.</param>
+            <param name="featureColumnName">The name of the feature column.</param>
+            <param name="exampleWeightColumnName">The name of the weight column.</param>
+            <param name="rank">The number of components in the PCA.</param>
+            <param name="oversampling">Oversampling parameter for randomized PCA training.</param>
+            <param name="ensureZeroMean">If enabled, data is centered to be zero mean.</param>
+            <param name="seed">The seed for random number generation.</param>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.RandomizedPcaTrainer.PostProcess(System.Single[][],System.Single[],System.Single[],System.Int32,System.Int32)">
+            <summary>
+            Modifies <paramref name="y"/> in place so it becomes <paramref name="y"/> * eigenvectors / eigenvalues.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Trainers.PcaModelParameters">
+            <summary>
+            Model parameters for <see cref="T:Microsoft.ML.Trainers.RandomizedPcaTrainer"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.PcaModelParameters.#ctor(Microsoft.ML.Runtime.IHostEnvironment,System.Int32,System.Single[][],Microsoft.ML.Data.VBuffer{System.Single}@)">
+            <summary>
+            Instantiate new model parameters from trained model.
+            </summary>
+            <param name="env">The host environment.</param>
+            <param name="rank">The rank of the PCA approximation of the covariance matrix. This is the number of eigenvectors in the model.</param>
+            <param name="eigenVectors">Array of eigenvectors.</param>
+            <param name="mean">The mean vector of the training data.</param>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.PcaModelParameters.GetEigenVectors(Microsoft.ML.Data.VBuffer{System.Single}[]@,System.Int32@)">
+            <summary>
+            Copies the top eigenvectors of the covariance matrix of the training data
+            into a set of buffers.
+            </summary>
+            <param name="vectors">A possibly reusable set of vectors, which will
+            be expanded as necessary to accommodate the data.</param>
+            <param name="rank">Set to the rank, which is also the logical length
+            of <paramref name="vectors"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Trainers.PcaModelParameters.GetMean(Microsoft.ML.Data.VBuffer{System.Single}@)">
+            <summary>
+            Copies the mean vector of the training data.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Transforms.PrincipalComponentAnalysisTransformer">
+            <summary>
+        PCA is a dimensionality-reduction transform which computes the projection of the feature vector onto a low-rank subspace. 
+      </summary><remarks>
+      <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">Principle Component Analysis (PCA)</a> is a dimensionality-reduction algorithm which computes the projection of the feature vector to onto a low-rank subspace.
+      Its training is done using the technique described in the paper: <a href="https://arxiv.org/pdf/1310.6304v2.pdf">Combining Structured and Unstructured Randomness in Large Scale PCA</a>,
+      and the paper <a href="https://arxiv.org/pdf/0909.4061v2.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>
+        <para>For more information, see also:</para>
+        <list type="bullet">
+          <item><description>
+            <a href="https://web.stanford.edu/group/mmds/slides2010/Martinsson.pdf">Randomized Methods for Computing the Singular Value Decomposition (SVD) of very large matrices</a>
+          </description></item>
+          <item><description>
+            <a href="https://arxiv.org/abs/0809.2274">A randomized algorithm for principal component analysis</a>
+          </description></item>
+          <item><description>
+            <a href="http://users.cms.caltech.edu/~jtropp/papers/HMT11-Finding-Structure-SIREV.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>
+          </description></item>
+        </list>
+      </remarks>
+        </member>
+        <member name="T:Microsoft.ML.Transforms.PrincipalComponentAnalyzer">
+            <summary>
+        PCA is a dimensionality-reduction transform which computes the projection of the feature vector onto a low-rank subspace. 
+      </summary><remarks>
+      <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">Principle Component Analysis (PCA)</a> is a dimensionality-reduction algorithm which computes the projection of the feature vector to onto a low-rank subspace.
+      Its training is done using the technique described in the paper: <a href="https://arxiv.org/pdf/1310.6304v2.pdf">Combining Structured and Unstructured Randomness in Large Scale PCA</a>,
+      and the paper <a href="https://arxiv.org/pdf/0909.4061v2.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>
+        <para>For more information, see also:</para>
+        <list type="bullet">
+          <item><description>
+            <a href="https://web.stanford.edu/group/mmds/slides2010/Martinsson.pdf">Randomized Methods for Computing the Singular Value Decomposition (SVD) of very large matrices</a>
+          </description></item>
+          <item><description>
+            <a href="https://arxiv.org/abs/0809.2274">A randomized algorithm for principal component analysis</a>
+          </description></item>
+          <item><description>
+            <a href="http://users.cms.caltech.edu/~jtropp/papers/HMT11-Finding-Structure-SIREV.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>
+          </description></item>
+        </list>
+      </remarks>
+        </member>
+        <member name="T:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions">
+            <summary>
+            Describes how the transformer handles one column pair.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.Name">
+            <summary>
+            Name of the column resulting from the transformation of <see cref="F:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.InputColumnName"/>.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.InputColumnName">
+            <summary>
+            Name of column to transform.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.WeightColumn">
+            <summary>
+            The name of the weight column.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.Rank">
+            <summary>
+            The number of components in the PCA.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.Oversampling">
+            <summary>
+            Oversampling parameter for randomized PCA training.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.EnsureZeroMean">
+            <summary>
+            If enabled, data is centered to be zero mean.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.Seed">
+            <summary>
+            The seed for random number generation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions.#ctor(System.String,System.String,System.String,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32})">
+            <summary>
+            Describes how the transformer handles one column pair.
+            </summary>
+            <param name="name">Name of the column resulting from the transformation of <paramref name="inputColumnName"/>.</param>
+            <param name="inputColumnName">Name of column to transform.
+            If set to <see langword="null"/>, the value of the <paramref name="name"/> will be used as source.</param>
+            <param name="weightColumn">The name of the weight column.</param>
+            <param name="rank">The number of components in the PCA.</param>
+            <param name="overSampling">Oversampling parameter for randomized PCA training.</param>
+            <param name="ensureZeroMean">If enabled, data is centered to be zero mean.</param>
+            <param name="seed">The random seed. If unspecified random state will be instead derived from the <see cref="T:Microsoft.ML.MLContext"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.#ctor(Microsoft.ML.Runtime.IHostEnvironment,System.String,System.String,System.String,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32})">
+            <summary>
+        PCA is a dimensionality-reduction transform which computes the projection of the feature vector onto a low-rank subspace. 
+      </summary><remarks>
+      <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">Principle Component Analysis (PCA)</a> is a dimensionality-reduction algorithm which computes the projection of the feature vector to onto a low-rank subspace.
+      Its training is done using the technique described in the paper: <a href="https://arxiv.org/pdf/1310.6304v2.pdf">Combining Structured and Unstructured Randomness in Large Scale PCA</a>,
+      and the paper <a href="https://arxiv.org/pdf/0909.4061v2.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>
+        <para>For more information, see also:</para>
+        <list type="bullet">
+          <item><description>
+            <a href="https://web.stanford.edu/group/mmds/slides2010/Martinsson.pdf">Randomized Methods for Computing the Singular Value Decomposition (SVD) of very large matrices</a>
+          </description></item>
+          <item><description>
+            <a href="https://arxiv.org/abs/0809.2274">A randomized algorithm for principal component analysis</a>
+          </description></item>
+          <item><description>
+            <a href="http://users.cms.caltech.edu/~jtropp/papers/HMT11-Finding-Structure-SIREV.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>
+          </description></item>
+        </list>
+      </remarks>
+            <param name="env">The environment to use.</param>
+            <param name="outputColumnName">Name of the column resulting from the transformation of <paramref name="inputColumnName" />.</param>
+            <param name="inputColumnName">Name of the column to transform.
+            If set to <see langword="null" />, the value of the <paramref name="outputColumnName" /> will be used as source.</param>
+            <param name="weightColumn">The name of the weight column.</param>
+            <param name="rank">The number of components in the PCA.</param>
+            <param name="overSampling">Oversampling parameter for randomized PCA training.</param>
+            <param name="ensureZeroMean">If enabled, data is centered to be zero mean.</param>
+            <param name="seed">The seed for random number generation.</param>
+        </member>
+        <member name="M:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.#ctor(Microsoft.ML.Runtime.IHostEnvironment,Microsoft.ML.Transforms.PrincipalComponentAnalyzer.ColumnOptions[])">
+            <summary>
+        PCA is a dimensionality-reduction transform which computes the projection of the feature vector onto a low-rank subspace. 
+      </summary><remarks>
+      <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">Principle Component Analysis (PCA)</a> is a dimensionality-reduction algorithm which computes the projection of the feature vector to onto a low-rank subspace.
+      Its training is done using the technique described in the paper: <a href="https://arxiv.org/pdf/1310.6304v2.pdf">Combining Structured and Unstructured Randomness in Large Scale PCA</a>,
+      and the paper <a href="https://arxiv.org/pdf/0909.4061v2.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>
+        <para>For more information, see also:</para>
+        <list type="bullet">
+          <item><description>
+            <a href="https://web.stanford.edu/group/mmds/slides2010/Martinsson.pdf">Randomized Methods for Computing the Singular Value Decomposition (SVD) of very large matrices</a>
+          </description></item>
+          <item><description>
+            <a href="https://arxiv.org/abs/0809.2274">A randomized algorithm for principal component analysis</a>
+          </description></item>
+          <item><description>
+            <a href="http://users.cms.caltech.edu/~jtropp/papers/HMT11-Finding-Structure-SIREV.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>
+          </description></item>
+        </list>
+      </remarks>
+            <param name="env">The environment to use.</param>
+            <param name="columns">The dataset columns to use, and their specific settings.</param>
+        </member>
+        <member name="M:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.Fit(Microsoft.ML.IDataView)">
+            <summary>
+            Trains and returns a <see cref="T:Microsoft.ML.Transforms.PrincipalComponentAnalysisTransformer"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Transforms.PrincipalComponentAnalyzer.GetOutputSchema(Microsoft.ML.SchemaShape)">
+            <summary>
+            Returns the <see cref="T:Microsoft.ML.SchemaShape"/> of the schema which will be produced by the transformer.
+            Used for schema propagation and verification in a pipeline.
+            </summary>
+        </member>
+    </members>
+</doc>

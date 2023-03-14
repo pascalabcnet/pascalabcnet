@@ -3878,6 +3878,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_ident(yield_unknown_ident _yield_unknown_ident)
 		{
 			read_ident(_yield_unknown_ident);
+			_yield_unknown_ident.UnknownID = _read_node() as ident;
 		}
 
 

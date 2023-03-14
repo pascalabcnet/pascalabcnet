@@ -4,6 +4,6 @@ cd DocGenForStandardUnits
 !GenDocWPFObjects.exe
 !GenDocGraph3D.exe
 cd ..
-"C:\Program Files (x86)\HTML Help Workshop\hhc.exe" PascalABCNET.hhp
+"C:\Program Files (x86)\HTML Help Workshop\hhc.exe" PascalABCNETNew.hhp
 copy PascalABCNET.chm ..\bin\PascalABCNET.chm 
 copy PascalABCNET.chm ..\Release\PascalABCNET.chm

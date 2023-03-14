@@ -157,6 +157,12 @@ procedure pp6;
 procedure pp7;
 procedure pp8;
 
+procedure br1;
+procedure br2;
+procedure br3;
+procedure br4;
+procedure br5;
+
 procedure examen1;
 procedure examen2;
 procedure examen3;
@@ -261,33 +267,30 @@ begin
 end;
 
 procedure c5;
-var i: integer;
 begin
   TaskText('Задание c5. Закрасить помеченные клетки');
   Field(11,11);
   RobotBeginEnd(1,1,11,11);
-  for i:=1 to 10 do
+  for var i:=1 to 10 do
     Tag(i,i);
 end;
 
 procedure c6;
-var i: integer;
 begin
   TaskText('Задание c6. Закрасить помеченные клетки');
   Field(17,1);
   RobotBeginEnd(17,1,17,1);
-  for i:=1 to 8 do
+  for var i:=1 to 8 do
     Tag(2*i,1);
 end;
 
 procedure c7;
-var i: integer;
 begin
   TaskText('Задание c7. Закрасить помеченные клетки');
   Field(11,2);
   RobotBeginEnd(11,1,1,1);
   TagRect(2,1,11,2);
-  for i:=1 to 5 do
+  for var i:=1 to 5 do
   begin
     VerticalWall(2*i,1,1);
     VerticalWall(2*i-1,2,1);
@@ -295,23 +298,21 @@ begin
 end;
 
 procedure c8;
-var i: integer;
 begin
   TaskText('Задание c8. Закрасить помеченные клетки');
   Field(11,2);
   RobotBeginEnd(11,1,1,1);
   TagRect(1,1,11,1);
-  for i:=1 to 10 do
+  for var i:=1 to 10 do
     VerticalWall(i,1,1);
 end;
 
 procedure c9;
-var i: integer;
 begin
   TaskText('Задание c9. Закрасить помеченные клетки');
   Field(11,2);
   RobotBeginEnd(1,2,11,2);
-  for i:=1 to 5 do
+  for var i:=1 to 5 do
   begin
     Tag(2*i,1);
     Tag(2*i-1,2);
@@ -376,13 +377,12 @@ begin
 end;
 
 procedure c16;
-var i: integer;
 begin
   TaskText('Задание c16. Закрасить помеченные клетки');
   Field(12,3);
   RobotBeginEnd(2,2,2,2);
   TagRect(2,2,11,2);
-  for i:=1 to 5 do
+  for var i:=1 to 5 do
   begin
     HorizontalWall(2*i,1,1);
     HorizontalWall(1+2*i,2,1);
@@ -393,14 +393,13 @@ begin
 end;
 
 procedure if1;
-var r: integer;
 begin
   TaskText('Задание if1. Обойти препятствие и закрасить клетку');
   Field(5,5);
   RobotBeginEnd(2,3,4,3);
   Tag(4,3);
   VerticalWall(3,3,1);
-  r:=random(2);
+  var r:=random(2);
   if r=0 then
   begin  
     HorizontalWall(3,2,1);   
@@ -767,26 +766,26 @@ begin
 end;
 
 procedure w4;
-var n,i: integer;
+var n: integer;
 begin
   TaskText('Задание w4. Дойти до конца закрашенного ряда переменной длины');
   n:=random(7)+3;
   Field(10,3);  
   RobotBeginEnd(2,2,n+1,2);
-  for i:=3 to n do
+  for var i:=3 to n do
     MarkPainted(i,2);
 end;
 
 procedure w5;
-var n,m,i,j: integer;
+var n,m: integer;
 begin
   TaskText('Задание w5. Дойти до правого нижнего угла закрашенного прямоугольника переменного размера');
   n:=random(7)+3;
   m:=random(6)+3;
   Field(10,9);  
   RobotBeginEnd(2,2,n,m);
-  for j:=2 to m do
-  for i:=2 to n do
+  for var j:=2 to m do
+  for var i:=2 to n do
     MarkPainted(i,j); 
 end;
 
@@ -889,7 +888,7 @@ begin
 end;
 
 procedure w13;
-var n,i,m: integer;
+var n,m: integer;
 begin
   TaskText('Задание w13. Подняться до клетки, имеющей проход налево или проход направо');
   n:=random(7)+2;
@@ -897,7 +896,7 @@ begin
   VerticalWall(2,9,2);  
   VerticalWall(3,9,2);
   RobotEnd(3,10-n-1);
-  for i:=0 to n-2 do
+  for var i:=0 to n-2 do
   begin
     m:=random(3);
     if m=0 then VerticalWall(2,10-n+i,1);
@@ -913,14 +912,14 @@ begin
 end;
 
 procedure w14;
-var n,m,i: integer;
+var n,m: integer;
 begin
   TaskText('Задание w14. Подняться до клетки, имеющей проход налево и проход направо');
   n:=random(7)+2;
   Field(5,10);RobotBegin(3,10);
   VerticalWall(2,9,2);  VerticalWall(3,9,2);
   RobotEnd(3,10-n-1);
-  for i:=0 to n-2 do
+  for var i:=0 to n-2 do
   begin
     m:=random(4);
     if m=0 then 
@@ -938,7 +937,7 @@ begin
 end;
 
 procedure w15;
-var n,z,i: integer;
+var n,z: integer;
 begin
   TaskText('Задание w15. Закрасить клетку под первой закрашенной клеткой, под которой свободно');
   Field(15,5);
@@ -946,7 +945,7 @@ begin
   HorizontalWall(2,3,2);
   z:=14;
   MarkPainted(14,3);
-  for i:=3 to 12 do
+  for var i:=3 to 12 do
   begin
     n:=random(4);
     if n=0 then 
@@ -967,36 +966,36 @@ begin
 end;
 
 procedure w16;
-var n,i: integer;
+var n: integer;
 begin
   TaskText('Задание w16. Идти до конца забора переменной длины');
   n:=random(6)+8;
   Field(15,5);  
   RobotBeginEnd(2,3,n+1,3);
-  for i:=2 to n do
+  for var i:=2 to n do
     VerticalWall(i,3,1);
 end;
 
 procedure w17;
-var n,i: integer;
+var n: integer;
 begin
   TaskText('Задание w17. Идти до конца забора переменной длины');
   n:=random(6)+1;
   Field(15,5);  
   RobotBeginEnd(2,3,2*n+1,3);
-  for i:=1 to n do
+  for var i:=1 to n do
     VerticalWall(2*i,3,1);
 end;
 
 procedure cif1;
-var n,i,r: integer;
+var n,r: integer;
 begin
   TaskText('Задание cif1. Закрасить все клетки под стенами');
   n:=14;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r:=random(2);
     if r=1 then
@@ -1008,14 +1007,14 @@ begin
 end;
 
 procedure cif2;
-var n,i,r: integer;
+var n,r: integer;
 begin
   TaskText('Задание cif2. Закрасить помеченные клетки');
   n:=14;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r:=random(3);
     if r=1 then
@@ -1032,14 +1031,14 @@ begin
 end;
 
 procedure cif3;
-var n,i,r: integer;
+var n,r: integer;
 begin
   TaskText('Задание cif3. Закрасить помеченные клетки');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r:=random(4);
     if r=1 then
@@ -1056,14 +1055,14 @@ begin
 end;
 
 procedure cif4;
-var n,i,r1,r2: integer;
+var n,r1,r2: integer;
 begin
   TaskText('Задание cif4. Закрасить помеченные клетки');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); 
     r2:=random(2);
@@ -1077,14 +1076,14 @@ begin
 end;
 
 procedure cif5;
-var n,i,r1,r2: integer;
+var n,r1,r2: integer;
 begin
   TaskText('Задание cif5. Закрасить помеченные клетки');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); 
     r2:=random(2);
@@ -1098,14 +1097,14 @@ begin
 end;
 
 procedure cif6;
-var n,i,r1,r2: integer;
+var n,r1,r2: integer;
 begin
   TaskText('Задание cif6. Закрасить помеченные клетки');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); r2:=random(2);
     if r1=1 then
@@ -1118,14 +1117,14 @@ begin
 end;
 
 procedure cif7;
-var n,i,r1,r2: integer;
+var n,r1,r2: integer;
 begin
   TaskText('Задание cif7. Закрасить помеченные клетки, используя два условных оператора в цикле');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); 
     r2:=random(2);
@@ -1139,14 +1138,14 @@ begin
 end;
 
 procedure cif8;
-var n,i,r1,r2: integer;
+var n,r1,r2: integer;
 begin
   TaskText('Задание cif8. Закрасить помеченные клетки, используя два условных оператора в цикле');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); r2:=random(2);
     if (r1=1) and (r2=0) then
@@ -1163,14 +1162,14 @@ begin
 end;
 
 procedure cif9;
-var n,i,r1,r2: integer;
+var n,r1,r2: integer;
 begin
   TaskText('Задание cif9. Закрасить помеченные клетки, используя три условных оператора в цикле');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); r2:=random(2);
     if r1=1 then
@@ -1187,14 +1186,14 @@ begin
 end;
 
 procedure cif10;
-var n,i,r1,r2,r3: integer;
+var n,r1,r2,r3: integer;
 begin
   TaskText('Задание cif10. Закрасить помеченные клетки');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); 
     r2:=random(2); 
@@ -1211,14 +1210,14 @@ begin
 end;
 
 procedure cif11;
-var n,i,r1,r2,r3: integer;
+var n,r1,r2,r3: integer;
 begin
   TaskText('Задание cif11. Закрасить помеченные клетки, используя в условии две операции and');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); 
     r2:=random(2); 
@@ -1235,14 +1234,14 @@ begin
 end;
 
 procedure cif12;
-var n,i,r1,r2,r3: integer;
+var n,r1,r2,r3: integer;
 begin
   TaskText('Задание cif12. Закрасить помеченные клетки, используя в условии операции and и or');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); 
     r2:=random(2); 
@@ -1259,14 +1258,14 @@ begin
 end;
 
 procedure cif13;
-var n,i,r2,r3: integer;
+var n,r2,r3: integer;
 begin
   TaskText('Задание cif13. Закрасить помеченные клетки, используя в условии две операции and и одну or');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r2:=random(2); 
     r3:=random(2);
@@ -1280,7 +1279,7 @@ begin
 end;
 
 procedure cif14;
-var n,i,r2,r3: integer;
+var n,r2,r3: integer;
 begin
   TaskText('Задание cif14. Закрасить помеченные клетки, используя вложенные условные операторы');
   n:=25;
@@ -1288,7 +1287,7 @@ begin
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
   HorizontalWall(1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r2:=random(2); 
     r3:=random(2);
@@ -1302,7 +1301,7 @@ begin
 end;
 
 procedure cif15;
-var n,i,r2,r3: integer;
+var n,r2,r3: integer;
 begin
   TaskText('Задание cif15. Закрасить помеченные клетки, используя вложенные условные операторы');
   n:=25;
@@ -1310,7 +1309,7 @@ begin
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
   HorizontalWall(1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r2:=random(2); 
     r3:=random(2);
@@ -1369,14 +1368,14 @@ begin
 end;
 
 procedure cif18;
-var n,c,i: integer;
+var n,c: integer;
 begin
   TaskText('Задание cif18. Перейти в конец более короткого ряда');
   Field(15,4);
   RobotBegin(2,2);
   c:=random(2);
   n:=random(11)+1;
-  for i:=3 to 3+n-1 do
+  for var i:=3 to 3+n-1 do
   begin 
     MarkPainted(i,2);MarkPainted(i,3) 
   end;
@@ -1512,7 +1511,7 @@ begin
 end;
 
 procedure count3;
-var n1,n2,m,t,i: integer;
+var n1,n2,m,t: integer;
 begin
   TaskText('Задание count3. Переместить Робота в клетку, симметричную относительно диагонали');
   m:=10;
@@ -1527,7 +1526,7 @@ begin
     n1:=n2; 
     n2:=t; 
   end;
-  for i:=1 to m do
+  for var i:=1 to m do
     MarkPainted(i,i); 
   RobotBeginEnd(n1,n2,n2,n1);
 end;
@@ -1593,13 +1592,13 @@ begin
 end;
 
 procedure count8;
-var i,r,cc: integer;
+var r,cc: integer;
 begin
   TaskText('Задание count8. Остановиться на пятой закрашенной клетке');
   Field(21,3);
   RobotBeginEnd(2,2,1,2);
   cc:=0;
-  for i:=2 to 20 do
+  for var i:=2 to 20 do
   begin
     if i<16 then
       r:=random(2)
@@ -1620,13 +1619,13 @@ begin
 end;
 
 procedure count9;
-var cc,i,r: integer;
+var cc,r: integer;
 begin
   TaskText('Задание count9. Остановиться на третьей закрашенной подряд клетке');
   Field(20,3);
   RobotBeginEnd(2,2,1,2);
   cc:=0;
-  for i:=2 to 19 do
+  for var i:=2 to 19 do
   begin
     if i<17 then
       r:=random(2)
@@ -1678,58 +1677,58 @@ begin
 end;
 
 procedure count12;
-var n,i: integer;
+var n: integer;
 begin
   TaskText('Задание count12. Закрасить помеченные клетки в коридоре переменной длины');
   n:=random(4)+10;
   Field(n,1);  
   RobotBeginEnd(1,1,n,1);
-  for i:=1 to n div 2 do
+  for var i:=1 to n div 2 do
     Tag(i*2,1); 
 end;
 
 procedure count13;
-var n,i: integer;
+var n: integer;
 begin
   TaskText('Задание count13. Закрасить помеченные клетки в коридоре переменной длины');
   n:=random(4)+10;
   Field(n,1);  
   RobotBeginEnd(1,1,n,1);
-  for i:=1 to n div 2 + 1 do
+  for var i:=1 to n div 2 + 1 do
     Tag(i*2-1,1); 
 end;
 
 procedure count14;
-var n,i: integer;
+var n: integer;
 begin
   TaskText('Задание count14. Закрасить помеченные клетки в коридоре переменной длины');
   n:=random(4)+16;
   Field(n,1);  
   RobotBeginEnd(1,1,n,1);
-  for i:=1 to n div 3 do
+  for var i:=1 to n div 3 do
     Tag(i*3,1);  
 end;
 
 procedure count15;
-var n,i: integer;
+var n: integer;
 begin
   TaskText('Задание count15. Закрасить помеченные клетки в коридоре переменной длины');
   n:=random(4)+16;
   Field(n,1);  
   RobotBeginEnd(1,1,n,1);
-  for i:=1 to n div 3 + 1 do
+  for var i:=1 to n div 3 + 1 do
     Tag(i*3-2,1); 
 end;
 
 procedure count16;
-var n,i,f,z: integer;
+var n,f,z: integer;
 begin
   TaskText('Задание count16. Закрасить все нечетные пролеты между закрашенными клетками');
   Field(25,3);  
   RobotBeginEnd(2,2,25,2);
   n:=2+random(5);
   f:=0;
-  for i:=2 to 24 do
+  for var i:=2 to 24 do
   begin 
     if i=n then 
     begin 
@@ -1752,14 +1751,14 @@ begin
 end;
 
 procedure count17;
-var n,i,f: integer;
+var n,f: integer;
 begin
   TaskText('Задание count17. Остановиться на первой клетке, нарушающей закономерность');
   Field(25,3);
   n:=random(20)+4;
   RobotBeginEnd(2,2,n,2);
   f:=0;
-  for i:=2 to 24 do
+  for var i:=2 to 24 do
   begin 
     if i<>n then 
     begin 
@@ -1773,24 +1772,23 @@ begin
 end;
 
 procedure cc1;
-var i: integer;
 begin
   TaskText('Задание cc1. Закрасить помеченные клетки, используя вложенные циклы');
   Field(31,7);   
   RobotBeginEnd(1,1,31,7);
-  for i:=1 to 6 do
+  for var i:=1 to 6 do
     TagRect(5*i-4,i,5*i,i);
 end;
 
 procedure cc2;
-var a,b,i: integer;
+var a,b: integer;
 begin
   TaskText('Задание cc2. Закрасить помеченные клетки, используя вложенные циклы');
   Field(22,7);   
   RobotBeginEnd(1,1,22,7);
   a:=1;
   b:=1;
-  for i:=1 to 6 do
+  for var i:=1 to 6 do
   begin   
     TagRect(a,i,b,i);
     a:=b+1;
@@ -1799,14 +1797,14 @@ begin
 end;
 
 procedure cc3;
-var a,b,i: integer;
+var a,b: integer;
 begin
   TaskText('Задание cc3. Закрасить помеченные клетки, используя вложенный цикл с downto');
   Field(22,7);   
   RobotBeginEnd(1,1,22,7);
   a:=1;
   b:=6;
-  for i:=1 to 6 do
+  for var i:=1 to 6 do
   begin   
     TagRect(a,i,b,i);
     a:=b+1;
@@ -1815,23 +1813,21 @@ begin
 end;
 
 procedure cc4;
-var i: integer;
 begin
   TaskText('Задание cc4. Закрасить помеченные клетки, используя во внешнем цикле два вложенных цикла');
   Field(11,10);
   RobotBeginEnd(1,1,1,10);
   TagRect(1,1,11,9);
-  for i:=1 to 9 do
+  for var i:=1 to 9 do
     HorizontalWall(2,i,10); 
 end;
 
 procedure cc5;
-var i: integer;
 begin
   TaskText('Задание cc5. Пройти лабиринт, используя во внешнем цикле два вложенных цикла');
   Field(14,9);
   RobotBeginEnd(1,1,1,9);
-  for i:=1 to 4 do
+  for var i:=1 to 4 do
   begin   
     HorizontalWall(1,2*i-1,13);  
     HorizontalWall(2,2*i,13); 
@@ -1839,13 +1835,13 @@ begin
 end;
 
 procedure cc6;
-var i,n,j: integer;
+var n,j: integer;
 begin
   TaskText('Задание cc6. Закрасить помеченные клетки');
   n:=10;
   Field(20,n);   RobotBeginEnd(1,n,20,n);
   j:=1;
-  for i:=1 to 5 do
+  for var i:=1 to 5 do
   begin   
     HorizontalWall(j,n-1,3);  
     VerticalWall(j+3,1,n-1);Tag(j+3,1);j:=j+4; 
@@ -1853,33 +1849,30 @@ begin
 end;
 
 procedure cc7;
-var i: integer;
 begin
   TaskText('Задание cc7. Закрасить помеченные клетки, используя во внешнем цикле два вложенных цикла');
   Field(10,10);
   RobotBeginEnd(1,1,1,10);
-  for i:=1 to 9 do
+  for var i:=1 to 9 do
     TagRect(1,i,i,i);  
 end;
 
 procedure cc8;
-var i: integer;
 begin
   TaskText('Задание cc8. Закрасить помеченные клетки, используя цикл с downto');
   Field(10,10);
   RobotBeginEnd(1,1,1,10);
-  for i:=1 to 9 do
+  for var i:=1 to 9 do
     TagRect(1,i,10-i,i); 
 end;
 
 procedure cc9;
-var i: integer;
 begin
   TaskText('Задание cc9. Закрасить помеченные клетки, используя во внешнем цикле два вложенных цикла');
   Field(10,10);  
   RobotBeginEnd(10,1,10,10);  
   TagRect(10,1,10,9);
-  for i:=1 to 9 do
+  for var i:=1 to 9 do
   begin   
     HorizontalWall(11-i,i,i);   
     HorizontalWall(1,i,9-i); 
@@ -1887,33 +1880,31 @@ begin
 end;
 
 procedure cc10;
-var i: integer;
 begin
   TaskText('Задание cc10. Закрасить помеченные клетки');
   Field(15,8);
   RobotBeginEnd(1,1,1,8);
-  for i:=1 to 7 do
+  for var i:=1 to 7 do
     TagRect(1,i,2*i,i); 
 end;
 
 procedure cc11;
-var i: integer;
 begin
   TaskText('Задание cc11. Закрасить помеченные клетки');
   Field(14,8);
   RobotBeginEnd(1,1,1,8);
-  for i:=1 to 7 do
+  for var i:=1 to 7 do
     TagRect(1,i,2*i-1,i); 
 end;
 
 procedure cc12;
-var i,p: integer;
+var p: integer;
 begin
   TaskText('Задание cc12. Закрасить помеченные клетки');
   Field(33,7);
   RobotBeginEnd(1,1,1,7);
   p:=1;
-  for i:=1 to 6 do
+  for var i:=1 to 6 do
   begin   
     TagRect(1,i,p,i);
     p:=p*2; 
@@ -1921,12 +1912,11 @@ begin
 end;
 
 procedure cc13;
-var i: integer;
 begin
   TaskText('Задание cc13. Закрасить помеченные клетки');
   Field(14,9);
   RobotBeginEnd(1,1,9,9);
-  for i:=1 to 4 do
+  for var i:=1 to 4 do
   begin   
     HorizontalWall(2*i-1,2*i-1,15-2*i);  
     HorizontalWall(2*i+2,2*i,13);
@@ -1935,12 +1925,11 @@ begin
 end;
 
 procedure cc14;
-var i: integer;
 begin
   TaskText('Задание cc14. Пройти лабиринт');
   Field(14,9);
   RobotBeginEnd(1,1,5,9);
-  for i:=1 to 4 do
+  for var i:=1 to 4 do
   begin   
     HorizontalWall(i,2*i-1,15-2*i);  
     HorizontalWall(i+2,2*i,14-2*i);  
@@ -1950,25 +1939,24 @@ begin
 end;
 
 procedure cc15;
-var i,n: integer;
+var n: integer;
 begin
   TaskText('Задание cc15. Закрасить помеченные клетки');
   n:=8;
   Field(15,9);   
   RobotBeginEnd(n,2,n,9);
-  for i:=1 to 7 do
+  for var i:=1 to 7 do
     TagRect(n-i+1,i+1,n+i-1,i+1); 
 end;
 
 procedure cc16;
-var i,k,j: integer;
 begin
   TaskText('Задание cc16. Закрасить помеченные клетки, используя вложенный цикл во вложенном цикле');
   Field(22,7);   
   RobotBeginEnd(2,6,22,6);
-  j:=2;
-  for k:=1 to 4 do
-    for i:=1 to 5 do
+  var j:=2;
+  for var k:=1 to 4 do
+    for var i:=1 to 5 do
     begin
       TagRect(j,6-i+1,j,6);
       j:=j+1;
@@ -1976,15 +1964,15 @@ begin
 end;
 
 procedure cc17;
-var i,j,k: integer;
+var j: integer;
 begin
   TaskText('Задание cc17. Закрасить помеченные клетки, используя вложенный цикл во вложенном цикле');
   Field(29,8);   
   RobotBeginEnd(2,7,28,7);
   j:=2;
-  for k:=1 to 6 do
+  for var k:=1 to 6 do
   begin
-    for i:=1 to 6-k+1 do
+    for var i:=1 to 6-k+1 do
     begin   
       TagRect(j,7-i+1,j,7);
       j:=j+1; 
@@ -1994,11 +1982,10 @@ begin
 end;
 
 procedure cc18;
-var i: integer;
 begin
   TaskText('Задание cc18. Закрасить помеченные клетки, используя цикл while внутри цикла for');
   Field(12,7);   RobotBeginEnd(1,1,1,7);
-  for i:=1 to 8 do
+  for var i:=1 to 8 do
     HorizontalWall(2,i,12); 
   VerticalWall(7,1,1);Tag(7,1);
   VerticalWall(9,2,1);Tag(9,2);
@@ -2010,13 +1997,13 @@ begin
 end;
 
 procedure cc19;
-var i,n: integer;
+var n: integer;
 begin
   TaskText('Задание cc19. Закрасить помеченные клетки. Высота поля может меняться');
   n:=random(4)+6;
   Field(11,n);
   RobotBeginEnd(1,1,1,n);
-  for i:=1 to n do
+  for var i:=1 to n do
   begin 
     Tag(11,i);  
     HorizontalWall(2,i,10);
@@ -2036,7 +2023,7 @@ begin
 end;
 
 procedure mix2;
-var n1,n2,m,i,j,ij: integer;
+var n1,n2,m,ij: integer;
 begin
   TaskText('Задание mix2. Закрасить в шахматном порядке прямоугольник переменного размера');
   m:=8;
@@ -2044,9 +2031,9 @@ begin
   n1:=random(6)+2;
   n2:=random(6)+2;
   RobotBeginEnd(n1,n2,m,m);
-  for i:=n1 to m do
+  for var i:=n1 to m do
   begin
-    for j:=n2 to m do
+    for var j:=n2 to m do
     begin 
       ij:=i+j-n1-n2;
       if ij mod 2 = 0 then
@@ -2104,12 +2091,12 @@ begin
 end;
 
 procedure mix6;
-var i,c: integer;
+var c: integer;
 begin
   TaskText('Задание mix6. Закрасить те клетки у правой стены, для которых закрашены клетки левой стены');
   Field(11,11);
   RobotBeginEnd(1,1,1,11);
-  for i:=1 to 10 do
+  for var i:=1 to 10 do
   begin 
     c:=random(2); 
     if c=1 then 
@@ -2121,12 +2108,12 @@ begin
 end;
 
 procedure mix7;
-var i,c1,c2: integer;
+var c1,c2: integer;
 begin
   TaskText('Задание mix7. Закрасить горизонтальные ряды, в которых закрашены левая и правая клетки');
   Field(11,11);
   RobotBeginEnd(1,1,1,11);
-  for i:=1 to 10 do
+  for var i:=1 to 10 do
     begin c1:=random(2); 
     if c1=1 then 
       MarkPainted(1,i); 
@@ -2139,12 +2126,12 @@ begin
 end;
 
 procedure mix8;
-var i,c1,c2,c3,c4: integer;
+var c1,c2,c3,c4: integer;
 begin
   TaskText('Задание mix8. Закрасить горизонтальные ряды, в которых закрашены левая и правая клетки и еще ровно одна');
   Field(11,15);
   RobotBeginEnd(1,1,1,15);
-  for i:=1 to 14 do
+  for var i:=1 to 14 do
   begin
     c1:=random(2);
     if c1=1 then
@@ -2229,9 +2216,8 @@ end;
 
 procedure p2;
  procedure my(n: integer);
- var i: integer;
  begin
-   for i:=1 to n do
+   for var i:=1 to n do
      TagRect(3*i-1,2,3*i,3); 
  end;
 begin
@@ -2242,12 +2228,11 @@ begin
 end;
 
 procedure p3;
-var i: integer;
 begin
   TaskText('Задание p3. Закрасить помеченные клетки, используя процедуру Square2');
   Field(12,12);   
   RobotBeginEnd(11,11,1,1);
-  for i:=1 to 6 do
+  for var i:=1 to 6 do
     TagRect(2*i-1,2*i-1,2*i,2*i); 
 end;
 
@@ -2268,32 +2253,29 @@ begin
 end;
 
 procedure p6;
-var i: integer;
 begin
   TaskText('Задание p6. Закрасить помеченные клетки, составив процедуру Row, в которой Робот закрашивает ряд и возвращается назад');
   Field(9,9);   
   RobotBeginEnd(1,2,1,8);
-  for i:=1 to 4 do
+  for var i:=1 to 4 do
     TagRect(1,2*i,11,2*i); 
 end;
 
 procedure p7;
-var i: integer;
 begin
   TaskText('Задание p7. Закрасить помеченные клетки, составив процедуру Column, в которой Робот закрашивает колонку и возвращается назад');
   Field(9,9);   
   RobotBeginEnd(2,1,8,1);
-  for i:=1 to 4 do
+  for var i:=1 to 4 do
     TagRect(2*i,1,2*i,11); 
 end;
 
 procedure p8;
-var i: integer;
 begin
   TaskText('Задание p8. Закрасить помеченные клетки, используя процедуры Row и Column');
   Field(9,9);   
   RobotBeginEnd(1,2,8,1);
-  for i:=1 to 4 do
+  for var i:=1 to 4 do
   begin   
     TagRect(1,2*i,11,2*i);
     TagRect(2*i,1,2*i,11);
@@ -2301,13 +2283,12 @@ begin
 end;
 
 procedure p9;
-var i,j: integer;
 begin
   TaskText('Задание p9. Закрасить помеченные клетки, используя процедуры Row и Column');
   Field(15,15);   
   RobotBeginEnd(2,2,6,6);
-  i:=2;
-  for j:=1 to 3 do
+  var i:=2;
+  for var j:=1 to 3 do
   begin   
     TagRect(i,i,i+8,i);  
     TagRect(i,i,i,i+8);i:=i+2;
@@ -2315,13 +2296,12 @@ begin
 end;
 
 procedure p10;
-var i,j: integer;
 begin
   TaskText('Задание p10. Закрасить помеченные клетки, составив процедуру Contour');
   Field(31,7);   
   RobotBeginEnd(2,2,26,2);
-  i:=2;
-  for j:=1 to 5 do
+  var i:=2;
+  for var j:=1 to 5 do
   begin   
     TagRect(i,2,i+4,2);  
     TagRect(i,2,i,6);  
@@ -2332,24 +2312,22 @@ begin
 end;
 
 procedure p11;
-var i,j: integer;
 begin
   TaskText('Задание p11. Закрасить помеченные клетки, составив процедуру Punktir');
   Field(15,11);   
   RobotBeginEnd(1,1,1,11);
-  for i:=1 to 7 do
-     for j:=1 to 5 do
+  for var i:=1 to 7 do
+    for var j:=1 to 5 do
       Tag(2*i-1,2*j-1); 
 end;
 
 procedure p12;
-var i,j: integer;
 begin
   TaskText('Задание p12. Закрасить помеченные клетки, используя процедуру Punktir');
   Field(16,12);   
   RobotBeginEnd(2,2,3,11);
-  for i:=1 to 7 do
-    for j:=1 to 5 do
+  for var i:=1 to 7 do
+    for var j:=1 to 5 do
     begin 
       Tag(2*i,2*j);
       Tag(2*i+1,2*j+1); 
@@ -2357,13 +2335,12 @@ begin
 end;
 
 procedure p13;
-var i,j: integer;
 begin
   TaskText('Задание p13. Закрасить помеченные клетки, используя процедуру Punktir');
   Field(17,14);   
   RobotBeginEnd(2,2,2,14);
-  for i:=1 to 5 do
-    for j:=1 to 4 do
+  for var i:=1 to 5 do
+    for var j:=1 to 4 do
     begin 
       Tag(3*i-1,3*j-1);
       Tag(3*i,3*j);
@@ -2372,27 +2349,26 @@ begin
 end;
 
 procedure p14;
-var i: integer;
 begin
   TaskText('Задание p14. Закрасить помеченные клетки, составив процедуры Row1 и Row2 для двух разновидностей рядов');
   Field(17,15);   RobotBeginEnd(2,2,2,14);
-  for i:=1 to 8 do
+  for var i:=1 to 8 do
       TagRect(2*i,2,2*i,13);  
-  for i:=1 to 8 do
+  for var i:=1 to 8 do
     TagRect(2,2*i,16,2*i); 
 end;
 
 procedure p15;
-var i,j,n: integer;
+var n: integer;
 begin
   TaskText('Задание p15. Закрасить помеченные клетки, составив процедуры Row1 и Row2 для двух разновидностей рядов');
   n:=14;  
   Field(25,n+1);  
   RobotBeginEnd(2,2,2,n);
-  for i:=1 to 8 do
+  for var i:=1 to 8 do
   begin   
     TagRect(4*i-1,2,4*i-1,n);
-    for j:=1 to 6 do
+    for var j:=1 to 6 do
     begin
       Tag(4*i-2,2*j+1);
       Tag(4*i,2*j+1);
@@ -2429,12 +2405,11 @@ begin
 end;
 
 procedure pp1;
-var i: integer;
 begin
   TaskText('Задание pp1. Закрасить помеченные клетки, составив процедуры с параметром RightN(n) и LeftN(n)');
   Field(12,7);   
   RobotBeginEnd(1,1,1,7);
-  for i:=1 to 8 do
+  for var i:=1 to 8 do
     HorizontalWall(2,i,12); 
   Tag(7,1);Tag(9,2);Tag(5,3);Tag(4,4);Tag(11,5);Tag(2,6);Tag(7,7);
 end;
@@ -2452,13 +2427,13 @@ begin
 end;
 
 procedure pp3;
-var i,d: integer;
+var d: integer;
 begin
   TaskText('Задание pp3. Пройти лабиринт. Составить процедуры с параметрами RightN(n), LeftN(n), UpN(n), DownN(n)');
   d:=9;
   Field(d,d);
   RobotBeginEnd(1,1,5,5);
-  for i:=1 to 4 do
+  for var i:=1 to 4 do
   begin   
     VerticalWall(i,i,d+1-2*i);  
     HorizontalWall(i+1,d-i,d-2*i);  
@@ -2519,29 +2494,108 @@ begin
   TagRect(13,1,13,7);   TagRect(15,1,15,7); Tag(14,2);
 end;
 
+procedure br1;
+begin
+  TaskText('Задание break1. Остановиться на указанной клетке. Использовать оператор break');
+  Field(13,5);
+  RobotBeginEnd(2,3,12,3);
+  var xx := Random(3,17);
+  for var x:=3 to 12 do
+    if x <> xx then
+      Tag(x,3)
+    else 
+    begin
+      HorizontalWall(x,3,1);
+      RobotEnd(x,3);
+      break;
+    end;    
+end;
+
+procedure br2;
+begin
+  TaskText('Задание break2. Остановиться на указанной клетке. Использовать оператор break');
+  Field(13,5);
+  RobotBeginEnd(2,3,12,3);
+  var xx := Random(3,17);
+  for var x:=3 to 12 do
+    if x <> xx then
+      Tag(x,2)
+    else 
+    begin
+      HorizontalWall(x,3,1);
+      RobotEnd(x,3);
+      break;
+    end;    
+end;
+
+procedure br3;
+begin
+  TaskText('Задание break3. Остановиться на указанной клетке. Использовать оператор break');
+  Field(13,5);
+  RobotBeginEnd(2,3,12,3);
+  var xx := Random(3,17);
+  for var x:=3 to 12 do
+    if x <> xx then
+    begin  
+      Tag(x,2);
+      Tag(x,3);
+    end  
+    else 
+    begin
+      MarkPainted(x,3);
+      RobotEnd(x,3);
+      break;
+    end;    
+end;
+
+procedure br4;
+begin
+  TaskText('Задание break4. Остановиться на указанной клетке. Использовать оператор break');
+  Field(13,5);
+  RobotBeginEnd(2,3,12,3);
+  var xx := Random(3,17);
+  if xx < 13 then
+    begin
+      HorizontalWall(xx,4,1);
+      Tag(xx,4);
+      RobotEnd(xx,4);
+    end;    
+end;
+
+procedure br5;
+begin
+  TaskText('Задание break5. Остановиться на указанной клетке. Использовать оператор break');
+  Field(13,5);
+  RobotBeginEnd(2,3,12,3);
+  var xx := Random(3,17);
+  if xx < 13 then
+    begin
+      MarkPainted(xx,2);
+      RobotEnd(xx,2);
+    end;      
+end;
+
+
 procedure examen1;
-var i,j: integer;
 begin
   TaskText('Задание examen1. Закрасить помеченные клетки, составив процедуру Punktir');
   Field(15,11);   
   RobotBeginEnd(1,1,1,11);
-  for i:=1 to 7 do
-    for j:=1 to 5 do
+  for var i:=1 to 7 do
+    for var j:=1 to 5 do
       Tag(2*i-1,2*j-1); 
 end;
 
 procedure examen2;
-var i,j: integer;
 begin
   TaskText('Задание examen2. Закрасить помеченные клетки, используя процедуру Punktir');
   Field(16,12);   
   RobotBeginEnd(2,2,3,11);
-  for i:=1 to 7 do
+  for var i:=1 to 7 do
   begin
-    for j:=1 to 5 do
+    for var j:=1 to 5 do
     begin 
-      Tag(2*i,2*j);
-      Tag(2*i+1,2*j+1); 
+      Tag(2*i,2*j);      Tag(2*i+1,2*j+1); 
     end
   end
 end;
@@ -2579,25 +2633,25 @@ begin
 end;
 
 procedure examen5;
-var i,n: integer;
+var n: integer;
 begin
   TaskText('Задание examen5. Закрасить все клетки в коридоре переменной длины');
   n:=random(4)+10;
   Field(n,1);
   RobotBeginEnd(1,1,n,1);
-  for i:=1 to n div 2 do
+  for var i:=1 to n div 2 do
     Tag(i*2,1);
 end;
 
 procedure examen6;
-var i,n,r1,r2: integer;
+var n,r1,r2: integer;
 begin
   TaskText('Задание examen6. Закрасить помеченные клетки, используя 2 условных оператора в цикле');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); 
     r2:=random(2);
@@ -2615,14 +2669,14 @@ begin
 end;
 
 procedure examen7;
-var i,n,r1,r2,r3: integer;
+var n,r1,r2,r3: integer;
 begin
   TaskText('Задание examen7. Закрасить помеченные клетки, используя в условии "and" и "or"');
   n:=25;
   Field(n,3);
   RobotBeginEnd(1,2,n-1,2);
   VerticalWall(n-1,2,1);
-  for i:=2 to n-1 do
+  for var i:=2 to n-1 do
   begin  
     r1:=random(2); 
     r2:=random(2); 

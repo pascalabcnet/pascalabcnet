@@ -219,6 +219,13 @@ namespace PascalABCCompiler.TreeRealization
                 return null;
             }
         }
+        public virtual List<SemanticTree.ITypeNode> ImplementingInterfacesOrEmpty
+        {
+            get
+            {
+                return ImplementingInterfaces;
+            }
+        }
 
         //true, если на данный момент имеется только предописание класса
         public virtual bool ForwardDeclarationOnly
@@ -2195,6 +2202,47 @@ namespace PascalABCCompiler.TreeRealization
                                     if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
                                         && sil.FindIndex(ssi=> ssi.sym_info == si.sym_info)==-1)  // SSM 12.12.18 - за счёт методов интерфейсов тоже могут добавляться одинаковые - исключаем их
                                         sil.Add(si);
+                                    else if (si.sym_info is common_property_node && (si.sym_info as common_property_node).common_comprehensive_type is generic_instance_type_node
+                                        && sil.FindIndex(ssi => ssi.sym_info == si.sym_info) == -1)
+                                    {
+                                        bool insert = false;
+                                        var cmpn = si.sym_info as common_property_node;
+                                        foreach (var si2 in sil)
+                                        {
+                                            if (si2.sym_info is compiled_property_node)
+                                            {
+                                                var cppn = si2.sym_info as compiled_property_node;
+                                                if (string.Compare(cppn.name, cmpn.name, true) == 0 && cppn.compiled_comprehensive_type.original_generic == cmpn.common_comprehensive_type.original_generic)
+                                                {
+                                                    insert = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (insert)
+                                            sil.Insert(0, si);
+                                    }
+                                    else if (si.sym_info is common_method_node && (si.sym_info as common_method_node).common_comprehensive_type is generic_instance_type_node
+                                        && sil.FindIndex(ssi => ssi.sym_info == si.sym_info) == -1)
+                                    {
+                                        bool insert = false;
+                                        var cmn = si.sym_info as common_method_node;
+                                        foreach (var si2 in sil)
+                                        {
+                                            if (si2.sym_info is compiled_function_node)
+                                            {
+                                                var cfn = si2.sym_info as compiled_function_node;
+                                                if (string.Compare(cmn.name, cfn.name, true) == 0 && cfn.cont_type.original_generic == cmn.cont_type.original_generic && convertion_data_and_alghoritms.function_eq_params_and_result(cmn, cfn))
+                                                {
+                                                    insert = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (insert)
+                                            sil.Insert(0, si);
+                                    }
+
                                     cache.Add(si.sym_info, si.sym_info);
                                 }
                             }
@@ -2437,7 +2485,20 @@ namespace PascalABCCompiler.TreeRealization
         	if (sil != null)
         	{
         		function_node fn = null;
-        		foreach(var si in sil)
+                foreach (var si in sil)
+                {
+                    fn = si.sym_info as function_node;
+                    if (fn != null && fn.parameters.Count == 1 && type_table.is_type_or_original_generics_equal(fn.parameters[0].type, ctn) && type_table.is_type_or_original_generics_equal(fn.return_value_type, this))
+                    {
+                        if (!fn.is_generic_function)
+                        {
+                            if (fn.parameters[0].type.is_generic_parameter && type_table.is_derived(ctn, this))
+                                continue;
+                            return fn;
+                        }
+                    }
+                }
+                foreach (var si in sil)
         		{
         			fn = si.sym_info as function_node;
         			if (fn != null && fn.parameters.Count == 1 && type_table.is_type_or_original_generics_equal(fn.parameters[0].type, ctn) && type_table.is_type_or_original_generics_equal(fn.return_value_type, this))
@@ -2547,7 +2608,7 @@ namespace PascalABCCompiler.TreeRealization
                 generic_convertions.MakePseudoInstanceName(name, param_types, true),
                 SemanticTree.type_access_level.tal_public, null, this.loc);
             _generic_instances.Add(new generic_type_instance_info(param_types, ctnode));
-            generic_convertions.init_generic_instance(this, ctnode, param_types);
+            generic_convertions.init_generic_instance(ctnode);
             return ctnode;
         }
 
@@ -3121,7 +3182,7 @@ namespace PascalABCCompiler.TreeRealization
                 generic_convertions.MakePseudoInstanceName(name, param_types, true),
                 SemanticTree.type_access_level.tal_public, null, /*ct_scope,*/ this.loc);
             _generic_instances.Add(new generic_type_instance_info(param_types, ctnode));
-            generic_convertions.init_generic_instance(this, ctnode, /*ct_scope,*/ param_types);
+            generic_convertions.init_generic_instance(ctnode/*, ct_scope*/);
             return ctnode;
         }
         //\ssyy
@@ -3279,8 +3340,11 @@ namespace PascalABCCompiler.TreeRealization
         {
             if (ctn.compiled_type.GetCustomAttributes(typeof(FlagsAttribute), true).Length == 0) return;
             basic_function_node _int_and = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.and_name, ctn, SemanticTree.basic_function_type.iand);
+            _int_and.compile_time_executor = SystemLibrary.static_executors.enum_and_executor;
             basic_function_node _int_or = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.or_name, ctn, SemanticTree.basic_function_type.ior);
+            _int_or.compile_time_executor = SystemLibrary.static_executors.enum_or_executor;
             basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.xor_name, ctn, SemanticTree.basic_function_type.ixor);
+            _int_xor.compile_time_executor = SystemLibrary.static_executors.enum_xor_executor;
             if (ctn.scope != null)
             {
                 ctn.scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfo(_int_and));

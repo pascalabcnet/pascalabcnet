@@ -466,7 +466,7 @@ namespace VisualPascalABC
                 else if (c == '\'')
                 {
                     beg_off--;
-                    while (beg_off >= 0 && text[beg_off] != '\'')
+                    while (beg_off >= 0 && text[beg_off] != '\'' && text[beg_off] != '/')
                         beg_off--;
                 }
                 else

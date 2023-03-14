@@ -29,9 +29,9 @@ procedure Start;
 /// Остановить Чертежника
 procedure Stop;
 
-/// Поднять перо
-procedure ОпуститьПеро;
 /// Опустить перо
+procedure ОпуститьПеро;
+/// Поднять перо
 procedure ПоднятьПеро;
 /// Переместиться к точке (x,y)
 procedure КТочке(x,y: integer);
@@ -55,7 +55,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-uses DMTaskMaker,DMZadan,DrawmanField;
+uses DMTaskMaker,DMZadan,DrawManField;
 
 procedure SetDrawmanWidth(w: integer);
 begin

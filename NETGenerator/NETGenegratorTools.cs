@@ -65,6 +65,7 @@ namespace PascalABCCompiler.NETGenerator
         public static MethodInfo GCHandleAllocPinned;
         public static MethodInfo OffsetToStringDataProperty;
         public static MethodInfo StringLengthMethod;
+        public static MethodInfo CharToString;
         public static ConstructorInfo IndexOutOfRangeConstructor;
         public static ConstructorInfo ParamArrayAttributeConstructor;
         public static MethodInfo StringCopyMethod;
@@ -126,6 +127,7 @@ namespace PascalABCCompiler.NETGenerator
             GCHandleFreeMethod = typeof(GCHandle).GetMethod("Free");
             GetTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle");
             StringCopyMethod = typeof(string).GetMethod("Copy");
+            CharToString = typeof(char).GetMethod("ToString", BindingFlags.Static | BindingFlags.Public);
         }
 
         public static bool IsStandType(Type t)

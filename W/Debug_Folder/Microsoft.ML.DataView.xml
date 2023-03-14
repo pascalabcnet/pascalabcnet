@@ -1,0 +1,1156 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.ML.DataView</name>
+    </assembly>
+    <members>
+        <member name="M:Microsoft.ML.Internal.Utilities.ArrayUtils.TryFindIndexSorted(System.Int32[],System.Int32,System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Akin to <c>FindIndexSorted</c>, except stores the found index in the output
+            <c>index</c> parameter, and returns whether that index is a valid index
+            pointing to a value equal to the input parameter <c>value</c>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.Utilities.ArrayUtils.FindIndexSorted(System.Int32[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Assumes input is sorted and finds value using BinarySearch.
+            If value is not found, returns the logical index of 'value' in the sorted list i.e index of the first element greater than value.
+            In case of duplicates it returns the index of the first one.
+            It guarantees that items before the returned index are &lt; value, while those at and after the returned index are &gt;= value.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Internal.Utilities.ArrayUtils.FindIndexSorted(System.ReadOnlySpan{System.Int32},System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Assumes input is sorted and finds value using BinarySearch.
+            If value is not found, returns the logical index of 'value' in the sorted list i.e index of the first element greater than value.
+            In case of duplicates it returns the index of the first one.
+            It guarantees that items before the returned index are &lt; value, while those at and after the returned index are &gt;= value.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.DataViewRowId">
+            <summary>
+            A structure serving as the identifier of a row of <see cref="T:Microsoft.ML.IDataView"/>.
+            For datasets with millions of records, those IDs need to be unique, therefore the need for such a large structure to hold the values.
+            Those Ids are derived from other Ids of the previous components of the pipelines, and dividing the structure in two: high order and low order of bits,
+            and reduces the changes of those collisions even further.
+            </summary>
+            <seealso cref="M:Microsoft.ML.DataViewRow.GetIdGetter"/>
+        </member>
+        <member name="F:Microsoft.ML.Data.DataViewRowId.Low">
+            <summary>The low order bits. Corresponds to H1 in the Murmur algorithms.</summary>
+        </member>
+        <member name="F:Microsoft.ML.Data.DataViewRowId.High">
+            <summary> The high order bits. Corresponds to H2 in the Murmur algorithms.</summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.DataViewRowId.#ctor(System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.ML.Data.DataViewRowId"/>
+            </summary>
+            <param name="low">The low order <langword>ulong</langword>.</param>
+            <param name="high">The high order <langword>ulong</langword>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.DataViewRowId.Fork">
+            <summary>
+            An operation that treats the value as an unmixed Murmur3 128-bit hash state,
+            and returns the hash state that would result if we hashed an addition 16 bytes
+            that were all zeros, except for the last bit which is one.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.DataViewRowId.Next">
+            <summary>
+            An operation that treats the value as an unmixed Murmur3 128-bit hash state,
+            and returns the hash state that would result if we hashed an addition 16 bytes
+            that were all zeros.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.DataViewRowId.Combine(Microsoft.ML.Data.DataViewRowId)">
+            <summary>
+            An operation that treats the value as an unmixed Murmur3 128-bit hash state,
+            and returns the hash state that would result if we took <paramref name="other"/>,
+            scrambled it using <see cref="M:Microsoft.ML.Data.DataViewRowId.Fork"/>, then hashed the result of that.
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.ML.Data.DataViewType">
+            <summary>
+            This is the abstract base class for all types in the <see cref="T:Microsoft.ML.IDataView"/> type system.
+            </summary>
+            <remarks>
+            Those that wish to extend the <see cref="T:Microsoft.ML.IDataView"/> type system should derive from one of
+            the more specific abstract classes <see cref="T:Microsoft.ML.Data.StructuredDataViewType"/> or <see cref="T:Microsoft.ML.Data.PrimitiveDataViewType"/>.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ML.Data.DataViewType.#ctor(System.Type)">
+            <summary>
+            Constructor for extension types, which must be either <see cref="T:Microsoft.ML.Data.PrimitiveDataViewType"/> or <see cref="T:Microsoft.ML.Data.StructuredDataViewType"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.DataViewType.RawType">
+            <summary>
+            The raw <see cref="T:System.Type"/> for this <see cref="T:Microsoft.ML.Data.DataViewType"/>. Note that this is the raw representation type
+            and not the complete information content of the <see cref="T:Microsoft.ML.Data.DataViewType"/>.
+            </summary>
+            <remarks>
+            Code should not assume that a <see cref="P:Microsoft.ML.Data.DataViewType.RawType"/> uniquely identifiers a <see cref="T:Microsoft.ML.Data.DataViewType"/>.
+            For example, most practical instances of ML.NET's KeyType and <see cref="P:Microsoft.ML.Data.NumberDataViewType.UInt32"/> will have a
+            <see cref="P:Microsoft.ML.Data.DataViewType.RawType"/> of <see cref="T:System.UInt32"/>, but both are very different in the types of information conveyed in that number.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ML.Data.DataViewType.Equals(Microsoft.ML.Data.DataViewType)">
+            <summary>
+            Return <see langword="true"/> if <see langword="this"/> is equivalent to <paramref name="other"/> and <see langword="false"/> otherwise.
+            </summary>
+            <param name="other">Another <see cref="T:Microsoft.ML.Data.DataViewType"/> to be compared with <see langword="this"/>.</param>
+        </member>
+        <member name="T:Microsoft.ML.Data.StructuredDataViewType">
+             <summary>
+             The abstract base class for all non-primitive types.
+             </summary>
+             <remarks>
+             This class stands in constrast to <see cref="T:Microsoft.ML.Data.PrimitiveDataViewType"/>. As that class is defined
+             to encapsulate cases where instances of the representation type can be freely copied without concerns
+             about ownership, mutability, or dispoal, this is defined for those types where these factors become concerns.
+            
+             To take the most conspicuous example, <see cref="T:Microsoft.ML.Data.VectorDataViewType"/> is a structure type,
+             which through the buffer sharing mechanisms of its <see cref="T:Microsoft.ML.Data.VBuffer`1"/> representation type,
+             does not have assignment as sufficient to create an independent copy.
+             </remarks>
+        </member>
+        <member name="T:Microsoft.ML.Data.PrimitiveDataViewType">
+            <summary>
+            The abstract base class for all primitive types. Values of these types can be freely copied
+            without concern for ownership, mutation, or disposing.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.TextDataViewType">
+            <summary>
+            The standard text type. This has representation type of <see cref="T:System.ReadOnlyMemory`1"/> with type parameter <see cref="T:System.Char"/>.
+            Note this can have only one possible value, accessible by the singleton static property <see cref="P:Microsoft.ML.Data.TextDataViewType.Instance"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.TextDataViewType.Instance">
+            <summary>
+            The singleton instance of this type.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.NumberDataViewType">
+            <summary>
+            The standard number type. This class is not directly instantiable. All allowed instances of this
+            type are singletons, and are accessible as static properties on this class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.SByte">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.SByte"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.Byte">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.Byte"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.Int16">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.Int16"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.UInt16">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.UInt16"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.Int32">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.Int32"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.UInt32">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.UInt32"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.Int64">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.Int64"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.UInt64">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.UInt64"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.Single">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.Single"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.NumberDataViewType.Double">
+            <summary>
+            The singleton instance of the <see cref="T:Microsoft.ML.Data.NumberDataViewType"/> with representation type of <see cref="T:System.Double"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.RowIdDataViewType">
+            <summary>
+            The <see cref="T:Microsoft.ML.Data.RowIdDataViewType"/> type. This has representation type of <see cref="T:Microsoft.ML.Data.DataViewRowId"/>.
+            Note this can have only one possible value, accessible by the singleton static property <see cref="P:Microsoft.ML.Data.RowIdDataViewType.Instance"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.RowIdDataViewType.Instance">
+            <summary>
+            The singleton instance of this type.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.BooleanDataViewType">
+            <summary>
+            The standard boolean type. This has representation type of <see cref="T:System.Boolean"/>.
+            Note this can have only one possible value, accessible by the singleton static property <see cref="P:Microsoft.ML.Data.BooleanDataViewType.Instance"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.BooleanDataViewType.Instance">
+            <summary>
+            The singleton instance of this type.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.DateTimeDataViewType">
+            <summary>
+            The standard date time type. This has representation type of <see cref="T:System.DateTime"/>.
+            Note this can have only one possible value, accessible by the singleton static property <see cref="P:Microsoft.ML.Data.DateTimeDataViewType.Instance"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.DateTimeDataViewType.Instance">
+            <summary>
+            The singleton instance of this type.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.DateTimeOffsetDataViewType">
+            <summary>
+            The standard date time offset type. This has representation type of <see cref="T:System.DateTimeOffset"/>.
+            Note this can have only one possible value, accessible by the singleton static property <see cref="P:Microsoft.ML.Data.DateTimeOffsetDataViewType.Instance"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.DateTimeOffsetDataViewType.Instance">
+            <summary>
+            The singleton instance of this type.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.TimeSpanDataViewType">
+            <summary>
+            The standard timespan type. This has representation type of <see cref="T:System.TimeSpan"/>.
+            Note this can have only one possible value, accessible by the singleton static property <see cref="P:Microsoft.ML.Data.TimeSpanDataViewType.Instance"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.TimeSpanDataViewType.Instance">
+            <summary>
+            The singleton instance of this type.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.DataViewTypeAttribute">
+            <summary>
+            <see cref="T:Microsoft.ML.Data.DataViewTypeAttribute"/> should be used to decorated class properties and fields, if that class' instances will be loaded as ML.NET <see cref="T:Microsoft.ML.IDataView"/>.
+            The function <see cref="M:Microsoft.ML.Data.DataViewTypeAttribute.Register"/> will be called to register a <see cref="T:Microsoft.ML.Data.DataViewType"/> for a <see cref="T:System.Type"/> with its <see cref="T:System.Attribute"/>s.
+            Whenever a value typed to the registered <see cref="T:System.Type"/> and its <see cref="T:System.Attribute"/>s, that value's type (i.e., a <see cref="P:Microsoft.ML.DataViewSchema.Column.Type"/>)
+            in <see cref="T:Microsoft.ML.IDataView"/> would be the associated <see cref="T:Microsoft.ML.Data.DataViewType"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.DataViewTypeAttribute.Register">
+            <summary>
+            A function implicitly invoked by ML.NET when processing a custom type. It binds a DataViewType to a custom type plus its attributes.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.DataViewTypeAttribute.Equals(Microsoft.ML.Data.DataViewTypeAttribute)">
+            <summary>
+            Return <see langword="true"/> if <see langword="this"/> is equivalent to <paramref name="other"/> and <see langword="false"/> otherwise.
+            </summary>
+            <param name="other">Another <see cref="T:Microsoft.ML.Data.DataViewTypeAttribute"/> to be compared with <see langword="this"/>.</param>
+        </member>
+        <member name="T:Microsoft.ML.Data.KeyDataViewType">
+             <summary>
+             Type representing categorical or enumerated values, most commonly used for
+             the values of labels in multiclass classification models.
+             </summary>
+             <remarks>
+             The underlying .NET type is one of the unsigned integer types. The default is
+             <see cref="T:System.UInt32"/>, but it can also be <see cref="T:System.Byte"/>,
+             <see cref="T:System.UInt16"/>, or <see cref="T:System.UInt64"/>.
+             Despite keys being numerical types, the information is not inherently numeric,
+             so typically, arithmetic is not meaningful.
+            
+             Missing values are mapped to 0.
+            
+             The first non-missing value of the set is always <c>1</c>.
+            
+             The other values range up to the value of <see cref="P:Microsoft.ML.Data.KeyDataViewType.Count"/>.
+            
+             For example, if you have a key value with a <see cref="P:Microsoft.ML.Data.KeyDataViewType.Count"/> of 3, then
+             the <see cref="T:System.UInt32"/> value <c>0</c> corresponds to missing key values, and
+             one of the values of <c>1</c>, <c>2</c>, or <c>3</c> is of the valid values,
+             and no other values are used.
+             </remarks>
+        </member>
+        <member name="M:Microsoft.ML.Data.KeyDataViewType.#ctor(System.Type,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ML.Data.KeyDataViewType"/> class.
+            </summary>
+            <param name="type">
+            The underlying representation type. Should be one of <see cref="T:System.Byte"/>, <see cref="T:System.UInt16"/>,
+            <see cref="T:System.UInt32"/> (the most common choice), or <see cref="T:System.UInt64"/>.
+            </param>
+            <param name="count">
+            The cardinality of the underlying set. This must not exceed the associated maximum value of the
+            representation type. For example, if <paramref name="type"/> is <see cref="T:System.UInt32"/>, then this must not
+            exceed <see cref="F:System.UInt32.MaxValue"/>.
+            </param>
+        </member>
+        <member name="M:Microsoft.ML.Data.KeyDataViewType.#ctor(System.Type,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ML.Data.KeyDataViewType"/> class. This differs from the hypothetically more general
+            <see cref="M:Microsoft.ML.Data.KeyDataViewType.#ctor(System.Type,System.UInt64)"/> constructor by taking an <see cref="T:System.Int32"/> for
+            <paramref name="count"/>, to more naturally facilitate the most common case that the key value is being used
+            as an enumeration over an array or list of some form.
+            </summary>
+            <param name="type">
+            The underlying representation type. Should be one of <see cref="T:System.Byte"/>, <see cref="T:System.UInt16"/>,
+            <see cref="T:System.UInt32"/> (the most common choice), or <see cref="T:System.UInt64"/>.
+            </param>
+            <param name="count">
+            The cardinality of the underlying set. This must not exceed the associated maximum value of the
+            representation type. For example, if <paramref name="type"/> is <see cref="T:System.UInt32"/>, then this must not
+            exceed <see cref="F:System.UInt32.MaxValue"/>.
+            </param>
+        </member>
+        <member name="M:Microsoft.ML.Data.KeyDataViewType.IsValidDataType(System.Type)">
+            <summary>
+            Returns true iff the given type is valid for a <see cref="T:Microsoft.ML.Data.KeyDataViewType"/>. The valid ones are
+            <see cref="T:System.Byte"/>, <see cref="T:System.UInt16"/>, <see cref="T:System.UInt32"/>, and <see cref="T:System.UInt64"/>, that is, the unsigned
+            integer types.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.KeyDataViewType.Count">
+            <summary>
+            <see cref="P:Microsoft.ML.Data.KeyDataViewType.Count"/> is the cardinality of the <see cref="T:Microsoft.ML.Data.KeyDataViewType"/>.
+            </summary>
+            <remarks>
+            The typical legal values for data of this type ranges from the missing value of <c>0</c>, and non-missing
+            values ranging from to <c>1</c> through <see cref="P:Microsoft.ML.Data.KeyDataViewType.Count"/>, inclusive, being the enumeration into whatever
+            set the key values are enumerated over.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ML.Data.KeyDataViewType.Equals(Microsoft.ML.Data.DataViewType)">
+            <summary>
+            Determine if this <see cref="T:Microsoft.ML.Data.KeyDataViewType"/> object is equal to another <see cref="T:Microsoft.ML.Data.DataViewType"/> instance.
+            Checks if the other item is the type of <see cref="T:Microsoft.ML.Data.KeyDataViewType"/>, if the <see cref="P:Microsoft.ML.Data.DataViewType.RawType"/>
+            is the same, and if the <see cref="P:Microsoft.ML.Data.KeyDataViewType.Count"/> is the same.
+            </summary>
+            <param name="other">The other object to compare against.</param>
+            <returns><see langword="true" /> if both objects are equal, otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Data.KeyDataViewType.Equals(System.Object)">
+            <summary>
+            Determine if a <see cref="T:Microsoft.ML.Data.KeyDataViewType"/> instance is equal to another <see cref="T:Microsoft.ML.Data.KeyDataViewType"/> instance.
+            Checks if any object is the type of <see cref="T:Microsoft.ML.Data.KeyDataViewType"/>, if the <see cref="P:Microsoft.ML.Data.DataViewType.RawType"/>
+            is the same, and if the <see cref="P:Microsoft.ML.Data.KeyDataViewType.Count"/> is the same.
+            </summary>
+            <param name="other">The other object to compare against.</param>
+            <returns><see langword="true" /> if both objects are equal, otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Data.KeyDataViewType.GetHashCode">
+            <summary>
+            Retrieves the hash code.
+            </summary>
+            <returns>An integer representing the hash code.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Data.KeyDataViewType.ToString">
+            <summary>
+            The string representation of the <see cref="T:Microsoft.ML.Data.KeyDataViewType"/>.
+            </summary>
+            <returns>A formatted string.</returns>
+        </member>
+        <member name="T:Microsoft.ML.Data.VBuffer`1">
+             <summary>
+             A buffer that supports both dense and sparse representations. This is the representation type for all
+             <see cref="T:Microsoft.ML.Data.VectorDataViewType"/> instances. The explicitly defined values of this vector are exposed through
+             <see cref="M:Microsoft.ML.Data.VBuffer`1.GetValues"/> and, if not dense, <see cref="M:Microsoft.ML.Data.VBuffer`1.GetIndices"/>.
+             </summary>
+             <remarks>
+             This structure is by itself immutable, but to enable buffer editing including re-use of the internal buffers,
+             a mutable variant <see cref="T:Microsoft.ML.Data.VBufferEditor`1"/> can be accessed through <see cref="T:Microsoft.ML.Data.VBuffer`1"/>.
+            
+             Throughout the code, we make the assumption that a sparse <see cref="T:Microsoft.ML.Data.VBuffer`1"/> is logically equivalent to
+             a dense <see cref="T:Microsoft.ML.Data.VBuffer`1"/> with the default value for <typeparamref name="T"/> filling in the default values.
+             </remarks>
+             <typeparam name="T">The type of the vector. There are no compile-time restrictions on what this could be, but
+             this code and practically all code that uses <see cref="T:Microsoft.ML.Data.VBuffer`1"/> makes the assumption that an assignment of
+             a value is sufficient to make a completely independent copy of it. So, for example, this means that a buffer of
+             buffers is not possible. But, things like <see cref="T:System.Int32"/>, <see cref="T:System.Single"/>, and <see
+             cref="T:System.ReadOnlyMemory`1"/>, are totally fine.</typeparam>
+        </member>
+        <member name="F:Microsoft.ML.Data.VBuffer`1._values">
+            <summary>
+            The internal re-usable array of values.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Data.VBuffer`1._indices">
+            <summary>
+            The internal re-usable array of indices.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Data.VBuffer`1._count">
+            <summary>
+            The number of items explicitly represented. This equals <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/> when the representation
+            is dense and less than <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/> when sparse.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Data.VBuffer`1.Length">
+            <summary>
+            The logical length of the buffer.
+            </summary>
+            <remarks>
+            Note that if this vector <see cref="P:Microsoft.ML.Data.VBuffer`1.IsDense"/>, then this will be the same as the <see cref="P:System.ReadOnlySpan`1.Length"/>
+            as returned from <see cref="M:Microsoft.ML.Data.VBuffer`1.GetValues"/>, since all values are explicitly represented in a dense representation. If
+            this is a sparse representation, then that <see cref="P:System.ReadOnlySpan`1.Length"/> will be somewhat shorter, as this
+            field contains the number of both explicit and implicit entries.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.GetValues">
+            <summary>
+            The explicitly represented values. When this <see cref="P:Microsoft.ML.Data.VBuffer`1.IsDense"/>, the <see cref="P:System.ReadOnlySpan`1.Length"/>
+            of the returned value will equal <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>, and otherwise will have length less than
+            <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.GetIndices">
+            <summary>
+            The indices. For a dense representation, this array is not used, and will return the default "empty" span.
+            For a sparse representation it is parallel to that returned from <see cref="M:Microsoft.ML.Data.VBuffer`1.GetValues"/> and specifies the
+            logical indices for the corresponding values, in increasing order, between 0 inclusive and
+            <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/> exclusive, corresponding to all explicitly defined values. All values at unspecified
+            indices should be treated as being implicitly defined with the default value of <typeparamref name="T"/>.
+            </summary>
+            <remarks>
+            To give one example, if <see cref="M:Microsoft.ML.Data.VBuffer`1.GetIndices"/> returns [3, 5] and <see cref="M:Microsoft.ML.Data.VBuffer`1.GetValues"/>() produces [98, 76],
+            this <see cref="T:Microsoft.ML.Data.VBuffer`1"/> stands for a vector with non-zero values 98 and 76 respectively at the 4th and 6th
+            coordinates, and zeros at all other indices. (Zero, because that is the default value for all .NET numeric
+            types.)
+            </remarks>
+        </member>
+        <member name="P:Microsoft.ML.Data.VBuffer`1.IsDense">
+            <summary>
+            Gets a value indicating whether every logical element is explicitly represented in the buffer.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.#ctor(System.Int32,`0[],System.Int32[])">
+            <summary>
+            Construct a dense representation. The <paramref name="indices"/> array is often unspecified, but if
+            specified it should be considered a buffer to be held on to, to be possibly used.
+            </summary>
+            <param name="length">The logical length of the resulting instance.</param>
+            <param name="values">
+            The values to be used. This must be at least as long as <paramref name="length"/>. If
+            <paramref name="length"/> is 0, it is legal for this to be <see langword="null"/>. The constructed buffer
+            takes ownership of this array.
+            </param>
+            <param name="indices">
+            The internal indices buffer. Because this constructor is for dense representations
+            this will not be immediately useful, but it does provide a buffer to be potentially reused to avoid
+            allocation. This is mostly non-null in situations where you want to produce a dense
+            <see cref="T:Microsoft.ML.Data.VBuffer`1"/>, but you happen to have an indices array "left over" and you don't want to
+            needlessly lose.
+            </param>
+            <remarks>
+            The resulting structure takes ownership of the passed in arrays, so they should not be used for
+            other purposes in the future.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.#ctor(System.Int32,System.Int32,`0[],System.Int32[])">
+            <summary>
+            Construct a possibly sparse vector representation.
+            </summary>
+            <param name="length">The length of the constructed buffer.</param>
+            <param name="count">The count of explicit entries. This must be between 0 and <paramref name="length"/>, both
+            inclusive. If it equals <paramref name="length"/> the result is a dense vector, and if less this will be a
+            sparse vector.</param>
+            <param name="values">
+            The values to be used. This must be at least as long as <paramref name="count"/>. If
+            <paramref name="count"/> is 0, it is legal for this to be <see langword="null"/>.
+            </param>
+            <param name="indices">The indices to be used. If we are constructing a dense representation, or
+            <paramref name="count"/> is 0, this can be <see langword="null"/>. Otherwise, this must be at least as long
+            as <paramref name="count"/>.</param>
+            <remarks>The resulting structure takes ownership of the passed in arrays, so they should not be used for
+            other purposes in the future.</remarks>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.CopyToDense(Microsoft.ML.Data.VBuffer{`0}@)">
+            <summary>
+            Copy from this buffer to the given destination, forcing a dense representation.
+            </summary>
+            <param name="destination">The destination buffer. After the copy, this will have <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>
+            of <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.CopyTo(Microsoft.ML.Data.VBuffer{`0}@)">
+            <summary>
+            Copy from this buffer to the given destination.
+            </summary>
+            <param name="destination">The destination buffer. After the copy, this will have <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>
+            of <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.CopyTo(Microsoft.ML.Data.VBuffer{`0}@,System.Int32,System.Int32)">
+            <summary>
+            Copy a range of values from this buffer to the given destination.
+            </summary>
+            <param name="destination">The destination buffer. After the copy, this will have <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>
+            of <paramref name="length"/>.</param>
+            <param name="sourceIndex">The minimum inclusive index to start copying from this vector.</param>
+            <param name="length">The logical number of values to copy from this vector into <paramref name="destination"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.CopyTo(System.Span{`0})">
+            <summary>
+            Copy from this buffer to the given destination span. This "densifies."
+            </summary>
+            <param name="destination">The destination buffer. This <see cref="P:System.Span`1.Length"/> must have least <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.CopyTo(System.Span{`0},System.Int32,`0)">
+            <summary>
+            Copy from this buffer to the given destination span, starting at the specified index. This "densifies."
+            </summary>
+            <param name="destination">The destination buffer. This <see cref="P:System.Span`1.Length"/> must be at least <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>
+            plus <paramref name="destinationIndex"/>.</param>
+            <param name="destinationIndex">The starting index of <paramref name="destination"/> at which to start copying.</param>
+            <param name="defaultValue">The value to fill in for the implicit sparse entries. This is a potential exception to
+            general expectation of sparse <see cref="T:Microsoft.ML.Data.VBuffer`1"/> that the implicit sparse entries have the default value
+            of <typeparamref name="T"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.Copy(`0[],System.Int32,Microsoft.ML.Data.VBuffer{`0}@,System.Int32)">
+            <summary>
+            Copy from a section of a source array to the given destination.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.Items(System.Boolean)">
+            <summary>
+            Returns the joint list of all index/value pairs.
+            </summary>
+            <param name="all">
+            If <see langword="true"/> all pairs, even those implicit values of a sparse representation,
+            will be returned, with the implicit values having the default value, as is appropriate. If left
+            <see langword="false"/> then only explicitly defined values are returned.
+            </param>
+            <returns>The index/value pairs.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.DenseValues">
+            <summary>
+            Returns an enumerable with <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/> items, representing the values.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.GetItemOrDefault(System.Int32,`0@)">
+             <summary>
+             Gets the item stored in this structure. In the case of a dense vector this is a simple lookup.
+             In the case of a sparse vector, it will try to find the entry with that index, and set <paramref name="destination"/>
+             to that stored value, or if no such value was found, assign it the default value.
+             </summary>
+             <remarks>
+             In the case where <see cref="P:Microsoft.ML.Data.VBuffer`1.IsDense"/> is <see langword="true"/>, this will take constant time since it an
+             directly lookup. For sparse vectors, however, because it must perform a bisection search on the indices to
+             find the appropriate value, that takes logarithmic time with respect to the number of explicitly represented
+             items, which is to say, the <see cref="P:System.ReadOnlySpan`1.Length"/> of the return value of <see cref="M:Microsoft.ML.Data.VBuffer`1.GetIndices"/>.
+            
+             For that reason, a single completely isolated lookup, since constructing <see cref="T:System.ReadOnlySpan`1"/> as
+             <see cref="M:Microsoft.ML.Data.VBuffer`1.GetValues"/> does is not a free operation, it may be more efficient to use this method. However
+             if one is doing a more involved computation involving many operations, it may be faster to utilize
+             <see cref="M:Microsoft.ML.Data.VBuffer`1.GetValues"/> and, if appropriate, <see cref="M:Microsoft.ML.Data.VBuffer`1.GetIndices"/> directly.
+             </remarks>
+             <param name="index">The index, which must be a non-negative number less than <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>.</param>
+             <param name="destination">The value stored at that index, or if this is a sparse vector where this is an implicit
+             entry, the default value for <typeparamref name="T"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.GetItemOrDefault(System.Int32)">
+            <summary>
+            A variant of <see cref="M:Microsoft.ML.Data.VBuffer`1.GetItemOrDefault(System.Int32,`0@)"/> that returns the value instead of passing it
+            back using a reference parameter.
+            </summary>
+            <param name="index">The index, which must be a non-negative number less than <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>.</param>
+            <returns>The value stored at that index, or if this is a sparse vector where this is an implicit
+            entry, the default value for <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBuffer`1.Items(`0[],System.Int32[],System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            A helper method that gives us an iterable over the items given the fields from a <see cref="T:Microsoft.ML.Data.VBuffer`1"/>.
+            Note that we have this in a separate utility class, rather than in its more natural location of
+            <see cref="T:Microsoft.ML.Data.VBuffer`1"/> itself, due to a bug in the C++/CLI compiler. (DevDiv 1097919:
+            [C++/CLI] Nested generic types are not correctly imported from metadata). So, if we want to use
+            <see cref="T:Microsoft.ML.Data.VBuffer`1"/> in C++/CLI projects, we cannot have a generic struct with a nested class
+            that has the outer struct type as a field.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.Data.VBufferEditor">
+            <summary>
+            Various methods for creating <see cref="T:Microsoft.ML.Data.VBufferEditor`1"/> instances.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBufferEditor.CreateFromBuffer``1(Microsoft.ML.Data.VBuffer{``0}@)">
+            <summary>
+            Creates a <see cref="T:Microsoft.ML.Data.VBufferEditor`1"/> with the same shape
+            (length and density) as the <paramref name="destination"/>.
+            </summary>
+            <param name="destination">The destination buffer. Note that the resulting <see cref="T:Microsoft.ML.Data.VBufferEditor`1"/> is assumed to take ownership
+            of this passed in object, and so whatever <see cref="T:Microsoft.ML.Data.VBuffer`1"/> was passed in as this parameter should not be used again, since its
+            underlying buffers are being potentially reused.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBufferEditor.Create``1(Microsoft.ML.Data.VBuffer{``0}@,System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Boolean,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:Microsoft.ML.Data.VBufferEditor`1"/> using
+            <paramref name="destination"/>'s values and indices buffers.
+            </summary>
+            <param name="destination">
+            The destination buffer. Note that the resulting <see cref="T:Microsoft.ML.Data.VBufferEditor`1"/> is assumed to take ownership
+            of this passed in object, and so whatever <see cref="T:Microsoft.ML.Data.VBuffer`1"/> was passed in as this parameter should not be used again, since its
+            underlying buffers are being potentially reused.
+            </param>
+            <param name="newLogicalLength">
+            The logical length of the new buffer being edited.
+            </param>
+            <param name="valuesCount">
+            The optional number of physical values to be represented in the buffer.
+            The buffer will be dense if <paramref name="valuesCount"/> is omitted.
+            </param>
+            <param name="maxValuesCapacity">
+            The optional number of maximum physical values to represent in the buffer.
+            The buffer won't grow beyond this maximum size.
+            </param>
+            <param name="keepOldOnResize">
+            True means that the old buffer values and indices are preserved, if possible (Array.Resize is called).
+            False means that a new array will be allocated, if necessary.
+            </param>
+            <param name="requireIndicesOnDense">
+            True means to ensure the Indices buffer is available, even if the buffer will be dense.
+            </param>
+        </member>
+        <member name="T:Microsoft.ML.Data.VBufferEditor`1">
+            <summary>
+            An object capable of editing a <see cref="T:Microsoft.ML.Data.VBuffer`1"/> by filling out
+            <see cref="F:Microsoft.ML.Data.VBufferEditor`1.Values"/> (and <see cref="F:Microsoft.ML.Data.VBufferEditor`1.Indices"/> if the buffer is not dense).
+            </summary>
+            <remarks>
+            The <see cref="T:Microsoft.ML.Data.VBuffer`1"/> structure by itself is immutable. However, the purpose of <see cref="T:Microsoft.ML.Data.VBuffer`1"/>
+            is to enable buffer re-use we can edit them through this structure, as created through
+            <see cref="M:Microsoft.ML.Data.VBufferEditor.Create``1(Microsoft.ML.Data.VBuffer{``0}@,System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Boolean,System.Boolean)"/> or
+            <see cref="M:Microsoft.ML.Data.VBufferEditor.CreateFromBuffer``1(Microsoft.ML.Data.VBuffer{``0}@)"/>.
+            </remarks>
+        </member>
+        <member name="F:Microsoft.ML.Data.VBufferEditor`1.Values">
+            <summary>
+            The mutable span of values.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.Data.VBufferEditor`1.Indices">
+            <summary>
+            The mutable span of indices.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.VBufferEditor`1.CreatedNewValues">
+            <summary>
+            Gets a value indicating whether a new <see cref="F:Microsoft.ML.Data.VBufferEditor`1.Values"/> array was allocated.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.VBufferEditor`1.CreatedNewIndices">
+            <summary>
+            Gets a value indicating whether a new <see cref="F:Microsoft.ML.Data.VBufferEditor`1.Indices"/> array was allocated.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBufferEditor`1.Commit">
+            <summary>
+            Commits the edits and creates a new <see cref="T:Microsoft.ML.Data.VBuffer`1"/> using the current <see cref="F:Microsoft.ML.Data.VBufferEditor`1.Values"/> and <see cref="F:Microsoft.ML.Data.VBufferEditor`1.Indices"/>.
+            Note that this structure and its properties should not be used once this is called.
+            </summary>
+            <returns>The newly created <see cref="T:Microsoft.ML.Data.VBuffer`1"/>.</returns>
+        </member>
+        <member name="M:Microsoft.ML.Data.VBufferEditor`1.CommitTruncated(System.Int32)">
+            <summary>
+            Commits the edits and creates a new <see cref="T:Microsoft.ML.Data.VBuffer`1"/> using
+            the current Values and Indices, while allowing to truncate the length
+            of <see cref="F:Microsoft.ML.Data.VBufferEditor`1.Values"/> and, if sparse, <see cref="F:Microsoft.ML.Data.VBufferEditor`1.Indices"/>.
+            Like <see cref="M:Microsoft.ML.Data.VBufferEditor`1.Commit"/>, this structure and its properties should not be used once this is called.
+            </summary>
+            <param name="physicalValuesCount">
+            The new number of physical values to be represented in the created buffer.
+            </param>
+            <returns>
+            The newly created <see cref="T:Microsoft.ML.Data.VBuffer`1"/>.
+            </returns>
+            <remarks>
+            This method allows to modify the length of the explicitly defined values.
+            This is useful in sparse situations where the <see cref="T:Microsoft.ML.Data.VBufferEditor`1"/>
+            was created with a larger physical value count than was needed
+            because the final value count was not known at creation time.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.ML.Data.VectorDataViewType">
+            <summary>
+            The standard vector type. The representation type of this is <see cref="T:Microsoft.ML.Data.VBuffer`1"/>,
+            where the type parameter is in <see cref="P:Microsoft.ML.Data.VectorDataViewType.ItemType"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.VectorDataViewType.Dimensions">
+            <summary>
+            The dimensions. This will always have at least one item. All values will be non-negative.
+            As with <see cref="P:Microsoft.ML.Data.VectorDataViewType.Size"/>, a zero value indicates that the vector type is considered to have
+            unknown length along that dimension.
+            </summary>
+            <remarks>
+            In the case where this is a multi-dimensional type, that is, a situation where <see cref="P:Microsoft.ML.Data.VectorDataViewType.Dimensions"/>
+            has length greater than one, since <see cref="T:Microsoft.ML.Data.VBuffer`1"/> itself is a single dimensional structure,
+            we must clarify what we mean. The indices represent a "flattened" view of the coordinates implicit in the
+            dimensions. We consider that the last dimension is the most "minor" index. In the case where <see cref="P:Microsoft.ML.Data.VectorDataViewType.Dimensions"/>
+            has length <c>2</c>, this is commonly referred to as row-major order. So, if you hypothetically had
+            dimensions of <c>{ 5, 2 }</c>, then the <see cref="T:Microsoft.ML.Data.VBuffer`1"/> values would be all of length <c>10</c>,
+            and the flattened indices <c>0, 1, 2, 3, 4, ...</c> would correspond to "coordinates" of
+            <c>(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), ...</c>, respectively.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ML.Data.VectorDataViewType.#ctor(Microsoft.ML.Data.PrimitiveDataViewType,System.Int32)">
+            <summary>
+            Constructs a new single-dimensional vector type.
+            </summary>
+            <param name="itemType">The type of the items contained in the vector.</param>
+            <param name="size">The size of the single dimension.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VectorDataViewType.#ctor(Microsoft.ML.Data.PrimitiveDataViewType,System.Int32[])">
+            <summary>
+            Constructs a potentially multi-dimensional vector type.
+            </summary>
+            <param name="itemType">The type of the items contained in the vector.</param>
+            <param name="dimensions">The dimensions. Note that, like <see cref="P:Microsoft.ML.Data.VectorDataViewType.Dimensions"/>, must be non-empty, with all
+            non-negative values. Also, because <see cref="P:Microsoft.ML.Data.VectorDataViewType.Size"/> is the product of <see cref="P:Microsoft.ML.Data.VectorDataViewType.Dimensions"/>, the result of
+            multiplying all these values together must not overflow <see cref="T:System.Int32"/>.</param>
+        </member>
+        <member name="M:Microsoft.ML.Data.VectorDataViewType.#ctor(Microsoft.ML.Data.PrimitiveDataViewType,System.Collections.Immutable.ImmutableArray{System.Int32})">
+            <summary>
+            Constructs a potentially multi-dimensional vector type.
+            </summary>
+            <param name="itemType">The type of the items contained in the vector.</param>
+            <param name="dimensions">The dimensions. Note that, like <see cref="P:Microsoft.ML.Data.VectorDataViewType.Dimensions"/>, must be non-empty, with all
+            non-negative values. Also, because <see cref="P:Microsoft.ML.Data.VectorDataViewType.Size"/> is the product of <see cref="P:Microsoft.ML.Data.VectorDataViewType.Dimensions"/>, the result of
+            multiplying all these values together must not overflow <see cref="T:System.Int32"/>.</param>
+        </member>
+        <member name="P:Microsoft.ML.Data.VectorDataViewType.IsKnownSize">
+            <summary>
+            Whether this is a vector type with known size.
+            Equivalent to <c><see cref="P:Microsoft.ML.Data.VectorDataViewType.Size"/> &gt; 0</c>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.VectorDataViewType.ItemType">
+            <summary>
+            The type of the items stored as values in vectors of this type.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.Data.VectorDataViewType.Size">
+            <summary>
+            The size of the vector. A value of zero means it is a vector whose size is unknown.
+            A vector whose size is known should correspond to values that always have the same <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/>,
+            whereas one whose size is unknown may have values whose <see cref="F:Microsoft.ML.Data.VBuffer`1.Length"/> varies from record to record.
+            Note that this is always the product of the elements in <see cref="P:Microsoft.ML.Data.VectorDataViewType.Dimensions"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.DataViewSchema">
+            <summary>
+            Represents the schema of an <see cref="T:Microsoft.ML.IDataView"/> or an <see cref="T:Microsoft.ML.DataViewRow"/>.
+            The schema is a collection of <see cref="T:Microsoft.ML.DataViewSchema.Column"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Count">
+            <summary>
+            Number of columns in the schema.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Item(System.String)">
+            <summary>
+            Get the column by name. Throws an exception if such column does not exist.
+            Note that if multiple columns exist with the same name, the one with the biggest index is returned.
+            The other columns are considered 'hidden', and only accessible by their index.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Item(System.Int32)">
+            <summary>
+            Get the column by index.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.GetColumnOrNull(System.String)">
+            <summary>
+            Get the column by name, or <c>null</c> if the column is not present.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.DataViewSchema.Column">
+            <summary>
+            This class describes one column in the particular schema.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Column.Name">
+            <summary>
+            The name of the column.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Column.Index">
+            <summary>
+            The column's index in the schema.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Column.IsHidden">
+            <summary>
+            Whether this column is hidden (accessible only by index).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Column.Type">
+            <summary>
+            The type of the column.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Column.Annotations">
+            <summary>
+            The annotations of the column.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.DataViewSchema.DetachedColumn">
+            <summary>
+            This class represents the schema of one column of a data view, without an attachment to a particular <see cref="T:Microsoft.ML.DataViewSchema"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.DetachedColumn.Name">
+            <summary>
+            The name of the column.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.DetachedColumn.Type">
+            <summary>
+            The type of the column.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.DetachedColumn.Annotations">
+            <summary>
+            The annotations associated with the column.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.DetachedColumn.#ctor(System.String,Microsoft.ML.Data.DataViewType,Microsoft.ML.DataViewSchema.Annotations)">
+            <summary>
+            Creates an instance of a <see cref="T:Microsoft.ML.DataViewSchema.DetachedColumn"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.DetachedColumn.#ctor(Microsoft.ML.DataViewSchema.Column)">
+            <summary>
+            Create an instance of <see cref="T:Microsoft.ML.DataViewSchema.DetachedColumn"/> from an existing schema's column.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.DataViewSchema.Annotations">
+            <summary>
+            The schema annotations of one <see cref="T:Microsoft.ML.DataViewSchema.Column"/>.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ML.DataViewSchema.Annotations._getters">
+            <summary>
+            Annotation getter delegates. Useful to construct annotations out of other annotations.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewSchema.Annotations.Schema">
+            <summary>
+            The schema of the annotations row. It is different from the schema that the column belongs to.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Annotations.#ctor(Microsoft.ML.DataViewSchema,System.Delegate[])">
+            <summary>
+            Create an annotations row by supplying the schema columns and the getter delegates for all the values.
+            </summary>
+            <remarks>
+            Note: The <paramref name="getters"/> array is owned by this <see cref="T:Microsoft.ML.DataViewSchema.Annotations"/> instance.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Annotations.GetGetter``1(Microsoft.ML.DataViewSchema.Column)">
+            <summary>
+            Get a getter delegate for one value of the annotations row.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Annotations.GetValue``1(System.String,``0@)">
+            <summary>
+            Get the value of an annotation, by annotation kind (aka column name).
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.DataViewSchema.Annotations.Builder">
+            <summary>
+            Class containing operations to build an <see cref="T:Microsoft.ML.DataViewSchema.Annotations"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Annotations.Builder.Add(Microsoft.ML.DataViewSchema.Annotations,System.Func{System.String,System.Boolean})">
+            <summary>
+            Add some columns from <paramref name="annotations"/> into our new annotations, by applying <paramref name="selector"/>
+            to all the names.
+            </summary>
+            <param name="annotations">The annotations row to take values from.</param>
+            <param name="selector">The predicate describing which annotation columns to keep.</param>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Annotations.Builder.Add``1(System.String,Microsoft.ML.Data.DataViewType,Microsoft.ML.ValueGetter{``0},Microsoft.ML.DataViewSchema.Annotations)">
+            <summary>
+            Add one annotation column, strongly-typed version.
+            </summary>
+            <typeparam name="TValue">The type of the value.</typeparam>
+            <param name="name">The annotation name.</param>
+            <param name="type">The annotation type.</param>
+            <param name="getter">The getter delegate.</param>
+            <param name="annotations">Annotations of the input column. Note that annotations on an annotation column is somewhat rare
+            except for certain types (for example, slot names for a vector, key values for something of key type).</param>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Annotations.Builder.Add(System.String,Microsoft.ML.Data.DataViewType,System.Delegate,Microsoft.ML.DataViewSchema.Annotations)">
+            <summary>
+            Add one annotation column, weakly-typed version.
+            </summary>
+            <param name="name">The annotation name.</param>
+            <param name="type">The annotation type.</param>
+            <param name="getter">The getter delegate that provides the value. Note that the type of the getter is still checked
+            inside this method.</param>
+            <param name="annotations">Annotations of the input column. Note that annotations on an annotation column is somewhat rare
+            except for certain types (for example, slot names for a vector, key values for something of key type).</param>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Annotations.Builder.AddPrimitiveValue``1(System.String,Microsoft.ML.Data.PrimitiveDataViewType,``0,Microsoft.ML.DataViewSchema.Annotations)">
+            <summary>
+            Add one annotation column for a primitive value type.
+            </summary>
+            <param name="name">The annotation name.</param>
+            <param name="type">The annotation type.</param>
+            <param name="value">The value of the annotation.</param>
+            <param name="annotations">Annotations of the input column. Note that annotations on an annotation column is somewhat rare
+            except for certain types (for example, slot names for a vector, key values for something of key type).</param>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Annotations.Builder.ToAnnotations">
+            <summary>
+            Returns a <see cref="T:Microsoft.ML.DataViewSchema.Annotations"/> row that contains the current contents of this <see cref="T:Microsoft.ML.DataViewSchema.Annotations.Builder"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.DataViewSchema.Builder">
+            <summary>
+            Class containing operations to build a <see cref="T:Microsoft.ML.DataViewSchema"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Builder.#ctor">
+            <summary>
+            Create a new instance of <see cref="T:Microsoft.ML.DataViewSchema.Builder"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Builder.AddColumn(System.String,Microsoft.ML.Data.DataViewType,Microsoft.ML.DataViewSchema.Annotations)">
+            <summary>
+            Add one column to the schema being built.
+            </summary>
+            <param name="name">The column name.</param>
+            <param name="type">The column type.</param>
+            <param name="annotations">The column annotations.</param>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Builder.AddColumns(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.Column})">
+            <summary>
+            Add multiple existing columns to the schema being built.
+            </summary>
+            <param name="source">Columns to add.</param>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Builder.AddColumns(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.DetachedColumn})">
+            <summary>
+            Add multiple existing columns to the schema being built.
+            </summary>
+            <param name="source">Columns to add.</param>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.Builder.ToSchema">
+            <summary>
+            Returns a <see cref="T:Microsoft.ML.DataViewSchema"/> that contains the current contents of this <see cref="T:Microsoft.ML.DataViewSchema.Builder"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewSchema.#ctor(Microsoft.ML.DataViewSchema.Column[])">
+            <summary>
+            This constructor should only be called by <see cref="T:Microsoft.ML.DataViewSchema.Builder"/>.
+            </summary>
+            <param name="columns">The input columns. The constructed instance takes ownership of the array.</param>
+        </member>
+        <member name="T:Microsoft.ML.IDataView">
+            <summary>
+            The input and output of Query Operators (Transforms). This is the fundamental data pipeline
+            type, comparable to <see cref="T:System.Collections.Generic.IEnumerable`1"/> for LINQ.
+            </summary>
+            <example>
+            <format type="text/markdown">
+            <![CDATA[
+            [!code-csharp[SimpleDataViewImplementation](~/../docs/samples/docs/samples/Microsoft.ML.Samples/Dynamic/SimpleDataViewImplementation.cs)]
+            ]]>
+            </format>
+            </example>
+        </member>
+        <member name="P:Microsoft.ML.IDataView.CanShuffle">
+            <summary>
+            Whether this IDataView supports shuffling of rows, to any degree.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.IDataView.GetRowCount">
+             <summary>
+             Returns the number of rows if known. Returning null means that the row count is unknown but
+             it might return a non-null value on a subsequent call. This indicates, that the transform does
+             not YET know the number of rows, but may in the future. Its implementation's computation
+             complexity should be O(1).
+            
+             Most implementation will return the same answer every time. Some, like a cache, might
+             return null until the cache is fully populated.
+             </summary>
+        </member>
+        <member name="M:Microsoft.ML.IDataView.GetRowCursor(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.Column},System.Random)">
+            <summary>
+            Get a row cursor. The <paramref name="columnsNeeded"/> indicate the active columns that are needed
+            to iterate over. If set to an empty <see cref="T:System.Collections.IEnumerable"/> no column is requested. The schema of the returned
+            cursor will be the same as the schema of the IDataView, but getting a getter for inactive columns will throw.
+            </summary>
+            <param name="columnsNeeded">The active columns needed. If passed an empty <see cref="T:System.Collections.IEnumerable"/> no column is requested.</param>
+            <param name="rand">An instance of <see cref="T:System.Random"/> to seed randomizing the access for a shuffled cursor.</param>
+        </member>
+        <member name="M:Microsoft.ML.IDataView.GetRowCursorSet(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.Column},System.Int32,System.Random)">
+             <summary>
+             This constructs a set of parallel batch cursors. The value <paramref name="n"/> is a recommended limit on
+             cardinality. If <paramref name="n"/> is non-positive, this indicates that the caller has no recommendation,
+             and the implementation should have some default behavior to cover this case. Note that this is strictly a
+             recommendation: it is entirely possible that an implementation can return a different number of cursors.
+            
+             The cursors should return the same data as returned through
+             <see cref="M:Microsoft.ML.IDataView.GetRowCursor(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.Column},System.Random)"/>, except partitioned: no two cursors should return the
+             "same" row as would have been returned through the regular serial cursor, but all rows should be returned by
+             exactly one of the cursors returned from this cursor. The cursors can have their values reconciled
+             downstream through the use of the <see cref="P:Microsoft.ML.DataViewRow.Batch"/> property.
+            
+             The typical usage pattern is that a set of cursors is requested, each of them is then given to a set of
+             working threads that consume from them independently while, ultimately, the results are finally collated in
+             the end by exploiting the ordering of the <see cref="P:Microsoft.ML.DataViewRow.Batch"/> property described above. More typical
+             scenarios will be content with pulling from the single serial cursor of
+             <see cref="M:Microsoft.ML.IDataView.GetRowCursor(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.Column},System.Random)"/>.
+             </summary>
+             <param name="columnsNeeded">The active columns needed. If passed an empty <see cref="T:System.Collections.IEnumerable"/> no column is requested.</param>
+             <param name="n">The suggested degree of parallelism.</param>
+             <param name="rand">An instance of <see cref="T:System.Random"/> to seed randomizing the access.</param>
+             <returns></returns>
+        </member>
+        <member name="P:Microsoft.ML.IDataView.Schema">
+            <summary>
+            Gets an instance of Schema.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.ValueGetter`1">
+            <summary>
+            Delegate type to get a value. This can be used for efficient access to data in a <see cref="T:Microsoft.ML.DataViewRow"/>
+            or <see cref="T:Microsoft.ML.DataViewRowCursor"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.DataViewRow">
+            <summary>
+            A logical row of data. May be a row of an <see cref="T:Microsoft.ML.IDataView"/> or a stand-alone row.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewRow.Position">
+             <summary>
+             This is incremented when the underlying contents changes, giving clients a way to detect change. It should be
+             -1 when the object is in a state where values cannot be fetched. In particular, for an <see cref="T:Microsoft.ML.DataViewRowCursor"/>,
+             this will be before <see cref="M:Microsoft.ML.DataViewRowCursor.MoveNext"/> if ever called for the first time, or after the first time
+             <see cref="M:Microsoft.ML.DataViewRowCursor.MoveNext"/> is called and returns <see langword="false"/>.
+            
+             Note that this position is not position within the underlying data, but position of this cursor only. If
+             one, for example, opened a set of parallel streaming cursors, or a shuffled cursor, each such cursor's first
+             valid entry would always have position 0.
+             </summary>
+        </member>
+        <member name="P:Microsoft.ML.DataViewRow.Batch">
+             <summary>
+             This provides a means for reconciling multiple rows that have been produced generally from
+             <see cref="M:Microsoft.ML.IDataView.GetRowCursorSet(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.Column},System.Int32,System.Random)"/>. When getting a set, there is a need
+             to, while allowing parallel processing to proceed, always have an aim that the original order should be
+             recoverable. Note, whether or not a user cares about that original order in one's specific application is
+             another story altogether (most callers of this as a practical matter do not, otherwise they would not call
+             it), but at least in principle it should be possible to reconstruct the original order one would get from an
+             identically configured <see cref="M:Microsoft.ML.IDataView.GetRowCursor(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.Column},System.Random)"/>. So: for any cursor
+             implementation, batch numbers should be non-decreasing. Furthermore, any given batch number should only
+             appear in one of the cursors as returned by
+             <see cref="M:Microsoft.ML.IDataView.GetRowCursorSet(System.Collections.Generic.IEnumerable{Microsoft.ML.DataViewSchema.Column},System.Int32,System.Random)"/>. In this way, order is determined by
+             batch number. An operation that reconciles these cursors to produce a consistent single cursoring, could do
+             so by drawing from the single cursor, among all cursors in the set, that has the smallest batch number
+             available.
+            
+             Note that there is no suggestion that the batches for a particular entry will be consistent from cursoring
+             to cursoring, except for the consistency in resulting in the same overall ordering. The same entry could
+             have different batch numbers from one cursoring to another. There is also no requirement that any given
+             batch number must appear, at all. It is merely a mechanism for recovering ordering from a possibly arbitrary
+             partitioning of the data. It also follows from this, of course, that considering the batch to be a property
+             of the data is completely invalid.
+             </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewRow.GetIdGetter">
+             <summary>
+             A getter for a 128-bit ID value. It is common for objects to serve multiple <see cref="T:Microsoft.ML.DataViewRow"/>
+             instances to iterate over what is supposed to be the same data, for example, in a <see cref="T:Microsoft.ML.IDataView"/>
+             a cursor set will produce the same data as a serial cursor, just partitioned, and a shuffled cursor will
+             produce the same data as a serial cursor or any other shuffled cursor, only shuffled. The ID exists for
+             applications that need to reconcile which entry is actually which. Ideally this ID should be unique, but for
+             practical reasons, it suffices if collisions are simply extremely improbable.
+            
+             Note that this ID, while it must be consistent for multiple streams according to the semantics above, is not
+             considered part of the data per se. So, to take the example of a data view specifically, a single data view
+             must render consistent IDs across all cursorings, but there is no suggestion at all that if the "same" data
+             were presented in a different data view (as by, say, being transformed, cached, saved, or whatever), that
+             the IDs between the two different data views would have any discernible relationship.</summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewRow.IsColumnActive(Microsoft.ML.DataViewSchema.Column)">
+            <summary>
+            Returns whether the given column is active in this row.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewRow.GetGetter``1(Microsoft.ML.DataViewSchema.Column)">
+            <summary>
+            Returns a value getter delegate to fetch the value of the given <paramref name="column"/>, from the row.
+            This throws if the column is not active in this row, or if the type
+            <typeparamref name="TValue"/> differs from this column's type.
+            </summary>
+            <typeparam name="TValue"> is the column's content type.</typeparam>
+            <param name="column"> is the output column whose getter should be returned.</param>
+        </member>
+        <member name="P:Microsoft.ML.DataViewRow.Schema">
+            <summary>
+            Gets a <see cref="P:Microsoft.ML.DataViewRow.Schema"/>, which provides name and type information for variables
+            (i.e., columns in ML.NET's type system) stored in this row.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewRow.Dispose">
+            <summary>
+            Implementation of dispose. Calls <see cref="M:Microsoft.ML.DataViewRow.Dispose(System.Boolean)"/> with <see langword="true"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ML.DataViewRow.Dispose(System.Boolean)">
+            <summary>
+            The disposable method for the disposable pattern. This default implementation does nothing.
+            </summary>
+            <param name="disposing">Whether this was called from <see cref="M:System.IDisposable.Dispose"/>.
+            Subclasses that implement <see cref="M:System.Object.Finalize"/> should call this method with
+            <see langword="false"/>, but I hasten to add that implementing finalizers should be
+            avoided if at all possible.</param>.
+        </member>
+        <member name="T:Microsoft.ML.DataViewRowCursor">
+            <summary>
+            Class used to cursor through rows of an <see cref="T:Microsoft.ML.IDataView"/>.
+            </summary>
+            <remarks>
+            Note that this is also an <see cref="T:Microsoft.ML.DataViewRow"/>. The <see cref="P:Microsoft.ML.DataViewRow.Position"/> is
+            incremented by <see cref="M:Microsoft.ML.DataViewRowCursor.MoveNext"/>. Prior to the first call to <see cref="M:Microsoft.ML.DataViewRowCursor.MoveNext"/>, or after
+            <see cref="M:Microsoft.ML.DataViewRowCursor.MoveNext"/> returns <see langword="false"/>, <see cref="P:Microsoft.ML.DataViewRow.Position"/> is <c>-1</c>.
+            Otherwise, when <see cref="M:Microsoft.ML.DataViewRowCursor.MoveNext"/> returns <see langword="true"/>, <see cref="P:Microsoft.ML.DataViewRow.Position"/> >= 0.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ML.DataViewRowCursor.MoveNext">
+            <summary>
+            Advance to the next row. When the cursor is first created, this method should be called to
+            move to the first row. Returns <see langword="false"/> if there are no more rows.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.SchemaDebuggerProxy">
+            <summary>
+            The debugger proxy for <see cref="T:Microsoft.ML.DataViewSchema"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ML.AnnotationsDebuggerProxy">
+            <summary>
+            The debugger proxy for <see cref="T:Microsoft.ML.DataViewSchema.Annotations"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

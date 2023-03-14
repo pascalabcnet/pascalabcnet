@@ -5019,6 +5019,75 @@ namespace PascalABCCompiler.SystemLibrary
             return new string_const_node(left.constant_value.ToString() + right.constant_value.ToString(), call_location);
         }
 
+        public static expression_node enum_or_executor(location call_location, params expression_node[] parameters)
+        {
+            enum_const_node left = parameters[0] as enum_const_node;
+            if (left == null && parameters[0] is static_compiled_variable_reference)
+            {
+                static_compiled_variable_reference cvr = parameters[0] as static_compiled_variable_reference;
+                if (cvr.var.IsLiteral)
+                    left = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[0].type, parameters[0].location);
+            }
+            if (left == null)
+                return null;
+            enum_const_node right = parameters[1] as enum_const_node;
+            if (right == null && parameters[1] is static_compiled_variable_reference)
+            {
+                static_compiled_variable_reference cvr = parameters[1] as static_compiled_variable_reference;
+                if (cvr.var.IsLiteral)
+                    right = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[1].type, parameters[1].location);
+            }
+            if (right == null)
+                return null;
+
+            return new enum_const_node(left.constant_value | right.constant_value, left.type, call_location);
+        }
+
+        public static expression_node enum_and_executor(location call_location, params expression_node[] parameters)
+        {
+            enum_const_node left = parameters[0] as enum_const_node;
+            if (left == null && parameters[0] is static_compiled_variable_reference)
+            {
+                static_compiled_variable_reference cvr = parameters[0] as static_compiled_variable_reference;
+                if (cvr.var.IsLiteral)
+                    left = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[0].type, parameters[0].location);
+            }
+            if (left == null)
+                return null;
+            enum_const_node right = parameters[1] as enum_const_node;
+            if (right == null && parameters[1] is static_compiled_variable_reference)
+            {
+                static_compiled_variable_reference cvr = parameters[1] as static_compiled_variable_reference;
+                if (cvr.var.IsLiteral)
+                    right = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[1].type, parameters[1].location);
+            }
+            if (right == null)
+                return null;
+            return new enum_const_node(left.constant_value & right.constant_value, left.type, call_location);
+        }
+
+        public static expression_node enum_xor_executor(location call_location, params expression_node[] parameters)
+        {
+            enum_const_node left = parameters[0] as enum_const_node;
+            if (left == null && parameters[0] is static_compiled_variable_reference)
+            {
+                static_compiled_variable_reference cvr = parameters[0] as static_compiled_variable_reference;
+                if (cvr.var.IsLiteral)
+                    left = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[0].type, parameters[0].location);
+            }
+            if (left == null)
+                return null;
+            enum_const_node right = parameters[1] as enum_const_node;
+            if (right == null && parameters[1] is static_compiled_variable_reference)
+            {
+                static_compiled_variable_reference cvr = parameters[1] as static_compiled_variable_reference;
+                if (cvr.var.IsLiteral)
+                    right = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[1].type, parameters[1].location);
+            }
+            if (right == null)
+                return null;
+            return new enum_const_node(left.constant_value ^ right.constant_value, left.type, call_location);
+        }
     }
 
 }

@@ -1588,15 +1588,15 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class yield_unknown_ident : ident
     {
-        protected ident _UnknownID;
+        //protected ident _UnknownID;
         protected ident _ClassName;
         protected bool _IsYieldInStaticMethod;
 
-        public ident UnknownID
+        /*public ident UnknownID
         {
             get { return _UnknownID; }
             set { _UnknownID = value; }
-        }
+        }*/
 
         public ident ClassName
         {

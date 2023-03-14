@@ -6,6 +6,7 @@ uses NUnit.Framework;
 procedure InitPABCSystem;
 begin
   __InitPABCSystem;
+  System.Console.OutputEncoding := Encoding.GetEncoding(866);
 end;
 
 type 

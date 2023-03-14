@@ -214,6 +214,10 @@ namespace PascalABCCompiler.SemanticTree
         {
             get;
         }
+		List<ITypeNode> ImplementingInterfacesOrEmpty
+        {
+            get;
+        }
 
         //Является ли generic-параметром
         bool is_generic_parameter

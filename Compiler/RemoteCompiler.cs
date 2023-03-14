@@ -117,10 +117,18 @@ namespace PascalABCCompiler
             string arg = null;
             if (line.Length < 3)
                 return;
+            if ((int)line[0] == 65279 && (int)line[1] == 65279)
+            {
+                line = line.Substring(2);
+                if (line.Length < 3)
+                    return;
+            }
+                
             if (line.Length > 3)
                 arg = line.Substring(4);
             string[] args = Tools.SplitString(arg, ConsoleCompilerConstants.MessageSeparator);
             int command = Convert.ToInt32(line.Substring(0, 3));
+            
             if (command < sendCommandStartNumber + 50)
             {
                 ChangeCompilerState((CompilerState)(command - sendCommandStartNumber), arg);
@@ -189,6 +197,8 @@ namespace PascalABCCompiler
                     //Encoding enc = (Encoding)sourceFilesProvider(arg, SourceFileOperation.FileEncoding);
                     //text = Tools.ChangeEncoding(text, enc, Encoding.UTF8);
                     //text = Tools.ChangeEncoding(text, Encoding.GetEncoding(1251), Encoding.UTF8);
+                    if (pabcnetcProcess == null)
+                        Reload();
                     Process pr = pabcnetcProcess;
                     sendCommand(ConsoleCompilerConstants.SourceFileText, text.Length);
                     byte[] buf = Encoding.UTF8.GetBytes(text);
@@ -316,12 +326,16 @@ namespace PascalABCCompiler
 
         void sendCommand(int command, object arg)
         {
+            if (pabcnetcProcess == null)
+                Reload();
             pabcnetcProcess.StandardInput.WriteLine(string.Format("{0} {1}", command, arg));
             pabcnetcProcess.StandardInput.Flush();
         }
 
         void sendObjectAsByteArray(int command, string obj)
         {
+            if (pabcnetcProcess == null)
+                Reload();
             pabcnetcProcess.StandardInput.WriteLine(string.Format("{0} {1}", command, obj.Length));
             pabcnetcProcess.StandardInput.Flush();
             byte[] buf = Encoding.UTF8.GetBytes(obj);
@@ -339,6 +353,8 @@ namespace PascalABCCompiler
         
         void sendCommand(int command)
         {
+            if (pabcnetcProcess == null)
+                Reload();
             pabcnetcProcess.StandardInput.WriteLine(command);
         }
         
@@ -374,7 +390,7 @@ namespace PascalABCCompiler
                 sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
             foreach (PascalABCCompiler.CompilerOptions.StandartModule sm in compilerOptions.StandartModules)
                 sendCommand(
-                    ConsoleCompilerConstants.CompilerOptionsStandartModule, 
+                    ConsoleCompilerConstants.CompilerOptionsStandartModule,
                     sm.Name,(int)sm.AddMethod,(int)sm.AddToLanguages);
         }
 
@@ -534,8 +550,18 @@ namespace PascalABCCompiler
             compilerReloading = true;
             stopCompiler();
             pabcnetcProcess = new Process();
-            pabcnetcProcess.StartInfo.FileName = Path.Combine(Tools.GetExecutablePath(), pabcnetcFileName);
-            pabcnetcProcess.StartInfo.Arguments = "commandmode";
+            if (!IsUnix())
+            {
+                pabcnetcProcess.StartInfo.FileName = Path.Combine(Tools.GetExecutablePath(), pabcnetcFileName);
+                pabcnetcProcess.StartInfo.Arguments = "commandmode";
+            }
+            else
+            {
+                pabcnetcProcess.StartInfo.FileName = "mono";
+                pabcnetcProcess.StartInfo.Arguments = Path.Combine(Tools.GetExecutablePath(), pabcnetcFileName)+" commandmode";
+                
+            }
+                
             pabcnetcProcess.StartInfo.UseShellExecute = false;
             pabcnetcProcess.StartInfo.CreateNoWindow = true;
             pabcnetcProcess.StartInfo.RedirectStandardOutput = true;
@@ -550,11 +576,17 @@ namespace PascalABCCompiler
             compilerReloading = false;
         }
 
+        public static bool IsUnix()
+        {
+            return System.Environment.OSVersion.Platform == System.PlatformID.Unix || System.Environment.OSVersion.Platform == System.PlatformID.MacOSX;
+        }
+
         void pabcnetcProcess_Exited(object sender, EventArgs e)
         {
             if (!compilerReloading)
             {
-                Reload();
+                pabcnetcProcess = null;
+                //Reload();
             }
         }
 

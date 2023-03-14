@@ -1063,6 +1063,8 @@ function ReadChar(prompt: string): char;
 function ReadString(prompt: string): string;
 /// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры
 function ReadBoolean(prompt: string): boolean;
+/// Выводит приглашение к вводу и возвращает значение типа BigInteger, введенное с клавиатуры
+function ReadBigInteger(prompt: string): BigInteger;
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
@@ -1082,6 +1084,9 @@ function ReadlnString(prompt: string): string;
 /// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
 function ReadlnBoolean(prompt: string): boolean;
+/// Выводит приглашение к вводу и возвращает значение типа BigInteger, введенное с клавиатуры,
+///и осуществляет переход на следующую строку ввода
+function ReadlnBigInteger(prompt: string): BigInteger;
 
 
 ///--
@@ -1799,7 +1804,7 @@ function Min(a, b, c: integer): integer;
 function Min(a, b, c, d: integer): integer;
 
 ///-function Max(a,b,...: T): T;
-/// Возвращает максиимальное из a,b,...
+/// Возвращает максимальное из a,b,...
 function Max<T>(params a: array of T): T;
 ///--
 //function Max(params a: array of real): real;
@@ -2266,6 +2271,8 @@ function SeqWhile<T>(first: T; next: T->T; pred: T->boolean): sequence of T;
 function SeqWhile<T>(first, second: T; next: (T,T) ->T; pred: T->boolean): sequence of T;
 /// Возвращает последовательность из count элементов x 
 function SeqFill<T>(count: integer; x: T): sequence of T;
+/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next
+function Iterate<T>(first: T; next: T->T): sequence of T;
 
 /// Возвращает последовательность из n целых, введенных с клавиатуры
 function ReadSeqInteger(n: integer): sequence of integer;
@@ -2310,9 +2317,13 @@ function Arr(a: CharRange): array of char;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
-function ArrRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
+function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
+/// Возвращает массив размера n, заполненный случайными целыми значениями
+function ArrRandomInteger(n: integer := 10): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
-function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
+function ArrRandomReal(n: integer; a: real; b: real): array of real;
+/// Возвращает массив размера n, заполненный случайными вещественными значениями
+function ArrRandomReal(n: integer := 10): array of real;
 /// Возвращает массив из count элементов, заполненных значениями gen(i)
 function ArrGen<T>(count: integer; gen: integer->T): array of T;
 /// Возвращает массив из count элементов, заполненных значениями gen(i), начиная с i=from
@@ -2381,22 +2392,22 @@ function MatrByCol<T>(a: sequence of sequence of T): array [,] of T;
 /// Генерирует двумерный массив по столбцам из последовательности
 function MatrByCol<T>(m,n: integer; a: sequence of T): array [,] of T;
 
+/// Возвращает матрицу m на n целых, введенных с клавиатуры
+function ReadMatrInteger(m, n: integer): array [,] of integer;
+/// Возвращает матрицу m на n вещественных, введенных с клавиатуры
+function ReadMatrReal(m, n: integer): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
-/// Возвращает двумерный массив размера m x n, заполненный элементами x 
-function MatrFill<T>(m, n: integer; x: T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
 function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
+/// Возвращает двумерный массив размера m x n, заполненный элементами x 
+function MatrFill<T>(m, n: integer; x: T): array [,] of T;
 /// Транспонирует двумерный массив 
 function Transpose<T>(a: array [,] of T): array [,] of T;
-/// Возвращает матрицу m на n целых, введенных с клавиатуры
-function ReadMatrInteger(m, n: integer): array [,] of integer;
-/// Возвращает матрицу m на n вещественных, введенных с клавиатуры
-function ReadMatrReal(m, n: integer): array [,] of real;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
@@ -2429,6 +2440,10 @@ function Lst<T>(a: sequence of T): List<T>;
 function Lst(a: IntRange): List<integer>;
 /// Возвращает список, заполненный диапазоном значений 
 function Lst(a: CharRange): List<char>;
+/// Возвращает список, заполненный указанными целыми значениями
+function LstStr(params a: array of string): List<string>;
+/// Возвращает список, заполненный указанными целыми значениями
+function LstInt(params a: array of integer): List<integer>;
 
 /// Возвращает двусвязный список, заполненный указанными значениями
 function LLst<T>(params a: array of T): LinkedList<T>;
@@ -2447,8 +2462,12 @@ function HSet<T>(a: sequence of T): HashSet<T>;
 function HSet(a: IntRange): HashSet<integer>;
 /// Возвращает множество на базе хеш таблицы, заполненное заполненный диапазоном значений 
 function HSet(a: CharRange): HashSet<char>;
+/// Возвращает множество на базе хеш таблицы, заполненное целыми значениями
+function HSetInt(params a: array of integer): HashSet<integer>;
+/// Возвращает множество на базе хеш таблицы, заполненное строковыми значениями
+function HSetStr(params a: array of string): HashSet<string>;
 
-/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
+/// Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями 
 function SSet<T>(params a: array of T): SortedSet<T>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
 function SSet<T>(a: sequence of T): SortedSet<T>;
@@ -2456,18 +2475,26 @@ function SSet<T>(a: sequence of T): SortedSet<T>;
 function SSet(a: IntRange): SortedSet<integer>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное диапазоном значений 
 function SSet(a: CharRange): SortedSet<char>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное целыми значениями 
+function SSetInt(params a: array of integer): SortedSet<integer>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное строковыми значениями 
+function SSetStr(params a: array of string): SortedSet<string>;
 
 
 /// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 /// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
+/// Возвращает словарь пар элементов (ключ, значение), построенный на значениях последовательности
+function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal>;
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 /// Возвращает словарь пар элементов (строка, строка)
 function DictStr(params pairs: array of (string, string)): Dictionary<string, string>;
 /// Возвращает словарь пар элементов (строка, целое)
 function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>;
+/// Возвращает словарь пар элементов (целое, целое)
+function DictInt(params pairs: array of (integer, integer)): Dictionary<integer, integer>;
 
 
 //{{{--doc: Конец секции интерфейса для документации }}} 
@@ -4782,12 +4809,16 @@ begin
   Result := ArrRandom(n, a, b);
 end;
 
+function ArrRandomInteger(n: integer) := ArrRandomInteger(n,0,100);
+
 function ArrRandomReal(n: integer; a: real; b: real): array of real;
 begin
   Result := new real[n];
   for var i := 0 to Result.Length - 1 do
     Result[i] := Random() * (b - a) + a;
 end;
+
+function ArrRandomReal(n: integer) := ArrRandomReal(n,0,10);
 
 function SeqRandom(n: integer; a: integer; b: integer): sequence of integer;
 begin
@@ -5163,6 +5194,11 @@ function Lst(a: IntRange): List<integer> := a.ToList;
 
 function Lst(a: CharRange): List<char> := a.ToList;
 
+function LstStr(params a: array of string): List<string> := a.ToList;
+
+function LstInt(params a: array of integer): List<integer> := a.ToList;
+
+
 function LLst<T>(params a: array of T): LinkedList<T> := new LinkedList<T>(a);
 
 function LLst<T>(a: sequence of T): LinkedList<T> := new LinkedList<T>(a);
@@ -5180,9 +5216,19 @@ function HSet<T>(a: sequence of T): HashSet<T> := new HashSet<T>(a);
 
 function SSet<T>(a: sequence of T): SortedSet<T> := new SortedSet<T>(a);
 
+function HSetInt(params a: array of integer): HashSet<integer> := a.ToHashSet;
+
+function HSetStr(params a: array of string): HashSet<string> := a.ToHashSet;
+
+function SSetInt(params a: array of integer): SortedSet<integer> := new SortedSet<integer>(a);
+
+function SSetStr(params a: array of string): SortedSet<string> := new SortedSet<string>(a);
+
 function HSet(a: IntRange): HashSet<integer> := a.ToHashSet;
 
 function HSet(a: CharRange): HashSet<char> := a.ToHashSet;
+
+
 
 function SSet(a: IntRange): SortedSet<integer> := a.ToSortedSet;
 
@@ -5203,6 +5249,9 @@ begin
     Result.Add(pairs[i][0], pairs[i][1]);
 end;
 
+function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal> 
+  := Dict(pairs.ToArray); // внутренняя ошибка компилятора
+
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 begin
   Result := new KeyValuePair<TKey, TVal>(key, value);
@@ -5214,6 +5263,8 @@ function DictStr(params pairs: array of (string, string)): Dictionary<string, st
 function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>
   := Dict&<string, integer>(pairs);
 
+function DictInt(params pairs: array of (integer, integer)): Dictionary<integer, integer>
+  := Dict&<integer, integer>(pairs);
 
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 begin
@@ -6236,6 +6287,12 @@ begin
   Result := ReadBoolean;
 end;
 
+function ReadBigInteger(prompt: string) : BigInteger;
+begin
+  Print(prompt);
+  Result := ReadBigInteger;
+end;
+
 function ReadlnInteger(prompt: string): integer;
 begin
   Print(prompt);
@@ -6270,6 +6327,12 @@ function ReadlnBoolean(prompt: string): boolean;
 begin
   Print(prompt);
   Result := ReadlnBoolean;
+end;
+
+function ReadlnBigInteger(prompt: string): BigInteger;
+begin
+  Print(prompt);
+  Result := ReadlnInteger;
 end;
 
 procedure ReadShortStringFromFile(f: Text; var s: string; n: integer);
@@ -8523,9 +8586,9 @@ begin
   if d > Result then Result := d;
 end;
 
-function Max(params a: array of integer): integer := a.Max;
+//function Max(params a: array of integer): integer := a.Max;
 
-function Max(params a: array of real): real := a.Max;
+//function Max(params a: array of real): real := a.Max;
 
 
 function Min(a, b: byte) := Math.Min(a, b);
@@ -9104,7 +9167,7 @@ end;
 
 function Trim(s: string): string;
 begin
-  Result := s.Trim(' ');
+  Result := s.Trim(|' '|);
 end;
 
 function TrimLeft(s: string): string;
@@ -10384,7 +10447,7 @@ begin
 end;
 
 /// Превращает последовательность в последовательность n-ок соседних элементов
-function Nwise<T>(Self: sequence of T; n: integer):sequence of array of T; extensionmethod;
+function Nwise<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin 
   var chunk := new Queue<T>(n);
   foreach var x in Self do 
@@ -12145,11 +12208,28 @@ begin
   end;  
 end;
 
-/// Возвращает n-тую декартову степень множества элементов, заданного массивом
+/// Возвращает n-тую декартову степень множества элементов, заданного последовательностью
 function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin
   Result := Self.ToArray.Cartesian(n);
 end;
+
+/// Возвращает все перестановки букв в строке в виде последовательности строк
+function Permutations(Self: string): sequence of string; extensionmethod 
+:= Self.ToCharArray.Permutations.Select(p -> new string(p));
+
+/// Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк
+function Permutations(Self: string; m: integer): sequence of string; extensionmethod 
+:= Self.ToCharArray.Permutations(m).Select(p -> new string(p));
+
+/// Возвращает n-тую декартову степень множества символов, заданного строкой
+function Cartesian(Self: string; n: integer): sequence of string; extensionmethod
+:= Self.ToCharArray.Cartesian(n).Select(p -> new string(p));
+
+/// Возвращает все сочетания по m элементов
+function Combinations(Self: string; m: integer): sequence of string; extensionmethod
+:= Self.ToCharArray.Combinations(m).Select(p -> new string(p));
+
 
 // Внутренние функции для одномерных массивов
 
@@ -12607,7 +12687,7 @@ begin
 end;
 
 /// Возвращает квадрат числа
-function Sqr(Self: integer): integer; extensionmethod;
+function Sqr(Self: integer): int64; extensionmethod;
 begin
   Result := Sqr(Self);
 end;

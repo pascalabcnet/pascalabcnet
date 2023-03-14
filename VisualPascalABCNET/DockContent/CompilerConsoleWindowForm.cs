@@ -25,7 +25,14 @@ namespace VisualPascalABC
         }
         public void AppendTextToConsoleCompiler(object text)
         {
-            CompilerConsole.AppendText(text as string);
+            try
+            {
+                CompilerConsole.AppendText(text as string); // SSM !!!!!!!!!!!!!!! 18/02/23
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
         public void AddTextToCompilerMessages(string text)

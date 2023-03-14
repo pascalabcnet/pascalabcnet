@@ -763,7 +763,7 @@ namespace PascalABCCompiler.PCU
                     return t;
                 template_types[i] = tt;
             }
-            if (template_types.Length > 0)
+            if (template_types.Length > 0 && t.IsGenericTypeDefinition)
                 return t.MakeGenericType(template_types);
             return t;
         }
@@ -1738,6 +1738,8 @@ namespace PascalABCCompiler.PCU
                 cmn.function_code = GetCodeWithOverridedMethod(cmn, br.ReadInt32());
             else if (not_restore_code && cmn.name != "get_val" && cmn.name != "set_val")//ignore pascal array property accessors
                 AddWaitedMethodCode(cmn, br.ReadInt32());
+            else if (cmn.name == "<>") // for conform_basic_function
+                AddWaitedMethodCode(cmn, br.ReadInt32());
             else
                 cmn.function_code = GetCode(br.ReadInt32());
             cmn.cont_type.methods.AddElement(cmn);
@@ -2094,6 +2096,7 @@ namespace PascalABCCompiler.PCU
                 scope = new WrappedClassScope(this, cun.scope, null);
             }
             ctn = new wrapped_common_type_node(this, null, name, SemanticTree.type_access_level.tal_public, cun.namespaces[0], scope, null, offset);
+            scope.class_type = ctn;
             scope.ctn = ctn;
             if (is_interface)
                 AddTypeToOrderList(ctn, ind);
@@ -2107,15 +2110,27 @@ namespace PascalABCCompiler.PCU
             AddMember(ctn, offset);
 
             int_members.Insert(0, ctn);
+            SemanticTree.type_special_kind tsk = (SemanticTree.type_special_kind)br.ReadByte();
+            ctn.type_special_kind = tsk;
             common_type_node saved_ctn = ctn;
+            if (ctn.full_name == "PABCSystem.BinaryFile")
+                ctn.type_special_kind = SemanticTree.type_special_kind.binary_file;
+            if (ctn.type_special_kind != SemanticTree.type_special_kind.set_type)
+            {
+                SystemLibrary.SystemLibrary.init_reference_type(ctn);
+            }
             type_node base_type = GetTypeReference();
             bool is_value_type = br.ReadBoolean();
-
+            ctn.SetBaseType(base_type);
+            ctn.internal_is_value = is_value_type;
+            
+            
             List<SemanticTree.ITypeNode> interf_implemented = ReadImplementingInterfaces();
+            
             constant_node low_val = null;
             constant_node upper_val = null;
             SemanticTree.type_access_level tal = (SemanticTree.type_access_level)br.ReadByte();
-            SemanticTree.type_special_kind tsk = (SemanticTree.type_special_kind)br.ReadByte();
+            
             ctn.SetIsSealed(br.ReadBoolean());
             ctn.SetIsAbstract(br.ReadBoolean(), null); // Причина null, потому что проблема пересечения sealed и abstract не может произойти после загрузки из .pcu
             ctn.SetIsStatic(br.ReadBoolean());
@@ -2137,19 +2152,12 @@ namespace PascalABCCompiler.PCU
                 }
                 iscope.TopInterfaceScopeArray = interf_scopes.ToArray();
             }
-            ctn.SetBaseType(base_type);
+            
             ctn.IsInterface = type_is_interface;
             ctn.IsDelegate = type_is_delegate;
             ctn.is_class = type_is_class;
             ctn.ImplementingInterfaces.AddRange(interf_implemented);
-            ctn.internal_is_value = is_value_type;
-            ctn.type_special_kind = tsk;
-            if (ctn.full_name == "PABCSystem.BinaryFile")
-                ctn.type_special_kind = SemanticTree.type_special_kind.binary_file;
-            if (ctn.type_special_kind != SemanticTree.type_special_kind.set_type)
-            {
-                SystemLibrary.SystemLibrary.init_reference_type(ctn);
-            }
+            
             if (type_is_generic_definition)
             {
                 foreach (common_type_node par in type_params)

@@ -76,9 +76,9 @@ begin
   if not ReadlnSignalSended then
     SendReadlnRequest;
   c := inherited read_symbol;
-  if (LastReadSymbol=N) and (c=R) then
+  if {(LastReadSymbol=#13) and} (c=#10) then // Fix SSM 30.08.22 for Linux
     ReadlnSignalSended := false;  
-  LastReadSymbol := c;
+  LastReadSymbol := c; // Не используется после Fix
   result := c;
 end;
 
@@ -88,7 +88,7 @@ begin
     SendReadlnRequest;
   var s := inherited ReadLine;
   ReadlnSignalSended := false;
-  LastReadSymbol := R;
+  LastReadSymbol := #10;
   Result := s;
 end;
 
@@ -145,8 +145,10 @@ begin
           _a[i-1] := _CommandLineArgs[i];
         _CommandLineArgs := _a;
         
-        Console.OutputEncoding := System.Text.Encoding.UTF8;
-        Console.InputEncoding := System.Text.Encoding.UTF8;
+        //Console.OutputEncoding := System.Text.Encoding.UTF8;
+        //Console.InputEncoding := System.Text.Encoding.UTF8;
+        Console.OutputEncoding := new System.Text.UTF8Encoding(false);
+        Console.InputEncoding := new System.Text.UTF8Encoding(false);
     end;
   except
   end;

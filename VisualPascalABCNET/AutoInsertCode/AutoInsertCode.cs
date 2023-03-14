@@ -98,6 +98,7 @@ namespace VisualPascalABC
                 var caret = editor.ActiveTextAreaControl.Caret;
                 int start = TextUtilities.FindPrevWordStart(editor.Document, caret.Offset);
                 // Нужно, чтобы в Text было последнее слово в строке !!! Исключение - когда в следующей надо сделать просто сдвиг
+               
                 var Text = editor.Document.GetText(start, caret.Offset - start).TrimEnd();
                 var TextToLower = Text.ToLower();
                 //var curStrEnd = TextUtilities.GetLineAsString(editor.Document, caret.Line).Substring(caret.Column);
@@ -137,10 +138,15 @@ namespace VisualPascalABC
                     ta.InsertString("\n" + Spaces(icur + 2));
                     if (next == null || Indent(next) < icur || Indent(next) == icur && !next.TrimStart().ToLower().StartsWith("end"))
                     {
+                        string whole_text = editor.Document.TextContent.Trim();
                         var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
                         int offset = doc.PositionToOffset(tl_beg);
                         var send = "\n" + Spaces(icur) + "end";
-                        if (next == null && (prev == null || !(prev.TrimStart().ToLower().StartsWith("procedure") || prev.TrimStart().ToLower().StartsWith("function"))))
+                        bool is_short = false;
+                        int ind = whole_text.IndexOf("##");
+                        if (ind != -1 && ind + 2 < whole_text.Length - 1 && (whole_text[ind + 2] == '\r' || whole_text[ind + 2] == '\n' || whole_text[ind + 2] == ' '))
+                            is_short = true;
+                        if (!is_short && next == null && (prev == null || !(prev.TrimStart().ToLower().StartsWith("procedure") || prev.TrimStart().ToLower().StartsWith("function"))))
                             send += ".";
                         else send += ";";
                         doc.Insert(offset, send);

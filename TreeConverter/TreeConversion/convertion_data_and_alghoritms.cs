@@ -668,7 +668,7 @@ namespace PascalABCCompiler.TreeConverter
 
 			if (pct.first==null)
 			{
-                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null)
+                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
                 {
                     return convert_type(en, (to as delegated_methods).empty_param_method.ret_type, loc);
                 }
@@ -679,9 +679,11 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
                     else
                         return en;
-                } 
+                }
                 else if (en.type is undefined_type && en is base_function_call bfc)
                     throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", bfc.function.name);
+                else if (en is enum_const_node && (en as enum_const_node).constant_value != 0)
+                    return new int_const_node((en as enum_const_node).constant_value, loc);
                 else AddError(new CanNotConvertTypes(en, en.type, to, loc));
 			}
 
@@ -1205,11 +1207,16 @@ namespace PascalABCCompiler.TreeConverter
                                 ptci.to = formal_param_type;
                                 tc.AddElement(ptci);
                                 factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
-                                return tc;
+                                //return tc;
                             }
-                            if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                            else if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                            {
                                 error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
-							return null;
+                                return null;
+                            }
+                            else
+                                return null;
+							//return null;
                             
 						}
 					}
@@ -1447,6 +1454,8 @@ namespace PascalABCCompiler.TreeConverter
 
 			for(int i=0;i<left.Count;i++)
 			{
+                if (i >= right.Count)
+                    break;
 				type_conversion_compare tcc=compare_type_conversions(left[i],right[i]);
 				if (tcc==type_conversion_compare.less_type_conversion)
 				{
@@ -3031,9 +3040,10 @@ namespace PascalABCCompiler.TreeConverter
                 tn1 = tn2;
                 tn2 = t;
             }
+            if (n1 == n2) return tn1;
             // Первый тип  - меньше или равен
             if ((int)n1 <= (int)int_types.integer_type && (int)n2 <= (int)int_types.integer_type) return SystemLibrary.SystemLibrary.integer_type;
-            if (n1 == n2) return tn1;
+            
             // Первый тип  - меньше
             if ((int)n2 == (int)int_types.uint64_type)
                 return SystemLibrary.SystemLibrary.uint64_type;
@@ -3055,19 +3065,6 @@ namespace PascalABCCompiler.TreeConverter
             return null; // это вхолостую
         }
 
-        public bool ContainsForward(type_node tn)
-        {
-            if (tn.ForwardDeclarationOnly || tn.original_generic != null && tn.original_generic.ForwardDeclarationOnly)
-                return true;
-            if (tn is generic_instance_type_node tni)
-                foreach (var t in tn.instance_params)
-                {
-                    var r = ContainsForward(t);
-                    if (r)
-                        return r;
-                }
-            return false;
-        }
     }
 
 }

@@ -1,0 +1,37 @@
+//PABCNETC
+%PREFIX%=PABCNETC_
+
+ERROR_INVALID_DIRECTORY=错误：目录无效
+ERROR_DIRECTORY_NOT_FOUND=错误：找不到目录
+FULL_ERROR_LIST=完整错误列表:
+OK_{0}MS_{1}LINES=正常 {0}ms ({1}行)
+TOTAL{0}_FILES{1}_LINES_{2}_TIME{3}=总计: {0} 个文件 ({1}kb,{2}行). 时间: {3}ms
+TOTAL{0}_SUCCESS{1}_PROCENT{2}=总计 {0}, 已编译 {1} ({2}%)
+COMPILING_ASSEMBLY{0}=编译程序集 {0}...
+RESTARTING_COMPILER=加载核心...
+ERROR_PARSERS_NOT_FOUND=错误：找不到解析器！
+CONNECTED_PARSERS=连接的解析器: 
+CONNECTED_CONVERSIONS=连接的转换器: 
+STARTING=正在开始...
+COMMANDLINEISABSENT=命令行为空
+FILEISABSENT{0}=文件 {0} 未找到
+COMPILEERRORS=编译错误:
+
+HELP=16LINES
+命令行参数: 
+pabcnetc source_file_name [target_file_name [dll|exe|winexe]]
+Commands:([x] -> x - 默认值)
+? 			- 帮助
+cd <dir>  		- 当前目录更改为 <dir>
+<file name> 		- 编译文件
+<files mask> 		- 编译文件
+Reset 			- 重新加载编译器
+ResetOnCompile=<0|1> 	- 编译前重置编译器 [0]
+Rebuild=<0|1> 		- 重新编译 PCU 文件 [0]
+Debug=<0|1> 		- 调试：创建 PDB 文件 [0]
+OutDir=<output directory>-设置输出目录
+OutType=<dll|exe|winexe>- 设置输出类型 [exe]
+ClrScr 			- 清除屏幕
+ShowAllMessages=<0|1>	- 显示所有编译器信息 [0]
+Language=<n> 		- 设置语言，其中 n:
+                

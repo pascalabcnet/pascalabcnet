@@ -575,7 +575,8 @@ namespace CodeCompletion
 
         public override void visit(if_node _if_node)
         {
-            throw new NotImplementedException();
+            _if_node.then_body.visit(this);
+            
         }
 
         public override void visit(ref_type _ref_type)

@@ -59,12 +59,13 @@ namespace PascalABCCompiler
                 if (dsc.tags.Count == 0)
                     if (dsc.text != null)
                     {
-                        documentation.Add(node, dsc.text);
+                        documentation.Add(node, dsc.text.Trim());
                         return;
                     }
                 foreach (documentation_comment_tag dt in dsc.tags)
                     if (dt.name.ToLower() == "summary")
-                        documentation.Add(node, dt.text);
+                        if (dt.text != null)
+                            documentation.Add(node, dt.text.Trim());
             }
             
         }

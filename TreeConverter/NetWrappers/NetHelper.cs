@@ -360,7 +360,7 @@ namespace PascalABCCompiler.NetHelper
 			return false;
 		}
 		
-		public static Assembly LoadAssembly(string name)
+		public static Assembly LoadAssembly(string name, bool use_load_from = false)
 		{
             if (name == null) return null;
 			Assembly a = ass_name_cache[name] as Assembly;
@@ -415,8 +415,10 @@ namespace PascalABCCompiler.NetHelper
            		fs.Read(buf, 0, (int)fs.Length);
             	fs.Close();
                 curr_inited_assm_path = name;
-                a = System.Reflection.Assembly.Load(buf);      
-                
+                if (!System.IO.Path.GetFileName(name).ToLower().Contains("microsoft."))
+                    a = System.Reflection.Assembly.Load(buf);
+                else
+                    a = System.Reflection.Assembly.LoadFrom(name);
                 a.GetTypes();
             	buf = null;
             	//Thread th = new Thread(new ThreadStart(collect_internal));
@@ -944,7 +946,7 @@ namespace PascalABCCompiler.NetHelper
                     if (!System.IO.File.Exists(path))
                         path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
                     if (System.IO.File.Exists(path))
-                        assm = LoadAssembly(path);
+                        assm = LoadAssembly(path, true);
                     curr_inited_assm_path = null;
 
                     //return LoadAssembly(args.Name);
@@ -982,6 +984,13 @@ namespace PascalABCCompiler.NetHelper
                     return true;
         	return false;
 		}
+
+        public static bool IsNetNamespaceInAssembly(string name, Assembly a)
+        {
+            if (cur_used_assemblies != null && cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(name))
+                return true;
+            return false;
+        }
 		
 		public static bool IsNetNamespace(string name,PascalABCCompiler.TreeRealization.using_namespace_list _unar, out string full_ns)
 		{
@@ -2081,7 +2090,7 @@ namespace PascalABCCompiler.NetHelper
 		
 		public static Type FindTypeOrCreate(string name)
 		{
-			TypeInfo ti = (TypeInfo)types[name];
+			TypeInfo ti = types[name] as TypeInfo;
 			if (ti != null /*&& cur_used_assemblies.ContainsKey(t.Assembly)*/) return ti.type;
 			//ivan added - runtime types adding
 			Type t = Type.GetType(name, false, true);

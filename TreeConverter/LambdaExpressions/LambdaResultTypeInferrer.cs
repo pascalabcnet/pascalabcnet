@@ -37,8 +37,14 @@ namespace TreeConverter.LambdaExpressions
                 if (convertion_data_and_alghoritms.eq_type_nodes(mostCommonType, resultExpressionsTypes[i].Item1))
                     continue;
                 var typeComparisonResult = type_table.compare_types(resultExpressionsTypes[i].Item1, mostCommonType);
+
                 if (typeComparisonResult == type_compare.non_comparable_type)
-                    syntaxTreeVisitor.AddError(new CanNotConvertTypes(resultExpressionsTypes[i].Item3, resultExpressionsTypes[i].Item1, mostCommonType, syntaxTreeVisitor.get_location(resultExpressionsTypes[i].Item2)));
+                {
+                    var ptc = type_table.get_convertions(resultExpressionsTypes[i].Item1, mostCommonType);
+                    if (ptc.first == null)
+                        syntaxTreeVisitor.AddError(new CanNotConvertTypes(resultExpressionsTypes[i].Item3, resultExpressionsTypes[i].Item1, mostCommonType, syntaxTreeVisitor.get_location(resultExpressionsTypes[i].Item2)));
+                }
+                
                 if (typeComparisonResult == type_compare.greater_type)
                     mostCommonType = resultExpressionsTypes[i].Item1;
             }

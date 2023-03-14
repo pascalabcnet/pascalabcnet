@@ -5,7 +5,7 @@ unit GraphABCHelper;
 //{$apptype windows}
 {$reference '%GAC%\System.Windows.Forms.dll'}
 {$reference '%GAC%\System.Drawing.dll'}
-{$reference 'PresentationFramework.dll'} 
+{reference 'PresentationFramework.dll'} 
 
 interface
 

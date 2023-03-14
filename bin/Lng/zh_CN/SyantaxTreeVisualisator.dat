@@ -1,0 +1,10 @@
+//Syntax Tree Visualisator Plugin
+%PREFIX%=VPP_SYNTRV_
+
+NAME=语法树
+FORMNAME=语法树可视化器
+DESCRIPTION=语法树可视化器
+CHOSEN_SYNTAX_TREE=所选语法树:
+SHOW_ALL_TREES=显示全部
+M_BUILD=构建当前
+M_REBUILD=重建所有

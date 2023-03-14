@@ -5990,6 +5990,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_yield_unknown_ident(yield_unknown_ident _yield_unknown_ident)
 		{
 			write_ident(_yield_unknown_ident);
+			if (_yield_unknown_ident.UnknownID == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_yield_unknown_ident.UnknownID.visit(this);
+			}
 		}
 
 

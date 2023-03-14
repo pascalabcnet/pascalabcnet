@@ -207,6 +207,7 @@ namespace VisualPascalABC
 
         public event RunnerManagerActionDelegate Exited;
         public event RunnerManagerActionDelegate Starting;
+        public event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun;
 
         public class StackTraceItem
         {
@@ -281,6 +282,8 @@ namespace VisualPascalABC
             
             try
             {
+                if (ChangeArgsBeforeRun != null)
+                    ChangeArgsBeforeRun(ref args);
                 PRunner.Start(fileName, args, redirectIO, redirectErrors, RunWithPause, attachDebugger, fictive_attach);
                 if (Starting != null)
                     Starting(fileName);

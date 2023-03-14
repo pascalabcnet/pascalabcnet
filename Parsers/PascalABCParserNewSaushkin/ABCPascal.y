@@ -1481,10 +1481,9 @@ simple_type_identifier
     ;
 
 enumeration_id_list
-    : enumeration_id tkComma enumeration_id  
+    : enumeration_id
         { 
 			$$ = new enumerator_list($1 as enumerator, @$);
-			($$ as enumerator_list).Add($3 as enumerator, @$);
         }      
     | enumeration_id_list tkComma enumeration_id
         { 
@@ -2314,6 +2313,8 @@ typed_var_init_expression
 			var formalPars = new formal_parameters(new typed_parameters(idList, any, parametr_kind.none, null, @2), @2);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, any, $5 as statement_list, @$);
 		}
+	| new_question_expr
+		{ $$ = $1; }		
 	;
 
 typed_const_plus
@@ -3267,6 +3268,8 @@ expr_l1
 		{ $$ = $1; }
     | new_question_expr
 		{ $$ = $1; }
+//    | var_stmt tkComma expr_l1 
+//		{ $$ = $3; }
     ;
     
 expr_l1_for_question_expr

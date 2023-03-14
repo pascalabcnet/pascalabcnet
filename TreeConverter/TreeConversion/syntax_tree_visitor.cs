@@ -140,7 +140,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void AddError(location loc, string ErrResourceString, params object[] values)
         {
             Errors.Error err = new SimpleSemanticError(loc, ErrResourceString, values);
-            if (ThrowCompilationError && !for_intellisense)
+            if ((ThrowCompilationError && !for_intellisense) || ErrResourceString == "FORWARD_DECLARATION_{0}_AS_BASE_TYPE")
             {
                 throw err;
             }
@@ -1112,6 +1112,12 @@ namespace PascalABCCompiler.TreeConverter
 
             type_node left_type = left.type;
             type_node right_type = right.type;
+            if (left_type == null && left is enum_const_node)
+            {
+                left_type = SystemLibrary.SystemLibrary.integer_type;
+                left.type = left_type;
+            }
+                
 
             if (left_type.semantic_node_type == semantic_node_type.delegated_method)
             {
@@ -3173,7 +3179,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                if (tp.is_generic_parameter && !tp.is_class && !(tp.base_type != null && tp.base_type.is_class) && !(tp.base_type != null && tp.base_type.original_generic != null && tp.base_type.original_generic.is_class))
+                if (tp.is_generic_parameter && !tp.is_class && !(tp.base_type != null && tp.base_type.is_class && tp.base_type != SystemLibrary.SystemLibrary.object_type) && !(tp.base_type != null && tp.base_type.original_generic != null && tp.base_type.original_generic.is_class))
                     AddError(get_location(node.type_def), "OPERATOR_AS_CAN_NOT_BE_USED_WITH_GENERIC_PARAMETER_{0}_WITHOUT_CLASS_CONSTRAINT", tp.name);
                 if (tp.is_value_type)
                     AddError(get_location(node.type_def), "OPERATOR_AS_MUST_BE_USED_WITCH_A_REFERENCE_TYPE_VALUETYPE{0}", tp.PrintableName);
@@ -3750,121 +3756,170 @@ namespace PascalABCCompiler.TreeConverter
                 context.converted_type.SetIsSealed(true);
                 context.converted_type.SetIsAbstract(true, null); // Причина null, потому что причины нет, класс статический а не абстрактный
             }
+
+            common_type_node converted_type;
+            //TODO Выглядит странно - в каком это случае семантический узел записи создаётся с задержкой?
+            if (_class_definition.keyword==PascalABCCompiler.SyntaxTree.class_keyword.Record)
+            {
+                if (_record_created)
+                {
+                    _record_created = false;
+                    converted_type = context.converted_type;
+                }
+                else
+                {
+                    converted_type = context.create_record_type(get_location(_class_definition), record_type_name);
+                    if (record_is_generic)
+                    {
+                        context.create_generic_indicator(converted_type);
+                        visit_generic_params(converted_type, _class_definition.template_args.idents);
+                    }
+                    else
+                    {
+                        if (_class_definition.template_args != null && _class_definition.template_args.idents != null)
+                        {
+                            AddError(get_location(_class_definition.template_args), "GENERIC_TYPE_NOT_ALLOWED_HERE");
+                        }
+                    }
+                    visit_where_list(_class_definition.where_section);
+                }
+            }
+            else
+                converted_type = context.converted_type;
+
+            // Для записей базовый класс устанавливает на SemanticRules.StructBaseType ещё в context.create_record_type
+            var need_set_base = _class_definition.keyword != PascalABCCompiler.SyntaxTree.class_keyword.Record;
+            // Ограничение шаблонов предка и интерфейсов нельзя проверять
+            // на первом проходе, когда ещё не все предки добавлены в converted_type
+            var need_recheck_where = new List<syntax_tree_node>();
+            if (_class_definition.class_parents != null)
+            {
+                need_recheck_where.Capacity = _class_definition.class_parents.Count;
+                // В случае partial классов можно (и желательно) указывать интерфейсы, которые уже были в предыдущем описании
+                // Поэтому проверять нужно только уникальное среди списка интерфейсов в этом описании
+                var curr_def_interfaces = new List<type_node>(need_recheck_where.Capacity);
+
+                // Отключаем проверки where для случая
+                // t1 = ...(t0<t1>)
+                context.skip_check_where_sections = true;
+                for (int i = 0; i < _class_definition.class_parents.Count; i++)
+                {
+                    var syntax_tn = _class_definition.class_parents[i];
+                    location loc = get_location(syntax_tn);
+
+                    var tn = (type_node)ret.visit(syntax_tn);
+                    if (tn.is_generic_type_definition || tn.is_generic_type_instance) need_recheck_where.Add(syntax_tn);
+
+                    if ((tn.original_generic??tn).ForwardDeclarationOnly)
+                        AddError(loc, "FORWARD_DECLARATION_{0}_AS_BASE_TYPE", tn.PrintableName);
+                    if (tn.is_generic_parameter)
+                        AddError(loc, "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
+
+                    for (var curr = tn; curr!=null; curr=curr.base_type)
+                    {
+                        curr = curr.original_generic ?? curr;
+                        if (curr == converted_type)
+                            AddError(loc, "TYPE_{0}_INHERITS_SELF", converted_type.PrintableName);
+                    }
+
+                    // Если первый тип в списке - класс-предок
+                    if (i==0 && !tn.IsInterface && _class_definition.keyword==PascalABCCompiler.SyntaxTree.class_keyword.Class)
+                    {
+                        if (tn.IsSealed)
+                            AddError(loc, "PARENT_TYPE_IS_SEALED{0}", tn.PrintableName);
+                        if (tn == SystemLibrary.SystemLibrary.value_type)
+                            AddError(loc, "CAN_NOT_INHERIT_FROM_VALUE_TYPE");
+                        if (tn.IsPointer)
+                            AddError(loc, "CAN_NOT_INHERIT_FROM_POINTER");
+                        if (tn.IsDelegate)
+                            AddError(loc, "CAN_NOT_INHERIT_FROM_FUNCTION_TYPE");
+                        if (tn == SystemLibrary.SystemLibrary.delegate_base_type || tn == SystemLibrary.SystemLibrary.system_delegate_type)
+                            AddError(loc, "CAN_NOT_INHERIT_FROM_DELEGATE_TYPE");
+
+                        converted_type.SetBaseType(tn);
+                        need_set_base = false;
+
+                        if (tn is common_type_node ctn && ctn.IsPartial)
+                            inherited_from_partials_list.Add(converted_type);
+
+                        continue;
+                    }
+
+                    // type_table.AddInterface проверяет что tn это интерфейс
+                    type_table.AddInterface(converted_type, tn, loc);
+                    if (curr_def_interfaces.Contains(tn))
+                        AddError(loc, "INTERFACE_{0}_ALREADY_ADDED_TO_IMPLEMENTING_LIST", tn.PrintableName);
+                    else
+                        curr_def_interfaces.Add(tn);
+
+                }
+                context.skip_check_where_sections = false;
+            }
+
+            if (need_set_base)
+            {
+                var bt =
+                    (converted_type.IsPartial ? converted_type.base_type : null) ??
+                    SemanticRules.ClassBaseType;
+                converted_type.SetBaseType(bt);
+            }
+
+            foreach (generic_type_instance_info gti in generic_convertions.get_type_instances(converted_type))
+            {
+                //TODO Было для #2524, но с generic_convertions.determine_type оно не нужно
+                //if (gti.pseudo_instance.base_type != null && gti.pseudo_instance.base_type.is_generic_type_instance && converted_type.IsPartial) continue;
+
+                // "t1<T> = class(i1<T>)" => "t1<byte>" реализует "i1<byte>" а не "i1<T>"
+                gti.pseudo_instance.SetBaseType(generic_convertions.determine_type(converted_type.base_type, gti.param_types, false));
+
+                // Сбрасываем на null, чтобы их вычислило заново, если понадобится
+                gti.pseudo_instance.SetImplementingInterfaces(null);
+                /**
+                gti.pseudo_instance.ImplementingInterfaces.Clear();
+                foreach (type_node t in converted_type.ImplementingInterfaces)
+                    gti.pseudo_instance.ImplementingInterfaces.Add(generic_convertions.determine_type(t, gti.param_types, false));
+                /**/
+
+            }
+
+            // Проверяем секции where предка/интерфейсов
+            // В самом конце, когда converted_type
+            // уже содержит всю информацию о предке и интерфейсах
+            foreach (var syntax_tn in need_recheck_where)
+                ret.visit(syntax_tn);
+
             switch (_class_definition.keyword)
             {
                 case PascalABCCompiler.SyntaxTree.class_keyword.Class:
-                    //if (context.converted_type.IsPartial)
-                    //    generic_convertions.remove_type_instances(context.converted_type);
-                    if (context.converted_type.is_value || context.converted_type.IsInterface)
-                    {
-                        AddError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", context.converted_type.name);
-                    }
-                    if ((_class_definition.class_parents != null) && (_class_definition.class_parents.types.Count > 0))
-                    {
-                        if (context.converted_type.IsStatic)
-                            AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_HAVE_PARENT");
-                        context.skip_check_where_sections = true;
-                        type_node tn = ret.visit(_class_definition.class_parents.types[0]);
-                        context.skip_check_where_sections = false;
-                        //if (tn == context.converted_type)
-                        if (type_table.original_types_equals(tn, context.converted_type))
-                            AddError(new UndefinedNameReference(tn.name, get_location(_class_definition.class_parents.types[0])));
-                        if (tn.IsSealed)
-                            AddError(get_location(_class_definition.class_parents.types[0]), "PARENT_TYPE_IS_SEALED{0}", tn.name);
-                        if (tn == SystemLibrary.SystemLibrary.value_type)
-                        {
-                            AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_VALUE_TYPE");
-                        }
-                        if (tn.IsPointer)
-                        {
-                            AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_POINTER");
-                        }
-                        if (tn.IsDelegate)
-                        {
-                            AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_FUNCTION_TYPE");
-                        }
-                        if (tn == SystemLibrary.SystemLibrary.delegate_base_type || tn == SystemLibrary.SystemLibrary.system_delegate_type)
-                        {
-                            AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_DELEGATE_TYPE");
-                        }
-                        Hashtable used_interfs = new Hashtable();
-                        if (tn is common_type_node && (tn as common_type_node).IsPartial)
-                            inherited_from_partials_list.Add(context.converted_type);
-                        //Если tn - это интерфейс
-                        if (tn.IsInterface)
-                        {
-                            //Первым в списке предков идёт интерфейс, поэтому базовым будет object.
-                            context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
+                    //if (converted_type.IsPartial)
+                    //    generic_convertions.remove_type_instances(converted_type);
 
-                            //Добавляем интерфейс
-                            used_interfs.Add(tn, tn);
-                            type_table.AddInterface(context.converted_type, tn, get_location(_class_definition.class_parents.types[0]));
-                            if (tn.is_generic_type_instance)
-                                ret.visit(_class_definition.class_parents.types[0]);
-                        }
-                        else
-                        {
-                            if (convertion_data_and_alghoritms.ContainsForward(tn)) // SSM 20/05/2020 #2140
-                            {
-                                AddError(get_location(_class_definition.class_parents.types[0]), "FORWARD_DECLARATION_{0}_AS_BASE_TYPE", tn.name);
-                            }
-                            if (tn.is_generic_parameter)
-                            {
-                                AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
-                            }
-                            context.converted_type.SetBaseType(tn);
-                            if (tn.is_generic_type_instance)
-                                ret.visit(_class_definition.class_parents.types[0]);
-                            var type_instances = generic_convertions.get_type_instances(context.converted_type);
-                            if (type_instances != null)
-                                foreach (generic_type_instance_info gti in type_instances)
-                                {
-                                    if (!(gti.pseudo_instance.base_type != null && gti.pseudo_instance.base_type.is_generic_type_instance && context.converted_type.IsPartial))
-                                        gti.pseudo_instance.SetBaseType(tn);
-                                }
-                        }
-                        //Теперь добавляем интерфейсы.
-                        //Цикл с единицы, т.к. нулевой элемент уже был рассмотрен.
-                        VisitAndAddInterfaces(context.converted_type, _class_definition.class_parents.types, 1, used_interfs);
-                        //for (int i = 1; i < _class_definition.class_parents.types.Count; i++)
-                        //{
-                        //    type_node interf = ret.visit(_class_definition.class_parents.types[i]);
-                        //    AddInterface(context.converted_type, interf, get_location(_class_definition.class_parents.types[i]));
-                        //}
-                    }
-                    else
-                    {
-                        if (!(context.converted_type.IsPartial && context.converted_type.base_type != null && context.converted_type.base_type != SemanticRules.ClassBaseType))
-                            context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
-                        else if (context.converted_type.IsPartial && context.converted_type.base_type != null)
-                            context.converted_type.SetBaseType(context.converted_type.base_type);
-                    }
-                    
-                    context.converted_type.is_class = true;
+                    if (converted_type.is_value || converted_type.IsInterface)
+                        AddError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", converted_type.name);
+                    converted_type.is_class = true;
+
                     if (_class_definition.body == null &&
                         (_class_definition.class_parents == null || _class_definition.class_parents.types.Count == 0))
                     {
-                        if (context.converted_type.ForwardDeclarationOnly)
-                        {
-                            AddError(new NameRedefinition(context.converted_type.name, context.converted_type.Location, get_location(_class_definition)));
-                        }
-                        context.types_predefined.Add(context.converted_type);
-                        context.converted_type.ForwardDeclarationOnly = true;
+                        if (converted_type.ForwardDeclarationOnly)
+                            AddError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
+                        converted_type.ForwardDeclarationOnly = true;
+
+                        context.types_predefined.Add(converted_type);
                     }
                     else
                     {
-                        context.converted_type.ForwardDeclarationOnly = false;
+                        converted_type.ForwardDeclarationOnly = false;
                         if (_class_definition.body == null)
                         {
                             generate_inherit_constructors();
-                            if (!context.converted_type.has_default_constructor)
+                            if (!converted_type.has_default_constructor)
                             {
                                 generate_default_constructor();
                             }
                         }
-                        List<SyntaxTree.ident> names = new List<SyntaxTree.ident>();
-                        List<SyntaxTree.type_definition> types = new List<SyntaxTree.type_definition>();
-                        if ((_class_definition.IsAutoClass()))
+
+                        if (_class_definition.IsAutoClass())
                         {
                             // Если снова возникнет ошибка с предками в автоклассах, то не раскомментировать эти строки, а подумать, как разрешить
                             //if (_class_definition.class_parents!=null)
@@ -3882,6 +3937,8 @@ namespace PascalABCCompiler.TreeConverter
 
                             }
 
+                            List<SyntaxTree.ident> names = new List<SyntaxTree.ident>();
+                            List<SyntaxTree.type_definition> types = new List<SyntaxTree.type_definition>();
                             SyntaxTreeBuilder.AddMembersForAutoClass(_class_definition,ref names,ref types);
 
                             //if (names.Select(s => s.name.ToLower()).Distinct().Count() != names.Count)
@@ -3922,92 +3979,61 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                             }
                         }
-                        //if (!SemanticRules.OrderIndependedNames)
-
-                        weak_node_test_and_visit(_class_definition.body);
                         
-
+                        //if (!SemanticRules.OrderIndependedNames)
+                        weak_node_test_and_visit(_class_definition.body);
                     }
-                    common_type_node converted_type = context.converted_type;
                     context.leave_block();
+
+                    // Обязательно после context.leave_block, потому что там неявно-абстрактные методы помечают свой IsAbstract
                     if (converted_type.IsSealed && converted_type.IsAbstract && !converted_type.IsStatic)
+                    {
                         if (converted_type.AbstractReason == null)
                             AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
                         else
                             AddError(get_location(_class_definition), converted_type.AbstractReason.Explanation, converted_type.name, converted_type.AbstractReason.ObjName);
-                    return;
+                    }
+                    break;
                 case PascalABCCompiler.SyntaxTree.class_keyword.Record:
-                    common_type_node ctn;
-                    if (_record_created)
-                    {
-                        _record_created = false;
-                        ctn = context.converted_type;
-                    }
-                    else
-                    {
-                        ctn = context.create_record_type(get_location(_class_definition), record_type_name);
-                        if (record_is_generic)
-                        {
-                            context.create_generic_indicator(ctn);
-                            visit_generic_params(ctn, _class_definition.template_args.idents);
-                        }
-                        else
-                        {
-                            if (_class_definition.template_args != null && _class_definition.template_args.idents != null)
-                            {
-                                AddError(get_location(_class_definition.template_args), "GENERIC_TYPE_NOT_ALLOWED_HERE");
-                            }
-                        }
-                        visit_where_list(_class_definition.where_section);
-                    }
 
                     if (context.CurrentScope is SymbolTable.BlockScope)
                     {
                         AddError(get_location(_class_definition), "RECORD_CANNOT_BE_DECLARED_IN_BLOCK");
-                        ctn.internal_is_value = true;
+                        converted_type.internal_is_value = true;
                         context.leave_record();
-                        return_value(ctn);
+                        return_value(converted_type);
                         return;
                     }
 
-                    //Добавляем интерфейсы - предки.
-                    if (_class_definition.class_parents != null)
-                    {
-                        VisitAndAddInterfaces(context.converted_type, _class_definition.class_parents.types, 0, new Hashtable());
-                        //for (int i = 0; i < _class_definition.class_parents.types.Count; i++)
-                        //{
-                        //    type_node interf = ret.visit(_class_definition.class_parents.types[i]);
-                        //    AddInterface(context.converted_type, interf, get_location(_class_definition.class_parents.types[i]));
-                        //}
-                    }
-                    CheckWaitedRefTypes(ctn);
+                    // "PMyRec = ^MyRec" перед описанием "MyRec"
+                    CheckWaitedRefTypes(converted_type);
+
                     record_type_name = null;
                     record_is_generic = false;
-                    context.converted_type.internal_is_value = true;
+                    converted_type.internal_is_value = true;
 
                     if (_class_definition.body == null &&
                         (_class_definition.class_parents == null || _class_definition.class_parents.types.Count == 0))
                     {
-                        if (context.converted_type.ForwardDeclarationOnly)
-                        {
-                            AddError(new NameRedefinition(context.converted_type.name, context.converted_type.Location, get_location(_class_definition)));
-                        }
-                        context.types_predefined.Add(context.converted_type);
-                        context.converted_type.ForwardDeclarationOnly = true;
+                        if (converted_type.ForwardDeclarationOnly)
+                            AddError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
+                        context.types_predefined.Add(converted_type);
+
+                        converted_type.ForwardDeclarationOnly = true;
                     }
                     else
                     {
                         
-                        context.converted_type.ForwardDeclarationOnly = false;
+                        converted_type.ForwardDeclarationOnly = false;
                         weak_node_test_and_visit(_class_definition.body);
-                        
+
 
                     }
                     /*if (_class_definition.body != null)
                         hard_node_test_and_visit(_class_definition.body);
                     else
                     {
-                        context.converted_type.ForwardDeclarationOnly = true;
+                        converted_type.ForwardDeclarationOnly = true;
                     }*/
                     /*if (_class_definition.body != null)
                     foreach (SyntaxTree.var_def_statement var in (_class_definition.body.class_def_blocks[0].members))
@@ -4015,32 +4041,22 @@ namespace PascalABCCompiler.TreeConverter
                         hard_node_test_and_visit(var);
                     }*/
                     context.leave_record();
-                    return_value(ctn);
-                    return;
+                    return_value(converted_type);
+                    break;
                 //ssyy owns
                 case PascalABCCompiler.SyntaxTree.class_keyword.Interface:
-                    if (context.converted_type.is_value || !context.converted_type.IsInterface)
+                    if (converted_type.is_value || !converted_type.IsInterface)
                     {
-                        AddError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", context.converted_type.name);
+                        AddError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", converted_type.name);
                     }
                     if (SemanticRules.GenerateNativeCode)
-                        context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
+                        converted_type.SetBaseType(SemanticRules.ClassBaseType);
                     else
-                        context.converted_type.SetBaseType(SystemLibrary.SystemLibrary.object_type);
-                    context.converted_type.IsInterface = true;
-                    context.converted_type.is_class = true;
-                    //Добавляем интерфейсы - предки.
-                    if (_class_definition.class_parents != null)
-                    {
-                        VisitAndAddInterfaces(context.converted_type, _class_definition.class_parents.types, 0, new Hashtable());
-                        //for (int i = 0; i < _class_definition.class_parents.types.Count; i++)
-                        //{
-                        //    type_node interf = ret.visit(_class_definition.class_parents.types[i]);
-                        //    AddInterface(context.converted_type, interf, get_location(_class_definition.class_parents.types[i]));
-                        //}
-                    }
+                        converted_type.SetBaseType(SystemLibrary.SystemLibrary.object_type);
+                    converted_type.IsInterface = true;
+                    converted_type.is_class = true;
 
-                    InitInterfaceScope(context.converted_type);
+                    InitInterfaceScope(converted_type);
 
                     //if (_class_definition.body == null)
                     //{
@@ -4050,40 +4066,24 @@ namespace PascalABCCompiler.TreeConverter
                     if (_class_definition.body == null &&
                         (_class_definition.class_parents == null || _class_definition.class_parents.types.Count == 0))
                     {
-                        if (context.converted_type.ForwardDeclarationOnly)
+                        if (converted_type.ForwardDeclarationOnly)
                         {
-                            AddError(new NameRedefinition(context.converted_type.name, context.converted_type.Location, get_location(_class_definition)));
+                            AddError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
                         }
-                        context.types_predefined.Add(context.converted_type);
-                        context.converted_type.ForwardDeclarationOnly = true;
+                        context.types_predefined.Add(converted_type);
+                        converted_type.ForwardDeclarationOnly = true;
                     }
                     else
                     {
-                        context.converted_type.ForwardDeclarationOnly = false;
+                        converted_type.ForwardDeclarationOnly = false;
                         weak_node_test_and_visit(_class_definition.body);
                     }
                     //hard_node_test_and_visit(_class_definition.body);
                     context.leave_block();
-                    return;
+                    break;
                 //\ssyy owns
                 default:
                     throw new NotSupportedError(get_location(_class_definition));
-            }
-        }
-
-        private void VisitAndAddInterfaces(common_type_node t, List<SyntaxTree.named_type_reference> types, int start, Hashtable used_interfaces)
-        {
-            for (int i = start; i < types.Count; i++)
-            {
-                type_node interf = ret.visit(types[i]);
-                location loc = get_location(types[i]);
-                if (used_interfaces[interf] != null)
-                {
-                    AddError(loc, "INTERFACE_{0}_ALREADY_ADDED_TO_IMPLEMENTING_LIST", interf.PrintableName);
-                }
-                used_interfaces.Add(interf, interf);
-                check_cycle_interface_inheritance(t, interf, new List<common_type_node>());
-                type_table.AddInterface(t, interf, loc);
             }
         }
 
@@ -5219,7 +5219,7 @@ namespace PascalABCCompiler.TreeConverter
                 foreach (SymbolInfo func in funcs)
                 {
                     function_node f = func.sym_info as function_node;
-                    if (f.is_generic_function)
+                    if (f != null && f.is_generic_function)
                     {
                         //Проверяем на совпадение
                         bool found = false;
@@ -7368,12 +7368,17 @@ namespace PascalABCCompiler.TreeConverter
                             else
                             {
                                 var enLambda = (SyntaxTree.function_lambda_definition)en;
-                                if (fn.parameters[exprCounter].is_params)
+                                if (fn.parameters.Count <= exprCounter && fn.parameters[fn.parameters.Count - 1].is_params)
+                                    LambdaHelper.InferTypesFromVarStmt(fn.parameters[fn.parameters.Count - 1].type.element_type, enLambda, this);
+                                else if (fn.parameters[exprCounter].is_params)
                                     LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type.element_type, enLambda, this);
                                 else
                                     LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, enLambda, this);
                                 enLambda.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
-                                exprs[exprCounter] = convert_strong(en);
+                                if (exprs.Count > exprCounter)
+                                    exprs[exprCounter] = convert_strong(en);
+                                else
+                                    exprs.AddElement(convert_strong(en));
                                 enLambda.lambda_visit_mode = LambdaVisitMode.VisitForInitialMethodCallProcessing;
                                 exprCounter++;
                             }
@@ -12491,11 +12496,14 @@ namespace PascalABCCompiler.TreeConverter
                         for (int i = 0; i < cnstr_args.expressions.Count; i++)
                         {
                             constant_node cn = convert_strong_to_constant_node(cnstr_args.expressions[i]);
+                            if (cn is basic_function_call_as_constant && (cn as basic_function_call_as_constant).method_call.function_node.compile_time_executor != null)
+                                cn = (cn as basic_function_call_as_constant).method_call.function_node.compile_time_executor(cn.location, (cn as basic_function_call_as_constant).method_call.parameters.ToArray()) as constant_node;
                             check_for_strong_constant(cn, get_location(cnstr_args.expressions[i]));
                             args.AddElement(cn);
                         }
-
+                        context.save_var_definitions();
                         base_function_call bfc = create_constructor_call(tn, args, get_location(attr));
+                        context.restore_var_definitions();
                         if (ctn is common_type_node && tn == SystemLibrary.SystemLibrary.struct_layout_attribute_type)
                         {
                             if ((System.Runtime.InteropServices.LayoutKind)Convert.ToInt32((args[0] as constant_node).get_object_value()) == System.Runtime.InteropServices.LayoutKind.Explicit)
@@ -12776,30 +12784,6 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        private void check_cycle_interface_inheritance(common_type_node cnode, type_node base_of_cnode, List<common_type_node> interfaces)
-        {
-            // Для интерфейсов всё это излишне. Поскольку нельзя использовать предописанные интерфейсы в списке наследования, то 
-            // циклически интерфейс может наследовать только от себя. Поэтому достаточно проверять нерекурсивно свой список ImplementingInterfaces и если там есть этот интерфейс, то ошибка
-            if (!cnode.IsInterface)
-                return;
-            interfaces.Add(cnode);
-            common_type_node bt = base_of_cnode as common_type_node;
-            if (bt != null && bt.original_generic != null)
-                bt = bt.original_generic as common_type_node;    
-            if (bt != null)
-            {
-                if (interfaces.Contains(bt))
-                {
-                    AddError(bt.loc, "TYPE_{0}_DERIVED_FROM_ITSELF", bt.PrintableName);
-                }
-                interfaces.Add(bt);
-                foreach (var tn in bt.ImplementingInterfaces)
-                {
-                    check_cycle_interface_inheritance(bt, tn as type_node, interfaces);
-                }
-            }
-        }
-
         private void check_where_from_base_class(common_type_node ctn)
         {
             if (ctn.base_type != null && ctn.base_type.is_generic_type_instance && ctn.is_generic_type_definition)
@@ -12899,6 +12883,7 @@ namespace PascalABCCompiler.TreeConverter
             List<common_type_node> used_types = new List<common_type_node>(where_list.defs.Count);
             foreach (SyntaxTree.where_definition wd in where_list.defs)
             {
+                int ind = 0;
                 foreach (SyntaxTree.ident wd_id in wd.names.idents)
                 {
                     bool param_not_found = true;
@@ -12919,8 +12904,9 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if (param_not_found)
                     {
-                        AddError(new UndefinedNameReference(wd.names.idents[0].name, get_location(wd.names)));
+                        AddError(new UndefinedNameReference(wd.names.idents[ind].name, get_location(wd.names.idents[ind])));
                     }
+                    ind++;
                 }
             }
             context.EndSkipGenericInstanceChecking();
@@ -13281,7 +13267,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             //\ssyy
-            if (context.converted_type != null && context.converted_type.IsStatic && !_procedure_definition.proc_header.class_keyword)
+            if (context.converted_type != null && context.converted_type.IsStatic && !_procedure_definition.proc_header.class_keyword && context.func_stack.Empty)
                 AddError(get_location(_procedure_definition), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (_procedure_definition.proc_body == null)
             {
@@ -15956,7 +15942,7 @@ namespace PascalABCCompiler.TreeConverter
             if (ent != null)
             {
                 var t = ent.compiled_type;
-                if (t != null && !t.IsArray && t.FullName.StartsWith("System.Tuple"))
+                if (t != null && IsTupleType(t))
                 {
                     expression eee = parameters.expressions[0];
 
@@ -16781,6 +16767,16 @@ namespace PascalABCCompiler.TreeConverter
             return expr;
         }
         
+        private bool is_delegate_wrapper_with_generics(type_node tn)
+        {
+            var del = tn as delegated_methods;
+            if (del == null)
+                return false;
+            if (del.proper_methods[0].ret_type != null && del.proper_methods[0].ret_type.is_generic_parameter)
+                return true;
+            return false;
+        }
+
         public override void visit(SyntaxTree.var_def_statement _var_def_statement)
         {
             var_def_statement_converting = true;
@@ -16918,9 +16914,11 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     foreach (parameter p in bfc.simple_function_node.parameters)
                     {
-                        if (p.type.is_generic_parameter)
-                            AddError(inital_value.location, "USE_ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
+                        if (p.type.is_generic_parameter || is_instance_of_generic_parameter(p.type))
+                            AddError(get_location(_var_def_statement), "ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED");
                     }
+                    if (bfc.simple_function_node.return_value_type != null && (bfc.simple_function_node.return_value_type.is_generic_parameter || is_instance_of_generic_parameter(bfc.simple_function_node.return_value_type)))
+                        AddError(get_location(_var_def_statement), "ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED");
                     common_type_node del =
             			convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
             		context.converted_namespace.types.AddElement(del);
@@ -18560,7 +18558,6 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             right = convertion_data_and_alghoritms.convert_type(right, left.type);
                         }
-
                     }
 
                 }
@@ -18569,7 +18566,7 @@ namespace PascalABCCompiler.TreeConverter
 
 
             //right = convertion_data_and_alghoritms.convert_type(right, left.type);
-            return_value(new double_question_colon_expression(condition, right, get_location(node)));
+            return_value(new double_question_colon_expression(left, right, get_location(node)));
         }
 
         public override void visit(SyntaxTree.question_colon_expression node)
@@ -18618,7 +18615,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 delegated_methods del_left = left.type as delegated_methods;
                 delegated_methods del_right = right.type as delegated_methods;
-                if (del_left != null && del_right != null && del_left.empty_param_method == null && del_right.empty_param_method == null)
+                if (del_left != null && del_right != null && (del_left.empty_param_method == null && del_right.empty_param_method == null || del_left.empty_param_method.ret_type == null && del_right.empty_param_method.ret_type == null))
                 {
                     base_function_call bfc = del_left.proper_methods[0];
                     common_type_node del =
@@ -18655,7 +18652,7 @@ namespace PascalABCCompiler.TreeConverter
                             else
                             {
                                 right = convertion_data_and_alghoritms.convert_type(right, lub);
-                                left = convertion_data_and_alghoritms.convert_type(right, lub);
+                                left = convertion_data_and_alghoritms.convert_type(left, lub);
                             }
                         }
                         else if (left.type == SystemLibrary.SystemLibrary.float_type && right.type == SystemLibrary.SystemLibrary.double_type)
@@ -21427,6 +21424,16 @@ namespace PascalABCCompiler.TreeConverter
             ProcessNode(av.new_addr_value); // обойти десахарное 
         }
 
+        public bool IsTupleType(Type t)
+        {
+            return !t.IsArray && (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"));
+        }
+
+        public bool IsSequenceType(Type t)
+        {
+            return t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null;
+        }
+
         private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
         {
             sem_ex = convert_strong(ex);
@@ -21434,15 +21441,10 @@ namespace PascalABCCompiler.TreeConverter
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-            IsTuple = false;
-            IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple"))
-                IsTuple = true;
-            if (!IsTuple)
-            {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
-            }
+
+            IsTuple = IsTupleType(t);
+            IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
@@ -21514,11 +21516,11 @@ namespace PascalABCCompiler.TreeConverter
 
             var IsTuple = false;
             var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple"))
+            if (IsTupleType(t))
                 IsTuple = true;
             if (!IsTuple)
             {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
+                if (IsSequenceType(t))
                     IsSequence = true;
             }
             if (!IsTuple && !IsSequence)
@@ -21578,15 +21580,10 @@ namespace PascalABCCompiler.TreeConverter
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-            var IsTuple = false;
-            var IsSequence = false;
-            if ((t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple")) && !(t.IsArray)) // ошибка - не проходит, когда есть System.Tuple[,][] т.е. массив туплов!!!
-                IsTuple = true;
-            if (!IsTuple)
-            {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
-            }
+
+            var IsTuple = IsTupleType(t);
+            var IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
