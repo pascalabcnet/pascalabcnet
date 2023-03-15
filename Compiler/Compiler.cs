@@ -276,6 +276,7 @@ namespace PascalABCCompiler
             : base(string.Format(StringResources.Get("COMPILATIONERROR_INVALID_PATH")))
         {
             this.source_context = sc;
+            this.fileName = sc.FileName;
         }
     }
 
@@ -1820,17 +1821,14 @@ namespace PascalABCCompiler
 
             CompilerOptions.OutputDirectory = project.output_directory;
         }
-        
-        private static string CombinePathWithCheck(string path1, string path2, location loc)
-        {
-            try
-            {
-                return Path.Combine(path1, path2);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidPathError(loc);
-            }
+
+        public static bool CheckPathValid(string path) {
+            return !Path.GetInvalidPathChars().Any(path.Contains);
+        }
+
+        public static void TryThrowInvalidPath(string path, SyntaxTree.SourceContext loc) {
+            if (CheckPathValid(path)) return;
+            throw new InvalidPathError(loc);
         }
 
         public string Compile()
@@ -2028,11 +2026,13 @@ namespace PascalABCCompiler
                     {
                         ErrorsList.Add(new MainResourceNotAllowed(cds[0].location));
                     }
-                    cdo.MainResourceFileName = CombinePathWithCheck(Path.GetDirectoryName(cds[0].source_file), cds[0].directive, cds[0].location);
-                    if (!File.Exists(cdo.MainResourceFileName))
-                    {
+                    TryThrowInvalidPath(cds[0].directive, cds[0].location);
+                    // Тут не обязательно нормализовывать путь
+                    // И если он слишком длинный - File.Exists вернёт false
+                    if (File.Exists(cdo.MainResourceFileName))
+                        cdo.MainResourceFileName = Path.Combine(Path.GetDirectoryName(cds[0].source_file), cds[0].directive);
+                    else
                         ErrorsList.Add(new ResourceFileNotFound(cds[0].directive, cds[0].location));
-                    }
                 }
 
                 List<string> ResourceFiles = null;
@@ -2040,10 +2040,11 @@ namespace PascalABCCompiler
                 {
                     ResourceFiles = new List<string>();
                     List<TreeRealization.compiler_directive> ResourceDirectives = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_resource];
-                    foreach (TreeRealization.compiler_directive cd in ResourceDirectives)
-                    {
-                        var resource_fname = CombinePathWithCheck(Path.GetDirectoryName(cd.source_file), cd.directive, cd.location);
-                        
+                    foreach (TreeRealization.compiler_directive cd in ResourceDirectives) {
+                        TryThrowInvalidPath(cd.directive, cd.location);
+                        var resource_fname = Path.Combine(Path.GetDirectoryName(cd.source_file), cd.directive);
+
+                        // Так же как с main_resource
                         if (File.Exists(resource_fname))
                             ResourceFiles.Add(resource_fname);
                         else
@@ -2578,21 +2579,21 @@ namespace PascalABCCompiler
             return null;
         }
 
-        public static string CombinePath(string dir, string path)
-        {
-            if (Path.IsPathRooted(path)) return path;
+        public static string CombinePathsRelatively(string path1, string path2) {
+            if (Path.IsPathRooted(path2)) return path2;
             int i = 0;
 
-            for (; dir!="" && i < path.Length && path[i] == '.' && path[i + 1] == '.'; )
-            {
-                if (Path.GetFileName(dir) == "..") break;
-                dir = Path.GetDirectoryName(dir);
-                if (dir == null) return null; // Path.GetDirectoryName("C:\") возвращает null
-                i += 2;
-                if (path[i] == Path.DirectorySeparatorChar || path[i] == Path.AltDirectorySeparatorChar) i += 1;
+            foreach (var s in path2.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar })) {
+                if (s==".") continue;
+                if (s==".." && !string.IsNullOrWhiteSpace(path1) && !path1.EndsWith("..")) {
+                    path1 = Path.GetDirectoryName(path1);
+                    if (path1 == null) return null; // Path.GetDirectoryName("C:\") возвращает null
+                }
+                else
+                    path1 = Path.Combine(path1, s);
             }
 
-            return Path.Combine(dir, path.Substring(i));
+            return path1;
         }
 
         public static string GetUnitPath(CompilationUnit u1, CompilationUnit u2)
@@ -2616,23 +2617,18 @@ namespace PascalABCCompiler
             {
                 var next = new Dictionary<CompilationUnit, string>();
 
-                foreach (var u in last.Keys)
-                {
-                    foreach (var used_u in u.DirectInterfaceCompilationUnits.Values)
-                    {
-                        if (!done.Add(used_u)) continue;
-                        var path = CombinePath(Path.GetDirectoryName(last[u]), u.InterfaceUsedUnits.unit_uses_paths[used_u.SemanticTree]);
-                        if (used_u == u2) return path;
-                        next.Add(used_u, path);
+                foreach (var u in last.Keys) {
+                    var intr_units = u.DirectInterfaceCompilationUnits.Select(kvp => new { u = kvp.Value, path = u.InterfaceUsedUnits.unit_uses_paths[kvp.Key] });
+                    var impl_units = u.DirectImplementationCompilationUnits.Select(kvp => new { u = kvp.Value, path = u.ImplementationUsedUnits.unit_uses_paths[kvp.Key] });
+
+                    foreach (var used_u in intr_units.Concat(impl_units)) {
+                        if (!done.Add(used_u.u)) continue;
+                        // Важно "..\a\b" + "..\c\d" превращать в "..\a\c\d", а не полный путь
+                        var path = CombinePathsRelatively(Path.GetDirectoryName(last[u]), used_u.path);
+                        if (used_u.u == u2) return path;
+                        next.Add(used_u.u, path);
                     }
 
-                    foreach (var used_u in u.DirectImplementationCompilationUnits.Values)
-                    {
-                        if (!done.Add(used_u)) continue;
-                        var path = CombinePath(Path.GetDirectoryName(last[u]), u.ImplementationUsedUnits.unit_uses_paths[used_u.SemanticTree]);
-                        if (used_u == u2) return path;
-                        next.Add(used_u, path);
-                    }
                 }
 
                 last = next;
@@ -2643,12 +2639,22 @@ namespace PascalABCCompiler
 
         private string FindFileInDirs(string FileName, params string[] Dirs)
         {
+            if (Path.IsPathRooted(FileName))
+                return File.Exists(FileName) ? FileName : null;
+
             foreach (string Dir in Dirs)
-            {
-                var res = CombinePath(Dir, FileName);
-                if (File.Exists(res))
-                    return res;
-            }
+                try {
+                    var res = Path.Combine(Dir, FileName);
+                    if (File.Exists(res))
+                        // Path.GetFullPath чтобы нормализовать
+                        // File.Exists не может кинуть исключение или дать true
+                        // если путь слишком длинный или содержит нерпавильные знаки
+                        return Path.GetFullPath(res);
+                }
+                catch (PathTooLongException) {
+                    continue;
+                }
+
             return null;
         }
 
@@ -2715,7 +2721,9 @@ namespace PascalABCCompiler
 
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in uui)
             {
-                
+
+                TryThrowInvalidPath(uui.in_file.Value, uui.in_file.source_context);
+
                 if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
                     throw new UsesInWrongName(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
