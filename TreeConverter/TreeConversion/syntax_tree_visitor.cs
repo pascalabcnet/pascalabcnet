@@ -14196,7 +14196,6 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
                             }
-
                             common_function_node ccfn = context.top_function;
                             if (ccfn.return_value_type is undefined_type)
                             {
