@@ -13492,6 +13492,12 @@ begin
   Result := Self.ToDictionary(g -> g.Key, g -> grOperation(g));
 end;
 
+/// Возвращает словарь, сопоставляющий элементам последовательности определённые значения
+function Each<Key,Res>(Self: sequence of Key; proj: Key -> Res): Dictionary<Key,Res>; extensionmethod;
+begin
+  Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> proj(g.Key));
+end;
+
 /// Операция удаления из словаря пары с указанным значением ключа
 procedure operator-=<Key,Value>(Self: IDictionary<Key,Value>; k: Key); extensionmethod;
 begin
