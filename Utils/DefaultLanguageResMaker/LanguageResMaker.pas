@@ -6,7 +6,7 @@ uses
   System.Resources;
 
 begin
-  var Files := DirectoryInfo.Create(Path.Combine('..', '..', 'bin', 'Lng', 'rus')).GetFiles('*.*');
+  var Files := DirectoryInfo.Create(Path.Combine('..', '..', 'bin', 'Lng', 'Rus')).GetFiles('*.*');
   Writeln('Найдено ' + Files.Length.tostring + ' файлов, обработка...');
   var res := '';
   for var i := 0 to Files.Length - 1 do
