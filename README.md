@@ -20,6 +20,8 @@ echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sud
 sudo apt update
 sudo apt-get install mono-devel
 sudo apt-get install mono-complete
+sudo apt-get install mono-roslyn
+sudo apt-get install msbuild
 ```
 
 Build the project and run tests.
