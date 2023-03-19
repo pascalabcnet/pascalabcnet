@@ -4,7 +4,7 @@ mono LanguageResMaker.exe
 cd ../..
 
 MONO_IOMAP=case msbuild /p:Configuration=release pabcnetc.sln
-MONO_IOMAP=case msbuild /p:Configuration=release CodeCompletion/CodeCompletion.csproj
+MONO_IOMAP=case msbuild /p:Configuration=release PascalABCNETLinux.sln
 mono --aot bin/pabcnetc.exe
 mono --aot bin/NETGenerator.dll
 mono --aot bin/TreeConverter.dll
