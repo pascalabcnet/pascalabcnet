@@ -1,4 +1,8 @@
 #!/bin/sh -e
+cd Utils/DefaultLanguageResMaker
+mono LanguageResMaker.exe
+cd ../..
+
 MONO_IOMAP=case msbuild /p:Configuration=release pabcnetc.sln
 MONO_IOMAP=case msbuild /p:Configuration=release CodeCompletion/CodeCompletion.csproj
 mono --aot bin/pabcnetc.exe
