@@ -11,7 +11,7 @@ _ReBuildDebug.bat builds the project in Debug-mode.
 
 PascalABC is being developed in Visual Studio Community 2019.
 
-## Building PascalABC.NET in Linux (Ubuntu 20.04)
+## Building PascalABC.NET in Linux (Ubuntu 22.04)
 Install Mono (http://www.mono-project.com/docs/getting-started/install/linux/)
 ```bash
 sudo apt install gnupg ca-certificates
