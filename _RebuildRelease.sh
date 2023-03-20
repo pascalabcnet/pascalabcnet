@@ -19,10 +19,3 @@ mono --aot bin/Errors.dll
 export MONO_IOMAP=all
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
-if [ $? -eq 0 ]; then
-    if [ $? -eq 0 ]; then
-      cd ../bin
-        mono TestRunner.exe
-        cd ..
-    fi
-fi

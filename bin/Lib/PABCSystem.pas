@@ -258,6 +258,9 @@ type
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
+  /// Преобразует значение одного базового типа к другому базовому типу
+  Convert = System.Convert;
+  
   /// Указывает на возможность сериализации класса
   Serializable = System.SerializableAttribute;
   
@@ -13487,6 +13490,12 @@ end;
 function Each<Key,Source,Res>(Self: sequence of System.Linq.IGrouping<Key,Source>; grOperation: System.Linq.IGrouping<Key,Source> -> Res): Dictionary<Key,Res>; extensionmethod;
 begin
   Result := Self.ToDictionary(g -> g.Key, g -> grOperation(g));
+end;
+
+/// Возвращает словарь, сопоставляющий элементам последовательности определённые значения
+function Each<Key,Res>(Self: sequence of Key; proj: Key -> Res): Dictionary<Key,Res>; extensionmethod;
+begin
+  Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> proj(g.Key));
 end;
 
 /// Операция удаления из словаря пары с указанным значением ключа
