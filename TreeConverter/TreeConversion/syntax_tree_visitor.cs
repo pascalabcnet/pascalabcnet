@@ -14078,9 +14078,11 @@ namespace PascalABCCompiler.TreeConverter
             bool is_override = false;
             bool is_virtual = false;
             bool is_abstract = false;
+            bool is_reintroduce = false;
             string override_proc_attr=null;
             string virtual_proc_attr=null;
             string abstract_proc_attr = null;
+            string reintroduce_proc_attr = null;
             for (int i = 0; i < _procedure_attributes_list.proc_attributes.Count; i++)
             {
                 switch (_procedure_attributes_list.proc_attributes[i].attribute_type)
@@ -14101,6 +14103,12 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             is_virtual = true;
                             virtual_proc_attr = _procedure_attributes_list.proc_attributes[i].name;
+                        }
+                        break;
+                    case SyntaxTree.proc_attribute.attr_reintroduce:
+                        {
+                            is_reintroduce = true;
+                            reintroduce_proc_attr = _procedure_attributes_list.proc_attributes[i].name;
                         }
                         break;
                 }
@@ -14220,6 +14228,10 @@ namespace PascalABCCompiler.TreeConverter
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_virtual)
                 			{
                             	AddError(get_location(_procedure_attributes_list.proc_attributes[i]),"USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name,virtual_proc_attr);
+                            }
+                            if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_reintroduce)
+                            {
+                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name, reintroduce_proc_attr);
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override)
                 			{
