@@ -12182,7 +12182,7 @@ begin
 end;
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
-function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
+function CartesianPower<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
 begin
   var r := new integer[n];
   var ar1 := new T[n];
@@ -12211,7 +12211,16 @@ begin
   end;  
 end;
 
+///--
+function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod := Self.CartesianPower(n);
+
 /// Возвращает n-тую декартову степень множества элементов, заданного последовательностью
+function CartesianPower<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.Cartesian(n);
+end;
+
+///--
 function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin
   Result := Self.ToArray.Cartesian(n);
