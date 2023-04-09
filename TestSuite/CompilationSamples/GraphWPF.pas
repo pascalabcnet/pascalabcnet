@@ -75,6 +75,13 @@ function GetFontFamily(name: string): FontFamily;
 // -----------------------------------------------------
 type
   ///!#
+  /// Параметры рисования
+  Parameters = static class
+  public
+    static ArrowSizeAlong: real := 10*4/5;
+    static ArrowSizeAcross: real := 4*4/5;
+  end;
+  ///!#
   /// Тип кисти
   BrushType = class
   private
@@ -384,6 +391,16 @@ procedure Lines(a: array of (Point,Point));
 /// Рисует отрезки, заданные массивом пар точек, цветом c 
 procedure Lines(a: array of (Point,Point); c: Color);
 /// Устанавливает текущую позицию рисования в точку (x,y)
+
+/// Рисует отрезок прямой от точки (x,y) до точки (x1,y1) со стрелкой на конце
+procedure Arrow(x,y,x1,y1: real);
+/// Рисует отрезок прямой от точки (x,y) до точки (x1,y1) цветом c со стрелкой на конце 
+procedure Arrow(x,y,x1,y1: real; c: Color);
+/// Рисует отрезок прямой от точки p до точки p1 со стрелкой на конце
+procedure Arrow(p,p1: Point);
+/// Рисует отрезок прямой от точки p до точки p1 цветом c со стрелкой на конце
+procedure Arrow(p,p1: Point; c: Color);
+
 procedure MoveTo(x,y: real);
 /// Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: real);
@@ -1358,6 +1375,28 @@ begin
   ReleaseDC(dc);
 end;
 
+function Norm(Self: Vector): Vector; extensionmethod := Self/Self.Length;
+function Ortog(Self: Vector): Vector; extensionmethod := Vect(Self.Y, -Self.X);
+
+procedure ArrowPFull(x,y,x1,y1: real; p: GPen);
+begin
+  var szAlong := Parameters.ArrowSizeAlong / GlobalScale;
+  var szAcross := Parameters.ArrowSizeACross / GlobalScale;
+  
+  var (p1,p2) := (Pnt(x,y),Pnt(x1,y1));
+  var v := p2 - p1;
+  var (vnorm, vortognorm) := (v.Norm, v.Ortog.Norm);
+  
+  var p3 := p2 - vnorm * szAlong + vortognorm * szAcross;
+  var p4 := p2 - vnorm * szAlong - vortognorm * szAcross;
+  
+  var dc := GetDC();
+  dc.DrawLine(p, p1, p2);
+  
+  dc.DrawPolygon(Brushes.Black,p,Arr(p2,p3,p4));
+  ReleaseDC(dc);
+end;
+
 procedure SetPixel(x,y: real; c: Color) := InvokeVisual(SetPixelP, x, y, c);
 
 procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color)
@@ -1399,6 +1438,9 @@ procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenConstruct);
 procedure LinePC(x,y,x1,y1: real; c: GColor) := LinePFull(x,y,x1,y1,ColorPen(c));
 procedure PolyLineP(points: array of Point) := PolyLinePFull(points,Pen.PenConstruct);
 procedure PolyLinePC(points: array of Point; c: GColor) := PolyLinePFull(points,ColorPen(c));
+
+procedure ArrowP(x,y,x1,y1: real) := ArrowPFull(x,y,x1,y1,Pen.PenConstruct);
+procedure ArrowPC(x,y,x1,y1: real; c: GColor) := ArrowPFull(x,y,x1,y1,ColorPen(c));
 
 procedure PolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushConstruct,Pen.PenConstruct);
 procedure DrawPolygonP(points: array of Point) := PolygonPFull(points,nil,Pen.PenConstruct);
@@ -1471,6 +1513,11 @@ procedure Line(p,p1: Point) := Line(p.x,p.y,p1.x,p1.y);
 procedure Line(p,p1: Point; c: Color) := Line(p.x,p.y,p1.x,p1.y,c);
 procedure Lines(a: array of (Point,Point)) := foreach var i in a.Indices do Line(a[i].Item1,a[i].Item2);
 procedure Lines(a: array of (Point,Point); c: Color) := foreach var i in a.Indices do Line(a[i].Item1,a[i].Item2,c);
+
+procedure Arrow(x,y,x1,y1: real) := InvokeVisual(ArrowP,x,y,x1,y1);
+procedure Arrow(x,y,x1,y1: real; c: GColor) := InvokeVisual(ArrowPC,x,y,x1,y1,c);
+procedure Arrow(p,p1: Point) := Arrow(p.x,p.y,p1.x,p1.y);
+procedure Arrow(p,p1: Point; c: Color) := Arrow(p.x,p.y,p1.x,p1.y,c);
 
 
 procedure MoveTo(x,y: real) := (Pen.fx,Pen.fy) := (x,y);
