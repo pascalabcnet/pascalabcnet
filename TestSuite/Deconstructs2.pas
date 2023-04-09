@@ -8,9 +8,11 @@ type
   end;
   
 begin
-  if new t1 is t1(var a) then
+  var o := new t1;
+  if o is t1(var a) then
     begin
       i := 2;
+      assert(o = a);
     end;
   assert(i = 2);
 end.

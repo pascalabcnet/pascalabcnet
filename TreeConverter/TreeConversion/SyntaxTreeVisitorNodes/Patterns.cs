@@ -93,9 +93,8 @@ namespace PascalABCCompiler.TreeConverter
             out type_node[] parameterTypes)
         {
             parameterTypes = new type_node[givenParameterTypes.Length];
-            if (candidate.parameters.Count == 0)
-                return false;
-            candidate.parameters[0].name = "Self"; // SSM 23.06.20 #2268 - это если в NET где-то такое нашли
+            if (candidate.parameters.Count > 0)
+                candidate.parameters[0].name = "Self"; // SSM 23.06.20 #2268 - это если в NET где-то такое нашли
             var selfParameter = candidate.is_extension_method ? candidate.parameters.FirstOrDefault(IsSelfParameter) : null;
             Debug.Assert(!candidate.is_extension_method || selfParameter != null, "Couldn't find self parameter in extension method");
             var candidateParameterTypes =
