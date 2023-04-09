@@ -1375,7 +1375,10 @@ begin
   ReleaseDC(dc);
 end;
 
+/// Нормированный вектор
 function Norm(Self: Vector): Vector; extensionmethod := Self/Self.Length;
+
+/// Вектор, ортогональный данному
 function Ortog(Self: Vector): Vector; extensionmethod := Vect(Self.Y, -Self.X);
 
 procedure ArrowPFull(x,y,x1,y1: real; p: GPen);
