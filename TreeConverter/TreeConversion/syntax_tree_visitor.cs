@@ -10928,7 +10928,7 @@ namespace PascalABCCompiler.TreeConverter
                 context.leave_code_block();
                 if (ifn == null)
                 {
-                    ifn = new if_node(en, new statements_list(null), null, get_location(_case_node));
+                    ifn = new if_node(new bool_const_node(false, null), new statements_list(null), null, get_location(_case_node));
                     main_ifn = ifn;
                 }
                 ifn.else_body = else_statement;
