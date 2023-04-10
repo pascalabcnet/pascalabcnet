@@ -536,48 +536,75 @@ procedure EndFrameBasedAnimation;
 // -----------------------------------------------------
 //>>     Функции для вывода текста # GraphWPF text functions
 // -----------------------------------------------------
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
+{
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
+// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
+// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит строку в прямоугольник
+// Выводит строку в прямоугольник
 procedure DrawText(r: GRect; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит целое в прямоугольник
+// Выводит целое в прямоугольник
 procedure DrawText(r: GRect; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит вещественное в прямоугольник
+// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
+// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
+// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит строку в прямоугольник
+// Выводит строку в прямоугольник
 procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит целое в прямоугольник
+// Выводит целое в прямоугольник
 procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит вещественное в прямоугольник
+// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом
 procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
+}
+
+/// Выводит текстовое представление объекта в прямоугольник размера (w,h) с координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит текстовое представление объекта указанным цветом в прямоугольник (x,y,w,h)
+procedure DrawText(x, y, w, h: real; text: object; color: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит текстовое представление объекта в указанный прямоугольник
+procedure DrawText(rect: GRect; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит текстовое представление объекта в указанный прямоугольник указанным цветом
+procedure DrawText(rect: GRect; text: object; color: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит строку в прямоугольник (x,y,w,h) указанным шрифтом
+procedure DrawText(x, y, w, h: real; text: object; f: FontOptions; align: Alignment; angle: real);
 
 
-/// Выводит строку в позицию (x,y)
+{// Выводит строку в позицию (x,y)
 procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит строку в позицию (x,y) цветом c
+// Выводит строку в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит целое в позицию (x,y)
+// Выводит целое в позицию (x,y)
 procedure TextOut(x, y: real; text: integer; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит целое в позицию (x,y) цветом c
+// Выводит целое в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит вещественное в позицию (x,y)
+// Выводит вещественное в позицию (x,y)
 procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит вещественное в позицию (x,y) цветом c
+// Выводит вещественное в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит строку в позицию (x,y) указанным шрифтом
-procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит строку в позицию (x,y) указанным шрифтом
+procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);}
+
+/// Выводит текстовое представление объекта в позицию (x,y)
+procedure TextOut(x, y: real; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию (x,y) указанным цветом
+procedure TextOut(x, y: real; text: object; color: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию (x,y) указанным шрифтом
+procedure TextOut(x, y: real; text: object; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию pos
+procedure TextOut(pos: Point; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию pos указанным цветом
+procedure TextOut(pos: Point; text: object; color: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию pos указанным шрифтом
+procedure TextOut(pos: Point; text: object; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+
 
 /// Ширина текста при выводе
 function TextWidth(text: string): real;
@@ -1616,41 +1643,52 @@ begin
     end;
 end;
 
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; text: string; align: Alignment; angle: real);
-begin
-  var (x0,y0) := (x,y);
-
-  var ft := FormTextFont(text,Font);
-  var sz := new Size(ft.Width,ft.Height);
-
-  DrawTextHelper(x, y, x0, y0, w, h, sz, align);
-  TextOutHelper(x,y,text,angle,x0,y0)
-end;
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment; angle: real);
-begin
-  var (x0,y0) := (x,y);
-
-  var ft := FormTextFont(text,Font);
-  var sz := new Size(ft.Width,ft.Height);
-
-  DrawTextHelper(x, y, x0, y0, w, h, sz, align);
-  TextOutHelper(x,y,text,angle,c,x0,y0)
-end;
-
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) данным шрифтом
-procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
+procedure DrawText(x, y, w, h: real; text: object; align: Alignment; angle: real);
 begin
   var (x0,y0) := (x,y);
   
-  var ft := FormTextFont(text,Font);
+  var textstr := text.ToString;
+  
+  var ft := FormTextFont(textstr,Font);
+  var sz := new Size(ft.Width,ft.Height);
+
+  DrawTextHelper(x, y, x0, y0, w, h, sz, align);
+  TextOutHelper(x,y,textstr,angle,x0,y0)
+end;
+
+procedure DrawText(x, y, w, h: real; text: object; color: GColor; align: Alignment; angle: real);
+begin
+  var (x0,y0) := (x,y);
+
+  var textstr := text.ToString;
+  
+  var ft := FormTextFont(textstr,Font);
+  var sz := new Size(ft.Width,ft.Height);
+
+  DrawTextHelper(x, y, x0, y0, w, h, sz, align);
+  TextOutHelper(x,y,textstr,angle,color,x0,y0)
+end;
+
+procedure DrawText(rect: GRect; text: object; align: Alignment; angle: real)
+  := DrawText(rect.x,rect.y,rect.Width,rect.Height,text,align,angle);
+
+procedure DrawText(rect: GRect; text: object; color: GColor; align: Alignment; angle: real)
+  := DrawText(rect.x,rect.y,rect.Width,rect.Height,text,align,angle);
+
+procedure DrawText(x, y, w, h: real; text: object; f: FontOptions; align: Alignment; angle: real);
+begin
+  var (x0,y0) := (x,y);
+  
+  var textstr := text.ToString;
+  
+  var ft := FormTextFont(textstr,Font);
   var sz := new Size(ft.Width,ft.Height);
 
   DrawTextHelper(x, y, x0, y0, w, h, sz, align, f);
-  TextOutHelper(x,y,text,angle,x0,y0,f)
+  TextOutHelper(x,y,textstr,angle,x0,y0,f)
 end;
 
+{
 /// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; number: integer; align: Alignment; angle: real) := DrawText(x, y, w, h, '' + number,align,angle);
 /// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
@@ -1671,32 +1709,28 @@ procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment; angle: r
 procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment; angle: real) := DrawText(r.x,r.y,r.Width,r.Height,number,c,align,angle);
 /// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment; angle: real) := DrawText(r.x,r.y,r.Width,r.Height,number,c,align,angle);
+}
 
-
-{function ConvertAlign(align: Alignment): Alignment;
-begin
-  Result := align;
-  case align of
-    Alignment.LeftTop: Result := Alignment.RightBottom;
-    Alignment.LeftCenter: Result := Alignment.RightCenter;
-    Alignment.LeftBottom: Result := Alignment.RightTop;
-    Alignment.CenterTop: Result := Alignment.CenterBottom;
-    Alignment.CenterBottom: Result := Alignment.CenterTop;
-    Alignment.RightTop: Result := Alignment.LeftBottom;
-    Alignment.RightCenter: Result := Alignment.LeftCenter;
-    Alignment.RightBottom: Result := Alignment.LeftTop;
-  end;
-end;}
-
+(*
 procedure TextOut(x, y: real; text: string; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text,{ConvertAlign(}align{)},angle);
 procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text, c,{ConvertAlign(}align{)},angle);
 procedure TextOut(x, y: real; text: integer; align: Alignment; angle: real) := TextOut(x, y, ''+text,align,angle);
 procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment; angle: real) := TextOut(x, y, ''+text, c,align,angle);
 procedure TextOut(x, y: real; text: real; align: Alignment; angle: real) := TextOut(x, y, ''+text,align,angle);
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment; angle: real) := TextOut(x, y, ''+text, c,align,angle);
-
-procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text, f, align, angle);
-
+*)
+procedure TextOut(x, y: real; text: object; align: Alignment; angle: real) 
+  := DrawText(x, y, 0, 0, text.ToString, align, angle);
+procedure TextOut(x, y: real; text: object; color: GColor; align: Alignment; angle: real) 
+  := DrawText(x, y, 0, 0, text.ToString, color, align, angle);
+procedure TextOut(x, y: real; text: object; f: FontOptions; align: Alignment; angle: real) 
+  := DrawText(x, y, 0, 0, text.ToString, f, align, angle);
+procedure TextOut(pos: Point; text: object; align: Alignment; angle: real) 
+  := TextOut(pos.x, pos.y, text, align, angle);
+procedure TextOut(pos: Point; text: object; color: GColor; align: Alignment; angle: real) 
+  := TextOut(pos.x, pos.y, text, color, align, angle);
+procedure TextOut(pos: Point; text: object; f: FontOptions; align: Alignment; angle: real) 
+  := TextOut(pos.x, pos.y, text, f, align, angle);
 
 type
   FS = auto class
