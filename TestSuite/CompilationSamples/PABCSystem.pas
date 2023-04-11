@@ -12182,7 +12182,7 @@ begin
 end;
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
-function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
+function CartesianPower<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
 begin
   var r := new integer[n];
   var ar1 := new T[n];
@@ -12212,9 +12212,20 @@ begin
 end;
 
 /// Возвращает n-тую декартову степень множества элементов, заданного последовательностью
+function CartesianPower<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.CartesianPower(n);
+end;
+
+// Не убирать этот комментарий! Нужен для корректного Intellisense
+///-(расширение sequence of T) function Cartesian<T, T1>(b: sequence of T1): sequence of (T, T1);
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
+function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod := Self.CartesianPower(n);
+
+///--
 function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin
-  Result := Self.ToArray.Cartesian(n);
+  Result := Self.ToArray.CartesianPower(n);
 end;
 
 /// Возвращает все перестановки букв в строке в виде последовательности строк
