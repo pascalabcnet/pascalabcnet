@@ -3369,7 +3369,7 @@ namespace PascalABCCompiler
                     }
                 //
 
-                if (is_dll(CurrentUnit.SyntaxTree))
+                if (ccu!=null && is_dll(ccu))
                     compilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary;
                 if (ParsersController.LastParser != null)
                     CurrentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
