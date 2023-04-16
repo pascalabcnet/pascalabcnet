@@ -2729,7 +2729,7 @@ namespace PascalABCCompiler
                     UnitName = Path.GetFileName(UnitName);
                     UnitName = Path.ChangeExtension(UnitName, null);
                 } else if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
-                    throw new UsesInWrongName(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
+                    throw new UsesInWrongName(SyntaxUsesUnit.source_context.FileName, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
             }
             else if (UnitName == null)
@@ -2762,7 +2762,7 @@ namespace PascalABCCompiler
                     // если где то ещё будет исопльзоваться UnitName или source_context - надо будет добавить такую же проверку
                     throw new InvalidOperationException(nameof(UnitName));
                 else
-                    throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, source_context);
+                    throw new UnitNotFound(source_context.FileName, UnitName, source_context);
 
             if (PCUFileExists && SourceFileExists)
             {
