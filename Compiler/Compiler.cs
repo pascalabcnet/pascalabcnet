@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
  /***************************************************************************
  *   
@@ -2725,7 +2725,7 @@ namespace PascalABCCompiler
                 TryThrowInvalidPath(uui.in_file.Value, uui.in_file.source_context);
 
                 if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
-                    throw new UsesInWrongName(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
+                    throw new UsesInWrongName(SyntaxUsesUnit.source_context.FileName, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
             }
 
@@ -2755,7 +2755,7 @@ namespace PascalABCCompiler
                     // если где то ещё будет исопльзоваться UnitName или source_context - надо будет добавить такую же проверку
                     throw new InvalidOperationException(nameof(UnitName));
                 else
-                    throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, source_context);
+                    throw new UnitNotFound(source_context.FileName, UnitName, source_context);
 
             if (PCUFileExists && SourceFileExists)
             {
