@@ -6,50 +6,32 @@
 <param name="Keyword" value="TextWidth"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Функции для вывода текста</H1>
-<table border=0 cellpadding=5><tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)</td></tr>
-<tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)</td></tr>
-<tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)</td></tr>
-<tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)</td></tr>
-<tr><td><code><b>procedure</b> DrawText(r: GRect; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в прямоугольник</td></tr>
-<tr><td><code><b>procedure</b> DrawText(r: GRect; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит целое в прямоугольник</td></tr>
-<tr><td><code><b>procedure</b> DrawText(r: GRect; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит вещественное в прямоугольник</td></tr>
-<tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)</td></tr>
-<tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)</td></tr>
-<tr><td><code><b>procedure</b> DrawText(r: GRect; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в прямоугольник</td></tr>
-<tr><td><code><b>procedure</b> DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит целое в прямоугольник</td></tr>
-<tr><td><code><b>procedure</b> DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит вещественное в прямоугольник</td></tr>
-<tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом</td></tr>
+<table border=0 cellpadding=5><tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в прямоугольник размера (w,h) с координатами левого верхнего угла (x,y)</td></tr>
+<tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: object; color: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта указанным цветом в прямоугольник (x,y,w,h)</td></tr>
+<tr><td><code><b>procedure</b> DrawText(rect: GRect; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в указанный прямоугольник</td></tr>
+<tr><td><code><b>procedure</b> DrawText(rect: GRect; text: object; color: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в указанный прямоугольник указанным цветом</td></tr>
+<tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: object; f: FontOptions; align: Alignment; angle: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в прямоугольник (x,y,w,h) указанным шрифтом</td></tr>
 <tr><td><code><b>function</b> TextHeight(text: string): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота текста при выводе</td></tr>
 <tr><td><code><b>function</b> TextHeight(text: string; f: FontOptions): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота текста при выводе заданным шрифтом</td></tr>
-<tr><td><code><b>procedure</b> TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в позицию (x,y)</td></tr>
-<tr><td><code><b>procedure</b> TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в позицию (x,y) цветом c</td></tr>
-<tr><td><code><b>procedure</b> TextOut(x, y: real; text: integer; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит целое в позицию (x,y)</td></tr>
-<tr><td><code><b>procedure</b> TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит целое в позицию (x,y) цветом c</td></tr>
-<tr><td><code><b>procedure</b> TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит вещественное в позицию (x,y)</td></tr>
-<tr><td><code><b>procedure</b> TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит вещественное в позицию (x,y) цветом c</td></tr>
-<tr><td><code><b>procedure</b> TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в позицию (x,y) указанным шрифтом</td></tr>
+<tr><td><code><b>procedure</b> TextOut(x, y: real; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию (x,y)</td></tr>
+<tr><td><code><b>procedure</b> TextOut(x, y: real; text: object; color: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию (x,y) указанным цветом</td></tr>
+<tr><td><code><b>procedure</b> TextOut(x, y: real; text: object; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию (x,y) указанным шрифтом</td></tr>
+<tr><td><code><b>procedure</b> TextOut(pos: Point; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию pos</td></tr>
+<tr><td><code><b>procedure</b> TextOut(pos: Point; text: object; color: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию pos указанным цветом</td></tr>
+<tr><td><code><b>procedure</b> TextOut(pos: Point; text: object; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию pos указанным шрифтом</td></tr>
 <tr><td><code><b>function</b> TextSize(text: string): Size;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер текста при выводе</td></tr>
 <tr><td><code><b>function</b> TextSize(text: string; f: FontOptions): Size;</code>

@@ -260,7 +260,10 @@ type
 // -----------------------------------------------------
 //>>     Класс Vector # Vector class
 // -----------------------------------------------------
-  /// Класс Vector
+  
+//{{{--doc: Конец секции 2 }}} 
+
+  // Класс Vector
   {Vector =  class
   public
     x,y: real;
@@ -272,9 +275,7 @@ type
     static function operator+(v: Vector; p: Point): Point := new Point(p.x+v.x,p.y+v.y);
     static function operator+(p: Point; v: Vector): Point := new Point(p.x+v.x,p.y+v.y);
   end;}
-  
-//{{{--doc: Конец секции 2 }}} 
-  
+ 
  
 //{{{doc: Начало секции 3 }}} 
 
@@ -436,7 +437,7 @@ procedure DrawPolygon(points: array of Point; c: GColor);
 procedure FillPolygon(points: array of Point; c: GColor);
 
 // -----------------------------------------------------
-//>>     Класс Bitmap
+//>>     Класс Bitmap # Bitmap class
 // -----------------------------------------------------
 ///!#
 /// Класс битового образа
@@ -536,34 +537,6 @@ procedure EndFrameBasedAnimation;
 // -----------------------------------------------------
 //>>     Функции для вывода текста # GraphWPF text functions
 // -----------------------------------------------------
-{
-// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит строку в прямоугольник
-procedure DrawText(r: GRect; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит целое в прямоугольник
-procedure DrawText(r: GRect; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит вещественное в прямоугольник
-procedure DrawText(r: GRect; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит строку в прямоугольник
-procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит целое в прямоугольник
-procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит вещественное в прямоугольник
-procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом
-procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
-}
 
 /// Выводит текстовое представление объекта в прямоугольник размера (w,h) с координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);
@@ -576,21 +549,6 @@ procedure DrawText(rect: GRect; text: object; color: GColor; align: Alignment :=
 /// Выводит строку в прямоугольник (x,y,w,h) указанным шрифтом
 procedure DrawText(x, y, w, h: real; text: object; f: FontOptions; align: Alignment; angle: real);
 
-
-{// Выводит строку в позицию (x,y)
-procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-// Выводит строку в позицию (x,y) цветом c
-procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-// Выводит целое в позицию (x,y)
-procedure TextOut(x, y: real; text: integer; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-// Выводит целое в позицию (x,y) цветом c
-procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-// Выводит вещественное в позицию (x,y)
-procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-// Выводит вещественное в позицию (x,y) цветом c
-procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-// Выводит строку в позицию (x,y) указанным шрифтом
-procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);}
 
 /// Выводит текстовое представление объекта в позицию (x,y)
 procedure TextOut(x, y: real; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
@@ -786,6 +744,50 @@ var AdditionalDrawOnDC: procedure(dc: DrawingContext);
 
 procedure __InitModule__;
 procedure __FinalizeModule__;
+
+(*
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит строку в прямоугольник
+procedure DrawText(r: GRect; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит целое в прямоугольник
+procedure DrawText(r: GRect; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит вещественное в прямоугольник
+procedure DrawText(r: GRect; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит строку в прямоугольник
+procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит целое в прямоугольник
+procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит вещественное в прямоугольник
+procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом
+procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
+
+// Выводит строку в позицию (x,y)
+procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит строку в позицию (x,y) цветом c
+procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит целое в позицию (x,y)
+procedure TextOut(x, y: real; text: integer; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит целое в позицию (x,y) цветом c
+procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит вещественное в позицию (x,y)
+procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит вещественное в позицию (x,y) цветом c
+procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит строку в позицию (x,y) указанным шрифтом
+procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);}
+*)
 
 implementation
 
