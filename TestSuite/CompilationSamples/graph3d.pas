@@ -4259,7 +4259,7 @@ function BillboardText(p: Point3D; Text: string; Fontsize: real) := BillboardTex
 
 function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT := Inv(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
 
-function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, arrowslength / 10);
+function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, (arrowslength / 10).ClampTop(0.2));
 
 function Text3D(x, y, z: real; Text: string; Height: real; fontname: string; c: Color): TextT := Inv(()->TextT.Create(x, y, z, text, height, fontname, c));
 

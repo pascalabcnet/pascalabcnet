@@ -571,8 +571,8 @@ namespace PascalABCCompiler.TreeRealization
                     implements = false;
                     // Цикл по всем реализуемым интерфейсам. А если tnode сам является интерфейсом?
                     var ImplementingInterfaces = tnode.ImplementingInterfaces.ToList();
-                    //if (tnode.IsInterface)
-                    //    ImplementingInterfaces.Add(tnode);
+                    if (tnode.IsInterface)
+                        ImplementingInterfaces.Add(tnode);
                     foreach (var interf in ImplementingInterfaces)
                     {
                         var ctn = interf as compiled_type_node;
@@ -597,10 +597,11 @@ namespace PascalABCCompiler.TreeRealization
                         // Тут можно проверить на ковариантность
                         // еще где то надо проверять, что IEnumerable<Derived> -> IEnumerable<Base>, но здесь base_class предполагает, 
                         // что это - класс, и рассматривает все его интерфейсы, упуская ситуацию, когда base_class - это и есть интерфейс
-                        //else if ((cgitn != null || ctn != null) && (bcgitn != null || bcctn != null))
+                        else if ((cgitn != null || ctn != null) && (bcgitn != null || bcctn != null)) // SSM 19/04
                         //else if (cgitn != null && (bcgitn != null || bcctn != null))
                         //else if ((cgitn != null || ctn != null) && bcgitn != null)
-                        else if (cgitn != null && bcgitn != null)
+                        //else if (cgitn != null && bcgitn != null)
+                        //else if (cgitn != null && bcgitn != null || ctn != null && bcctn != null) // SSM 18/04 немного большие ограничения
                         {
                             compiled_type_node interf_original_generic = cgitn != null ? cgitn.original_generic as compiled_type_node : ctn.original_generic as compiled_type_node;
                             compiled_type_node base_original_generic = bcgitn != null ? bcgitn.original_generic as compiled_type_node : bcctn.original_generic as compiled_type_node;
@@ -635,6 +636,11 @@ namespace PascalABCCompiler.TreeRealization
                                             if (is_derived(base_instance_params[i], interf_instance_params[i], false))
                                             {
                                                 // OK
+                                            }
+                                            else // SSM 19/04/23 -вот эта ветка была решающей
+                                            {
+                                                impl = false;
+                                                break;
                                             }
                                         }
                                         // Почему то когда это закомментировано, то работает. А так не вызывается ??!
