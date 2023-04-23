@@ -8756,7 +8756,8 @@ end;
 
 procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
 begin
-  a := a.OrderBy(x->keySelector(x)).ToArray;
+  var keys := System.Array.ConvertAll(a,keySelector);
+  System.Array.Sort(keys, a);
 end;
 
 procedure Sort<T>(l: List<T>);

@@ -565,18 +565,18 @@ type
     
   /// Локальная ось X в глобальных координатах
     property LocalAxisX: Vector3D 
-      read Invoke&<Vector3D>(()->model.Transform.Transform(new Vector3D(1,0,0)));
+      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(1,0,0)));
   /// Локальная ось X в глобальных координатах
     property LocalAxisY: Vector3D 
-      read Invoke&<Vector3D>(()->model.Transform.Transform(new Vector3D(0,1,0)));
+      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(0,1,0)));
   /// Локальная ось X в глобальных координатах
     property LocalAxisZ: Vector3D 
-      read Invoke&<Vector3D>(()->model.Transform.Transform(new Vector3D(0,0,1)));
+      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(0,0,1)));
     
   /// Перемещает 3D-объект к точке (x,y,z) в локальных координатах
     procedure MoveToLocal(x,y,z: real);
     begin
-      var p := Invoke&<Point3D>(()->model.Transform.Transform(new Point3D(x,y,z)));
+      var p := Invoke&<Point3D>(()->model.GetTransform.Transform(new Point3D(x,y,z)));
       MoveTo(p);
     end;
   /// Перемещает 3D-объект к точке p в локальных координатах  
@@ -585,9 +585,9 @@ type
     procedure MoveByLocal(dx,dy,dz: real);
     begin
       // x,y,z в локальных координатах всегда нули
-      MoveToLocal(dx, dy, dz);
-      //var v := LocalAxisX*dx + LocalAxisY*dy + LocalAxisZ*dz;
-      //MoveBy(v);
+     // MoveToLocal(dx, dy, dz);
+      var v := LocalAxisX*dx + LocalAxisY*dy + LocalAxisZ*dz;
+      MoveBy(v);
     end;
   /// Перемещает 3D-объект на вектор v в локальных координатах
     procedure MoveByLocal(v: Vector3D) := MoveByLocal(v.x,v.y,v.z);
@@ -3324,7 +3324,7 @@ function BillboardText(p: Point3D; Text: string; Fontsize: real := 12): Billboar
 /// Возвращает координатную систему с длиной стрелок ArrowsLength и диаметром стрелок Diameter
 function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT;
 /// Возвращает координатную систему с длиной стрелок ArrowsLength
-function CoordinateSystem(ArrowsLength: real): CoordinateSystemT;
+function CoordinateSystem(ArrowsLength: real := 2): CoordinateSystemT;
 /// Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height, именем шрифта FontName заданного цвета
 function Text3D(x, y, z: real; Text: string; Height: real; FontName: string; c: Color): TextT;
 /// Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height, именем шрифта FontName
@@ -4263,7 +4263,7 @@ function BillboardText(p: Point3D; Text: string; Fontsize: real) := BillboardTex
 
 function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT := Inv(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
 
-function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, (arrowslength / 10).ClampTop(0.2));
+function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, (arrowslength / 10).ClampTop(0.18));
 
 function Text3D(x, y, z: real; Text: string; Height: real; fontname: string; c: Color): TextT := Inv(()->TextT.Create(x, y, z, text, height, fontname, c));
 
