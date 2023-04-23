@@ -43,7 +43,8 @@ namespace VisualPascalABC
 		}
 		
 		private List<string> assembly_files = new List<string>();
-		public bool fromFile = false;
+        private List<string> native_dlls = new List<string>();
+        public bool fromFile = false;
 		private AssemblyType assemblyType = AssemblyType.GAC;
 		
 		public AssemblyType AssemblyType
@@ -67,8 +68,9 @@ namespace VisualPascalABC
 		
 		public void Clear()
 		{
-			assembly_files.Clear();
-			assemblyType = AssemblyType.GAC;
+            assembly_files.Clear();
+            native_dlls.Clear();
+            assemblyType = AssemblyType.GAC;
 			lvGac.Items.Clear();
             tbLog.Text = "";
 			//lvCom.Items.Clear();
@@ -101,8 +103,13 @@ namespace VisualPascalABC
 		{
 			return assembly_files.ToArray();
 		}
-		
-		private List<ListViewItem> GetCacheContent()
+
+        public string[] GetNativeDlls()
+        {
+            return native_dlls.ToArray();
+        }
+
+        private List<ListViewItem> GetCacheContent()
 		{
 			List<ListViewItem> itemList = new List<ListViewItem>();
 			foreach (GacInterop.AssemblyListEntry asm in GacInterop.GetAssemblyList()) {
@@ -154,13 +161,15 @@ namespace VisualPascalABC
 			}
 		}
 
-        private void nugetInstalled(bool result, string[] dlls, string[] xmls)
+        private void nugetInstalled(bool result, string[] dlls, string[] xmls, string[] ndlls)
         {
             assemblyType = AssemblyType.File;
             if (result)
             {
                 foreach (string dll in dlls)
                     assembly_files.Add(dll);
+                foreach (string dll in ndlls)
+                    native_dlls.Add(dll);
                 this.DialogResult = DialogResult.OK;
             }
             else

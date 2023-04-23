@@ -565,18 +565,18 @@ type
     
   /// Локальная ось X в глобальных координатах
     property LocalAxisX: Vector3D 
-      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(1,0,0)));
+      read Invoke&<Vector3D>(()->model.Transform.Transform(new Vector3D(1,0,0)));
   /// Локальная ось X в глобальных координатах
     property LocalAxisY: Vector3D 
-      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(0,1,0)));
+      read Invoke&<Vector3D>(()->model.Transform.Transform(new Vector3D(0,1,0)));
   /// Локальная ось X в глобальных координатах
     property LocalAxisZ: Vector3D 
-      read Invoke&<Vector3D>(()->model.GetTransform.Transform(new Vector3D(0,0,1)));
+      read Invoke&<Vector3D>(()->model.Transform.Transform(new Vector3D(0,0,1)));
     
   /// Перемещает 3D-объект к точке (x,y,z) в локальных координатах
     procedure MoveToLocal(x,y,z: real);
     begin
-      var p := Invoke&<Point3D>(()->model.GetTransform.Transform(new Point3D(x,y,z)));
+      var p := Invoke&<Point3D>(()->model.Transform.Transform(new Point3D(x,y,z)));
       MoveTo(p);
     end;
   /// Перемещает 3D-объект к точке p в локальных координатах  
@@ -586,13 +586,15 @@ type
     begin
       // x,y,z в локальных координатах всегда нули
       MoveToLocal(dx, dy, dz);
+      //var v := LocalAxisX*dx + LocalAxisY*dy + LocalAxisZ*dz;
+      //MoveBy(v);
     end;
   /// Перемещает 3D-объект на вектор v в локальных координатах
     procedure MoveByLocal(v: Vector3D) := MoveByLocal(v.x,v.y,v.z);
 /// Возвращает анимацию перемещения объекта к точке (x, y, z) за seconds секунд в локальных координатах
     function AnimMoveToLocal(x, y, z: real; seconds: real := 1): AnimationBase;
     begin
-      var p := Invoke&<Point3D>(()->model.GetTransform.Transform(new Point3D(x,y,z)));
+      var p := Invoke&<Point3D>(()->model.Transform.Transform(new Point3D(x,y,z)));
       Result := AnimMoveTo(p);
     end;
 /// Возвращает анимацию перемещения объекта к точке p за seconds секунд в локальных координатах
@@ -601,7 +603,9 @@ type
 /// Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд в локальных координатах
     function AnimMoveByLocal(dx, dy, dz: real; seconds: real := 1): AnimationBase;
     begin
-      Result := AnimMoveToLocal(dx, dy, dz, seconds);
+      var v := LocalAxisX*dx + LocalAxisY*dy + LocalAxisZ*dz;
+      Result := AnimMoveBy(v);
+      //Result := AnimMoveToLocal(dx, dy, dz, seconds);
     end;
 /// Возвращает анимацию перемещения объекта на вектор v за seconds секунд в локальных координатах
     function AnimMoveByLocal(v: Vector3D; seconds: real := 1): AnimationBase
@@ -4259,7 +4263,7 @@ function BillboardText(p: Point3D; Text: string; Fontsize: real) := BillboardTex
 
 function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT := Inv(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
 
-function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, arrowslength / 10);
+function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, (arrowslength / 10).ClampTop(0.2));
 
 function Text3D(x, y, z: real; Text: string; Height: real; fontname: string; c: Color): TextT := Inv(()->TextT.Create(x, y, z, text, height, fontname, c));
 
