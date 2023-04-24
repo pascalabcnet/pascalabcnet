@@ -2189,7 +2189,7 @@ procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(a: array of T; less: (T,T)->boolean);
 /// Сортирует динамический массив по ключу
-procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
+procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp
@@ -8754,7 +8754,7 @@ begin
   System.Array.Sort(a, (x, y)-> less(x, y) ? -1 : (less(y, x) ? 1 : 0));
 end;
 
-procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
+procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
 begin
   var keys := System.Array.ConvertAll(a,keySelector);
   System.Array.Sort(keys, a);
