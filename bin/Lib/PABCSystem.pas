@@ -4659,6 +4659,13 @@ function BigInteger.operator mod(p: BigInteger; q: integer) := BigInteger.Remain
 function BigInteger.operator-(p: BigInteger) := BigInteger.Negate(p);
 
 //------------------------------------------------------------------------------
+//          Операции для Decimal
+//------------------------------------------------------------------------------
+
+function operator-(d: Decimal): Decimal; extensionmethod := Decimal.Negate(d);
+
+
+//------------------------------------------------------------------------------
 //          Операции для Complex
 //------------------------------------------------------------------------------
 function operator-(Self: Complex): Complex; extensionmethod := Complex.Negate(Self);
