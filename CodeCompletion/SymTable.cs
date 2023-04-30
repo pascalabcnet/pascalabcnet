@@ -5277,6 +5277,8 @@ namespace CodeCompletion
                     {
                         if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !IsHiddenName(t.Name) && !t.IsNested)
                         {
+                            if (t.IsArray)
+                                continue;
                             if (t.BaseType == typeof(MulticastDelegate))
                                 //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
                                 syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Delegate, null), t).si);
