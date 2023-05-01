@@ -491,17 +491,23 @@ namespace CodeCompletion
             return lst;
         }
         
-        private bool hasUsesCycle(SymScope unit)
+        private bool hasUsesCycle(SymScope unit, int deep=0)
         {
             if (unit.Name == "PABCSystem")
+                return true;
+            if (deep > 100)
                 return true;
             if (this.used_units != null)
         		for (int i = 0; i < this.used_units.Count; i++)
                 {
                     if (this.used_units[i] == unit || this.used_units[i] == this)
                     	return true;
-                    else if (this.used_units[i].hasUsesCycle(unit))
-                    	return true;
+                    else
+                    {
+                        if (this.used_units[i].hasUsesCycle(unit, deep+1))
+                            return true;
+                    }
+                    	
                 }
         	return false;
         }
