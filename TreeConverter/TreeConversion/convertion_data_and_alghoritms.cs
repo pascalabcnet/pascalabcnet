@@ -1926,11 +1926,16 @@ namespace PascalABCCompiler.TreeConverter
                     arri.type = fn.parameters[fn.parameters.Count - 1].type;
                     exprs.AddElement(arri);
                 }
+                // SSM 02/05/23 - этот код ответственен за добавление параметров по умолчанию.
+                // После внедрения именованных параметров здесь необходим более интеллектуальный код - для соответствующих
+                // именованных параметров вместо значений по умолчанию будут добавляться их значения при вызове
+                // Поступим проще - выберем одну функцию с указанными именованными параметрами и подставим все - по умолчанию и именованные
+                // Если функций с указанными именоваными параметрами остается две - то кидать ошибку
                 common_function_node cfn = (common_function_node)fn;
                 for (int j = exprs.Count; j < cfn.parameters.Count; j++)
                 {
                     common_parameter cp = (common_parameter)cfn.parameters[j];
-                    if (cp.default_value != null)
+                    if (cp.default_value != null) // default_value хранится в формальном параметре. А значение именованного параметра хранится в вызове!!
                         exprs.AddElement(cp.default_value);
                 }
             }
@@ -2119,6 +2124,16 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+
+        public List<function_node> select_function_helper(expressions_list parameters, List<SymbolInfo> functions, 
+             location loc, List<SyntaxTree.expression> syntax_nodes_parameters, bool only_from_not_extensions,
+             ref Errors.Error err)
+        {
+            // Возвращает список function_node, если он состоит из одной, то меняет parameters, 
+            // в err возвращает ошибку или null если ошибки не было
+            // Возможная проблема - parameters меняется после первого вызова с ошибкой и во втором вызове он некорректный
+            return null;
+        }
 
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
         public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
@@ -2552,7 +2567,7 @@ namespace PascalABCCompiler.TreeConverter
                     possible_type_convertions_list tcl = get_conversions(parameters, funcs[0].parameters, true, loc, out err);
                     if (err != null)
                         return AddError<function_node>(err);
-                    convert_function_call_expressions(funcs[0], parameters, tcl);
+                    convert_function_call_expressions(funcs[0], parameters, tcl); // вот тут заполняются параметры
                     return funcs[0];
                 }
 
