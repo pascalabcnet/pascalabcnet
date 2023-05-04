@@ -2881,11 +2881,88 @@ namespace PascalABCCompiler.TreeConverter
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
         public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
         {
-            Errors.Error err_out;
-            var list = select_function_helper(parameters, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
-            if (err_out != null)
-                return AddError<function_node>(err_out);
-            return list[0];
+            // с какого номера начинаются именованные параметры
+            var indexOfFirstNamedArgument = -1;
+            if (syntax_nodes_parameters != null)
+                indexOfFirstNamedArgument = syntax_nodes_parameters.FindIndex(exp => exp is SyntaxTree.name_assign_expr);
+
+            if (indexOfFirstNamedArgument == -1)
+            {
+                Errors.Error err_out;
+                var list = select_function_helper(parameters, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                if (err_out != null)
+                    return AddError<function_node>(err_out);
+                return list[0];
+            }
+            else
+            {
+                // сделаем копию parameters без именованных аргументов
+                var parameters_helper = new expressions_list();
+                for (int i = 0; i < indexOfFirstNamedArgument; i++)
+                    parameters_helper.AddElement(parameters[i]);
+
+                Errors.Error err_out;
+                var list = select_function_helper(parameters_helper, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                if (list.Count == 0 && err_out != null)
+                    return AddError<function_node>(err_out);
+
+                // Теперь ищем среди оставшихся параметров именованные
+                // Создадим множество имен именованных аргументов
+                var hs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (int i = indexOfFirstNamedArgument; i < syntax_nodes_parameters.Count; i++)
+                {
+                    var nae = syntax_nodes_parameters[i] as SyntaxTree.name_assign_expr;
+                    hs.Add(nae.name.name);
+                }
+                // В syntax_nodes_parameters и parameters по идее должно быть одно и то же количество значений
+                // Удалим из functions все неподходящие, где нет таких имен параметров в оставшейся части
+                list.RemoveAll(ff =>
+                {
+                    var names = ff.parameters.Skip(indexOfFirstNamedArgument).Select(par => par.name);
+                    var hsnames = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
+                    return !hs.IsProperSubsetOf(hsnames); 
+                    // то есть все имена в именованных аргументах должны находиться среди оставшихся параметров по умолчанию
+                });
+                if (list.Count == 0)
+                    return AddError<function_node>(new NoFunctionWithSameArguments(loc, true)); // или false - не знаю
+                if (list.Count > 1)
+                    return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, list)); // или другое сообщение
+                // Теперь раз в list осталась одна функция, найти её в functions и только её и оставить
+                functions.RemoveAll(fun => fun.sym_info != list[0]);
+                if (functions.Count == 0)
+                    return AddError<function_node>(new NoFunctionWithSameArguments(loc, true)); // это не должно случиться, но вдруг
+                // Вот и в functions осталась одна функция
+                // Теперь делаем словарь сопоставлений именам -> expression_node (в параметрах)
+                var dict = new Dictionary<string, expression_node>(StringComparer.OrdinalIgnoreCase); // Это словарь именованных аргументов
+                for (int i = indexOfFirstNamedArgument; i < syntax_nodes_parameters.Count; i++)
+                {
+                    var nae = syntax_nodes_parameters[i] as SyntaxTree.name_assign_expr;
+                    dict[nae.name.name] = parameters[i]; // parameters и syntax_nodes_parameters д.б.одной длины
+                }
+                // Вот теперь как-то хвост в parameters надо менять на параметры по умолчанию или на те, что хранятся в dict
+                // Я бы очистил хвост parameters и добавлял бы в него как раньше параметры по умолчанию
+                parameters.remove_range(indexOfFirstNamedArgument, parameters.Count - indexOfFirstNamedArgument); // удалить хвост
+                var fun1 = functions[0].sym_info as function_node;
+                
+                for (int i = indexOfFirstNamedArgument; i < fun1.parameters.Count; i++) // сверить это с другим кодом
+                {
+                    var par = fun1.parameters[i];
+                    var paramexpr = par.default_value;
+                    var name = par.name;
+                    if (dict.ContainsKey(name))
+                        paramexpr = dict[name]; // вместо значения по умолчанию взять значение именованного параметра
+                    parameters.AddElement(paramexpr);
+                }
+                // И наконец всё готово!!!
+                // syntax_nodes_parameters мне кажется всё испортят - там именованные аргументы стоят не на своих местах!!!
+                // Это единственный - опасный и потенциально с ошибками вызов!
+                // Но ощущение, что всё верно, т.к. это нужно только для параметров лямбд, а у именованных аргументов их быть не может
+                list = select_function_helper(parameters, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                if (err_out != null)
+                    return AddError<function_node>(err_out);
+                return list[0];
+            }
+
             // для именованных параметров последовательность может быть такая
             // Если именованных параметров при вызове нет, то - этот алгоритм. Если есть, то
             // 1. Оставить только неименованные параметры и вызвать select_function_helper

@@ -19507,6 +19507,12 @@ namespace PascalABCCompiler.TreeConverter
             return_value(create_constructor_call(tn, exprs, get_location(_new_expr.type), new Tuple<bool, List<expression>>(lambdas_are_in_parameters, syntax_nodes_parameters)));
         }
 
+        public override void visit(SyntaxTree.name_assign_expr node)
+        {
+            var ex = convert_strong(node.expr); // на этом уровне имя никак не учитывать. Оно учтется ТОЛЬКО в select_function
+            return_value(ex);
+        }
+
         public override void visit(SyntaxTree.where_type_specificator_list node)
         {
             throw new NotSupportedError(get_location(node));

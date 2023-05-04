@@ -3268,8 +3268,8 @@ expr_with_func_decl_lambda
 expr_with_func_decl_lambda_ass
 	: expr
 		{ $$ = $1; }
-	| tkIdentifier tkAssign expr
-		{ $$ = $3; }
+	| identifier tkAssign expr_l1
+		{ $$ = new name_assign_expr($1,$3,@$); }
     | func_decl_lambda
         { $$ = $1; }
 	| tkInherited
