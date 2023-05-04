@@ -84,13 +84,13 @@
 %type <stn> exception_handler  
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
-%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
+%type <stn> typed_const_list1 typed_const_list optional_expr_list optional_expr_list_func_param elem_list optional_expr_list_with_bracket expr_list expr_list_func_param const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_or_unpacked_list
 // %type <stn> expr_l1_list
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr const_relop_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq 
+%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda expr_with_func_decl_lambda_ass const_expr const_relop_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq 
 %type <ex> lambda_unpacked_params expr_l1 expr_l1_or_unpacked expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
+%type <ex> external_directive_ident init_const_expr case_label variable proc_func_call var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
 %type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
 %type <stn> foreach_stmt  
@@ -1463,7 +1463,7 @@ range_factor
 		}
     | literal
 		{ $$ = $1; }
-    | range_factor tkRoundOpen const_elem_list tkRoundClose
+    | range_factor tkRoundOpen const_elem_list tkRoundClose // f(1)..f(2) - странно - вызовы функций тут вроде запрещены
         { 
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
         }
@@ -3232,6 +3232,17 @@ expr_list
 			$$ = ($1 as expression_list).Add($3, @$); 
 		}
     ;
+    
+expr_list_func_param
+	: expr_with_func_decl_lambda_ass                                
+        { 
+			$$ = new expression_list($1, @$); 
+		}
+    | expr_list tkComma expr_with_func_decl_lambda_ass              
+		{
+			$$ = ($1 as expression_list).Add($3, @$); 
+		}
+    ;
 
 expr_as_stmt
     : allowable_expr_as_stmt      
@@ -3248,6 +3259,17 @@ allowable_expr_as_stmt
 expr_with_func_decl_lambda
 	: expr
 		{ $$ = $1; }
+    | func_decl_lambda
+        { $$ = $1; }
+	| tkInherited
+		{ $$ = new inherited_ident("", @$); }
+    ;
+
+expr_with_func_decl_lambda_ass
+	: expr
+		{ $$ = $1; }
+	| tkIdentifier tkAssign expr
+		{ $$ = $3; }
     | func_decl_lambda
         { $$ = $1; }
 	| tkInherited
@@ -4232,7 +4254,16 @@ var_with_init_for_expr_with_let_list
 			$$ = $1;
 		}
 	;
-	
+
+proc_func_call
+	: variable tkRoundOpen optional_expr_list_func_param tkRoundClose                
+        {
+			if ($1 is index)
+				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
+			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
+        }
+	;
+
 variable
     : identifier 
 		{ $$ = $1; }
@@ -4330,12 +4361,8 @@ variable
         { 
 			$$ = new array_const_new($2 as expression_list, @$);  
 		}
-    | variable tkRoundOpen optional_expr_list tkRoundClose                
-        {
-			if ($1 is index)
-				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");
-			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
-        }
+    | proc_func_call
+    	{ $$ = $1; }
     | variable tkPoint identifier_keyword_operatorname
         {
 			if ($1 is index)
@@ -4362,6 +4389,13 @@ variable
     
 optional_expr_list
     : expr_list
+		{ $$ = $1; }
+    |
+		{ $$ = null; }
+    ;
+
+optional_expr_list_func_param
+    : expr_list_func_param
 		{ $$ = $1; }
     |
 		{ $$ = null; }

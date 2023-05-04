@@ -588,8 +588,8 @@ namespace PascalABCCompiler.NETGenerator
             string conf = "Debug";
            // if (comp_opt.dbg_attrs == DebugAttributes.Release)
                 conf = "Release";
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.CreateNoWindow = false;
+            p.StartInfo.UseShellExecute = true;
             p.StartInfo.Arguments = "publish -f " + framework + " --runtime " + runtime + " -c " + conf + " --self-contained true " + csproj;
             p.Start();
             p.WaitForExit();

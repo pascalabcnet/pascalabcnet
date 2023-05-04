@@ -15,7 +15,7 @@ internal static class RevisionClass
 	public const string Major = "3";
 	public const string Minor = "8";
 	public const string Build = "3";
-	public const string Revision = "3264";
+	public const string Revision = "3270";
 
         public const string MainVersion = Major + "." + Minor;
 	public const string FullVersion = Major + "." + Minor + "." + Build + "." + Revision;
