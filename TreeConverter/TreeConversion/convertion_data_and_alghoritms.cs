@@ -2916,6 +2916,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 // В syntax_nodes_parameters и parameters по идее должно быть одно и то же количество значений
                 // Удалим из functions все неподходящие, где нет таких имен параметров в оставшейся части
+
+                // !!!!!!!!!!!!! Надо еще кидать ошибку если нигде нет таких имен именованных параметров!
                 list.RemoveAll(ff =>
                 {
                     var names = ff.parameters.Skip(indexOfFirstNamedArgument).Select(par => par.name);

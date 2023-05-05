@@ -3238,7 +3238,7 @@ expr_list_func_param
         { 
 			$$ = new expression_list($1, @$); 
 		}
-    | expr_list tkComma expr_with_func_decl_lambda_ass              
+    | expr_list_func_param tkComma expr_with_func_decl_lambda_ass              
 		{
 			$$ = ($1 as expression_list).Add($3, @$); 
 		}
