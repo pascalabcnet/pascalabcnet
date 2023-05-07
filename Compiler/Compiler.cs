@@ -2641,12 +2641,12 @@ namespace PascalABCCompiler
         private string FindFileInDirs(string FileName, params string[] Dirs)
         {
             if (Path.IsPathRooted(FileName))
-                return File.Exists(FileName) ? FileName : null;
+                return SourceFileExists(FileName) ? FileName : null;
 
             foreach (string Dir in Dirs)
                 try {
                     var res = Path.Combine(Dir, FileName);
-                    if (File.Exists(res))
+                    if (SourceFileExists(res))
                         // Path.GetFullPath чтобы нормализовать
                         // File.Exists не может кинуть исключение или дать true
                         // если путь слишком длинный или содержит нерпавильные знаки
@@ -2729,7 +2729,7 @@ namespace PascalABCCompiler
                     UnitName = Path.GetFileName(UnitName);
                     UnitName = Path.ChangeExtension(UnitName, null);
                 } else if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
-                    throw new UsesInWrongName(SyntaxUsesUnit.source_context.FileName, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
+                    throw new UsesInWrongName(SyntaxUsesUnit.source_context?.FileName, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
             }
             else if (UnitName == null)
@@ -2741,6 +2741,8 @@ namespace PascalABCCompiler
         
         public string GetUnitFileName(string UnitName, string path, string curr_path, SyntaxTree.SourceContext source_context)
         {
+            if (UnitName == null)
+                throw new ArgumentNullException(nameof(UnitName));
             var cache_key = Tuple.Create(path.ToLower(), curr_path?.ToLower());
             string res;
             if (GetUnitFileNameCache.TryGetValue(cache_key, out res))
@@ -2757,12 +2759,7 @@ namespace PascalABCCompiler
             var PCUFileExists = (!CompilerOptions.Rebuild || !SourceFileExists) && PCUFileName != null;
 
             if (!PCUFileExists && !SourceFileExists)
-                if (UnitName == null)
-                    // вызов с "UnitName == null" должен быть только там, где уже известно что хотя бы какой то файл есть
-                    // если где то ещё будет исопльзоваться UnitName или source_context - надо будет добавить такую же проверку
-                    throw new InvalidOperationException(nameof(UnitName));
-                else
-                    throw new UnitNotFound(source_context.FileName, UnitName, source_context);
+                throw new UnitNotFound(source_context?.FileName, UnitName, source_context);
 
             if (PCUFileExists && SourceFileExists)
             {
@@ -3260,7 +3257,7 @@ namespace PascalABCCompiler
                 }
 
             if (CurrentUnit==null && Path.GetExtension(UnitFileName).ToLower() == CompilerOptions.CompiledUnitExtension)
-                if (File.Exists(UnitFileName))
+                if (SourceFileExists(UnitFileName))
                 {
                     if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitFileName, null);
                     try
