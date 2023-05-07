@@ -2284,7 +2284,9 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     try
                     {
-
+                        // syntax_nodes_parameters в DeduceFunction - ничего плохого нет. Из них фильтруются 
+                        // только function_lambda_definition, а в значениях именованных аргументов их не может быть. 
+                        // Хотя и в этом случае проблем не вижу
                         function_node inst = generic_convertions.DeduceFunction(func, parameters,
                                                                                 is_alone_method_defined, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
                         if (inst == null)
@@ -2630,7 +2632,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (parsi.Any(p => !IsFuncT(p))) // Если какой-то параметр не функция у какой-то из функций с данной дистанцией, то пропустим этот параметр! 
                         // Это - странно! Даже если это - Action, то пропускаем! Это - очень слабая логика!
                         continue;
-
+                    // ЕСЛИ ВСЕ ПАРАМЕТРЫ _ НЕ ФУНКЦИИ, ТО ВСЕ ПРОПУСТЯТСЯ!!!
                     var argss = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()).ToArray(); // последовательность массивов параметров Func
                     var cnts = argss.Select(a => a.Count());
 
@@ -2669,11 +2671,19 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (funcs[0].is_extension_method)
                         {
-                            fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                            if (i - 1 >= syntax_nodes_parameters.Count)
+                                fldiResType = null;
+                            // syntax_nodes_parameters[i - 1] или [i] - может быть другое количество синтаксических параметров 
+                            // при вызове - тогда упадет. Не понимаю, почему этого не происходит
+                            else fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
                         }
                         else
                         {
-                            fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                            // Здесь возможно будет несинхрон если в syntax_nodes_parameters пропущены какие то параметры по умолчанию
+                            // Или такого быть не может?
+                            if (i >= syntax_nodes_parameters.Count)
+                                fldiResType = null;
+                            else fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
                         }
                     }
                     // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
