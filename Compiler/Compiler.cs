@@ -276,6 +276,7 @@ namespace PascalABCCompiler
             : base(string.Format(StringResources.Get("COMPILATIONERROR_INVALID_PATH")))
         {
             this.source_context = sc;
+            this.fileName = sc.FileName;
         }
     }
 
@@ -2678,6 +2679,7 @@ namespace PascalABCCompiler
         
         private string GetReferenceFileName(string FileName, SyntaxTree.SourceContext sc, string curr_path)
         {
+            FileName = FileName.Trim();
             if (standart_assembly_dict.ContainsKey(FileName))
                 return standart_assembly_dict[FileName];
 

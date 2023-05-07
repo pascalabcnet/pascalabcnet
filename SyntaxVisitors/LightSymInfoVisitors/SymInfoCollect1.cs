@@ -126,7 +126,8 @@ namespace PascalABCCompiler.SyntaxTree
                 //case repeat_node rep:
                 case case_node cas:
                     PreExitScope(st);
-                    Current = Current.Parent;
+                    if (Current != null)
+                        Current = Current.Parent;
                     break;
             }
         }

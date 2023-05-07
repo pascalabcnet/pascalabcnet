@@ -3292,7 +3292,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         common_method_node static_constr = context.top_function as common_method_node;
                         static_constr.is_constructor = true;
-                        if (context.converted_type.IsPartial && context.converted_type.static_constr != null)//remove auto generated static constructor from partial class
+                        if (/*context.converted_type.IsPartial && */context.converted_type.static_constr != null)//remove auto generated static constructor from partial class
                             context.converted_type.methods.RemoveElement(context.converted_type.static_constr);
                         static_constr.cont_type.static_constr = context.top_function as common_method_node;
                     }
@@ -7830,6 +7830,9 @@ namespace PascalABCCompiler.TreeConverter
 
         private void CheckSpecialFunctionCall(List<SymbolInfo> sil, expressions_list exprs, location loc)
         {
+            string FunctionName = "";
+            if (sil != null && sil.Count > 0 && sil[0].sym_info is function_node)
+                FunctionName = (sil[0].sym_info as function_node).name;
             if (SystemUnitAssigned)
             {
                 bool write_proc = SystemLibrary.SystemLibInitializer.write_procedure.Equal(sil);
@@ -7889,11 +7892,11 @@ namespace PascalABCCompiler.TreeConverter
                 else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
                             || SystemLibrary.SystemLibInitializer.ExcludeProcedure.Equal(sil))
                 {
-                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(loc, true));
+                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
                     type_node element_type = exprs[0].type.element_type;
                     if (exprs[0].type.type_special_kind != SemanticTree.type_special_kind.base_set_type && exprs[0].type.type_special_kind != SemanticTree.type_special_kind.set_type)
                     {
-                        AddError(new NoFunctionWithSameArguments(loc, true));
+                        AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
                     }
                     if (element_type != null)
                         convertion_data_and_alghoritms.check_convert_type(exprs[1], element_type, exprs[1].location);
@@ -7902,7 +7905,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else if (SystemLibrary.SystemLibInitializer.InSetProcedure.Equal(sil))
                 {
-                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(loc, true));
+                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
                     type_node element_type = exprs[1].type.element_type;
                     if (element_type != null)
                     {
@@ -7914,7 +7917,7 @@ namespace PascalABCCompiler.TreeConverter
                 else if (SystemLibrary.SystemLibInitializer.SetUnionProcedure.Equal(sil)
                    || SystemLibrary.SystemLibInitializer.SetIntersectProcedure.Equal(sil) || SystemLibrary.SystemLibInitializer.SetSubtractProcedure.Equal(sil))
                 {
-                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(loc, true));
+                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
                     convertion_data_and_alghoritms.check_convert_type(exprs[1], exprs[0].type, exprs[1].location);
                 }
 
@@ -7928,12 +7931,12 @@ namespace PascalABCCompiler.TreeConverter
 
         private expression_node make_new_call(SymbolInfo si, SyntaxTree.expression_list parameters, location loc)
         {
-        	if (parameters == null) AddError( new NoFunctionWithSameParametresNum(loc,false,si.sym_info as function_node));
+            if (parameters == null) AddError( new NoFunctionWithSameParametresNum(loc,false,si.sym_info as function_node));
             if (parameters.expressions.Count == 1)
             {
                 expression_node param0 = convert_strong(parameters.expressions[0]);
                 if (!param0.type.IsPointer || param0.type == SystemLibrary.SystemLibrary.pointer_type)
-                    AddError(new NoFunctionWithSameArguments(loc, true));
+                    AddError(new NoFunctionWithSameArguments("New", loc, true));
                 if (!param0.is_addressed)
                 {
                     bool is_pascal_array_ref = false;
@@ -7991,7 +7994,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 expression_node param0 = convert_strong(parameters.expressions[0]);
                 if (!param0.type.IsPointer || param0.type == SystemLibrary.SystemLibrary.pointer_type)
-                    AddError(new NoFunctionWithSameArguments(loc, true));
+                    AddError(new NoFunctionWithSameArguments("Dispose", loc, true));
                 if (!param0.is_addressed)
                 {
                     bool is_pascal_array_ref = false;
@@ -8043,6 +8046,10 @@ namespace PascalABCCompiler.TreeConverter
         
         private expression_node make_ord_call(List<SymbolInfo> sil, SyntaxTree.expression_list parameters, location loc)
         {
+            string FunctionName = "";
+            if (sil != null && sil.Count > 0 && sil[0].sym_info is function_node)
+                FunctionName = (sil[0].sym_info as function_node).name;
+
             if (parameters == null)
             {
                 AddError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
@@ -8102,7 +8109,7 @@ namespace PascalABCCompiler.TreeConverter
 
                 else
                 {
-                    AddError(new NoFunctionWithSameArguments(loc, false));
+                    AddError(new NoFunctionWithSameArguments(FunctionName, loc, false));
                     return null;
                 }
             }
@@ -8174,7 +8181,7 @@ namespace PascalABCCompiler.TreeConverter
                         return cnfc;
                     }
         		}
-        		else AddError(new NoFunctionWithSameArguments(loc,false));
+        		else AddError(new NoFunctionWithSameArguments("Succ", loc,false));
         		bfc.parameters.AddElement(param0);
         		if (type_flag == 0 || type_flag == 3)
         		bfc.parameters.AddElement(new int_const_node(1,null));
@@ -8249,7 +8256,7 @@ namespace PascalABCCompiler.TreeConverter
                         return cnfc;
                     }
         		}
-        		else AddError(new NoFunctionWithSameArguments(loc,false));
+        		else AddError(new NoFunctionWithSameArguments("Pred",loc,false));
         		bfc.parameters.AddElement(param0);
         		if (type_flag == 0 || type_flag == 3)
         		bfc.parameters.AddElement(new int_const_node(1,null));
@@ -8445,7 +8452,7 @@ namespace PascalABCCompiler.TreeConverter
         			}
         			else if (param0.type.IsEnum) is_enum = true;
         		}
-        		else AddError(new NoFunctionWithSameArguments(loc,false));
+        		else AddError(new NoFunctionWithSameArguments("Inc",loc,false));
                 if (type_flag != 5)
                 {
                     if (param1 != null)
@@ -8676,7 +8683,7 @@ namespace PascalABCCompiler.TreeConverter
         			}
         			else if (param0.type.IsEnum) is_enum = true;
         		}
-        		else throw new NoFunctionWithSameArguments(loc,false);
+        		else throw new NoFunctionWithSameArguments("Dec",loc,false);
                 if (type_flag != 5)
                 {
                     if (param1 != null)
@@ -10928,7 +10935,7 @@ namespace PascalABCCompiler.TreeConverter
                 context.leave_code_block();
                 if (ifn == null)
                 {
-                    ifn = new if_node(en, new statements_list(null), null, get_location(_case_node));
+                    ifn = new if_node(new bool_const_node(false, null), new statements_list(null), null, get_location(_case_node));
                     main_ifn = ifn;
                 }
                 ifn.else_body = else_statement;
@@ -14078,9 +14085,11 @@ namespace PascalABCCompiler.TreeConverter
             bool is_override = false;
             bool is_virtual = false;
             bool is_abstract = false;
+            bool is_reintroduce = false;
             string override_proc_attr=null;
             string virtual_proc_attr=null;
             string abstract_proc_attr = null;
+            string reintroduce_proc_attr = null;
             for (int i = 0; i < _procedure_attributes_list.proc_attributes.Count; i++)
             {
                 switch (_procedure_attributes_list.proc_attributes[i].attribute_type)
@@ -14101,6 +14110,12 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             is_virtual = true;
                             virtual_proc_attr = _procedure_attributes_list.proc_attributes[i].name;
+                        }
+                        break;
+                    case SyntaxTree.proc_attribute.attr_reintroduce:
+                        {
+                            is_reintroduce = true;
+                            reintroduce_proc_attr = _procedure_attributes_list.proc_attributes[i].name;
                         }
                         break;
                 }
@@ -14196,7 +14211,6 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
                             }
-
                             common_function_node ccfn = context.top_function;
                             if (ccfn.return_value_type is undefined_type)
                             {
@@ -14221,6 +14235,10 @@ namespace PascalABCCompiler.TreeConverter
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_virtual)
                 			{
                             	AddError(get_location(_procedure_attributes_list.proc_attributes[i]),"USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name,virtual_proc_attr);
+                            }
+                            if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_reintroduce)
+                            {
+                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name, reintroduce_proc_attr);
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override)
                 			{
@@ -19494,6 +19512,12 @@ namespace PascalABCCompiler.TreeConverter
                 
             }
             return_value(create_constructor_call(tn, exprs, get_location(_new_expr.type), new Tuple<bool, List<expression>>(lambdas_are_in_parameters, syntax_nodes_parameters)));
+        }
+
+        public override void visit(SyntaxTree.name_assign_expr node)
+        {
+            var ex = convert_strong(node.expr); // на этом уровне имя никак не учитывать. Оно учтется ТОЛЬКО в select_function
+            return_value(ex);
         }
 
         public override void visit(SyntaxTree.where_type_specificator_list node)

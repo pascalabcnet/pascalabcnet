@@ -258,6 +258,9 @@ type
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
+  /// Преобразует значение одного базового типа к другому базовому типу
+  Convert = System.Convert;
+  
   /// Указывает на возможность сериализации класса
   Serializable = System.SerializableAttribute;
   
@@ -2186,7 +2189,7 @@ procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(a: array of T; less: (T,T)->boolean);
 /// Сортирует динамический массив по ключу
-procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
+procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp
@@ -4654,6 +4657,13 @@ function BigInteger.operator mod(p: BigInteger; q: integer) := BigInteger.Remain
 //function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
 
 function BigInteger.operator-(p: BigInteger) := BigInteger.Negate(p);
+
+//------------------------------------------------------------------------------
+//          Операции для Decimal
+//------------------------------------------------------------------------------
+
+function operator-(d: Decimal): Decimal; extensionmethod := Decimal.Negate(d);
+
 
 //------------------------------------------------------------------------------
 //          Операции для Complex
@@ -8751,9 +8761,10 @@ begin
   System.Array.Sort(a, (x, y)-> less(x, y) ? -1 : (less(y, x) ? 1 : 0));
 end;
 
-procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
+procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
 begin
-  a := a.OrderBy(x->keySelector(x)).ToArray;
+  var keys := System.Array.ConvertAll(a,keySelector);
+  System.Array.Sort(keys, a);
 end;
 
 procedure Sort<T>(l: List<T>);
@@ -12179,7 +12190,7 @@ begin
 end;
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
-function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
+function CartesianPower<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
 begin
   var r := new integer[n];
   var ar1 := new T[n];
@@ -12209,9 +12220,20 @@ begin
 end;
 
 /// Возвращает n-тую декартову степень множества элементов, заданного последовательностью
+function CartesianPower<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.CartesianPower(n);
+end;
+
+// Не убирать этот комментарий! Нужен для корректного Intellisense
+///-(расширение sequence of T) function Cartesian<T, T1>(b: sequence of T1): sequence of (T, T1);
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
+function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod := Self.CartesianPower(n);
+
+///--
 function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin
-  Result := Self.ToArray.Cartesian(n);
+  Result := Self.ToArray.CartesianPower(n);
 end;
 
 /// Возвращает все перестановки букв в строке в виде последовательности строк
@@ -13487,6 +13509,12 @@ end;
 function Each<Key,Source,Res>(Self: sequence of System.Linq.IGrouping<Key,Source>; grOperation: System.Linq.IGrouping<Key,Source> -> Res): Dictionary<Key,Res>; extensionmethod;
 begin
   Result := Self.ToDictionary(g -> g.Key, g -> grOperation(g));
+end;
+
+/// Возвращает словарь, сопоставляющий элементам последовательности определённые значения
+function Each<Key,Res>(Self: sequence of Key; proj: Key -> Res): Dictionary<Key,Res>; extensionmethod;
+begin
+  Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> proj(g.Key));
 end;
 
 /// Операция удаления из словаря пары с указанным значением ключа

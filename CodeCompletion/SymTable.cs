@@ -491,17 +491,23 @@ namespace CodeCompletion
             return lst;
         }
         
-        private bool hasUsesCycle(SymScope unit)
+        private bool hasUsesCycle(SymScope unit, int deep=0)
         {
             if (unit.Name == "PABCSystem")
+                return true;
+            if (deep > 100)
                 return true;
             if (this.used_units != null)
         		for (int i = 0; i < this.used_units.Count; i++)
                 {
                     if (this.used_units[i] == unit || this.used_units[i] == this)
                     	return true;
-                    else if (this.used_units[i].hasUsesCycle(unit))
-                    	return true;
+                    else
+                    {
+                        if (this.used_units[i].hasUsesCycle(unit, deep+1))
+                            return true;
+                    }
+                    	
                 }
         	return false;
         }
@@ -5277,6 +5283,8 @@ namespace CodeCompletion
                     {
                         if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !IsHiddenName(t.Name) && !t.IsNested)
                         {
+                            if (t.IsArray)
+                                continue;
                             if (t.BaseType == typeof(MulticastDelegate))
                                 //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
                                 syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Delegate, null), t).si);

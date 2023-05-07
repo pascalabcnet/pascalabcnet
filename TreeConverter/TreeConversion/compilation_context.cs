@@ -2462,11 +2462,17 @@ namespace PascalABCCompiler.TreeConverter
             common_method_node stat_ctor;
             if (sil == null)
             {
-                stat_ctor = new common_method_node(stat_ctor_name, null, null, generic_def,
+                if (generic_def.static_constr != null)
+                    stat_ctor = generic_def.static_constr;
+                else
+                {
+                    stat_ctor = new common_method_node(stat_ctor_name, null, null, generic_def,
                     SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_public, null);
-                stat_ctor.is_constructor = true;
-                generic_def.add_name(stat_ctor_name, new SymbolInfo(stat_ctor));
-                generic_def.methods.AddElement(stat_ctor);
+                    stat_ctor.is_constructor = true;
+                    generic_def.add_name(stat_ctor_name, new SymbolInfo(stat_ctor));
+                    generic_def.methods.AddElement(stat_ctor);
+                }
+                
             }
             else
             {

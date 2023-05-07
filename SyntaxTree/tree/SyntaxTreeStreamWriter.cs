@@ -5446,7 +5446,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_name_assign_expr(name_assign_expr _name_assign_expr)
 		{
-			write_syntax_tree_node(_name_assign_expr);
+			write_expression(_name_assign_expr);
 			if (_name_assign_expr.name == null)
 			{
 				bw.Write((byte)0);

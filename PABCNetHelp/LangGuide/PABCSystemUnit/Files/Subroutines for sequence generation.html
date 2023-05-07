@@ -1,4 +1,5 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Iterate">
 <param name="Keyword" value="PartitionPoints">
 <param name="Keyword" value="Range">
 <param name="Keyword" value="ReadSeqInteger">
@@ -16,7 +17,9 @@
 <param name="Keyword" value="SeqWhile"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы для генерации последовательностей</H1>
-<table border=0 cellpadding=5><tr><td><code><b>function</b> PartitionPoints(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Iterate&lt;T&gt;(first: T; next: T-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next</td></tr>
+<tr><td><code><b>function</b> PartitionPoints(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей</td></tr>
 <tr><td><code><b>function</b> Range(a, b: integer): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b</td></tr>

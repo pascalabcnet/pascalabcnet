@@ -1133,6 +1133,54 @@ begin
   DoNewLineBeforeMessage := False;
 end;
 
+procedure CheckOutputNew(params arr: array of object);
+begin
+  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+    exit;
+
+  var mn := Min(arr.Length, OutputList.Count);
+  
+  // Несоответствие типов или значений
+  var ind := -1;
+  for var i := 0 to mn - 1 do
+  begin  
+    // Если типы не совпадают 
+    if arr[i].GetType <> OutputList[i].GetType then
+    begin
+      ind := i; // то запомнить индекс первого несовпадения
+      if ind > InitialOutputList.Count then
+        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+      raise new OutputTypeException(i + 1, TypeName(arr[i]), TypeName(OutputList[i]));           
+    end;
+    // Если значения не совпадают
+    if not CompareValues(arr[i], OutputList[i]) then
+    begin
+      ind := i; // то запомнить индекс первого несовпадения
+      if ind > InitialOutputList.Count then
+      begin
+        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+        ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i]}, а выведено {OutputList[i]}',MsgColorGray);
+      end;  
+      TaskResult := BadSolution;
+      exit;           
+    end;
+  end;
+  if ind = -1 then
+    ind := mn;
+  
+  if arr.Length <> OutputList.Count then
+  begin  
+    if (ind = mn) and (ind<>0) then
+      ColoredMessage('Все выведенные данные правильны',MsgColorGray)
+    else if ind > 0 then
+      ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+    raise new OutputCountException(OutputList.Count, arr.Length);
+  end;
+  TaskResult := Solved;
+end;
+
+
+
 function NValues(n: integer): string;
 begin
   case n of
@@ -1489,6 +1537,89 @@ begin
     //Console.WriteLine(v);
   end;
 end;
+
+function Char2Str(c: char): string;
+begin
+  if (c = #10) or (c = #13) then
+    Result := '''ПереходНаНовуюСтроку'''
+  else Result := '''' + c + '''';
+end;
+
+procedure CheckOutputString(str: string);
+begin
+  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+    exit;
+  var ostr := OutputString.ToString;
+  var mn := Min(str.Length, ostr.Length);
+  
+  var ind := -1;
+  for var i := 1 to mn do
+  begin
+    if str[i] <> ostr[i] then
+    begin
+      ind := i;
+      ColoredMessage($'Элемент {i}: ожидался символ {Char2Str(str[i])}, а выведен символ {Char2Str(ostr[i])}',MsgColorGray);
+      TaskResult := BadSolution;
+      exit;           
+    end;
+  end;
+  if ind = -1 then
+    ind := mn;
+
+  if str.Length <> ostr.Length then
+  begin  
+    if (ind = mn) and (ind<>0) then
+      ColoredMessage('Все выведенные данные правильны',MsgColorGray)
+    else if ind > 0 then
+      ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+    raise new OutputCountException(ostr.Length, str.Length);
+  end;
+
+  TaskResult := Solved;
+end;
+
+
+procedure CheckOutputSeqNew(a: sequence of integer) := CheckOutputNew(ToObjArray(a.ToArray));
+procedure CheckOutputSeqNew(a: sequence of real) := CheckOutputNew(ToObjArray(a.ToArray));
+procedure CheckOutputSeqNew(a: sequence of string) := CheckOutputNew(ToObjArray(a.ToArray));
+procedure CheckOutputSeqNew(a: sequence of char) := CheckOutputNew(ToObjArray(a.ToArray));
+procedure CheckOutputSeqNew(a: sequence of boolean) := CheckOutputNew(ToObjArray(a.ToArray));
+procedure CheckOutputSeqNew(a: sequence of object) := CheckOutputNew(a.ToArray);
+procedure CheckOutputSeqNew(a: ObjectList) := CheckOutputNew(a.lst.ToArray);
+procedure CheckOutputSeqNew(a: sequence of word) := CheckOutputSeqNew(a.Select(x->object(x)));
+
+type 
+  IntAr = array of integer;
+  RealAr = array of real;
+  IntAr2 = array [,] of integer;
+  RealAr2 = array [,] of real;
+  
+function FlattenElement(x: object): List<object>; 
+begin
+  var lst := new List<object>;
+  if x is IntAr (var iarr) then
+    lst.AddRange(iarr.Select(x -> object(x)))
+  else if x is RealAr (var rarr) then
+    lst.AddRange(rarr.Select(x -> object(x)))
+  else if x is IntAr2 (var iarr) then
+    lst.AddRange(iarr.ElementsByRow.Select(x -> object(x)))
+  else if x is RealAr2 (var rarr) then
+    lst.AddRange(rarr.ElementsByRow.Select(x -> object(x)))
+  else if x is List<integer> (var larr) then
+    lst.AddRange(larr.Select(x -> object(x)))
+  else if x is List<real> (var lrarr) then
+    lst.AddRange(lrarr.Select(x -> object(x)))
+  else lst.Add(x);
+  Result := lst;
+end;
+
+procedure FlattenOutput;
+begin
+  // если в OutputList массивы, вытянуть их в единый список
+  OutputList := OutputList.SelectMany(x -> FlattenElement(x)).ToList;
+end;
+
+
 
 procedure WriteInfoToDatabases(LessonName,TaskName,TaskPlatform: string; TaskResult: TaskStatus; AdditionalInfo: string := '');
 begin

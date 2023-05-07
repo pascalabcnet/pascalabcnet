@@ -2534,7 +2534,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="name_assign_expr" BaseName="syntax_tree_node">
+    <SyntaxNode Name="name_assign_expr" BaseName="expression">
       <Fields>
         <SyntaxField Name="name" SyntaxType="ident" />
         <SyntaxField Name="expr" SyntaxType="expression" />

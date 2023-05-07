@@ -41925,7 +41925,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class name_assign_expr : syntax_tree_node
+	public partial class name_assign_expr : expression
 	{
 
 		///<summary>
@@ -42001,6 +42001,11 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			if (name != null)
 			{
 				copy.name = (ident)name.Clone();
@@ -42023,6 +42028,8 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
 		public override void FillParentsInDirectChilds()
 		{
+			if (attributes != null)
+				attributes.Parent = this;
 			if (name != null)
 				name.Parent = this;
 			if (expr != null)
@@ -42033,6 +42040,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public override void FillParentsInAllChilds()
 		{
 			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 			name?.FillParentsInAllChilds();
 			expr?.FillParentsInAllChilds();
 		}

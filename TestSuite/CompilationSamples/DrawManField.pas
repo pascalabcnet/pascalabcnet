@@ -507,6 +507,7 @@ end;
 function TDMField.IsSolution: boolean;
 begin
   DMColl.Normalize;
+  DMColl.Normalize;
   DMMakerColl.Normalize;
   
 {  for i:=0 to DMColl.Count-1 do

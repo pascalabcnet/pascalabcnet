@@ -22,7 +22,7 @@ type
     function GetEnabled: boolean;
     procedure SetInterval(_interval: integer);
     function GetInterval: integer;
-    procedure OnTimer(sender: object; e: System.Timers.ElapsedEventArgs);
+    procedure TimerHandler(sender: object; e: System.Timers.ElapsedEventArgs);
   public
     /// Создает таймер с интервалом срабатывания ms миллисекунд и обработчиком TimerProc
     constructor Create(ms: integer; TimerProc: procedure := nil); 
@@ -34,8 +34,10 @@ type
     property Enabled: boolean read GetEnabled write SetEnabled;
     /// Интервал срабатывания таймера
     property Interval: integer read GetInterval write SetInterval;
-    /// Интервал срабатывания таймера
+    ///--
     property TimerProc: ()->() read _procedure write _procedure;
+    /// Событие таймера
+    property OnTimer: ()->() read _procedure write _procedure;
   end;
   
 /// Создать и запустить таймер, вызывающий процедуру TimerProc каждые ms миллисекунд
@@ -49,7 +51,7 @@ begin
   Result.Start;
 end;
 
-procedure Timer.OnTimer(sender: object; e: System.Timers.ElapsedEventArgs);
+procedure Timer.TimerHandler(sender: object; e: System.Timers.ElapsedEventArgs);
 begin
   _procedure;    
 end;
@@ -58,7 +60,7 @@ constructor Timer.Create(ms: integer; TimerProc: procedure);
 begin
   _timer := new System.Timers.Timer(ms);
   _procedure := TimerProc;
-  _timer.Elapsed += OnTimer;
+  _timer.Elapsed += TimerHandler;
 end;
 
 procedure Timer.Start;
