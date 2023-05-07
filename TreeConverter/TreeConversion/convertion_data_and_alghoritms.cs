@@ -2140,6 +2140,9 @@ namespace PascalABCCompiler.TreeConverter
                 err_out = new NoFunctionWithThisName(loc);
                 return set_of_possible_functions;
             }
+            string FunctionName = "";
+            if (functions != null && functions.Count > 0)
+                FunctionName = (functions[0].sym_info as function_node).name;
 
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
@@ -2448,7 +2451,7 @@ namespace PascalABCCompiler.TreeConverter
                     err_out = new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1], loc);
                 else if (is_op)
                     err_out = new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1 ? parameters[1] : null, loc);
-                else err_out = new NoFunctionWithSameArguments(loc, is_alone_method_defined);
+                else err_out = new NoFunctionWithSameArguments(FunctionName, loc, is_alone_method_defined);
                 return set_of_possible_functions;
             }
 
@@ -2881,6 +2884,9 @@ namespace PascalABCCompiler.TreeConverter
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
         public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
         {
+            string FunctionName = "";
+            if (functions != null && functions.Count > 0)
+                FunctionName = (functions[0].sym_info as function_node).name;
             // с какого номера начинаются именованные параметры
             var indexOfFirstNamedArgument = -1;
             if (syntax_nodes_parameters != null)
@@ -2896,6 +2902,46 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
+                // Вначале ищем среди оставшихся параметров именованные
+                // Создадим список имен ident именованных аргументов. 
+                List<SyntaxTree.ident> NamesInNamedArguments = syntax_nodes_parameters.Skip(indexOfFirstNamedArgument)
+                    .Select(par => (par as SyntaxTree.name_assign_expr).name).ToList();
+                foreach (var name in NamesInNamedArguments)
+                {
+                    // Есть ли это имя в оставшихся параметрах
+                    var found = false;
+                    foreach (var ff in functions)
+                    {
+                        var names = (ff.sym_info as function_node).parameters.Skip(indexOfFirstNamedArgument).Select(par => par.name);
+                        var fo = names.Contains(name.name, StringComparer.OrdinalIgnoreCase);
+                        if (fo)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    // Если какое то имя не найдено ни в одном элементе list - found = false - кидать ошибку о неизвестном имени
+                    if (!found)
+                    {
+                        // Здесь - две ситуации. Если среди неименованных аргументов нет, то
+                        var foundUnnamed = false;
+                        foreach (var ff in functions)
+                        {
+                            var names = (ff.sym_info as function_node).parameters.Take(indexOfFirstNamedArgument).Select(par => par.name);
+                            var fo = names.Contains(name.name, StringComparer.OrdinalIgnoreCase);
+                            if (fo)
+                            {
+                                foundUnnamed = true;
+                                break;
+                            }
+                        }
+                        if (!foundUnnamed)
+                            return AddError<function_node>(syntax_tree_visitor.get_location(name), "UNDEFINED_NAMED_ARGUMENT_{0}", name.name);
+                        // иначе: Именованный аргумент Вася задает параметр, который уже получил значение как неименованный аргумент
+                        return AddError<function_node>(syntax_tree_visitor.get_location(name), "NAMED_ARGUMENT_{0}_SPECIFIES_PARAMETER_THAT_HAD_VALUE_AS_UNNAMED_ARGUMENT", name.name);
+                    }
+                }
+
                 // сделаем копию parameters без именованных аргументов
                 var parameters_helper = new expressions_list();
                 for (int i = 0; i < indexOfFirstNamedArgument; i++)
@@ -2903,11 +2949,10 @@ namespace PascalABCCompiler.TreeConverter
 
                 Errors.Error err_out;
                 var list = select_function_helper(parameters_helper, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
-                if (list.Count == 0 && err_out != null)
-                    return AddError<function_node>(err_out);
+                if (list.Count == 0 && err_out != null) // С именованными уже точно ничего не получится
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, functions.Count == 1));
 
-                // Теперь ищем среди оставшихся параметров именованные
-                // Создадим множество имен именованных аргументов
+                // Теперь остались функции functions, такие что каждый именованный аргумент есть хотя бы в одной из них
                 var hs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 for (int i = indexOfFirstNamedArgument; i < syntax_nodes_parameters.Count; i++)
                 {
@@ -2915,24 +2960,27 @@ namespace PascalABCCompiler.TreeConverter
                     hs.Add(nae.name.name);
                 }
                 // В syntax_nodes_parameters и parameters по идее должно быть одно и то же количество значений
-                // Удалим из functions все неподходящие, где нет таких имен параметров в оставшейся части
 
-                // !!!!!!!!!!!!! Надо еще кидать ошибку если нигде нет таких имен именованных параметров!
+                // В C# - вот такое сообщение об ошибке: 
+                // Наиболее подходящий перегруженный метод 'proc' не имеет параметра с именем 'Вася'
+
+                // Удалим из list все неподходящие, где нет таких имен параметров в оставшейся части
                 list.RemoveAll(ff =>
                 {
                     var names = ff.parameters.Skip(indexOfFirstNamedArgument).Select(par => par.name);
                     var hsnames = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
-                    return !hs.IsProperSubsetOf(hsnames); 
+                    return !hs.IsSubsetOf(hsnames); 
                     // то есть все имена в именованных аргументах должны находиться среди оставшихся параметров по умолчанию
                 });
                 if (list.Count == 0)
-                    return AddError<function_node>(new NoFunctionWithSameArguments(loc, true)); // или false - не знаю
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // или false - не знаю
                 if (list.Count > 1)
                     return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, list)); // или другое сообщение
+
                 // Теперь раз в list осталась одна функция, найти её в functions и только её и оставить
                 functions.RemoveAll(fun => fun.sym_info != list[0]);
                 if (functions.Count == 0)
-                    return AddError<function_node>(new NoFunctionWithSameArguments(loc, true)); // это не должно случиться, но вдруг
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // это не должно случиться, но вдруг
                 // Вот и в functions осталась одна функция
                 // Теперь делаем словарь сопоставлений именам -> expression_node (в параметрах)
                 var dict = new Dictionary<string, expression_node>(StringComparer.OrdinalIgnoreCase); // Это словарь именованных аргументов
