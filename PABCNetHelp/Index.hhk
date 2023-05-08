@@ -7022,6 +7022,10 @@
   <param name="Local" value="LangGuide\_ProgrStruct_Defs\identifiers.html">
 </OBJECT>
 <LI> <OBJECT type="text/sitemap">
+  <param name="Name" value="Ковариантность">
+  <param name="Local" value="LangGuide\Generics\covariance.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
   <param name="Name" value="Комментарии">
   <param name="Local" value="LangGuide\_ProgrStruct_Defs\comments.html">
 </OBJECT>

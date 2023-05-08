@@ -546,6 +546,10 @@
 				<param name="Name" value="Ограничения на параметры обобщенных подпрограмм и классов">
 				<param name="Local" value="LangGuide\Generics\generic_constraints.html">
 				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Ковариантность в параметрах обобщенных типов">
+				<param name="Local" value="LangGuide\Generics\covariance.html">
+				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Элементы функционального программирования">

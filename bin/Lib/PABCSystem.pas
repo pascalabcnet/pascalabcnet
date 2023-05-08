@@ -12244,9 +12244,16 @@ function Permutations(Self: string): sequence of string; extensionmethod
 function Permutations(Self: string; m: integer): sequence of string; extensionmethod 
 := Self.ToCharArray.Permutations(m).Select(p -> new string(p));
 
+// Не убирать этот комментарий! Нужен для корректного Intellisense
+///-(расширение sequence of T) function Cartesian<T, T1>(b: sequence of T1): sequence of (T, T1);
 /// Возвращает n-тую декартову степень множества символов, заданного строкой
 function Cartesian(Self: string; n: integer): sequence of string; extensionmethod
 := Self.ToCharArray.Cartesian(n).Select(p -> new string(p));
+
+/// Возвращает n-тую декартову степень множества символов, заданного строкой
+function CartesianPower(Self: string; n: integer): sequence of string; extensionmethod
+:= Self.ToCharArray.Cartesian(n).Select(p -> new string(p));
+
 
 /// Возвращает все сочетания по m элементов
 function Combinations(Self: string; m: integer): sequence of string; extensionmethod

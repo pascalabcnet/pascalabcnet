@@ -1,4 +1,4 @@
-﻿Next, we describe the terms under which PascalABC.NET (version 3.8) is distributed.
+﻿Next, we describe the terms under which PascalABC.NET (version 3.9) is distributed.
 A copy of the GNU GPL is appended to this file.
 
 IMPORTANT PascalABC.NET LICENSE TERMS (or any derivative product)
