@@ -350,6 +350,14 @@
 				<param name="Local" value="LangGuide\ProcFunc\defaultparams.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="”прощенный синтаксис описани€ подпрограмм">
+				<param name="Local" value="LangGuide\ProcFunc\shortfundef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="»менованные аргументы">
+				<param name="Local" value="LangGuide\ProcFunc\namedarguments.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="ќпережающее объ€вление">
 				<param name="Local" value="LangGuide\ProcFunc\forward.html">
 				</OBJECT>
