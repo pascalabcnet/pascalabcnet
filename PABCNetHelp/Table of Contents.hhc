@@ -350,6 +350,14 @@
 				<param name="Local" value="LangGuide\ProcFunc\defaultparams.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Oacute;&iuml;&eth;&icirc;&ugrave;&aring;&iacute;&iacute;&ucirc;&eacute; &ntilde;&egrave;&iacute;&ograve;&agrave;&ecirc;&ntilde;&egrave;&ntilde; &icirc;&iuml;&egrave;&ntilde;&agrave;&iacute;&egrave;&yuml; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;">
+				<param name="Local" value="LangGuide\ProcFunc\shortfundef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Egrave;&igrave;&aring;&iacute;&icirc;&acirc;&agrave;&iacute;&iacute;&ucirc;&aring; &agrave;&eth;&atilde;&oacute;&igrave;&aring;&iacute;&ograve;&ucirc;">
+				<param name="Local" value="LangGuide\ProcFunc\namedarguments.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Icirc;&iuml;&aring;&eth;&aring;&aelig;&agrave;&thorn;&ugrave;&aring;&aring; &icirc;&aacute;&uacute;&yuml;&acirc;&euml;&aring;&iacute;&egrave;&aring;">
 				<param name="Local" value="LangGuide\ProcFunc\forward.html">
 				</OBJECT>
@@ -537,6 +545,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Icirc;&atilde;&eth;&agrave;&iacute;&egrave;&divide;&aring;&iacute;&egrave;&yuml; &iacute;&agrave; &iuml;&agrave;&eth;&agrave;&igrave;&aring;&ograve;&eth;&ucirc; &icirc;&aacute;&icirc;&aacute;&ugrave;&aring;&iacute;&iacute;&ucirc;&otilde; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave; &egrave; &ecirc;&euml;&agrave;&ntilde;&ntilde;&icirc;&acirc;">
 				<param name="Local" value="LangGuide\Generics\generic_constraints.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Ecirc;&icirc;&acirc;&agrave;&eth;&egrave;&agrave;&iacute;&ograve;&iacute;&icirc;&ntilde;&ograve;&uuml; &acirc; &iuml;&agrave;&eth;&agrave;&igrave;&aring;&ograve;&eth;&agrave;&otilde; &icirc;&aacute;&icirc;&aacute;&ugrave;&aring;&iacute;&iacute;&ucirc;&otilde; &ograve;&egrave;&iuml;&icirc;&acirc;">
+				<param name="Local" value="LangGuide\Generics\covariance.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">

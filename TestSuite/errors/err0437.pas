@@ -1,4 +1,4 @@
-﻿//!Несколько подпрограмм могут быть вызваны
+﻿//!Несколько подпрограмм p0 могут быть вызваны
 procedure p0(o: pointer) := exit;
 procedure p0(o: array of integer) := exit;
 

@@ -5344,6 +5344,27 @@ namespace PascalABCCompiler.TreeConverter
             var syntax_nodes_parameters = _method_call.parameters == null
                                               ? new List<expression>()
                                               : _method_call.parameters.expressions;
+
+            // SSM 08/05/23
+            // 1. Проверить, что именованные аргументы идут в конце
+            // 2. Проверить, что нет одинаковых имен в именованных аргументах
+            var foundnamedargs = false;
+            var lst1 = new List<string>();
+            foreach (var param in syntax_nodes_parameters)
+            {
+                var aa = param as name_assign_expr;
+                if (aa != null)
+                {
+                    foundnamedargs = true;
+                    if (lst1.Contains(aa.name.name, StringComparer.OrdinalIgnoreCase))
+                        AddError(get_location(aa.name), "NAMED_ARG_{0}_HAS_BEEN_USED_BEFORE", aa.name);
+                    else lst1.Add(aa.name.name);
+                }
+                else if (foundnamedargs)
+                    AddError(get_location(param), "UNNAMED_ARGS_CANNOT_FOLLOW_NAMED");
+            }
+            lst1 = null;
+
             if (procedure_wait)
             {
                 procedure_wait = false;

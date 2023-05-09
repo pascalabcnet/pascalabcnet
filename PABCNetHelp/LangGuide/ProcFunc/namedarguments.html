@@ -1,0 +1,31 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Именованные аргументы">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Именованные аргументы</H1>
+<p >В <span lang="en-us">PascalABC.NET при вызове подпрограмм можно именовать 
+аргументы. Они должны обязательно идти последними в списке аргументов, иметь 
+имена, совпадающие с именами параметров в описании подпрограммы, и возможны 
+только для параметров по умолчанию. Например, при запуске программы</span></p>
+<blockquote>
+	<p><code><span lang="en-us"><strong>procedure</strong> p(s: string; x: 
+	integer := 1; y: integer := 2; z: integer := 3);<br><strong>begin</strong><br>&nbsp; 
+	Print(s,x,y,z);<br><strong>end</strong>;<br><br><strong>begin</strong><br>&nbsp; 
+	p('Hello', z := 33, y := 22);<br><strong>end</strong>.</span></code></p>
+</blockquote>
+<p >будет выведено</p>
+<blockquote>
+	<p ><code>Hello 1 22 33 </code></p>
+</blockquote>
+</body>
+
+</html>
