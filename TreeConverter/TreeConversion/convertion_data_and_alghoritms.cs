@@ -2140,6 +2140,9 @@ namespace PascalABCCompiler.TreeConverter
                 err_out = new NoFunctionWithThisName(loc);
                 return set_of_possible_functions;
             }
+            string FunctionName = "";
+            if (functions != null && functions.Count > 0)
+                FunctionName = (functions[0].sym_info as function_node).name;
 
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
@@ -2281,7 +2284,9 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     try
                     {
-
+                        // syntax_nodes_parameters в DeduceFunction - ничего плохого нет. Из них фильтруются 
+                        // только function_lambda_definition, а в значениях именованных аргументов их не может быть. 
+                        // Хотя и в этом случае проблем не вижу
                         function_node inst = generic_convertions.DeduceFunction(func, parameters,
                                                                                 is_alone_method_defined, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
                         if (inst == null)
@@ -2448,7 +2453,7 @@ namespace PascalABCCompiler.TreeConverter
                     err_out = new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1], loc);
                 else if (is_op)
                     err_out = new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1 ? parameters[1] : null, loc);
-                else err_out = new NoFunctionWithSameArguments(loc, is_alone_method_defined);
+                else err_out = new NoFunctionWithSameArguments(FunctionName, loc, is_alone_method_defined);
                 return set_of_possible_functions;
             }
 
@@ -2627,7 +2632,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (parsi.Any(p => !IsFuncT(p))) // Если какой-то параметр не функция у какой-то из функций с данной дистанцией, то пропустим этот параметр! 
                         // Это - странно! Даже если это - Action, то пропускаем! Это - очень слабая логика!
                         continue;
-
+                    // ЕСЛИ ВСЕ ПАРАМЕТРЫ _ НЕ ФУНКЦИИ, ТО ВСЕ ПРОПУСТЯТСЯ!!!
                     var argss = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()).ToArray(); // последовательность массивов параметров Func
                     var cnts = argss.Select(a => a.Count());
 
@@ -2666,11 +2671,19 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (funcs[0].is_extension_method)
                         {
-                            fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                            if (i - 1 >= syntax_nodes_parameters.Count)
+                                fldiResType = null;
+                            // syntax_nodes_parameters[i - 1] или [i] - может быть другое количество синтаксических параметров 
+                            // при вызове - тогда упадет. Не понимаю, почему этого не происходит
+                            else fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
                         }
                         else
                         {
-                            fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                            // Здесь возможно будет несинхрон если в syntax_nodes_parameters пропущены какие то параметры по умолчанию
+                            // Или такого быть не может?
+                            if (i >= syntax_nodes_parameters.Count)
+                                fldiResType = null;
+                            else fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
                         }
                     }
                     // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
@@ -2881,11 +2894,135 @@ namespace PascalABCCompiler.TreeConverter
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
         public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
         {
-            Errors.Error err_out;
-            var list = select_function_helper(parameters, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
-            if (err_out != null)
-                return AddError<function_node>(err_out);
-            return list[0];
+            string FunctionName = "";
+            if (functions != null && functions.Count > 0)
+                FunctionName = (functions[0].sym_info as function_node).name;
+            // с какого номера начинаются именованные параметры
+            var indexOfFirstNamedArgument = -1;
+            if (syntax_nodes_parameters != null)
+                indexOfFirstNamedArgument = syntax_nodes_parameters.FindIndex(exp => exp is SyntaxTree.name_assign_expr);
+
+            if (indexOfFirstNamedArgument == -1)
+            {
+                Errors.Error err_out;
+                var list = select_function_helper(parameters, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                if (err_out != null)
+                    return AddError<function_node>(err_out);
+                return list[0];
+            }
+            else
+            {
+                // Вначале ищем среди оставшихся параметров именованные
+                // Создадим список имен ident именованных аргументов. 
+                List<SyntaxTree.ident> NamesInNamedArguments = syntax_nodes_parameters.Skip(indexOfFirstNamedArgument)
+                    .Select(par => (par as SyntaxTree.name_assign_expr).name).ToList();
+                foreach (var name in NamesInNamedArguments)
+                {
+                    // Есть ли это имя в оставшихся параметрах
+                    var found = false;
+                    foreach (var ff in functions)
+                    {
+                        var names = (ff.sym_info as function_node).parameters.Skip(indexOfFirstNamedArgument).Select(par => par.name);
+                        var fo = names.Contains(name.name, StringComparer.OrdinalIgnoreCase);
+                        if (fo)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    // Если какое то имя не найдено ни в одном элементе list - found = false - кидать ошибку о неизвестном имени
+                    if (!found)
+                    {
+                        // Здесь - две ситуации. Если среди неименованных аргументов нет, то
+                        var foundUnnamed = false;
+                        foreach (var ff in functions)
+                        {
+                            var names = (ff.sym_info as function_node).parameters.Take(indexOfFirstNamedArgument).Select(par => par.name);
+                            var fo = names.Contains(name.name, StringComparer.OrdinalIgnoreCase);
+                            if (fo)
+                            {
+                                foundUnnamed = true;
+                                break;
+                            }
+                        }
+                        if (!foundUnnamed)
+                            return AddError<function_node>(syntax_tree_visitor.get_location(name), "UNDEFINED_NAMED_ARGUMENT_{0}", name.name);
+                        // иначе: Именованный аргумент Вася задает параметр, который уже получил значение как неименованный аргумент
+                        return AddError<function_node>(syntax_tree_visitor.get_location(name), "NAMED_ARGUMENT_{0}_SPECIFIES_PARAMETER_THAT_HAD_VALUE_AS_UNNAMED_ARGUMENT", name.name);
+                    }
+                }
+
+                // сделаем копию parameters без именованных аргументов
+                var parameters_helper = new expressions_list();
+                for (int i = 0; i < indexOfFirstNamedArgument; i++)
+                    parameters_helper.AddElement(parameters[i]);
+
+                Errors.Error err_out;
+                var list = select_function_helper(parameters_helper, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                if (list.Count == 0 && err_out != null) // С именованными уже точно ничего не получится
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, functions.Count == 1));
+
+                // Теперь остались функции functions, такие что каждый именованный аргумент есть хотя бы в одной из них
+                var hs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (int i = indexOfFirstNamedArgument; i < syntax_nodes_parameters.Count; i++)
+                {
+                    var nae = syntax_nodes_parameters[i] as SyntaxTree.name_assign_expr;
+                    hs.Add(nae.name.name);
+                }
+                // В syntax_nodes_parameters и parameters по идее должно быть одно и то же количество значений
+
+                // В C# - вот такое сообщение об ошибке: 
+                // Наиболее подходящий перегруженный метод 'proc' не имеет параметра с именем 'Вася'
+
+                // Удалим из list все неподходящие, где нет таких имен параметров в оставшейся части
+                list.RemoveAll(ff =>
+                {
+                    var names = ff.parameters.Skip(indexOfFirstNamedArgument).Select(par => par.name);
+                    var hsnames = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
+                    return !hs.IsSubsetOf(hsnames); 
+                    // то есть все имена в именованных аргументах должны находиться среди оставшихся параметров по умолчанию
+                });
+                if (list.Count == 0)
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // или false - не знаю
+                if (list.Count > 1)
+                    return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, list)); // или другое сообщение
+
+                // Теперь раз в list осталась одна функция, найти её в functions и только её и оставить
+                functions.RemoveAll(fun => fun.sym_info != list[0]);
+                if (functions.Count == 0)
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // это не должно случиться, но вдруг
+                // Вот и в functions осталась одна функция
+                // Теперь делаем словарь сопоставлений именам -> expression_node (в параметрах)
+                var dict = new Dictionary<string, expression_node>(StringComparer.OrdinalIgnoreCase); // Это словарь именованных аргументов
+                for (int i = indexOfFirstNamedArgument; i < syntax_nodes_parameters.Count; i++)
+                {
+                    var nae = syntax_nodes_parameters[i] as SyntaxTree.name_assign_expr;
+                    dict[nae.name.name] = parameters[i]; // parameters и syntax_nodes_parameters д.б.одной длины
+                }
+                // Вот теперь как-то хвост в parameters надо менять на параметры по умолчанию или на те, что хранятся в dict
+                // Я бы очистил хвост parameters и добавлял бы в него как раньше параметры по умолчанию
+                parameters.remove_range(indexOfFirstNamedArgument, parameters.Count - indexOfFirstNamedArgument); // удалить хвост
+                var fun1 = functions[0].sym_info as function_node;
+                
+                for (int i = indexOfFirstNamedArgument; i < fun1.parameters.Count; i++) // сверить это с другим кодом
+                {
+                    var par = fun1.parameters[i];
+                    var paramexpr = par.default_value;
+                    var name = par.name;
+                    if (dict.ContainsKey(name))
+                        paramexpr = dict[name]; // вместо значения по умолчанию взять значение именованного параметра
+                    parameters.AddElement(paramexpr);
+                }
+                // И наконец всё готово!!!
+                // syntax_nodes_parameters мне кажется всё испортят - там именованные аргументы стоят не на своих местах!!!
+                // Это единственный - опасный и потенциально с ошибками вызов!
+                // Но ощущение, что всё верно, т.к. это нужно только для параметров лямбд, а у именованных аргументов их быть не может
+                list = select_function_helper(parameters, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                if (err_out != null)
+                    return AddError<function_node>(err_out);
+                return list[0];
+            }
+
             // для именованных параметров последовательность может быть такая
             // Если именованных параметров при вызове нет, то - этот алгоритм. Если есть, то
             // 1. Оставить только неименованные параметры и вызвать select_function_helper

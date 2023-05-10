@@ -2029,9 +2029,8 @@ namespace PascalABCCompiler
                     TryThrowInvalidPath(cds[0].directive, cds[0].location);
                     // Тут не обязательно нормализовывать путь
                     // И если он слишком длинный - File.Exists вернёт false
-                    if (File.Exists(cdo.MainResourceFileName))
-                        cdo.MainResourceFileName = Path.Combine(Path.GetDirectoryName(cds[0].source_file), cds[0].directive);
-                    else
+                    cdo.MainResourceFileName = Path.Combine(Path.GetDirectoryName(cds[0].source_file), cds[0].directive);
+                    if (!File.Exists(cdo.MainResourceFileName))
                         ErrorsList.Add(new ResourceFileNotFound(cds[0].directive, cds[0].location));
                 }
 

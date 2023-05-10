@@ -350,6 +350,14 @@
 				<param name="Local" value="LangGuide\ProcFunc\defaultparams.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Упрощенный синтаксис описания подпрограмм">
+				<param name="Local" value="LangGuide\ProcFunc\shortfundef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Именованные аргументы">
+				<param name="Local" value="LangGuide\ProcFunc\namedarguments.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Опережающее объявление">
 				<param name="Local" value="LangGuide\ProcFunc\forward.html">
 				</OBJECT>
@@ -537,6 +545,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Ограничения на параметры обобщенных подпрограмм и классов">
 				<param name="Local" value="LangGuide\Generics\generic_constraints.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Ковариантность в параметрах обобщенных типов">
+				<param name="Local" value="LangGuide\Generics\covariance.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">

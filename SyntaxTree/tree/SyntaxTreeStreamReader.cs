@@ -3579,7 +3579,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_name_assign_expr(name_assign_expr _name_assign_expr)
 		{
-			read_syntax_tree_node(_name_assign_expr);
+			read_expression(_name_assign_expr);
 			_name_assign_expr.name = _read_node() as ident;
 			_name_assign_expr.expr = _read_node() as expression;
 		}
