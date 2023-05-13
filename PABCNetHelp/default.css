@@ -18,6 +18,7 @@ dfn {
 }
 
 code {
+	font-family: Consolas, monospace;
         color: #000080;
         font-size: 12pt;
 }
