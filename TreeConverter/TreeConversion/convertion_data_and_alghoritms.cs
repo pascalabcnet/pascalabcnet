@@ -2892,11 +2892,17 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
-        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
+        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, 
+            List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false, int params_inc = 0)
         {
+            // only_from_not_extensions = false - не вырезается первый параметр (Включая методы расширения)
+            // only_from_not_extensions = true - вырезается первый параметр (Исключая методы расширения)
             string FunctionName = "";
+            // а вот в func[i].parameters - только если это метод расширения. Для методов не надо !!!
             if (functions != null && functions.Count > 0)
+            { 
                 FunctionName = (functions[0].sym_info as function_node).name;
+            }
             // с какого номера начинаются именованные параметры
             var indexOfFirstNamedArgument = -1;
             if (syntax_nodes_parameters != null)
@@ -2912,6 +2918,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
+                var indexOfFirstNamedArgumentSem = indexOfFirstNamedArgument + params_inc;
+
                 // Вначале ищем среди оставшихся параметров именованные
                 // Создадим список имен ident именованных аргументов. 
                 List<SyntaxTree.ident> NamesInNamedArguments = syntax_nodes_parameters.Skip(indexOfFirstNamedArgument)
@@ -2922,7 +2930,8 @@ namespace PascalABCCompiler.TreeConverter
                     var found = false;
                     foreach (var ff in functions)
                     {
-                        var names = (ff.sym_info as function_node).parameters.Skip(indexOfFirstNamedArgument).Select(par => par.name);
+                        var is_ext1 = (ff.sym_info as function_node).is_extension_method;
+                        var names = (ff.sym_info as function_node).parameters.Skip(indexOfFirstNamedArgument + (is_ext1 ? 1 : 0)).Select(par => par.name);
                         var fo = names.Contains(name.name, StringComparer.OrdinalIgnoreCase);
                         if (fo)
                         {
@@ -2937,7 +2946,8 @@ namespace PascalABCCompiler.TreeConverter
                         var foundUnnamed = false;
                         foreach (var ff in functions)
                         {
-                            var names = (ff.sym_info as function_node).parameters.Take(indexOfFirstNamedArgument).Select(par => par.name);
+                            var is_ext1 = (ff.sym_info as function_node).is_extension_method;
+                            var names = (ff.sym_info as function_node).parameters.Take(indexOfFirstNamedArgument + (is_ext1 ? 1 : 0)).Select(par => par.name);
                             var fo = names.Contains(name.name, StringComparer.OrdinalIgnoreCase);
                             if (fo)
                             {
@@ -2954,11 +2964,12 @@ namespace PascalABCCompiler.TreeConverter
 
                 // сделаем копию parameters без именованных аргументов
                 var parameters_helper = new expressions_list();
-                for (int i = 0; i < indexOfFirstNamedArgument; i++)
+                for (int i = 0; i < indexOfFirstNamedArgumentSem; i++)
                     parameters_helper.AddElement(parameters[i]);
 
                 Errors.Error err_out;
-                var list = select_function_helper(parameters_helper, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                var syntax_nodes_parameters1 = syntax_nodes_parameters.Take(indexOfFirstNamedArgument).ToList();
+                var list = select_function_helper(parameters_helper, functions, loc, syntax_nodes_parameters1, only_from_not_extensions, out err_out);
                 if (list.Count == 0 && err_out != null) // С именованными уже точно ничего не получится
                     return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, functions.Count == 1));
 
@@ -2977,7 +2988,8 @@ namespace PascalABCCompiler.TreeConverter
                 // Удалим из list все неподходящие, где нет таких имен параметров в оставшейся части
                 list.RemoveAll(ff =>
                 {
-                    var names = ff.parameters.Skip(indexOfFirstNamedArgument).Select(par => par.name);
+                    var is_ext1 = ff.is_extension_method;
+                    var names = ff.parameters.Skip(indexOfFirstNamedArgument + (is_ext1 ? 1 : 0)).Select(par => par.name);
                     var hsnames = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
                     return !hs.IsSubsetOf(hsnames); 
                     // то есть все имена в именованных аргументах должны находиться среди оставшихся параметров по умолчанию
@@ -2997,14 +3009,16 @@ namespace PascalABCCompiler.TreeConverter
                 for (int i = indexOfFirstNamedArgument; i < syntax_nodes_parameters.Count; i++)
                 {
                     var nae = syntax_nodes_parameters[i] as SyntaxTree.name_assign_expr;
-                    dict[nae.name.name] = parameters[i]; // parameters и syntax_nodes_parameters д.б.одной длины
+                    //dict[nae.name.name] = parameters[i + (NeedIncrementIndexFNA ? 1 : 0)]; // parameters и syntax_nodes_parameters д.б.одной длины
+                    dict[nae.name.name] = parameters[i + params_inc];
                 }
                 // Вот теперь как-то хвост в parameters надо менять на параметры по умолчанию или на те, что хранятся в dict
                 // Я бы очистил хвост parameters и добавлял бы в него как раньше параметры по умолчанию
-                parameters.remove_range(indexOfFirstNamedArgument, parameters.Count - indexOfFirstNamedArgument); // удалить хвост
-                var fun1 = functions[0].sym_info as function_node;
-                
-                for (int i = indexOfFirstNamedArgument; i < fun1.parameters.Count; i++) // сверить это с другим кодом
+                parameters.remove_range(indexOfFirstNamedArgumentSem, parameters.Count - indexOfFirstNamedArgumentSem); // удалить хвост
+
+                var fun1 = functions[0].sym_info as function_node; // это - единственная функция
+                var is_ext = fun1.is_extension_method;
+                for (int i = indexOfFirstNamedArgument + (is_ext ? 1 : 0); i < fun1.parameters.Count; i++) // сверить это с другим кодом
                 {
                     var par = fun1.parameters[i];
                     var paramexpr = par.default_value;
