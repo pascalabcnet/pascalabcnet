@@ -5896,16 +5896,21 @@ namespace PascalABCCompiler.TreeConverter
                                         #endregion
 
                                         function_node fn = null;
-                                        if (!skip_first_parameter || sil.Count() == 1)
+                                        if (!skip_first_parameter /*|| sil.Count() == 1*/)
                                         {
-                                            fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
+                                            // exprs.Count = 2; s_n_p = 2; false - не удаляем 1 параметр
+                                            fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters, false); 
                                         }
-                                        else
+                                        else // skip_first_parameter = true
                                         {
                                             try
                                             {
                                                 ThrowCompilationError = false;
-                                                fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
+                                                // Включая методы расширения
+                                                // Семантическая разница между exprs.Count и s_n_p.Count равна 1 !!! Только здесь! И вот ее и передавать!
+                                                // exprs.Count = 3; s_n_p = 2; false - не удаляем 1 параметр
+                                                // Добавил последний параметр = 1 - это единственное место где длина exprs на 1 больше
+                                                fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters, false, 1); 
                                                 if (fn == null && skip_first_parameter)
                                                 {
                                                     if (sil.Count() == 1)
@@ -5917,7 +5922,8 @@ namespace PascalABCCompiler.TreeConverter
                                                     skip_first_parameter = false;
                                                     sil = tmp_sil;
                                                     exprs.remove_at(0);
-                                                    fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters,true);
+                                                    // exprs.Count = 2; s_n_p = 2; true - удаляем 1 параметр, пропускаем расширения
+                                                    fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters,true); 
                                                     if (fn == null)
                                                     {
                                                         ThrowCompilationError = true;
@@ -5942,7 +5948,8 @@ namespace PascalABCCompiler.TreeConverter
                                                     function_node tmp_fn = fn;
                                                     exprs.remove_at(0);
                                                     sil = tmp_sil;
-                                                    fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters,true);
+                                                    // Только для методов, исключая методы расширения
+                                                    fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters,true); // true - удаляем 1 параметр, пропускаем расширения
                                                     if (fn == null)
                                                     {
                                                         fn = tmp_fn;

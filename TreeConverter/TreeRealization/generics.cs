@@ -66,6 +66,7 @@ namespace PascalABCCompiler.TreeRealization
             foreach (type_node t in generic_params)
             {
                 generic_parameter_eliminations gpe = new generic_parameter_eliminations();
+                
                 gpe.has_default_ctor = generic_convertions.type_has_default_ctor(t, false);
                 if (t is common_type_node && (t as common_type_node).has_explicit_default_constructor)
                     gpe.has_explicit_default_ctor = true;
@@ -1789,6 +1790,14 @@ namespace PascalABCCompiler.TreeRealization
             }
             cmn.IsOperator = orig_fn.IsOperator;
             return cmn;
+        }
+
+        public override bool IsAbstract
+        {
+            get
+            {
+                return original_generic.IsAbstract;
+            }
         }
 
         public override List<type_node> instance_params
