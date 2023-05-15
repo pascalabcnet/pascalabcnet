@@ -9415,13 +9415,13 @@ namespace PascalABCCompiler.TreeConverter
         }
         
 
-        private base_function_call create_static_method_call_with_params(function_node fn, location loc, type_node tn, bool procedure_allowed, expressions_list parametrs)
+        private base_function_call create_static_method_call_with_params(function_node fn, location loc, type_node tn, bool procedure_allowed, expressions_list parametrs, bool inherited_call = false)
         {
-            base_function_call bfc = create_static_method_call(fn, loc, tn, procedure_allowed);
+            base_function_call bfc = create_static_method_call(fn, loc, tn, procedure_allowed, inherited_call);
             bfc.parameters.AddRange(parametrs);
             return bfc;
         }
-        private base_function_call create_static_method_call(function_node fn, location loc, type_node tn, bool procedure_allowed)
+        private base_function_call create_static_method_call(function_node fn, location loc, type_node tn, bool procedure_allowed, bool inherited_call = false)
         {
             if ((!procedure_allowed) && (fn.return_value_type == null))
             {
@@ -9439,7 +9439,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if (cmn.cont_type.IsStatic)
                         AddError(new SimpleSemanticError(loc, "STATIC_CONSTRUCTOR_CALL"));
-                    if (cmn.cont_type.IsAbstract)
+                    if (cmn.cont_type.IsAbstract && !inherited_call)
                     	AddError(new SimpleSemanticError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name));
                     common_constructor_call csmc2 = new common_constructor_call(cmn, loc);
                     return csmc2;
@@ -17570,13 +17570,13 @@ namespace PascalABCCompiler.TreeConverter
             	}
             	if (fn is common_method_node)
             	{
-            		common_constructor_call ccc = create_constructor_call((fn as common_method_node).cont_type,exprs,loc) as common_constructor_call;
+            		common_constructor_call ccc = create_constructor_call((fn as common_method_node).cont_type,exprs,loc, null, true) as common_constructor_call;
             		ccc._new_obj_awaited = false;
             		return ccc;
             	}
             	else if (fn is compiled_constructor_node)
             	{
-            		compiled_constructor_call ccc = create_constructor_call((fn as compiled_constructor_node).compiled_type,exprs,loc) as compiled_constructor_call;
+            		compiled_constructor_call ccc = create_constructor_call((fn as compiled_constructor_node).compiled_type,exprs,loc, null, true) as compiled_constructor_call;
             		ccc._new_obj_awaited = false;
             		return ccc;
             	}
@@ -19165,7 +19165,7 @@ namespace PascalABCCompiler.TreeConverter
             return adrv;
         }
 
-        private base_function_call create_constructor_call(type_node tn, expressions_list exprs, location loc, Tuple<bool, List<SyntaxTree.expression>> lambdas_info = null)
+        private base_function_call create_constructor_call(type_node tn, expressions_list exprs, location loc, Tuple<bool, List<SyntaxTree.expression>> lambdas_info = null, bool inherited_call=false)
         {
             if (tn.IsInterface)
             {
@@ -19175,7 +19175,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(loc, "STATIC_CONSTRUCTOR_CALL");
             }
-            if (tn.IsAbstract)
+            if (tn.IsAbstract && !inherited_call)
             {
             	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
             }
@@ -19396,7 +19396,7 @@ namespace PascalABCCompiler.TreeConverter
                 e.is_constructor = true;
                 throw;
             }
-            return create_static_method_call_with_params(fnn, loc, tn, false, exprs);
+            return create_static_method_call_with_params(fnn, loc, tn, false, exprs, inherited_call);
         }
 		
         private expression_node clip_expression_if_need(expression_node expr, type_node tn)
