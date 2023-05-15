@@ -5910,6 +5910,9 @@ namespace PascalABCCompiler.TreeConverter
                                                 // Семантическая разница между exprs.Count и s_n_p.Count равна 1 !!! Только здесь! И вот ее и передавать!
                                                 // exprs.Count = 3; s_n_p = 2; false - не удаляем 1 параметр
                                                 // Добавил последний параметр = 1 - это единственное место где длина exprs на 1 больше
+                                                // Это первый вызов. Будет второй поэтому надо сохранить копию expr до вызова
+
+                                                var exprs_copy = exprs.Clone();
                                                 fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters, false, 1); 
                                                 if (fn == null && skip_first_parameter)
                                                 {
@@ -5921,8 +5924,10 @@ namespace PascalABCCompiler.TreeConverter
                                                     Errors.Error last_err = LastError();
                                                     skip_first_parameter = false;
                                                     sil = tmp_sil;
+                                                    exprs = exprs_copy;
                                                     exprs.remove_at(0);
                                                     // exprs.Count = 2; s_n_p = 2; true - удаляем 1 параметр, пропускаем расширения
+                                                    // Только для методов, исключая методы расширения
                                                     fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters,true); 
                                                     if (fn == null)
                                                     {
@@ -5943,8 +5948,11 @@ namespace PascalABCCompiler.TreeConverter
                                                         throw last_err;
                                                     }
                                                 }
+                                                // Это значит, что нашли метод расширения, но на всякий случай ищем метод поскольку он имеет приоритет
                                                 else if (fn != null && skip_first_parameter && sil.Count() > 1 && !sil.HasOnlyExtensionMethods())
                                                 {
+                                                    var exprs_saved = exprs; // запомнили то что нашли - вдруг здесь не найдем
+                                                    exprs = exprs_copy; // восстановили начальное exprs
                                                     function_node tmp_fn = fn;
                                                     exprs.remove_at(0);
                                                     sil = tmp_sil;
@@ -5954,7 +5962,8 @@ namespace PascalABCCompiler.TreeConverter
                                                     {
                                                         fn = tmp_fn;
                                                         RemoveLastError();
-                                                        exprs.AddElementFirst(exp);
+                                                        exprs = exprs_saved; // восстановили - т.к. здесь не нашли
+                                                        //exprs.AddElementFirst(exp);
                                                     }
                                                 }
                                             }
