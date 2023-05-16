@@ -46956,7 +46956,8 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Это внутри begin:var (a,b) := (1,2);
+
 	///</summary>
 	[Serializable]
 	public partial class assign_var_tuple : statement
@@ -50962,7 +50963,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Это только в секции до begin: var (a,b) := (3,4); begin
 	///</summary>
 	[Serializable]
 	public partial class var_tuple_def_statement : var_def_statement
