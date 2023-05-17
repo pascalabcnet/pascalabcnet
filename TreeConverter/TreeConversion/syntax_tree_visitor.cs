@@ -15266,6 +15266,18 @@ namespace PascalABCCompiler.TreeConverter
                 constant = new default_operator_node_as_constant(expr as default_operator_node, null);
             else if (expr is typeof_operator && !is_const_section)
                 constant = new typeof_operator_as_constant(expr as typeof_operator, null);
+            else if (expr is common_static_method_call)
+            {
+                var csmc = expr as common_static_method_call;
+                var properties = new List<common_property_node>();
+                foreach (common_property_node cpn in csmc.function_node.cont_type.properties)
+                    if (cpn.get_function == csmc.function_node && cpn.set_function == null)
+                    {
+                        constant = new common_static_method_call_as_constant(csmc, null);
+                        break;
+                    }
+                    
+            }
             else
             {
                 constant = expr as constant_node;
@@ -15404,6 +15416,9 @@ namespace PascalABCCompiler.TreeConverter
                             break;
                         case semantic_node_type.compiled_static_method_call:
                             constant = new compiled_static_method_call_as_constant(exprc as compiled_static_method_call, loc);
+                            break;
+                        case semantic_node_type.common_static_method_call:
+                            constant = new common_static_method_call_as_constant(exprc as common_static_method_call, loc);
                             break;
                         case semantic_node_type.basic_function_call:
                             constant = new basic_function_call_as_constant(exprc as basic_function_call, loc);

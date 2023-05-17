@@ -3470,7 +3470,12 @@ namespace PascalABCCompiler.PCU
         {
             return new compiled_static_method_call_as_constant(CreateCompiledStaticMethodCall(), null);
         }
-        
+
+        private common_static_method_call_as_constant CreateCommonStaticMethodCallNodeAsConstant()
+        {
+            return new common_static_method_call_as_constant(CreateStaticMethodCall(), null);
+        }
+
         private common_namespace_function_call_as_constant CreateCommonNamespaceFunctionCallNodeAsConstant()
         {
             common_namespace_function_call_as_constant cnfcc = new common_namespace_function_call_as_constant((common_namespace_function_call)CreateCommonNamespaceFunctionCall(), null);
@@ -3510,6 +3515,8 @@ namespace PascalABCCompiler.PCU
                     return CreateAsNode();
                 case semantic_node_type.compiled_static_method_call_node_as_constant:
                     return CreateCompiledStaticMethodCallNodeAsConstant();
+                case semantic_node_type.common_static_method_call_node_as_constant:
+                    return CreateCommonStaticMethodCallNodeAsConstant();
                 case semantic_node_type.common_namespace_function_call_node_as_constant:
                     return CreateCommonNamespaceFunctionCallNodeAsConstant();
                 case semantic_node_type.compiled_constructor_call_as_constant:
@@ -3734,7 +3741,7 @@ namespace PascalABCCompiler.PCU
             return nspr;
         }
 		
-        private expression_node CreateStaticMethodCall()
+        private common_static_method_call CreateStaticMethodCall()
         {
         	common_method_node meth = GetMethodByOffset();
             common_static_method_call cmc = new common_static_method_call(meth,null);

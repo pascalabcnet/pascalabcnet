@@ -3717,7 +3717,12 @@ namespace PascalABCCompiler.PCU
         {
             VisitCompiledStaticMethodCall(node.method_call);
         }
-        
+
+        private void VisitCommonStaticMethodCallNodeAsConstant(common_static_method_call_as_constant node)
+        {
+            VisitCommonStaticMethodCall(node.method_call);
+        }
+
         private void VisitCompiledConstructorCallAsConstant(compiled_constructor_call_as_constant node)
         {
             VisitCompiledConstructorCall(node.method_call);
@@ -3752,6 +3757,8 @@ namespace PascalABCCompiler.PCU
                     VisitAsNode((as_node)en); break;
                 case semantic_node_type.compiled_static_method_call_node_as_constant:
                     VisitCompiledStaticMethodCallNodeAsConstant((compiled_static_method_call_as_constant)en); break;
+                case semantic_node_type.common_static_method_call_node_as_constant:
+                    VisitCommonStaticMethodCallNodeAsConstant((common_static_method_call_as_constant)en); break;
                 case semantic_node_type.common_namespace_function_call_node_as_constant:
                     VisitCommonNamespaceFunctionCallNodeAsConstant((common_namespace_function_call_as_constant)en); break;
                 case semantic_node_type.compiled_constructor_call_as_constant:

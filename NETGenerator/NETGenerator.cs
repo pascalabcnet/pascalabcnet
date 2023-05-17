@@ -11394,6 +11394,12 @@ namespace PascalABCCompiler.NETGenerator
         {
             value.MethodCall.visit(this);
         }
+
+        public override void visit(ICommonStaticMethodCallNodeAsConstant value)
+        {
+            value.MethodCall.visit(this);
+        }
+
         public override void visit(ICompiledConstructorCallAsConstant value)
         {
             value.MethodCall.visit(this);
