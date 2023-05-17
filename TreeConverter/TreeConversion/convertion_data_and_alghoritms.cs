@@ -3000,8 +3000,9 @@ namespace PascalABCCompiler.TreeConverter
                     return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, list)); // или другое сообщение
 
                 // Теперь раз в list осталась одна функция, найти её в functions и только её и оставить
-                functions.RemoveAll(fun => fun.sym_info != list[0]);
-                if (functions.Count == 0)
+                // Надо делать копию functions иначе это влияет на следующий код
+                var functions1 = functions.Where(fun => fun.sym_info == list[0]).ToList();
+                if (functions1.Count == 0)
                     return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // это не должно случиться, но вдруг
                 // Вот и в functions осталась одна функция
                 // Теперь делаем словарь сопоставлений именам -> expression_node (в параметрах)
@@ -3016,7 +3017,7 @@ namespace PascalABCCompiler.TreeConverter
                 // Я бы очистил хвост parameters и добавлял бы в него как раньше параметры по умолчанию
                 parameters.remove_range(indexOfFirstNamedArgumentSem, parameters.Count - indexOfFirstNamedArgumentSem); // удалить хвост
 
-                var fun1 = functions[0].sym_info as function_node; // это - единственная функция
+                var fun1 = functions1[0].sym_info as function_node; // это - единственная функция
                 var is_ext = fun1.is_extension_method;
                 for (int i = indexOfFirstNamedArgument + (is_ext ? 1 : 0); i < fun1.parameters.Count; i++) // сверить это с другим кодом
                 {
@@ -3031,7 +3032,7 @@ namespace PascalABCCompiler.TreeConverter
                 // syntax_nodes_parameters мне кажется всё испортят - там именованные аргументы стоят не на своих местах!!!
                 // Это единственный - опасный и потенциально с ошибками вызов!
                 // Но ощущение, что всё верно, т.к. это нужно только для параметров лямбд, а у именованных аргументов их быть не может
-                list = select_function_helper(parameters, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                list = select_function_helper(parameters, functions1, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
                 if (err_out != null)
                     return AddError<function_node>(err_out);
                 return list[0];

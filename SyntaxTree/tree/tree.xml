@@ -3520,7 +3520,7 @@
       <HelpData Key="assign_tuple" Value="" />
       <HelpData Key="assign_tuple.expr" Value="" />
       <HelpData Key="assign_tuple.vars" Value="" />
-      <HelpData Key="assign_var_tuple" Value="" />
+      <HelpData Key="assign_var_tuple" Value="Это внутри begin:var (a,b) := (1,2);&#xD;&#xA;" />
       <HelpData Key="assign_var_tuple.expr" Value="" />
       <HelpData Key="assign_var_tuple.idents" Value="" />
       <HelpData Key="attribute" Value="" />
@@ -4858,7 +4858,7 @@
       <HelpData Key="var_statement." Value="" />
       <HelpData Key="var_statement.override string ToString()" Value="" />
       <HelpData Key="var_statement.var_def" Value="" />
-      <HelpData Key="var_tuple_def_statement" Value="" />
+      <HelpData Key="var_tuple_def_statement" Value="Это только в секции до begin: var (a,b) := (3,4); begin" />
       <HelpData Key="variable_definitions" Value="Секция описания переменных (до beginа). Состоит из var_def_statement. Не путать с var_statement - однострочным описанием переменной внутри begin-end" />
       <HelpData Key="variable_definitions." Value="" />
       <HelpData Key="variable_definitions.override string ToString()" Value="" />
