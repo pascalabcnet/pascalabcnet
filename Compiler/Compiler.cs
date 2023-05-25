@@ -425,6 +425,17 @@ namespace PascalABCCompiler
         public Dictionary<unit_node, CompilationUnit> DirectImplementationCompilationUnits { get; } = new Dictionary<unit_node, CompilationUnit>();
         public PascalABCCompiler.TreeRealization.unit_node_list ImplementationUsedUnits { get; } = new PascalABCCompiler.TreeRealization.unit_node_list();
 
+        public bool ForEachDirectCompilationUnit(Func<CompilationUnit, string, bool> on_unit)
+        {
+            foreach (var kvp in DirectInterfaceCompilationUnits)
+                if (!on_unit(kvp.Value, InterfaceUsedUnits.unit_uses_paths[kvp.Key]))
+                    return false;
+            foreach (var kvp in DirectImplementationCompilationUnits)
+                if (!on_unit(kvp.Value, ImplementationUsedUnits.unit_uses_paths[kvp.Key]))
+                    return false;
+            return true;
+        }
+
         private SyntaxTree.compilation_unit _syntaxTree=null;
 		public SyntaxTree.compilation_unit SyntaxTree
 		{
@@ -2597,40 +2608,41 @@ namespace PascalABCCompiler
 
         public static string GetUnitPath(CompilationUnit u1, CompilationUnit u2)
         {
-            if (u1 == null) throw new ArgumentException(nameof(u1));
-            if (u2 == null) throw new ArgumentException(nameof(u2));
+            if (u1 == null) throw new ArgumentNullException(nameof(u1));
+            if (u2 == null) throw new ArgumentNullException(nameof(u2));
 
-            if (u1.DirectInterfaceCompilationUnits      .Values.Contains(u2)) return u1.InterfaceUsedUnits      .unit_uses_paths[u2.SemanticTree];
-            if (u1.DirectImplementationCompilationUnits .Values.Contains(u2)) return u1.ImplementationUsedUnits .unit_uses_paths[u2.SemanticTree];
-
-            var last = new Dictionary<CompilationUnit, string>();
+            var curr = new Dictionary<CompilationUnit, string>();
             var done = new HashSet<CompilationUnit>();
 
-            foreach (var u in u1.DirectInterfaceCompilationUnits.Values.Concat(u1.DirectImplementationCompilationUnits.Values))
+            var res_path = default(string);
+            bool register_unit(CompilationUnit u, string path)
             {
-                last.Add(u, u1.InterfaceUsedUnits.unit_uses_paths[u.SemanticTree]);
-                done.Add(u);
+                if (!done.Add(u))
+                    return true;
+                if (u == u2)
+                {
+                    res_path = path;
+                    return false;
+                }
+                curr.Add(u, path);
+                return true;
             }
 
-            while (last.Count != 0)
+            if (!u1.ForEachDirectCompilationUnit(register_unit))
+                return res_path;
+
+            while (curr.Count != 0)
             {
-                var next = new Dictionary<CompilationUnit, string>();
+                var prev = curr;
+                curr = new Dictionary<CompilationUnit, string>();
 
-                foreach (var u in last.Keys) {
-                    var intr_units = u.DirectInterfaceCompilationUnits.Select(kvp => new { u = kvp.Value, path = u.InterfaceUsedUnits.unit_uses_paths[kvp.Key] });
-                    var impl_units = u.DirectImplementationCompilationUnits.Select(kvp => new { u = kvp.Value, path = u.ImplementationUsedUnits.unit_uses_paths[kvp.Key] });
-
-                    foreach (var used_u in intr_units.Concat(impl_units)) {
-                        if (!done.Add(used_u.u)) continue;
+                foreach (var kvp in prev)
+                    if (!kvp.Key.ForEachDirectCompilationUnit((u, path) =>
+                    {
                         // Важно "..\a\b" + "..\c\d" превращать в "..\a\c\d", а не полный путь
-                        var path = CombinePathsRelatively(Path.GetDirectoryName(last[u]), used_u.path);
-                        if (used_u.u == u2) return path;
-                        next.Add(used_u.u, path);
-                    }
+                        return register_unit(u, CombinePathsRelatively(Path.GetDirectoryName(kvp.Value), path));
+                    })) return res_path;
 
-                }
-
-                last = next;
             }
 
             throw new InvalidOperationException($"Could not find path to \"{u2.UnitFileName}\" relative to \"{u1.UnitFileName}\"");
