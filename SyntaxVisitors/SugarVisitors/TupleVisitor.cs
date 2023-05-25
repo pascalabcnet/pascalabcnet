@@ -119,7 +119,7 @@ namespace SyntaxVisitors.SugarVisitors
                 }
 
                 //for (var i = 0; i < n; i++)
-                for (var i = n-1; i >=0; i--)
+                for (var i = n-1; i >= 0; i--)
                 {
                     var a = new assign(asstup.vars.variables[i],
                         (sl[i] as var_statement).var_def.vars.idents[0],
