@@ -187,11 +187,12 @@ namespace Mono.Debugging.Soft
 				Arguments = string.Format ("{2} \"{0}\" {1}", dsi.Command, dsi.Arguments, dsi.RuntimeArguments),
 				WorkingDirectory = dsi.WorkingDirectory,
 				RedirectStandardOutput = true,
+				RedirectStandardInput = true,
 				RedirectStandardError = true,
 				UseShellExecute = false,
 				CreateNoWindow = true,
 			};
-			
+			Console.WriteLine(psi.Arguments);
 			LaunchOptions options = null;
 			
 			if (dsi.UseExternalConsole && args.ExternalConsoleLauncher != null) {
@@ -407,6 +408,11 @@ namespace Mono.Debugging.Soft
 				EndLaunch ();
 				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 			}
+		}
+
+		public void ForceEndSession()
+        {
+			EndSession();
 		}
 
 		const string StartWithShellExecuteExMarker = "___Process_StartWithShellExecuteEx_Marker___";

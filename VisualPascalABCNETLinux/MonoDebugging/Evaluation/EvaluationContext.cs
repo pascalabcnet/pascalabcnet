@@ -33,7 +33,20 @@ namespace Mono.Debugging.Evaluation
 {
 	public class EvaluationContext
 	{
-		public ExpressionEvaluator Evaluator { get; set; }
+		private ExpressionEvaluator evaluator;
+
+		public ExpressionEvaluator Evaluator { 
+			get
+            {
+				if (evaluator == null)
+					evaluator = new ExpressionEvaluator();
+				return evaluator;
+            }
+			set
+            {
+				evaluator = value;
+            }
+		}
 		public ObjectValueAdaptor Adapter { get; set; }
 		
 		public EvaluationOptions Options {

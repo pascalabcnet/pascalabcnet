@@ -36,8 +36,13 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public abstract class ExpressionEvaluator
+	public class ExpressionEvaluator
 	{
+		public ExpressionEvaluator()
+        {
+
+        }
+
 		public ValueReference Evaluate (EvaluationContext ctx, string expression)
 		{
 			return Evaluate (ctx, expression, null);
@@ -183,7 +188,10 @@ namespace Mono.Debugging.Evaluation
 			get { return true; }
 		}
 
-		public abstract string Resolve (DebuggerSession session, SourceLocation location, string expression);
+		public string Resolve (DebuggerSession session, SourceLocation location, string expression)
+        {
+			return expression;
+        }
 
 		public virtual IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
 		{

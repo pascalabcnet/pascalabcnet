@@ -261,7 +261,6 @@ namespace Mono.Debugging.Evaluation
 				var ctx = GetEvaluationContext (frameIndex, options);
 				if (ctx == null)
 					return null;
-
 				finfo = new FrameInfo ();
 				finfo.Context = ctx;
 				//Don't try to optimize lines below with lazy loading, you won't gain anything(in communication with runtime)

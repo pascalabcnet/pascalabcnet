@@ -656,6 +656,8 @@ namespace VisualPascalABC
 
         public void ClearWatch()
         {
+            if (DebugWatchListWindow == null)
+                return;
             for (int i = 0; i < this.WdataGridView1.Rows.Count; i++)
             {
                 DebugWatchListWindow.SetUndefinedValue(i);
@@ -664,7 +666,8 @@ namespace VisualPascalABC
 
         public void DisplayDisassembledCode(string code)
         {
-            DisassemblyWindow.SetDisassembledCode(code);
+            if (DisassemblyWindow != null)
+                DisassemblyWindow.SetDisassembledCode(code);
         }
 
         public void ClearDebugTabs()
@@ -678,7 +681,8 @@ namespace VisualPascalABC
 
         public void ClearLocalVarTree()
         {
-            DebugVariablesListWindow.ClearAllSubTrees();
+            if (DebugVariablesListWindow != null)
+                DebugVariablesListWindow.ClearAllSubTrees();
         }
 
         public void RefreshPad(IList<IListItem> items)
