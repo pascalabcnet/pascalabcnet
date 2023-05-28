@@ -5604,7 +5604,7 @@ begin
     var c: char;
     repeat
       c := read_symbol;
-    until (c <> ' ') and (c <> #10) and (c <> #13);
+    until (c <> ' ') and (c <> #10) and (c <> #13) and (c <> #9);
     
     if c = char(-1) then
       raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_INPUT_STREAM));
@@ -5621,6 +5621,8 @@ begin
       if c = #10 then
         break;
       if c = #13 then
+        break;
+      if c = #9 then
         break;
       if c = char(-1) then
         break;
@@ -5662,7 +5664,7 @@ begin
     var c: char;
     repeat
       c := read_symbol;
-    until (c <> ' ') and (c <> #10) and (c <> #13);
+    until (c <> ' ') and (c <> #10) and (c <> #13) and (c <> #9);
     
     if c = char(-1) then
       raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_INPUT_STREAM));
@@ -5694,6 +5696,8 @@ begin
       if c = #10 then
         break;
       if c = #13 then
+        break;
+      if c = #9 then
         break;
       if c = char(-1) then
         break;

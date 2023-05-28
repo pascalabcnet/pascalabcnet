@@ -5522,7 +5522,11 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                     else
                                     {
-                                        sil = exp.type.find_in_type(id_right.name, context.CurrentScope);
+                                        sil = exp.type.find_in_type(id_right.name, context.CurrentScope); // SSM 25.05.23 тут находится div в 1.div(2,3), а не должен
+                                                                                                          // в этом случае sil.sym_info = basic_function_node
+                                        sil = sil?.FindAll(si => !(si.sym_info is basic_function_node));   // убираю все такие операторы. Может, убираю лишнее
+                                        if (sil != null && sil.Count == 0)
+                                            sil = null;
                                         sil = sil?.Distinct(new SymInfoComparer()).ToList(); // SSM 16/06/20 - удалил дубли для порядка
                                         if (sil != null && sil.FirstOrDefault().sym_info != null && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.wrap_def)
                                         {
