@@ -354,7 +354,7 @@ namespace SyntaxVisitors.PatternsVisitors
         
         private type_definition GetTypeDefinitionForConstParam(expression constParamExpr)
         {
-            switch (constParamExpr)
+            /*switch (constParamExpr)
             {
                 case string_const type:
                     return new named_type_reference("string");
@@ -366,7 +366,17 @@ namespace SyntaxVisitors.PatternsVisitors
                     return new named_type_reference("integer");
                 case double_const type:
                     return new named_type_reference("double");
-            }
+            }*/
+            if (constParamExpr is string_const)
+                return new named_type_reference("string");
+            if (constParamExpr is char_const)
+                return new named_type_reference("char");
+            if (constParamExpr is int32_const)
+                return new named_type_reference("integer");
+            if (constParamExpr is int64_const)
+                return new named_type_reference("integer");
+            if (constParamExpr is double_const)
+                return new named_type_reference("double");
             return null;
         }
 
@@ -821,13 +831,14 @@ namespace SyntaxVisitors.PatternsVisitors
         {
             List<statement> statementsToAdd = null;
 
-            switch (isExpression.right)
+            /*switch (isExpression.right)
             {
                 case deconstructor_pattern dp:
                     if (dp.const_params_check != null)
                     {
                         var ifToAddConstParamsCheckTo = GetAscendant<if_node>(isExpression);
-                        ifToAddConstParamsCheckTo.condition = bin_expr.LogicalAnd(ifToAddConstParamsCheckTo.condition, dp.const_params_check);
+                        ifToAddConstParamsCheckTo.condition = 
+                            bin_expr.LogicalAnd(ifToAddConstParamsCheckTo.condition, dp.const_params_check);
                     }
                     statementsToAdd = ProcessDesugaringForDeconstructorPattern(isExpression);
                     break;
@@ -840,7 +851,30 @@ namespace SyntaxVisitors.PatternsVisitors
                 case const_pattern cp:
                     statementsToAdd = ProcessDesugaringForConstPattern(isExpression);
                     break;
+            }*/
+            if (isExpression.right is deconstructor_pattern dp)
+            {
+                if (dp.const_params_check != null)
+                {
+                    var ifToAddConstParamsCheckTo = GetAscendant<if_node>(isExpression);
+                    ifToAddConstParamsCheckTo.condition =
+                        bin_expr.LogicalAnd(ifToAddConstParamsCheckTo.condition, dp.const_params_check);
+                }
+                statementsToAdd = ProcessDesugaringForDeconstructorPattern(isExpression);
             }
+            else if (isExpression.right is collection_pattern)
+            {
+                statementsToAdd = ProcessDesugaringForCollectionPattern(isExpression);
+            }
+            else if (isExpression.right is tuple_pattern)
+            {
+                statementsToAdd = ProcessDesugaringForTuplePattern(isExpression);
+            }
+            else if (isExpression.right is const_pattern)
+            {
+                statementsToAdd = ProcessDesugaringForConstPattern(isExpression);
+            }
+
 
             var enclosingIf = GetAscendant<if_node>(isExpression);
             // Если уже обрабатывался ранее (второй встретившийся в том же условии is), то не изменяем if
@@ -1113,13 +1147,20 @@ namespace SyntaxVisitors.PatternsVisitors
         {
             var firstStatement = GetAscendant<statement>(node);
 
-            switch (firstStatement)
+            /*switch (firstStatement)
             {
                 case if_node _: return PatternLocation.IfCondition;
                 case var_statement _: return PatternLocation.Assign;
                 case assign _: return PatternLocation.Assign;
                 default: return PatternLocation.Unknown;
-            }
+            }*/
+            if (firstStatement is if_node)
+                return PatternLocation.IfCondition;
+            if (firstStatement is var_statement)
+                return PatternLocation.Assign;
+            if (firstStatement is assign)
+                return PatternLocation.Assign;
+            return PatternLocation.Unknown;
         }
 
         private T GetAscendant<T>(syntax_tree_node node)
