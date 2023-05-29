@@ -990,7 +990,7 @@ namespace VisualPascalABC
             {
                 //debuggedProcess.Modules[0].SymReader.GetMethod(debuggedProcess.SelectedFunction.Token);
                 string save_PrevFullFileName = PrevFullFileName;
-                Console.WriteLine(stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
+                Console.WriteLine("jump to "+stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
                 //CodeFileDocumentControl page = null;
                 //DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
                 if (!ShowDebugTabs)//esli eshe ne pokazany watch i lokal, pokazyvaem
@@ -1115,8 +1115,8 @@ namespace VisualPascalABC
                 //for (int i=0; i<lseg.Words.Count; i++)
                 CurrentLineBookmark.SetPosition(stackFrame.SourceLocation.FileName, curPage.TextEditor.Document, stackFrame.SourceLocation.Line, 1, stackFrame.SourceLocation.Line,
                    len);
-                curPage.TextEditor.ActiveTextAreaControl.JumpTo(stackFrame.SourceLocation.Line - 1, 0);
-
+                
+                //curPage.TextEditor.ActiveTextAreaControl.JumpTo(stackFrame.SourceLocation.Line - 1, 0);
                 if ((Status == DebugStatus.StepOver || Status == DebugStatus.StepIn) && (CurrentLine == stackFrame.SourceLocation.Line
                         && save_PrevFullFileName == stackFrame.SourceLocation.FileName))
                 {
@@ -1135,14 +1135,14 @@ namespace VisualPascalABC
                     CurrentLine = stackFrame.SourceLocation.Line;
                     MustDebug = false;
                 }
-
+                Console.WriteLine("jumped to " + stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
                 RemoveBreakpoints();
                 if (currentBreakpoint != null)
                 {
                     dbg.RemoveBreakpoint(currentBreakpoint);
                     currentBreakpoint = null; //RemoveBreakpoints();
                 }
-
+                Console.WriteLine("breakpoints removed");
             }
         }
 
@@ -1488,7 +1488,27 @@ namespace VisualPascalABC
                                 parent_val = pv;
                         }
                     }
-
+                    if (self_lv != null)
+                    {
+                        var fields = self_lv.GetAllChildren();
+                        foreach (var fi in fields)
+                            if (string.Compare(fi.Name, var, true) == 0)
+                                return new ValueItem(fi);
+                    }
+                    if (global_lv != null)
+                    {
+                        var fields = self_lv.GetAllChildren();
+                        foreach (var fi in fields)
+                            if (string.Compare(fi.Name, var, true) == 0) 
+                                return new ValueItem(fi);
+                        Type global_type = AssemblyHelper.GetType(global_lv.TypeName);
+                        if (global_type != null)
+                        {
+                            var fi = global_type.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                            if (fi != null && fi.IsLiteral)
+                                return new ValueItem(DebugUtils.MakeValue(fi.GetRawConstantValue()), var, global_nv.Type);
+                        }
+                    }
 
 
                     nvc = debuggedProcess.SelectedFunction.LocalVariables;
@@ -1761,6 +1781,7 @@ namespace VisualPascalABC
                     CloseOldToolTip();
                     if (toolTipControl != null)
                     {
+                        
                         toolTipControl.ShowForm(textArea, e.LogicalPosition);
                     }
                     oldToolTipControl = toolTipControl;

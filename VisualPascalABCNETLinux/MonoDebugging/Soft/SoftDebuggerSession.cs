@@ -1703,6 +1703,7 @@ namespace Mono.Debugging.Soft
 		void Step (StepDepth depth, StepSize size)
 		{
 			try {
+				//Console.WriteLine("Adaptor.CancelAsyncOperations");
 				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
 				var req = vm.CreateStepRequest (current_thread);
 				req.Depth = depth;
@@ -1719,8 +1720,11 @@ namespace Mono.Debugging.Soft
 						throw e;
 				}
 				currentStepRequest = req;
+				//Console.WriteLine("OnResumed");
 				OnResumed ();
+				//Console.WriteLine("vm.Resume");
 				vm.Resume ();
+				//Console.WriteLine("DequeueEventsForFirstThread");
 				DequeueEventsForFirstThread ();
 			} catch (CommandException ex) {
 				string reason;

@@ -669,7 +669,7 @@ namespace VisualPascalABC
             get
             {
                 return monoValue.DisplayValue;
-                if (ShowValuesInHexadecimal && val.IsInteger)
+                /*if (ShowValuesInHexadecimal && val.IsInteger)
                 {
                     return String.Format("0x{0:X}", val.PrimitiveValue);
                 }
@@ -760,7 +760,7 @@ namespace VisualPascalABC
                     {
                         return "";
                     }
-                }
+                }*/
             }
         }
 		
@@ -838,25 +838,28 @@ namespace VisualPascalABC
         {
             get
             {
+
                 List<IListItem> list = new List<IListItem>();
-                if (val.IsArray)
+               
+                if (monoValue.IsObject)
                 {
-                    foreach (NamedValue element in val.GetArrayElements())
+                    foreach (var element in monoValue.GetAllChildren())
                     {
-                        list.Add(new ValueItem(element,null));
+                        list.Add(new ValueItem(element));
                     }
+                    return list;
                 }
-                if (val.IsObject || val.Type.IsByRef() && !val.IsPrimitive)
+                /*if (monoValue.IsObject || !monoValue.IsPrimitive)
                 {
                     //if (IsArrayWrap())
                     //{
-                    NamedValue nv = GetNullBasedArray();
-                    if (nv != null)
+                    var lv = GetNullBasedArray();
+                    if (lv != null)
                     {
                         int i = 0;
-                        foreach (NamedValue element in nv.GetArrayElements())
+                        foreach (var element in lv.GetAllChildren())
                         {
-                            list.Add(new ArrayValueItem(element, null, val, nv, i++));
+                            list.Add(new ArrayValueItem(element, monoValue, lv, i++));
 
                         }
                     }
@@ -866,17 +869,19 @@ namespace VisualPascalABC
                         if (!val.Type.IsByRef())
                             return new BaseTypeItem(val, val.Type).SubItems;
                     }
-                }
+                }*/
                 return list;
             }
         }
 
-        private NamedValue GetNullBasedArray()
+        private Mono.Debugging.Client.ObjectValue GetNullBasedArray()
         {
-            IList<FieldInfo> flds = val.Type.GetFields();
-            if (flds.Count != 3) return null;
-            foreach (FieldInfo fi in flds)
-                if (fi.Name == "NullBasedArray") return fi.GetValue(val);
+            var fields = monoValue.GetAllChildren();
+            if (fields.Length != 3) 
+                return null;
+            foreach (var fi in fields)
+                if (fi.Name == "NullBasedArray")
+                    return fi;
             return null;
         }
 
@@ -994,6 +999,11 @@ namespace VisualPascalABC
                 low_bound = tmp_fi.GetRawConstantValue();
             else
                 low_bound = tmp_fi.GetValue(sz_arr);
+        }
+
+        public ArrayValueItem(Mono.Debugging.Client.ObjectValue val, Mono.Debugging.Client.ObjectValue arr, Mono.Debugging.Client.ObjectValue sz_arr, int ind)
+        {
+
         }
 
         public override string Name

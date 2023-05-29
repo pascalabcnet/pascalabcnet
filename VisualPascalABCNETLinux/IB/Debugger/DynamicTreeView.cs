@@ -292,10 +292,14 @@ namespace VisualPascalABC
             frm.Controls.Add(this);
             frm.ShowWindowWithoutActivation = true;
             frm.Show();
+            frm.GotFocus += (s, e) => {
+                textArea.Focus();
+            };
             textArea.Click += OnTextAreaClick;
             textArea.KeyDown += OnTextAreaClick;
             frm.ClientSize = new Size(frm.ClientSize.Width, row.Height + 2);
         }
+
 
         public bool IsMouseOver
         {
@@ -314,6 +318,7 @@ namespace VisualPascalABC
             ((ICSharpCode.TextEditor.TextArea)sender).KeyDown -= OnTextAreaClick;
             ((ICSharpCode.TextEditor.TextArea)sender).Click -= OnTextAreaClick;
             frm.Close();
+            this.isExpanded = false;
         }
 
         bool isExpanded;
@@ -817,6 +822,7 @@ namespace VisualPascalABC
 
             void CloseOnDeactivate()
             {
+                return;
                 ChildForm owner = Owner as ChildForm;
                 if (owner != null)
                 {
