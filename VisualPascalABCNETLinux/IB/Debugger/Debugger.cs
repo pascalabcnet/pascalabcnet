@@ -1142,7 +1142,6 @@ namespace VisualPascalABC
                     dbg.RemoveBreakpoint(currentBreakpoint);
                     currentBreakpoint = null; //RemoveBreakpoints();
                 }
-                Console.WriteLine("breakpoints removed");
             }
         }
 
@@ -1418,10 +1417,14 @@ namespace VisualPascalABC
                     List<Mono.Debugging.Client.ObjectValue> unit_lvs = new List<Mono.Debugging.Client.ObjectValue>();
                     var lvc = stackFrame.GetAllLocals();
                     foreach (var lv in lvc)
+                    {
                         if (lv.Name == var)
                             return new ValueItem(lv);
+                    }
+                        
                     foreach (var lv in lvc)
                     {
+                        Console.WriteLine("local var "+lv.Name);
                         if (lv.Name.IndexOf(':') != -1)
                         {
                             int pos = lv.Name.IndexOf(':');
@@ -1440,10 +1443,18 @@ namespace VisualPascalABC
                         }
                         else if (string.Compare(lv.Name, "self", true) == 0 && stackFrame.GetThisReference() != null)
                             return new ValueItem(stackFrame.GetThisReference());
-                        else if (lv.Name.Contains("$class_var")) global_lv = lv;
-                        else if (lv.Name.Contains("$unit_var")) unit_lvs.Add(lv);
-                        else if (lv.Name == "$disp$") disp_lv = lv;//vo vlozhennyh procedurah ssylka na verh zapis aktivacii
-                        else if (lv.Name.StartsWith("$rv")) ret_lv = lv;//vozvrashaemoe znachenie
+                        else if (lv.Name.Contains("$class_var"))
+                        {
+                            
+                            global_lv = lv;
+                        }
+                            
+                        else if (lv.Name.Contains("$unit_var")) 
+                            unit_lvs.Add(lv);
+                        else if (lv.Name == "$disp$") 
+                            disp_lv = lv;//vo vlozhennyh procedurah ssylka na verh zapis aktivacii
+                        else if (lv.Name.StartsWith("$rv"))
+                            ret_lv = lv;//vozvrashaemoe znachenie
                     }
                     lvc = stackFrame.GetParameters();
                     Mono.Debugging.Client.ObjectValue self_lv = null;
@@ -1488,19 +1499,37 @@ namespace VisualPascalABC
                                 parent_val = pv;
                         }
                     }
-                    if (self_lv != null)
+                    if (stackFrame.GetThisReference() != null)
                     {
-                        var fields = self_lv.GetAllChildren();
+                        var fields = stackFrame.GetThisReference().GetAllChildren();
                         foreach (var fi in fields)
+                        {
+                            
                             if (string.Compare(fi.Name, var, true) == 0)
                                 return new ValueItem(fi);
+                        }
+                    }
+                    if (self_lv != null)
+                    {
+                        Console.WriteLine("search in this");
+                        var fields = self_lv.GetAllChildren();
+                        foreach (var fi in fields)
+                        {
+                            if (string.Compare(fi.Name, var, true) == 0)
+                                return new ValueItem(fi);
+                        }
+                            
                     }
                     if (global_lv != null)
                     {
-                        var fields = self_lv.GetAllChildren();
+                        var fields = global_lv.GetAllChildren();
+                        
                         foreach (var fi in fields)
-                            if (string.Compare(fi.Name, var, true) == 0) 
+                        {
+                            if (string.Compare(fi.Name, var, true) == 0)
                                 return new ValueItem(fi);
+                        }
+                            
                         Type global_type = AssemblyHelper.GetType(global_lv.TypeName);
                         if (global_type != null)
                         {
@@ -1775,13 +1804,12 @@ namespace VisualPascalABC
                         toolTipControl = ti.ToolTipControl as DebuggerGridControl;
                         if (ti.ToolTipText != null)
                         {
-                            e.ShowToolTip(ti.ToolTipText);
+                           //e.ShowToolTip(ti.ToolTipText);
                         }
                     }
                     CloseOldToolTip();
                     if (toolTipControl != null)
                     {
-                        
                         toolTipControl.ShowForm(textArea, e.LogicalPosition);
                     }
                     oldToolTipControl = toolTipControl;
@@ -1796,7 +1824,7 @@ namespace VisualPascalABC
             }
             finally
             {
-                if (toolTipControl == null && CanCloseOldToolTip)
+                if (toolTipControl == null && CanCloseOldToolTip && !oldToolTipControl.IsMouseOver)
                 {
                     CloseOldToolTip();
                     RemoveMarker((sender as TextArea).Document);

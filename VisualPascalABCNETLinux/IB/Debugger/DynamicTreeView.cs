@@ -291,15 +291,33 @@ namespace VisualPascalABC
             Dock = DockStyle.Fill;
             frm.Controls.Add(this);
             frm.ShowWindowWithoutActivation = true;
+            frm.KeyPreview = true;
+            frm.KeyDown += DebuggerGridControl_KeyDown;
             frm.Show();
-            frm.GotFocus += (s, e) => {
-                textArea.Focus();
-            };
+            
             textArea.Click += OnTextAreaClick;
             textArea.KeyDown += OnTextAreaClick;
             frm.ClientSize = new Size(frm.ClientSize.Width, row.Height + 2);
         }
 
+        private void DebuggerGridControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F8)
+            {
+                WorkbenchServiceFactory.DebuggerManager.Status = DebugStatus.StepOver;
+                WorkbenchServiceFactory.DebuggerManager.StepOver();
+            }
+        }
+
+        private void Frm_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+        }
+
+        private void TextArea_LostFocus(object sender, EventArgs e)
+        {
+            
+        }
 
         public bool IsMouseOver
         {
