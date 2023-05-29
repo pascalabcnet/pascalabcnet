@@ -21364,24 +21364,25 @@ namespace PascalABCCompiler.TreeConverter
                 semantic_check_for_indices(expr);
             }*/
             // Patterns
-            else if (st.typ is SemanticCheckType.MatchedExpression)  // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ  == SemanticCheckType.MatchedExpression)  
+                // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
             {
                 var expr = st.lst[0] as expression;
                 CheckMatchedExpression(expr);
             }
-            else if (st.typ is SemanticCheckType.MatchedExpressionAndType)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedExpressionAndType)
             {
                 var expr = st.lst[0] as expression;
                 var type = st.lst[1] as type_definition;
                 CheckIfCanBeMatched(expr, type);
             }
-            else if (st.typ is SemanticCheckType.MatchedExpressionAndExpression)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedExpressionAndExpression)
             {
                 var matchedExpr = st.lst[0] as expression;
                 var patternExpr = st.lst[1] as expression;
                 CheckIfCanBeMatched(matchedExpr, patternExpr);
             }
-            else if (st.typ is SemanticCheckType.MatchedTuple)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedTuple)
             {
                 var tuple = st.lst[0] as expression;
                 var length = st.lst[1] as int32_const;
@@ -21389,7 +21390,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             // !Patterns
             // Slices
-            else if (st.typ is SemanticCheckType.SliceAssignmentTypeCompatibility)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.SliceAssignmentTypeCompatibility)
             {
                 var to = st.lst[0] as expression;
                 var from = st.lst[1] as expression;

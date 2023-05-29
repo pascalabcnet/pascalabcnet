@@ -140,12 +140,17 @@ namespace PascalABCCompiler.TreeConverter
 
         private type_node GetDeconstructorOwner(function_node deconstructor)
         {
-            switch (deconstructor)
+            /*switch (deconstructor)
             {
                 case common_method_node commonMethod: return commonMethod.cont_type;
                 case common_namespace_function_node commonNamespaseFunction: return GetSelfParameter(commonNamespaseFunction).type;
                 default: return null;
-            }
+            }*/
+            if (deconstructor is common_method_node commonMethod)
+                return commonMethod.cont_type;
+            if (deconstructor is common_namespace_function_node commonNamespaseFunction)
+                return GetSelfParameter(commonNamespaseFunction).type;
+            return null;
         }
 
         private bool AreTheSameType(type_node type1, type_node type2) =>
