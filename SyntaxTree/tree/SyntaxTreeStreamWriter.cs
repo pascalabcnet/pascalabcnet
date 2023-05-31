@@ -7101,6 +7101,18 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			bw.Write((Int16)259);
+			write_lambda_any_type_node_syntax(_lambda_any_type_node_syntax);
+		}
+
+		public void write_lambda_any_type_node_syntax(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			write_expression(_lambda_any_type_node_syntax);
+		}
+
 	}
 
 
