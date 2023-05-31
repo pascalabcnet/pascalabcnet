@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.TreeConversion;
-using PascalABCCompiler.TreeConverter;
 
 namespace SyntaxVisitors.PatternsVisitors
 {
@@ -86,11 +84,11 @@ namespace SyntaxVisitors.PatternsVisitors
     {
         private enum PatternLocation { Unknown, IfCondition, Assign }
 
-        private const string DeconstructMethodName = compiler_string_consts.deconstruct_method_name;
-        private const string IsTestMethodName = compiler_string_consts.is_test_function_name;
-        private const string WildCardsTupleEqualFunctionName = compiler_string_consts.wild_cards_tuple_equal_function_name;
-        private const string SeqFunctionName = compiler_string_consts.seq_function_name;
-        private const string CountPropertyName = compiler_string_consts.count_property_name;
+        private const string DeconstructMethodName = "deconstruct";
+        private const string IsTestMethodName = "__TypeCheckAndAssignForIsMatch";
+        private const string WildCardsTupleEqualFunctionName = "__WildCardsTupleEqual";
+        private const string SeqFunctionName = "Seq";
+        private const string CountPropertyName = "Count";
         private const string GeneratedPatternNamePrefix = "<>pattern";
         private const string GeneratedDeconstructParamPrefix = "<>deconstructParam";
         private const string GeneratedVisitElseBranchVariableName = "<>visitElseBranch";

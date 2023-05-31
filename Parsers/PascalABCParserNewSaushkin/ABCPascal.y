@@ -2286,8 +2286,8 @@ typed_var_init_expression
     | identifier tkArrow lambda_function_body
 		{  
 			var idList = new ident_list($1, @1); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @1), parametr_kind.none, null, @1), @1);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new lambda_any_type_node_syntax(), @1), $3 as statement_list, @$);
 		}
     | tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
 		{
@@ -2308,7 +2308,7 @@ typed_var_init_expression
 				idList.idents.Add(el.expressions[j] as ident);
 			}	
 				
-			var any = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @2);	
+			var any = new lambda_inferred_type(new lambda_any_type_node_syntax(), @2);	
 				
 			var formalPars = new formal_parameters(new typed_parameters(idList, any, parametr_kind.none, null, @2), @2);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, any, $5 as statement_list, @$);
@@ -4895,10 +4895,10 @@ func_decl_lambda
 	: identifier tkArrow lambda_function_body
 		{
 			var idList = new ident_list($1, @1); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @1), parametr_kind.none, null, @1), @1);
 			//var sl = $3 as statement_list;
 			//if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName($3, "Result") != null) // если это было выражение или есть переменная Result, то автовывод типа 
-			    $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
+			    $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new lambda_any_type_node_syntax(), @1), $3 as statement_list, @$);
 			//else 
 			//$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, $3 as statement_list, @$);  
 		}
@@ -4923,7 +4923,7 @@ func_decl_lambda
 	| tkRoundOpen identifier tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			var idList = new ident_list($2, @2);
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @2), LexLocation.MergeAll(@2,@3,@4));
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), null), parametr_kind.none, null, @2), LexLocation.MergeAll(@2,@3,@4));
 			for (int i = 0; i < ($4 as formal_parameters).Count; i++)
 				formalPars.Add(($4 as formal_parameters).params_list[i]);
 		    var sl = $8 as statement_list;
@@ -4978,7 +4978,7 @@ func_decl_lambda
 						lst_ex.Add(x);
 					
 					function_lambda_definition fld = null; //= new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
-    					//new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @2), pair.exprs, @$);
+    					//new lambda_inferred_type(new lambda_any_type_node_syntax(), @2), pair.exprs, @$);
 
 					var sl1 = pair.exprs;
 			    	if (sl1.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl1, "result") != null) // то надо выводить
@@ -4994,7 +4994,7 @@ func_decl_lambda
 				var idd = $2 as ident;
 				if (idd==null)
 					parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",@2);
-				var lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+				var lambda_inf_type = new lambda_inferred_type(new lambda_any_type_node_syntax(), null);
 				var new_typed_pars = new typed_parameters(new ident_list(idd, idd.source_context), lambda_inf_type, parametr_kind.none, null, idd.source_context);
 				formal_pars.Add(new_typed_pars);
 				foreach (var id in ($4 as expression_list).expressions)
@@ -5003,7 +5003,7 @@ func_decl_lambda
 					if (idd1==null)
 						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",id.source_context);
 					
-					lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+					lambda_inf_type = new lambda_inferred_type(new lambda_any_type_node_syntax(), null);
 					new_typed_pars = new typed_parameters(new ident_list(idd1, idd1.source_context), lambda_inf_type, parametr_kind.none, null, idd1.source_context);
 					formal_pars.Add(new_typed_pars);
 				}
@@ -5055,7 +5055,7 @@ func_decl_lambda
     		var pair = $2 as pair_type_stlist;
     		// пока формальные параметры - null. Раскроем их сахарным визитором
     		$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
-    			new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), pair.exprs, @$);
+    			new lambda_inferred_type(new lambda_any_type_node_syntax(), @1), pair.exprs, @$);
     		// unpacked_params - это для одного параметра. Для нескольких - надо другую структуру. Возможно, список списков
     		var lst_ex = new List<expression>();
     		lst_ex.Add($1 as unpacked_list_of_ident_or_list);
@@ -5118,7 +5118,7 @@ full_lambda_fp_list
 				$$ = new formal_parameters();
 				foreach (var id in typed_pars.idents.idents)
 				{
-					var lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+					var lambda_inf_type = new lambda_inferred_type(new lambda_any_type_node_syntax(), null);
 					var new_typed_pars = new typed_parameters(new ident_list(id, id.source_context), lambda_inf_type, parametr_kind.none, null, id.source_context);
 					($$ as formal_parameters).Add(new_typed_pars);
 				}
@@ -5145,7 +5145,7 @@ lambda_simple_fp_sect
 lambda_type_ref
 	:
 		{
-			$$ = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+			$$ = new lambda_inferred_type(new lambda_any_type_node_syntax(), null);
 		}
 	| tkColon fptype
 		{
@@ -5156,7 +5156,7 @@ lambda_type_ref
 lambda_type_ref_noproctype
 	:
 		{
-			$$ = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+			$$ = new lambda_inferred_type(new lambda_any_type_node_syntax(), null);
 		}
 	| tkColon fptype_noproctype
 		{
