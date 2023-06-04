@@ -1445,7 +1445,6 @@ namespace VisualPascalABC
                             return new ValueItem(stackFrame.GetThisReference());
                         else if (lv.Name.Contains("$class_var"))
                         {
-                            
                             global_lv = lv;
                         }
                             
@@ -1522,14 +1521,15 @@ namespace VisualPascalABC
                     }
                     if (global_lv != null)
                     {
-                        var fields = global_lv.GetAllChildren();
-                        
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
+                        var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
                         foreach (var fi in fields)
                         {
                             if (string.Compare(fi.Name, var, true) == 0)
-                                return new ValueItem(fi);
+                                return new ValueItem(fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions));
                         }
-                            
+
+
                         Type global_type = AssemblyHelper.GetType(global_lv.TypeName);
                         if (global_type != null)
                         {
