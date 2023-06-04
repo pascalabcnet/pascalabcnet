@@ -723,7 +723,15 @@ namespace Mono.Debugging.Soft
 			if (!types.TryGetValue (fullName, out typesList))
 				aliases.TryGetValue (fullName, out typesList);
 			if (typesList == null)
-				return null;
+            {
+				var vm_types = vm.GetTypes(fullName, true);
+				foreach (var vm_type in vm_types)
+					ProcessType(vm_type);
+				if (!types.TryGetValue(fullName, out typesList))
+					aliases.TryGetValue(fullName, out typesList);
+				if (typesList == null)
+					return null;
+			}
 			if (typesList.Count == 1)
 				return typesList [0];
 			//Idea here is... If we have multiple types with same name... they must be in different .dlls

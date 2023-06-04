@@ -1521,6 +1521,7 @@ namespace VisualPascalABC
                     }
                     if (global_lv != null)
                     {
+                        Console.WriteLine(global_lv.TypeName);
                         var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
                         var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
                         foreach (var fi in fields)
@@ -1537,6 +1538,15 @@ namespace VisualPascalABC
                             if (fi != null && fi.IsLiteral)
                                 return new ValueItem(DebugUtils.MakeValue(fi.GetRawConstantValue()), var, global_nv.Type);
                         }
+                    }
+
+                    Type t = AssemblyHelper.GetTypeForStatic(var);
+                    if (t != null)
+                    {
+                        var tm = monoDebuggerSession.GetType(t.FullName);
+                        Console.WriteLine("type for static " + tm);
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+                        return new BaseTypeItem(tr, t);
                     }
 
 
@@ -1659,7 +1669,7 @@ namespace VisualPascalABC
                         }
                     }
 
-                    Type t = AssemblyHelper.GetTypeForStatic(var);
+                    t = AssemblyHelper.GetTypeForStatic(var);
                     if (t != null)
                     {
                         DebugType dt = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(var),(uint)t.MetadataToken);
