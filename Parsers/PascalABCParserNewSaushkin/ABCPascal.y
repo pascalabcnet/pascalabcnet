@@ -1,9 +1,9 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-// SSM 21/11/16 Р›СЏРјР±РґР° РІС‹СЂР°Р¶РµРЅРёСЏ РІС‹РЅРµСЃРµРЅС‹ РЅР° РІРµСЂС…РЅРёР№ СѓСЂРѕРІРµРЅСЊ (Рї.С‡. РїСЂРёСЃРІР°РёРІР°РЅРёСЏ Рё РїР°СЂР°РјРµС‚СЂС‹)
+// SSM 21/11/16 Лямбда выражения вынесены на верхний уровень (п.ч. присваивания и параметры)
 %{
-// Р­С‚Рё РѕР±СЉСЏРІР»РµРЅРёСЏ РґРѕР±Р°РІР»СЏСЋС‚СЃСЏ РІ РєР»Р°СЃСЃ GPPGParser, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РёР№ СЃРѕР±РѕР№ РїР°СЂСЃРµСЂ, РіРµРЅРµСЂРёСЂСѓРµРјС‹Р№ СЃРёСЃС‚РµРјРѕР№ gppg
-    public syntax_tree_node root; // РљРѕСЂРЅРµРІРѕР№ СѓР·РµР» СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° 
+// Эти объявления добавляются в класс GPPGParser, представляющий собой парсер, генерируемый системой gppg
+    public syntax_tree_node root; // Корневой узел синтаксического дерева 
 
     public List<Error> errors;
     public string current_file_name;
@@ -276,7 +276,7 @@ program_file
         }
 	;
 
-/* СЌС‚Рѕ РЅСѓР¶РЅРѕ РґР»СЏ intellisensР° С‡С‚РѕР±С‹ СЃС‚СЂРѕРёР»РѕСЃСЊ РґРµСЂРµРІРѕ РїСЂРё РѕС‚СЃСѓС‚СЃС‚РІРёРё С‚РѕС‡РєРё РІ РєРѕРЅС†Рµ */
+/* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
 optional_tk_point 
     : tkPoint
         { $$ = $1; }
@@ -628,7 +628,7 @@ decl_sect
 		{ $$ = $1; }
     ;
 
-/* SSM 2.1.13 СѓРїСЂРѕС‰РµРЅРёРµ РіСЂР°РјРјР°С‚РёРєРё */
+/* SSM 2.1.13 упрощение грамматики */
 proc_func_constr_destr_decl 
 	: proc_func_decl              
 		{ $$ = $1; }
@@ -958,7 +958,7 @@ const_factor
 		}
     | sign const_factor                              
         { 
-		    // СЂСѓС‡РЅР°РЇ РєРѕСЂСЂРµРєС†РёРЇ С†РµР»С‹С… РєРѕРЅСЃС‚Р°РЅС‚
+		    // ручнаЯ коррекциЯ целых констант
 			if ($1.type == Operators.Minus)
 			{
 			    var i64 = $2 as int64_const;
@@ -978,7 +978,7 @@ const_factor
 					parsertools.AddErrorFromResource("BAD_INT2",@$);
 					break;
 				}
-			    // РјРѕР¶РЅРѕ СЃРґРµР»Р°С‚СЊ РІС‹С‡РёСЃР»РµРЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹ СЃ РІРјРѕРЅС‚РёСЂРѕРІР°РЅРЅС‹Рј РјРёРЅСѓСЃРѕРј
+			    // можно сделать вычисление константы с вмонтированным минусом
 			}
 			$$ = new un_expr($2, $1.type, @$); 
 		}
@@ -1013,7 +1013,7 @@ sign
 const_variable
     : identifier
 		{ $$ = $1; }
-    | literal // SSM 02.10.18 РґР»СЏ '123'.Length РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РєРѕРЅСЃС‚Р°РЅС‚
+    | literal // SSM 02.10.18 для '123'.Length при инициализации констант
 		{ $$ = $1; }
     | unsigned_number
 		{ $$ = $1; }
@@ -1618,7 +1618,7 @@ proc_type_decl
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
         }
-	| simple_type_identifier tkArrow template_param // СЌС‚Рё 2 РїСЂР°РІРёР»Р° РЅРµР»СЊР·СЏ РѕР±СЉРµРґРёРЅСЏС‚СЊ РІ РѕРґРЅРѕ template_param - Р±СѓРґРµС‚ РєРѕРЅС„Р»РёРєС‚
+	| simple_type_identifier tkArrow template_param // эти 2 правила нельзя объединять в одно template_param - будет конфликт
     	{
     		$$ = new modern_proc_type($1,null,$3,@$);            
     	}
@@ -1634,7 +1634,7 @@ proc_type_decl
     	{
     		$$ = new modern_proc_type(null,$2 as enumerator_list,$5,@$);
     	}
-    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose // СЌС‚Рё 2 РїСЂР°РІРёР»Р° РЅРµР»СЊР·СЏ РѕР±СЉРµРґРёРЅСЏС‚СЊ РІ РѕРґРЅРѕ template_param - Р±СѓРґРµС‚ РєРѕРЅС„Р»РёРєС‚
+    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose // эти 2 правила нельзя объединять в одно template_param - будет конфликт
     	{
     		$$ = new modern_proc_type($1,null,null,@$);
     	}
@@ -2151,17 +2151,17 @@ property_specifiers
     :
     | tkRead optional_read_expr write_property_specifiers   
         { 
-        	if ($2 == null || $2 is ident) // СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ СЃРІРѕР№СЃС‚РІР°
+        	if ($2 == null || $2 is ident) // стандартные свойства
         	{
         		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, null, $3 as property_accessors, @$);
         	}
-        	else // СЂР°СЃС€РёСЂРµРЅРЅС‹Рµ СЃРІРѕР№СЃС‚РІР°
+        	else // расширенные свойства
         	{
 				var id = NewId("#GetGen", @2);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassReadFunc($2, id, @2);
-				$$ = NewPropertySpecifiersRead($1, id, pr, $2, $3 as property_accessors, @$); // $2 РїРµСЂРµРґР°С‘С‚СЃСЏ РґР»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ 
+				$$ = NewPropertySpecifiersRead($1, id, pr, $2, $3 as property_accessors, @$); // $2 передаётся для форматирования 
 			}
         }
     | tkWrite unlabelled_stmt read_property_specifiers     
@@ -2171,19 +2171,19 @@ property_specifiers
         	
         		$$ = NewPropertySpecifiersWrite($1, null, null, null, $3 as property_accessors, @$);
         	}
-        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident) // СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ СЃРІРѕР№СЃС‚РІР°
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident) // стандартные свойства
         	{
         	
-        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, $3 as property_accessors, @$);  // СЃС‚Р°СЂС‹Рµ СЃРІРѕР№СЃС‚РІР° - СЃ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, $3 as property_accessors, @$);  // старые свойства - с идентификатором
         	}
-        	else // СЂР°СЃС€РёСЂРµРЅРЅС‹Рµ СЃРІРѕР№СЃС‚РІР°
+        	else // расширенные свойства
         	{
 				var id = NewId("#SetGen", @2);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
                 if (parsertools.build_tree_for_formatter)
-					$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 РїРµСЂРµРґР°С‘С‚СЃСЏ РґР»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
+					$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 передаётся для форматирования
 				else $$ = NewPropertySpecifiersWrite($1, id, pr, null, $3 as property_accessors, @$); 	
 			}
         }
@@ -2199,7 +2199,7 @@ write_property_specifiers
         	}
         	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
         	{
-        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, null, @$); // СЃС‚Р°СЂС‹Рµ СЃРІРѕР№СЃС‚РІР° - СЃ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, null, @$); // старые свойства - с идентификатором
         	}
         	else 
         	{
@@ -2271,7 +2271,7 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
 		}*/
-    | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus СѓР¶Рµ РґР°РІРЅРѕ РЅРµ РєРѕРЅСЃС‚Р°РЅС‚Р° :) РќРѕ СЃСЋРґР° РЅРµ РїРѕРїР°Р»Рё Tuples, РїРѕСЃРєРѕР»СЊРєСѓ РѕРЅРё РєРѕРЅРєСѓСЂРёСЂСѓСЋС‚ СЃ РґСѓСЂР°С†РєРёРјРё СЃС‚Р°СЂС‹РјРё РёРЅРёС†РёР°Р»РёР·Р°С‚РѕСЂР°РјРё РјР°СЃСЃРёРІРѕРІ 
+    | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus уже давно не константа :) Но сюда не попали Tuples, поскольку они конкурируют с дурацкими старыми инициализаторами массивов 
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
 		}
@@ -3052,19 +3052,19 @@ foreach_stmt
         { 
 			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$8, $6, @$); 
         }
-    | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt // СЃР°С…Р°СЂРЅРѕРµ РїСЂР°РІРёР»Рѕ
+    | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt // сахарное правило
         { 
         	if (parsertools.build_tree_for_formatter)
         	{
         		var il = $4 as ident_list;
-        		il.source_context = LexLocation.MergeAll(@4,@5); // РЅСѓР¶РЅРѕ РґР»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
+        		il.source_context = LexLocation.MergeAll(@4,@5); // нужно для форматирования
         		$$ = new foreach_stmt_formatting(il,$7,$10 as statement,$8,@$);
         	}
         	else
         	{
-        		// Р•СЃС‚СЊ РїСЂРѕР±Р»РµРјР° - РЅРµРїРѕРЅСЏС‚РЅРѕ, РіРґРµ Р·РґРµСЃСЊ СЃРґРµР»Р°С‚СЊ СЃРµРјР°РЅС‚С‡РµСЃРєРёР№ СѓР·РµР» РґР»СЏ РїСЂРѕРІРµСЂРєРё
-        		// РџСЂРѕРІРµСЂРёС‚СЊ РјРѕР¶РЅРѕ Рё РІ foreach, РЅРѕ РіРґРµ-С‚Рѕ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РјР°СЂРєРµСЂ, С‡С‚Рѕ СЌС‚Рѕ СЃР°С…Р°СЂРЅС‹Р№ СѓР·РµР»
-        		// РќР°РїСЂРёРјРµСЂ, РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ #fe - РЅРѕ СЌС‚Рѕ РїР»РѕС…Р°СЏ РёРґРµСЏ
+        		// Есть проблема - непонятно, где здесь сделать семантческий узел для проверки
+        		// Проверить можно и в foreach, но где-то должен быть маркер, что это сахарный узел
+        		// Например, идентификатор #fe - но это плохая идея
                 var id = NewId("#fe",@4);
                 var tttt = new assign_var_tuple($4 as ident_list, id, @$);
                 statement_list nine = $10 is statement_list ? $10 as statement_list : new statement_list($10 as statement,@9);
@@ -3509,7 +3509,7 @@ list_fields_in_unnamed_object
 /*array_name_for_new_expr
     : simple_type_identifier 
 		{ $$ = $1; }
-//    | unsized_array_type - Рё РєРѕРјСѓ С‚Р°РєРѕРµ РїСЂРёСЃРЅРёР»РѕСЃСЊ
+//    | unsized_array_type - и кому такое приснилось
 //		{ $$ = $1; }
     ;*/
 
@@ -4084,7 +4084,7 @@ default_expr
     ;
 
 tuple
-	 : tkRoundOpen expr_l1_or_unpacked tkComma expr_l1_or_unpacked_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list РЅСѓР¶РЅРѕ РѕСЃС‚Р°РІРёС‚СЊ С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ РєРѕРЅС„Р»РёРєС‚РѕРІ СЃ РіСЂР°РјРјР°С‚РёРєРѕР№ Р»СЏРјР±Рґ 
+	 : tkRoundOpen expr_l1_or_unpacked tkComma expr_l1_or_unpacked_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
 		{
 			if ($2 is unpacked_list_of_ident_or_list) 
 				parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",@2);
@@ -4149,7 +4149,7 @@ factor
 					parsertools.AddErrorFromResource("BAD_INT2",@$);
 					break;
 				}
-			    // РјРѕР¶РЅРѕ СЃРґРµР»Р°С‚СЊ РІС‹С‡РёСЃР»РµРЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹ СЃ РІРјРѕРЅС‚РёСЂРѕРІР°РЅРЅС‹Рј РјРёРЅСѓСЃРѕРј
+			    // можно сделать вычисление константы с вмонтированным минусом
 			}
 			$$ = new un_expr($2, $1.type, @$);
 		}
@@ -4322,11 +4322,11 @@ variable
                 }
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
-			// РјРЅРѕРіРѕРјРµСЂРЅС‹Рµ СЃСЂРµР·С‹
+			// многомерные срезы
             else if (el.expressions.Any(e => e is format_expr))
             {
             	if (el.expressions.Count > 4)
-            		parsertools.AddErrorFromResource("SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5",@$); // РЎСЂРµР·С‹ РјРЅРѕРіРѕРјРµСЂРЅС‹С… РјР°СЃСЃРёРІРѕРІ СЂР°Р·СЂРµС€РµРЅС‹ С‚РѕР»СЊРєРѕ РґР»СЏ РјР°СЃСЃРёРІРѕРІ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё < 5  
+            		parsertools.AddErrorFromResource("SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5",@$); // Срезы многомерных массивов разрешены только для массивов размерности < 5  
                 var ll = new List<Tuple<expression, expression, expression>>();
                 foreach (var ex in el.expressions)
                 {
@@ -4342,7 +4342,7 @@ variable
                     }
                     else
                     {
-                    	ll.Add(Tuple.Create(ex, (expression)new int32_const(0, ex.source_context), (expression)new int32_const(int.MaxValue, ex.source_context))); // СЃРєР°Р»СЏСЂРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РІРјРµСЃС‚Рѕ СЃСЂРµР·Р°
+                    	ll.Add(Tuple.Create(ex, (expression)new int32_const(0, ex.source_context), (expression)new int32_const(int.MaxValue, ex.source_context))); // скалярное значение вместо среза
                     }
 				}
 				var sle = new slice_expr($1 as addressed_value,null,null,null,@$);
@@ -4845,7 +4845,7 @@ assign_operator
 lambda_unpacked_params
 	: tkBackSlashRoundOpen lambda_list_of_unpacked_params_or_id tkComma lambda_unpacked_params_or_id tkRoundClose
 		{
-			// СЂРµР·СѓР»СЊС‚Р°С‚ РЅР°РґРѕ РїСЂРёСЃРІРѕРёС‚СЊ РєР°РєРѕРјСѓ С‚Рѕ СЃР°С…Р°СЂРЅРѕРјСѓ РїРѕР»СЋ РІ function_lambda_definition
+			// результат надо присвоить какому то сахарному полю в function_lambda_definition
 			($2 as unpacked_list_of_ident_or_list).Add($4 as ident_or_list);
 			$$ = $2 as unpacked_list_of_ident_or_list;
 		}
@@ -4903,16 +4903,16 @@ func_decl_lambda
 			var idList = new ident_list($1, @1); 
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
 			//var sl = $3 as statement_list;
-			//if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName($3, "Result") != null) // РµСЃР»Рё СЌС‚Рѕ Р±С‹Р»Рѕ РІС‹СЂР°Р¶РµРЅРёРµ РёР»Рё РµСЃС‚СЊ РїРµСЂРµРјРµРЅРЅР°СЏ Result, С‚Рѕ Р°РІС‚РѕРІС‹РІРѕРґ С‚РёРїР° 
+			//if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName($3, "Result") != null) // если это было выражение или есть переменная Result, то автовывод типа 
 			    $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
 			//else 
 			//$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, $3 as statement_list, @$);  
 		}
     | tkRoundOpen tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
-		    // Р—РґРµСЃСЊ РЅР°РґРѕ Р°РЅР°Р»РёР·РёСЂРѕРІР°С‚СЊ РїРѕ С‚РµР»Сѓ Рё Р»РёР±Рѕ РѕСЃС‚Р°РІР»СЏС‚СЊ lambda_inferred_type, Р»РёР±Рѕ РґРµР»Р°С‚СЊ РµРіРѕ null!
+		    // Здесь надо анализировать по телу и либо оставлять lambda_inferred_type, либо делать его null!
 		    var sl = $5 as statement_list;
-		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // С‚Рѕ РЅР°РґРѕ РІС‹РІРѕРґРёС‚СЊ
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $3, sl, @$);
 			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, sl, @$);	
 		}
@@ -4922,7 +4922,7 @@ func_decl_lambda
             var loc = LexLocation.MergeAll(@2,@3,@4);
 			var formalPars = new formal_parameters(new typed_parameters(idList, $4, parametr_kind.none, null, loc), loc);
 		    var sl = $8 as statement_list;
-		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // С‚Рѕ РЅР°РґРѕ РІС‹РІРѕРґРёС‚СЊ
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, sl, @$);
 			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);	
 		}
@@ -4933,7 +4933,7 @@ func_decl_lambda
 			for (int i = 0; i < ($4 as formal_parameters).Count; i++)
 				formalPars.Add(($4 as formal_parameters).params_list[i]);
 		    var sl = $8 as statement_list;
-		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // С‚Рѕ РЅР°РґРѕ РІС‹РІРѕРґРёС‚СЊ
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, sl, @$);
 			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);	
 		}
@@ -4945,20 +4945,20 @@ func_decl_lambda
 			for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 				formalPars.Add(($6 as formal_parameters).params_list[i]);
 		    var sl = $10 as statement_list;
-		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // С‚Рѕ РЅР°РґРѕ РІС‹РІРѕРґРёС‚СЊ
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, sl, @$);
 			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);
 		}
-    | tkRoundOpen expr_l1_or_unpacked tkComma expr_l1_or_unpacked_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda // optional_full_lambda_fp_list - С‚Р°Рє СЃРґРµР»Р°РЅРѕ РёР·-Р·Р° РєРѕРЅС„Р»РёРєС‚РѕРІ РІ РіСЂР°РјР°С‚РёРєРµ
+    | tkRoundOpen expr_l1_or_unpacked tkComma expr_l1_or_unpacked_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda // optional_full_lambda_fp_list - так сделано из-за конфликтов в граматике
 		{ 
 			var pair = $8 as pair_type_stlist;
 			
 			if ($5 is lambda_inferred_type)
 			{
-				// РґРѕР±Р°РІРёРј СЃСЋРґР° \(x,y)
-				// РџСЂРѕР№С‚РёСЃСЊ РїРѕ РІСЃРµРј expr_list1. Р•СЃР»Рё С…РѕС‚СЏ Р±С‹ РѕРґРЅР° - С‚РёРїР° ident_or_list С‚Рѕ РїРѕР№С‚Рё РїРѕ СЌС‚РѕР№ РІРµС‚РєРµ Рё РІС‹Р№С‚Рё
-				// СѓР±РµРґРёС‚СЊСЃСЏ, С‡С‚Рѕ $6 = null
-				// СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ List<expression> РґР»СЏ unpacked_params Рё РїСЂРёСЃРІРѕРёС‚СЊ
+				// добавим сюда \(x,y)
+				// Пройтись по всем expr_list1. Если хотя бы одна - типа ident_or_list то пойти по этой ветке и выйти
+				// убедиться, что $6 = null
+				// сформировать List<expression> для unpacked_params и присвоить
 				var has_unpacked = false;
 				if ($2 is unpacked_list_of_ident_or_list)
 					has_unpacked = true;
@@ -4971,7 +4971,7 @@ func_decl_lambda
 							break;
 						}
 					}
-				if (has_unpacked) // С‚СѓС‚ РЅРѕРІР°СЏ РІРµС‚РєР°
+				if (has_unpacked) // тут новая ветка
 				{
 					if ($6 != null)
 					{
@@ -4987,7 +4987,7 @@ func_decl_lambda
     					//new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @2), pair.exprs, @$);
 
 					var sl1 = pair.exprs;
-			    	if (sl1.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl1, "result") != null) // С‚Рѕ РЅР°РґРѕ РІС‹РІРѕРґРёС‚СЊ
+			    	if (sl1.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl1, "result") != null) // то надо выводить
 						fld = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, pair.tn, pair.exprs, @$);
 					else fld = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, pair.exprs, @$);	
 
@@ -5021,7 +5021,7 @@ func_decl_lambda
 				formal_pars.source_context = LexLocation.MergeAll(@2,@3,@4,@5);
 			    
 			    var sl = pair.exprs;
-			    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // С‚Рѕ РЅР°РґРѕ РІС‹РІРѕРґРёС‚СЊ
+			    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
 					$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, pair.tn, pair.exprs, @$);
 				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, null, pair.exprs, @$);	
 			}
@@ -5051,18 +5051,18 @@ func_decl_lambda
 						formalPars.Add(($6 as formal_parameters).params_list[i]);
 
 				var sl = pair.exprs;
-			    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // С‚Рѕ РЅР°РґРѕ РІС‹РІРѕРґРёС‚СЊ
+			    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
 					$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);
 				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, pair.exprs, @$);
 			}
 		}
-    | lambda_unpacked_params rem_lambda // Р»СЏРјР±РґР° СЃ СЂР°СЃРїР°РєРѕРІРєРѕР№
+    | lambda_unpacked_params rem_lambda // лямбда с распаковкой
     	{
     		var pair = $2 as pair_type_stlist;
-    		// РїРѕРєР° С„РѕСЂРјР°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ - null. Р Р°СЃРєСЂРѕРµРј РёС… СЃР°С…Р°СЂРЅС‹Рј РІРёР·РёС‚РѕСЂРѕРј
+    		// пока формальные параметры - null. Раскроем их сахарным визитором
     		$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, 
     			new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), pair.exprs, @$);
-    		// unpacked_params - СЌС‚Рѕ РґР»СЏ РѕРґРЅРѕРіРѕ РїР°СЂР°РјРµС‚СЂР°. Р”Р»СЏ РЅРµСЃРєРѕР»СЊРєРёС… - РЅР°РґРѕ РґСЂСѓРіСѓСЋ СЃС‚СЂСѓРєС‚СѓСЂСѓ. Р’РѕР·РјРѕР¶РЅРѕ, СЃРїРёСЃРѕРє СЃРїРёСЃРєРѕРІ
+    		// unpacked_params - это для одного параметра. Для нескольких - надо другую структуру. Возможно, список списков
     		var lst_ex = new List<expression>();
     		lst_ex.Add($1 as unpacked_list_of_ident_or_list);
     		($$ as function_lambda_definition).unpacked_params = lst_ex;  
@@ -5089,7 +5089,7 @@ rem_lambda
 	;
 	
 expl_func_decl_lambda
-	: tkFunction lambda_type_ref_noproctype tkArrow lambda_function_body // SSM 11.08.20 РґРѕР±Р°РІРёР» _noproctype РІ 3 РїРѕРґРїСЂР°РІРёР»Р°С… 
+	: tkFunction lambda_type_ref_noproctype tkArrow lambda_function_body // SSM 11.08.20 добавил _noproctype в 3 подправилах 
 		{
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $2, $4 as statement_list, 1, @$);
 		}
@@ -5234,7 +5234,7 @@ lambda_function_body
             {
                  parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);
             }
-			var sl = new statement_list(new assign("result",$1,@$),@$); // РЅР°РґРѕ РїРѕРјРµС‡Р°С‚СЊ РµС‰С‘ Рё assign РєР°Рє Р°РІС‚РѕСЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРЅС‹Р№ РґР»СЏ Р»СЏРјР±РґС‹ - С‡С‚РѕР±С‹ Р·Р°РїСЂРµС‚РёС‚СЊ СЏРІРЅС‹Р№ Result
+			var sl = new statement_list(new assign("result",$1,@$),@$); // надо помечать ещё и assign как автосгенерированный для лямбды - чтобы запретить явный Result
 			sl.expr_lambda_body = true;
 			$$ = sl;
 		}
