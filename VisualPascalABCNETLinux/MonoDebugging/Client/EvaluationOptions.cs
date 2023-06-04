@@ -45,8 +45,8 @@ namespace Mono.Debugging.Client
 				ops.AllowMethodEvaluation = true;
 				ops.AllowToStringCalls = true;
 				ops.FlattenHierarchy = true;
-				ops.GroupPrivateMembers = true;
-				ops.GroupStaticMembers = true;
+				ops.GroupPrivateMembers = false;
+				ops.GroupStaticMembers = false;
 				ops.UseExternalTypeResolver = true;
 				ops.IntegerDisplayFormat = IntegerDisplayFormat.Decimal;
 				ops.CurrentExceptionTag = "$exception";

@@ -64,12 +64,12 @@ namespace Mono.Debugger.Soft
 
 			VirtualMachine vm = new VirtualMachine (p, conn);
 
-			if (info.RedirectStandardOutput)
+			if (info.RedirectStandardOutput && false)
 				vm.StandardOutput = p.StandardOutput;
 
-			if (info.RedirectStandardError)
+			if (info.RedirectStandardError && false)
 				vm.StandardError = p.StandardError;
-
+			
 			conn.EventHandler = new EventHandler (vm);
 
 			vm.connect ();
@@ -81,6 +81,8 @@ namespace Mono.Debugger.Soft
 		{
 			return BeginLaunch (info, callback, null);
 		}
+
+		public static ITargetProcess currentProcess;
 
 		public static IAsyncResult BeginLaunch (ProcessStartInfo info, AsyncCallback callback, LaunchOptions options)
 		{
@@ -103,25 +105,33 @@ namespace Mono.Debugger.Soft
 			if (options != null && options.Valgrind)
 				info.FileName = "valgrind";
 			info.UseShellExecute = false;
-
+			info.RedirectStandardError = true;
 			if (info.RedirectStandardError)
 				info.StandardErrorEncoding = Encoding.UTF8;
 
 			if (info.RedirectStandardOutput)
 				info.StandardOutputEncoding = Encoding.UTF8;
-
+			info.RedirectStandardInput = true;
+			
 			ITargetProcess p;
 			if (options != null && options.CustomProcessLauncher != null)
 				p = new ProcessWrapper (options.CustomProcessLauncher (info));
 			else if (options != null && options.CustomTargetProcessLauncher != null)
 				p = options.CustomTargetProcessLauncher (info);
 			else
-				p = new ProcessWrapper (Process.Start (info));
+            {
+				var netProcess = new System.Diagnostics.Process();
+				netProcess.StartInfo = info;
+				netProcess.EnableRaisingEvents = true;
+				netProcess.Start();
+				p = new ProcessWrapper(netProcess);
+			}
+				
 			
 			p.Exited += delegate (object sender, EventArgs eargs) {
 				socket.Close ();
 			};
-
+			currentProcess = p;
 			var listenTask = LaunchInternalAsync (p, info, socket);
 			listenTask.ContinueWith (t => callback (listenTask));
 			return listenTask;
@@ -347,8 +357,8 @@ namespace Mono.Debugger.Soft
 		{
 			VirtualMachine vm = new VirtualMachine (null, transport);
 			
-			vm.StandardOutput = standardOutput;
-			vm.StandardError = standardError;
+			//vm.StandardOutput = standardOutput;
+			//vm.StandardError = standardError;
 			
 			transport.EventHandler = new EventHandler (vm);
 

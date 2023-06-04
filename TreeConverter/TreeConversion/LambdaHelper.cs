@@ -459,7 +459,7 @@ namespace PascalABCCompiler.TreeConverter
             }*/
         }
         #endregion
-
+        /*
         #region Генерация новых узлов синтаксического дерева
         /// <summary>
         /// Класс для генерации новых узлов синтаксического дерева
@@ -549,5 +549,6 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
         #endregion
+    */
     }
 }

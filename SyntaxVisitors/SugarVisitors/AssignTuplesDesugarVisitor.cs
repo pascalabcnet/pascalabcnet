@@ -120,6 +120,7 @@ namespace SyntaxVisitors.SugarVisitors
             visit(assvartup.expr); // В assvartup.expr могут содержаться лямбды, в которых будут другие assign_var_tuple. 
             // И вообще другой синтаксический сахар, размещённый в этом визиторе
         }
+
         public override void visit(var_tuple_def_statement vtd)
         {
             // Состоит из var_def_statements. Некоторые являются var_tuple_def_statement

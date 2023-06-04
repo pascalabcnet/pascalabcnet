@@ -1564,5 +1564,10 @@ namespace VisualPascalABCPlugins
         {
             throw new System.NotImplementedException();
         }
+
+        public void visit(ICommonStaticMethodCallNodeAsConstant value)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

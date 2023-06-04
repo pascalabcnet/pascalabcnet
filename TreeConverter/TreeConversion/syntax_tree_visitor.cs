@@ -5522,7 +5522,11 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                     else
                                     {
-                                        sil = exp.type.find_in_type(id_right.name, context.CurrentScope);
+                                        sil = exp.type.find_in_type(id_right.name, context.CurrentScope); // SSM 25.05.23 тут находится div в 1.div(2,3), а не должен
+                                                                                                          // в этом случае sil.sym_info = basic_function_node
+                                        sil = sil?.FindAll(si => !(si.sym_info is basic_function_node));   // убираю все такие операторы. Может, убираю лишнее
+                                        if (sil != null && sil.Count == 0)
+                                            sil = null;
                                         sil = sil?.Distinct(new SymInfoComparer()).ToList(); // SSM 16/06/20 - удалил дубли для порядка
                                         if (sil != null && sil.FirstOrDefault().sym_info != null && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.wrap_def)
                                         {
@@ -5910,6 +5914,9 @@ namespace PascalABCCompiler.TreeConverter
                                                 // Семантическая разница между exprs.Count и s_n_p.Count равна 1 !!! Только здесь! И вот ее и передавать!
                                                 // exprs.Count = 3; s_n_p = 2; false - не удаляем 1 параметр
                                                 // Добавил последний параметр = 1 - это единственное место где длина exprs на 1 больше
+                                                // Это первый вызов. Будет второй поэтому надо сохранить копию expr до вызова
+
+                                                var exprs_copy = exprs.Clone();
                                                 fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters, false, 1); 
                                                 if (fn == null && skip_first_parameter)
                                                 {
@@ -5921,8 +5928,10 @@ namespace PascalABCCompiler.TreeConverter
                                                     Errors.Error last_err = LastError();
                                                     skip_first_parameter = false;
                                                     sil = tmp_sil;
+                                                    exprs = exprs_copy;
                                                     exprs.remove_at(0);
                                                     // exprs.Count = 2; s_n_p = 2; true - удаляем 1 параметр, пропускаем расширения
+                                                    // Только для методов, исключая методы расширения
                                                     fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters,true); 
                                                     if (fn == null)
                                                     {
@@ -5943,8 +5952,11 @@ namespace PascalABCCompiler.TreeConverter
                                                         throw last_err;
                                                     }
                                                 }
+                                                // Это значит, что нашли метод расширения, но на всякий случай ищем метод поскольку он имеет приоритет
                                                 else if (fn != null && skip_first_parameter && sil.Count() > 1 && !sil.HasOnlyExtensionMethods())
                                                 {
+                                                    var exprs_saved = exprs; // запомнили то что нашли - вдруг здесь не найдем
+                                                    exprs = exprs_copy; // восстановили начальное exprs
                                                     function_node tmp_fn = fn;
                                                     exprs.remove_at(0);
                                                     sil = tmp_sil;
@@ -5954,7 +5966,8 @@ namespace PascalABCCompiler.TreeConverter
                                                     {
                                                         fn = tmp_fn;
                                                         RemoveLastError();
-                                                        exprs.AddElementFirst(exp);
+                                                        exprs = exprs_saved; // восстановили - т.к. здесь не нашли
+                                                        //exprs.AddElementFirst(exp);
                                                     }
                                                 }
                                             }
@@ -15266,6 +15279,18 @@ namespace PascalABCCompiler.TreeConverter
                 constant = new default_operator_node_as_constant(expr as default_operator_node, null);
             else if (expr is typeof_operator && !is_const_section)
                 constant = new typeof_operator_as_constant(expr as typeof_operator, null);
+            else if (expr is common_static_method_call)
+            {
+                var csmc = expr as common_static_method_call;
+                var properties = new List<common_property_node>();
+                foreach (common_property_node cpn in csmc.function_node.cont_type.properties)
+                    if (cpn.get_function == csmc.function_node && cpn.set_function == null)
+                    {
+                        constant = new common_static_method_call_as_constant(csmc, null);
+                        break;
+                    }
+                    
+            }
             else
             {
                 constant = expr as constant_node;
@@ -15404,6 +15429,9 @@ namespace PascalABCCompiler.TreeConverter
                             break;
                         case semantic_node_type.compiled_static_method_call:
                             constant = new compiled_static_method_call_as_constant(exprc as compiled_static_method_call, loc);
+                            break;
+                        case semantic_node_type.common_static_method_call:
+                            constant = new common_static_method_call_as_constant(exprc as common_static_method_call, loc);
                             break;
                         case semantic_node_type.basic_function_call:
                             constant = new basic_function_call_as_constant(exprc as basic_function_call, loc);
@@ -21336,24 +21364,25 @@ namespace PascalABCCompiler.TreeConverter
                 semantic_check_for_indices(expr);
             }*/
             // Patterns
-            else if (st.typ is SemanticCheckType.MatchedExpression)  // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ  == SemanticCheckType.MatchedExpression)  
+                // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
             {
                 var expr = st.lst[0] as expression;
                 CheckMatchedExpression(expr);
             }
-            else if (st.typ is SemanticCheckType.MatchedExpressionAndType)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedExpressionAndType)
             {
                 var expr = st.lst[0] as expression;
                 var type = st.lst[1] as type_definition;
                 CheckIfCanBeMatched(expr, type);
             }
-            else if (st.typ is SemanticCheckType.MatchedExpressionAndExpression)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedExpressionAndExpression)
             {
                 var matchedExpr = st.lst[0] as expression;
                 var patternExpr = st.lst[1] as expression;
                 CheckIfCanBeMatched(matchedExpr, patternExpr);
             }
-            else if (st.typ is SemanticCheckType.MatchedTuple)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedTuple)
             {
                 var tuple = st.lst[0] as expression;
                 var length = st.lst[1] as int32_const;
@@ -21361,7 +21390,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             // !Patterns
             // Slices
-            else if (st.typ is SemanticCheckType.SliceAssignmentTypeCompatibility)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.SliceAssignmentTypeCompatibility)
             {
                 var to = st.lst[0] as expression;
                 var from = st.lst[1] as expression;

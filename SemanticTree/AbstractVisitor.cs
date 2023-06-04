@@ -656,6 +656,11 @@ namespace PascalABCCompiler.SemanticTree
         {
             
         }
+
+		public virtual void visit(ICommonStaticMethodCallNodeAsConstant value)
+        {
+
+        }
     }
 
 }

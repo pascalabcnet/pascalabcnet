@@ -378,6 +378,7 @@ namespace VisualPascalABC
             RemoveFromTables(fileName);
             if (Exited != null)
                 Exited(fileName);
+
         }
         
         void RemoveFromTables(string FileName)
@@ -407,6 +408,7 @@ namespace VisualPascalABC
             (StartedProcesses[fileName] as Utils.ProcessRunner).Kill();
             if (!WorkbenchServiceFactory.Workbench.UserOptions.AlwaysAttachDebuggerAtStart)
                 WorkbenchServiceFactory.Workbench.DebuggerManager.NullProcessHandleIfNeed(fileName);
+            WorkbenchServiceFactory.DebuggerManager.EndDebuggerSession();
             RemoveFromTables(fileName);
             if (Exited != null)
                 Exited(fileName);

@@ -1,5 +1,4 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.TreeConverter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,8 @@ namespace SyntaxVisitors
 {
     public class SingleDeconstructChecker : BaseEnterExitVisitor
     {
+        private const string DeconstructMethodName = "deconstruct"; // в трех местах эту константу - если менять
+
         private int deconstructCount = 0;
         private bool isInClass = false;
 
@@ -34,7 +35,7 @@ namespace SyntaxVisitors
             if (!isInClass)
                 return;
 
-            if (_method_name?.meth_name?.name?.ToLower() == compiler_string_consts.deconstruct_method_name)
+            if (_method_name?.meth_name?.name?.ToLower() == DeconstructMethodName)
                 deconstructCount++;
 
             if (deconstructCount > 1)

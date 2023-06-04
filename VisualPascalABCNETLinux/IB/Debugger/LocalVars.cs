@@ -453,6 +453,8 @@ namespace VisualPascalABC
     class ValueItem : ListItem
     {
         Value val;
+        Mono.Debugging.Client.ObjectValue monoValue;
+
 		public DebugType declaringType;
 		
 		public ValueItem() {}
@@ -462,10 +464,10 @@ namespace VisualPascalABC
             [HandleProcessCorruptedStateExceptionsAttribute]
             get
             {
+                
                 try
                 {
-                    bool b = val.IsObject;
-                    return false;
+                    return monoValue.IsPrimitive;
                 }
                 catch (System.Exception e)
                 {
@@ -503,6 +505,7 @@ namespace VisualPascalABC
             [HandleProcessCorruptedStateExceptionsAttribute]
             get
             {
+                return 1;
             	if (!(val is NamedValue)) return 1;
             	if (imageIndex != -1) return imageIndex;
             	if (declaringType == null) return 1;
@@ -603,8 +606,12 @@ namespace VisualPascalABC
             [HandleProcessCorruptedStateExceptionsAttribute]
             get
             {
+                
                 try
                 {
+                    if (monoValue.Name.IndexOf(':') != -1)
+                        return monoValue.Name.Substring(0, monoValue.Name.IndexOf(':'));
+                    return monoValue.Name;
                     if (!string.IsNullOrEmpty(name))
                         return name;
                     if (!((val is NamedValue) ? (val as NamedValue).Name : name).Contains("$rv"))
@@ -661,7 +668,8 @@ namespace VisualPascalABC
             [HandleProcessCorruptedStateExceptionsAttribute]
             get
             {
-                if (ShowValuesInHexadecimal && val.IsInteger)
+                return monoValue.DisplayValue;
+                /*if (ShowValuesInHexadecimal && val.IsInteger)
                 {
                     return String.Format("0x{0:X}", val.PrimitiveValue);
                 }
@@ -752,7 +760,7 @@ namespace VisualPascalABC
                     {
                         return "";
                     }
-                }
+                }*/
             }
         }
 		
@@ -785,14 +793,7 @@ namespace VisualPascalABC
             {
                 try
                 {
-            		if (val.Type != null)
-                	{
-            			return DebugUtils.WrapTypeName(val.Type);
-                	}
-                	else
-                	{
-                    	return String.Empty;
-                	}
+                    return monoValue.TypeName;
                 }
                 catch(System.Exception e)
                 {
@@ -805,7 +806,7 @@ namespace VisualPascalABC
         {
             try
             {
-                return val.IsObject;
+                return monoValue.IsObject;
             }
             catch (System.Exception e)
             {
@@ -820,8 +821,11 @@ namespace VisualPascalABC
             {
                 try
                 {
-                	if (IsEnum() || val.Type.ManagedType == typeof(string)) return false;
-                    return val.IsObject || val.IsArray;
+                    if (monoValue.TypeName == "string")
+                        return false;
+                    return monoValue.IsObject || monoValue.IsArray;
+                	//if (IsEnum() || val.Type.ManagedType == typeof(string)) return false;
+                    //return val.IsObject || val.IsArray;
                 }
                 catch (System.Exception e)
                 {
@@ -834,25 +838,28 @@ namespace VisualPascalABC
         {
             get
             {
+
                 List<IListItem> list = new List<IListItem>();
-                if (val.IsArray)
+               
+                if (monoValue.IsObject)
                 {
-                    foreach (NamedValue element in val.GetArrayElements())
+                    foreach (var element in monoValue.GetAllChildren())
                     {
-                        list.Add(new ValueItem(element,null));
+                        list.Add(new ValueItem(element));
                     }
+                    return list;
                 }
-                if (val.IsObject || val.Type.IsByRef() && !val.IsPrimitive)
+                /*if (monoValue.IsObject || !monoValue.IsPrimitive)
                 {
                     //if (IsArrayWrap())
                     //{
-                    NamedValue nv = GetNullBasedArray();
-                    if (nv != null)
+                    var lv = GetNullBasedArray();
+                    if (lv != null)
                     {
                         int i = 0;
-                        foreach (NamedValue element in nv.GetArrayElements())
+                        foreach (var element in lv.GetAllChildren())
                         {
-                            list.Add(new ArrayValueItem(element, null, val, nv, i++));
+                            list.Add(new ArrayValueItem(element, monoValue, lv, i++));
 
                         }
                     }
@@ -862,17 +869,19 @@ namespace VisualPascalABC
                         if (!val.Type.IsByRef())
                             return new BaseTypeItem(val, val.Type).SubItems;
                     }
-                }
+                }*/
                 return list;
             }
         }
 
-        private NamedValue GetNullBasedArray()
+        private Mono.Debugging.Client.ObjectValue GetNullBasedArray()
         {
-            IList<FieldInfo> flds = val.Type.GetFields();
-            if (flds.Count != 3) return null;
-            foreach (FieldInfo fi in flds)
-                if (fi.Name == "NullBasedArray") return fi.GetValue(val);
+            var fields = monoValue.GetAllChildren();
+            if (fields.Length != 3) 
+                return null;
+            foreach (var fi in fields)
+                if (fi.Name == "NullBasedArray")
+                    return fi;
             return null;
         }
 
@@ -942,12 +951,18 @@ namespace VisualPascalABC
             }
             val.Changed += delegate { OnChanged(new ListItemEventArgs(this)); };
         }
+
+        public ValueItem(Mono.Debugging.Client.ObjectValue val)
+        {
+            this.monoValue = val;
+        }
+
         [HandleProcessCorruptedStateExceptionsAttribute]
         public override bool SetText(string newValue)
         {
             try
             {
-                val.PrimitiveValue = newValue;
+                monoValue.SetValue(newValue);
                 return true;
             }
             catch (NotSupportedException)
@@ -984,6 +999,11 @@ namespace VisualPascalABC
                 low_bound = tmp_fi.GetRawConstantValue();
             else
                 low_bound = tmp_fi.GetValue(sz_arr);
+        }
+
+        public ArrayValueItem(Mono.Debugging.Client.ObjectValue val, Mono.Debugging.Client.ObjectValue arr, Mono.Debugging.Client.ObjectValue sz_arr, int ind)
+        {
+
         }
 
         public override string Name

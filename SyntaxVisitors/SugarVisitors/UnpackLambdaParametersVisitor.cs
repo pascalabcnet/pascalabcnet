@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.TreeRealization;
 
 namespace SyntaxVisitors.SugarVisitors
 {
@@ -71,7 +70,7 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 if (param is unpacked_list_of_ident_or_list unpacked_param)
                 {
-                    var lam_inft = new lambda_inferred_type(new lambda_any_type_node());
+                    var lam_inft = new lambda_inferred_type(new lambda_any_type_node_syntax());
                     var param_id = CreateIdent(fld.source_context);
                     var idlist = new ident_list(param_id, unpacked_param.source_context);
                     var typed_pars = new typed_parameters(idlist, lam_inft, parametr_kind.none, null, unpacked_param.source_context);
@@ -83,7 +82,7 @@ namespace SyntaxVisitors.SugarVisitors
                 }
                 else if (param is ident id)
                 {
-                    var lam_inft = new lambda_inferred_type(new lambda_any_type_node());
+                    var lam_inft = new lambda_inferred_type(new lambda_any_type_node_syntax());
                     var idlist = new ident_list(id,id.source_context);
                     var typed_pars = new typed_parameters(idlist, lam_inft);
                     fld.formal_parameters.Add(typed_pars, fld.source_context);

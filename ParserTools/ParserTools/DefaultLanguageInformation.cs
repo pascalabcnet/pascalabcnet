@@ -542,17 +542,38 @@ namespace PascalABCCompiler.Parsers
                 if (fields[i].Name != "value__")
                 {
                     object o = fields[i].GetRawConstantValue(); //ошибка была здесь, так как я не знал, что у констант enum'а может быть другой тип помимо int
-                    switch (o)
-                    {
-                        case byte b: if (b != i - 1) return true; break;
-                        case sbyte b: if (b != i - 1) return true; break;
-                        case short b: if (b != i - 1) return true; break;
-                        case ushort b: if (b != i - 1) return true; break;
-                        case int b: if (b != i - 1) return true; break;
-                        case uint b: return true; break;
-                        case long b: return true; break;
-                        case ulong b: return true; break;
-                    }
+	                if (o is byte b1)
+	                {
+		                if (b1 != i - 1) return true;
+	                }
+	                else if (o is sbyte b2)
+	                {
+		                if (b2 != i - 1) return true;
+	                }
+	                else if (o is short b3)
+	                {
+		                if (b3 != i - 1) return true;
+	                }
+	                else if (o is ushort b4)
+	                {
+		                if (b4 != i - 1) return true;
+	                }
+	                else if (o is int b5)
+	                {
+		                if (b5 != i - 1) return true;
+	                }
+	                else if (o is uint b6)
+	                {
+		                return true;
+	                }
+	                else if (o is long b7)
+	                {
+		                return true;
+	                }
+	                else if (o is ulong b8)
+	                {
+		                return true;
+	                }
                 }
             }
             return false;

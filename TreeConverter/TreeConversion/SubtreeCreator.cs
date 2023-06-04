@@ -11,6 +11,7 @@ using PascalABCCompiler.TreeConverter;
 
 namespace PascalABCCompiler.TreeConversion
 {
+    /*
     public class SubtreeCreator
     {
         syntax_tree_visitor _syntaxTreeVisitor;
@@ -278,4 +279,5 @@ namespace PascalABCCompiler.TreeConversion
             return res;
         }
     }
+    */
 }

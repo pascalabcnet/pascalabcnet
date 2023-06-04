@@ -719,6 +719,7 @@ namespace AdvancedDataGridView
             }
             catch (System.Exception e)
             {
+				Console.WriteLine(e.Message + " " + e.StackTrace);
             }
         }
 		
