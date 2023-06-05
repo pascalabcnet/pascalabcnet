@@ -193,7 +193,7 @@ namespace VisualPascalABC
                                 {
                                     DebuggerManager.ShowDebugTabs = true;
                                     DebuggerManager.UpdateBreakpoints();
-                                    //DebuggerManager.CurrentBreakpoint = DebuggerManager.AddBreakPoint(DocumentService.CurrentCodeFileDocument.FileName, DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1, false);
+                                    DebuggerManager.CurrentBreakpoint = DebuggerManager.AddBreakPoint(DocumentService.CurrentCodeFileDocument.FileName, DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1, false);
                                     DebuggerManager.AddGoToBreakPoint(DebuggerManager.CurrentBreakpoint);
                                 }
                                 else if (needFirstBreakpoint)

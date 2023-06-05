@@ -296,7 +296,7 @@ namespace VisualPascalABC
         private string FullFileName;
         private string PrevFullFileName;
         private Mono.Debugging.Client.Breakpoint brPoint;
-        private Breakpoint currentBreakpoint;
+        private Mono.Debugging.Client.Breakpoint currentBreakpoint;
         private int CurrentLine;
         public DebugStatus Status;
         private bool MustDebug = false;
@@ -340,7 +340,7 @@ namespace VisualPascalABC
         	}
     	}
         
-        public Breakpoint CurrentBreakpoint
+        public Mono.Debugging.Client.Breakpoint CurrentBreakpoint
         {
             get { return currentBreakpoint; }
             set { currentBreakpoint = value; }
@@ -668,7 +668,7 @@ namespace VisualPascalABC
 
         void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
         {
-            if (currentBreakpoint != null)
+            /*if (currentBreakpoint != null)
             {
             	dbg.RemoveBreakpoint(currentBreakpoint);
                 RemoveGotoBreakpoints();
@@ -690,7 +690,7 @@ namespace VisualPascalABC
                 }
             }
             if (debuggerStateEvent != null)
-            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));
+            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));*/
         }
 		
         private void debugBreakpointHit(object sender, BreakpointEventArgs e)
@@ -1139,7 +1139,7 @@ namespace VisualPascalABC
                 RemoveBreakpoints();
                 if (currentBreakpoint != null)
                 {
-                    dbg.RemoveBreakpoint(currentBreakpoint);
+                    monoDebuggerSession.Breakpoints.Remove(currentBreakpoint);
                     currentBreakpoint = null; //RemoveBreakpoints();
                 }
             }
@@ -2042,10 +2042,10 @@ namespace VisualPascalABC
                 //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).FileName,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
                   //  (frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column+100), true);
                 workbench.WidgetController.SetStartDebugDisabled();
-                currentBreakpoint = dbg.AddBreakpoint(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);
+                currentBreakpoint = monoDebuggerSession.Breakpoints.Add(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);
                 AddGoToBreakPoint(currentBreakpoint);
                 Status = DebugStatus.None;
-                dbg.Processes[0].Continue();
+                monoDebuggerSession.Continue();
                 //dbg.RemoveBreakpoint(cur_brpt);
                 CurrentLineBookmark.Remove();
             }
@@ -2054,12 +2054,12 @@ namespace VisualPascalABC
             }
         }
 
-        private Stack<Breakpoint> goto_brs = new Stack<Breakpoint>();
+        private Stack<Mono.Debugging.Client.Breakpoint> goto_brs = new Stack<Mono.Debugging.Client.Breakpoint>();
 
         /// <summary>
         /// Добавляет Breakpoint по F4
         /// </summary>
-        public void AddGoToBreakPoint(Breakpoint br)
+        public void AddGoToBreakPoint(Mono.Debugging.Client.Breakpoint br)
         {
             goto_brs.Push(br);
         }
@@ -2081,7 +2081,7 @@ namespace VisualPascalABC
         
         public void AddGoToBreakPoint(string fileName, int line)
         {
-        	goto_brs.Push(dbg.AddBreakpoint(fileName, line));
+        	goto_brs.Push(monoDebuggerSession.Breakpoints.Add(fileName, line));
         }
         
         /// <summary>
@@ -2092,11 +2092,10 @@ namespace VisualPascalABC
         {
             while (goto_brs.Count > 0)
             {
-                Breakpoint br = goto_brs.Pop();
+                Mono.Debugging.Client.Breakpoint br = goto_brs.Pop();
                 try
                 {
-
-                    dbg.RemoveBreakpoint(br);
+                    monoDebuggerSession.Breakpoints.Remove(br);
                 }
                 catch (System.Exception e)
                 {
