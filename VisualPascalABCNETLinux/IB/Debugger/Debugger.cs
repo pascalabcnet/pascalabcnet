@@ -296,7 +296,7 @@ namespace VisualPascalABC
         private string FullFileName;
         private string PrevFullFileName;
         private Mono.Debugging.Client.Breakpoint brPoint;
-        private Breakpoint currentBreakpoint;
+        private Mono.Debugging.Client.Breakpoint currentBreakpoint;
         private int CurrentLine;
         public DebugStatus Status;
         private bool MustDebug = false;
@@ -340,7 +340,7 @@ namespace VisualPascalABC
         	}
     	}
         
-        public Breakpoint CurrentBreakpoint
+        public Mono.Debugging.Client.Breakpoint CurrentBreakpoint
         {
             get { return currentBreakpoint; }
             set { currentBreakpoint = value; }
@@ -668,7 +668,7 @@ namespace VisualPascalABC
 
         void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
         {
-            if (currentBreakpoint != null)
+            /*if (currentBreakpoint != null)
             {
             	dbg.RemoveBreakpoint(currentBreakpoint);
                 RemoveGotoBreakpoints();
@@ -690,7 +690,7 @@ namespace VisualPascalABC
                 }
             }
             if (debuggerStateEvent != null)
-            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));
+            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));*/
         }
 		
         private void debugBreakpointHit(object sender, BreakpointEventArgs e)
@@ -1139,7 +1139,7 @@ namespace VisualPascalABC
                 RemoveBreakpoints();
                 if (currentBreakpoint != null)
                 {
-                    dbg.RemoveBreakpoint(currentBreakpoint);
+                    monoDebuggerSession.Breakpoints.Remove(currentBreakpoint);
                     currentBreakpoint = null; //RemoveBreakpoints();
                 }
             }
@@ -1445,7 +1445,6 @@ namespace VisualPascalABC
                             return new ValueItem(stackFrame.GetThisReference());
                         else if (lv.Name.Contains("$class_var"))
                         {
-                            
                             global_lv = lv;
                         }
                             
@@ -1522,14 +1521,16 @@ namespace VisualPascalABC
                     }
                     if (global_lv != null)
                     {
-                        var fields = global_lv.GetAllChildren();
-                        
+                        Console.WriteLine(global_lv.TypeName);
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
+                        var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
                         foreach (var fi in fields)
                         {
                             if (string.Compare(fi.Name, var, true) == 0)
-                                return new ValueItem(fi);
+                                return new ValueItem(fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions));
                         }
-                            
+
+
                         Type global_type = AssemblyHelper.GetType(global_lv.TypeName);
                         if (global_type != null)
                         {
@@ -1537,6 +1538,15 @@ namespace VisualPascalABC
                             if (fi != null && fi.IsLiteral)
                                 return new ValueItem(DebugUtils.MakeValue(fi.GetRawConstantValue()), var, global_nv.Type);
                         }
+                    }
+
+                    Type t = AssemblyHelper.GetTypeForStatic(var);
+                    if (t != null)
+                    {
+                        var tm = monoDebuggerSession.GetType(t.FullName);
+                        Console.WriteLine("type for static " + tm);
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+                        return new BaseTypeItem(tr, t);
                     }
 
 
@@ -1659,7 +1669,7 @@ namespace VisualPascalABC
                         }
                     }
 
-                    Type t = AssemblyHelper.GetTypeForStatic(var);
+                    t = AssemblyHelper.GetTypeForStatic(var);
                     if (t != null)
                     {
                         DebugType dt = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(var),(uint)t.MetadataToken);
@@ -2032,10 +2042,10 @@ namespace VisualPascalABC
                 //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).FileName,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
                   //  (frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column+100), true);
                 workbench.WidgetController.SetStartDebugDisabled();
-                currentBreakpoint = dbg.AddBreakpoint(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);
+                currentBreakpoint = monoDebuggerSession.Breakpoints.Add(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);
                 AddGoToBreakPoint(currentBreakpoint);
                 Status = DebugStatus.None;
-                dbg.Processes[0].Continue();
+                monoDebuggerSession.Continue();
                 //dbg.RemoveBreakpoint(cur_brpt);
                 CurrentLineBookmark.Remove();
             }
@@ -2044,12 +2054,12 @@ namespace VisualPascalABC
             }
         }
 
-        private Stack<Breakpoint> goto_brs = new Stack<Breakpoint>();
+        private Stack<Mono.Debugging.Client.Breakpoint> goto_brs = new Stack<Mono.Debugging.Client.Breakpoint>();
 
         /// <summary>
         /// Добавляет Breakpoint по F4
         /// </summary>
-        public void AddGoToBreakPoint(Breakpoint br)
+        public void AddGoToBreakPoint(Mono.Debugging.Client.Breakpoint br)
         {
             goto_brs.Push(br);
         }
@@ -2071,7 +2081,7 @@ namespace VisualPascalABC
         
         public void AddGoToBreakPoint(string fileName, int line)
         {
-        	goto_brs.Push(dbg.AddBreakpoint(fileName, line));
+        	goto_brs.Push(monoDebuggerSession.Breakpoints.Add(fileName, line));
         }
         
         /// <summary>
@@ -2082,11 +2092,10 @@ namespace VisualPascalABC
         {
             while (goto_brs.Count > 0)
             {
-                Breakpoint br = goto_brs.Pop();
+                Mono.Debugging.Client.Breakpoint br = goto_brs.Pop();
                 try
                 {
-
-                    dbg.RemoveBreakpoint(br);
+                    monoDebuggerSession.Breakpoints.Remove(br);
                 }
                 catch (System.Exception e)
                 {

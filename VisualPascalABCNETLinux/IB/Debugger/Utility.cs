@@ -43,6 +43,14 @@ namespace VisualPascalABC
             return ht[name] != null;
         }
 
+        public static bool CheckForCollection(Mono.Debugging.Evaluation.TypeValueReference type)
+        {
+            string name = type.Name;
+            int ind = name.IndexOf('<');
+            if (ind != -1) name = name.Substring(0, ind);
+            return ht[name] != null;
+        }
+
         public static NamedValue GetNullBasedArray(Value val)
         {
             IList<FieldInfo> flds = val.Type.GetFields();
