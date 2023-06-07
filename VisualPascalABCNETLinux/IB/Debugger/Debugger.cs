@@ -978,13 +978,32 @@ namespace VisualPascalABC
         private Mono.Debugging.Client.SourceLocation stepin_stmt = null;
 		private bool tab_changed=false;
 
+        private delegate void JumpToLineDelegate(int line);
+        private delegate void JumpToLinePreActionsDelegate();
+        private delegate void SetCurrentLineBookmarkDelegate(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn);
+
+        void JumpToLineInvoke(int line)
+        {
+            curPage.TextEditor.ActiveTextAreaControl.JumpTo(line, 0);
+        }
+
+        void JumpToLinePreActionsInvoke()
+        {
+            workbench.MainForm.Activate();
+            CurrentLineBookmark.Remove();//udalajem zheltyj kursor otladki
+        }
+
+        void SetCurrentLineBookmarkInvoke(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
+        {
+            CurrentLineBookmark.SetPosition(fileName, document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
+        }
+
         /// <summary>
         /// Перейти к следующей строке при отладке
         /// </summary>
         private void JumpToCurrentLine(bool fromBreakpoint = false)
         {
-            workbench.MainForm.Activate();
-            CurrentLineBookmark.Remove();//udalajem zheltyj kursor otladki
+            workbench.MainForm.Invoke(new JumpToLinePreActionsDelegate(JumpToLinePreActionsInvoke));
             //System.Threading.Thread.Sleep(70);
             if (stackFrame != null)
             {
@@ -1030,6 +1049,7 @@ namespace VisualPascalABC
                 {
                     tab_changed = true;
                     curPage = WorkbenchServiceFactory.FileService.OpenFileForDebug(stackFrame.SourceLocation.FileName);
+                    
                     if (curPage == null)
                     {
                         MustDebug = true;
@@ -1112,10 +1132,12 @@ namespace VisualPascalABC
                         }
                     }
                 }
-                //for (int i=0; i<lseg.Words.Count; i++)
-                CurrentLineBookmark.SetPosition(stackFrame.SourceLocation.FileName, curPage.TextEditor.Document, stackFrame.SourceLocation.Line, 1, stackFrame.SourceLocation.Line,
+                //CurrentLineBookmark.SetPosition(stackFrame.SourceLocation.FileName, curPage.TextEditor.Document, stackFrame.SourceLocation.Line, 1, stackFrame.SourceLocation.Line,
+                //   len);
+
+                curPage.TextEditor.ActiveTextAreaControl.Invoke(new JumpToLineDelegate(JumpToLineInvoke), stackFrame.SourceLocation.Line - 1);
+                curPage.TextEditor.ActiveTextAreaControl.Invoke(new SetCurrentLineBookmarkDelegate(SetCurrentLineBookmarkInvoke), stackFrame.SourceLocation.FileName, curPage.TextEditor.Document, stackFrame.SourceLocation.Line, 1, stackFrame.SourceLocation.Line,
                    len);
-                
                 //curPage.TextEditor.ActiveTextAreaControl.JumpTo(stackFrame.SourceLocation.Line - 1, 0);
                 if ((Status == DebugStatus.StepOver || Status == DebugStatus.StepIn) && (CurrentLine == stackFrame.SourceLocation.Line
                         && save_PrevFullFileName == stackFrame.SourceLocation.FileName))
