@@ -546,7 +546,8 @@ namespace VisualPascalABC
             return null;
         }
 
-        
+
+        private delegate void EndDebuggerSessionDelegate();
 
         public void EndDebuggerSession()
         {
@@ -596,9 +597,10 @@ namespace VisualPascalABC
             monoDebuggerSession = new Mono.Debugging.Soft.SoftDebuggerSession();
         }
 
+        
         private void Process_Exited(object sender, EventArgs e)
         {
-            EndDebuggerSession();
+            VisualPABCSingleton.MainForm.Invoke(new EndDebuggerSessionDelegate(EndDebuggerSession));
             
         }
 
@@ -613,6 +615,7 @@ namespace VisualPascalABC
             stackFrame = e.Thread.Backtrace.GetFrame(0);
             JumpToCurrentLine();
             workbench.WidgetController.SetStartDebugEnabled();
+            WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(stackFrame).SubItems);
         }
 
         private void MonoDebuggerSession_TargetStarted(object sender, EventArgs e)

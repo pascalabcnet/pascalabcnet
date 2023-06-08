@@ -633,11 +633,9 @@ namespace VisualPascalABC
         private bool watch_vis = false;
         public void SetDebugTabsVisible(bool flag)
         {
-            if (DebugWatchListWindow == null)
-                return;
             if (flag)
             {
-                if (!DebugWatchListWindow.IsHidden)
+                if (DebugWatchListWindow != null && !DebugWatchListWindow.IsHidden)
                 {
                     watch_vis = true;
                 }
@@ -645,14 +643,15 @@ namespace VisualPascalABC
                 {
                     if (!BottomTabsVisible)
                         BottomTabsVisible = true;
-                    ShowContent(DebugWatchListWindow, false);
+                    if (DebugWatchListWindow != null)
+                        ShowContent(DebugWatchListWindow, false);
                     ShowContent(DebugVariablesListWindow, false);
                 }
             }
             else
             {
                 //HideContent(DebugWatchListWindow);
-                if (!watch_vis)
+                if (!watch_vis && DebugWatchListWindow != null)
                 {
                     HideContent(DebugWatchListWindow);
                 }

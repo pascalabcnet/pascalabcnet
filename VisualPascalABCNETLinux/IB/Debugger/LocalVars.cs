@@ -141,34 +141,17 @@ namespace VisualPascalABC
 
     public class ModuleItem : ListItem
     {
-        private NamedValue val;
-        private string ns_name;
         private Function func;
 		private List<DebugType> types;
-		
-        /*public ModuleItem(NamedValue val, Function func)
+        private Mono.Debugging.Client.StackFrame frame;
+        private List<Mono.Debugging.Evaluation.TypeValueReference> monoTypes;
+
+        public ModuleItem(List<Mono.Debugging.Evaluation.TypeValueReference> monoTypes, Mono.Debugging.Client.StackFrame frame)
         {
-            this.val = val;
-            ns_name = val.Type.FullName.Substring(0, val.Type.FullName.LastIndexOf('.'));
-            this.func = func;
-            this.func.Process.DebuggeeStateChanged += delegate
-            {
-                this.OnChanged(new ListItemEventArgs(this));
-            };
-        }*/
-        
-		public ModuleItem(List<DebugType> types, Function func)
-        {
-            //this.val = val;
-            //ns_name = val.Type.FullName.Substring(0, val.Type.FullName.LastIndexOf('.'));
-            this.types = types;
-            this.func = func;
-            this.func.Process.DebuggeeStateChanged += delegate
-            {
-                this.OnChanged(new ListItemEventArgs(this));
-            };
+            this.monoTypes = monoTypes;
+            this.frame = frame;
         }
-		
+
         public override int ImageIndex
         {
             get
@@ -228,12 +211,12 @@ namespace VisualPascalABC
             get
             {
                 List<IListItem> ret = new List<IListItem>();
-                foreach (DebugType dt in types)
+                foreach (var tr in monoTypes)
                 {
-                	//IList<FieldInfo> fis = val.Type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);  
-                	IList<FieldInfo> fis = dt.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                	foreach (FieldInfo fi in fis)
-                  	if (!fi.Name.Contains("$")) ret.Add(new ValueItem(fi.GetValue(null),fi.DeclaringType));
+                    var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                    foreach (var fi in fields)
+                  	    if (!fi.Name.Contains("$")) 
+                            ret.Add(new ValueItem(fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions)));
                 }
                 return ret;
             }
@@ -242,15 +225,8 @@ namespace VisualPascalABC
 
     public class FunctionItem : ListItem
     {
-        Function function;
+        Mono.Debugging.Client.StackFrame frame;
 
-        public Function Function
-        {
-            get
-            {
-                return function;
-            }
-        }
 
         public override bool IsLiteral
         {
@@ -271,7 +247,7 @@ namespace VisualPascalABC
         {
             get
             {
-                return function.Name;
+                return frame.SourceLocation.MethodName;
             }
         }
 
@@ -314,45 +290,42 @@ namespace VisualPascalABC
             {
                 List<IListItem> ret = new List<IListItem>();
                 Hashtable ht = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-                foreach (NamedValue val in function.LocalVariables)
+                foreach (var val in frame.GetAllLocals())
                 {
-                    if (val.Name.Contains("$class_var") /*&& !val.Type.FullName.Contains("$")*/)
+                    if (val.Name.Contains("$class_var"))
                     {
-                        //IList<FieldInfo> fis = val.Type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                        //if (fis.Count != 0)
-                        List<DebugType> types = new List<DebugType>();
+                        List<Mono.Debugging.Evaluation.TypeValueReference> types = new List<Mono.Debugging.Evaluation.TypeValueReference>();
                         try
                         {
-                            if (val.Type.FullName.Contains(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName))
+                            if (val.TypeName.Contains(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName))
                         	{
-                                string interf_name = val.Type.FullName.Substring(0, val.Type.FullName.IndexOf(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
+                                string interf_name = val.TypeName.Substring(0, val.TypeName.IndexOf(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
                         		Type t = AssemblyHelper.GetTypeForStatic(interf_name);
-                        		DebugType dt = DebugUtils.GetDebugType(t);
-                        		types.Add(dt);
+                                var tr = new Mono.Debugging.Evaluation.TypeValueReference(frame.SourceBacktrace.GetEvaluationContext(frame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), 
+                                            (frame.DebuggerSession as Mono.Debugging.Soft.SoftDebuggerSession).GetType(t.FullName));
+                        		types.Add(tr);
                         	}
-                            types.Add(val.Type);
+                            var valtr = new Mono.Debugging.Evaluation.TypeValueReference(frame.SourceBacktrace.GetEvaluationContext(frame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions),
+                                            (frame.DebuggerSession as Mono.Debugging.Soft.SoftDebuggerSession).GetType(val.TypeName));
+                            types.Add(valtr);
                         }
                         catch (System.Exception e)
                         {
-                        	
+                            Console.WriteLine(e.Message + " " + e.StackTrace);
                         }
                         
-                        ret.Add(new ModuleItem(types, function));
-                        //foreach (FieldInfo fi in fis)
-                        //  if (!fi.Name.Contains("$")) ret.Add(new ValueItem(fi.GetValue(val)));
+                        ret.Add(new ModuleItem(types, frame));
                     }
                 }
-                foreach (NamedValue val in function.LocalVariables)
+                foreach (var val in frame.GetAllLocals())
                 {
-                    //if (val.IsObject) 
-                    
                     if (!val.Name.Contains("$"))
-                    	ret.Add(new ValueItem(val,null));
+                    	ret.Add(new ValueItem(val));
                     else if (val.Name.Contains("$rv"))
                     {
-                        ret.Add(new ValueItem(val,null));
+                        ret.Add(new ValueItem(val));
                     }
-                    else if (val.Name == "$disp$")
+                    /*else if (val.Name == "$disp$")
                     {
                         IList<FieldInfo> fields = val.Type.GetFields(BindingFlags.All);
                         foreach (FieldInfo fi in fields)
@@ -361,15 +334,15 @@ namespace VisualPascalABC
                         	ret.Add(new ValueItem(fi.GetValue(val),fi.DeclaringType));
                         	ht[fi.Name] = fi.Name;
                         }
-                    }
+                    }*/
                 }
-                NamedValue self_nv = null;
+                Mono.Debugging.Client.ObjectValue self_nv = null;
                 try
                 {
-                    foreach (NamedValue val in function.Arguments)
+                    foreach (var val in frame.GetParameters())
                     {
                         if (!val.Name.Contains("$") && !ht.ContainsKey(val.Name))
-                            ret.Add(new ValueItem(val, null));
+                            ret.Add(new ValueItem(val));
                         else if (val.Name == "$obj$")
                             self_nv = val;
                     }
@@ -377,26 +350,17 @@ namespace VisualPascalABC
                 catch
                 {
                 }
-                if (!function.IsStatic) ret.Add(new ValueItem(function.ThisValue,null));
+                if (frame.GetThisReference() != null) 
+                    ret.Add(new ValueItem(frame.GetThisReference()));
                 else if (self_nv != null)
-                	ret.Add(new ValueItem(self_nv,"self",null));
-                
-                /*foreach (NamedValue val in function.ContaingClassVariables)
-                {
-                    if (!val.Name.Contains("$"))
-                    ret.Add(new ValueItem(val));
-                }*/
+                	ret.Add(new ValueItem(self_nv));
                 return ret.AsReadOnly();
             }
         }
 
-        public FunctionItem(Function function)
+        public FunctionItem(Mono.Debugging.Client.StackFrame frame)
         {
-            this.function = function;
-            this.function.Process.DebuggeeStateChanged += delegate
-            {
-                this.OnChanged(new ListItemEventArgs(this));
-            };
+            this.frame = frame;
         }
     }
     
