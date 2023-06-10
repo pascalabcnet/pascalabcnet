@@ -341,9 +341,10 @@ namespace VisualPascalABC
             AddDisassemblyWindow(); // Это нельзя убирать - почему то оболочка закрывается при запуске программы!!!
             HideContent(FindSymbolsResultWindow);
             HideContent(DisassemblyWindow);
-
+            AddDebugVariablesListWindow();
+            HideContent(DebugVariablesListWindow);
             /*AddImmediateWindow();
-            //AddDebugVariablesListWindow();
+            
             //AddDebugWatchListWindow();
             if (!Tools.IsUnix())
             {
@@ -355,7 +356,7 @@ namespace VisualPascalABC
             //    SelectContent(ProjectExplorerWindow, false);
 
             //HideContent(ImmediateWindow);
-            //HideContent(DebugVariablesListWindow);
+           
             //HideContent(DebugWatchListWindow);
 
             if (!Tools.IsUnix())
@@ -656,6 +657,8 @@ namespace VisualPascalABC
 
         public void ClearWatch()
         {
+            if (DebugWatchListWindow == null)
+                return;
             for (int i = 0; i < this.WdataGridView1.Rows.Count; i++)
             {
                 DebugWatchListWindow.SetUndefinedValue(i);
@@ -664,7 +667,8 @@ namespace VisualPascalABC
 
         public void DisplayDisassembledCode(string code)
         {
-            DisassemblyWindow.SetDisassembledCode(code);
+            if (DisassemblyWindow != null)
+                DisassemblyWindow.SetDisassembledCode(code);
         }
 
         public void ClearDebugTabs()
@@ -678,20 +682,29 @@ namespace VisualPascalABC
 
         public void ClearLocalVarTree()
         {
-            DebugVariablesListWindow.ClearAllSubTrees();
+            if (DebugVariablesListWindow != null)
+                DebugVariablesListWindow.ClearAllSubTrees();
+        }
+
+        private delegate void RefreshPadDelegate(IList<IListItem> items);
+
+        private void RefreshPadInvoke(IList<IListItem> items)
+        {
+            try
+            {
+                if (DebugWatchListWindow != null)
+                    DebugWatchListWindow.RefreshWatch();
+                AdvancedDataGridView.TreeGridNode.UpdateNodesForLocalList(DebugVariablesListWindow.watchList, DebugVariablesListWindow.watchList.Nodes, items);
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message + " " + ex.StackTrace);
+            }
         }
 
         public void RefreshPad(IList<IListItem> items)
         {
-            try
-            {
-                DebugWatchListWindow.RefreshWatch();
-                AdvancedDataGridView.TreeGridNode.UpdateNodesForLocalList(DebugVariablesListWindow.watchList, DebugVariablesListWindow.watchList.Nodes, items);
-            }
-            catch (System.Exception)
-            {
-
-            }
+            Invoke(new RefreshPadDelegate(RefreshPadInvoke), items);
         }
 
         public void GotoWatch()

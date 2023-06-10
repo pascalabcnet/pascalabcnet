@@ -439,6 +439,7 @@ namespace Mono.Debugging.Client
 					OnRunning ();
 					OnRun (startInfo);
 				} catch (Exception ex) {
+					Console.WriteLine(ex.Message+" "+ex.StackTrace);
 					// should handle exception before raising Exit event because HandleException may ignore exceptions in Exited state
 					var exceptionHandled = HandleException (ex);
 					ForceExit ();
@@ -1058,7 +1059,7 @@ namespace Mono.Debugging.Client
 		}
 		
 		readonly Dictionary<string, IExpressionEvaluator> evaluators = new Dictionary<string, IExpressionEvaluator> ();
-		readonly ExpressionEvaluator defaultResolver;
+		readonly ExpressionEvaluator defaultResolver = new ExpressionEvaluator();
 
 		internal IExpressionEvaluator FindExpressionEvaluator (StackFrame frame)
 		{

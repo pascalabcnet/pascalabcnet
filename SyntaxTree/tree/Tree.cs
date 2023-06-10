@@ -46956,7 +46956,8 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Это внутри begin:var (a,b) := (1,2);
+
 	///</summary>
 	[Serializable]
 	public partial class assign_var_tuple : statement
@@ -50962,7 +50963,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Это только в секции до begin: var (a,b) := (3,4); begin
 	///</summary>
 	[Serializable]
 	public partial class var_tuple_def_statement : var_def_statement
@@ -55401,6 +55402,106 @@ namespace PascalABCCompiler.SyntaxTree
 						expr = (expression)value;
 						break;
 				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Marker. On semantic level becomes lambda_any_type_node in generic_conversions.SaveLambdasStates
+	///</summary>
+	[Serializable]
+	public partial class lambda_any_type_node_syntax : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public lambda_any_type_node_syntax()
+		{
+
+		}
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			lambda_any_type_node_syntax copy = new lambda_any_type_node_syntax();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new lambda_any_type_node_syntax TypedClone()
+		{
+			return Clone() as lambda_any_type_node_syntax;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
 			}
 		}
 		///<summary>

@@ -295,8 +295,8 @@ namespace VisualPascalABC
         private string FileName;
         private string FullFileName;
         private string PrevFullFileName;
-        private Breakpoint brPoint;
-        private Breakpoint currentBreakpoint;
+        private Mono.Debugging.Client.Breakpoint brPoint;
+        private Mono.Debugging.Client.Breakpoint currentBreakpoint;
         private int CurrentLine;
         public DebugStatus Status;
         private bool MustDebug = false;
@@ -305,13 +305,18 @@ namespace VisualPascalABC
 		public bool ShowDebugTabs=true;
 		public PascalABCCompiler.Parsers.IParser parser = null;
 		EventHandler<EventArgs> debuggerStateEvent;
-		
+        private Mono.Debugging.Soft.SoftDebuggerSession monoDebuggerSession;
+        private Mono.Debugging.Client.StackFrame stackFrame;
+
         public DebugHelper()
         {
             //System.Threading.Thread.CurrentThread.SetApartmentState(System.Threading.ApartmentState.MTA);
             dbg = new NDebugger();
+            monoDebuggerSession = new Mono.Debugging.Soft.SoftDebuggerSession();
             //th = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(frm.RefreshPad));
             this.workbench = WorkbenchServiceFactory.Workbench;
+            
+            
         }
 
         public Process DebuggedProcess
@@ -335,7 +340,7 @@ namespace VisualPascalABC
         	}
     	}
         
-        public Breakpoint CurrentBreakpoint
+        public Mono.Debugging.Client.Breakpoint CurrentBreakpoint
         {
             get { return currentBreakpoint; }
             set { currentBreakpoint = value; }
@@ -344,24 +349,24 @@ namespace VisualPascalABC
         /// <summary>
         /// Добавить Breakpoint в файл fileName строку line
         /// </summary>
-        public Breakpoint AddBreakPoint(string fileName, int line, bool commonBreakpoint)
+        public Mono.Debugging.Client.Breakpoint AddBreakPoint(string fileName, int line, bool commonBreakpoint)
         {
-            Breakpoint br = null;
+            Mono.Debugging.Client.Breakpoint br = null;
             bool added = false;
             if (!workbench.UserOptions.AlwaysAttachDebuggerAtStart && handle != 0 && commonBreakpoint && this.debuggedProcess == null)
             {
             	Attach(handle, ExeFileName, true,true);
             }
-            foreach (Breakpoint bp in dbg.Breakpoints)
+            foreach (Mono.Debugging.Client.Breakpoint bp in monoDebuggerSession.Breakpoints.GetBreakpoints())
             {
-                if (bp.SourcecodeSegment.SourceFullFilename == fileName && bp.SourcecodeSegment.StartLine == line)
+                if (bp.FileName == fileName && bp.Line == line)
                 {
                     added = true;
                     br = bp;
                 }
             }
             if (!added)
-                br = dbg.AddBreakpoint(fileName, line);
+                br = monoDebuggerSession.Breakpoints.Add(fileName, line);
             
             return br;
         }
@@ -369,12 +374,12 @@ namespace VisualPascalABC
         /// <summary>
         /// Получить список Breakpointov в файле fileName
         /// </summary>
-        public List<Breakpoint> GetBreakpointsInFile(string fileName)
+        public List<Mono.Debugging.Client.Breakpoint> GetBreakpointsInFile(string fileName)
         {
-            List<Breakpoint> lst = new List<Breakpoint>();
-            foreach (Breakpoint bp in dbg.Breakpoints)
+            List<Mono.Debugging.Client.Breakpoint> lst = new List<Mono.Debugging.Client.Breakpoint>();
+            foreach (Mono.Debugging.Client.Breakpoint bp in monoDebuggerSession.Breakpoints.GetBreakpoints())
             {
-                if (bp.SourcecodeSegment.SourceFullFilename == fileName)
+                if (bp.FileName == fileName)
                 {
                     lst.Add(bp);
                 }
@@ -385,9 +390,9 @@ namespace VisualPascalABC
         /// <summary>
         /// Удалить Breakpoint
         /// </summary>
-        public void RemoveBreakpoint(Breakpoint br)
+        public void RemoveBreakpoint(Mono.Debugging.Client.Breakpoint br)
         {
-            dbg.RemoveBreakpoint(br);
+            monoDebuggerSession.Breakpoints.Remove(br);
         }
 
         public delegate void DebugHelperActionDelegate(string FileName);
@@ -416,7 +421,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             this.PrevFullFileName = FullFileName;
-            if (need_first_brpt) brPoint = dbg.AddBreakpoint(FileName, workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
+            //if (need_first_brpt) brPoint = dbg.AddBreakpoint(FileName, workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
             AssemblyHelper.LoadAssembly(fileName);
             debuggedProcess = dbg.Start(fileName, workingDirectory, arguments);
             SelectProcess(debuggedProcess);
@@ -426,6 +431,7 @@ namespace VisualPascalABC
         
         public void NullProcessHandleIfNeed(string fileName)
         {
+            Console.WriteLine("null process handle");
         	if (string.Compare(fileName,this.ExeFileName,true)==0)
         	{
         		FileName = null;
@@ -436,7 +442,8 @@ namespace VisualPascalABC
         			ExeFileName = null;
         			WorkbenchServiceFactory.OperationsService.ClearTabStack();
         			WorkbenchServiceFactory.DebuggerOperationsService.ClearDebugTabs();
-                    WorkbenchServiceFactory.Workbench.DisassemblyWindow.ClearWindow();
+                    if (WorkbenchServiceFactory.Workbench.DisassemblyWindow != null)
+                        WorkbenchServiceFactory.Workbench.DisassemblyWindow.ClearWindow();
         		}
         	}
         }
@@ -454,8 +461,8 @@ namespace VisualPascalABC
         		return;
         	if (Starting != null)
                 Starting(fileName);
-        	
-        	string sourceFileName = null;
+           
+            string sourceFileName = null;
         	if (!ProjectFactory.Instance.ProjectLoaded)
         	    sourceFileName = workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName;
         	else
@@ -467,19 +474,160 @@ namespace VisualPascalABC
             this.parser = CodeCompletion.CodeCompletionController.ParsersController.selectParser(Path.GetExtension(FullFileName).ToLower());
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
-        	dbg.ProcessStarted += debugProcessStarted;
-            dbg.ProcessExited += debugProcessExit;
-            //brPoint = dbg.AddBreakpoint(FileName, frm.VisualEnvironmentCompiler.Compiler.BeginOffset);
+            //dbg.ProcessStarted += debugProcessStarted;
+            //dbg.ProcessExited += debugProcessExit;
+            monoDebuggerSession.TargetHitBreakpoint += MonoDebuggerSession_TargetHitBreakpoint;
+            monoDebuggerSession.AttachToProcess(new Mono.Debugging.Client.ProcessInfo(handle, fileName), new Mono.Debugging.Client.DebuggerSessionOptions());
+            
+        }
+
+        public System.Diagnostics.Process RunWithMonoDebugger(System.Diagnostics.ProcessStartInfo psi, string fileName, string args)
+        {
+            if (Starting != null)
+                Starting(fileName);
+
+            string sourceFileName = null;
+            if (!ProjectFactory.Instance.ProjectLoaded)
+                sourceFileName = workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName;
+            else
+                sourceFileName = ProjectFactory.Instance.CurrentProject.MainFile;
+            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+            this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
+            this.ExeFileName = fileName;
+            CurrentLine = 0;
+            this.parser = CodeCompletion.CodeCompletionController.ParsersController.selectParser(Path.GetExtension(FullFileName).ToLower());
+            this.PrevFullFileName = FullFileName;
+            AssemblyHelper.LoadAssembly(fileName);
+
+            Mono.Debugging.Client.DebuggerSessionOptions dso = new Mono.Debugging.Client.DebuggerSessionOptions();
+            dso.EvaluationOptions = Mono.Debugging.Client.EvaluationOptions.DefaultOptions.Clone();
+            
+            //monoDebuggerSession.AttachToProcess(new Mono.Debugging.Client.ProcessInfo(handle, fileName), dso);
+            Mono.Debugging.Soft.SoftDebuggerStartInfo dsi = new Mono.Debugging.Soft.SoftDebuggerStartInfo("", new Dictionary<string, string>());
+            dsi.Command = fileName;
+            dsi.Arguments = args;
+            dsi.StartArgs = new Mono.Debugging.Soft.SoftDebuggerLaunchArgs("", new Dictionary<string, string>());
+            dsi.WorkingDirectory = psi.WorkingDirectory;
+            
             try
             {
-                debuggedProcess = dbg.DebugActiveProcess(handle, fileName);
+                
+                monoDebuggerSession.TargetHitBreakpoint += MonoDebuggerSession_TargetHitBreakpoint;
+                monoDebuggerSession.TargetStopped += MonoDebuggerSession_TargetStopped;
+                monoDebuggerSession.TargetStarted += MonoDebuggerSession_TargetStarted;
+                //monoDebuggerSession.TargetThreadStopped += MonoDebuggerSession_TargetThreadStopped;
+                monoDebuggerSession.Run(dsi, dso);
+                int i = 0;
+                while (Mono.Debugger.Soft.VirtualMachineManager.currentProcess == null && i < 5)
+                {
+                    System.Threading.Thread.Sleep(100);
+                    i++;
+                }
+                workbench.WidgetController.SetDebugTabsVisible(true);
+                workbench.WidgetController.SetPlayButtonsVisible(true);
+                workbench.WidgetController.SetDebugStopEnabled();//e.Process.LogMessage += messageEventProc;
+                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.ChangeStartDebugNameOnContinue();
+                workbench.WidgetController.EnableCodeCompletionToolTips(false);
+                workbench.WidgetController.SetAddExprMenuVisible(true);
+                workbench.WidgetController.SetDisassemblyMenuVisible(true);
+                workbench.ServiceContainer.EditorService.SetEditorDisabled(true);
+                TooltipServiceManager.hideToolTip();
+                IsRunning = true;
+                //evaluator = new ExpressionEvaluator(e.Process, workbench.VisualEnvironmentCompiler, FileName);
+                var process = (Mono.Debugger.Soft.VirtualMachineManager.currentProcess as Mono.Debugger.Soft.ProcessWrapper).Process;
+                process.Exited += Process_Exited;
+                return (Mono.Debugger.Soft.VirtualMachineManager.currentProcess as Mono.Debugger.Soft.ProcessWrapper).Process;
             }
             catch (System.Exception ex)
             {
-                return;
+                Console.WriteLine(ex.Message);
             }
-        	SelectProcess(debuggedProcess);
-        	//debuggedProcess.Break();
+            return null;
+        }
+
+
+        private delegate void EndDebuggerSessionDelegate();
+
+        public void EndDebuggerSession()
+        {
+            if (Mono.Debugger.Soft.VirtualMachineManager.currentProcess == null)
+                return;
+            
+            if (Exited != null && ExeFileName != null)
+                Exited(ExeFileName);
+            curPage = null;
+            ShowDebugTabs = true;
+            workbench.WidgetController.SetPlayButtonsVisible(false);
+            workbench.WidgetController.SetAddExprMenuVisible(false);
+            workbench.WidgetController.SetDisassemblyMenuVisible(false);
+            if (DebugWatchListWindowForm.WatchWindow != null)
+                DebugWatchListWindowForm.WatchWindow.ClearAllSubTrees();
+            IsRunning = false;
+            workbench.WidgetController.SetDebugStopDisabled();
+            workbench.WidgetController.ChangeContinueDebugNameOnStart();
+            CurrentLineBookmark.Remove();
+            WorkbenchServiceFactory.DebuggerOperationsService.ClearLocalVarTree();
+            WorkbenchServiceFactory.DebuggerOperationsService.ClearDebugTabs();
+            WorkbenchServiceFactory.DebuggerOperationsService.ClearWatch();
+            if (WorkbenchServiceFactory.Workbench.DisassemblyWindow != null)
+                WorkbenchServiceFactory.Workbench.DisassemblyWindow.ClearWindow();
+            workbench.WidgetController.SetDebugTabsVisible(false);
+            WorkbenchServiceFactory.OperationsService.ClearTabStack();
+            workbench.WidgetController.EnableCodeCompletionToolTips(true);
+            RemoveGotoBreakpoints();
+            AssemblyHelper.Unload();
+            CloseOldToolTip();
+            workbench.ServiceContainer.EditorService.SetEditorDisabled(false);
+            //RemoveMarker(frm.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Document);
+            evaluator = null;
+            parser = null;
+            FileName = null;
+            handle = 0;
+            ExeFileName = null;
+            FullFileName = null;
+            PrevFullFileName = null;
+            stackFrame = null;
+            monoDebuggerSession.TargetHitBreakpoint -= MonoDebuggerSession_TargetHitBreakpoint;
+            monoDebuggerSession.TargetStopped -= MonoDebuggerSession_TargetStopped;
+            monoDebuggerSession.TargetStarted -= MonoDebuggerSession_TargetStarted;
+            //monoDebuggerSession.TargetThreadStopped -= MonoDebuggerSession_TargetThreadStopped;
+            Status = DebugStatus.None;
+            Mono.Debugger.Soft.VirtualMachineManager.currentProcess = null;
+            monoDebuggerSession = new Mono.Debugging.Soft.SoftDebuggerSession();
+        }
+
+        
+        private void Process_Exited(object sender, EventArgs e)
+        {
+            VisualPABCSingleton.MainForm.Invoke(new EndDebuggerSessionDelegate(EndDebuggerSession));
+            
+        }
+
+        private void MonoDebuggerSession_TargetThreadStopped(object sender, Mono.Debugging.Client.TargetEventArgs e)
+        {
+            stackFrame = e.Thread.Backtrace.GetFrame(0);
+            JumpToCurrentLine();
+        }
+
+        private void MonoDebuggerSession_TargetStopped(object sender, Mono.Debugging.Client.TargetEventArgs e)
+        {
+            stackFrame = e.Thread.Backtrace.GetFrame(0);
+            JumpToCurrentLine();
+            workbench.WidgetController.SetStartDebugEnabled();
+            WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(stackFrame).SubItems);
+        }
+
+        private void MonoDebuggerSession_TargetStarted(object sender, EventArgs e)
+        {
+            stackFrame = null;
+        }
+
+        private void MonoDebuggerSession_TargetHitBreakpoint(object sender, Mono.Debugging.Client.TargetEventArgs e)
+        {
+            stackFrame = e.Thread.Backtrace.GetFrame(0);
+            JumpToCurrentLine();
+            workbench.WidgetController.SetStartDebugEnabled();
         }
 
         Function currentFunction;
@@ -523,7 +671,7 @@ namespace VisualPascalABC
 
         void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
         {
-            if (currentBreakpoint != null)
+            /*if (currentBreakpoint != null)
             {
             	dbg.RemoveBreakpoint(currentBreakpoint);
                 RemoveGotoBreakpoints();
@@ -545,7 +693,7 @@ namespace VisualPascalABC
                 }
             }
             if (debuggerStateEvent != null)
-            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));
+            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));*/
         }
 		
         private void debugBreakpointHit(object sender, BreakpointEventArgs e)
@@ -555,7 +703,9 @@ namespace VisualPascalABC
         
         public void SetFirstBreakpoint(string fileName, int line)
         {
-        	brPoint = dbg.AddBreakpoint(fileName, line);
+            //brPoint = dbg.AddBreakpoint(fileName, line);
+            brPoint = new Mono.Debugging.Client.Breakpoint(fileName, line, 1);
+            monoDebuggerSession.Breakpoints.Add(brPoint);
         }
         
         private void SelectProcess(Debugger.Process process)
@@ -633,7 +783,7 @@ namespace VisualPascalABC
         {
             if (brPoint != null)
             {
-                dbg.RemoveBreakpoint(brPoint);
+                monoDebuggerSession.Breakpoints.Remove(brPoint);
                 brPoint = null;
             }
         }
@@ -828,185 +978,199 @@ namespace VisualPascalABC
 		private ICodeFileDocument curPage;
 		
         private bool is_out = false;
-        private SourcecodeSegment stepin_stmt = null;
+        private Mono.Debugging.Client.SourceLocation stepin_stmt = null;
 		private bool tab_changed=false;
-		
-        /// <summary>
-        /// Перейти к следующей строке при отладке
-        /// </summary>
-        private void JumpToCurrentLine()
+
+        private delegate void JumpToLineDelegate(int line);
+        private delegate void JumpToLinePreActionsDelegate();
+        private delegate void SetCurrentLineBookmarkDelegate(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn);
+
+        void JumpToLineInvoke(int line)
+        {
+            curPage.TextEditor.ActiveTextAreaControl.JumpTo(line, 0);
+        }
+
+        void JumpToLinePreActionsInvoke()
         {
             workbench.MainForm.Activate();
             CurrentLineBookmark.Remove();//udalajem zheltyj kursor otladki
+        }
+
+        void SetCurrentLineBookmarkInvoke(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
+        {
+            CurrentLineBookmark.SetPosition(fileName, document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
+        }
+
+        /// <summary>
+        /// Перейти к следующей строке при отладке
+        /// </summary>
+        private void JumpToCurrentLine(bool fromBreakpoint = false)
+        {
+            workbench.MainForm.Invoke(new JumpToLinePreActionsDelegate(JumpToLinePreActionsInvoke));
             //System.Threading.Thread.Sleep(70);
-            if (debuggedProcess != null)
+            if (stackFrame != null)
             {
-                SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
                 //debuggedProcess.Modules[0].SymReader.GetMethod(debuggedProcess.SelectedFunction.Token);
-                if (nextStatement != null)
+                string save_PrevFullFileName = PrevFullFileName;
+                Console.WriteLine("jump to "+stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
+                //CodeFileDocumentControl page = null;
+                //DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+                if (!ShowDebugTabs)//esli eshe ne pokazany watch i lokal, pokazyvaem
                 {
-                    string save_PrevFullFileName = PrevFullFileName;
-                    //CodeFileDocumentControl page = null;
-                    //DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
-                    if (!ShowDebugTabs)//esli eshe ne pokazany watch i lokal, pokazyvaem
+                    ShowDebugTabs = true;
+                    workbench.WidgetController.SetDebugTabsVisible(true);
+                    workbench.WidgetController.SetAddExprMenuVisible(true);
+                }
+                if (stackFrame.SourceLocation.Line == 0xFFFFFF)
+                {
+                    //sjuda popadem, esli vyzyvaem Test(arr), gde arr - massiv peredavaemyj po znacheniju
+                    //metod $Copy ne imeet sequence pointov, poetomu chtoby vojti v proceduru vyzovy $Copy my pomechaem 0xFFFFFFF
+                    //dolgo s etoj badjagoj muchalsja
+                    is_out = true;
+                    monoDebuggerSession.StepLine();//vhodim neposredstvenno v proceduru
+                    return;
+                }
+                /*else if (AssemblyHelper.IsDebuggerStepThrough(stackFrame))
+                {
+                    MustDebug = true;
+                    monoDebuggerSession.StepLine();
+
+                    return;
+                }*/
+                else if (is_out)
+                {
+                    is_out = false;
+                    if (stepin_stmt.FileName == stackFrame.SourceLocation.FileName && stepin_stmt.Line != stackFrame.SourceLocation.Line)
+                        stepin_stmt = stackFrame.SourceLocation;
+                    else
                     {
-                        ShowDebugTabs = true;
-                        workbench.WidgetController.SetDebugTabsVisible(true);
-                        workbench.WidgetController.SetAddExprMenuVisible(true);
-                    }
-                    if (debuggedProcess.NextStatement.StartLine == 0xFFFFFF)
-                    {
-                        //sjuda popadem, esli vyzyvaem Test(arr), gde arr - massiv peredavaemyj po znacheniju
-                        //metod $Copy ne imeet sequence pointov, poetomu chtoby vojti v proceduru vyzovy $Copy my pomechaem 0xFFFFFFF
-                        //dolgo s etoj badjagoj muchalsja
-                        is_out = true;
-                        debuggedProcess.StepInto();//vhodim neposredstvenno v proceduru
+                        monoDebuggerSession.StepLine();
                         return;
                     }
-                    else if (AssemblyHelper.IsDebuggerStepThrough(debuggedProcess.SelectedFunction))
+                }
+                if (stackFrame.SourceLocation.FileName != this.PrevFullFileName || !WorkbenchServiceFactory.DocumentService.ContainsTab(stackFrame.SourceLocation.FileName))
+                {
+                    tab_changed = true;
+                    curPage = WorkbenchServiceFactory.FileService.OpenFileForDebug(stackFrame.SourceLocation.FileName);
+                    
+                    if (curPage == null)
                     {
                         MustDebug = true;
-                        debuggedProcess.StepOut();
-                        
                         return;
                     }
-                    else if (is_out)
+                    PrevFullFileName = stackFrame.SourceLocation.FileName;
+                }
+                else if (curPage != WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument)
+                    WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument = curPage;
+                bool remove_breakpoints = true;
+                IDocument doc = curPage.TextEditor.Document;
+                curTextArea = curPage.TextEditor.ActiveTextAreaControl.TextArea;
+                LineSegment lseg = curPage.TextEditor.ActiveTextAreaControl.Document.GetLineSegment(stackFrame.SourceLocation.Line - 1);
+                int len = lseg.Length + 1;
+                /*if (lseg.Words.Count == 1 && string.Compare(lseg.Words[0].Word,"begin",true)==0)
+                {
+                    debuggedProcess.StepOver();
+                    return;
+                }*/
+                //eto badjaga prepjatstvuet popadaniju na begin
+                //luchshego sposoba naverno net
+                bool in_comm = false;
+                bool beg = false;
+                bool in_str = false;
+                for (int i = 0; i < lseg.Words.Count; i++)
+                {
+                    if (lseg.Words[i].Type == TextWordType.Word)
                     {
-                        is_out = false;
-                        if (stepin_stmt.SourceFullFilename == debuggedProcess.NextStatement.SourceFullFilename && stepin_stmt.StartLine != debuggedProcess.NextStatement.StartLine)
-                            stepin_stmt = debuggedProcess.NextStatement;
-                        else
+                        string word = lseg.Words[i].Word;
+                        if (string.Compare(word, "begin", true) == 0 && !in_str && !in_comm)
+                            beg = true;
+                        else if (string.Compare(word, "{") == 0)
                         {
-                            debuggedProcess.StepInto();
-                            return;
+                            if (!in_str) in_comm = true;
                         }
-                    }
-                    if (debuggedProcess.NextStatement.SourceFullFilename != this.PrevFullFileName || !WorkbenchServiceFactory.DocumentService.ContainsTab(debuggedProcess.NextStatement.SourceFullFilename))
-                    {
-                        tab_changed = true;
-                        curPage = WorkbenchServiceFactory.FileService.OpenFileForDebug(debuggedProcess.NextStatement.SourceFullFilename);
-                        if (curPage == null)
+                        else if (string.Compare(word, "}") == 0)
                         {
-                            MustDebug = true;
-                            return;
+                            if (!in_str && in_comm) in_comm = false;
                         }
-                        PrevFullFileName = debuggedProcess.NextStatement.SourceFullFilename;
-                    }
-                    else if (curPage != WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument)
-                        WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument = curPage;
-                    bool remove_breakpoints = true;
-                    IDocument doc = curPage.TextEditor.Document;
-                    curTextArea = curPage.TextEditor.ActiveTextAreaControl.TextArea;
-                    LineSegment lseg = curPage.TextEditor.ActiveTextAreaControl.Document.GetLineSegment(debuggedProcess.NextStatement.StartLine - 1);
-                    int len = lseg.Length + 1;
-                    /*if (lseg.Words.Count == 1 && string.Compare(lseg.Words[0].Word,"begin",true)==0)
-                    {
-                    	debuggedProcess.StepOver();
-                        return;
-                    }*/
-                    //eto badjaga prepjatstvuet popadaniju na begin
-                    //luchshego sposoba naverno net
-                    bool in_comm = false;
-                    bool beg = false;
-                    bool in_str = false;
-                    for (int i = 0; i < lseg.Words.Count; i++)
-                    {
-                        if (lseg.Words[i].Type == TextWordType.Word)
+                        else if (string.Compare(word, "'") == 0)
+                            in_str = !in_str;
+                        else if (string.Compare(word, "/") == 0)
                         {
-                            string word = lseg.Words[i].Word;
-                            if (string.Compare(word, "begin", true) == 0 && !in_str && !in_comm)
-                                beg = true;
-                            else if (string.Compare(word, "{") == 0)
-                            {
-                                if (!in_str) in_comm = true;
-                            }
-                            else if (string.Compare(word, "}") == 0)
-                            {
-                                if (!in_str && in_comm) in_comm = false;
-                            }
-                            else if (string.Compare(word, "'") == 0)
-                                in_str = !in_str;
-                            else if (string.Compare(word, "/") == 0)
-                            {
-                                if (i < lseg.Words.Count - 1 && string.Compare(lseg.Words[i + 1].Word, "/") == 0)
-                                    break;
-                            }
-                            else if (string.Compare(word, "(") == 0)
-                            {
-                                if (i < lseg.Words.Count - 1 && string.Compare(lseg.Words[i + 1].Word, "*") == 0)
-                                {
-                                    beg = false;
-                                    break;
-                                }
-                            }
-                            else if (!in_str && !in_comm)
+                            if (i < lseg.Words.Count - 1 && string.Compare(lseg.Words[i + 1].Word, "/") == 0)
+                                break;
+                        }
+                        else if (string.Compare(word, "(") == 0)
+                        {
+                            if (i < lseg.Words.Count - 1 && string.Compare(lseg.Words[i + 1].Word, "*") == 0)
                             {
                                 beg = false;
                                 break;
                             }
                         }
-                    }
-                    if (beg)
-                    {
-                        if (debuggedProcess.PausedReason != PausedReason.Exception)
-                            debuggedProcess.StepOver();
-                        return;
-                    }
-                    if (debuggedProcess.PausedReason == PausedReason.Breakpoint)
-                    {
-                        Breakpoint br = dbg.GetBreakpoint(debuggedProcess.NextStatement.SourceFullFilename, nextStatement.StartLine);
-                        if (br != null && !BreakPointFactory.MustHit(br))
+                        else if (!in_str && !in_comm)
                         {
-                            if (Status == DebugStatus.StepOver || Status == DebugStatus.StepIn)
-                            {
-                                remove_breakpoints = false;
-                            }
-                            else
-                            {
-                                debuggedProcess.Continue();
-                                return;
-                            }
-                        }
-                    }
-                    //for (int i=0; i<lseg.Words.Count; i++)
-                    CurrentLineBookmark.SetPosition(debuggedProcess.NextStatement.SourceFilename, curPage.TextEditor.Document, nextStatement.StartLine, 1, nextStatement.StartLine,
-                       len);
-                    curPage.TextEditor.ActiveTextAreaControl.JumpTo(nextStatement.StartLine - 1, 0);
-
-                    if ((Status == DebugStatus.StepOver || Status == DebugStatus.StepIn) && (CurrentLine == nextStatement.StartLine && save_PrevFullFileName == debuggedProcess.NextStatement.SourceFilename))
-                    {
-                        if (curILOffset != nextStatement.ILOffset)
-                        {
-                            curILOffset = nextStatement.ILOffset;
-                            //debuggedProcess.StepOver();
-                            MustDebug = true;
-                        }
-                        CurrentLine = nextStatement.StartLine;
-                        //return;
-                    }
-                    else
-                    {
-                        curILOffset = nextStatement.ILOffset;
-                        CurrentLine = nextStatement.StartLine;
-                        MustDebug = false;
-                        //MustDebug = ((nextStatement.ILOffset + 1) == nextStatement.ILEnd);
-                    }
-                    //MustDebug = false;
-                    //if (remove_breakpoints)
-                    {
-                        RemoveBreakpoints();
-                        if (currentBreakpoint != null)
-                        {
-                            dbg.RemoveBreakpoint(currentBreakpoint);
-                            currentBreakpoint = null; //RemoveBreakpoints();
+                            beg = false;
+                            break;
                         }
                     }
                 }
+                if (beg)
+                {
+                    monoDebuggerSession.NextLine();
+                    return;
+                }
+                if (fromBreakpoint)
+                {
+                    var br = monoDebuggerSession.Breakpoints.Add(stackFrame.SourceLocation.FileName, stackFrame.SourceLocation.Line);
+                    if (br != null && !BreakPointFactory.MustHit(br))
+                    {
+                        if (Status == DebugStatus.StepOver || Status == DebugStatus.StepIn)
+                        {
+                            remove_breakpoints = false;
+                        }
+                        else
+                        {
+                            monoDebuggerSession.Continue();
+                            return;
+                        }
+                    }
+                }
+                //CurrentLineBookmark.SetPosition(stackFrame.SourceLocation.FileName, curPage.TextEditor.Document, stackFrame.SourceLocation.Line, 1, stackFrame.SourceLocation.Line,
+                //   len);
 
+                curPage.TextEditor.ActiveTextAreaControl.Invoke(new JumpToLineDelegate(JumpToLineInvoke), stackFrame.SourceLocation.Line - 1);
+                curPage.TextEditor.ActiveTextAreaControl.Invoke(new SetCurrentLineBookmarkDelegate(SetCurrentLineBookmarkInvoke), stackFrame.SourceLocation.FileName, curPage.TextEditor.Document, stackFrame.SourceLocation.Line, 1, stackFrame.SourceLocation.Line,
+                   len);
+                //curPage.TextEditor.ActiveTextAreaControl.JumpTo(stackFrame.SourceLocation.Line - 1, 0);
+                if ((Status == DebugStatus.StepOver || Status == DebugStatus.StepIn) && (CurrentLine == stackFrame.SourceLocation.Line
+                        && save_PrevFullFileName == stackFrame.SourceLocation.FileName))
+                {
+                    if (curILOffset != stackFrame.Address)
+                    {
+                        curILOffset = stackFrame.Address;
+                        //debuggedProcess.StepOver();
+                        MustDebug = true;
+                    }
+                    CurrentLine = stackFrame.SourceLocation.Line;
+                    //return;
+                }
+                else
+                {
+                    curILOffset = stackFrame.Address;
+                    CurrentLine = stackFrame.SourceLocation.Line;
+                    MustDebug = false;
+                }
+                Console.WriteLine("jumped to " + stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
+                RemoveBreakpoints();
+                if (currentBreakpoint != null)
+                {
+                    monoDebuggerSession.Breakpoints.Remove(currentBreakpoint);
+                    currentBreakpoint = null; //RemoveBreakpoints();
+                }
             }
         }
 
-        private int curILOffset = 0;
+        private long curILOffset = 0;
 
         struct COR_DEBUG_IL_TO_NATIVE_MAP
         {
@@ -1082,7 +1246,7 @@ namespace VisualPascalABC
 
         public void DoInPausedState(MethodInvoker action)
         {
-            Debugger.Process process = debuggedProcess;
+            /*Debugger.Process process = debuggedProcess;
             if (process.IsPaused)
             {
             	//System.Threading.Thread th = new System.Threading.Thread(new System.Threading.ThreadStart(delegate{action();}));
@@ -1098,7 +1262,8 @@ namespace VisualPascalABC
                     process.DebuggingPaused -= onDebuggingPaused;
                 };
                 process.DebuggingPaused += onDebuggingPaused;
-            }
+            }*/
+            action();
         }
 
         private NamedValue GetVariableFromName(string variableName)
@@ -1271,6 +1436,145 @@ namespace VisualPascalABC
                     NamedValue global_nv = null;
                     NamedValue disp_nv = null;
                     NamedValue ret_nv = null;
+                    Mono.Debugging.Client.ObjectValue global_lv = null;
+                    Mono.Debugging.Client.ObjectValue disp_lv = null;
+                    Mono.Debugging.Client.ObjectValue ret_lv = null;
+                    List<Mono.Debugging.Client.ObjectValue> unit_lvs = new List<Mono.Debugging.Client.ObjectValue>();
+                    var lvc = stackFrame.GetAllLocals();
+                    foreach (var lv in lvc)
+                    {
+                        if (lv.Name == var)
+                            return new ValueItem(lv);
+                    }
+                        
+                    foreach (var lv in lvc)
+                    {
+                        Console.WriteLine("local var "+lv.Name);
+                        if (lv.Name.IndexOf(':') != -1)
+                        {
+                            int pos = lv.Name.IndexOf(':');
+                            string name = lv.Name.Substring(0, pos);
+                            if (string.Compare(name, var, true) == 0)
+                            {
+                                int start_line = Convert.ToInt32(lv.Name.Substring(pos + 1, lv.Name.LastIndexOf(':') - pos - 1));
+                                int end_line = Convert.ToInt32(lv.Name.Substring(lv.Name.LastIndexOf(':') + 1));
+                                if (num_line >= start_line - 1 && num_line <= end_line - 1)
+                                    return new ValueItem(lv);
+                            }
+                        }
+                        if (string.Compare(lv.Name, var, true) == 0)
+                        {
+                            return new ValueItem(lv);
+                        }
+                        else if (string.Compare(lv.Name, "self", true) == 0 && stackFrame.GetThisReference() != null)
+                            return new ValueItem(stackFrame.GetThisReference());
+                        else if (lv.Name.Contains("$class_var"))
+                        {
+                            global_lv = lv;
+                        }
+                            
+                        else if (lv.Name.Contains("$unit_var")) 
+                            unit_lvs.Add(lv);
+                        else if (lv.Name == "$disp$") 
+                            disp_lv = lv;//vo vlozhennyh procedurah ssylka na verh zapis aktivacii
+                        else if (lv.Name.StartsWith("$rv"))
+                            ret_lv = lv;//vozvrashaemoe znachenie
+                    }
+                    lvc = stackFrame.GetParameters();
+                    Mono.Debugging.Client.ObjectValue self_lv = null;
+                    foreach (var lv in lvc)
+                    {
+                        if (string.Compare(lv.Name, var, true) == 0) 
+                            return new ValueItem(lv);
+                        if (lv.Name == "$obj$")
+                            self_lv = lv;
+                    }
+                    if (var.ToLower() == "self")
+                    {
+                        try
+                        {
+                            return new ValueItem(stackFrame.GetThisReference());
+                        }
+                        catch
+                        {
+                            if (self_lv != null)
+                                return new ValueItem(self_lv);
+                        }
+                    }
+                    if (disp_lv != null)//prohodimsja po vlozhennym podprogrammam
+                    {
+                        Mono.Debugging.Client.ObjectValue parent_val = null;
+                        var fields = disp_lv.GetAllChildren();
+                        foreach (var fi in fields)
+                            if (string.Compare(fi.Name, var, true) == 0) 
+                                return new ValueItem(fi);
+                            else if (fi.Name == "$parent$") 
+                                parent_val = fi;
+                        var pv = parent_val;
+                        while (!pv.IsNull)
+                        {
+                            fields = parent_val.GetAllChildren();
+                            foreach (var fi in fields)
+                                if (string.Compare(fi.Name, var, true) == 0) 
+                                    return new ValueItem(fi);
+                                else if (fi.Name == "$parent$") 
+                                    pv = fi;
+                            if (!pv.IsNull) 
+                                parent_val = pv;
+                        }
+                    }
+                    if (stackFrame.GetThisReference() != null)
+                    {
+                        var fields = stackFrame.GetThisReference().GetAllChildren();
+                        foreach (var fi in fields)
+                        {
+                            
+                            if (string.Compare(fi.Name, var, true) == 0)
+                                return new ValueItem(fi);
+                        }
+                    }
+                    if (self_lv != null)
+                    {
+                        Console.WriteLine("search in this");
+                        var fields = self_lv.GetAllChildren();
+                        foreach (var fi in fields)
+                        {
+                            if (string.Compare(fi.Name, var, true) == 0)
+                                return new ValueItem(fi);
+                        }
+                            
+                    }
+                    if (global_lv != null)
+                    {
+                        Console.WriteLine(global_lv.TypeName);
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
+                        var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                        foreach (var fi in fields)
+                        {
+                            if (string.Compare(fi.Name, var, true) == 0)
+                                return new ValueItem(fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions));
+                        }
+
+
+                        Type global_type = AssemblyHelper.GetType(global_lv.TypeName);
+                        if (global_type != null)
+                        {
+                            var fi = global_type.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                            if (fi != null && fi.IsLiteral)
+                                return new ValueItem(DebugUtils.MakeValue(fi.GetRawConstantValue()), var, global_nv.Type);
+                        }
+                    }
+
+                    Type t = AssemblyHelper.GetTypeForStatic(var);
+                    if (t != null)
+                    {
+                        var tm = monoDebuggerSession.GetType(t.FullName);
+                        Console.WriteLine("type for static " + tm);
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+                        return new BaseTypeItem(tr, t);
+                    }
+
+
                     nvc = debuggedProcess.SelectedFunction.LocalVariables;
                     List<NamedValue> val_list = new List<NamedValue>();
                     foreach (NamedValue nv in nvc)//smotrim sredi lokalnyh peremennyh
@@ -1390,7 +1694,7 @@ namespace VisualPascalABC
                         }
                     }
 
-                    Type t = AssemblyHelper.GetTypeForStatic(var);
+                    t = AssemblyHelper.GetTypeForStatic(var);
                     if (t != null)
                     {
                         DebugType dt = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(var),(uint)t.MetadataToken);
@@ -1455,7 +1759,7 @@ namespace VisualPascalABC
             }
             catch (System.Exception e)
             {
-
+                Console.WriteLine(e.Message + " "+ e.StackTrace);
             }
             return null;
         }
@@ -1493,8 +1797,8 @@ namespace VisualPascalABC
             DebuggerGridControl toolTipControl = null;
             TextMarker marker = null;
             //RemoveMarker((sender as TextArea).Document);
-            if (debuggedProcess == null) return;
-            if (debuggedProcess.SelectedFunction == null || !debuggedProcess.IsPaused) return;
+            if (stackFrame == null)
+                return;
             try
             {
                 TextArea textArea = (TextArea)sender;
@@ -1535,7 +1839,7 @@ namespace VisualPascalABC
                         toolTipControl = ti.ToolTipControl as DebuggerGridControl;
                         if (ti.ToolTipText != null)
                         {
-                            e.ShowToolTip(ti.ToolTipText);
+                           //e.ShowToolTip(ti.ToolTipText);
                         }
                     }
                     CloseOldToolTip();
@@ -1555,7 +1859,7 @@ namespace VisualPascalABC
             }
             finally
             {
-                if (toolTipControl == null && CanCloseOldToolTip)
+                if (toolTipControl == null && CanCloseOldToolTip && !oldToolTipControl.IsMouseOver)
                 {
                     CloseOldToolTip();
                     RemoveMarker((sender as TextArea).Document);
@@ -1673,7 +1977,7 @@ namespace VisualPascalABC
             try
             {
                 workbench.WidgetController.SetStartDebugDisabled();
-                if (debuggedProcess.SelectedFunction.Name == ".cctor")
+                /*if (monoDebuggerSession.ActiveThread.Backtrace.GetFrame(0).SourceLocation.MethodName == ".cctor")
                 {
                     var sequencePoints = debuggedProcess.SelectedFunction.symMethod.SequencePoints;
                     if (sequencePoints != null && debuggedProcess.NextStatement.StartLine == sequencePoints[sequencePoints.Length-1].Line)
@@ -1684,11 +1988,14 @@ namespace VisualPascalABC
                         debuggedProcess.StepOver();
                 }
                 else
-                    debuggedProcess.StepOver();
+                    debuggedProcess.StepOver();*/
+                
                 CurrentLineBookmark.Remove();
+                monoDebuggerSession.NextLine();
             }
             catch (System.Exception e)
             {
+                Console.WriteLine(e.Message);
             }
         }
 		
@@ -1701,11 +2008,12 @@ namespace VisualPascalABC
             try
             {
                 workbench.WidgetController.SetStartDebugDisabled();
-                dbg.Processes[0].Continue();
+                monoDebuggerSession.Continue();
                 CurrentLineBookmark.Remove();
             }
             catch (System.Exception e)
             {
+                Console.WriteLine(e.Message);
             }
         }
 		
@@ -1718,12 +2026,13 @@ namespace VisualPascalABC
             try
             {
                 workbench.WidgetController.SetStartDebugDisabled();
-                stepin_stmt = dbg.Processes[0].NextStatement;
-                dbg.Processes[0].StepInto();
+                stepin_stmt = monoDebuggerSession.ActiveThread.Backtrace.GetFrame(0).SourceLocation;
+                monoDebuggerSession.StepLine();
                 CurrentLineBookmark.Remove();
             }
             catch (System.Exception e)
             {
+                Console.WriteLine(e.Message);
             }
         }
 		
@@ -1758,10 +2067,10 @@ namespace VisualPascalABC
                 //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).FileName,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
                   //  (frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column+100), true);
                 workbench.WidgetController.SetStartDebugDisabled();
-                currentBreakpoint = dbg.AddBreakpoint(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);
+                currentBreakpoint = monoDebuggerSession.Breakpoints.Add(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);
                 AddGoToBreakPoint(currentBreakpoint);
                 Status = DebugStatus.None;
-                dbg.Processes[0].Continue();
+                monoDebuggerSession.Continue();
                 //dbg.RemoveBreakpoint(cur_brpt);
                 CurrentLineBookmark.Remove();
             }
@@ -1770,12 +2079,12 @@ namespace VisualPascalABC
             }
         }
 
-        private Stack<Breakpoint> goto_brs = new Stack<Breakpoint>();
+        private Stack<Mono.Debugging.Client.Breakpoint> goto_brs = new Stack<Mono.Debugging.Client.Breakpoint>();
 
         /// <summary>
         /// Добавляет Breakpoint по F4
         /// </summary>
-        public void AddGoToBreakPoint(Breakpoint br)
+        public void AddGoToBreakPoint(Mono.Debugging.Client.Breakpoint br)
         {
             goto_brs.Push(br);
         }
@@ -1797,7 +2106,7 @@ namespace VisualPascalABC
         
         public void AddGoToBreakPoint(string fileName, int line)
         {
-        	goto_brs.Push(dbg.AddBreakpoint(fileName, line));
+        	goto_brs.Push(monoDebuggerSession.Breakpoints.Add(fileName, line));
         }
         
         /// <summary>
@@ -1808,11 +2117,10 @@ namespace VisualPascalABC
         {
             while (goto_brs.Count > 0)
             {
-                Breakpoint br = goto_brs.Pop();
+                Mono.Debugging.Client.Breakpoint br = goto_brs.Pop();
                 try
                 {
-
-                    dbg.RemoveBreakpoint(br);
+                    monoDebuggerSession.Breakpoints.Remove(br);
                 }
                 catch (System.Exception e)
                 {

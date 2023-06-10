@@ -32,7 +32,7 @@ namespace PascalABCCompiler.SyntaxTree
         public override void Enter(syntax_tree_node st)
         {
             ScopeSyntax t = null;
-            switch (st)
+            /*switch (st)
             {
                 case program_module p:
                 case unit_module u:
@@ -62,9 +62,9 @@ namespace PascalABCCompiler.SyntaxTree
                 case foreach_stmt p:
                     t = new ForeachScopeSyntax();
                     break;
-                /*case repeat_node p: // не надо т.к. это StatListScope
-                    t = new RepeatScopeSyntax();
-                    break;*/
+                //case repeat_node p: // не надо т.к. это StatListScope
+                //    t = new RepeatScopeSyntax();
+                //    break;
                 case case_node p:
                     t = new CaseScopeSyntax();
                     break;
@@ -90,7 +90,65 @@ namespace PascalABCCompiler.SyntaxTree
                 case function_lambda_definition p:
                     t = new LambdaScopeSyntax();
                     break;
+            }*/
+            if (st is program_module p1 || st is unit_module u)
+            {
+                t = new GlobalScopeSyntax();
+                Root = t;
             }
+            else if (st is procedure_definition p2)
+            {
+                var name = p2.proc_header?.name?.meth_name;
+                if (name == null)
+                    name = "create";
+                var attr = p2.proc_header.class_keyword ? Attributes.class_attr : 0;
+                if (name != null)
+                    if (p2.proc_header is function_header)
+                       AddSymbol(name, SymKind.funcname, null, attr);
+                    else AddSymbol(name, SymKind.procname, null, attr);
+                t = new ProcScopeSyntax(name);
+            }
+            else if (st is statement_list p3)
+            {
+                t = new StatListScopeSyntax();
+            }
+            else if (st is for_node p4)
+            {
+                t = new ForScopeSyntax();
+            }
+            else if (st is foreach_stmt p5)
+            {
+                t = new ForeachScopeSyntax();
+            }
+            else if (st is case_node p6)
+            {
+                t = new CaseScopeSyntax();
+            }
+            else if (st is class_definition p7)
+            {
+                var td = p7.Parent as type_declaration;
+                var tname = td == null ? "NONAME" : td.type_name;
+                if (p7.keyword == class_keyword.Class)
+                {
+                    AddSymbol(tname, SymKind.classname);
+                    t = new ClassScopeSyntax(tname);
+                }
+                else if (p7.keyword == class_keyword.Record)
+                {
+                    AddSymbol(tname, SymKind.recordname);
+                    t = new RecordScopeSyntax(tname);
+                }
+                else if (p7.keyword == class_keyword.Interface)
+                {
+                    AddSymbol(tname, SymKind.interfacename);
+                    t = new InterfaceScopeSyntax(tname);
+                }
+             }
+            else if (st is function_lambda_definition p8)
+            {
+                t = new LambdaScopeSyntax();
+            }
+
             if (t != null)
             {
                 t.Parent = Current;
@@ -112,7 +170,7 @@ namespace PascalABCCompiler.SyntaxTree
         }
         public override void Exit(syntax_tree_node st)
         {
-            switch (st)
+            /*switch (st)
             {
                 case program_module p:
                 case procedure_definition pd:
@@ -129,6 +187,14 @@ namespace PascalABCCompiler.SyntaxTree
                     if (Current != null)
                         Current = Current.Parent;
                     break;
+            }*/
+            if (st is program_module p || st is procedure_definition pd || st is statement_list stl ||
+                st is for_node f || st is foreach_stmt fe || st is class_definition cd || st is record_type rt ||
+                st is function_lambda_definition fld || st is case_node cas)
+            {
+                PreExitScope(st);
+                if (Current != null)
+                    Current = Current.Parent;
             }
         }
         public override void visit(var_def_statement vd)

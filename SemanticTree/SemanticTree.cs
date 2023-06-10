@@ -1831,7 +1831,15 @@ namespace PascalABCCompiler.SemanticTree
     	}
     }
     
-    public interface ICompiledStaticMethodCallNodeAsConstant : IConstantNode
+	public interface ICommonStaticMethodCallNodeAsConstant : IConstantNode
+    {
+		ICommonStaticMethodCallNode MethodCall
+		{
+			get;
+		}
+	}
+
+	public interface ICompiledStaticMethodCallNodeAsConstant : IConstantNode
     {
         ICompiledStaticMethodCallNode MethodCall
         {

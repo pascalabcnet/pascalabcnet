@@ -3029,7 +3029,7 @@ namespace CodeCompletion
                                                   left_column_num,
                                                   right_line_num, right_column_num,
                                                  doc);
-                cur_scope.loc = new location(cur_scope.loc.begin_line_num, cur_scope.loc.end_line_num, right_line_num, right_column_num, doc);
+                cur_scope.loc = new location(cur_scope.loc.begin_line_num, cur_scope.loc.begin_column_num, right_line_num, right_column_num, doc);
                 _program_module.program_block.program_code.visit(this);
             }
         }

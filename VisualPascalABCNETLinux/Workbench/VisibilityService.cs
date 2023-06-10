@@ -496,6 +496,8 @@ namespace VisualPascalABC
 
         public void SetDisassemblyMenuVisible(bool flag)
         {
+            if (tsDisassembly == null)
+                return;
             tsDisassembly.Visible = flag;
         }
 
@@ -633,7 +635,7 @@ namespace VisualPascalABC
         {
             if (flag)
             {
-                if (!DebugWatchListWindow.IsHidden)
+                if (DebugWatchListWindow != null && !DebugWatchListWindow.IsHidden)
                 {
                     watch_vis = true;
                 }
@@ -641,14 +643,15 @@ namespace VisualPascalABC
                 {
                     if (!BottomTabsVisible)
                         BottomTabsVisible = true;
-                    ShowContent(DebugWatchListWindow, false);
+                    if (DebugWatchListWindow != null)
+                        ShowContent(DebugWatchListWindow, false);
                     ShowContent(DebugVariablesListWindow, false);
                 }
             }
             else
             {
                 //HideContent(DebugWatchListWindow);
-                if (!watch_vis)
+                if (!watch_vis && DebugWatchListWindow != null)
                 {
                     HideContent(DebugWatchListWindow);
                 }
