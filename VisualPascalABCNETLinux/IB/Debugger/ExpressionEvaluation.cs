@@ -31,6 +31,7 @@ namespace VisualPascalABC
         //private ValueKind kind;
         public object prim_val;
         public Value obj_val;
+        public Mono.Debugging.Client.ObjectValue monoValue;
         public DebugType type;
         public Type managed_type;
         public bool syn_err;
@@ -224,6 +225,8 @@ namespace VisualPascalABC
         private Stack<RetValue> eval_stack = new Stack<RetValue>();
         private RetValue ret_val;
         private Debugger.Process debuggedProcess;
+        private Mono.Debugging.Client.StackFrame stackFrame;
+        private Mono.Debugging.Soft.SoftDebuggerSession monoDebuggerSession;
         private IVisualEnvironmentCompiler vec;
         private string FileName;
         private bool for_immediate = false;
@@ -233,6 +236,20 @@ namespace VisualPascalABC
             this.debuggedProcess = debuggedProcess;
             this.vec = vec;
             this.FileName = FileName;
+        }
+
+
+        public ExpressionEvaluator(IVisualEnvironmentCompiler vec, string FileName)
+        {
+            this.vec = vec;
+            this.FileName = FileName;
+
+        }
+
+        public void SetCurrentMonoFrame(Mono.Debugging.Soft.SoftDebuggerSession monoDebuggerSession, Mono.Debugging.Client.StackFrame stackFrame)
+        {
+            this.monoDebuggerSession = monoDebuggerSession;
+            this.stackFrame = stackFrame;
         }
 
         /// <summary>
@@ -366,7 +383,7 @@ namespace VisualPascalABC
             }
             catch (System.Exception ex)
             {
-                //throw new System.Exception(ex.Message);
+                throw new System.Exception(ex.Message);
             }
             finally
             {
@@ -413,11 +430,11 @@ namespace VisualPascalABC
             }
             if (_assign.to is ident)
             {
-                Value nv = GetValue((_assign.to as ident).name);
+                var v = GetValue((_assign.to as ident).name);
                 if (ret_val.prim_val != null)
-                    nv.SetValue(DebugUtils.MakeValue(ret_val.prim_val));
-                else if (ret_val.obj_val != null)
-                    nv.SetValue(ret_val.obj_val);
+                    v = DebugUtils.MakeMonoValue(ret_val.prim_val);
+                else if (ret_val.monoValue != null)
+                    v = ret_val.monoValue;
             }
         }
 
@@ -4944,11 +4961,158 @@ namespace VisualPascalABC
             throw new NotImplementedException();
         }
 
-        public Value GetValue(string var)
+        public Mono.Debugging.Client.ObjectValue GetMonoValue(string var)
+        {
+            return null;
+        }
+
+        public Mono.Debugging.Client.ObjectValue GetValue(string var)
         {
             try
             {
                 List<NamedValue> unit_vars = new List<NamedValue>();
+                NamedValueCollection nvc = null;
+                NamedValue global_nv = null;
+                NamedValue disp_nv = null;
+                NamedValue ret_nv = null;
+                Mono.Debugging.Client.ObjectValue global_lv = null;
+                Mono.Debugging.Client.ObjectValue disp_lv = null;
+                Mono.Debugging.Client.ObjectValue ret_lv = null;
+                List<Mono.Debugging.Client.ObjectValue> unit_lvs = new List<Mono.Debugging.Client.ObjectValue>();
+                var lvc = stackFrame.GetAllLocals();
+                foreach (var lv in lvc)
+                {
+                    if (lv.Name == var)
+                        return lv;
+                }
+
+                foreach (var lv in lvc)
+                {
+                    Console.WriteLine("local var " + lv.Name);
+                    if (lv.Name.IndexOf("<>local_variables") != -1)
+                    {
+                        foreach (var fi in lv.GetAllChildren())
+                            if (string.Compare(fi.Name, var, true) == 0)
+                                return fi;
+                    }
+                    if (lv.Name.IndexOf(':') != -1)
+                    {
+                        int pos = lv.Name.IndexOf(':');
+                        string name = lv.Name.Substring(0, pos);
+                        if (string.Compare(name, var, true) == 0)
+                        {
+                            int num_line = stackFrame.SourceLocation.Line;
+                            int start_line = Convert.ToInt32(lv.Name.Substring(pos + 1, lv.Name.LastIndexOf(':') - pos - 1));
+                            int end_line = Convert.ToInt32(lv.Name.Substring(lv.Name.LastIndexOf(':') + 1));
+                            if (num_line >= start_line - 1 && num_line <= end_line - 1)
+                                return lv;
+                        }
+                    }
+                    if (string.Compare(lv.Name, var, true) == 0)
+                    {
+                        return lv;
+                    }
+                    else if (string.Compare(lv.Name, "self", true) == 0 && stackFrame.GetThisReference() != null)
+                        return stackFrame.GetThisReference();
+                    else if (lv.Name.Contains("$class_var"))
+                    {
+                        global_lv = lv;
+                    }
+
+                    else if (lv.Name.Contains("$unit_var"))
+                        unit_lvs.Add(lv);
+                    else if (lv.Name == "$disp$")
+                        disp_lv = lv;//vo vlozhennyh procedurah ssylka na verh zapis aktivacii
+                    else if (lv.Name.StartsWith("$rv"))
+                        ret_lv = lv;//vozvrashaemoe znachenie
+                }
+                lvc = stackFrame.GetParameters();
+                Mono.Debugging.Client.ObjectValue self_lv = null;
+                foreach (var lv in lvc)
+                {
+                    if (string.Compare(lv.Name, var, true) == 0)
+                        return lv;
+                    if (lv.Name == "$obj$")
+                        self_lv = lv;
+                }
+                if (var.ToLower() == "self")
+                {
+                    try
+                    {
+                        return stackFrame.GetThisReference();
+                    }
+                    catch
+                    {
+                        if (self_lv != null)
+                            return self_lv;
+                    }
+                }
+                if (disp_lv != null)//prohodimsja po vlozhennym podprogrammam
+                {
+                    Mono.Debugging.Client.ObjectValue parent_val = null;
+                    var fields = disp_lv.GetAllChildren();
+                    foreach (var fi in fields)
+                        if (string.Compare(fi.Name, var, true) == 0)
+                            return fi;
+                        else if (fi.Name == "$parent$")
+                            parent_val = fi;
+                    var pv = parent_val;
+                    while (!pv.IsNull)
+                    {
+                        fields = parent_val.GetAllChildren();
+                        foreach (var fi in fields)
+                            if (string.Compare(fi.Name, var, true) == 0)
+                                return fi;
+                            else if (fi.Name == "$parent$")
+                                pv = fi;
+                        if (!pv.IsNull)
+                            parent_val = pv;
+                    }
+                }
+                if (stackFrame.GetThisReference() != null)
+                {
+                    var fields = stackFrame.GetThisReference().GetAllChildren();
+                    foreach (var fi in fields)
+                    {
+
+                        if (string.Compare(fi.Name, var, true) == 0)
+                            return fi;
+                    }
+                }
+                if (self_lv != null)
+                {
+                    Console.WriteLine("search in this");
+                    var fields = self_lv.GetAllChildren();
+                    foreach (var fi in fields)
+                    {
+                        if (string.Compare(fi.Name, var, true) == 0)
+                            return fi;
+                    }
+
+                }
+                if (global_lv != null)
+                {
+                    Console.WriteLine(global_lv.TypeName);
+                    var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
+                    var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                    foreach (var fi in fields)
+                    {
+                        if (string.Compare(fi.Name, var, true) == 0)
+                            return fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                    }
+
+
+                    /*Type global_type = AssemblyHelper.GetType(global_lv.TypeName);
+                    if (global_type != null)
+                    {
+                        var fi = global_type.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                        if (fi != null && fi.IsLiteral)
+                            return new ValueItem(DebugUtils.MakeValue(fi.GetRawConstantValue()), var, global_nv.Type);
+                    }*/
+                }
+
+                
+                /*List<NamedValue> unit_vars = new List<NamedValue>();
                 NamedValueCollection nvc = null;
                 NamedValue ret_nv = null;
                 NamedValue global_nv = null;
@@ -5069,12 +5233,6 @@ namespace VisualPascalABC
                             return DebugUtils.MakeValue(fi.GetRawConstantValue());
                     }
                 }
-                /*foreach (NamedValue nv in unit_vars)
-                {
-                    IList<FieldInfo> fields = nv.Type.GetFields(BindingFlags.All);
-                    foreach (FieldInfo fi in fields)
-                        if (string.Compare(fi.Name, var, true) == 0) return fi.GetValue(nv);
-                }*/
 
                 IList<Function> funcs = debuggedProcess.SelectedThread.Callstack;
                 for (int i = 0; i < funcs.Count; i++)
@@ -5084,7 +5242,7 @@ namespace VisualPascalABC
                     {
                         if (string.Compare(nv.Name, var, true) == 0) return nv;
                     }
-                }
+                }*/
 
             }
             catch (System.Exception e)
@@ -5183,12 +5341,12 @@ namespace VisualPascalABC
             else
             {
                 names.Add(_ident.name);
-                val.obj_val = GetValue(_ident.name);
-                if (val.obj_val == null)
+                val.monoValue = GetValue(_ident.name);
+                if (val.monoValue == null)
                 {
                     val.prim_val = EvalStandFuncNoParam(_ident.name);
                 }
-                if (val.obj_val == null && val.prim_val == null)
+                if (val.monoValue == null && val.prim_val == null)
                 {
                     Type t = AssemblyHelper.GetType(_ident.name);
                     if (t != null)
@@ -5197,7 +5355,7 @@ namespace VisualPascalABC
                         val.managed_type = t;
                     }
                 }
-                if (val.obj_val == null && val.prim_val == null && val.type == null && !by_dot)
+                if (val.monoValue == null && val.prim_val == null && val.type == null && !by_dot)
                     throw new UnknownName(_ident.name);
             }
             eval_stack.Push(val);
@@ -6522,34 +6680,32 @@ namespace VisualPascalABC
             by_dot = tmp2;
             RetValue rv = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (rv.obj_val != null)
+            if (rv.monoValue != null)
             {
                 //if (rv.obj_val.Dereference != null)
                 //    rv.obj_val = rv.obj_val.Dereference;
                 if (_dot_node.right is ident)
                 {
-                    if (rv.obj_val.IsNull)
+                    if (rv.monoValue.IsNull)
                         throw new CommonEvaluationError(new NullReferenceException());
                     ident id = _dot_node.right as ident;
                     names.Add("." + id.name);
                     //IList<Debugger.MemberInfo> members = rv.obj_val.Type.GetMember(id.name, BindingFlags.All);
-                    if (rv.obj_val.IsArray)
+                    if (rv.monoValue.IsArray)
                     {
                         if (string.Compare(id.name, "Length", true) == 0)
-                            res.prim_val = rv.obj_val.ArrayLenght;
-                        else
-                            if (string.Compare(id.name, "Rank", true) == 0)
-                                res.prim_val = rv.obj_val.ArrayRank;
+                            res.prim_val = rv.monoValue.ArrayCount;
+                        
                     }
                     else
                     {
-                        res.obj_val = rv.obj_val.GetMember(id.name);
-                        if (res.obj_val == null)
+                        res.monoValue = rv.monoValue.GetChild(id.name);
+                        if (res.monoValue == null)
                             throw new UnknownName(id.name);
-                        if (res.obj_val is MemberValue && (res.obj_val as MemberValue).MemberInfo is PropertyInfo)
-                            last_obj = rv.obj_val;
+                        //if (res.obj_val is MemberValue && (res.obj_val as MemberValue).MemberInfo is PropertyInfo)
+                        //    last_obj = rv.obj_val;
                     }
-                    declaringType = rv.obj_val.Type;
+                    //declaringType = rv.obj_val.Type;
                 }
             }
             else if (_dot_node.right is ident)

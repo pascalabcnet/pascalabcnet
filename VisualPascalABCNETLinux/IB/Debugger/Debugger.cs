@@ -1449,7 +1449,13 @@ namespace VisualPascalABC
                         
                     foreach (var lv in lvc)
                     {
-                        Console.WriteLine("local var "+lv.Name);
+                        Console.WriteLine("local var " + lv.Name);
+                        if (lv.Name.IndexOf("<>local_variables") != -1)
+                        {
+                            foreach (var fi in lv.GetAllChildren())
+                                if (string.Compare(fi.Name, var, true) == 0)
+                                    return new ValueItem(fi);
+                        }
                         if (lv.Name.IndexOf(':') != -1)
                         {
                             int pos = lv.Name.IndexOf(':');
@@ -1730,24 +1736,25 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    if (evaluator == null) return null;
-                    Debugger.Wrappers.CorSym.ISymUnmanagedMethod sym_meth = debuggedProcess.SelectedFunction.symMethod;
+                    Console.WriteLine("expression "+var);
+                    if (evaluator == null)
+                        evaluator = new ExpressionEvaluator(workbench.VisualEnvironmentCompiler, FileName);
+                    evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
                     //            	if (sym_meth == null) return null;
                     //               		if (sym_meth.SequencePoints.Length > 0)
                     //                 	if (num_line < sym_meth.SequencePoints[0].Line || num_line > sym_meth.SequencePoints[sym_meth.SequencePoints.Length - 1].EndLine)
                     //                     return null;
                     string preformat;
                     RetValue rv = evaluator.GetValueForExpression(var, out preformat);
-                    if (rv.obj_val != null && rv.obj_val is NamedValue)
+                    if (rv.monoValue != null)
                     {
-                        Value v = rv.obj_val;
-                        ValueItem vi = new ValueItem(v, var, evaluator.declaringType);
+                        ValueItem vi = new ValueItem(rv.monoValue);
                         vi.SpecialName = preformat;
                         return vi;
                     }
                     else if (rv.prim_val != null)
                     {
-                        ValueItem vi = new ValueItem(DebugUtils.MakeValue(rv.prim_val), var, evaluator.declaringType);
+                        ValueItem vi = new ValueItem(DebugUtils.MakeMonoValue(rv.prim_val));
                         vi.SpecialName = preformat;
                         return vi;
                     }

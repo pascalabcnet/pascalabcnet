@@ -249,6 +249,11 @@ namespace VisualPascalABC
             return "Count = " + cnt.ToString();
         }
 
+        public static Mono.Debugging.Client.ObjectValue MakeMonoValue(object obj)
+        {
+            return Mono.Debugging.Client.ObjectValue.CreatePrimitive(null, new Mono.Debugging.Client.ObjectPath(""), obj.GetType().Name, new Mono.Debugging.Backend.EvaluationResult(obj.ToString()), Mono.Debugging.Client.ObjectValueFlags.Literal);
+        }
+
         public static Value MakeValue(object obj)
         {
             Value v = null;
