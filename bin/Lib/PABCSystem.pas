@@ -10691,6 +10691,12 @@ end;
 //>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------
 
+/// Возвращает случайный элемент списка
+function RandomElement<T>(Self: List<T>): T; extensionmethod;
+begin
+  Result := Self[Random(Self.Count)];  
+end;
+
 /// Возвращает последовательность индексов списка
 function Indices<T>(Self: List<T>): sequence of integer; extensionmethod := Range(0, Self.Count - 1);
 

@@ -48,6 +48,12 @@ function Random: real;
 function Random(a, b: real): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
+/// Возвращает случайное целое в диапазоне 
+function Random(diap: IntRange): integer;
+/// Возвращает случайное вещественное в диапазоне 
+function Random(diap: RealRange): real;
+/// Возвращает случайный символ в диапазоне 
+function Random(diap: CharRange): char;
 
 /// Возвращает кортеж из двух случайных целых в диапазоне от a до b
 function Random2(a, b: integer): (integer, integer);
@@ -55,12 +61,25 @@ function Random2(a, b: integer): (integer, integer);
 function Random2(a, b: real): (real, real);
 /// Возвращает кортеж из двух случайных символов в диапазоне от a до b
 function Random2(a, b: char): (char, char);
+/// Возвращает кортеж из двух случайных целых в диапазоне
+function Random2(diap: IntRange): (integer, integer);
+/// Возвращает кортеж из двух случайных символов в диапазоне
+function Random2(diap: CharRange): (char, char);
+/// Возвращает кортеж из двух случайных вещественных в диапазоне
+function Random2(diap: RealRange): (real, real);
+
 /// Возвращает кортеж из трех случайных целых в диапазоне от a до b
 function Random3(a, b: integer): (integer, integer, integer);
 /// Возвращает кортеж из трех случайных вещественных в диапазоне от a до b
 function Random3(a, b: real): (real, real, real);
 /// Возвращает кортеж из трех случайных символов в диапазоне от a до b
 function Random3(a, b: char): (char, char, char);
+/// Возвращает кортеж из трех случайных целых в диапазоне
+function Random3(diap: IntRange): (integer, integer, integer);
+/// Возвращает кортеж из трех случайных вещественных в диапазоне
+function Random3(diap: RealRange): (real, real, real);
+/// Возвращает кортеж из трех случайных символов в диапазоне
+function Random3(diap: CharRange): (char, char, char);
 
 /// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от a до b
 function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
@@ -120,7 +139,7 @@ procedure ColoredMessage(msg: string);
 
 /// Проверить типы вводимых данных
 procedure CheckInput(a: array of System.Type);
-/// Проверить значения и типы при выводе
+/// Проверить значения при выводе
 procedure CheckOutput(params arr: array of object);
 
 /// Синоним CheckInput
@@ -158,6 +177,9 @@ procedure CompareTypeWithOutput(params a: array of System.Type);
 
 /// Сравнить два значения
 function CompareValues(o1, o2: Object): boolean;
+
+/// Сравнить два массива
+function CompareArrValues(a,lst: array of object): boolean;
 
 /// Сравнить значения с выводом
 function CompareValuesWithOutput(params a: array of object): boolean;
@@ -265,6 +287,12 @@ function Re2: (real, real);
 function IntArr(n: integer): array of integer;
 /// Следующие n элементов ввода как массив вещественных
 function ReArr(n: integer): array of real;
+/// Следующие n элементов ввода как массив логических
+function BooArr(n: integer): array of boolean;
+/// Следующие n элементов ввода как массив символов
+function ChrArr(n: integer): array of char;
+/// Следующие n элементов ввода как массив строк
+function StrArr(n: integer): array of string;
 
 // функции, возвращающие входные и выходные списки, а также их срезы, приведенные к нужному типу
 
@@ -849,8 +877,10 @@ function Int2: (integer, integer) := (Int, Int);
 function Re2: (real, real) := (Re, Re);
 
 function IntArr(n: integer): array of integer := (1..n).Select(x -> Int).ToArray;
-
 function ReArr(n: integer): array of real := (1..n).Select(x -> Re).ToArray;
+function BooArr(n: integer): array of boolean := (1..n).Select(x -> Boo).ToArray;
+function ChrArr(n: integer): array of char := (1..n).Select(x -> Chr).ToArray;
+function StrArr(n: integer): array of string := (1..n).Select(x -> Str).ToArray;
 
 // функции, возвращающие входные и выходные списки, а также их срезы, приведенные к нужному типу
 
@@ -934,6 +964,30 @@ begin
   InputList.Add(Result);
 end;
 
+/// Возвращает случайное целое в диапазоне 
+function Random(diap: IntRange): integer;
+begin
+  Result := PABCSystem.Random(diap);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+/// Возвращает случайное вещественное в диапазоне 
+function Random(diap: RealRange): real;
+begin
+  Result := PABCSystem.Random(diap);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+/// Возвращает случайный символ в диапазоне 
+function Random(diap: CharRange): char;
+begin
+  Result := PABCSystem.Random(diap);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
 /// Возвращает кортеж из двух случайных целых в диапазоне от a до b
 function Random2(a, b: integer): (integer, integer);
 begin
@@ -957,7 +1011,35 @@ function Random2(a, b: char): (char, char);
 begin
   Result := PABCSystem.Random2(a, b);
   if IsPT then exit;
-  InputList.Add(Result);
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+end;
+
+/// Возвращает кортеж из двух случайных целых в диапазоне
+function Random2(diap: IntRange): (integer, integer);
+begin
+  Result := PABCSystem.Random2(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+end;
+
+/// Возвращает кортеж из двух случайных символов в диапазоне
+function Random2(diap: CharRange): (char, char);
+begin
+  Result := PABCSystem.Random2(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+end;
+
+/// Возвращает кортеж из двух случайных вещественных в диапазоне
+function Random2(diap: RealRange): (real, real);
+begin
+  Result := PABCSystem.Random2(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
 end;
 
 /// Возвращает кортеж из трех случайных целых в диапазоне от a до b
@@ -984,6 +1066,36 @@ end;
 function Random3(a, b: char): (char, char, char);
 begin
   Result := PABCSystem.Random3(a, b);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+/// Возвращает кортеж из трех случайных целых в диапазоне
+function Random3(diap: IntRange): (integer, integer, integer);
+begin
+  Result := PABCSystem.Random3(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+/// Возвращает кортеж из трех случайных вещественных в диапазоне
+function Random3(diap: RealRange): (real, real, real);
+begin
+  Result := PABCSystem.Random3(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+/// Возвращает кортеж из трех случайных символов в диапазоне
+function Random3(diap: CharRange): (char, char, char);
+begin
+  Result := PABCSystem.Random3(diap);
   if IsPT then exit;
   InputList.Add(Result[0]);
   InputList.Add(Result[1]);
@@ -1232,35 +1344,6 @@ begin
     raise new OutputCountException(OutputList.Count, a.Length);
 end;
 
-procedure CheckOutputOld(params arr: array of object);
-begin
-  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
-    exit;
-
-  var mn := Min(arr.Length, OutputList.Count);
-  TaskResult := Solved;
-  // Несоответствие типов
-  for var i := 0 to mn - 1 do
-  begin 
-    if (arr[i].GetType.Name = 'RuntimeType') and (arr[i] <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i] as System.Type), TypeName(OutputList[i]))
-    else if (arr[i].GetType.Name <> 'RuntimeType') and (arr[i].GetType <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeName(arr[i]), TypeName(OutputList[i]));
-  end;  
-  
-  // Несоответствие количества выводимых параметров
-  if arr.Length <> OutputList.Count then
-    raise new OutputCountException(OutputList.Count, arr.Length);
-  
-  // Несоответствие значений
-  for var i := 0 to mn - 1 do
-    if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
-    begin
-      TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
-      exit;           
-    end;
-end;
-
 procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
 begin
   if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
@@ -1304,24 +1387,10 @@ begin
       raise new InputTypeException(i + 1, TypeToTypeName(a[i]), TypeName(InputList[i]));
 end;
 
-/// Смноним CheckInputTypes
+/// Синоним CheckInputTypes
 procedure CheckInput(a: array of System.Type) := CheckInputTypes(a);
 
 procedure CheckInput(seq: sequence of System.Type) := CheckInputTypes(seq.ToArray);
-
-procedure CheckOutputSeqOld(a: sequence of integer) := CheckOutputOld(ToObjArray(a.ToArray));
-
-procedure CheckOutputSeqOld(a: sequence of real) := CheckOutputOld(ToObjArray(a.ToArray));
-
-procedure CheckOutputSeqOld(a: sequence of string) := CheckOutputOld(ToObjArray(a.ToArray));
-
-procedure CheckOutputSeqOld(a: sequence of char) := CheckOutputOld(ToObjArray(a.ToArray));
-
-procedure CheckOutputSeqOld(a: sequence of boolean) := CheckOutputOld(ToObjArray(a.ToArray));
-
-procedure CheckOutputSeqOld(a: sequence of object) := CheckOutputOld(a.ToArray);
-
-procedure CheckOutputSeqOld(a: ObjectList) := CheckOutputOld(a.lst.ToArray);
 
 procedure CheckOutputAfterInitialSeq(seq: sequence of integer) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
 procedure CheckOutputAfterInitialSeq(seq: sequence of real) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
@@ -1376,8 +1445,41 @@ begin
   CreateNewLineBeforeMessage := False;
 end;
 
+/// Здесь проверялся RuntimeType - в новом CheckOutput RuntimeType вообще не проверяется
+procedure CheckOutputOld(params arr: array of object);
+begin
+  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+    exit;
+
+  var mn := Min(arr.Length, OutputList.Count);
+  TaskResult := Solved;
+  // Несоответствие типов
+  for var i := 0 to mn - 1 do
+  begin 
+    if (arr[i].GetType.Name = 'RuntimeType') and (arr[i] <> OutputList[i].GetType) then
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i] as System.Type), TypeName(OutputList[i]))
+    else if (arr[i].GetType.Name <> 'RuntimeType') and (arr[i].GetType <> OutputList[i].GetType) then
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i].GetType), TypeName(OutputList[i]));
+  end;  
+  
+  // Несоответствие количества выводимых параметров
+  if arr.Length <> OutputList.Count then
+    raise new OutputCountException(OutputList.Count, arr.Length);
+  
+  // Несоответствие значений
+  for var i := 0 to mn - 1 do
+    if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
+    begin
+      TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
+      exit;           
+    end;
+end;
+
+// Добавим сюда проверку типов RuntimeType
 procedure CheckOutput(params arr: array of object);
 begin
+  // TaskResult = InitialTask - ничего выводить не надо
+  // TaskResult = BadInitialTask - потом будет выведено исключение, что часть изначальных данных удалена
   if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
     exit;
 
@@ -1388,15 +1490,17 @@ begin
   for var i := 0 to mn - 1 do
   begin  
     // Если типы не совпадают 
-    if arr[i].GetType <> OutputList[i].GetType then
+    if (arr[i].GetType.Name <> 'RuntimeType') and (arr[i].GetType <> OutputList[i].GetType) or
+      (arr[i].GetType.Name = 'RuntimeType') and (arr[i] <> OutputList[i].GetType)
+    then
     begin
       ind := i; // то запомнить индекс первого несовпадения
       if ind > InitialOutputList.Count then
         ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
-      raise new OutputTypeException(i + 1, TypeName(arr[i]), TypeName(OutputList[i]));           
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i].GetType), TypeName(OutputList[i]));           
     end;
-    // Если значения не совпадают
-    if not CompareValues(arr[i], OutputList[i]) then
+    // Если значения не совпадают (если задан маркер типа, то проверка значений пропускается)
+    if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
     begin
       ind := i; // то запомнить индекс первого несовпадения
       if ind > InitialOutputList.Count then
@@ -1441,6 +1545,13 @@ procedure CheckOutputSeqNew(a: sequence of object) := CheckOutputSeq(a);
 procedure CheckOutputSeqNew(a: sequence of word) := CheckOutputSeq(a);
 procedure CheckOutputSeqNew(a: ObjectList) := CheckOutputSeq(a);
 
+procedure CheckOutputSeqOld(a: sequence of integer) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of real) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of string) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of char) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of boolean) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of object) := CheckOutputOld(a.ToArray);
+procedure CheckOutputSeqOld(a: ObjectList) := CheckOutputOld(a.lst.ToArray);
 
 procedure CheckOutputString(str: string);
   function Char2Str(c: char): string;
