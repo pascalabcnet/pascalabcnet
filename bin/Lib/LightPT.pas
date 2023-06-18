@@ -42,6 +42,8 @@ type
 {==================================================================================}
 /// Возвращает случайное целое в диапазоне от a до b
 function Random(a, b: integer): integer;
+/// Возвращает случайное целое в диапазоне от 0 до n-1
+function Random(n: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
 /// Возвращает случайное вещественное в диапазоне [a,b)
@@ -142,6 +144,12 @@ procedure CheckInput(a: array of System.Type);
 /// Проверить значения при выводе
 procedure CheckOutput(params arr: array of object);
 
+/// Проверить, что данные не вводились
+procedure CheckInputIsEmpty;
+
+/// Проверить, что помимо начального ввода других данных не вводилось
+procedure CheckInputIsInitial;
+
 /// Синоним CheckInput
 procedure CheckInputTypes(a: array of System.Type);
 
@@ -208,6 +216,8 @@ procedure CheckInitialInput(params a: array of object);
 
 procedure CheckInitialOutputSeq(a: sequence of System.Type);
 procedure CheckInitialInputSeq(a: sequence of System.Type);
+
+procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
 
 procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
 
@@ -731,6 +741,13 @@ procedure CheckInitialOutputSeq(a: sequence of System.Type) := CheckInitialOutpu
 
 procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(a.Select(x->object(x)).ToArray);
 
+procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
+begin
+  InitialInput(input.Select(x->object(x)).ToArray);
+  InitialOutput(output.Select(x->object(x)).ToArray);
+  CheckInitialIO;
+end;
+
 procedure CheckInputCount(n: integer);
 begin
   if InputList.Count <> n then
@@ -936,6 +953,13 @@ end;
 function Random(a, b: integer): integer;
 begin
   Result := PABCSystem.Random(a, b);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+function Random(n: integer): integer;
+begin
+  Result := PABCSystem.Random(n);
   if IsPT then exit;
   InputList.Add(Result);
 end;
@@ -1344,38 +1368,6 @@ begin
     raise new OutputCountException(OutputList.Count, a.Length);
 end;
 
-procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
-begin
-  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
-    exit;
-  
-  // Здесь всегда OutputList.Count > InitialOutputList.Count
-  // Если arr.Length > OutputList.Count - InitialOutputList.Count, то мы не вывели часть данных
-  // Если arr.Length < OutputList.Count - InitialOutputList.Count, то мы вывели больше чем надо
-  
-  if arr.Length <> OutputList.Count - InitialOutputList.Count then
-    raise new OutputCountException(OutputList.Count, InitialOutputList.Count + arr.Length);
-    
-  TaskResult := Solved;
-  // Несоответствие типов
-  var a := OutputList.Count - arr.Length;
-  for var i := a to OutputList.Count - 1 do
-  begin 
-    if (arr[i-a].GetType.Name = 'RuntimeType') and (arr[i-a] <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i-a] as System.Type), TypeName(OutputList[i]))
-    else if (arr[i-a].GetType.Name <> 'RuntimeType') and (arr[i-a].GetType <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeName(arr[i-a]), TypeName(OutputList[i]));
-  end;
-  
-  // Несоответствие значений
-  for var i := a to OutputList.Count - 1 do
-    if (arr[i-a].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i-a], OutputList[i]) then
-    begin
-      TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
-      exit;           
-    end;
-end;
-
 /// Не меняет TaskResult если типы правильные
 procedure CheckInputTypes(a: array of System.Type);
 begin
@@ -1389,6 +1381,12 @@ end;
 
 /// Синоним CheckInputTypes
 procedure CheckInput(a: array of System.Type) := CheckInputTypes(a);
+procedure CheckInputIsEmpty := CheckInputTypes(new System.Type[0]);
+
+procedure CheckInputIsInitial;
+begin
+  CheckInput(InitialInputList.Select(x->x as System.Type).ToArray);
+end; 
 
 procedure CheckInput(seq: sequence of System.Type) := CheckInputTypes(seq.ToArray);
 
@@ -1495,7 +1493,7 @@ begin
     then
     begin
       ind := i; // то запомнить индекс первого несовпадения
-      if ind > InitialOutputList.Count then
+      if ind >= InitialOutputList.Count then
         ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
       raise new OutputTypeException(i + 1, TypeToTypeName(arr[i].GetType), TypeName(OutputList[i]));           
     end;
@@ -1503,7 +1501,7 @@ begin
     if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
     begin
       ind := i; // то запомнить индекс первого несовпадения
-      if ind > InitialOutputList.Count then
+      if ind >= InitialOutputList.Count then
       begin
         ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
         ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i]}, а выведено {OutputList[i]}',MsgColorGray);
@@ -1524,6 +1522,88 @@ begin
     raise new OutputCountException(OutputList.Count, arr.Length);
   end;
   TaskResult := Solved;
+end;
+
+procedure CheckOutputAfterInitial(params arr: array of object);
+begin
+  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+    exit;
+  // Если мы попали сюда, то OutputList.Count >= InitialOutputList.Count
+  var mn := Min(arr.Length, OutputList.Count - InitialOutputList.Count);
+  
+  var i0 := InitialOutputList.Count;
+  var ind := -1;
+  for var i := i0 to i0 + mn - 1 do
+  begin  
+    // Если типы не совпадают 
+    if (arr[i-i0].GetType.Name <> 'RuntimeType') and (arr[i-i0].GetType <> OutputList[i].GetType) or
+      (arr[i-i0].GetType.Name = 'RuntimeType') and (arr[i-i0] <> OutputList[i].GetType)
+    then
+    begin
+      ind := i; // то запомнить индекс первого несовпадения
+      if ind >= InitialOutputList.Count then
+        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i-i0].GetType), TypeName(OutputList[i]));           
+    end;
+    // Если значения не совпадают (если задан маркер типа, то проверка значений пропускается)
+    if (arr[i-i0].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i-i0], OutputList[i]) then
+    begin
+      ind := i; // то запомнить индекс первого несовпадения
+      if ind > InitialOutputList.Count then
+      begin
+        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+        ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i-i0]}, а выведено {OutputList[i]}',MsgColorGray);
+      end;  
+      TaskResult := BadSolution;
+      exit;           
+    end;
+  end;
+  if ind = -1 then
+    ind := mn;
+  
+  if arr.Length <> OutputList.Count - InitialOutputList.Count then
+  begin  
+    if (ind = mn) and (ind<>i0) then
+      ColoredMessage('Все выведенные данные правильны',MsgColorGray)
+    else if ind > 0 then
+      ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+    raise new OutputCountException(OutputList.Count, arr.Length + i0);
+  end;
+  TaskResult := Solved;
+end;
+
+procedure CheckOutputAfterInitialOld(params arr: array of object); // проверить только то, что после исходного вывода
+begin
+  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+    exit;
+  
+  // Здесь всегда OutputList.Count > InitialOutputList.Count
+  // Если arr.Length > OutputList.Count - InitialOutputList.Count, то мы не вывели часть данных
+  // Если arr.Length < OutputList.Count - InitialOutputList.Count, то мы вывели больше чем надо
+  
+  if arr.Length <> OutputList.Count - InitialOutputList.Count then
+    raise new OutputCountException(OutputList.Count, InitialOutputList.Count + arr.Length);
+    
+  TaskResult := Solved;
+  // Несоответствие типов
+  var a := OutputList.Count - arr.Length;
+  for var i := a to OutputList.Count - 1 do
+  begin 
+    if (arr[i-a].GetType.Name = 'RuntimeType') and (arr[i-a] <> OutputList[i].GetType) then
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i-a] as System.Type), TypeName(OutputList[i]))
+    else if (arr[i-a].GetType.Name <> 'RuntimeType') and (arr[i-a].GetType <> OutputList[i].GetType) then
+      raise new OutputTypeException(i + 1, TypeName(arr[i-a]), TypeName(OutputList[i]));
+  end;
+  
+  // Несоответствие значений
+  for var i := a to OutputList.Count - 1 do
+    if (arr[i-a].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i-a], OutputList[i]) then
+    begin
+      TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
+      exit;           
+    end;
+    
+    
 end;
 
 procedure CheckOutputSeq(a: sequence of integer) := CheckOutput(ToObjArray(a.ToArray));
