@@ -14,6 +14,7 @@ using System.Runtime.ExceptionServices;
 
 namespace VisualPascalABC
 {
+
     public static class DebugUtils
     {
         private static Hashtable ht = new Hashtable();

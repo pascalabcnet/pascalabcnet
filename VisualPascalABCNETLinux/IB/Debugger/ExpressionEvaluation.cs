@@ -383,7 +383,7 @@ namespace VisualPascalABC
             }
             catch (System.Exception ex)
             {
-                throw new System.Exception(ex.Message);
+                throw new System.Exception(ex.Message + " " + ex.StackTrace);
             }
             finally
             {
@@ -6212,10 +6212,10 @@ namespace VisualPascalABC
                 if (i < _indexer.indexes.expressions.Count - 1)
                     names.Add(",");
                 RetValue val = eval_stack.Pop();
-                if (val.prim_val == null && val.obj_val != null)
+                if (val.prim_val == null && val.monoValue != null)
                 {
-                    if (val.obj_val.IsPrimitive)
-                        val.prim_val = val.obj_val.PrimitiveValue;
+                    if (val.monoValue.IsPrimitive)
+                        val.prim_val = val.monoValue.GetRawValue();
                 }
                 if (val.prim_val != null)
                 {
@@ -6237,13 +6237,13 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    indices.Add(val.obj_val);
+                    indices.Add(val.monoValue);
                 }
 
             }
             by_dot = tmp;
             names.Add("]");
-            if (rv.obj_val != null)
+            if (rv.monoValue != null)
             {
                 if (rv.obj_val is MemberValue && (rv.obj_val as MemberValue).MemberInfo is PropertyInfo)
                 {
@@ -6264,11 +6264,12 @@ namespace VisualPascalABC
                     eval_stack.Push(res);
                     return;
                 }
-                if (rv.obj_val.IsArray)
+                if (rv.monoValue.IsArray)
                 {
+                    
                     RetValue res = new RetValue();
-                    res.obj_val = rv.obj_val.GetArrayElement(conv_to_uint_arr(indices));
-                    check_for_out_of_range(res.obj_val);
+                    res.monoValue = rv.monoValue.GetArrayItem(conv_to_int_arr(indices)[0]);
+                    //check_for_out_of_range(res.monoValue);
                     eval_stack.Push(res);
 
                 }
@@ -6424,13 +6425,13 @@ namespace VisualPascalABC
             return null;
         }
 
-        private uint[] conv_to_uint_arr(List<object> arr)
+        private int[] conv_to_int_arr(List<object> arr)
         {
             try
             {
-                List<uint> l = new List<uint>();
+                List<int> l = new List<int>();
                 foreach (object i in arr)
-                    l.Add(Convert.ToUInt32(i));
+                    l.Add(Convert.ToInt32(i));
                 return l.ToArray();
             }
             catch
