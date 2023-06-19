@@ -36,7 +36,7 @@ namespace PascalABCCompiler
         public static bool DetailOut = false;
         public static bool Rebuild=false;
         public static bool NoConsole = false;
-        public static CompilerOptions.OutputType outputType;
+        public static CompilerOptions.OutputType outputType = CompilerOptions.OutputType.ConsoleApplicaton;
         public static bool Debug = true;
         public static bool UseDll = false;
         public static List<Error> GlobalErrorsList = new List<Error>();
@@ -183,15 +183,37 @@ namespace PascalABCCompiler
                     ScanDir(mask, dinf.FullName);
         }
 
-        static void CompileAllFilesInDirectory(string mask,string directory)
+        static void CompileAllFilesInDirectory(string filePath, string directory)
         {
-            DirectoryInfo di = new DirectoryInfo(directory);
-            
+            DirectoryInfo di;
+            if (filePath.Contains("\\"))
+            {
+                di = new DirectoryInfo(filePath.Substring(0, filePath.LastIndexOf('\\') + 1));
+                filePath = Path.GetFileName(filePath);
+            }
+            else if (filePath.Contains("/"))
+            {
+                di = new DirectoryInfo(filePath.Substring(0, filePath.LastIndexOf('/') + 1));
+                filePath = Path.GetFileName(filePath);
+            }
+            else
+            {
+                di = new DirectoryInfo(directory);
+            }
+
+
             //Console.WriteLine("["+directory+"]");
             FileInfo[] files;
             try
             {
-                files = di.GetFiles(mask);
+                if (filePath.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                {
+                    files = di.GetFiles(filePath);
+                }
+                else
+                {
+                    files = new FileInfo[1] { new FileInfo(Path.Combine(di.FullName, filePath)) };
+                }
             }
             catch (DirectoryNotFoundException)
             {
@@ -433,12 +455,11 @@ namespace PascalABCCompiler
                     StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[StringResourcesLanguage.TwoLetterISOLanguages.IndexOf("en")];
                 else
                     StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[StringResourcesLanguage.TwoLetterISOLanguages.IndexOf(StringResourcesLanguage.CurrentTwoLetterISO)];
-                
-            }
-                
 
-            for (int i = 0; i < ConsoleBufferWidth-1; i++)
-              BlankString += " ";
+            }
+
+
+            BlankString = new string(' ', ConsoleBufferWidth - 1);
 
             Console.ForegroundColor = ConsoleColor.White;
             OutputDirectory="";
@@ -446,64 +467,69 @@ namespace PascalABCCompiler
             Console.Title = StringResourcesGet("STARTING");
             Reset();
             Console.Title = Compiler.Banner;
-            
+
 
             //Console.CursorLeft = (Console.BufferWidth - Compiler.Banner.Length) / 2;
-            //Console.WriteLine(Compiler.Banner); 
+            //Console.WriteLine(Compiler.Banner);
 
-
-            short_output = args.Count != 1;
-
-            if (args.Count >= 1) 
+            ShowConnectedParsers();
+            ShowConnectedConversions();
+            if (args.Count > 0)
             {
-                FileName = args[0];
-            }
-            if (args.Count >= 2)
-                if (args[1] == "/rebuildnodebug")
+                List<FileInfo> fileInfo = new List<FileInfo>();
+                foreach (var arg in args)
                 {
-                    Rebuild = true;
-                    Compiler.InternalDebug.IncludeDebugInfoInPCU = false;
-                    short_output = false;
-                    DetailOut = true;
-                }
-                else
-                    if (args[1] == "/rebuild")
+                    if (arg == "/rebuildnodebug")
+                    {
+                        Rebuild = true;
+                        Compiler.InternalDebug.IncludeDebugInfoInPCU = false;
+                        short_output = false;
+                        DetailOut = true;
+                    }
+                    else if (arg == "/rebuild")
                     {
                         Rebuild = true;
                         short_output = false;
                         DetailOut = true;
                     }
                     else
-                        TagertFileName = args[1];
-            outputType = CompilerOptions.OutputType.ConsoleApplicaton;
-            if (args.Count >= 3)
-                    SetOutType(args[2]);
-            
-
-
-            ShowConnectedParsers();
-            ShowConnectedConversions();
-            if (args.Count >= 1)
-            {
-                return CompileAssembly(FileName, outputType, true);
-            }
-            ExecuteCommand("?");
-            while (true)
-            {
-                
-                Console.WriteLine();
-                string Dir = Environment.CurrentDirectory; int dleng = 25;
-                Console.ForegroundColor = ConsoleColor.Gray;
-                if (Dir.Length > dleng)
-                    Dir = string.Format("...{0}>", Dir.Substring(Dir.Length - dleng));
-                else
-                    Dir = string.Format("{0}>", Dir);
-                Console.Write(Dir);
-                Console.ForegroundColor = ConsoleColor.Green;
-                if (!ExecuteCommand(Console.ReadLine()))
+                    {
+                        if (File.Exists(arg))
+                        {
+                            fileInfo.Add(new FileInfo(arg));
+                        }
+                        else
+                        {
+                            ExecuteCommand(arg);
+                        }
+                    }
+                }
+                foreach (var fi in fileInfo)
                 {
+                    CompileAllFilesInDirectory(fi.FullName, Environment.CurrentDirectory);
+                }
+                return 0;
+            }
+            else
+            {
+                ExecuteCommand("?");
+                while (true)
+                {
+
+                    Console.WriteLine();
+                    string Dir = Environment.CurrentDirectory; int dleng = 25;
                     Console.ForegroundColor = ConsoleColor.Gray;
-                    return 0;
+                    if (Dir.Length > dleng)
+                        Dir = string.Format("...{0}>", Dir.Substring(Dir.Length - dleng));
+                    else
+                        Dir = string.Format("{0}>", Dir);
+                    Console.Write(Dir);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    if (!ExecuteCommand(Console.ReadLine()))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        return 0;
+                    }
                 }
             }
 		}
