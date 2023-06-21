@@ -1152,7 +1152,9 @@ namespace Mono.Debugging.Soft
 				return breakInfo;
 			}
 
-			if (breakEvent is FunctionBreakpoint function) {
+		
+			if (breakEvent is FunctionBreakpoint) {
+				var function = breakEvent as FunctionBreakpoint;
 				foreach (var method in FindMethodsByName (function.TypeName, function.MethodName, function.ParamTypes)) {
 					if (!ResolveFunctionBreakpoint (breakInfo, function, method)) {
 						breakInfo.SetStatus (BreakEventStatus.NotBound, null);
@@ -1164,7 +1166,8 @@ namespace Mono.Debugging.Soft
 				lock (pending_bes) {
 					pending_bes.Add (breakInfo);
 				}
-			} else if (breakEvent is InstructionBreakpoint instruction) {
+			} else if (breakEvent is InstructionBreakpoint) {
+				var instruction = breakEvent as InstructionBreakpoint;
 				Location location;
 
 				breakInfo.FileName = instruction.FileName;
@@ -1181,7 +1184,8 @@ namespace Mono.Debugging.Soft
 				lock (pending_bes) {
 					pending_bes.Add (breakInfo);
 				}
-			} else if (breakEvent is Breakpoint breakpoint) {
+			} else if (breakEvent is Breakpoint) {
+				var breakpoint = breakEvent as Breakpoint;
 				bool insideLoadedRange;
 				bool found = false;
 
@@ -1208,7 +1212,8 @@ namespace Mono.Debugging.Soft
 					else
 						breakInfo.SetStatus (BreakEventStatus.NotBound, null);
 				}
-			} else if (breakEvent is Catchpoint catchpoint) {
+			} else if (breakEvent is Catchpoint) {
+				var catchpoint = breakEvent as Catchpoint;
 				if (!types.ContainsKey (catchpoint.ExceptionName)) {
 					//
 					// Same as in FindLocationByFile (), fetch types matching the type name
