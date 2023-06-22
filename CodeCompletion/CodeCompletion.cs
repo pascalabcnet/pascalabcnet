@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -374,14 +374,14 @@ namespace CodeCompletion
         }
 
         const string LibSourceDirectoryIdent = "%LIBSOURCEDIRECTORY%";
-        public static string FindSourceFileName(string unit_name, params string[] ddirs)
+        public static string FindSourceFileName(string unit_name, out int found_dir_ind, params string[] ddirs)
         {
             List<string> Dirs = new List<string>();
             Dirs.AddRange(ddirs);
             Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectory);
             if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent))
                 Dirs.Add((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
-            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, Dirs.ToArray());
+            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, Dirs.ToArray());
         }
 
         public static CodeCompletionNameHelper Helper
