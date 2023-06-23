@@ -468,13 +468,13 @@ namespace Mono.Debugging.Evaluation
 			string typeName = type != null ? GetTypeName (ctx, type) : "";
 
 			if (obj == null || IsNull (ctx, obj))
-				return ObjectValue.CreateNullObject (source, path, GetDisplayTypeName (typeName), flags);
+				return ObjectValue.CreateNullObject (source, path, GetDisplayTypeName (typeName), flags, type, ctx);
 
 			if (IsPrimitive (ctx, obj) || IsEnum (ctx,obj))
 				return ObjectValue.CreatePrimitive (source, path, GetDisplayTypeName (typeName), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
 
 			if (IsArray (ctx, obj))
-				return ObjectValue.CreateObject (source, path, GetDisplayTypeName (typeName), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
+				return ObjectValue.CreateObject (source, path, GetDisplayTypeName (typeName), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null, type, ctx);
 
 			EvaluationResult tvalue = null;
 			TypeDisplayData tdata = null;
@@ -520,7 +520,7 @@ namespace Mono.Debugging.Evaluation
 				}
 			}
 
-			ObjectValue oval = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
+			ObjectValue oval = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null, type, ctx);
 			if (!string.IsNullOrEmpty (tdata.NameDisplayString) && ctx.Options.AllowDisplayStringEvaluation) {
 				try {
 					oval.Name = EvaluateDisplayString (ctx, obj, tdata.NameDisplayString);

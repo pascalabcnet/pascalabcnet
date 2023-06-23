@@ -45,7 +45,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public ObjectValueAdaptor Adaptor { get; set; }
 		
-		protected abstract EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options);
+		public abstract EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options);
 		
 		public abstract int FrameCount { get; }
 	

@@ -1,5 +1,6 @@
 
 using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Backend
 {
@@ -16,5 +17,6 @@ namespace Mono.Debugging.Backend
 		CompletionData GetExpressionCompletionData (int frameIndex, string exp);
 		AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count);
 		ValidationResult ValidateExpression (int frameIndex, string expression, EvaluationOptions options);
+		EvaluationContext GetEvaluationContext(int frameIndex, EvaluationOptions options);
 	}
 }

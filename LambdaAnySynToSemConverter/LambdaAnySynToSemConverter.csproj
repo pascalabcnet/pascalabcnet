@@ -38,7 +38,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +45,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SemanticTree\SemanticTree.csproj">
+      <Project>{613e0dda-aa8a-437c-ac45-507b47429ff9}</Project>
+      <Name>SemanticTree</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
       <Project>{f10a5330-dcf4-4533-877c-7b1b1be23884}</Project>
       <Name>SyntaxTreeConverters</Name>

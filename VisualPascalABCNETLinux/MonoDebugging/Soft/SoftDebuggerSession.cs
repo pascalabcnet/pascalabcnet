@@ -723,7 +723,15 @@ namespace Mono.Debugging.Soft
 			if (!types.TryGetValue (fullName, out typesList))
 				aliases.TryGetValue (fullName, out typesList);
 			if (typesList == null)
-				return null;
+            {
+				var vm_types = vm.GetTypes(fullName, true);
+				foreach (var vm_type in vm_types)
+					ProcessType(vm_type);
+				if (!types.TryGetValue(fullName, out typesList))
+					aliases.TryGetValue(fullName, out typesList);
+				if (typesList == null)
+					return null;
+			}
 			if (typesList.Count == 1)
 				return typesList [0];
 			//Idea here is... If we have multiple types with same name... they must be in different .dlls
@@ -1144,7 +1152,9 @@ namespace Mono.Debugging.Soft
 				return breakInfo;
 			}
 
-			if (breakEvent is FunctionBreakpoint function) {
+		
+			if (breakEvent is FunctionBreakpoint) {
+				var function = breakEvent as FunctionBreakpoint;
 				foreach (var method in FindMethodsByName (function.TypeName, function.MethodName, function.ParamTypes)) {
 					if (!ResolveFunctionBreakpoint (breakInfo, function, method)) {
 						breakInfo.SetStatus (BreakEventStatus.NotBound, null);
@@ -1156,7 +1166,8 @@ namespace Mono.Debugging.Soft
 				lock (pending_bes) {
 					pending_bes.Add (breakInfo);
 				}
-			} else if (breakEvent is InstructionBreakpoint instruction) {
+			} else if (breakEvent is InstructionBreakpoint) {
+				var instruction = breakEvent as InstructionBreakpoint;
 				Location location;
 
 				breakInfo.FileName = instruction.FileName;
@@ -1173,7 +1184,8 @@ namespace Mono.Debugging.Soft
 				lock (pending_bes) {
 					pending_bes.Add (breakInfo);
 				}
-			} else if (breakEvent is Breakpoint breakpoint) {
+			} else if (breakEvent is Breakpoint) {
+				var breakpoint = breakEvent as Breakpoint;
 				bool insideLoadedRange;
 				bool found = false;
 
@@ -1200,7 +1212,8 @@ namespace Mono.Debugging.Soft
 					else
 						breakInfo.SetStatus (BreakEventStatus.NotBound, null);
 				}
-			} else if (breakEvent is Catchpoint catchpoint) {
+			} else if (breakEvent is Catchpoint) {
+				var catchpoint = breakEvent as Catchpoint;
 				if (!types.ContainsKey (catchpoint.ExceptionName)) {
 					//
 					// Same as in FindLocationByFile (), fetch types matching the type name

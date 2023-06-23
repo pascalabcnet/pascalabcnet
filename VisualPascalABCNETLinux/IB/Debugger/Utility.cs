@@ -14,6 +14,7 @@ using System.Runtime.ExceptionServices;
 
 namespace VisualPascalABC
 {
+
     public static class DebugUtils
     {
         private static Hashtable ht = new Hashtable();
@@ -38,6 +39,14 @@ namespace VisualPascalABC
         public static bool CheckForCollection(DebugType type)
         {
             string name = type.FullName;
+            int ind = name.IndexOf('<');
+            if (ind != -1) name = name.Substring(0, ind);
+            return ht[name] != null;
+        }
+
+        public static bool CheckForCollection(Mono.Debugging.Evaluation.TypeValueReference type)
+        {
+            string name = type.Name;
             int ind = name.IndexOf('<');
             if (ind != -1) name = name.Substring(0, ind);
             return ht[name] != null;
@@ -239,6 +248,11 @@ namespace VisualPascalABC
         {
             object cnt = v.GetMember("Count").PrimitiveValue;
             return "Count = " + cnt.ToString();
+        }
+
+        public static Mono.Debugging.Client.ObjectValue MakeMonoValue(object obj)
+        {
+            return Mono.Debugging.Client.ObjectValue.CreatePrimitive(null, new Mono.Debugging.Client.ObjectPath(""), obj.GetType().Name, new Mono.Debugging.Backend.EvaluationResult(obj.ToString()), Mono.Debugging.Client.ObjectValueFlags.Literal);
         }
 
         public static Value MakeValue(object obj)

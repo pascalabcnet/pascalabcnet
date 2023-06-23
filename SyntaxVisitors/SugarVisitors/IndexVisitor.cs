@@ -35,8 +35,13 @@ namespace SyntaxVisitors.SugarVisitors
                     ind.source_context);
             syntax_tree_node mc = null;
             var possibleIndexer = ind.Parent?.Parent;
+            if (ind.Parent != null && !(ind.Parent is expression_list))
+                possibleIndexer = null;
             if (possibleIndexer != null && possibleIndexer is indexer indexer)
             {
+                // x[1:^1][5] - не должно сюда заходить в этом случае !!! Но неожиданно possibleIndexer оказывается expr[5]
+                // Сюда должно заходить только при x[^1,3].  То есть, ind.Parent д.б. expression_list и только в этом случае!!!
+
                 // Надо подняться до узла indexer и запомнить индекс, под которым данный index входит
                 // Идём по Parent - и смотрим, когда Parent = indexer
                 // Находим у него expressions и ищем, под каким индексом в нем содержится текущий. 

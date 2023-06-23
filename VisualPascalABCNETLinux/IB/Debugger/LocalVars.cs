@@ -141,34 +141,17 @@ namespace VisualPascalABC
 
     public class ModuleItem : ListItem
     {
-        private NamedValue val;
-        private string ns_name;
         private Function func;
 		private List<DebugType> types;
-		
-        /*public ModuleItem(NamedValue val, Function func)
+        private Mono.Debugging.Client.StackFrame frame;
+        private List<Mono.Debugging.Evaluation.TypeValueReference> monoTypes;
+
+        public ModuleItem(List<Mono.Debugging.Evaluation.TypeValueReference> monoTypes, Mono.Debugging.Client.StackFrame frame)
         {
-            this.val = val;
-            ns_name = val.Type.FullName.Substring(0, val.Type.FullName.LastIndexOf('.'));
-            this.func = func;
-            this.func.Process.DebuggeeStateChanged += delegate
-            {
-                this.OnChanged(new ListItemEventArgs(this));
-            };
-        }*/
-        
-		public ModuleItem(List<DebugType> types, Function func)
-        {
-            //this.val = val;
-            //ns_name = val.Type.FullName.Substring(0, val.Type.FullName.LastIndexOf('.'));
-            this.types = types;
-            this.func = func;
-            this.func.Process.DebuggeeStateChanged += delegate
-            {
-                this.OnChanged(new ListItemEventArgs(this));
-            };
+            this.monoTypes = monoTypes;
+            this.frame = frame;
         }
-		
+
         public override int ImageIndex
         {
             get
@@ -228,12 +211,12 @@ namespace VisualPascalABC
             get
             {
                 List<IListItem> ret = new List<IListItem>();
-                foreach (DebugType dt in types)
+                foreach (var tr in monoTypes)
                 {
-                	//IList<FieldInfo> fis = val.Type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);  
-                	IList<FieldInfo> fis = dt.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                	foreach (FieldInfo fi in fis)
-                  	if (!fi.Name.Contains("$")) ret.Add(new ValueItem(fi.GetValue(null),fi.DeclaringType));
+                    var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                    foreach (var fi in fields)
+                  	    if (!fi.Name.Contains("$")) 
+                            ret.Add(new ValueItem(fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions)));
                 }
                 return ret;
             }
@@ -242,15 +225,8 @@ namespace VisualPascalABC
 
     public class FunctionItem : ListItem
     {
-        Function function;
+        Mono.Debugging.Client.StackFrame frame;
 
-        public Function Function
-        {
-            get
-            {
-                return function;
-            }
-        }
 
         public override bool IsLiteral
         {
@@ -271,7 +247,7 @@ namespace VisualPascalABC
         {
             get
             {
-                return function.Name;
+                return frame.SourceLocation.MethodName;
             }
         }
 
@@ -314,45 +290,42 @@ namespace VisualPascalABC
             {
                 List<IListItem> ret = new List<IListItem>();
                 Hashtable ht = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-                foreach (NamedValue val in function.LocalVariables)
+                foreach (var val in frame.GetAllLocals())
                 {
-                    if (val.Name.Contains("$class_var") /*&& !val.Type.FullName.Contains("$")*/)
+                    if (val.Name.Contains("$class_var"))
                     {
-                        //IList<FieldInfo> fis = val.Type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                        //if (fis.Count != 0)
-                        List<DebugType> types = new List<DebugType>();
+                        List<Mono.Debugging.Evaluation.TypeValueReference> types = new List<Mono.Debugging.Evaluation.TypeValueReference>();
                         try
                         {
-                            if (val.Type.FullName.Contains(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName))
+                            if (val.TypeName.Contains(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName))
                         	{
-                                string interf_name = val.Type.FullName.Substring(0, val.Type.FullName.IndexOf(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
+                                string interf_name = val.TypeName.Substring(0, val.TypeName.IndexOf(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
                         		Type t = AssemblyHelper.GetTypeForStatic(interf_name);
-                        		DebugType dt = DebugUtils.GetDebugType(t);
-                        		types.Add(dt);
+                                var tr = new Mono.Debugging.Evaluation.TypeValueReference(frame.SourceBacktrace.GetEvaluationContext(frame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), 
+                                            (frame.DebuggerSession as Mono.Debugging.Soft.SoftDebuggerSession).GetType(t.FullName));
+                        		types.Add(tr);
                         	}
-                            types.Add(val.Type);
+                            var valtr = new Mono.Debugging.Evaluation.TypeValueReference(frame.SourceBacktrace.GetEvaluationContext(frame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions),
+                                            (frame.DebuggerSession as Mono.Debugging.Soft.SoftDebuggerSession).GetType(val.TypeName));
+                            types.Add(valtr);
                         }
                         catch (System.Exception e)
                         {
-                        	
+                            Console.WriteLine(e.Message + " " + e.StackTrace);
                         }
                         
-                        ret.Add(new ModuleItem(types, function));
-                        //foreach (FieldInfo fi in fis)
-                        //  if (!fi.Name.Contains("$")) ret.Add(new ValueItem(fi.GetValue(val)));
+                        ret.Add(new ModuleItem(types, frame));
                     }
                 }
-                foreach (NamedValue val in function.LocalVariables)
+                foreach (var val in frame.GetAllLocals())
                 {
-                    //if (val.IsObject) 
-                    
                     if (!val.Name.Contains("$"))
-                    	ret.Add(new ValueItem(val,null));
+                    	ret.Add(new ValueItem(val));
                     else if (val.Name.Contains("$rv"))
                     {
-                        ret.Add(new ValueItem(val,null));
+                        ret.Add(new ValueItem(val));
                     }
-                    else if (val.Name == "$disp$")
+                    /*else if (val.Name == "$disp$")
                     {
                         IList<FieldInfo> fields = val.Type.GetFields(BindingFlags.All);
                         foreach (FieldInfo fi in fields)
@@ -361,15 +334,15 @@ namespace VisualPascalABC
                         	ret.Add(new ValueItem(fi.GetValue(val),fi.DeclaringType));
                         	ht[fi.Name] = fi.Name;
                         }
-                    }
+                    }*/
                 }
-                NamedValue self_nv = null;
+                Mono.Debugging.Client.ObjectValue self_nv = null;
                 try
                 {
-                    foreach (NamedValue val in function.Arguments)
+                    foreach (var val in frame.GetParameters())
                     {
                         if (!val.Name.Contains("$") && !ht.ContainsKey(val.Name))
-                            ret.Add(new ValueItem(val, null));
+                            ret.Add(new ValueItem(val));
                         else if (val.Name == "$obj$")
                             self_nv = val;
                     }
@@ -377,26 +350,17 @@ namespace VisualPascalABC
                 catch
                 {
                 }
-                if (!function.IsStatic) ret.Add(new ValueItem(function.ThisValue,null));
+                if (frame.GetThisReference() != null) 
+                    ret.Add(new ValueItem(frame.GetThisReference()));
                 else if (self_nv != null)
-                	ret.Add(new ValueItem(self_nv,"self",null));
-                
-                /*foreach (NamedValue val in function.ContaingClassVariables)
-                {
-                    if (!val.Name.Contains("$"))
-                    ret.Add(new ValueItem(val));
-                }*/
+                	ret.Add(new ValueItem(self_nv));
                 return ret.AsReadOnly();
             }
         }
 
-        public FunctionItem(Function function)
+        public FunctionItem(Mono.Debugging.Client.StackFrame frame)
         {
-            this.function = function;
-            this.function.Process.DebuggeeStateChanged += delegate
-            {
-                this.OnChanged(new ListItemEventArgs(this));
-            };
+            this.frame = frame;
         }
     }
     
@@ -1036,30 +1000,15 @@ namespace VisualPascalABC
 
     public class BaseTypeItem : ListItem
     {
-        Value val;
         DebugType type;
+        Mono.Debugging.Evaluation.TypeValueReference monoType;
 
-        public Value Value
-        {
-            get
-            {
-                return val;
-            }
-        }
 
         public override bool IsLiteral
         {
             get
             {
                 return false;
-            }
-        }
-
-        public DebugType DebugType
-        {
-            get
-            {
-                return type;
             }
         }
 
@@ -1100,7 +1049,7 @@ namespace VisualPascalABC
         {
             get
             {
-            	return DebugUtils.WrapTypeName(type);
+            	return monoType.Name;
             }
         }
 		
@@ -1145,11 +1094,15 @@ namespace VisualPascalABC
 //        	else
         		this.imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberClass;
         }
-        
-        public BaseTypeItem(Value val, DebugType type)
+
+        public BaseTypeItem(Mono.Debugging.Evaluation.TypeValueReference type, Type mt)
         {
-            this.val = val;
-            this.type = type;
+            this.monoType = type;
+            this.managed_type = mt;
+            //        	if (mt.IsValueType)
+            //        		this.imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberStruct;
+            //        	else
+            this.imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberClass;
         }
 
         public bool IsExtern()
@@ -1157,174 +1110,55 @@ namespace VisualPascalABC
             return !type.Module.SymbolsLoaded;
         }
         [HandleProcessCorruptedStateExceptionsAttribute]
-        List<IListItem> GetMembers(BindingFlags flags)
+        List<IListItem> GetMembers(bool privateMembers)
         {
             List<IListItem> list = new List<IListItem>();
-            if (val != null)
+            var mis = monoType.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+            foreach (var mi in mis)
             {
-            	NamedValueCollection nvc = val.GetMembers(type, flags);
-            	foreach (NamedValue v in nvc)
-            	{
-                	try
-                	{
-                        if (v is MemberValue && (v as MemberValue).MemberInfo is PropertyInfo && ((v as MemberValue).MemberInfo as PropertyInfo).GetGetMethod().ParameterCount > 0)
-                            continue;
-                        list.Add(new ValueItem(v,this.DebugType));
-                	}
-                	catch (System.Exception)
-                	{
-                	}
-            	}
+                try
+                {
+                    if (!mi.Name.Contains("$"))
+                    {
+                        /*if (!privateMembers && ((mi.Flags & Mono.Debugging.Client.ObjectValueFlags.Public) == Mono.Debugging.Client.ObjectValueFlags.Public
+                            || (mi.Flags & Mono.Debugging.Client.ObjectValueFlags.Internal) == Mono.Debugging.Client.ObjectValueFlags.Internal
+                            || (mi.Flags & Mono.Debugging.Client.ObjectValueFlags.Protected) == Mono.Debugging.Client.ObjectValueFlags.Protected
+                            || (mi.Flags & Mono.Debugging.Client.ObjectValueFlags.InternalProtected) == Mono.Debugging.Client.ObjectValueFlags.InternalProtected))
+                            list.Add(new ValueItem(mi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions)));
+                        else if (privateMembers && (mi.Flags & Mono.Debugging.Client.ObjectValueFlags.Private) == Mono.Debugging.Client.ObjectValueFlags.Private)
+                            list.Add(new ValueItem(mi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions)));*/
+                        list.Add(new ValueItem(mi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions)));
+                    }
+                }
+                catch (System.Exception e)
+                {
+
+                }
             }
-            else
+            System.Reflection.BindingFlags bf = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static;
+            if (!privateMembers) 
+                bf |= System.Reflection.BindingFlags.Public;
+            else 
+                bf |= System.Reflection.BindingFlags.NonPublic;
+            System.Reflection.FieldInfo[] fis = managed_type.GetFields(bf);
+            /*for (int i = 0; i < fis.Length; i++)
             {
-            	IList<MemberInfo> mis = type.GetMembers(flags);
-            	for (int i=0; i<mis.Count; i++)
-            	{
-            		try
-            		{
-                        if (mis[i].IsStatic && !mis[i].Name.Contains("$"))
-                        {
-                            if (mis[i] is FieldInfo)
-                            {
-                                FieldInfo fi = mis[i] as FieldInfo;
-                                Value v = fi.GetValue(null);
-                                list.Add(new ValueItem(v as NamedValue, this.DebugType));
-                            }
-                            else if (mis[i] is PropertyInfo)
-                            {
-                                PropertyInfo pi = mis[i] as PropertyInfo;
-                                Value v = pi.GetValue(null);
-                                list.Add(new ValueItem(v as NamedValue, this.DebugType));
-                            }
-                        }
-            		}
-            		catch(System.Exception e)
-            		{
-            			
-            		}
-            	}
-            	System.Reflection.BindingFlags bf = System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Static;
-            	if ((flags & BindingFlags.Public) == BindingFlags.Public) bf |= System.Reflection.BindingFlags.Public;
-            	else bf |= System.Reflection.BindingFlags.NonPublic;
-            	System.Reflection.FieldInfo[] fis = managed_type.GetFields(bf);
-            	for (int i=0; i<fis.Length; i++)
-            	{
-            		if (fis[i].IsLiteral)
-            		{
-            			Value v = DebugUtils.MakeValue(fis[i].GetRawConstantValue());
-            			list.Add(new ValueItem(v,fis[i].Name,v.Type));
-            		}
-            	}
-            }
+                if (fis[i].IsLiteral)
+                {
+                    Value v = DebugUtils.MakeValue(fis[i].GetRawConstantValue());
+                    list.Add(new ValueItem(v, fis[i].Name, v.Type));
+                }
+            }*/
             //return new List<ListItem>();
             return list;
         }
+
         [HandleProcessCorruptedStateExceptionsAttribute]
         IList<IListItem> GetSubItemsForCollection()
         {
         	List<IListItem> list = new List<IListItem>();
-        	if (val == null) return list;
-			try
-			{
-				int count = (int)val.GetMember("Count").PrimitiveValue;
-				if (DebugUtils.IsStack(type) || DebugUtils.IsQueue(type))
-				{
-					Value nv = val.GetMember("_array");
-					NamedValueCollection nvc = nv.GetArrayElements();
-					count = (count < 10)?count:10;
-					for (int i=0; i<count; i++)
-					{
-						list.Add(new ValueItem(nvc[i],nvc[i].Type));
-					}
-				}
-				else if (DebugUtils.IsDictionary(type))
-				{
-					NamedValue nv = val.GetMember("entries");
-					NamedValueCollection nvc = nv.GetArrayElements();
-					count = (count < 10)?count:10;
-					for (int i=0; i<count; i++)
-					{
-						nv = nvc[i];
-						Value key = nv.GetMember("key");
-						Value _val = nv.GetMember("value");
-						
-						list.Add(new PairValueItem(key as NamedValue,_val as NamedValue,"["+i.ToString()+"]"));
-					}
-				}
-				else
-				if (DebugUtils.IsHashtable(type))
-				{
-					NamedValue nv = val.GetMember("buckets");
-					NamedValueCollection nvc = nv.GetArrayElements();
-					count = 0;
-					for (int i=0; i<nvc.Count; i++)
-					{
-						nv = nvc[i];
-						Value key = nv.GetMember("key");
-						Value _val = nv.GetMember("val");
-						if (!key.IsNull)
-						{
-							list.Add(new PairValueItem(key as NamedValue,_val as NamedValue,"["+count.ToString()+"]"));
-							if (count > 10) break;
-							count++;
-						}
-					}
-				}
-				else if (DebugUtils.IsSortedList(type))
-				{
-					NamedValue nv_keys = val.GetMember("keys");
-					NamedValue nv_values = val.GetMember("values");
-					count = (int)val.GetMember("Count").PrimitiveValue;
-					NamedValueCollection nvc_keys = nv_keys.GetArrayElements();
-					NamedValueCollection nvc_values = nv_values.GetArrayElements();
-					for (int i=0; i<count; i++)
-					{
-						list.Add(new PairValueItem(nvc_keys[i],nvc_values[i],"["+i.ToString()+"]"));
-						if (i > 10) break;
-					}
-				}
-				else if (DebugUtils.IsSortedDictionary(type))
-				{
-					NamedValue nv = val.GetMember("_set").GetMember("root");
-					int i = 0;
-					while (i<=10 && !nv.IsNull)
-					{
-						NamedValue tmp = nv.GetMember("item");
-						list.Add(new PairValueItem(tmp.GetMember("key"),tmp.GetMember("value"),"["+i.ToString()+"]"));
-						nv = nv.GetMember("right");
-						i++;
-					}
-				}
-				else if (DebugUtils.IsLinkedList(type))
-				{
-					NamedValue nv = val.GetMember("First");
-					int i = 0;
-					while (i<=10 && !nv.IsNull)
-					{
-						list.Add(new ValueItem(nv.GetMember("Value"),"["+i.ToString()+"]",nv.Type,true));
-						nv = nv.GetMember("Next");
-						i++;
-					}
-				}
-				else
-				{
-					MethodInfo mi = type.GetMember("get_Item",BindingFlags.All)[0] as MethodInfo;
-					count = (count < 100)?count:100;
-					for (int i=0; i<count; i++)
-					{
-						Value v = mi.Invoke(val,new Value[1]{DebugUtils.MakeValue(i)});
-						list.Add(new ValueItem(v,"["+i.ToString()+"]",v.Type));
-					}
-				}
-				IList<IListItem> raw_items = GetSubItems(true);
-				list.Add(new FixedItem(-1,PascalABCCompiler.StringResources.Get("DEBUG_VIEW_RAW_VIEW"),string.Empty,string.Empty,true,raw_items));
-			}
-			catch (System.Exception e)
-			{
-				return null;
-			}
-			return list;
+        	return list;
+			
         }
         [HandleProcessCorruptedStateExceptionsAttribute]
         IList<IListItem> GetSubItems(bool is_raw)
@@ -1332,7 +1166,7 @@ namespace VisualPascalABC
             List<IListItem> list = new List<IListItem>();
             try
             {
-                if (DebugUtils.CheckForCollection(type) && !is_raw)
+                if (DebugUtils.CheckForCollection(monoType) && !is_raw)
                 {
                     IList<IListItem> lst = GetSubItemsForCollection();
                     if (lst != null) return lst;
@@ -1341,46 +1175,13 @@ namespace VisualPascalABC
                 string staticRes = PascalABCCompiler.StringResources.Get("DEBUG_VIEW_STATIC");//StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.StaticMembers}");
                 string privateStaticRes = PascalABCCompiler.StringResources.Get("DEBUG_VIEW_PRIVATE_STATIC");// StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.PrivateStaticMembers}");
 
-                List<IListItem> publicInstance = null;
-                List<IListItem> privateInstance = null;
+                List<IListItem> publicStatic = GetMembers(false);
+                //List<IListItem> privateStatic = GetMembers(true);
 
-                if (val != null)
-                {
-                    publicInstance = GetMembers(BindingFlags.Public | BindingFlags.Instance);
-                    privateInstance = GetMembers(BindingFlags.NonPublic | BindingFlags.Instance);
-                }
-                List<IListItem> publicStatic = GetMembers(BindingFlags.Public | BindingFlags.Static);
-                List<IListItem> privateStatic = GetMembers(BindingFlags.NonPublic | BindingFlags.Static);
-
-                if (type.BaseType != null && type.BaseType.FullName != "System.Object" && type.BaseType.FullName != "System.ValueType")
-                {
-                    list.Add(new BaseTypeItem(val, type.BaseType));
-                }
-                if (val != null)
-                {
-                    list.AddRange(publicInstance);
-                    if (publicStatic.Count > 0)
-                    {
-                        list.Add(new FixedItem(-1, staticRes, String.Empty, String.Empty, true, publicStatic));
-                    }
-
-                    if (privateInstance.Count > 0 || privateStatic.Count > 0)
-                    {
-                        List<IListItem> nonPublicItems = new List<IListItem>();
-                        if (privateStatic.Count > 0)
-                        {
-                            nonPublicItems.Add(new FixedItem(-1, privateStaticRes, String.Empty, String.Empty, true, privateStatic));
-                        }
-                        nonPublicItems.AddRange(privateInstance);
-                        list.Add(new FixedItem(-1, privateRes, String.Empty, String.Empty, true, nonPublicItems));
-                    }
-                }
-                else
-                {
-                    list.AddRange(publicStatic);
-                    if (privateStatic.Count > 0)
-                        list.Add(new FixedItem(-1, privateRes, String.Empty, String.Empty, true, privateStatic));
-                }
+                
+                list.AddRange(publicStatic);
+                //if (privateStatic.Count > 0)
+                //    list.Add(new FixedItem(-1, privateRes, String.Empty, String.Empty, true, privateStatic));
             }
             catch (System.Exception e)
             {

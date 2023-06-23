@@ -341,9 +341,10 @@ namespace VisualPascalABC
             AddDisassemblyWindow(); // Это нельзя убирать - почему то оболочка закрывается при запуске программы!!!
             HideContent(FindSymbolsResultWindow);
             HideContent(DisassemblyWindow);
-
+            AddDebugVariablesListWindow();
+            HideContent(DebugVariablesListWindow);
             /*AddImmediateWindow();
-            //AddDebugVariablesListWindow();
+            
             //AddDebugWatchListWindow();
             if (!Tools.IsUnix())
             {
@@ -355,7 +356,7 @@ namespace VisualPascalABC
             //    SelectContent(ProjectExplorerWindow, false);
 
             //HideContent(ImmediateWindow);
-            //HideContent(DebugVariablesListWindow);
+           
             //HideContent(DebugWatchListWindow);
 
             if (!Tools.IsUnix())
@@ -685,17 +686,25 @@ namespace VisualPascalABC
                 DebugVariablesListWindow.ClearAllSubTrees();
         }
 
-        public void RefreshPad(IList<IListItem> items)
+        private delegate void RefreshPadDelegate(IList<IListItem> items);
+
+        private void RefreshPadInvoke(IList<IListItem> items)
         {
             try
             {
-                DebugWatchListWindow.RefreshWatch();
+                if (DebugWatchListWindow != null)
+                    DebugWatchListWindow.RefreshWatch();
                 AdvancedDataGridView.TreeGridNode.UpdateNodesForLocalList(DebugVariablesListWindow.watchList, DebugVariablesListWindow.watchList.Nodes, items);
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-
+                Console.WriteLine(ex.Message + " " + ex.StackTrace);
             }
+        }
+
+        public void RefreshPad(IList<IListItem> items)
+        {
+            Invoke(new RefreshPadDelegate(RefreshPadInvoke), items);
         }
 
         public void GotoWatch()

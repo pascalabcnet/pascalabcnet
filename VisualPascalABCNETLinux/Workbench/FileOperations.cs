@@ -148,7 +148,14 @@ namespace VisualPascalABC
             CurrentCodeFileDocument.AddDesigner(null);
         }
 
-        public CodeFileDocumentControl OpenFileForDebug(string FileName)
+        public delegate CodeFileDocumentControl OpenFileForDebugDelegate(string FileName);
+
+        public ICodeFileDocument OpenFileForDebug(string FileName)
+        {
+            return this.Invoke(new OpenFileForDebugDelegate(OpenFileForDebugInvoke), FileName) as ICodeFileDocument;
+        }
+
+        public CodeFileDocumentControl OpenFileForDebugInvoke(string FileName)
         {
             CodeFileDocumentControl tp = FindTab(FileName);
             bool IsNewFile = FileName == null;

@@ -62,7 +62,7 @@ namespace VisualPascalABC
 
         public CodeCompletionImagesProvider()
         {
-            images.ColorDepth = ColorDepth.Depth32Bit;
+            images.ColorDepth = ColorDepth.Depth24Bit;
             IconNumberMethod = AddImageFromManifestResource("Icons.16x16.Method.png");
             IconNumberField = AddImageFromManifestResource("Icons.16x16.Field.png");
             IconNumberProperty = AddImageFromManifestResource("Icons.16x16.Property.png");
