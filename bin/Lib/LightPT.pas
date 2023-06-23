@@ -207,12 +207,17 @@ procedure CheckOutputSeqNew(a: ObjectList);
 {   Подпрограммы для проверки начального ввода-вывода, представленного в заготовке задания   }
 {============================================================================================}
 
+procedure CheckData(InitialInput: array of System.Type := nil; 
+  InitialOutput: array of System.Type := nil; 
+  Input: array of System.Type := nil);
+
 procedure CheckInitialIO;
-procedure InitialOutput(params a: array of object);
-procedure InitialInput(params a: array of object);
-procedure CheckInitialOutputValues(params a: array of object);
-procedure CheckInitialOutput(params a: array of object);
-procedure CheckInitialInput(params a: array of object);
+procedure CheckInitialIOIsEmpty;
+procedure InitialOutput(a: array of System.Type);
+procedure InitialInput(a: array of System.Type);
+//procedure CheckInitialOutputValues(params a: array of object); - тут значений быть не должно!
+procedure CheckInitialOutput(params a: array of System.Type);
+procedure CheckInitialInput(params a: array of System.Type);
 
 procedure CheckInitialOutputSeq(a: sequence of System.Type);
 procedure CheckInitialInputSeq(a: sequence of System.Type);
@@ -369,9 +374,9 @@ var
   /// Список введенных элементов
   InputList := new List<object>;
   /// Список типов элементов, выведенных в заготовке задания (cRe, cInt и т.д.)
-  InitialOutputList := new List<object>; 
+  InitialOutputList := new List<System.Type>; 
   /// Список типов элементов, введенных в заготовке задания
-  InitialInputList := new List<object>;  
+  InitialInputList := new List<System.Type>;  
   /// Ссылка на основную процедуру проверки в модуле Task
   CheckTask: procedure(name: string);
 
@@ -671,6 +676,15 @@ function cStr := typeof(string);
 function cBool := typeof(boolean);
 function cChar := typeof(char);
 
+
+procedure CheckData(InitialInput, InitialOutput, Input: array of System.Type);
+begin
+  CheckInitialIOSeqs(InitialInput, InitialOutput);
+  if Input = nil then
+    CheckInputIsInitial
+  else CheckInput(Input);
+end;  
+
 procedure CheckInitialIO;
 begin
   if (OutputList.Count = InitialOutputList.Count) and (InputList.Count = InitialInputList.Count) then
@@ -679,16 +693,20 @@ begin
     TaskResult := BadInitialTask;
 end;
 
-procedure InitialOutput(params a: array of object);
+procedure CheckInitialIOIsEmpty := CheckInitialIO;
+
+procedure InitialOutput(a: array of System.Type);
 begin
   InitialOutputList.Clear;
-  InitialOutputList.AddRange(a);
+  if a<>nil then
+    InitialOutputList.AddRange(a);
 end;
 
-procedure InitialInput(params a: array of object);
+procedure InitialInput(a: array of System.Type);
 begin
   InitialInputList.Clear;
-  InitialInputList.AddRange(a);
+  if a<>nil then
+    InitialInputList.AddRange(a);
 end;
 
 function CompareValues(o1, o2: Object): boolean;
@@ -718,33 +736,33 @@ end;
 
 function CompareValuesWithOutput(params a: array of object): boolean := CompareArrValues(a,OutputList.ToArray);
 
-procedure CheckInitialOutputValues(params a: array of object);
+{procedure CheckInitialOutputValues(params a: array of object);
 begin
   if CompareArrValues(a,OutputList.ToArray) then
     TaskResult := InitialTask;   
-end;
+end;}
 
 // По сути отдельные функции - это неправильно. Необходим CheckInitialInputOutput
-procedure CheckInitialOutput(params a: array of object);
+procedure CheckInitialOutput(params a: array of System.Type);
 begin
   InitialOutput(a);
   CheckInitialIO;
 end;
 
-procedure CheckInitialInput(params a: array of object);
+procedure CheckInitialInput(params a: array of System.Type);
 begin
   InitialInput(a);
   CheckInitialIO;
 end;
 
-procedure CheckInitialOutputSeq(a: sequence of System.Type) := CheckInitialOutput(a.Select(x->object(x)).ToArray);
+procedure CheckInitialOutputSeq(a: sequence of System.Type) := CheckInitialOutput(a.ToArray);
 
-procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(a.Select(x->object(x)).ToArray);
+procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(a.ToArray);
 
 procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
 begin
-  InitialInput(input.Select(x->object(x)).ToArray);
-  InitialOutput(output.Select(x->object(x)).ToArray);
+  InitialInput(input?.ToArray);
+  InitialOutput(output?.ToArray);
   CheckInitialIO;
 end;
 
@@ -1385,7 +1403,7 @@ procedure CheckInputIsEmpty := CheckInputTypes(new System.Type[0]);
 
 procedure CheckInputIsInitial;
 begin
-  CheckInput(InitialInputList.Select(x->x as System.Type).ToArray);
+  CheckInput(InitialInputList.ToArray);
 end; 
 
 procedure CheckInput(seq: sequence of System.Type) := CheckInputTypes(seq.ToArray);
@@ -1493,7 +1511,7 @@ begin
     then
     begin
       ind := i; // то запомнить индекс первого несовпадения
-      if ind >= InitialOutputList.Count then
+      if ind > InitialOutputList.Count then
         ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
       raise new OutputTypeException(i + 1, TypeToTypeName(arr[i].GetType), TypeName(OutputList[i]));           
     end;
@@ -1501,7 +1519,7 @@ begin
     if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
     begin
       ind := i; // то запомнить индекс первого несовпадения
-      if ind >= InitialOutputList.Count then
+      if ind > InitialOutputList.Count then
       begin
         ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
         ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i]}, а выведено {OutputList[i]}',MsgColorGray);

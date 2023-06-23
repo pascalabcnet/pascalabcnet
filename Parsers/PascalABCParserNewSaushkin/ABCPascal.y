@@ -1,6 +1,7 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 // SSM 21/11/16 Лямбда выражения вынесены на верхний уровень (п.ч. присваивания и параметры)
+
 %{
 // Эти объявления добавляются в класс GPPGParser, представляющий собой парсер, генерируемый системой gppg
     public syntax_tree_node root; // Корневой узел синтаксического дерева 
@@ -3081,7 +3082,7 @@ for_stmt
         { 
 			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, null, @$);
         }
-    | tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 tkStep expr_l1 optional_tk_do unlabelled_stmt  
+    | tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 tkStep expr_l1 tkDo unlabelled_stmt  
         { 
 			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $11 as statement, $9, @$);
         }
