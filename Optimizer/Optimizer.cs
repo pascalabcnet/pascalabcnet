@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -595,7 +595,7 @@ namespace PascalABCCompiler
                 {
                     tuple_decomp = true;
                     if (vdn.type is generic_instance_type_node)
-                        tuples_num = (vdn.type as generic_instance_type_node).generic_params.Count;
+                        tuples_num = (vdn.type as generic_instance_type_node).instance_params.Count;
                     else if (vdn.type is compiled_type_node)
                         tuples_num = (vdn.type as compiled_type_node).compiled_type.GetGenericArguments().Length;
                     continue;
