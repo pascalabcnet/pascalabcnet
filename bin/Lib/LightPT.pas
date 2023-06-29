@@ -207,6 +207,7 @@ procedure CheckOutputSeqNew(a: ObjectList);
 {   Подпрограммы для проверки начального ввода-вывода, представленного в заготовке задания   }
 {============================================================================================}
 
+/// Проверить типы данных начального ввода, начального вывода и ввода. Если ввод Input = nil, то он совпадает с начальным вводом
 procedure CheckData(InitialInput: array of System.Type := nil; 
   InitialOutput: array of System.Type := nil; 
   Input: array of System.Type := nil);
@@ -226,12 +227,19 @@ procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
 
 procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
 
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of integer);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of real);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of string);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of boolean);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of char);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of object);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: ObjectList);
 
 {=========================================================}
@@ -272,15 +280,15 @@ function Boo(i: integer): boolean;
 function Chr(i: integer): char;
 
 /// i-тый элемент вывода как целое 
-function OutAsInt(i: integer): integer;
+function OutInt(i: integer): integer;
 /// i-тый элемент вывода как вещественное 
-function OutAsRe(i: integer): real;
+function OutRe(i: integer): real;
 /// i-тый элемент вывода как строка 
-function OutAsBoo(i: integer): boolean;
+function OutBoo(i: integer): boolean;
 /// i-тый элемент вывода как логическое 
-function OutAsChr(i: integer): char;
+function OutChr(i: integer): char;
 /// i-тый элемент вывода как символ 
-function OutAsStr(i: integer): string;
+function OutStr(i: integer): string;
 
 /// Следующий элемент ввода как целое 
 function Int: integer;
@@ -323,17 +331,22 @@ function OutputListAsBooleans: array of boolean;
 function OutputListAsChars: array of char;
 function OutputListAsStrings: array of string;
 
-function InputListSliceAsIntegers(a,b: integer): array of integer;
-function InputListSliceAsReals(a,b: integer): array of real;
-function InputListSliceAsBooleans(a,b: integer): array of boolean;
-function InputListSliceAsChars(a,b: integer): array of char;
-function InputListSliceAsStrings(a,b: integer): array of string;
+function InSliceIntArr(a,b: integer): array of integer;
+function InSliceReArr(a,b: integer): array of real;
+function InSliceBooArr(a,b: integer): array of boolean;
+function InSliceChrArr(a,b: integer): array of char;
+function InSliceStrArr(a,b: integer): array of string;
 
-function OutputListSliceAsIntegers(a,b: integer): array of integer;
-function OutputListSliceAsReals(a,b: integer): array of real;
-function OutputListSliceAsBooleans(a,b: integer): array of boolean;
-function OutputListSliceAsChars(a,b: integer): array of char;
-function OutputListSliceAsStrings(a,b: integer): array of string;
+/// Срез элементов вывода от a до b как массив целых
+function OutSliceIntArr(a,b: integer): array of integer;
+/// Срез элементов вывода от a до b как массив вещественных
+function OutSliceReArr(a,b: integer): array of real;
+/// Срез элементов вывода от a до b как массив логических
+function OutSliceBooArr(a,b: integer): array of boolean;
+/// Срез элементов вывода от a до b как массив символов
+function OutSliceChrArr(a,b: integer): array of char;
+/// Срез элементов вывода от a до b как массив строк
+function OutSliceStrArr(a,b: integer): array of string;
 
 {=========================================================}
 {                Процедуры генерации ошибок               }
@@ -391,6 +404,9 @@ function cBool: System.Type;
 /// Символьный тип для проверки ввода-вывода
 function cChar: System.Type;
 
+type 
+  /// Константа для обозначения пустого ввода или вывода
+  EmptyType = (Empty);
 
 implementation
 
@@ -410,6 +426,9 @@ uses System.Threading.Tasks;
 //   ПодтипИсключения(парам1,...,парамn)
 // Эту строку также можно писать в БД как доп параметры TaskResultInfo
 // Чем хороши исключения - их можно делать разными с абсолютно разными параметрами
+
+// Сервисная функция - чтобы можно было вводу, начальному вводу или начальному выводу в CheckData присвоить Empty вместо nil
+function operator implicit(Self: EmptyType): array of System.Type; extensionmethod := nil;
 
 const lightptname = 'lightpt.dat';
 
@@ -837,7 +856,7 @@ begin
   Result := char(InputList[i]);
 end;
 
-function OutAsInt(i: integer): integer;
+function OutInt(i: integer): integer;
 begin
   CheckOutput2Count(i);
   if not OutIsInt(i) then
@@ -845,7 +864,7 @@ begin
   Result := integer(OutputList[i]);
 end;
 
-function OutAsRe(i: integer): real;
+function OutRe(i: integer): real;
 begin
   CheckOutput2Count(i);
   if not OutIsRe(i) then
@@ -853,7 +872,7 @@ begin
   Result := real(OutputList[i]);
 end;
 
-function OutAsBoo(i: integer): boolean;
+function OutBoo(i: integer): boolean;
 begin
   CheckOutput2Count(i);
   if not OutIsBoo(i) then
@@ -861,7 +880,7 @@ begin
   Result := boolean(OutputList[i]);
 end;
 
-function OutAsChr(i: integer): char;
+function OutChr(i: integer): char;
 begin
   CheckOutput2Count(i);
   if not OutIsChr(i) then
@@ -869,7 +888,7 @@ begin
   Result := char(OutputList[i]);
 end;
 
-function OutAsStr(i: integer): string;
+function OutStr(i: integer): string;
 begin
   CheckOutput2Count(i);
   if not OutIsStr(i) then
@@ -925,23 +944,23 @@ function InputListAsBooleans: array of boolean := InputList.Select((x,i) -> Boo(
 function InputListAsChars: array of char := InputList.Select((x,i) -> Chr(i)).ToArray;
 function InputListAsStrings: array of string := InputList.Select((x,i) -> Str(i)).ToArray;
 
-function OutputListAsIntegers: array of integer := OutputList.Select((x,i) -> OutAsInt(i)).ToArray;
-function OutputListAsReals: array of real := OutputList.Select((x,i) -> OutAsRe(i)).ToArray;
-function OutputListAsBooleans: array of boolean := OutputList.Select((x,i) -> OutAsBoo(i)).ToArray;
-function OutputListAsChars: array of char := OutputList.Select((x,i) -> OutAsChr(i)).ToArray;
-function OutputListAsStrings: array of string := OutputList.Select((x,i) -> OutAsStr(i)).ToArray;
+function OutputListAsIntegers: array of integer := OutputList.Select((x,i) -> OutInt(i)).ToArray;
+function OutputListAsReals: array of real := OutputList.Select((x,i) -> OutRe(i)).ToArray;
+function OutputListAsBooleans: array of boolean := OutputList.Select((x,i) -> OutBoo(i)).ToArray;
+function OutputListAsChars: array of char := OutputList.Select((x,i) -> OutChr(i)).ToArray;
+function OutputListAsStrings: array of string := OutputList.Select((x,i) -> OutStr(i)).ToArray;
 
-function InputListSliceAsIntegers(a,b: integer): array of integer := (a..b).Select(i->Int(i)).ToArray;
-function InputListSliceAsReals(a,b: integer): array of real := (a..b).Select(i->Re(i)).ToArray;
-function InputListSliceAsBooleans(a,b: integer): array of boolean := (a..b).Select(i->Boo(i)).ToArray;
-function InputListSliceAsChars(a,b: integer): array of char := (a..b).Select(i->Chr(i)).ToArray;
-function InputListSliceAsStrings(a,b: integer): array of string := (a..b).Select(i->Str(i)).ToArray;
+function InSliceIntArr(a,b: integer): array of integer := (a..b).Select(i->Int(i)).ToArray;
+function InSliceReArr(a,b: integer): array of real := (a..b).Select(i->Re(i)).ToArray;
+function InSliceBooArr(a,b: integer): array of boolean := (a..b).Select(i->Boo(i)).ToArray;
+function InSliceChrArr(a,b: integer): array of char := (a..b).Select(i->Chr(i)).ToArray;
+function InSliceStrArr(a,b: integer): array of string := (a..b).Select(i->Str(i)).ToArray;
 
-function OutputListSliceAsIntegers(a,b: integer): array of integer := (a..b).Select(i->OutAsInt(i)).ToArray;
-function OutputListSliceAsReals(a,b: integer): array of real := (a..b).Select(i->OutAsRe(i)).ToArray;
-function OutputListSliceAsBooleans(a,b: integer): array of boolean := (a..b).Select(i->OutAsBoo(i)).ToArray;
-function OutputListSliceAsChars(a,b: integer): array of char := (a..b).Select(i->OutAsChr(i)).ToArray;
-function OutputListSliceAsStrings(a,b: integer): array of string := (a..b).Select(i->OutAsStr(i)).ToArray;
+function OutSliceIntArr(a,b: integer): array of integer := (a..b).Select(i->OutInt(i)).ToArray;
+function OutSliceReArr(a,b: integer): array of real := (a..b).Select(i->OutRe(i)).ToArray;
+function OutSliceBooArr(a,b: integer): array of boolean := (a..b).Select(i->OutBoo(i)).ToArray;
+function OutSliceChrArr(a,b: integer): array of char := (a..b).Select(i->OutChr(i)).ToArray;
+function OutSliceStrArr(a,b: integer): array of string := (a..b).Select(i->OutStr(i)).ToArray;
 
 function ConvertOne(ob: Object): Object;
 begin
