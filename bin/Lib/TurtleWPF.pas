@@ -13,10 +13,10 @@ procedure Back(r: real);
 /// Поворачивает Черепаху на угол da по часовой стрелке
 procedure Turn(da: real);
 
-/// Поворачивает Черепаху на угол da по часовой стрелке
+/// Поворачивает Черепаху на угол da влево
 procedure TurnLeft(da: real);
 
-/// Поворачивает Черепаху на угол da против часовой стрелке
+/// Поворачивает Черепаху на угол da вправо
 procedure TurnRight(da: real);
 
 /// Возвращает случайный цвет
@@ -201,9 +201,9 @@ begin
   end;
 end;
 
-procedure TurnLeft(da: real) := Turn(da);
+procedure TurnLeft(da: real) := Turn(-da);
 
-procedure TurnRight(da: real) := Turn(-da);
+procedure TurnRight(da: real) := Turn(da);
 
 /// Продвигает Черепаху вперёд на расстояние r
 procedure Forw(r: real);
