@@ -48,6 +48,8 @@ function Random(n: integer): integer;
 function Random: real;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
+/// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
+function RandomReal(a, b: real; digits: integer := 1): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 /// Возвращает случайное целое в диапазоне 
@@ -1025,6 +1027,13 @@ end;
 function Random(a, b: char): char;
 begin
   Result := PABCSystem.Random(a, b);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+function RandomReal(a, b: real; digits: integer): real;
+begin
+  Result := PABCSystem.RandomReal(a, b, digits);
   if IsPT then exit;
   InputList.Add(Result);
 end;

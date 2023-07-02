@@ -1701,7 +1701,7 @@ function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
 /// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
-function RandomReal(a, b: real; digits: integer := 1): real;
+function RandomReal(a, b: real; digits: integer := -1): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 /// Возвращает случайное целое в диапазоне 
