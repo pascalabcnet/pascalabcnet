@@ -129,8 +129,10 @@ procedure Print(c: char);
 {                        Сервисные процедуры                              }
 {=========================================================================}
 
+// Вывести цветовое сообщение в окно вывода
 procedure ColoredMessage(msg: string; color: MessageColorT);
 
+// Вывести сообщение красным цветом в окно вывода
 procedure ColoredMessage(msg: string);
 
 {=========================================================================}
@@ -392,6 +394,8 @@ var
   InitialInputList := new List<System.Type>;  
   /// Ссылка на основную процедуру проверки в модуле Task
   CheckTask: procedure(name: string);
+  /// Погасить сообщения о неверном вводе-выводе если задача содержит только начальный ввод-вывод
+  CancelMessagesIfInitial := True;
 
 /// Целый тип для проверки ввода-вывода
 function cInt: System.Type;
@@ -1511,11 +1515,14 @@ begin
 end;
 
 // Добавим сюда проверку типов RuntimeType
+// Выдавать ли сообщение о дальнейшем вводе-выводе если у нас InitialTask?
+//   Сделаем глобальную настройку CancelMessagesIfInitial и по умолчанию присвоим ей False
 procedure CheckOutput(params arr: array of object);
 begin
   // TaskResult = InitialTask - ничего выводить не надо
   // TaskResult = BadInitialTask - потом будет выведено исключение, что часть изначальных данных удалена
-  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+  if (TaskResult = InitialTask) and CancelMessagesIfInitial
+     or (TaskResult = BadInitialTask) then
     exit;
 
   var mn := Min(arr.Length, OutputList.Count);
@@ -1563,8 +1570,10 @@ end;
 
 procedure CheckOutputAfterInitial(params arr: array of object);
 begin
-  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+  if (TaskResult = InitialTask) and CancelMessagesIfInitial
+     or (TaskResult = BadInitialTask) then
     exit;
+
   // Если мы попали сюда, то OutputList.Count >= InitialOutputList.Count
   var mn := Min(arr.Length, OutputList.Count - InitialOutputList.Count);
   
