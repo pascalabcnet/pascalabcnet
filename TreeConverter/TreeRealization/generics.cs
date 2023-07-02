@@ -1626,6 +1626,18 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public override property_node default_property_node
+        {
+            get
+            {
+                if (default_property != null)
+                    return default_property;
+                if (original_generic.default_property_node != null)
+                    default_property = ConvertMember(original_generic.default_property_node) as common_property_node;
+                return default_property;
+            }
+        }
+
         private List<SymbolInfo> temp_names = new List<SymbolInfo>(3);
 
         public override void add_name(string name, SymbolInfo si)
