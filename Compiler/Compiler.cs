@@ -2615,7 +2615,7 @@ namespace PascalABCCompiler
             var done = new HashSet<CompilationUnit>();
 
             var res_path = default(string);
-            bool register_unit(CompilationUnit u, string path)
+            Func<CompilationUnit, string, bool> register_unit = (CompilationUnit u, string path) =>
             {
                 if (!done.Add(u))
                     return true;
@@ -2626,7 +2626,7 @@ namespace PascalABCCompiler
                 }
                 curr.Add(u, path);
                 return true;
-            }
+            };
 
             if (!u1.ForEachDirectCompilationUnit(register_unit))
                 return res_path;
