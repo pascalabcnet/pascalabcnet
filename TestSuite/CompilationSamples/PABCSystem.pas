@@ -1700,6 +1700,8 @@ function Random(maxValue: real): real;
 function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
+/// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
+function RandomReal(a, b: real; digits: integer := -1): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 /// Возвращает случайное целое в диапазоне 
@@ -8507,6 +8509,29 @@ function Random(a, b: real): real;
 begin
   if a > b then Swap(a, b);
   Result := a + Random()*(b-a);
+end;
+
+function RandomReal(a, b: real; digits: integer): real;
+begin
+  if digits<0 then
+    Result := Random(a,b)
+  else begin
+    // Бывают некорректные данные. Например, найти точку с 2 знаками на [2.736, 2.737]. Тогда возвращать a скажем
+    var step := 1/10**digits;
+    Result := Round(Random(a,b),digits);
+    if Result < a then
+    begin  
+      Result += step;
+      if Result > b then
+        Result := b
+    end  
+    else if Result > b then 
+    begin  
+      Result -= step;
+      if Result < a then
+        Result := a;
+    end;  
+  end;  
 end;
 
 function Random(diap: IntRange): integer := Random(diap.Low,diap.High);

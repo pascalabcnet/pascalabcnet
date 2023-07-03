@@ -571,8 +571,10 @@ namespace PascalABCCompiler.TreeRealization
                     implements = false;
                     // Цикл по всем реализуемым интерфейсам. А если tnode сам является интерфейсом?
                     var ImplementingInterfaces = tnode.ImplementingInterfaces.ToList();
-                    if (tnode.IsInterface)
-                        ImplementingInterfaces.Add(tnode);
+                    // Из-за этой строки возникла ошибка https://github.com/pascalabcnet/pascalabcnet/issues/2872
+                    // Но без этой строчки не работает преобразование sequence of Student к sequence of Person и sequence of object
+                    //if (tnode.IsInterface)
+                    //    ImplementingInterfaces.Add(tnode);
                     foreach (var interf in ImplementingInterfaces)
                     {
                         var ctn = interf as compiled_type_node;

@@ -16197,8 +16197,13 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                             }
             }*/
+            if (expr.type.default_property_node == null && expr.type is generic_instance_type_node && (expr.type as generic_instance_type_node).original_generic.default_property_node != null)
+            {
+                generic_convertions.instance_default_property(expr.type as generic_instance_type_node);
+            }
             if (expr.type.default_property_node == null)
             {
+                
                 if (expr.type.semantic_node_type != semantic_node_type.delegated_method)
                 {
                     AddError(loc, "NO_DEFAULT_PROPERTY_TO_TYPE_{0}", expr.type.PrintableName);
@@ -20424,7 +20429,16 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.template_type_name node)
         {
-            throw new NotSupportedError(get_location(node));
+            //throw new NotSupportedError(get_location(node));
+            ident_with_templateparams id = new ident_with_templateparams();
+            if (node.name.IndexOf('`') != -1 )
+                id.name = new ident(node.name.Substring(0, node.name.IndexOf('`')), node.source_context);
+            else
+                id.name = new ident(node.name, node.source_context);
+            id.template_params = new template_param_list();
+            for (int i = 0; i < node.template_args.Count; i++)
+                id.template_params.Add(new named_type_reference(node.template_args[0] as SyntaxTree.ident, node.template_args[i].source_context));
+            id.visit(this);
         }
 
         public override void visit(SyntaxTree.default_operator _default_operator)
