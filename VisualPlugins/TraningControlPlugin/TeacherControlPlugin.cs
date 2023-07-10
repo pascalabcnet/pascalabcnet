@@ -273,6 +273,17 @@ namespace VisualPascalABCPlugins
         private void ChangeArgsBeforeRunHandler(ref string args)
         {
             args += " " + loginForm.Authorized.ToString();
+            var FileName = Workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument.FileName;
+            // Ладно - это текст
+            var text = Workbench.VisualEnvironmentCompiler.StandartCompiler.GetSourceFileText(FileName);
+            //text = System.Text.RegularExpressions.Regex.Replace(text, "\"", "\\\"");
+            if (text.Length > 5000)
+                text = text.Substring(0, 5000);
+            text = text.Replace("\\\"", "\\ \"");
+            text = text.Replace("\"", "\\\"");
+            //text = System.Text.RegularExpressions.Regex.Unescape(text);
+            args += " " + "\""+ text + "\"";
+            //args += " HelloBye23";
         }
     }
 }
