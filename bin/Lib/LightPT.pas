@@ -2159,12 +2159,18 @@ procedure WriteInfoToDatabases(LessonName,TaskName,TaskPlatform: string; TaskRes
 begin
   try
     System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {TaskResult.ToString} {AdditionalInfo}' + #10);
-    var auth := FindAuthDat();
+  except
+    on e: Exception do
+      ColoredMessage('Ошибка записи в файл db.txt. Обратитесь к преподавателю',MsgColorGray);
+  end; 
+  // Разделили ошибки записи в локальную и глобальную базу
+  try
+    var auth := FindAuthDat(); // файл авторизации ищется либо в текущей папке либо в папке на уровень выше
     var args := System.Environment.GetCommandLineArgs;
     if (auth <> '') and (args.Length >= 3) and (args[2].ToLower = 'true') then
     begin  
       var text := '';
-      if TaskResult <> InitialTask then
+      if (TaskResult <> InitialTask) and (args.Length >= 4) then
         text := args[3];
       // Есть проблема паузы при плохой сети 
       WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskPlatform,TaskResult.ToString, text, AdditionalInfo);
