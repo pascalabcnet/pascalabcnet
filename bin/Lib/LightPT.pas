@@ -2151,6 +2151,8 @@ begin
     var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo);
     var v := t2.Result;
     v := v;
+    if v <> 'Success' then
+      ColoredMessage('Ошибка сервера: '+v, MsgColorGray);
     //Console.WriteLine(v);
   end;
 end;
