@@ -573,8 +573,10 @@ namespace PascalABCCompiler.TreeRealization
                     var ImplementingInterfaces = tnode.ImplementingInterfaces.ToList();
                     // Из-за этой строки возникла ошибка https://github.com/pascalabcnet/pascalabcnet/issues/2872
                     // Но без этой строчки не работает преобразование sequence of Student к sequence of Person и sequence of object
-                    //if (tnode.IsInterface)
-                    //    ImplementingInterfaces.Add(tnode);
+                    // SSM 19/07/23 - снова раскомментировал - теперь не работало
+                    // CheckOutputSeq(a); в Tasks где var a: array of char
+                    if (tnode.IsInterface)
+                        ImplementingInterfaces.Add(tnode);
                     foreach (var interf in ImplementingInterfaces)
                     {
                         var ctn = interf as compiled_type_node;

@@ -477,7 +477,7 @@ type
       client.Timeout := TimeSpan.FromSeconds(10);
     end;
     
-    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskPlatform, TaskResult, TaskResultInfo: string): Task<string>;
+    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskPlatform, TaskResult, text, TaskResultInfo: string): Task<string>;
     begin
       var values := Dict(
         ( 'shortFIO', '' ),  
@@ -487,7 +487,7 @@ type
         ( 'taskPlatform', TaskPlatform ),
         ( 'taskResult', TaskResult ),
         ( 'taskResultInfo', TaskResultInfo ),
-        ( 'content', '' ),
+        ( 'content', text ),
         ( 'password', Password )
       );
       var content := new FormUrlEncodedContent(values);
@@ -2136,7 +2136,7 @@ end;
 {            Процедуры для записи в базы данных           }
 {=========================================================}
 
-procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo: string);
+procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo: string);
 begin
   // Считать логин пароль из auth
   var data := System.IO.File.ReadAllBytes(auth);
@@ -2148,9 +2148,11 @@ begin
     pass := arr[1];
     // Теперь как-то записать в БД информацию
     var User := new ServerAccessProvider(ServerAddr);
-    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo);
+    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo);
     var v := t2.Result;
     v := v;
+    if v <> 'Success' then
+      ColoredMessage('Ошибка сервера: '+v, MsgColorGray);
     //Console.WriteLine(v);
   end;
 end;
@@ -2159,11 +2161,22 @@ procedure WriteInfoToDatabases(LessonName,TaskName,TaskPlatform: string; TaskRes
 begin
   try
     System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {TaskResult.ToString} {AdditionalInfo}' + #10);
-    var auth := FindAuthDat();
+  except
+    on e: Exception do
+      ColoredMessage('Ошибка записи в файл db.txt. Обратитесь к преподавателю',MsgColorGray);
+  end; 
+  // Разделили ошибки записи в локальную и глобальную базу
+  try
+    var auth := FindAuthDat(); // файл авторизации ищется либо в текущей папке либо в папке на уровень выше
     var args := System.Environment.GetCommandLineArgs;
-    if (auth <> '') and (args.Length = 3) and (args[2].ToLower = 'true') then
+    if (auth <> '') and (args.Length >= 3) and (args[2].ToLower = 'true') then
+    begin  
+      var text := '';
+      if (TaskResult <> InitialTask) and (args.Length >= 4) then
+        text := args[3];
       // Есть проблема паузы при плохой сети 
-      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskPlatform,TaskResult.ToString, AdditionalInfo);
+      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskPlatform,TaskResult.ToString, text, AdditionalInfo);
+    end  
   except
     on e: System.AggregateException do
     begin
