@@ -332,6 +332,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_resource = "resource";
         public static string compiler_directive_platformtarget = "platformtarget";
         public static string compiler_directive_faststrings = "faststrings";
+        public static string compiler_directive_targetframework = "targetframework";
 
         // SSM (3.1.2011) Перенес эти константы сюда. 
         public static string version_string = "version";

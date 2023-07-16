@@ -403,6 +403,14 @@ namespace PascalABCCompiler
         }
     }
 
+    public class UnsupportetTargetFramework: CompilerCompilationError
+    {
+        public UnsupportetTargetFramework(string FrameworkName, TreeRealization.location sl)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGETFRAMEWORK_{0}"), FrameworkName))
+        {
+            this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+        }
+    }
 
     public enum UnitState { BeginCompilation, InterfaceCompiled, Compiled }
 
@@ -1986,6 +1994,13 @@ namespace PascalABCCompiler
                 }
                 if (this.compilerOptions.Only32Bit)
                     cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
+                if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_targetframework, out cds))
+                {
+                    cdo.TargetFramework = cds[0].directive;
+                    if (!new string[] { "net40", "net403", "net45", "net451", "net452", "net46", "net461", "net462", "net47", "net471", "net472", "net48", "net481" }
+                        .Contains(cdo.TargetFramework))
+                        ErrorsList.Add(new UnsupportetTargetFramework(cdo.TargetFramework, cds[0].location));
+                }
                 if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.product_string, out cds))
                 {
                     cdo.Product = cds[0].directive;
