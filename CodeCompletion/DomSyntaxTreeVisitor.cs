@@ -2777,7 +2777,7 @@ namespace CodeCompletion
             {
                 if (s is uses_unit_in uui)
                 {
-                    string unit_name = CodeCompletionNameHelper.FindSourceFileName(uui.in_file.Value, curr_path);
+                    string unit_name = CodeCompletionNameHelper.FindSourceFileName(uui.in_file.Value, out _, curr_path);
                     if (unit_name==null) throw new InvalidOperationException($"uses '{uui.in_file.Value}';");
 
                     DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -2803,7 +2803,7 @@ namespace CodeCompletion
                         if (i == 0)
                         {
                             string pcu_unit_name = FindPCUFileName(str, curr_path);
-                            string unit_name = CodeCompletionNameHelper.FindSourceFileName(str, curr_path);
+                            string unit_name = CodeCompletionNameHelper.FindSourceFileName(str, out _, curr_path);
 
                             /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                 && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
