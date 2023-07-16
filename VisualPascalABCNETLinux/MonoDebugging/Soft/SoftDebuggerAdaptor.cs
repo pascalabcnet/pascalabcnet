@@ -120,8 +120,12 @@ namespace Mono.Debugging.Soft
 		{
 			try {
 				var result = ctx.RuntimeInvoke (method, obj, new Value[0]);
-				if (result is StringMirror str)
-					return MirrorStringToString (ctx, str);
+				var str = result as StringMirror;
+				if (str != null)
+                {
+					return MirrorStringToString(ctx, str);
+				}
+					
 
 				return null;
 			} catch {
@@ -133,17 +137,21 @@ namespace Mono.Debugging.Soft
 		{
 			if (obj == null)
 				return null;
-
-			if (obj is StringMirror str)
+			var str = obj as StringMirror;
+			if (str != null)
+            {
 				return str.Value;
+			}
 
-			if (obj is EnumMirror em)
+			var em = obj as EnumMirror;
+			if (em != null)
 				return em.StringValue;
 
-			if (obj is PrimitiveValue primitive)
+			var primitive = obj as PrimitiveValue;
+			if (primitive != null)
 				return primitive.Value.ToString ();
-
-			if (obj is PointerValue pointer)
+			var pointer = obj as PointerValue;
+			if (pointer != null)
 				return string.Format ("0x{0:x}", pointer.Address);
 
 			var cx = (SoftEvaluationContext) ctx;
@@ -184,7 +192,8 @@ namespace Mono.Debugging.Soft
 				var tt = targetType as Type;
 				if (tt != null) {
 					try {
-						if (obj is PrimitiveValue primitive)
+						var primitive = obj as PrimitiveValue;
+						if (primitive != null)
 							obj = primitive.Value;
 
 						res = System.Convert.ChangeType (obj, tt);
@@ -360,7 +369,8 @@ namespace Mono.Debugging.Soft
 
 			if (fromType != null) {
 				// Try casting the primitive type of the enum
-				if (val is EnumMirror em)
+				var em = val as EnumMirror;
+				if (em != null)
 					return TryCast (ctx, CreateValue (ctx, em.Value), type);
 
 				if (toType != null && toType.IsAssignableFrom(fromType))
@@ -380,8 +390,10 @@ namespace Mono.Debugging.Soft
 				}
 
 
-				if (toType.IsGenericType && toType.FullName.StartsWith ("System.Nullable`1", StringComparison.Ordinal)) {
-					if (val is PrimitiveValue primitiveVal && primitiveVal.Value == null) {
+				if (toType.IsGenericType && toType.FullName.StartsWith ("System.Nullable`1", StringComparison.Ordinal)) 
+				{
+					var primitiveVal = val as PrimitiveValue;
+					if (primitiveVal != null && primitiveVal.Value == null) {
 						val = CreateValue (ctx, toType, new object [0]);
 					} else {
 						val = CreateValue (ctx, toType, val);
@@ -412,7 +424,8 @@ namespace Mono.Debugging.Soft
 
 					try {
 						if (tt.IsPrimitive || tt == typeof (string)) {
-							if (val is PrimitiveValue primitive)
+							var primitive = val as PrimitiveValue;
+							if (primitive != null)
 								val = primitive.Value;
 
 							if (val == null)
@@ -526,8 +539,8 @@ namespace Mono.Debugging.Soft
 		public override object CreateValue (EvaluationContext ctx, object value)
 		{
 			var cx = (SoftEvaluationContext) ctx;
-
-			if (value is string str)
+			var str = value as string;
+			if (str != null)
 				return cx.Domain.CreateString (str);
 
 			if (value is decimal) {
@@ -1114,24 +1127,31 @@ namespace Mono.Debugging.Soft
 			return GetMembers (ctx, null, t, co, bindingFlags);
 		}
 
-		string [] GetTupleElementNames (IObjectSource source, EvaluationContext ctx)
+		string[] GetTupleElementNames(IObjectSource source, EvaluationContext ctx)
 		{
-			switch (source) {
-			case FieldValueReference field:
-				if ((field.Type as TypeMirror)?.Name?.StartsWith ("ValueTuple`", StringComparison.Ordinal) != true)
+			if (source is FieldValueReference)
+			{
+				FieldValueReference field = source as FieldValueReference;
+				if ((field.Type as TypeMirror)?.Name?.StartsWith("ValueTuple`", StringComparison.Ordinal) != true)
 					return null;
-				return field.GetTupleElementNames ();
-			case PropertyValueReference prop:
-				if ((prop.Type as TypeMirror)?.Name?.StartsWith ("ValueTuple`", StringComparison.Ordinal) != true)
-					return null;
-				return prop.GetTupleElementNames ();
-			case VariableValueReference variable:
-				if ((variable.Type as TypeMirror)?.Name?.StartsWith ("ValueTuple`", StringComparison.Ordinal) != true)
-					return null;
-				return variable.GetTupleElementNames ((SoftEvaluationContext)ctx);
-			default:
-				return null;
+				return field.GetTupleElementNames();
 			}
+			if (source is PropertyValueReference)
+			{
+				PropertyValueReference prop = source as PropertyValueReference;
+				if ((prop.Type as TypeMirror)?.Name?.StartsWith("ValueTuple`", StringComparison.Ordinal) != true)
+					return null;
+				return prop.GetTupleElementNames();
+			}
+			if (source is VariableValueReference)
+			{
+				VariableValueReference variable = source as VariableValueReference;
+				if ((variable.Type as TypeMirror)?.Name?.StartsWith("ValueTuple`", StringComparison.Ordinal) != true)
+					return null;
+				return variable.GetTupleElementNames((SoftEvaluationContext)ctx);
+			}
+			return null;
+
 		}
 
 		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, IObjectSource objectSource, object t, object co, BindingFlags bindingFlags)
@@ -1528,8 +1548,8 @@ namespace Mono.Debugging.Soft
 						args += ",";
 
 					string tn;
-
-					if (!(argType is TypeMirror atm)) {
+					var atm = argType as TypeMirror;
+					if (atm == null) {
 						var att = (Type) argType;
 
 						tn = att.FullName + ", " + att.Assembly.GetName ();
@@ -1600,7 +1620,8 @@ namespace Mono.Debugging.Soft
 
 		public override object GetParentType (EvaluationContext ctx, object type)
 		{
-			if (type is TypeMirror tm) {
+			var tm = type as TypeMirror;
+			if (tm != null) {
 				int plus = tm.FullName.LastIndexOf ('+');
 
 				return plus != -1 ? GetType (ctx, tm.FullName.Substring (0, plus)) : null;
@@ -1671,7 +1692,8 @@ namespace Mono.Debugging.Soft
 		
 		public override object GetBaseType (EvaluationContext ctx, object type)
 		{
-			return type is TypeMirror tm ? tm.BaseType : null;
+			var tm = type as TypeMirror;
+			return tm != null ? tm.BaseType : null;
 		}
 
 		public override bool HasMethodWithParamLength (EvaluationContext ctx, object targetType, string methodName, BindingFlags flags, int paramLength)
@@ -1776,12 +1798,14 @@ namespace Mono.Debugging.Soft
 
 		public override bool IsValueType (object type)
 		{
-			return type is TypeMirror tm && tm.IsValueType;
+			var tm = type as TypeMirror;
+			return tm != null && tm.IsValueType;
 		}
 
 		public override bool IsPrimitiveType (object type)
 		{
-			if (!(type is TypeMirror tm))
+			var tm = type as TypeMirror;
+			if (tm == null)
 				return false;
 
 			if (tm.IsPrimitive)
@@ -1795,7 +1819,8 @@ namespace Mono.Debugging.Soft
 
 		public override bool IsClass (EvaluationContext ctx, object type)
 		{
-			return type is TypeMirror tm && (tm.IsClass || tm.IsValueType) && !tm.IsPrimitive;
+			var tm = type as TypeMirror;
+			return tm != null && (tm.IsClass || tm.IsValueType) && !tm.IsPrimitive;
 		}
 
 		public override bool IsNull (EvaluationContext ctx, object val)
@@ -1807,7 +1832,8 @@ namespace Mono.Debugging.Soft
 		{
 			if (val is PrimitiveValue || val is StringMirror || val is PointerValue)
 				return true;
-			if (!(val is StructMirror sm))
+			var sm = val as StructMirror;
+			if (sm == null)
 				return false;
 			if (sm.Type.IsPrimitive)
 				return true;

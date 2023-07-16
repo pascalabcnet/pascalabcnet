@@ -1352,7 +1352,7 @@ namespace PascalABCCompiler
        			}*/
        			else
        			{
-       				string source_file = FindFileInDirs(s+".vb",Path.GetDirectoryName(CompilerOptions.SourceFileName),Path.Combine(this.CompilerOptions.SystemDirectory,"lib"),
+       				string source_file = FindFileInDirs(s+".vb", out _, Path.GetDirectoryName(CompilerOptions.SourceFileName),Path.Combine(this.CompilerOptions.SystemDirectory,"lib"),
        				                                                 Path.Combine(this.CompilerOptions.SystemDirectory,"LibSource"));
        				if (!string.IsNullOrEmpty(source_file))
        				{
@@ -1672,8 +1672,8 @@ namespace PascalABCCompiler
 			parser.Dispose();
 			if (info != null)
 			sources.AddRange(info.addit_project_files);
-			string redirect_base_fname = FindFileInDirs("__RedirectIOMode.vb",Path.Combine(this.CompilerOptions.SystemDirectory,"Lib"),Path.Combine(this.CompilerOptions.SystemDirectory,"LibSource"));
-			string system_unit_name = FindFileInDirs("VBSystem.vb",Path.Combine(this.CompilerOptions.SystemDirectory,"lib"),Path.Combine(this.CompilerOptions.SystemDirectory,"LibSource"));
+			string redirect_base_fname = FindFileInDirs("__RedirectIOMode.vb", out _, Path.Combine(this.CompilerOptions.SystemDirectory,"Lib"),Path.Combine(this.CompilerOptions.SystemDirectory,"LibSource"));
+			string system_unit_name = FindFileInDirs("VBSystem.vb", out _, Path.Combine(this.CompilerOptions.SystemDirectory,"lib"),Path.Combine(this.CompilerOptions.SystemDirectory,"LibSource"));
 			string redirect_fname = Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName),"_RedirectIOMode.vb");
 			StreamReader sr = File.OpenText(redirect_base_fname);
 			string redirect_module = sr.ReadToEnd();
@@ -1765,7 +1765,7 @@ namespace PascalABCCompiler
 			if (info != null && info.modules.Count > 0)
 			{
 				comp_opt.ReferencedAssemblies.Add(Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName),PascalABCCompiler.TreeConverter.compiler_string_consts.pabc_rtl_dll_name));
-				string mod_file_name = FindFileInDirs("PABCRtl.dll",Path.Combine(this.CompilerOptions.SystemDirectory,"Lib"));
+				string mod_file_name = FindFileInDirs("PABCRtl.dll", out _, Path.Combine(this.CompilerOptions.SystemDirectory,"Lib"));
 				File.Copy(mod_file_name,Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName),"PABCRtl.dll"),true);
 				/*foreach (string mod in info.modules)
 				{
@@ -2534,12 +2534,12 @@ namespace PascalABCCompiler
             if (!PCUFileNamesDictionary.TryGetValue(cache_key, out var res))
             {
 
-                if (FindFileInDirs(fname, curr_path) is string res_s1)
+                if (FindFileInDirs(fname, out _, curr_path) is string res_s1)
                     res = Tuple.Create(res_s1, 1);
-                else if (FindFileInDirs(Path.GetFileName(fname), CompilerOptions.OutputDirectory) is string res_s2)
+                else if (FindFileInDirs(Path.GetFileName(fname), out _, CompilerOptions.OutputDirectory) is string res_s2)
                     res = Tuple.Create(res_s2, 2);
-                else if (FindFileInDirs(fname, CompilerOptions.SearchDirectory.ToArray()) is string res_s3)
-                    res = Tuple.Create(res_s3, 3);
+                else if (FindFileInDirs(fname, out var dir_ind, CompilerOptions.SearchDirectory.ToArray()) is string res_s3)
+                    res = Tuple.Create(res_s3, 3+dir_ind);
                 else
                     res = null;
 
@@ -2557,10 +2557,10 @@ namespace PascalABCCompiler
             if (!SourceFileNamesDictionary.TryGetValue(cache_key, out var res))
             {
 
-                if (FindSourceFileNameInDirs(fname, curr_path) is string res_s1)
+                if (FindSourceFileNameInDirs(fname, out _, curr_path) is string res_s1)
                     res = Tuple.Create(res_s1, 1);
-                else if (FindSourceFileNameInDirs(fname, CompilerOptions.SearchDirectory.ToArray()) is string res_s3)
-                    res = Tuple.Create(res_s3, 3);
+                else if (FindSourceFileNameInDirs(fname, out var dir_ind, CompilerOptions.SearchDirectory.ToArray()) is string res_s3)
+                    res = Tuple.Create(res_s3, 3+dir_ind);
                 else
                     res = null;
 
@@ -2571,7 +2571,7 @@ namespace PascalABCCompiler
             return res?.Item1;
         }
         
-        public string FindSourceFileNameInDirs(string fname, params string[] Dirs)
+        public string FindSourceFileNameInDirs(string fname, out int found_dir_ind, params string[] Dirs)
         {
             var fname_ext = Path.GetExtension(fname);
             var need_ext = string.IsNullOrEmpty(fname_ext);
@@ -2580,12 +2580,13 @@ namespace PascalABCCompiler
                 foreach (string ext in sf.Extensions)
                     if (need_ext || fname_ext==ext)
                     {
-                        var res = FindFileInDirs(need_ext ? fname+ext : fname, Dirs);
+                        var res = FindFileInDirs(need_ext ? fname+ext : fname, out found_dir_ind, Dirs);
                         //if (!(CompilerOptions.UseDllForSystemUnits && Path.GetDirectoryName(res) == CompilerOptions.SearchDirectory))
                         if (res != null)
                             return res;
                     }
-            
+
+            found_dir_ind = 0;
             return null;
         }
 
@@ -2648,24 +2649,32 @@ namespace PascalABCCompiler
             throw new InvalidOperationException($"Could not find path to \"{u2.UnitFileName}\" relative to \"{u1.UnitFileName}\"");
         }
 
-        private string FindFileInDirs(string FileName, params string[] Dirs)
+        private string FindFileInDirs(string FileName, out int found_dir_ind, params string[] Dirs)
         {
             if (Path.IsPathRooted(FileName))
+            {
+                found_dir_ind = 0;
                 return File.Exists(FileName) ? FileName : null;
+            }
 
-            foreach (string Dir in Dirs)
+            for (int dir_i = 0; dir_i<Dirs.Length; ++dir_i)
                 try {
+                    var Dir = Dirs[dir_i];
                     var res = Path.Combine(Dir, FileName);
                     if (File.Exists(res))
+                    {
+                        found_dir_ind = dir_i;
                         // Path.GetFullPath чтобы нормализовать
                         // File.Exists не может кинуть исключение или дать true
                         // если путь слишком длинный или содержит нерпавильные знаки
                         return Path.GetFullPath(res);
+                    }
                 }
                 catch (PathTooLongException) {
                     continue;
                 }
 
+            found_dir_ind = 0;
             return null;
         }
 

@@ -3338,6 +3338,14 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="lambda_any_type_node_syntax" BaseName="expression">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -4089,6 +4097,7 @@
       <HelpData Key="labeled_statement.to_statement" Value="" />
       <HelpData Key="labelname_list" Value="" />
       <HelpData Key="labelname_list.names" Value="" />
+      <HelpData Key="lambda_any_type_node_syntax" Value="Marker. On semantic level becomes lambda_any_type_node in generic_conversions.SaveLambdasStates" />
       <HelpData Key="lambda_inferred_type" Value="" />
       <HelpData Key="lambda_inferred_type._realType" Value="" />
       <HelpData Key="lambda_inferred_type.realType" Value="" />

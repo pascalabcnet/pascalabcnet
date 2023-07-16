@@ -538,6 +538,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new property_ident();
 				case 258:
 					return new expression_with_let();
+				case 259:
+					return new lambda_any_type_node_syntax();
 			}
 			return null;
 		}
@@ -4517,6 +4519,17 @@ namespace PascalABCCompiler.SyntaxTree
 			read_addressed_value(_expression_with_let);
 			_expression_with_let.stat = _read_node() as statement_list;
 			_expression_with_let.expr = _read_node() as expression;
+		}
+
+
+		public void visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			read_lambda_any_type_node_syntax(_lambda_any_type_node_syntax);
+		}
+
+		public void read_lambda_any_type_node_syntax(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			read_expression(_lambda_any_type_node_syntax);
 		}
 
 	}

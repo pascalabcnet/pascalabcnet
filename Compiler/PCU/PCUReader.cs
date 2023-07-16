@@ -565,7 +565,12 @@ namespace PascalABCCompiler.PCU
                 pcu_file.SourceFileName = br.ReadString();
             else
                 pcu_file.SourceFileName = Path.GetFileNameWithoutExtension(FileName);
-			int num_names = br.ReadInt32();
+            if (Path.GetDirectoryName(pcu_file.SourceFileName) == "")
+                cur_doc = new document(Path.Combine(Path.GetDirectoryName(FileName), pcu_file.SourceFileName));
+            else
+                cur_doc = new document(pcu_file.SourceFileName);
+
+            int num_names = br.ReadInt32();
 			pcu_file.names = new NameRef[num_names];
 			for (int i=0; i<num_names; i++)
 			{

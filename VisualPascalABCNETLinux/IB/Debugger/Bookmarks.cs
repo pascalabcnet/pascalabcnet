@@ -510,8 +510,8 @@ namespace VisualPascalABC
     
     public class BreakPointFactory
     {
-        public static Dictionary<CurrentBreakpointBookmark, Breakpoint> breakpoints = new Dictionary<CurrentBreakpointBookmark, Breakpoint>();
-        public static Dictionary<Breakpoint,BreakpointInfo> breakpoints_conditions = new Dictionary<Breakpoint,BreakpointInfo>();
+        public static Dictionary<CurrentBreakpointBookmark, Mono.Debugging.Client.Breakpoint> breakpoints = new Dictionary<CurrentBreakpointBookmark, Mono.Debugging.Client.Breakpoint>();
+        public static Dictionary<Mono.Debugging.Client.Breakpoint, BreakpointInfo> breakpoints_conditions = new Dictionary<Mono.Debugging.Client.Breakpoint, BreakpointInfo>();
         static BreakPointFactory()
         {
 
@@ -519,7 +519,7 @@ namespace VisualPascalABC
 		
         private static BreakpointConditionForm bcf;
         
-        public static bool MustHit(Breakpoint br)
+        public static bool MustHit(Mono.Debugging.Client.Breakpoint br)
         {
         	BreakpointInfo bi = null;
         	if (breakpoints_conditions.TryGetValue(br,out bi))
@@ -584,7 +584,7 @@ namespace VisualPascalABC
         		Form1StringResources.SetTextForAllControls(bcf);
         	}
         	BreakpointInfo bi = null;
-        	Breakpoint br = breakpoints[cur_bookmark];
+            Mono.Debugging.Client.Breakpoint br = breakpoints[cur_bookmark];
         	if (breakpoints_conditions.TryGetValue(br,out bi))
         	{
         		bcf.IsConditionEnabled = bi.enabled;
@@ -620,14 +620,14 @@ namespace VisualPascalABC
         
         public static void AddBreakpoints(string FileName, TextArea text_area)
         {
-            List<Breakpoint> br_list = WorkbenchServiceFactory.DebuggerManager.GetBreakpointsInFile(FileName);
-            foreach (Breakpoint br in br_list)
+            List<Mono.Debugging.Client.Breakpoint> br_list = WorkbenchServiceFactory.DebuggerManager.GetBreakpointsInFile(FileName);
+            foreach (Mono.Debugging.Client.Breakpoint br in br_list)
             {
-                ToggleBreakpointAtByOpen(text_area.Document, br.SourcecodeSegment.SourceFullFilename, br.SourcecodeSegment.StartLine-1, br);
+                ToggleBreakpointAtByOpen(text_area.Document, br.FileName, br.Line-1, br);
             }
         }
 
-        public static void ToggleBreakpointAtByOpen(IDocument document, string fileName, int lineNumber, Breakpoint br)
+        public static void ToggleBreakpointAtByOpen(IDocument document, string fileName, int lineNumber, Mono.Debugging.Client.Breakpoint br)
         {
             foreach (char ch in document.GetText(document.GetLineSegment(lineNumber)))
             {

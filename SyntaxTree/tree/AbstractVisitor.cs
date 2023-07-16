@@ -1302,6 +1302,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_expression_with_let);
 		}
+
+		public virtual void visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			DefaultVisit(_lambda_any_type_node_syntax);
+		}
 	}
 
 

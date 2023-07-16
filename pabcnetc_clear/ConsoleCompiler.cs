@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using PascalABCCompiler.Errors;
@@ -91,6 +91,11 @@ namespace PascalABCCompiler
                     return true;
 
                 case "searchdir":
+                    if (!Directory.Exists(value))
+                    {
+                        Console.WriteLine($"SearchDir \"{value}\" not found relative to \"{Environment.CurrentDirectory}\"");
+                        return false;
+                    }
                     co.SearchDirectory.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
                     return true;
 

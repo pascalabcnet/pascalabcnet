@@ -41,6 +41,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         {
             var st = new StandardSyntaxTreeConverter();
             syntaxTreeConverters.Add(st);
+            var lam = new SyntaxSemanticVisitors.LambdaAnyConverter(); // синтактико семантический конвертер
+            syntaxTreeConverters.Add(lam);
         }
         public void AddConverters()
         {

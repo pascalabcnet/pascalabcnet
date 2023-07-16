@@ -1700,6 +1700,8 @@ function Random(maxValue: real): real;
 function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
+/// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
+function RandomReal(a, b: real; digits: integer := -1): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 /// Возвращает случайное целое в диапазоне 
@@ -2319,11 +2321,11 @@ function Arr(a: CharRange): array of char;
 
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
-/// Возвращает массив размера n, заполненный случайными целыми значениями
+/// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от a до b
 function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandomInteger(n: integer := 10): array of integer;
-/// Возвращает массив размера n, заполненный случайными вещественными значениями
+/// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
 function ArrRandomReal(n: integer; a: real; b: real): array of real;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
 function ArrRandomReal(n: integer := 10): array of real;
@@ -8509,6 +8511,29 @@ begin
   Result := a + Random()*(b-a);
 end;
 
+function RandomReal(a, b: real; digits: integer): real;
+begin
+  if digits<0 then
+    Result := Random(a,b)
+  else begin
+    // Бывают некорректные данные. Например, найти точку с 2 знаками на [2.736, 2.737]. Тогда возвращать a скажем
+    var step := 1/10**digits;
+    Result := Round(Random(a,b),digits);
+    if Result < a then
+    begin  
+      Result += step;
+      if Result > b then
+        Result := b
+    end  
+    else if Result > b then 
+    begin  
+      Result -= step;
+      if Result < a then
+        Result := a;
+    end;  
+  end;  
+end;
+
 function Random(diap: IntRange): integer := Random(diap.Low,diap.High);
 function Random(diap: RealRange): real := Random(diap.Low,diap.High);
 function Random(diap: CharRange): char := Random(diap.Low,diap.High);
@@ -10690,6 +10715,12 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------
+
+/// Возвращает случайный элемент списка
+function RandomElement<T>(Self: List<T>): T; extensionmethod;
+begin
+  Result := Self[Random(Self.Count)];  
+end;
 
 /// Возвращает последовательность индексов списка
 function Indices<T>(Self: List<T>): sequence of integer; extensionmethod := Range(0, Self.Count - 1);

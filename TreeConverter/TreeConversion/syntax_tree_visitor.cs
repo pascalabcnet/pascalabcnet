@@ -16197,8 +16197,13 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                             }
             }*/
+            if (expr.type.default_property_node == null && expr.type is generic_instance_type_node && (expr.type as generic_instance_type_node).original_generic.default_property_node != null)
+            {
+                generic_convertions.instance_default_property(expr.type as generic_instance_type_node);
+            }
             if (expr.type.default_property_node == null)
             {
+                
                 if (expr.type.semantic_node_type != semantic_node_type.delegated_method)
                 {
                     AddError(loc, "NO_DEFAULT_PROPERTY_TO_TYPE_{0}", expr.type.PrintableName);
@@ -20424,7 +20429,16 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.template_type_name node)
         {
-            throw new NotSupportedError(get_location(node));
+            //throw new NotSupportedError(get_location(node));
+            ident_with_templateparams id = new ident_with_templateparams();
+            if (node.name.IndexOf('`') != -1 )
+                id.name = new ident(node.name.Substring(0, node.name.IndexOf('`')), node.source_context);
+            else
+                id.name = new ident(node.name, node.source_context);
+            id.template_params = new template_param_list();
+            for (int i = 0; i < node.template_args.Count; i++)
+                id.template_params.Add(new named_type_reference(node.template_args[0] as SyntaxTree.ident, node.template_args[i].source_context));
+            id.visit(this);
         }
 
         public override void visit(SyntaxTree.default_operator _default_operator)
@@ -21364,24 +21378,25 @@ namespace PascalABCCompiler.TreeConverter
                 semantic_check_for_indices(expr);
             }*/
             // Patterns
-            else if (st.typ is SemanticCheckType.MatchedExpression)  // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ  == SemanticCheckType.MatchedExpression)  
+                // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
             {
                 var expr = st.lst[0] as expression;
                 CheckMatchedExpression(expr);
             }
-            else if (st.typ is SemanticCheckType.MatchedExpressionAndType)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedExpressionAndType)
             {
                 var expr = st.lst[0] as expression;
                 var type = st.lst[1] as type_definition;
                 CheckIfCanBeMatched(expr, type);
             }
-            else if (st.typ is SemanticCheckType.MatchedExpressionAndExpression)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedExpressionAndExpression)
             {
                 var matchedExpr = st.lst[0] as expression;
                 var patternExpr = st.lst[1] as expression;
                 CheckIfCanBeMatched(matchedExpr, patternExpr);
             }
-            else if (st.typ is SemanticCheckType.MatchedTuple)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.MatchedTuple)
             {
                 var tuple = st.lst[0] as expression;
                 var length = st.lst[1] as int32_const;
@@ -21389,7 +21404,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             // !Patterns
             // Slices
-            else if (st.typ is SemanticCheckType.SliceAssignmentTypeCompatibility)
+            else if (st.typ is SemanticCheckType && (SemanticCheckType)st.typ == SemanticCheckType.SliceAssignmentTypeCompatibility)
             {
                 var to = st.lst[0] as expression;
                 var from = st.lst[1] as expression;

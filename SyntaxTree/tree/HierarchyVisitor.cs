@@ -2077,6 +2077,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+		}
+
+		public virtual void post_do_visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4292,6 +4300,13 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(expression_with_let.stat);
 			visit(expression_with_let.expr);
 			post_do_visit(_expression_with_let);
+		}
+
+		public override void visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			DefaultVisit(_lambda_any_type_node_syntax);
+			pre_do_visit(_lambda_any_type_node_syntax);
+			post_do_visit(_lambda_any_type_node_syntax);
 		}
 	}
 

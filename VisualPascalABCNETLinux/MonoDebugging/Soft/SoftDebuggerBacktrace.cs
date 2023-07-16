@@ -212,7 +212,7 @@ namespace Mono.Debugging.Soft
 			return new SoftDebuggerStackFrame (frame, addressSpace, location, language, external, hasDebugInfo, hidden, typeFQN, typeFullName);
 		}
 		
-		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
+		public override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
 		{
 			ValidateStack ();
 

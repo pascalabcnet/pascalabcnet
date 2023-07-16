@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Mono.Debugging.Backend;
+using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Client
 {
@@ -46,6 +47,8 @@ namespace Mono.Debugging.Client
 		string typeName;
 		string displayValue;
 		string childSelector;
+		object type;
+		EvaluationContext ctx;
 		ObjectValueFlags flags;
 		IObjectValueSource source;
 		IObjectValueUpdater updater;
@@ -78,13 +81,14 @@ namespace Mono.Debugging.Client
 			return CreateObject (source, path, typeName, new EvaluationResult (value), flags, children);
 		}
 		
-		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, EvaluationResult value, ObjectValueFlags flags, ObjectValue[] children)
+		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, EvaluationResult value, ObjectValueFlags flags, ObjectValue[] children, object type=null, EvaluationContext ctx=null)
 		{
 			var val = Create (source, path, typeName);
 			val.flags = flags | ObjectValueFlags.Object;
 			val.displayValue = value.DisplayValue;
 			val.value = value.Value;
-
+			val.type = type;
+			val.ctx = ctx;
 			if (children != null) {
 				val.children = new List<ObjectValue> ();
 				val.children.AddRange (children);
@@ -93,16 +97,18 @@ namespace Mono.Debugging.Client
 			return val;
 		}
 		
-		public static ObjectValue CreateNullObject (IObjectValueSource source, string name, string typeName, ObjectValueFlags flags)
+		public static ObjectValue CreateNullObject (IObjectValueSource source, string name, string typeName, ObjectValueFlags flags, object type = null, EvaluationContext ctx = null)
 		{
-			return CreateNullObject (source, new ObjectPath (name), typeName, flags);
+			return CreateNullObject (source, new ObjectPath (name), typeName, flags, type, ctx);
 		}
 		
-		public static ObjectValue CreateNullObject (IObjectValueSource source, ObjectPath path, string typeName, ObjectValueFlags flags)
+		public static ObjectValue CreateNullObject (IObjectValueSource source, ObjectPath path, string typeName, ObjectValueFlags flags, object type = null, EvaluationContext ctx = null)
 		{
 			var val = Create (source, path, typeName);
 			val.flags = flags | ObjectValueFlags.Object;
 			val.value = "(null)";
+			val.type = type;
+			val.ctx = ctx;
 			val.isNull = true;
 			return val;
 		}
@@ -170,6 +176,7 @@ namespace Mono.Debugging.Client
 		public static ObjectValue CreateFatalError (string name, string message, ObjectValueFlags flags)
 		{
 			var val = new ObjectValue ();
+			Console.WriteLine("create value " + name);
 			val.flags = flags | ObjectValueFlags.Error;
 			val.value = message;
 			val.name = name;
@@ -186,6 +193,7 @@ namespace Mono.Debugging.Client
 
 		public static ObjectValue CreateShowMore ()
 		{
+			Console.WriteLine("create value show more");
 			return new ObjectValue () {
 				flags = ObjectValueFlags.IEnumerable,
 				name = ""
@@ -203,6 +211,22 @@ namespace Mono.Debugging.Client
 		/// </summary>
 		public ObjectValueFlags Flags {
 			get { return flags; }
+		}
+
+		public object Type
+        {
+			get
+            {
+				return type;
+            }
+        }
+
+		public EvaluationContext Context
+		{
+			get
+			{
+				return ctx;
+			}
 		}
 
 		/// <summary>
