@@ -366,8 +366,8 @@ namespace PascalABCCompiler.NetHelper
             var bytes = File.ReadAllBytes(name);
             return Assembly.Load(bytes);
         }
-		
-		public static Assembly LoadAssembly(string name)
+
+		public static Assembly LoadAssembly(string name, bool use_load_from = false)
 		{
             if (name == null) return null;
 			Assembly a = ass_name_cache[name] as Assembly;
@@ -941,7 +941,7 @@ namespace PascalABCCompiler.NetHelper
                     if (!System.IO.File.Exists(path))
                         path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
                     if (System.IO.File.Exists(path))
-                        assm = LoadAssembly(path);
+                        assm = LoadAssembly(path, true);
                     curr_inited_assm_path = null;
 
                     //return LoadAssembly(args.Name);
@@ -979,7 +979,14 @@ namespace PascalABCCompiler.NetHelper
                     return true;
         	return false;
 		}
-		
+
+        public static bool IsNetNamespaceInAssembly(string name, Assembly a)
+        {
+            if (cur_used_assemblies != null && cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(name))
+                return true;
+            return false;
+        }
+
 		public static bool IsNetNamespace(string name,PascalABCCompiler.TreeRealization.using_namespace_list _unar, out string full_ns)
 		{
 			Type t = namespaces[name] as Type;

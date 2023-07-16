@@ -2534,7 +2534,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="name_assign_expr" BaseName="syntax_tree_node">
+    <SyntaxNode Name="name_assign_expr" BaseName="expression">
       <Fields>
         <SyntaxField Name="name" SyntaxType="ident" />
         <SyntaxField Name="expr" SyntaxType="expression" />
@@ -3338,6 +3338,14 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="lambda_any_type_node_syntax" BaseName="expression">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3520,7 +3528,7 @@
       <HelpData Key="assign_tuple" Value="" />
       <HelpData Key="assign_tuple.expr" Value="" />
       <HelpData Key="assign_tuple.vars" Value="" />
-      <HelpData Key="assign_var_tuple" Value="" />
+      <HelpData Key="assign_var_tuple" Value="Это внутри begin:var (a,b) := (1,2);&#xD;&#xA;" />
       <HelpData Key="assign_var_tuple.expr" Value="" />
       <HelpData Key="assign_var_tuple.idents" Value="" />
       <HelpData Key="attribute" Value="" />
@@ -4089,6 +4097,7 @@
       <HelpData Key="labeled_statement.to_statement" Value="" />
       <HelpData Key="labelname_list" Value="" />
       <HelpData Key="labelname_list.names" Value="" />
+      <HelpData Key="lambda_any_type_node_syntax" Value="Marker. On semantic level becomes lambda_any_type_node in generic_conversions.SaveLambdasStates" />
       <HelpData Key="lambda_inferred_type" Value="" />
       <HelpData Key="lambda_inferred_type._realType" Value="" />
       <HelpData Key="lambda_inferred_type.realType" Value="" />
@@ -4858,7 +4867,7 @@
       <HelpData Key="var_statement." Value="" />
       <HelpData Key="var_statement.override string ToString()" Value="" />
       <HelpData Key="var_statement.var_def" Value="" />
-      <HelpData Key="var_tuple_def_statement" Value="" />
+      <HelpData Key="var_tuple_def_statement" Value="Это только в секции до begin: var (a,b) := (3,4); begin" />
       <HelpData Key="variable_definitions" Value="Секция описания переменных (до beginа). Состоит из var_def_statement. Не путать с var_statement - однострочным описанием переменной внутри begin-end" />
       <HelpData Key="variable_definitions." Value="" />
       <HelpData Key="variable_definitions.override string ToString()" Value="" />

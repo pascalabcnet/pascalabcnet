@@ -1,11 +1,17 @@
-name: Build & Run all tests (release)
+﻿name: Build & Run all tests (release)
 
 on:
+  push:
+  pull_request:
   workflow_dispatch:
 
   release:
     types:
       - created
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:

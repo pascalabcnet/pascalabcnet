@@ -7,6 +7,7 @@
 <param name="Keyword" value="OnMouseDown">
 <param name="Keyword" value="OnMouseMove">
 <param name="Keyword" value="OnMouseUp">
+<param name="Keyword" value="OnMouseWheel">
 <param name="Keyword" value="OnResize"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>События модуля GraphWPF</H1>
@@ -16,6 +17,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши</td></tr>
 <tr><td><code>OnMouseMove: <b>procedure</b>(x, y: real; mousebutton: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши</td></tr>
+<tr><td><code>OnMouseWheel: <b>procedure</b>(delta: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие прокрутки колёсика мыши. delta - величина прокрутки: delta &gt; 0 - от пользователя, delta &lt; 0 - к пользователю</td></tr>
 <tr><td><code>OnKeyDown: <b>procedure</b>(k: Key);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия клавиши</td></tr>
 <tr><td><code>OnKeyUp: <b>procedure</b>(k: Key);</code>

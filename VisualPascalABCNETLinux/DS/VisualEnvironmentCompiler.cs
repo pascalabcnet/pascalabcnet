@@ -24,8 +24,7 @@ namespace VisualPascalABC
     
     public class VisualEnvironmentCompiler: IVisualEnvironmentCompiler
     {
-        // PascalABCCompiler.CompilerType defaultCompilerType = PascalABCCompiler.CompilerType.Remote;
-        PascalABCCompiler.CompilerType defaultCompilerType = PascalABCCompiler.CompilerType.Standart; // Для Linux
+        PascalABCCompiler.CompilerType defaultCompilerType = PascalABCCompiler.CompilerType.Remote;
 
         public static Encoding DefaultFileEncoding = new System.Text.UTF8Encoding(false);
 
@@ -149,7 +148,7 @@ namespace VisualPascalABC
             CodeCompletion.CodeCompletionController.StandartDirectories = StandartDirectories;
 
             this.CodeCompletionParserController.Init();
-            if (defaultCompilerType == PascalABCCompiler.CompilerType.Remote && !Tools.IsUnix())
+            if (defaultCompilerType == PascalABCCompiler.CompilerType.Remote || true /*&& !Tools.IsUnix()*/)
                 LoadRemoteCompiler();
             else
                 defaultCompilerType = PascalABCCompiler.CompilerType.Standart;

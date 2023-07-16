@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 
@@ -352,16 +353,15 @@ namespace PascalABCCompiler.TreeRealization
             {
                 throw new TreeConverter.SimpleSemanticError(loc, "FORWARD_DECLARATION_{0}_AS_IMPLEMENTING_INTERFACE", _interface.name);
             }
-            if (!cnode.ImplementingInterfaces.Contains(_interface))
+
+            if (cnode.ImplementingInterfaces.Contains(_interface))
+                return;
+            cnode.ImplementingInterfaces.Add(_interface);
+            foreach (type_node tn in _interface.ImplementingInterfaces)
             {
-                cnode.ImplementingInterfaces.Add(_interface);
-                foreach (type_node tn in _interface.ImplementingInterfaces)
-                {
-                    if (!cnode.ImplementingInterfaces.Contains(tn))
-                    {
-                        cnode.ImplementingInterfaces.Add(tn);
-                    }
-                }
+                if (cnode.ImplementingInterfaces.Contains(tn))
+                    continue;
+                cnode.ImplementingInterfaces.Add(tn);
             }
         }
 
@@ -569,16 +569,105 @@ namespace PascalABCCompiler.TreeRealization
                     //implements = tnode.ImplementingInterfaces.Contains(base_class);
 
                     implements = false;
-                    foreach (var interf in tnode.ImplementingInterfaces)
+                    // Цикл по всем реализуемым интерфейсам. А если tnode сам является интерфейсом?
+                    var ImplementingInterfaces = tnode.ImplementingInterfaces.ToList();
+                    // Из-за этой строки возникла ошибка https://github.com/pascalabcnet/pascalabcnet/issues/2872
+                    // Но без этой строчки не работает преобразование sequence of Student к sequence of Person и sequence of object
+                    // SSM 19/07/23 - снова раскомментировал - теперь не работало
+                    // CheckOutputSeq(a); в Tasks где var a: array of char
+                    if (tnode.IsInterface)
+                        ImplementingInterfaces.Add(tnode);
+                    foreach (var interf in ImplementingInterfaces)
                     {
+                        var ctn = interf as compiled_type_node;
+                        // if (ctn.generic_params == null || ctn.generic_params.Count == 0)
+                        //    ctn = null;
+                        var bcctn = base_class as compiled_type_node; // мне кажется, здесь надо проверять на наличие generic-параметров
+                        //if (bcctn.generic_params == null || bcctn.generic_params.Count == 0)
+                        //    bcctn = null;
+                        var cgitn = interf as compiled_generic_instance_type_node;
+                        var bcgitn = base_class as compiled_generic_instance_type_node;
+                        // interf - IEnumerable<Student>, base_class - IEnumerable<Person>
                         if (interf == base_class)
                         {
                             implements = true;
                             break;
                         }
+                        // Справка:
+                        // IEnumerable<object> - compiled_type_node
+                        // IEnumerable<Student>, List<Student> - compiled_generic_instance_type_node
+                        // MyIEnumerable<Student>, MyIEnumerable<object> - common_generic_instance_type_node
+                        // Здесь common быть не может поскольку ковариантность у нас - только для откомпилированных NET-типов
+                        // Тут можно проверить на ковариантность
+                        // еще где то надо проверять, что IEnumerable<Derived> -> IEnumerable<Base>, но здесь base_class предполагает, 
+                        // что это - класс, и рассматривает все его интерфейсы, упуская ситуацию, когда base_class - это и есть интерфейс
+                        else if ((cgitn != null || ctn != null) && (bcgitn != null || bcctn != null)) // SSM 19/04
+                        //else if (cgitn != null && (bcgitn != null || bcctn != null))
+                        //else if ((cgitn != null || ctn != null) && bcgitn != null)
+                        //else if (cgitn != null && bcgitn != null)
+                        //else if (cgitn != null && bcgitn != null || ctn != null && bcctn != null) // SSM 18/04 немного большие ограничения
+                        {
+                            compiled_type_node interf_original_generic = cgitn != null ? cgitn.original_generic as compiled_type_node : ctn.original_generic as compiled_type_node;
+                            compiled_type_node base_original_generic = bcgitn != null ? bcgitn.original_generic as compiled_type_node : bcctn.original_generic as compiled_type_node;
+                            List<type_node> interf_instance_params = cgitn != null ? cgitn.instance_params : ctn.instance_params;
+                            List<type_node> base_instance_params = bcgitn != null ? bcgitn.instance_params : bcctn.instance_params;
+
+                            //compiled_type_node interf_original_generic = cgitn.original_generic as compiled_type_node;
+                            //compiled_type_node base_original_generic = bcgitn.original_generic as compiled_type_node;
+                            //List<type_node> interf_instance_params = cgitn.instance_params;
+                            //List<type_node> base_instance_params = bcgitn.instance_params;
+
+                            if (interf_original_generic != null && interf_original_generic == base_original_generic)
+                            {
+                                // Нам нужно два original_generic as compiled_type_node и два instance_params
+                                
+                                //if (ctcgi != null) // по идее это всегда так! потому что cgitn - compiled - поэтому закомментировал SSM 14/02/23
+                                // теперь надо проверить параметры на ковариантность - все
+                                var n = base_instance_params.Count;
+                                var n1 = interf_instance_params.Count;
+
+                                // перенес сюда. cgitn точно не null
+                                var interf_compiled_type = interf_original_generic.compiled_type; // Пр: IEnumerable<T>
+                                var impl = true;
+                                if (n != n1)
+                                    impl = false;
+                                else
+                                    for (int i=0; i<n; i++)
+                                    {
+                                        // ctcgi.compiled_type - это System.Type
+                                        if ((interf_compiled_type.GetGenericArguments()[i].GenericParameterAttributes & System.Reflection.GenericParameterAttributes.Covariant) != 0)
+                                        {
+                                            if (is_derived(base_instance_params[i], interf_instance_params[i], false))
+                                            {
+                                                // OK
+                                            }
+                                            else // SSM 19/04/23 -вот эта ветка была решающей
+                                            {
+                                                impl = false;
+                                                break;
+                                            }
+                                        }
+                                        // Почему то когда это закомментировано, то работает. А так не вызывается ??!
+                                        /*else if (base_instance_params[i] == interf_instance_params[i])
+                                        {
+                                            n = n;
+                                            // Тоже OK
+                                        }*/
+                                        else
+                                        {
+                                            impl = false;
+                                            break;
+                                        }
+                                    }
+                                // то есть если все контравариантные или неважно какие, но равные то implements = true иначе false
+                                implements = impl;
+                                if (implements)
+                                    break;
+                            }
+                        }
                         else if (interf is compiled_type_node ictn && base_class is compiled_type_node bctn)
                         {
-                            if (ictn.compiled_type.AssemblyQualifiedName != null &&  ictn.compiled_type.AssemblyQualifiedName == bctn.compiled_type.AssemblyQualifiedName)
+                            if (ictn.compiled_type.AssemblyQualifiedName != null && ictn.compiled_type.AssemblyQualifiedName == bctn.compiled_type.AssemblyQualifiedName)
                             {
                                 implements = true;
                                 break;

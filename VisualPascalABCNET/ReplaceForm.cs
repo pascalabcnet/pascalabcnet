@@ -103,7 +103,7 @@ namespace VisualPascalABC
                 return findSuccess;
             }
             if (cbSearchUp.Checked)
-                Match = Regex.Match(Form1.CurrentSyntaxEditor.TextEditor.Document.TextContent, 0, startOffset);
+                Match = Regex.Match(Form1.CurrentSyntaxEditor.TextEditor.Document.TextContent, 0, Math.Max(startOffset, 0));
             else
                 Match = Regex.Match(Form1.CurrentSyntaxEditor.TextEditor.Document.TextContent, startOffset);
             

@@ -219,6 +219,13 @@ namespace PascalABCCompiler.TreeRealization
                 return null;
             }
         }
+        public virtual List<SemanticTree.ITypeNode> ImplementingInterfacesOrEmpty
+        {
+            get
+            {
+                return ImplementingInterfaces;
+            }
+        }
 
         //true, если на данный момент имеется только предописание класса
         public virtual bool ForwardDeclarationOnly
@@ -2601,7 +2608,7 @@ namespace PascalABCCompiler.TreeRealization
                 generic_convertions.MakePseudoInstanceName(name, param_types, true),
                 SemanticTree.type_access_level.tal_public, null, this.loc);
             _generic_instances.Add(new generic_type_instance_info(param_types, ctnode));
-            generic_convertions.init_generic_instance(this, ctnode, param_types);
+            generic_convertions.init_generic_instance(ctnode);
             return ctnode;
         }
 
@@ -3175,7 +3182,7 @@ namespace PascalABCCompiler.TreeRealization
                 generic_convertions.MakePseudoInstanceName(name, param_types, true),
                 SemanticTree.type_access_level.tal_public, null, /*ct_scope,*/ this.loc);
             _generic_instances.Add(new generic_type_instance_info(param_types, ctnode));
-            generic_convertions.init_generic_instance(this, ctnode, /*ct_scope,*/ param_types);
+            generic_convertions.init_generic_instance(ctnode/*, ct_scope*/);
             return ctnode;
         }
         //\ssyy
@@ -3333,8 +3340,11 @@ namespace PascalABCCompiler.TreeRealization
         {
             if (ctn.compiled_type.GetCustomAttributes(typeof(FlagsAttribute), true).Length == 0) return;
             basic_function_node _int_and = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.and_name, ctn, SemanticTree.basic_function_type.iand);
+            _int_and.compile_time_executor = SystemLibrary.static_executors.enum_and_executor;
             basic_function_node _int_or = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.or_name, ctn, SemanticTree.basic_function_type.ior);
+            _int_or.compile_time_executor = SystemLibrary.static_executors.enum_or_executor;
             basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.xor_name, ctn, SemanticTree.basic_function_type.ixor);
+            _int_xor.compile_time_executor = SystemLibrary.static_executors.enum_xor_executor;
             if (ctn.scope != null)
             {
                 ctn.scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfo(_int_and));

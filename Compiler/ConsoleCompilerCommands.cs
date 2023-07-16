@@ -11,8 +11,7 @@ namespace PascalABCCompiler
         public const int MaxProcessMemoryMB = 500;
         
         public const string DataSeparator = "]\r\n[";
-        //public const string MessageSeparator = "***";
-        public const string MessageSeparator = "\002\002\002";
+        public static readonly string MessageSeparator = "\002\002\002";
 
         //1xx to remoteCompiler
         public const int CommandStartNumber = 100;
@@ -50,5 +49,11 @@ namespace PascalABCCompiler
         public const int UseDllForSystemUnits = 226;
         public const int IDELocale = 227;
         public const int CompilerLocale = 228;
+
+        static ConsoleCompilerConstants()
+        {
+            if (System.Environment.OSVersion.Platform == System.PlatformID.Unix || System.Environment.OSVersion.Platform == System.PlatformID.MacOSX)
+                MessageSeparator = "*\002\002\002*";
+        }
     }
 }

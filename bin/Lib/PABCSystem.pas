@@ -258,6 +258,9 @@ type
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
+  /// Преобразует значение одного базового типа к другому базовому типу
+  Convert = System.Convert;
+  
   /// Указывает на возможность сериализации класса
   Serializable = System.SerializableAttribute;
   
@@ -1063,6 +1066,8 @@ function ReadChar(prompt: string): char;
 function ReadString(prompt: string): string;
 /// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры
 function ReadBoolean(prompt: string): boolean;
+/// Выводит приглашение к вводу и возвращает значение типа BigInteger, введенное с клавиатуры
+function ReadBigInteger(prompt: string): BigInteger;
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
@@ -1082,6 +1087,9 @@ function ReadlnString(prompt: string): string;
 /// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
 function ReadlnBoolean(prompt: string): boolean;
+/// Выводит приглашение к вводу и возвращает значение типа BigInteger, введенное с клавиатуры,
+///и осуществляет переход на следующую строку ввода
+function ReadlnBigInteger(prompt: string): BigInteger;
 
 
 ///--
@@ -1692,6 +1700,8 @@ function Random(maxValue: real): real;
 function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
+/// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
+function RandomReal(a, b: real; digits: integer := -1): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 /// Возвращает случайное целое в диапазоне 
@@ -1799,7 +1809,7 @@ function Min(a, b, c: integer): integer;
 function Min(a, b, c, d: integer): integer;
 
 ///-function Max(a,b,...: T): T;
-/// Возвращает максиимальное из a,b,...
+/// Возвращает максимальное из a,b,...
 function Max<T>(params a: array of T): T;
 ///--
 //function Max(params a: array of real): real;
@@ -2181,7 +2191,7 @@ procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(a: array of T; less: (T,T)->boolean);
 /// Сортирует динамический массив по ключу
-procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
+procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp
@@ -2266,6 +2276,8 @@ function SeqWhile<T>(first: T; next: T->T; pred: T->boolean): sequence of T;
 function SeqWhile<T>(first, second: T; next: (T,T) ->T; pred: T->boolean): sequence of T;
 /// Возвращает последовательность из count элементов x 
 function SeqFill<T>(count: integer; x: T): sequence of T;
+/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next
+function Iterate<T>(first: T; next: T->T): sequence of T;
 
 /// Возвращает последовательность из n целых, введенных с клавиатуры
 function ReadSeqInteger(n: integer): sequence of integer;
@@ -2309,11 +2321,11 @@ function Arr(a: CharRange): array of char;
 
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
-/// Возвращает массив размера n, заполненный случайными целыми значениями
+/// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от a до b
 function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandomInteger(n: integer := 10): array of integer;
-/// Возвращает массив размера n, заполненный случайными вещественными значениями
+/// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
 function ArrRandomReal(n: integer; a: real; b: real): array of real;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
 function ArrRandomReal(n: integer := 10): array of real;
@@ -2433,6 +2445,10 @@ function Lst<T>(a: sequence of T): List<T>;
 function Lst(a: IntRange): List<integer>;
 /// Возвращает список, заполненный диапазоном значений 
 function Lst(a: CharRange): List<char>;
+/// Возвращает список, заполненный указанными целыми значениями
+function LstStr(params a: array of string): List<string>;
+/// Возвращает список, заполненный указанными целыми значениями
+function LstInt(params a: array of integer): List<integer>;
 
 /// Возвращает двусвязный список, заполненный указанными значениями
 function LLst<T>(params a: array of T): LinkedList<T>;
@@ -2451,8 +2467,12 @@ function HSet<T>(a: sequence of T): HashSet<T>;
 function HSet(a: IntRange): HashSet<integer>;
 /// Возвращает множество на базе хеш таблицы, заполненное заполненный диапазоном значений 
 function HSet(a: CharRange): HashSet<char>;
+/// Возвращает множество на базе хеш таблицы, заполненное целыми значениями
+function HSetInt(params a: array of integer): HashSet<integer>;
+/// Возвращает множество на базе хеш таблицы, заполненное строковыми значениями
+function HSetStr(params a: array of string): HashSet<string>;
 
-/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
+/// Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями 
 function SSet<T>(params a: array of T): SortedSet<T>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
 function SSet<T>(a: sequence of T): SortedSet<T>;
@@ -2460,18 +2480,26 @@ function SSet<T>(a: sequence of T): SortedSet<T>;
 function SSet(a: IntRange): SortedSet<integer>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное диапазоном значений 
 function SSet(a: CharRange): SortedSet<char>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное целыми значениями 
+function SSetInt(params a: array of integer): SortedSet<integer>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное строковыми значениями 
+function SSetStr(params a: array of string): SortedSet<string>;
 
 
 /// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 /// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
+/// Возвращает словарь пар элементов (ключ, значение), построенный на значениях последовательности
+function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal>;
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 /// Возвращает словарь пар элементов (строка, строка)
 function DictStr(params pairs: array of (string, string)): Dictionary<string, string>;
 /// Возвращает словарь пар элементов (строка, целое)
 function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>;
+/// Возвращает словарь пар элементов (целое, целое)
+function DictInt(params pairs: array of (integer, integer)): Dictionary<integer, integer>;
 
 
 //{{{--doc: Конец секции интерфейса для документации }}} 
@@ -4633,6 +4661,13 @@ function BigInteger.operator mod(p: BigInteger; q: integer) := BigInteger.Remain
 function BigInteger.operator-(p: BigInteger) := BigInteger.Negate(p);
 
 //------------------------------------------------------------------------------
+//          Операции для Decimal
+//------------------------------------------------------------------------------
+
+function operator-(d: Decimal): Decimal; extensionmethod := Decimal.Negate(d);
+
+
+//------------------------------------------------------------------------------
 //          Операции для Complex
 //------------------------------------------------------------------------------
 function operator-(Self: Complex): Complex; extensionmethod := Complex.Negate(Self);
@@ -5171,6 +5206,11 @@ function Lst(a: IntRange): List<integer> := a.ToList;
 
 function Lst(a: CharRange): List<char> := a.ToList;
 
+function LstStr(params a: array of string): List<string> := a.ToList;
+
+function LstInt(params a: array of integer): List<integer> := a.ToList;
+
+
 function LLst<T>(params a: array of T): LinkedList<T> := new LinkedList<T>(a);
 
 function LLst<T>(a: sequence of T): LinkedList<T> := new LinkedList<T>(a);
@@ -5188,9 +5228,19 @@ function HSet<T>(a: sequence of T): HashSet<T> := new HashSet<T>(a);
 
 function SSet<T>(a: sequence of T): SortedSet<T> := new SortedSet<T>(a);
 
+function HSetInt(params a: array of integer): HashSet<integer> := a.ToHashSet;
+
+function HSetStr(params a: array of string): HashSet<string> := a.ToHashSet;
+
+function SSetInt(params a: array of integer): SortedSet<integer> := new SortedSet<integer>(a);
+
+function SSetStr(params a: array of string): SortedSet<string> := new SortedSet<string>(a);
+
 function HSet(a: IntRange): HashSet<integer> := a.ToHashSet;
 
 function HSet(a: CharRange): HashSet<char> := a.ToHashSet;
+
+
 
 function SSet(a: IntRange): SortedSet<integer> := a.ToSortedSet;
 
@@ -5211,6 +5261,9 @@ begin
     Result.Add(pairs[i][0], pairs[i][1]);
 end;
 
+function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal> 
+  := Dict(pairs.ToArray); // внутренняя ошибка компилятора
+
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 begin
   Result := new KeyValuePair<TKey, TVal>(key, value);
@@ -5222,6 +5275,8 @@ function DictStr(params pairs: array of (string, string)): Dictionary<string, st
 function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>
   := Dict&<string, integer>(pairs);
 
+function DictInt(params pairs: array of (integer, integer)): Dictionary<integer, integer>
+  := Dict&<integer, integer>(pairs);
 
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 begin
@@ -5551,7 +5606,7 @@ begin
     var c: char;
     repeat
       c := read_symbol;
-    until (c <> ' ') and (c <> #10) and (c <> #13);
+    until (c <> ' ') and (c <> #10) and (c <> #13) and (c <> #9);
     
     if c = char(-1) then
       raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_INPUT_STREAM));
@@ -5568,6 +5623,8 @@ begin
       if c = #10 then
         break;
       if c = #13 then
+        break;
+      if c = #9 then
         break;
       if c = char(-1) then
         break;
@@ -5609,7 +5666,7 @@ begin
     var c: char;
     repeat
       c := read_symbol;
-    until (c <> ' ') and (c <> #10) and (c <> #13);
+    until (c <> ' ') and (c <> #10) and (c <> #13) and (c <> #9);
     
     if c = char(-1) then
       raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_INPUT_STREAM));
@@ -5641,6 +5698,8 @@ begin
       if c = #10 then
         break;
       if c = #13 then
+        break;
+      if c = #9 then
         break;
       if c = char(-1) then
         break;
@@ -6244,6 +6303,12 @@ begin
   Result := ReadBoolean;
 end;
 
+function ReadBigInteger(prompt: string) : BigInteger;
+begin
+  Print(prompt);
+  Result := ReadBigInteger;
+end;
+
 function ReadlnInteger(prompt: string): integer;
 begin
   Print(prompt);
@@ -6278,6 +6343,12 @@ function ReadlnBoolean(prompt: string): boolean;
 begin
   Print(prompt);
   Result := ReadlnBoolean;
+end;
+
+function ReadlnBigInteger(prompt: string): BigInteger;
+begin
+  Print(prompt);
+  Result := ReadlnInteger;
 end;
 
 procedure ReadShortStringFromFile(f: Text; var s: string; n: integer);
@@ -8440,6 +8511,29 @@ begin
   Result := a + Random()*(b-a);
 end;
 
+function RandomReal(a, b: real; digits: integer): real;
+begin
+  if digits<0 then
+    Result := Random(a,b)
+  else begin
+    // Бывают некорректные данные. Например, найти точку с 2 знаками на [2.736, 2.737]. Тогда возвращать a скажем
+    var step := 1/10**digits;
+    Result := Round(Random(a,b),digits);
+    if Result < a then
+    begin  
+      Result += step;
+      if Result > b then
+        Result := b
+    end  
+    else if Result > b then 
+    begin  
+      Result -= step;
+      if Result < a then
+        Result := a;
+    end;  
+  end;  
+end;
+
 function Random(diap: IntRange): integer := Random(diap.Low,diap.High);
 function Random(diap: RealRange): real := Random(diap.Low,diap.High);
 function Random(diap: CharRange): char := Random(diap.Low,diap.High);
@@ -8531,9 +8625,9 @@ begin
   if d > Result then Result := d;
 end;
 
-function Max(params a: array of integer): integer := a.Max;
+//function Max(params a: array of integer): integer := a.Max;
 
-function Max(params a: array of real): real := a.Max;
+//function Max(params a: array of real): real := a.Max;
 
 
 function Min(a, b: byte) := Math.Min(a, b);
@@ -8696,9 +8790,10 @@ begin
   System.Array.Sort(a, (x, y)-> less(x, y) ? -1 : (less(y, x) ? 1 : 0));
 end;
 
-procedure Sort<T,T1>(var a: array of T; keySelector: T->T1);
+procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
 begin
-  a := a.OrderBy(x->keySelector(x)).ToArray;
+  var keys := System.Array.ConvertAll(a,keySelector);
+  System.Array.Sort(keys, a);
 end;
 
 procedure Sort<T>(l: List<T>);
@@ -10392,7 +10487,7 @@ begin
 end;
 
 /// Превращает последовательность в последовательность n-ок соседних элементов
-function Nwise<T>(Self: sequence of T; n: integer):sequence of array of T; extensionmethod;
+function Nwise<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin 
   var chunk := new Queue<T>(n);
   foreach var x in Self do 
@@ -10620,6 +10715,12 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------
+
+/// Возвращает случайный элемент списка
+function RandomElement<T>(Self: List<T>): T; extensionmethod;
+begin
+  Result := Self[Random(Self.Count)];  
+end;
 
 /// Возвращает последовательность индексов списка
 function Indices<T>(Self: List<T>): sequence of integer; extensionmethod := Range(0, Self.Count - 1);
@@ -12124,7 +12225,7 @@ begin
 end;
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
-function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
+function CartesianPower<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod;
 begin
   var r := new integer[n];
   var ar1 := new T[n];
@@ -12154,9 +12255,20 @@ begin
 end;
 
 /// Возвращает n-тую декартову степень множества элементов, заданного последовательностью
+function CartesianPower<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
+begin
+  Result := Self.ToArray.CartesianPower(n);
+end;
+
+// Не убирать этот комментарий! Нужен для корректного Intellisense
+///-(расширение sequence of T) function Cartesian<T, T1>(b: sequence of T1): sequence of (T, T1);
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
+function Cartesian<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod := Self.CartesianPower(n);
+
+///--
 function Cartesian<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin
-  Result := Self.ToArray.Cartesian(n);
+  Result := Self.ToArray.CartesianPower(n);
 end;
 
 /// Возвращает все перестановки букв в строке в виде последовательности строк
@@ -12167,9 +12279,16 @@ function Permutations(Self: string): sequence of string; extensionmethod
 function Permutations(Self: string; m: integer): sequence of string; extensionmethod 
 := Self.ToCharArray.Permutations(m).Select(p -> new string(p));
 
+// Не убирать этот комментарий! Нужен для корректного Intellisense
+///-(расширение sequence of T) function Cartesian<T, T1>(b: sequence of T1): sequence of (T, T1);
 /// Возвращает n-тую декартову степень множества символов, заданного строкой
 function Cartesian(Self: string; n: integer): sequence of string; extensionmethod
 := Self.ToCharArray.Cartesian(n).Select(p -> new string(p));
+
+/// Возвращает n-тую декартову степень множества символов, заданного строкой
+function CartesianPower(Self: string; n: integer): sequence of string; extensionmethod
+:= Self.ToCharArray.Cartesian(n).Select(p -> new string(p));
+
 
 /// Возвращает все сочетания по m элементов
 function Combinations(Self: string; m: integer): sequence of string; extensionmethod
@@ -12632,7 +12751,7 @@ begin
 end;
 
 /// Возвращает квадрат числа
-function Sqr(Self: integer): integer; extensionmethod;
+function Sqr(Self: integer): int64; extensionmethod;
 begin
   Result := Sqr(Self);
 end;
@@ -12922,10 +13041,9 @@ end;
 /// Заменяет count вхождений подстроки oldStr на подстроку newStr в исходной строке
 function Replace(Self: string; oldStr,newStr: string; count: integer): string; extensionmethod;
 begin
-  var reg := new Regex(oldStr);
+  var reg := new Regex(Regex.Escape(oldStr));
   Result := reg.Replace(Self,newStr,count);
 end;
-
 
 /// Возвращает True если значение находится между двумя другими
 function Between(Self: string; a, b: string): boolean; extensionmethod;
@@ -13432,6 +13550,12 @@ end;
 function Each<Key,Source,Res>(Self: sequence of System.Linq.IGrouping<Key,Source>; grOperation: System.Linq.IGrouping<Key,Source> -> Res): Dictionary<Key,Res>; extensionmethod;
 begin
   Result := Self.ToDictionary(g -> g.Key, g -> grOperation(g));
+end;
+
+/// Возвращает словарь, сопоставляющий элементам последовательности определённые значения
+function Each<Key,Res>(Self: sequence of Key; proj: Key -> Res): Dictionary<Key,Res>; extensionmethod;
+begin
+  Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> proj(g.Key));
 end;
 
 /// Операция удаления из словаря пары с указанным значением ключа

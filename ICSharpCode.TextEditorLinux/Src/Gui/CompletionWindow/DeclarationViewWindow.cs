@@ -13,6 +13,8 @@ using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
+	
+	
 	public interface IDeclarationViewWindow
 	{
 		string Description {
@@ -25,6 +27,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 	
 	public class DeclarationViewWindow : Form, IDeclarationViewWindow
 	{
+		private ICSharpCode.TextEditor.TextEditorControl textEditorControl;
+	
 		string description = String.Empty;
 		
 		public string Description {
@@ -38,7 +42,20 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				} else if (value != null) {
 					if (!Visible) ShowDeclarationViewWindow();
 					Refresh();
+					
 				}
+			}
+		}
+		
+		public ICSharpCode.TextEditor.TextEditorControl TextEditorControl
+		{
+			get
+			{
+				return textEditorControl;
+			}
+			set
+			{
+				textEditorControl = value;
 			}
 		}
 		
@@ -69,6 +86,15 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
+		protected override void OnGotFocus(EventArgs e)
+		{
+			base.OnGotFocus(e);
+			if (textEditorControl != null)
+			{
+				textEditorControl.Focus(); // Да, именно так!!!!!!!!!!!!!! Не удалять!!!
+			}
+		}
+		
 		protected override void OnClick(EventArgs e)
 		{
 			base.OnClick(e);
@@ -78,6 +104,11 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		public void ShowDeclarationViewWindow()
 		{
 			Show();
+		}
+		
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
 		}
 		
 		public void CloseDeclarationViewWindow()

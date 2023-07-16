@@ -5446,7 +5446,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_name_assign_expr(name_assign_expr _name_assign_expr)
 		{
-			write_syntax_tree_node(_name_assign_expr);
+			write_expression(_name_assign_expr);
 			if (_name_assign_expr.name == null)
 			{
 				bw.Write((byte)0);
@@ -7099,6 +7099,18 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_expression_with_let.expr.visit(this);
 			}
+		}
+
+
+		public void visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			bw.Write((Int16)259);
+			write_lambda_any_type_node_syntax(_lambda_any_type_node_syntax);
+		}
+
+		public void write_lambda_any_type_node_syntax(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			write_expression(_lambda_any_type_node_syntax);
 		}
 
 	}

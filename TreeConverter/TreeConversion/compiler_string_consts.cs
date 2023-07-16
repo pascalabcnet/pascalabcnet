@@ -332,6 +332,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_resource = "resource";
         public static string compiler_directive_platformtarget = "platformtarget";
         public static string compiler_directive_faststrings = "faststrings";
+        public static string compiler_directive_targetframework = "targetframework";
 
         // SSM (3.1.2011) Перенес эти константы сюда. 
         public static string version_string = "version";
@@ -373,11 +374,11 @@ namespace PascalABCCompiler.TreeConverter
         public static string ienumerable_auto_type_name = "IEnumerableAutoType"; // SSM 05.07.16 - тип, который определяется на этапе компиляции при первом присваивании
         public static string recort_printable_name_template = "record{0}end";
         public static string set_name = "TypedSet";
-        public const string deconstruct_method_name = "deconstruct";
-        public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
-        public const string wild_cards_tuple_equal_function_name = "__WildCardsTupleEqual";
-        public const string seq_function_name = "Seq";
-        public const string count_property_name = "Count";
+        public const string deconstruct_method_name = "deconstruct"; // Есть дубль - если менять здесь, то и в дубле!!
+        //public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
+        //public const string wild_cards_tuple_equal_function_name = "__WildCardsTupleEqual";
+        //public const string seq_function_name = "Seq";
+        //public const string count_property_name = "Count";
         public static string bounded_array_printable_name_template = "array [{0}..{1}] of {2}";
         public static string array_printable_name_template = "array of {0}";
         public static string multi_dim_array_printable_name_template = "array [{0}] of {1}";

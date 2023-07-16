@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualPascalABCNET", "VisualPascalABCNET", "{26843C5D-9D7E-4C2C-AC14-2D227FA5592E}"
 EndProject
@@ -48,6 +48,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxVisitors", "SyntaxVisitors\SyntaxVisitors.csproj", "{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YieldConversionSyntax", "Yield\YieldConversionSyntax\YieldConversionSyntax.csproj", "{276EE073-60F6-46D2-8811-1B8026BCAADA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -247,6 +249,18 @@ Global
 		{276EE073-60F6-46D2-8811-1B8026BCAADA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{276EE073-60F6-46D2-8811-1B8026BCAADA}.Release|x86.ActiveCfg = Release|Any CPU
 		{276EE073-60F6-46D2-8811-1B8026BCAADA}.Release|x86.Build.0 = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|x86.Build.0 = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.ActiveCfg = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -271,5 +285,9 @@ Global
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{276EE073-60F6-46D2-8811-1B8026BCAADA} = {F8CE2712-826B-450B-A72F-D32D80C99858}
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98} = {F8CE2712-826B-450B-A72F-D32D80C99858}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {761C7A47-891E-47CF-B674-0C2B53D2E48C}
 	EndGlobalSection
 EndGlobal

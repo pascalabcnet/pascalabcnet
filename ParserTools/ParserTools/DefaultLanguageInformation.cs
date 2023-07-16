@@ -474,12 +474,16 @@ namespace PascalABCCompiler.Parsers
                 else if (ctn.Name.Contains("Tuple`"))
                     return get_tuple_string(ctn);
             }
-            if (ctn.Name.Contains("`"))
+            int gen_pos = ctn.Name.IndexOf("`");
+            if (gen_pos != -1 || ctn.IsGenericType)
             {
                 int len = ctn.GetGenericArguments().Length;
                 Type[] gen_ps = ctn.GetGenericArguments();
                 System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                sb.Append(ctn.Namespace + "." + ctn.Name.Substring(0, ctn.Name.IndexOf('`')));
+                if (gen_pos != -1)
+                    sb.Append(ctn.Namespace + "." + ctn.Name.Substring(0, gen_pos));
+                else
+                    sb.Append(ctn.Namespace + "." + ctn.Name);
                 sb.Append('<');
                 for (int i = 0; i < len; i++)
                 {
@@ -538,17 +542,38 @@ namespace PascalABCCompiler.Parsers
                 if (fields[i].Name != "value__")
                 {
                     object o = fields[i].GetRawConstantValue(); //ошибка была здесь, так как я не знал, что у констант enum'а может быть другой тип помимо int
-                    switch (o)
-                    {
-                        case byte b: if (b != i - 1) return true; break;
-                        case sbyte b: if (b != i - 1) return true; break;
-                        case short b: if (b != i - 1) return true; break;
-                        case ushort b: if (b != i - 1) return true; break;
-                        case int b: if (b != i - 1) return true; break;
-                        case uint b: return true; break;
-                        case long b: return true; break;
-                        case ulong b: return true; break;
-                    }
+	                if (o is byte b1)
+	                {
+		                if (b1 != i - 1) return true;
+	                }
+	                else if (o is sbyte b2)
+	                {
+		                if (b2 != i - 1) return true;
+	                }
+	                else if (o is short b3)
+	                {
+		                if (b3 != i - 1) return true;
+	                }
+	                else if (o is ushort b4)
+	                {
+		                if (b4 != i - 1) return true;
+	                }
+	                else if (o is int b5)
+	                {
+		                if (b5 != i - 1) return true;
+	                }
+	                else if (o is uint b6)
+	                {
+		                return true;
+	                }
+	                else if (o is long b7)
+	                {
+		                return true;
+	                }
+	                else if (o is ulong b8)
+	                {
+		                return true;
+	                }
                 }
             }
             return false;
@@ -598,7 +623,7 @@ namespace PascalABCCompiler.Parsers
             ln++;
             sb.AppendLine(); ln++;
             sb.AppendLine("type "); ln++;
-
+            
             if (mi == t)
             {
                 line = ln;
@@ -619,10 +644,14 @@ namespace PascalABCCompiler.Parsers
                 line = get_line_nr(sb);
                 col = 1;
             }
+            sb.Append("  ");
             int ind = t.Name.IndexOf('`');
-            if (ind != -1)
+            if (ind != -1 || t.IsGenericType)
             {
-                sb.Append(prepare_member_name(t.Name.Substring(0, ind)));
+                if (ind != -1)
+                    sb.Append(prepare_member_name(t.Name.Substring(0, ind)));
+                else
+                    sb.Append(t.Name);
                 sb.Append('<');
                 Type[] gen_args = t.GetGenericArguments();
                 for (int i = 0; i < gen_args.Length; i++)
@@ -671,7 +700,7 @@ namespace PascalABCCompiler.Parsers
             FieldInfo[] fields = t.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (fields.Length > 0)
             {
-                sb.AppendLine("{$region " + StringResources.Get("CODE_COMPLETION_FIELDS") + "}");
+                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_FIELDS") + "}");
                 for (int i = 0; i < fields.Length; i++)
                 {
                     if (fields[i].DeclaringType == t && !fields[i].IsPrivate && !fields[i].IsAssembly)
@@ -679,12 +708,12 @@ namespace PascalABCCompiler.Parsers
                         doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(fields[i]);
                         if (!string.IsNullOrEmpty(doc))
                         {
-                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "  /// ");
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
                             doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
                             doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
-                            sb.AppendLine("  /// " + doc);
+                            sb.AppendLine("    /// " + doc);
                             ln++;
                         }
                         if (fields[i] == mi || fields[i].Name == mi.Name)
@@ -692,19 +721,19 @@ namespace PascalABCCompiler.Parsers
                             line = get_line_nr(sb);
                             col = 3;
                         }
-                        sb.Append("  ");
+                        sb.Append("    ");
                         sb.Append(GetDescriptionForCompiledField(fields[i]));
                         sb.AppendLine(); ln++;
                         sb.AppendLine(); ln++;
                     }
                 }
-                sb.AppendLine("{$endregion}");
+                sb.AppendLine("  {$endregion}");
                 sb.AppendLine();
             }
             EventInfo[] events = t.GetEvents(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (events.Length > 0)
             {
-                sb.AppendLine("{$region " + StringResources.Get("CODE_COMPLETION_EVENTS") + "}");
+                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_EVENTS") + "}");
                 for (int i = 0; i < events.Length; i++)
                 {
                     if (events[i].DeclaringType != t)
@@ -715,12 +744,12 @@ namespace PascalABCCompiler.Parsers
                         doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(events[i]);
                         if (!string.IsNullOrEmpty(doc))
                         {
-                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "  /// ");
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
                             doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
                             doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
-                            sb.AppendLine("  /// " + doc);
+                            sb.AppendLine("    /// " + doc);
                         }
 
                         if (events[i] == mi || events[i].Name == mi.Name)
@@ -728,19 +757,19 @@ namespace PascalABCCompiler.Parsers
                             line = get_line_nr(sb);
                             col = 3;
                         }
-                        sb.Append("  ");
+                        sb.Append("    ");
                         sb.Append(GetDescriptionForCompiledEvent(events[i]));
                         sb.AppendLine(); ln++;
                         sb.AppendLine(); ln++;
                     }
                 }
-                sb.AppendLine("{$endregion}");
+                sb.AppendLine("  {$endregion}");
                 sb.AppendLine();
             }
             PropertyInfo[] props = t.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (props.Length > 0)
             {
-                sb.AppendLine("{$region " + StringResources.Get("CODE_COMPLETION_PROPERTIES") + "}");
+                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_PROPERTIES") + "}");
                 for (int i = 0; i < props.Length; i++)
                 {
                     if (props[i].DeclaringType != t)
@@ -751,32 +780,32 @@ namespace PascalABCCompiler.Parsers
                         doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(props[i]);
                         if (!string.IsNullOrEmpty(doc))
                         {
-                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "  /// ");
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
                             doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
                             doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
-                            sb.AppendLine("  /// " + doc);
+                            sb.AppendLine("    /// " + doc);
                         }
                         if (props[i] == mi || props[i].Name == mi.Name)
                         {
                             line = get_line_nr(sb);
                             col = 3;
                         }
-                        sb.Append("  ");
-                        sb.Append(GetDescriptionForCompiledProperty(props[i]));
+                        sb.Append("    ");
+                        sb.Append(GetDescriptionForCompiledProperty(props[i]).Replace("; readonly"," read"));
                         sb.AppendLine(); ln++;
                         sb.AppendLine(); ln++;
                     }
                 }
-                sb.AppendLine("{$endregion}");
+                sb.AppendLine("  {$endregion}");
                 sb.AppendLine();
             }
             
             ConstructorInfo[] constrs = t.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (constrs.Length > 0)
             {
-                sb.AppendLine("{$region " + StringResources.Get("CODE_COMPLETION_CONSTRUCTORS") + "}");
+                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_CONSTRUCTORS") + "}");
                 for (int i = 0; i < constrs.Length; i++)
                 {
                     if (constrs[i].DeclaringType == t && !constrs[i].IsPrivate && !constrs[i].IsAssembly)
@@ -784,31 +813,31 @@ namespace PascalABCCompiler.Parsers
                         doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(constrs[i]);
                         if (!string.IsNullOrEmpty(doc))
                         {
-                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "  /// ");
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
                             doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
                             doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
-                            sb.AppendLine("  /// " + doc);
+                            sb.AppendLine("    /// " + doc);
                         }
                         if (constrs[i] == mi)
                         {
                             line = get_line_nr(sb);
                             col = 3;
                         }
-                        sb.Append("  ");
+                        sb.Append("    ");
                         sb.Append(GetDescriptionForCompiledConstructor(constrs[i]));
                         sb.AppendLine(); ln++;
                         sb.AppendLine(); ln++;
                     }
                 }
-                sb.AppendLine("{$endregion}");
+                sb.AppendLine("  {$endregion}");
                 sb.AppendLine();
             }
             MethodInfo[] meths = t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (meths.Length > 0)
             {
-                sb.AppendLine("{$region " + StringResources.Get("CODE_COMPLETION_METHODS") + "}");
+                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_METHODS") + "}");
                 for (int i = 0; i < meths.Length; i++)
                 {
                     if (meths[i].DeclaringType == t && !meths[i].IsPrivate && !meths[i].IsAssembly && !meths[i].Name.StartsWith("get_") && !meths[i].Name.StartsWith("set_") && !meths[i].Name.StartsWith("add_") && !meths[i].Name.StartsWith("remove_"))
@@ -816,29 +845,29 @@ namespace PascalABCCompiler.Parsers
                         doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(meths[i]);
                         if (!string.IsNullOrEmpty(doc))
                         {
-                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "  /// ");
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
                             doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
                             doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
-                            sb.AppendLine("  /// " + doc);
+                            sb.AppendLine("    /// " + doc);
                         }
                         if (meths[i] == mi || (meths[i].Name == mi.Name))
                         {
                             line = get_line_nr(sb);
                             col = 3;
                         }
-                        sb.Append("  ");
+                        sb.Append("    ");
                         sb.Append(GetDescriptionForCompiledMethod(meths[i]));
                         sb.AppendLine(); ln++;
                         sb.AppendLine(); ln++;
                     }
                 }
-                sb.AppendLine("{$endregion}");
+                sb.AppendLine("  {$endregion}");
                 sb.AppendLine();
             }
             
-            sb.AppendLine("end;");
+            sb.AppendLine("  end;");
             sb.AppendLine();
             sb.AppendLine("end.");
             return sb.ToString();

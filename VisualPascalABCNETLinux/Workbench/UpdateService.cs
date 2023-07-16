@@ -53,7 +53,7 @@ namespace VisualPascalABC
             try
             {
                 WebClient client = new WebClient();
-                newVersion = client.DownloadString("http://pascalabc.net/downloads/pabcversion.txt").Trim();
+                newVersion = client.DownloadString("https://pascalabc.net/downloads/pabcversion.txt").Trim();
                 curVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 if ((new Version(curVersion)).CompareTo(new Version(newVersion)) == -1)
                     status = 0;
@@ -75,9 +75,9 @@ namespace VisualPascalABC
                         PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_CHECK"), 
                         MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
-                        //System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("VP_MF_PABC_DOWNLOAD_PAGE"));
+                        System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("VP_MF_PABC_DOWNLOAD_PAGE"));
                         // SSM 24/04/19 - вернул назад, т.к. обновление закрывало оболочку из-за некорректно написанного асинхронного вызова. Обойдёмся без асинхронного вызова. Слишком много пользователей пострадало.
-                        WorkbenchServiceFactory.OperationsService.AddTabWithUrl("PascalABC.NET", PascalABCCompiler.StringResources.Get("VP_MF_PABC_DOWNLOAD_PAGE"));
+                        //WorkbenchServiceFactory.OperationsService.AddTabWithUrl("PascalABC.NET", PascalABCCompiler.StringResources.Get("VP_MF_PABC_DOWNLOAD_PAGE"));
                     }
                     break;
                 case -1:

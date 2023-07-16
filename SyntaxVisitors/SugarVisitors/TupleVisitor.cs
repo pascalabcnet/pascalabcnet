@@ -19,6 +19,13 @@ namespace SyntaxVisitors.SugarVisitors
             get { return new TupleVisitor(); }
         }
 
+        private int num = 0;
+        public string UniqueName()
+        {
+            num++;
+            return "#tup_vis"+num.ToString();
+        }
+
         public override void visit(read_accessor_name wn)
         {
             DefaultVisit(wn);
@@ -48,6 +55,8 @@ namespace SyntaxVisitors.SugarVisitors
             ProcessNode(ls.to_statement);
         }
 
+        // Здесь раскрываются ситуации когда справа - кортеж с константами: var (a,b) := (1,2) и только это. 
+        // Остальное раскрывается в AssignTuplesDesugarVisitor
         public override void visit(assign_var_tuple assvartup)
         {
             if (assvartup.expr is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
@@ -94,6 +103,33 @@ namespace SyntaxVisitors.SugarVisitors
                 }
                 ReplaceStatementUsingParent(asstup, sl);
             }
+            else if (asstup.expr is tuple_node tn1 && !tn1.el.expressions.Any(ex => ex is nil_const))
+            {
+                var n = asstup.vars.variables.Count();
+                if (n > tn1.el.Count)
+                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", asstup.vars.variables[0]);
+
+                var sl = new List<statement>();
+                for (var i = 0; i < n; i++)
+                {
+                    var temp_id = new ident(UniqueName(), tn1.el.expressions[i].source_context);
+                    var var_def = new var_def_statement(temp_id, tn1.el.expressions[i], tn1.el.expressions[i].source_context);
+                    var a = new var_statement(var_def, tn1.el.expressions[i].source_context);
+                    sl.Add(a);
+                }
+
+                //for (var i = 0; i < n; i++)
+                for (var i = n-1; i >= 0; i--)
+                {
+                    var a = new assign(asstup.vars.variables[i],
+                        (sl[i] as var_statement).var_def.vars.idents[0],
+                        Operators.Assignment,
+                        asstup.vars.variables[i].source_context);
+                    sl.Add(a);
+                }
+
+                ReplaceStatementUsingParent(asstup, sl);
+            }
             else
             {
                 DefaultVisit(asstup);
@@ -111,6 +147,7 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
+        // А это по идее до begin - там немного другие узлы и внешний контекст
         public override void visit(var_tuple_def_statement vtd)
         {
             if (vtd.inital_value is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))

@@ -93,7 +93,8 @@ namespace PascalABCCompiler.TreeConverter
             out type_node[] parameterTypes)
         {
             parameterTypes = new type_node[givenParameterTypes.Length];
-            candidate.parameters[0].name = "Self"; // SSM 23.06.20 #2268 - это если в NET где-то такое нашли
+            if (candidate.parameters.Count > 0)
+                candidate.parameters[0].name = "Self"; // SSM 23.06.20 #2268 - это если в NET где-то такое нашли
             var selfParameter = candidate.is_extension_method ? candidate.parameters.FirstOrDefault(IsSelfParameter) : null;
             Debug.Assert(!candidate.is_extension_method || selfParameter != null, "Couldn't find self parameter in extension method");
             var candidateParameterTypes =
@@ -139,12 +140,17 @@ namespace PascalABCCompiler.TreeConverter
 
         private type_node GetDeconstructorOwner(function_node deconstructor)
         {
-            switch (deconstructor)
+            /*switch (deconstructor)
             {
                 case common_method_node commonMethod: return commonMethod.cont_type;
                 case common_namespace_function_node commonNamespaseFunction: return GetSelfParameter(commonNamespaseFunction).type;
                 default: return null;
-            }
+            }*/
+            if (deconstructor is common_method_node commonMethod)
+                return commonMethod.cont_type;
+            if (deconstructor is common_namespace_function_node commonNamespaseFunction)
+                return GetSelfParameter(commonNamespaseFunction).type;
+            return null;
         }
 
         private bool AreTheSameType(type_node type1, type_node type2) =>

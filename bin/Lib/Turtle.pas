@@ -3,6 +3,8 @@ unit Turtle;
 
 uses GraphWPF;
 
+type Colors = GraphWPF.Colors;
+
 var 
   tp: Point;
   a: real := 0;

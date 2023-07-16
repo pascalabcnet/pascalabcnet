@@ -301,6 +301,10 @@ namespace VisualPascalABC
             this.menuStrip1.Size = new System.Drawing.Size(876, 24);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.MenuActivate += new System.EventHandler(this.menuStrip1_MenuActivate);
+            this.menuStrip1.MenuDeactivate += new System.EventHandler(this.menuStrip1_MenuDeactivate);
+            this.menuStrip1.Enter += new System.EventHandler(this.menuStrip1_Enter);
+            this.menuStrip1.Leave += new System.EventHandler(this.menuStrip1_Leave);
             // 
             // mrFile
             // 
@@ -967,6 +971,7 @@ namespace VisualPascalABC
             this.miRunNoDebug.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F9)));
             this.miRunNoDebug.Size = new System.Drawing.Size(228, 22);
             this.miRunNoDebug.Text = "M_RUN_NODEBUG";
+            this.miRunNoDebug.Visible = false;
             this.miRunNoDebug.Click += new System.EventHandler(this.miRunNoDebug_Click);
             // 
             // mRUNPARAMETERSToolStripMenuItem1
@@ -1010,6 +1015,7 @@ namespace VisualPascalABC
             | System.Windows.Forms.Keys.F9)));
             this.miRebuild.Size = new System.Drawing.Size(228, 22);
             this.miRebuild.Text = "M_REBUILD";
+            this.miRebuild.Visible = false;
             this.miRebuild.Click += new System.EventHandler(this.toolStripButton12_Click);
             // 
             // miAddExpr
@@ -1282,6 +1288,7 @@ namespace VisualPascalABC
             | System.Windows.Forms.Keys.T)));
             this.mUNITTESTSToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             this.mUNITTESTSToolStripMenuItem.Text = "M_UNIT_TESTS";
+            this.mUNITTESTSToolStripMenuItem.Visible = false;
             this.mUNITTESTSToolStripMenuItem.Click += new System.EventHandler(this.mUNITTESTSToolStripMenuItem_Click);
             // 
             // miPlugins
@@ -1318,6 +1325,7 @@ namespace VisualPascalABC
             this.mMAINFEATURESToolStripMenuItem.Name = "mMAINFEATURESToolStripMenuItem";
             this.mMAINFEATURESToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.mMAINFEATURESToolStripMenuItem.Text = "M_MAINFEATURES";
+            this.mMAINFEATURESToolStripMenuItem.Visible = false;
             this.mMAINFEATURESToolStripMenuItem.Click += new System.EventHandler(this.mMAINFEATURESToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
@@ -1332,6 +1340,7 @@ namespace VisualPascalABC
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
             this.toolStripMenuItem5.Size = new System.Drawing.Size(179, 22);
             this.toolStripMenuItem5.Text = "M_OPENTUTORIAL";
+            this.toolStripMenuItem5.Visible = false;
             this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
             // 
             // toolStripSeparator6
@@ -1890,8 +1899,10 @@ namespace VisualPascalABC
             this.cmHelp,
             this.cmSamples});
             this.cmEditor.Name = "cmEditor";
-            this.cmEditor.Size = new System.Drawing.Size(222, 336);
+            this.cmEditor.Size = new System.Drawing.Size(222, 358);
+            this.cmEditor.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.cmEditor_Closed);
             this.cmEditor.Opening += new System.ComponentModel.CancelEventHandler(this.cmEditor_Opening);
+            this.cmEditor.Opened += new System.EventHandler(this.cmEditor_Opened);
             // 
             // cmGotoDefinition
             // 

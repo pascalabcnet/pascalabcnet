@@ -50,7 +50,7 @@ namespace VisualPascalABCPlugins
 			{
 				return;
 			}
-			prepare_node_with_text(subnode,node_name+":"+subnode.GetType().Name);
+			prepare_node_with_text(subnode,node_name+": "+subnode.GetType().Name);
 		}
 
 		public void prepare_collection(IEnumerable inum,string collection_name)
@@ -1145,8 +1145,12 @@ namespace VisualPascalABCPlugins
             prepare_node(node.proc_body, "proc_body");
             prepare_node(node.procdef, "procdef");
         }
+        public override void visit(name_assign_expr node)
+        {
+            prepare_node(node.name, "name");
+            prepare_node(node.expr, "expr");
+        }
     }
-
 
 }
 

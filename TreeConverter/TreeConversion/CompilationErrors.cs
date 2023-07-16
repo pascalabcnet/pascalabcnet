@@ -427,7 +427,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (is_constructor)
                 return StringResources.Get("NO_CONSTRUCTOR_WITH_SAME_PARAMETERS_NUM");
-            return StringResources.Get("NO_FUNCTION_WITH_SAME_PARAMETERS_NUM") + " " + ((first_function == null) ? "" : first_function.name);
+            return StringResources.Get("NO_FUNCTION_WITH_SAME_PARAMETERS_NUM",((first_function == null) ? "" : first_function.name));
         }
 
     }
@@ -436,11 +436,13 @@ namespace PascalABCCompiler.TreeConverter
     {
         private readonly ILocation _loc;
         private readonly bool _is_alone;
+        private string _name;
 
-        public NoFunctionWithSameArguments(ILocation loc, bool is_alone)
+        public NoFunctionWithSameArguments(string name, ILocation loc, bool is_alone)
         {
             _loc = loc;
             _is_alone = is_alone;
+            _name = name;
         }
 
         public ILocation loc
@@ -458,15 +460,23 @@ namespace PascalABCCompiler.TreeConverter
                 return _is_alone;
             }
         }
+        public string name
+        {
+            get
+            {
+                return _name;
+            }
+        }
 
         public override string ToString()
         {
-            //return ("No function with same arguments\n"+loc_to_string(_loc));
-            if (_is_alone)
-            {
-                return (StringResources.Get("INVALID_FUNCTION_ARGUMENTS"));
-            }
-            return (StringResources.Get("NO_OVERLOADED_FUNCTION_WITH_SAME_ARGUMENTS"));
+            //return ("No function with same arguments\n"+loc_to_string(_loc)); - старое
+
+            //if (_is_alone) // убрал 07.05.23. Общее сообщение об ошибке лучше
+            //{
+            //    return (StringResources.Get("INVALID_FUNCTION_ARGUMENTS_{0}",name));
+            //}
+            return (StringResources.Get("NO_OVERLOADED_FUNCTION_{0}_WITH_SAME_ARGUMENTS",name));
         }
 
         public override ILocation Location
@@ -507,8 +517,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public override string ToString()
         {
+            var name = set_of_possible_functions[0].name;
             //return ("Several functions can be called\n"+loc_to_string(_loc));
-            return (StringResources.Get("SEVERAL_FUNCTIONS_CAN_BE_CALLED"));
+            return (StringResources.Get("SEVERAL_FUNCTIONS_{0}_CAN_BE_CALLED",name));
         }
 
         public override ILocation Location

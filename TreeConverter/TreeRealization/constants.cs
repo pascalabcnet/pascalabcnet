@@ -1019,6 +1019,62 @@ namespace PascalABCCompiler.TreeRealization
         }
     }
 
+    public class common_static_method_call_as_constant : constant_node, SemanticTree.ICommonStaticMethodCallNodeAsConstant
+    {
+        private common_static_method_call _method_call;
+
+        public common_static_method_call method_call
+        {
+            get
+            {
+                return _method_call;
+            }
+            set
+            {
+                _method_call = value;
+            }
+        }
+
+        public common_static_method_call_as_constant(common_static_method_call method_call, location loc) :
+            base(method_call.type, loc)
+        {
+            _method_call = method_call;
+        }
+
+        SemanticTree.ICommonStaticMethodCallNode SemanticTree.ICommonStaticMethodCallNodeAsConstant.MethodCall
+        {
+            get
+            {
+                return _method_call;
+            }
+        }
+
+        public override constant_node get_constant_copy(location loc)
+        {
+            return new common_static_method_call_as_constant(this.method_call, loc);
+        }
+
+        /// <summary>
+        /// Метод для обхода дерева посетителем.
+        /// </summary>
+        /// <param name="visitor">Класс - посетитель дерева.</param>
+        public override void visit(SemanticTree.ISemanticVisitor visitor)
+        {
+            visitor.visit(this);
+        }
+
+        /// <summary>
+        /// Тип узла.
+        /// </summary>
+        public override semantic_node_type semantic_node_type
+        {
+            get
+            {
+                return semantic_node_type.common_static_method_call_node_as_constant;
+            }
+        }
+    }
+
     public class common_namespace_function_call_as_constant : constant_node, SemanticTree.ICommonNamespaceFunctionCallNodeAsConstant
     {
         private common_namespace_function_call _method_call;

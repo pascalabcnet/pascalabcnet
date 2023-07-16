@@ -93,11 +93,15 @@ namespace VisualPascalABC
 
         public static void ToolTipService_TextAreaKeyDown(object sender, KeyEventArgs e)
         {
+            VisualPABCSingleton.MainForm.MenuActive = false;
+            //VisualPABCSingleton.MainForm.Text = "MenuActive = " + false.ToString();
             hideToolTip();
         }
 
         public static void ToolTipService_TextAreaMouseEvent_HideToolTip(object sender, MouseEventArgs e)
         {
+            VisualPABCSingleton.MainForm.MenuActive = false;
+            //VisualPABCSingleton.MainForm.Text = "MenuActive = " + false.ToString();
             hideToolTip();
         }
 
@@ -136,10 +140,11 @@ namespace VisualPascalABC
                     {
                         dvw = new DeclarationWindow(VisualPABCSingleton.MainForm);
                         dvw.Font = new System.Drawing.Font(Constants.CompletionWindowDeclarationViewWindowFontName, dvw.Font.Size);
-
                         dvw.HideOnClick = true;
+						
                         //dvw.ShowDeclarationViewWindow();
                     }
+					dvw.TextEditorControl = textArea.MotherTextEditorControl;
                     int ypos = (textArea.Document.GetVisibleLine(e.LogicalPosition.Y) + 1) * textArea.TextView.FontHeight - textArea.VirtualTop.Y;
                     System.Drawing.Point p = new System.Drawing.Point(0, ypos);
                     p = textArea.PointToScreen(p);
@@ -147,8 +152,11 @@ namespace VisualPascalABC
                     p.Y += 5;
                     string txt = GetPopupHintText(textArea, e);
                     dvw.Location = choose_location(p, txt);
-                    dvw.Description = txt;
-
+                    if (!VisualPABCSingleton.MainForm.MenuActive)
+                    {
+                        //dvw.ShowInTaskbar = false;
+                        dvw.Description = txt;
+                    }                            
                     _hint_hide_d = dvw.Font.Height / 2;
                     _mouse_hint_x = e.MousePosition.X;
                     _mouse_hint_y = e.MousePosition.Y;

@@ -782,6 +782,10 @@ end;
 
 procedure CorrectWHLT;
 begin
+  if RobField = nil then
+    exit;
+  if GraphABCControl = nil then
+    exit;
   if (RobField.DimX=0) or (RobField.DimY=0) then
     exit;
   var mw := (GraphABCControl.Width - 30) div RobField.DimX;

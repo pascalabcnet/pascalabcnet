@@ -12,13 +12,14 @@ CYCLIC_UNIT_REFERENCE_WITH_UNIT_{0}=Cyclic unit reference with unit '{0}'
 UNDEFINED_SEMANTIC_ERROR{0}=Undefined semantic error : {0}
 RESOURCEFILE_{0}_NOT_FOUND=Resource file '{0}' not found
 DUPLICATE_USES_UNIT{0}=Duplicate identifier '{0}' in uses section
-MAINRESOURCE_NOT_ALLOWED=mainresource can not be used with the directives: product, version, company, trademark, title, description
+MAINRESOURCE_NOT_ALLOWED=mainresource can not be used with the directives: product, version, company, trademark, title, description, copyright
 DUPLICATE_DIRECTIVE{0}=Duplicate directive {0}
 FILE_{0}_NOT_FOUND=File '{0}' not found
 NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS=Files with namespaces can be compiled only inside projects
 NAMESPACE_CANNOT_HAVE_IN_SECTION=Namespace cannot have 'in' section
 APPTYPE_DLL_IS_ALLOWED_ONLY_FOR_LIBRARIES= {$apptype dll} directive is allowed only for libraries
 USES_IN_WRONG_NAME=Unit name in uses-in ({0}) must be same as file name ({1})
+UNSUPPORTED_TARGETFRAMEWORK_{0}=TargetFramework '{0}' not supported
 
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Internal compiler error in module {0} :'{1}'

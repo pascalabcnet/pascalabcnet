@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace VisualPascalABC
 {
-    delegate void NugetPackageInstallHandler(bool result, string[] dlls, string[] xmls);
+    delegate void NugetPackageInstallHandler(bool result, string[] dlls, string[] xmls, string[] ndlls);
     delegate void NugetPackageOutputHandler(string output);
 
     class NuGetTasks
@@ -26,28 +26,31 @@ namespace VisualPascalABC
             nugetProcess.StartInfo.FileName = Path.Combine(PascalABCCompiler.Tools.GetExecutablePath(), "nuget.exe");
             nugetProcess.StartInfo.UseShellExecute = false;
             nugetProcess.StartInfo.Arguments = "install "+packageId+ " -NonInteractive";
-            nugetProcess.StartInfo.CreateNoWindow = true;
-            nugetProcess.StartInfo.RedirectStandardOutput = true;
-            nugetProcess.StartInfo.RedirectStandardError = true;
+            nugetProcess.StartInfo.CreateNoWindow = false;
+            nugetProcess.StartInfo.RedirectStandardOutput = false;
+            nugetProcess.StartInfo.RedirectStandardError = false;
             nugetProcess.StartInfo.WorkingDirectory = dir;
             nugetProcess.EnableRaisingEvents = true;
-            nugetProcess.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
+            //nugetProcess.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
             nugetProcess.Exited += new EventHandler(delegate (object o, EventArgs a) {
                 string[] dlls;
                 string[] xmls;
-                bool result = getPackage(dir, out dlls, out xmls);
-                finishAction(result, dlls, xmls);
+                string[] ndlls;
+                bool result = getPackage(dir, out dlls, out xmls, out ndlls);
+                finishAction(result, dlls, xmls, ndlls);
             });
             nugetProcess.Start();
             nugetProcess.WaitForExit();
         }
 
-        static bool getPackage(string workingDir, out string[] dlls, out string[] xmls)
+        static bool getPackage(string workingDir, out string[] dlls, out string[] xmls, out string[] ndlls)
         {
             dlls = null;
             xmls = null;
+            ndlls = null;
             List<string> dllList = new List<string>();
             List<string> xmlList = new List<string>();
+            List<string> nativedllList = new List<string>();
             bool result = false;
             foreach (string dir in Directory.EnumerateDirectories(workingDir))
             {
@@ -59,6 +62,8 @@ namespace VisualPascalABC
                         dotnetDir = Path.Combine(libDir, "net45");
                     if (!Directory.Exists(dotnetDir))
                         dotnetDir = Path.Combine(libDir, "net46");
+                    if (!Directory.Exists(dotnetDir))
+                        dotnetDir = Path.Combine(libDir, "netstandard2.0");
                     if (!Directory.Exists(dotnetDir))
                         dotnetDir = Path.Combine(libDir, "net");
                     if (!Directory.Exists(dotnetDir))
@@ -77,9 +82,36 @@ namespace VisualPascalABC
                         }
                     }
                 }
+                // А теперь разбираемся с native dlls. Они находятся в папке runtimes\win-x64\nativeassets\такое же окончание как в dotnetdir
+                string runtimesDir = Path.Combine(dir, "runtimes", "win-x64", "nativeassets");
+                if (!Directory.Exists(runtimesDir))
+                    runtimesDir = Path.Combine(dir, "runtimes", "win-x64", "native");
+                if (Directory.Exists(runtimesDir))
+                {
+                    string dotnetDir = Path.Combine(runtimesDir, "net40");
+                    if (!Directory.Exists(dotnetDir))
+                        dotnetDir = Path.Combine(runtimesDir, "net45");
+                    if (!Directory.Exists(dotnetDir))
+                        dotnetDir = Path.Combine(runtimesDir, "net46");
+                    if (!Directory.Exists(dotnetDir))
+                        dotnetDir = Path.Combine(runtimesDir, "netstandard2.0");
+                    if (!Directory.Exists(dotnetDir))
+                        dotnetDir = Path.Combine(runtimesDir, "net");
+                    if (!Directory.Exists(dotnetDir))
+                        dotnetDir = runtimesDir;
+                    if (Directory.Exists(dotnetDir))
+                    {
+                        string[] nativedllFiles = Directory.GetFiles(dotnetDir, "*.dll");
+                        if (nativedllFiles.Length > 0)
+                        {
+                            nativedllList.AddRange(nativedllFiles);
+                        }
+                    }
+                }
             }
             dlls = dllList.ToArray();
             xmls = xmlList.ToArray();
+            ndlls = nativedllList.ToArray();
             return result;
         }
     }

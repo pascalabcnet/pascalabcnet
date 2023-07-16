@@ -74,6 +74,8 @@ namespace ICSharpCode.TextEditor.Util
                     {
                         documentation = splitDescription[1].Trim();
                     }
+					else
+						documentation = " ";
                 }
             }
 
@@ -135,6 +137,8 @@ namespace ICSharpCode.TextEditor.Util
                     {
                         documentation = splitDescription[1].Trim();
                     }
+					else
+						documentation = " ";
                 }
             }
             return DrawHelpTip(control, graphics, font, countMessage,
@@ -354,7 +358,8 @@ namespace ICSharpCode.TextEditor.Util
                 CountTipText countMessageTip = new CountTipText(graphics, font, countMessage);
 
                 TipSpacer countSpacer = new TipSpacer(graphics, new SizeF(IsVisibleText(countMessage) ? 4 : 0, 0));
-
+				if (basicDescription.Length < 30)
+					basicDescription = basicDescription.PadRight(30);
                 TipText descriptionTip = new TipText(graphics, font, basicDescription);
                 descriptionTip.insight_wnd = control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow;
                 descriptionTip.beg_bold = beg_bold;
@@ -472,6 +477,7 @@ namespace ICSharpCode.TextEditor.Util
 
                     }
                 }
+				
                 TipText docTip = new TipText(graphics, font, documentation);
                 //docTip.is_doc = true;
                 docTip.need_tab = true;

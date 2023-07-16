@@ -1,0 +1,1683 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="ImageType" value="Folder">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Общие сведения">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="О системе PascalABC.NET">
+			<param name="Local" value="Common\main.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Коротко о главном">
+			<param name="Local" value="Common\features.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Что такое .NET">
+			<param name="Local" value="Common\Net.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Преимущества PascalABC.NET">
+			<param name="Local" value="Common\AdvantagePABC.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Отличия языка PascalABC.NET от Delphi Object Pascal">
+			<param name="Local" value="Common\PABCNETvsDelphi.html">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Справочник по языку">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Обзор языка PascalABC.NET">
+			<param name="Local" value="LangGuide\index_lang_guide.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Структура программы">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Структура программы: обзор">
+				<param name="Local" value="LangGuide\_ProgrStruct_Defs\index_progrstruct.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Идентификаторы и ключевые слова">
+				<param name="Local" value="LangGuide\_ProgrStruct_Defs\identifiers.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Комментарии">
+				<param name="Local" value="LangGuide\_ProgrStruct_Defs\comments.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Описание переменных">
+				<param name="Local" value="LangGuide\_ProgrStruct_Defs\vardef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Описание констант">
+				<param name="Local" value="LangGuide\_ProgrStruct_Defs\constdef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Описание меток">
+				<param name="Local" value="LangGuide\_ProgrStruct_Defs\labeldef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Описание типов">
+				<param name="Local" value="LangGuide\_ProgrStruct_Defs\typesdef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Область действия идентификатора">
+				<param name="Local" value="LangGuide\_ProgrStruct_Defs\scope.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Типы данных">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Типы: обзор">
+				<param name="Local" value="LangGuide\Types\index_types.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Размерные и ссылочные типы">
+				<param name="Local" value="LangGuide\Types\value_ref_types.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Целые типы">
+				<param name="Local" value="LangGuide\Types\integer.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Вещественные типы">
+				<param name="Local" value="LangGuide\Types\real.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Логический тип">
+				<param name="Local" value="LangGuide\Types\boolean.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Символьный тип">
+				<param name="Local" value="LangGuide\Types\char.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Перечислимый и диапазонный типы">
+				<param name="Local" value="LangGuide\Types\enum_subrange.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Строковый тип">
+				<param name="Local" value="LangGuide\Types\string.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Размерные строки">
+				<param name="Local" value="LangGuide\Types\valuestrings.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Класс string">
+				<param name="Local" value="LangGuide\Types\stringmembers.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Массивы">
+				<param name="Local" value="LangGuide\Types\arrays.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Динамические массивы">
+				<param name="Local" value="LangGuide\Types\dynamicarrays.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Статические массивы">
+				<param name="Local" value="LangGuide\Types\staticarrays.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Записи">
+				<param name="Local" value="LangGuide\Types\records.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Кортежи">
+				<param name="Local" value="LangGuide\Types\tuples.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Множества">
+				<param name="Local" value="LangGuide\Types\sets.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Файловые типы">
+				<param name="Local" value="LangGuide\Types\files.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Последовательности">
+				<param name="Local" value="LangGuide\Types\sequences.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Указатели">
+				<param name="Local" value="LangGuide\Types\pointers.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Процедурный тип">
+				<param name="Local" value="LangGuide\Types\proctype.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Эквивалентность и совместимость типов">
+				<param name="Local" value="LangGuide\Types\typecompatibility.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Отображение на типы .NET">
+				<param name="Local" value="LangGuide\Types\typesprojection.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Выражения и операции">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Выражения и операции: обзор">
+				<param name="Local" value="LangGuide\Operations_Expressions\index_expressions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Арифметические операции">
+				<param name="Local" value="LangGuide\Operations_Expressions\arithmop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Логические операции">
+				<param name="Local" value="LangGuide\Operations_Expressions\logicop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Побитовые операции">
+				<param name="Local" value="LangGuide\Operations_Expressions\bitop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операции сравнения">
+				<param name="Local" value="LangGuide\Operations_Expressions\relop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Строковые операции">
+				<param name="Local" value="LangGuide\Operations_Expressions\stringop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операции с указателями">
+				<param name="Local" value="LangGuide\Operations_Expressions\pointerop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операции с множествами">
+				<param name="Local" value="LangGuide\Operations_Expressions\setop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операция @">
+				<param name="Local" value="LangGuide\Operations_Expressions\addrop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операции is и as">
+				<param name="Local" value="LangGuide\Operations_Expressions\isasop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операция new">
+				<param name="Local" value="LangGuide\Operations_Expressions\newop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операции typeof и sizeof">
+				<param name="Local" value="LangGuide\Operations_Expressions\typeof_sizeof.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операция явного приведения типов">
+				<param name="Local" value="LangGuide\Operations_Expressions\typecast.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Условная операция">
+				<param name="Local" value="LangGuide\Operations_Expressions\IfOperation.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Срезы">
+				<param name="Local" value="LangGuide\Operations_Expressions\Slice.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Приоритет операций">
+				<param name="Local" value="LangGuide\Operations_Expressions\oppriority.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Операторы">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операторы: обзор">
+				<param name="Local" value="LangGuide\Operators\index_statements.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор присваивания">
+				<param name="Local" value="LangGuide\Operators\assign.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Составной оператор">
+				<param name="Local" value="LangGuide\Operators\beginend.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Пустой оператор">
+				<param name="Local" value="LangGuide\Operators\emptyop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Условный оператор">
+				<param name="Local" value="LangGuide\Operators\if.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор описания переменной">
+				<param name="Local" value="LangGuide\Operators\var_statement.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор выбора">
+				<param name="Local" value="LangGuide\Operators\case.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор цикла for">
+				<param name="Local" value="LangGuide\Operators\for.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор цикла loop">
+				<param name="Local" value="LangGuide\Operators\loop.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор цикла foreach">
+				<param name="Local" value="LangGuide\Operators\foreach.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операторы цикла while и repeat">
+				<param name="Local" value="LangGuide\Operators\while.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор with">
+				<param name="Local" value="LangGuide\Operators\with.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор goto">
+				<param name="Local" value="LangGuide\Operators\goto.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операторы break, continue и exit">
+				<param name="Local" value="LangGuide\Operators\break.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор yield">
+				<param name="Local" value="LangGuide\Operators\yield.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор yield sequence">
+				<param name="Local" value="LangGuide\Operators\yieldsequence.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор try ... except">
+				<param name="Local" value="LangGuide\Operators\try_except.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор try ... finally">
+				<param name="Local" value="LangGuide\Operators\try_finally.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор raise">
+				<param name="Local" value="LangGuide\Operators\raise.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Операторы += и -=">
+				<param name="Local" value="LangGuide\Operators\plusequal.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Оператор lock">
+				<param name="Local" value="LangGuide\Operators\lock.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Процедуры и функции">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Описание процедур и функций">
+				<param name="Local" value="LangGuide\ProcFunc\procdef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Параметры процедур и функций">
+				<param name="Local" value="LangGuide\ProcFunc\params.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Переменное число параметров">
+				<param name="Local" value="LangGuide\ProcFunc\variableparams.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Параметры по умолчанию">
+				<param name="Local" value="LangGuide\ProcFunc\defaultparams.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Упрощенный синтаксис описания подпрограмм">
+				<param name="Local" value="LangGuide\ProcFunc\shortfundef.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Именованные аргументы">
+				<param name="Local" value="LangGuide\ProcFunc\namedarguments.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Опережающее объявление">
+				<param name="Local" value="LangGuide\ProcFunc\forward.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Перегрузка имен подпрограмм">
+				<param name="Local" value="LangGuide\ProcFunc\overloading.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Вызов подпрограмм из неуправляемой dll">
+				<param name="Local" value="LangGuide\ProcFunc\external.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модули и библиотеки">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Структура модуля">
+				<param name="Local" value="LangGuide\Modules\indexmodule.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Раздел uses">
+				<param name="Local" value="LangGuide\Modules\uses.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Упрощенный синтаксис модуля">
+				<param name="Local" value="LangGuide\Modules\simplemodule.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Циклические ссылки между модулями">
+				<param name="Local" value="LangGuide\Modules\cyclemodules.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Библиотеки dll">
+				<param name="Local" value="LangGuide\Modules\libraries.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Совместное использование модулей и библиотек">
+				<param name="Local" value="LangGuide\Modules\libraries_units.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Документирующие комментарии">
+				<param name="Local" value="LangGuide\Modules\doccomments.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Классы">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Классы и объекты: обзор">
+				<param name="Local" value="LangGuide\Classes\index_classes.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Видимость членов класса">
+				<param name="Local" value="LangGuide\Classes\visibility.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы">
+				<param name="Local" value="LangGuide\Classes\methods.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Инициализаторы полей">
+				<param name="Local" value="LangGuide\Classes\initfields.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Конструкторы">
+				<param name="Local" value="LangGuide\Classes\constrdestr.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Предварительное объявление классов">
+				<param name="Local" value="LangGuide\Classes\classdefbefore.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Переменная Self">
+				<param name="Local" value="LangGuide\Classes\self.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Свойства">
+				<param name="Local" value="LangGuide\Classes\properties.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Индексные свойства">
+				<param name="Local" value="LangGuide\Classes\indexedproperties.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Наследование">
+				<param name="Local" value="LangGuide\Classes\inheritance.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Переопределение методов">
+				<param name="Local" value="LangGuide\Classes\inherited.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Наследование конструкторов">
+				<param name="Local" value="LangGuide\Classes\constrinheritance.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Виртуальные методы и полиморфизм">
+				<param name="Local" value="LangGuide\Classes\virtual.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Абстрактные методы и классы">
+				<param name="Local" value="LangGuide\Classes\abstractmethods.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Перегрузка операций">
+				<param name="Local" value="LangGuide\Classes\operoverloading.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Статические классы, поля, методы, свойства и конструкторы">
+				<param name="Local" value="LangGuide\Classes\classconstr.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения">
+				<param name="Local" value="LangGuide\Classes\extensionmethods.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Атрибуты">
+				<param name="Local" value="LangGuide\Classes\attributes.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Анонимные классы">
+				<param name="Local" value="LangGuide\Classes\anontypes.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Автоклассы">
+				<param name="Local" value="LangGuide\Classes\autoclasses.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Обработка исключений">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Обработка исключений: обзор">
+				<param name="Local" value="LangGuide\ExceptionHandling\Overview.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Стандартные классы исключений">
+				<param name="Local" value="LangGuide\ExceptionHandling\StandardExceptions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Исключения, определяемые пользователем">
+				<param name="Local" value="LangGuide\ExceptionHandling\userExceptions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Повторная генерация исключения">
+				<param name="Local" value="LangGuide\ExceptionHandling\reraise.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Примеры обработки исключений">
+				<param name="Local" value="LangGuide\ExceptionHandling\ExeptionsExamples.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Интерфейсы">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Интерфейсы: обзор">
+				<param name="Local" value="LangGuide\Interfaces\indexinterf.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Реализация нескольких интерфейсов ">
+				<param name="Local" value="LangGuide\Interfaces\manyinterf.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Обобщенные типы">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Обобщенные типы: обзор">
+				<param name="Local" value="LangGuide\Generics\index_generics.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Обобщенные подпрограммы: обзор">
+				<param name="Local" value="LangGuide\Generics\generic_sub.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Обобщенные подпрограммы в качестве параметров">
+				<param name="Local" value="LangGuide\Generics\generic_sub_params.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Ограничения на параметры обобщенных подпрограмм и классов">
+				<param name="Local" value="LangGuide\Generics\generic_constraints.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Ковариантность в параметрах обобщенных типов">
+				<param name="Local" value="LangGuide\Generics\covariance.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Элементы функционального программирования">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Лямбда-выражения">
+				<param name="Local" value="LangGuide\FuncProgramming\lambdas.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Захват переменных">
+				<param name="Local" value="LangGuide\FuncProgramming\capture_variables.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы последовательностей: обзор">
+				<param name="Local" value="LangGuide\FuncProgramming\extensionmethodsforsequences.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы для последовательностей">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Print">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Print.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Where">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Where.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Select">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Select.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод SelectMany">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\SelectMany.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы Take, TakeWhile, Skip, SkipWhile">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Take, TakeWhile, Skip, SkipWhile.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Sorted">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Sorted.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы OrderBy, OrderByDescending">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\OrderBy, OrderByDescending.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы ThenBy,ThenByDescending">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\ThenBy,ThenByDescending.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Concat">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Concat.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Zip">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Zip.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Distinct">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Distinct.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы Union,Intersect,Except">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Union,Intersect,Except.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Reverse">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Reverse.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод SequenceEqual">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\SequenceEqual.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы First, FirstOrDefault">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\First, FirstOrDefault.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы Last, LastOrDefault">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Last, LastOrDefault.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы Single, SingleOrDefault">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Single, SingleOrDefault.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод DefaultIfEmpty">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\DefaultIfEmpty.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы ElementAt, ElementAtOrDefault">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\ElementAt, ElementAtOrDefault.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы Any, All">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Any, All.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Count">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Count.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Contains">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Contains.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Aggregate">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Aggregate.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы Sum, Average">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Sum, Average.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы Min, Max">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Min, Max.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Join">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Join.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод GroupJoin">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\GroupJoin.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод GroupBy">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\GroupBy.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод AsEnumerable">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\AsEnumerable.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Методы ToArray, ToList">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\ToArray, ToList.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод ToDictionary">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\ToDictionary.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод ToLookup">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\ToLookup.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод OfType">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\OfType.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод Cast">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\Cast.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Метод JoinIntoString">
+					<param name="Local" value="LangGuide\FuncProgramming\Files\JoinIntoString.html">
+					</OBJECT>
+			</UL>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Управление памятью">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Управление памятью: обзор">
+				<param name="Local" value="LangGuide\MemoryManagement\index_memory.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Системный модуль PABCSystem">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Mодуль PABCSystem: обзор">
+				<param name="Local" value="LangGuide\PABCSystemUnit\_main.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Стандартные константы">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Standard constants.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Стандартные типы">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Standard types.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Общие подпрограммы">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Common subroutines.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы ввода">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Read subroutines.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы вывода">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Write subroutines.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Математические подпрограммы">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Math subroutines.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Cистемные подпрограммы">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\System subroutines.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Общие подпрограммы для работы с файлами">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Common subroutines for files.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы с текстовыми файлами">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for text files.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы с типизированными и бестиповыми файлами">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for typed and untyped files.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы с двоичными файлами">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for binary files.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы с именами файлов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Functions for file names.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы с символами">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for char.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы со строками">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for string.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы с динамическими массивами">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for array of T.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы со стандартными множествами">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for set of T.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для работы с комплексными числами">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Functions for Complex numbers.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для генерации последовательностей">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for sequence generation.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для создания динамических массивов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for array of T generation.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Подпрограммы для создания двумерных динамических массивов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for matrixes.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Короткие функции Lst, HSet, SSet, Dict, KV">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Short functions Lst, HSet, SSet, Dict, KV.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Генерация бесконечных последовательностей">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Infinite sequences.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения последовательностей">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for sequence of T.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения одномерных динамических массивов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for array of T.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения двумерных динамических массивов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for array [,] of T.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения списков">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for List T.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения типа integer">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for integer.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения типа BigInteger">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for BigInteger.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения типа real">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for real.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения типа char">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for char.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения типа string">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for string.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения типа Func">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for Func.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения типа Complex">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for Complex.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения словарей">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for IDictionary.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Общие методы файловых типов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\stand_common_files_methods.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы текстовых файлов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\stand_text_files_methods.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы двоичных файлов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\stand_binary_files_methods.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы типизированных файлов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\stand_typed_files_methods.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Методы расширения типизированных файлов">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for typed files.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OpenMP">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="OpenMP: обзор">
+				<param name="Local" value="LangGuide\OpenMP\indexopenmp.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Директива parallel for">
+				<param name="Local" value="LangGuide\OpenMP\parallelfor.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Редукция в директиве parallel for">
+				<param name="Local" value="LangGuide\OpenMP\reduction.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Параллельные секции и директива parallel sections ">
+				<param name="Local" value="LangGuide\OpenMP\sections.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Синхронизация и директива critical">
+				<param name="Local" value="LangGuide\OpenMP\sync.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Директивы компилятора">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Директивы компилятора">
+				<param name="Local" value="LangGuide\CompilerDirectives\index_directives.html">
+				</OBJECT>
+		</UL>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Стандартные модули">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модуль GraphWPF">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль GraphWPF: обзор">
+				<param name="Local" value="PABCUnits\GraphWPF\index.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: графические примитивы">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF primitives.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: функции для вывода текста">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF text functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: функции для вывода графиков">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF graph functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: функции для вывода изображений и видео">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF functions for images and video.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: функции для настройки системы координат">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF coordinate system functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: процедуры покадровой анимации">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF FrameBasedAnimation functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: вспомогательные функции GraphWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF service functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: типы модуля GraphWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF types.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: переменные модуля GraphWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF variables.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: события модуля GraphWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF events.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: класс BrushType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\BrushType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: класс PenType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\PenType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: класс FontType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\FontType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: класс GraphWindowType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF GraphWindowType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: класс WindowTypeWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\WindowTypeWPF class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: класс WindowType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\WindowType class.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модуль WPFObjects">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль WPFObjects: обзор">
+				<param name="Local" value="PABCUnits\WPFObjects\index.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Типы модуля WPFObjects">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects types.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Переменные модуля WPFObjects">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects Variables.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="События модуля WPFObjects">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects events.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс ObjectWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class ObjectWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс BoundedObjectWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class BoundedObjectWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс EllipseWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class EllipseWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс CircleWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class CircleWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс RectangleWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class RectangleWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс SquareWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class SquareWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс RoundRectWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class RoundRectWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс RoundSquareWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class RoundSquareWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс LineWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class LineWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс RegularPolygonWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class RegularPolygonWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс StarWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class StarWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс PolygonWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class PolygonWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс PictureWPF">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class PictureWPF.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс графического окна">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class GraphWindowType.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: класс списка графических объектов">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Class List of objects.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: функции для определения пересечения">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Intersection functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Вспомогательные функции WPFObjects">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects functions 1.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модуль Graph3D">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль Graph3D: обзор">
+				<param name="Local" value="PABCUnits\Graph3D\index.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Переменные модуля Graph3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D variables.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Типы модуля Graph3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D types.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="События модуля Graph3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D events.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Короткие функции модуля Graph3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D short functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: функции для создания 3D-объектов">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for creation 3D-objects.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс Object3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Object3D class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс ObjectWithChildren3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ObjectWithChildren3D class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс ObjectWithMaterial3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ObjectWithMaterial3D class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс SphereT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D SphereT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс EllipsoidT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D EllipsoidT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс CubeT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CubeT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс BoxT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D BoxT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс ArrowT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ArrowT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс TruncatedConeT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TruncatedConeT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс CylinderT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CylinderT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс TeapotT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TeapotT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс CoordinateSystemT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CoordinateSystemT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс BillboardTextT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D BillboardTextT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс TextT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TextT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс RectangleT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D RectangleT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс FileModelT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D FileModelT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс PipeT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PipeT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс LegoT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D LegoT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс PlatonicAbstractT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PlatonicAbstractT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс IcosahedronT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D IcosahedronT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс DodecahedronT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D DodecahedronT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс TetrahedronT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TetrahedronT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс OctahedronT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D OctahedronT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс TriangleT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TriangleT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс PrismT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PrismT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс PyramidT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PyramidT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс PrismTWireframe">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PrismTWireframe class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс PyramidTWireframe">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PyramidTWireframe class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс SegmentsT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D SegmentsT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс TorusT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TorusT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс AnimationBase">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D AnimationBase class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс Materials">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Materials class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс View3DType">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D View3DType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс CameraType">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CameraType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: класс GridLinesType">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D GridLinesType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: сервисные функции">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D service functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: функции для создания материалов Materials">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Materials functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: функции для создания невизуальных объектов">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for creation non-visual objects.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: функции для определения ближайших точек и объектов">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for nearest points and objects.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модуль GraphABC">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: обзор">
+				<param name="Local" value="PABCUnits\GraphABC\index.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: типы и переменные">
+				<param name="Local" value="PABCUnits\GraphABC\gr_typesvars.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: графические примитивы">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Prim.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: функции для работы с цветом">
+				<param name="Local" value="PABCUnits\GraphABC\gr_ColorFun.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: цветовые константы">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Colors.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: подпрограммы для работы с пером">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Pen.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: текущее перо Pen">
+				<param name="Local" value="PABCUnits\GraphABC\gr_PenClass.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: стили пера">
+				<param name="Local" value="PABCUnits\GraphABC\gr_PenDashStyle.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: подпрограммы для работы с кистью">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Brush.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: текущая кисть Brush">
+				<param name="Local" value="PABCUnits\GraphABC\gr_BrushClass.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: стили кисти">
+				<param name="Local" value="PABCUnits\GraphABC\gr_BrushStyle.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: стили штриховки кисти">
+				<param name="Local" value="PABCUnits\GraphABC\gr_BrushHatchStyle.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: подпрограммы для работы со шрифтом">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Font.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: текущий шрифт Font">
+				<param name="Local" value="PABCUnits\GraphABC\gr_FontClass.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: класс Picture графического рисунка">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Picture.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: подпрограммы для работы с графическим окном">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Window.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: объект графического окна Window">
+				<param name="Local" value="PABCUnits\GraphABC\gr_WindowClass.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: подпрограммы для работы с координатами графического окна">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Coordinate.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: объект Coordinate координат графического окна">
+				<param name="Local" value="PABCUnits\GraphABC\gr_CoordinateClass.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: блокировка рисования и ускорение анимации">
+				<param name="Local" value="PABCUnits\GraphABC\gr_LockDrawing.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: режимы рисования">
+				<param name="Local" value="PABCUnits\GraphABC\gr_Options.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: события">
+				<param name="Local" value="PABCUnits\GraphABC\gr_events.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: виртуальные коды клавиш">
+				<param name="Local" value="PABCUnits\GraphABC\gr_VK.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: Стили шрифта">
+				<param name="Local" value="PABCUnits\GraphABC\gr_FontStyle.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модуль ABCObjects">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: обзор">
+				<param name="Local" value="PABCUnits\ABCObjects\index.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: диаграмма классов">
+				<param name="Local" value="PABCUnits\ABCObjects\ABCClasses.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс ObjectABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_ObjectABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс BoundedObjectABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_BoundedObjectABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс RectangleABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_RectangleABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс SquareABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_SquareABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс EllipseABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_EllipseABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс CircleABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_CircleABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс RoundRectABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_RoundRectABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс RoundSquareABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_RoundSquareABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс TextABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_TextABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс RegularPolygonABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_RegularPolygonABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс StarABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_StarABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс PictureABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_PictureABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс MultiPictureABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_MultiPictureABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс BoardABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_BoardABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: класс ObjectBoardABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_ObjectBoardABC.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: мультирисунки">
+				<param name="Local" value="PABCUnits\ABCObjects\MultiPictureReview.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: массив графических объектов Objects">
+				<param name="Local" value="PABCUnits\ABCObjects\ObjectsArray.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: переменные, процедуры и функции ">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_Common.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: ускорение перерисовки графических объектов">
+				<param name="Local" value="PABCUnits\ABCObjects\FastABCDraw.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Совмещение графического вывода модулей ABCObjects и GraphABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_WithGraphABC.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модуль ABCSprites">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCSprites: обзор">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_ABCSprites.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCSprites: класс SpriteABC">
+				<param name="Local" value="PABCUnits\ABCObjects\gabc_SpriteABC.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модуль Timers">
+			<param name="Local" value="PABCUnits\Timers\index.html">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Средства обучения в PascalABC.NET">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Исполнители">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Что такое Исполнители">
+				<param name="Local" value="ForEducation\Executors\index.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Исполнитель Робот">
+				<param name="Local" value="ForEducation\Executors\robotstart.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Исполнитель Чертежник">
+				<param name="Local" value="ForEducation\Executors\dmstart.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Проверяемые задания">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Что такое проверяемые задания">
+				<param name="Local" value="ForEducation\CheckedTasks\index.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Задание Begin3 из электронного задачника Programming Taskbook">
+				<param name="Local" value="ForEducation\CheckedTasks\checkedtasks1.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Задание a1 для исполнителя Робот">
+				<param name="Local" value="ForEducation\CheckedTasks\checkedtasks2.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Задание на обработку строк">
+				<param name="Local" value="ForEducation\CheckedTasks\ctstring.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Задание на обработку файлов">
+				<param name="Local" value="ForEducation\CheckedTasks\ctfile.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Задания на указатели и динамические структуры данных">
+				<param name="Local" value="ForEducation\CheckedTasks\ctpointer.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Задания на обработку деревьев">
+				<param name="Local" value="ForEducation\CheckedTasks\cttree.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Задания, связанные с ЕГЭ по информатике">
+				<param name="Local" value="ForEducation\CheckedTasks\ctexam.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Электронный задачник Programming Taskbook">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Общее описание и программные модули">
+				<param name="Local" value="ForEducation\PT4\About.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Группы заданий">
+				<param name="Local" value="ForEducation\PT4\Groups.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль PT4">
+				<param name="Local" value="ForEducation\PT4\IO.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Создание шаблона программы">
+				<param name="Local" value="ForEducation\PT4\Load.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Окно задачника">
+				<param name="Local" value="ForEducation\PT4\Window.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Раздел отладки">
+				<param name="Local" value="ForEducation\PT4\Debug.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Просмотр результатов">
+				<param name="Local" value="ForEducation\PT4\Results.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Демонстрационный режим">
+				<param name="Local" value="ForEducation\PT4\Demo.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Модули конструкторов заданий">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Конструкторы проверяемых заданий: обзор">
+				<param name="Local" value="ForEducation\MakeModules\index.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль RobotTaskMaker">
+				<param name="Local" value="ForEducation\MakeModules\RobotMake.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Создание заданий для исполнителя Робот">
+				<param name="Local" value="ForEducation\MakeModules\RobotMakeCreation.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль DMTaskMaker">
+				<param name="Local" value="ForEducation\MakeModules\DMMake.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Создание заданий для исполнителя Чертежник">
+				<param name="Local" value="ForEducation\MakeModules\DMMakeCreation.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль PT4TaskMakerNET: общее описание">
+				<param name="Local" value="ForEducation\MakeModules\tmaker_main.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль PT4TaskMakerNET: основные компоненты">
+				<param name="Local" value="ForEducation\MakeModules\tmaker_proc1.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль PT4TaskMakerNET: дополнительные компоненты">
+				<param name="Local" value="ForEducation\MakeModules\tmaker_proc2.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль PT4TaskMakerNET: форматирование текста">
+				<param name="Local" value="ForEducation\MakeModules\tmaker_format.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль PT4TaskMakerNET: примеры разработки учебных заданий">
+				<param name="Local" value="ForEducation\MakeModules\tmaker_samples.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Модуль PT4TaskMakerNET: разработка заданий, связанных с ЕГЭ по информатике">
+				<param name="Local" value="ForEducation\MakeModules\tmaker_exam.html">
+				</OBJECT>
+		</UL>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Уроки PascalABC.NET">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Работа с модулем ABCObjects">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: быстрое введение">
+				<param name="Local" value="Tutorials\ABCObjects\QuickStartABCObjects.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ABCObjects: контейнеры графических объектов">
+				<param name="Local" value="Tutorials\ABCObjects\ABCContainersOverview.html">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Примеры">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Графика и анимация">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Анимация без мерцания">
+					<param name="Local" value="Examples\GraphABC\NonBlinkAnim1.html">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Простейшие события">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Рисование мышью в графическом окне">
+					<param name="Local" value="Examples\GraphABCEvents\GEv1.html">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Перемещение окна с помощью клавиатуры">
+					<param name="Local" value="Examples\GraphABCEvents\GEv2.html">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Пример использования таймера">
+				<param name="Local" value="Examples\Timers\Timer1.html">
+				</OBJECT>
+		</UL>
+	</UL>
+</UL>
+</BODY></HTML>

@@ -12,9 +12,10 @@ namespace VisualPascalABC
 
         //public static string DefaultWorkingDirectory = SystemDirectoryIdent + @"\WorkDirectory";
         public static string DefaultWorkingDirectory =
-            !Tools.IsUnix() ? 
+            !Tools.IsUnix() ?
                 (System.IO.Path.GetPathRoot(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows)) + "PABCWork.NET") :
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/" + "PABCWork.NET";
+                //System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/" + "PABCWork.NET";
+                "~/" + "PABCWork.NET";
         public static string DefaultOutputDirectory = DefaultWorkingDirectory + @"\Output";
 
         public static string DefaultLibSourceDirectory = SystemDirectoryIdent + @"\LibSource";
@@ -23,7 +24,8 @@ namespace VisualPascalABC
         public static string DotNetHelpFileName = "%PABCSYSTEM%\\Documentation_NET40.chm";
         public static string HelpExamplesFileName = "%PABCSYSTEM%\\PascalABCNETExamples.chm";
         public static string HelpExamplesMapFileName = "%PABCSYSTEM%\\HelpExamples.ini";
-        public static string HelpExamplesDirectory = DefaultWorkingDirectory+"\\Samples";
+        //public static string HelpExamplesDirectory = DefaultWorkingDirectory+"\\Samples";
+        public static string HelpExamplesDirectory =  @"/usr/lib/pascalabcnet/Samples";
         public static string HelpTutorialExamplesDirectory = DefaultWorkingDirectory + "\\Samples\\!Tutorial";
 
         
@@ -44,7 +46,8 @@ namespace VisualPascalABC
                 DotNetHelpFileName = "%PABCSYSTEM%/Documentation_NET40.chm";
                 HelpExamplesFileName = "%PABCSYSTEM%/PascalABCNETExamples.chm";
                 HelpExamplesMapFileName = "%PABCSYSTEM%/HelpExamples.ini";
-                HelpExamplesDirectory = DefaultWorkingDirectory + "/Samples";
+                //HelpExamplesDirectory = DefaultWorkingDirectory + "/Samples";
+                HelpExamplesDirectory = @"/usr/lib/pascalabcnet/Samples";
                 HelpTutorialExamplesDirectory = DefaultWorkingDirectory + "/Samples/!Tutorial";
                 DefaultOutputDirectory = DefaultWorkingDirectory + @"/Output";
                 DefaultLibSourceDirectory = SystemDirectoryIdent + @"/LibSource";

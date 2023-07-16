@@ -214,6 +214,10 @@ namespace PascalABCCompiler.SemanticTree
         {
             get;
         }
+		List<ITypeNode> ImplementingInterfacesOrEmpty
+        {
+            get;
+        }
 
         //Является ли generic-параметром
         bool is_generic_parameter
@@ -1827,7 +1831,15 @@ namespace PascalABCCompiler.SemanticTree
     	}
     }
     
-    public interface ICompiledStaticMethodCallNodeAsConstant : IConstantNode
+	public interface ICommonStaticMethodCallNodeAsConstant : IConstantNode
+    {
+		ICommonStaticMethodCallNode MethodCall
+		{
+			get;
+		}
+	}
+
+	public interface ICompiledStaticMethodCallNodeAsConstant : IConstantNode
     {
         ICompiledStaticMethodCallNode MethodCall
         {

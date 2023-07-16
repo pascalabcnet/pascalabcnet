@@ -216,7 +216,10 @@ namespace VisualPascalABC.Utils
             RedirectIO=redirectIO;
 			process = new Process();
             string BatFile = null;
-            process.StartInfo.ErrorDialog = false;
+#if (!DEBUG)
+			attachDebugger = false;
+#endif
+			process.StartInfo.ErrorDialog = false;
             if (RunWithPause && (BatFile = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath),"ProgrammRunner.exe")/*GenerateBatFileForRunWithPause(command, arguments)*/) != null)
             {
                 TempBatFile = BatFile;
@@ -239,9 +242,12 @@ namespace VisualPascalABC.Utils
                 else
                 #endif
                 {
-                	process.StartInfo.FileName = command;
+					string dbg = "";
+					if (WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.Debug)
+						dbg = " --debug ";
+                	process.StartInfo.FileName = "mono";
                 	process.StartInfo.WorkingDirectory = workingDirectory;
-               	 	process.StartInfo.Arguments = arguments;
+               	 	process.StartInfo.Arguments = dbg+command+" "+arguments;
                 }
             }
             //process.StartInfo.Domain = Domain.FriendlyName;
@@ -257,21 +263,33 @@ namespace VisualPascalABC.Utils
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.StandardErrorEncoding = System.Text.Encoding.UTF8;
             }
-            if (ProcessExited != null)
+			bool dbgFailed = false;
+			if (attachDebugger && !fictive_attach)
+            {
+				var dbgProcess = WorkbenchServiceFactory.DebuggerManager.RunWithMonoDebugger(process.StartInfo, command, arguments);
+				if (dbgProcess != null)
+                {
+					process = dbgProcess;
+					process.PriorityClass = ProcessPriorityClass.BelowNormal;
+				}
+				else
+					dbgFailed = true;
+			}
+			if (ProcessExited != null)
             {
                 process.EnableRaisingEvents = true;
                 process.Exited += new EventHandler(OnProcessExited);
 			}
-            process.Start();
-            //ssyy
-            process.PriorityClass = ProcessPriorityClass.BelowNormal;
-            //\ssyy
-            if (attachDebugger)
+			if (!attachDebugger || dbgFailed || fictive_attach)
             {
-                WorkbenchServiceFactory.DebuggerManager.Attach((uint)process.Id,command,!fictive_attach,false);
-            }
-            if (redirectIO)
-            process.StandardInput.WriteLine("GO");
+				process.Start();
+				//ssyy
+				process.PriorityClass = ProcessPriorityClass.BelowNormal;
+				//\ssyy
+			}
+
+			if (redirectIO)
+				process.StandardInput.WriteLine("GO");
             
 		}
 

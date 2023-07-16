@@ -27,6 +27,7 @@
     File "..\bin\AvalonDock.dll"
     File "..\bin\Mono.Cecil.dll"
     File "..\bin\TeacherControlPlugin.dll"
+    File "..\bin\LambdaAnySynToSemConverter.dll"
 	;File "libs\System.Core.dll"
     File "gacutil.exe"
     File "gacutil.exe.config"
@@ -67,6 +68,7 @@
     ${AddFile} "OptimizerConversion.dll"
     ${AddFile} "Mono.Cecil.dll"
     ${AddFile} "TeacherControlPlugin.dll"
+    ${AddFile} "LambdaAnySynToSemConverter.dll"
     ${AddFile} "License.txt"
     ${AddFile} "copyright.txt"
     ${AddFile} "pabcnetc.exe.config"
@@ -138,13 +140,14 @@
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
     File ..\bin\Lib\Turtle.pcu
+    File ..\bin\Lib\TurtleWPF.pcu
     File ..\bin\Lib\LightPT.pcu
     File ..\bin\Lib\Tasks.pcu
     File ..\bin\Lib\TwoPanelsWindow.pcu
     File ..\bin\Lib\NUnitABC.pcu
     File ..\bin\Lib\PlotWPF.pcu
     File ..\bin\Lib\XLSX.pcu
-
+    File ..\bin\Lib\Мозаика.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -152,6 +155,8 @@
     File ..\bin\Lib\nunit.framework.dll 
     File ..\bin\Lib\InteractiveDataDisplay.WPF.dll 
 	
+    File ..\bin\Lib\turtle.png
+
     ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
     ${AddFile} "ABCButtons.pcu"
@@ -216,13 +221,16 @@
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
     ${AddFile} "Turtle.pcu"
+    ${AddFile} "TurtleWPF.pcu"
     ${AddFile} "LightPT.pcu"
     ${AddFile} "Tasks.pcu"
     ${AddFile} "TwoPanelsWindow.pcu"
     ${AddFile} "NUnitABC.pcu"
     ${AddFile} "PlotWPF.pcu"
     ${AddFile} "XLSX.pcu"
+    ${AddFile} "Мозаика.pcu"
 
+    ${AddFile} "turtle.png"
 
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
@@ -312,12 +320,14 @@
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
     File ..\bin\Lib\Turtle.pas
+    File ..\bin\Lib\TurtleWPF.pas
     File ..\bin\Lib\LightPT.pas
     File ..\bin\Lib\Tasks.pas
     File ..\bin\Lib\TwoPanelsWindow.pas
     File ..\bin\Lib\NUnitABC.pas
     File ..\bin\Lib\PlotWPF.pas
     File ..\bin\Lib\XLSX.pas
+    File ..\bin\Lib\Мозаика.pas
 
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
@@ -384,12 +394,14 @@
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
     ${AddFile} "Turtle.pas"
+    ${AddFile} "TurtleWPF.pas"
     ${AddFile} "LightPT.pas"
     ${AddFile} "Tasks.pas"
     ${AddFile} "TwoPanelsWindow.pas"
     ${AddFile} "NUnitABC.pas"
     ${AddFile} "PlotWPF.pas"
     ${AddFile} "XLSX.pas"
+    ${AddFile} "Мозаика.pas"
 
 
 	${AddFile} "__RedirectIOMode.vb"

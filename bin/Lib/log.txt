@@ -402,3 +402,445 @@
    в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
    в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
    в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 560
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 3019
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC_Git\SyntaxTree\tree\Tree.cs:строка 13211
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 63
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.UnknownScope.IsEqual(SymScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 8077
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 410
+   в CodeCompletion.SymScope.GetExtensionMethods(TypeScope ts, String name) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 482
+   в CodeCompletion.SymScope.GetExtensionMethods(String name, TypeScope ts) в D:\PABC_Git\CodeCompletion\SymTable.cs:строка 367
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(bin_expr _bin_expr) в D:\PABC_Git\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 561

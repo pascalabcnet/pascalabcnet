@@ -6,7 +6,7 @@
    GraphABCHelper,  
    GraphWPFBase,
    Graph3D,
-   GraphWPF, Turtle,
+   GraphWPF, Turtle, TurtleWPF,
    WPFObjects,
    NumLibABC,
    IniFile, PointerTools, PointRect, PT4, PT4MakerNetX, Robot, RobotField,
@@ -15,7 +15,7 @@
    ABCDatabases,PT4Databases,BlockFileOfT,Controls,
    OpenCLABC, OpenCL,
    OpenGLABC, OpenGL,
-   BBCMicroBit, School, SF, TwoPanelsWindow, NUnitABC, PlotWPF, XLSX, LightPT, Tasks
+   BBCMicroBit, School, SF, TwoPanelsWindow, NUnitABC, PlotWPF, XLSX, LightPT, Tasks, Мозаика
    ;
    
 begin

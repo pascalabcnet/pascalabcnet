@@ -2,11 +2,421 @@
 unit LightPT;
 {$reference System.Net.Http.dll}
 {$reference System.Security.dll}
-{$reference System.Management.dll}
-uses __RedirectIOMode;
 
-// Любые существенные изменения в этом модуле влияют на все Tasks, составленные всеми.
-// Они перестанут компилироваться, что плохо !!!
+interface
+
+{==============================================================}
+{                  Класс для формирования вывода               }
+{==============================================================}
+type
+  /// Класс для формирования вывода
+  ObjectList = class
+    lst := new List<object>;
+  public
+    static function New: ObjectList := ObjectList.Create;
+    procedure Add(o: object) := lst.Add(o);
+    function AddRange(sq: sequence of integer): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of real): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of string): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of char): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of boolean): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddRange(sq: sequence of object): ObjectList; begin lst.AddRange(sq); Result := Self end;
+    function AddRange(sq: sequence of System.Type): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
+    function AddFill(n: integer; elem: object): ObjectList; begin lst.AddRange(ArrFill(n,elem)); Result := Self end;
+    function AddArithm(n: integer; a0,step: integer): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x+step).Select(x -> object(x))); Result := Self end;
+    function AddArithm(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x+step).Select(x -> object(x))); Result := Self end;
+    function AddFib(n: integer): ObjectList; begin lst.AddRange(ArrGen(n,1,1,(x,y)->x+y).Select(x -> object(x))); Result := Self end;
+    function AddGeom(n: integer; a0,step: integer): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
+    function AddGeom(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
+  end;
+
+{==================================================================================}
+{                                  Сервисные типы                                  }
+{==================================================================================}
+type
+  MessageColorT = (MsgColorGreen, MsgColorRed, MsgColorOrange, MsgColorMagenta, MsgColorGray);
+  TaskStatus = (NotUnderControl, Solved, IOError, BadSolution, PartialSolution, InitialTask, BadInitialTask, InitialTaskPT4, ErrFix, Demo); // Короткий результат для БД
+
+{==================================================================================}
+{     Переопределенные функций стандартного модуля с заполнением ввода и вывода    }
+{==================================================================================}
+/// Возвращает случайное целое в диапазоне от a до b
+function Random(a, b: integer): integer;
+/// Возвращает случайное целое в диапазоне от 0 до n-1
+function Random(n: integer): integer;
+/// Возвращает случайное вещественное в диапазоне [0..1)
+function Random: real;
+/// Возвращает случайное вещественное в диапазоне [a,b)
+function Random(a, b: real): real;
+/// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
+function RandomReal(a, b: real; digits: integer := 1): real;
+/// Возвращает случайный символ в диапазоне от a до b
+function Random(a, b: char): char;
+/// Возвращает случайное целое в диапазоне 
+function Random(diap: IntRange): integer;
+/// Возвращает случайное вещественное в диапазоне 
+function Random(diap: RealRange): real;
+/// Возвращает случайный символ в диапазоне 
+function Random(diap: CharRange): char;
+
+/// Возвращает кортеж из двух случайных целых в диапазоне от a до b
+function Random2(a, b: integer): (integer, integer);
+/// Возвращает кортеж из двух случайных вещественных в диапазоне от a до b
+function Random2(a, b: real): (real, real);
+/// Возвращает кортеж из двух случайных символов в диапазоне от a до b
+function Random2(a, b: char): (char, char);
+/// Возвращает кортеж из двух случайных целых в диапазоне
+function Random2(diap: IntRange): (integer, integer);
+/// Возвращает кортеж из двух случайных символов в диапазоне
+function Random2(diap: CharRange): (char, char);
+/// Возвращает кортеж из двух случайных вещественных в диапазоне
+function Random2(diap: RealRange): (real, real);
+
+/// Возвращает кортеж из трех случайных целых в диапазоне от a до b
+function Random3(a, b: integer): (integer, integer, integer);
+/// Возвращает кортеж из трех случайных вещественных в диапазоне от a до b
+function Random3(a, b: real): (real, real, real);
+/// Возвращает кортеж из трех случайных символов в диапазоне от a до b
+function Random3(a, b: char): (char, char, char);
+/// Возвращает кортеж из трех случайных целых в диапазоне
+function Random3(diap: IntRange): (integer, integer, integer);
+/// Возвращает кортеж из трех случайных вещественных в диапазоне
+function Random3(diap: RealRange): (real, real, real);
+/// Возвращает кортеж из трех случайных символов в диапазоне
+function Random3(diap: CharRange): (char, char, char);
+
+/// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от a до b
+function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
+/// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от 0 до 100
+function ArrRandomInteger(n: integer): array of integer;
+/// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
+function ArrRandomReal(n: integer; a: real; b: real): array of real;
+
+/// Возвращает массив размера n, заполненный случайными вещественными значениями  в диапазоне от 0 до 10
+function ArrRandomReal(n: integer): array of real;
+
+/// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
+function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
+/// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
+function MatrRandomInteger(m: integer; n: integer): array [,] of integer;
+/// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
+function MatrRandomReal(m: integer; n: integer; a: real; b: real): array [,] of real;
+/// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
+function MatrRandomReal(m: integer; n: integer): array [,] of real;
+
+/// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
+//function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
+
+/// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
+function ReadInteger(prompt: string): integer;
+/// Выводит приглашение к вводу и возвращает два значения типа integer, введенные с клавиатуры
+function ReadInteger2(prompt: string): (integer, integer);
+/// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
+function ReadlnInteger(prompt: string): integer;
+
+///- procedure Print(a,b,...);
+/// Выводит значения a,b,... на экран, после каждого значения выводит пробел
+procedure Print(params args: array of object);
+///- procedure Println(a,b,...);
+/// Выводит значения a,b,... на экран, после каждого значения выводит пробел и переходит на новую строку
+procedure Println(params args: array of object);
+/// Выводит значение экран и выводит пробел
+procedure Print(ob: object);
+/// Выводит значение экран и выводит пробел
+procedure Print(s: string);
+/// Выводит значение экран и выводит пробел
+procedure Print(c: char);
+
+{=========================================================================}
+{                        Сервисные процедуры                              }
+{=========================================================================}
+
+// Вывести цветовое сообщение в окно вывода
+procedure ColoredMessage(msg: string; color: MessageColorT);
+
+// Вывести сообщение красным цветом в окно вывода
+procedure ColoredMessage(msg: string);
+
+{=========================================================================}
+{        Основные процедуры для проверки правильности ввода-вывода        }
+{=========================================================================}
+
+// Самые часто используемые: CheckInput, CheckOutput, CheckOutputSeq
+
+/// Проверить типы вводимых данных
+procedure CheckInput(a: array of System.Type);
+/// Проверить значения при выводе
+procedure CheckOutput(params arr: array of object);
+
+/// Проверить, что данные не вводились
+procedure CheckInputIsEmpty;
+
+/// Проверить, что помимо начального ввода других данных не вводилось
+procedure CheckInputIsInitial;
+
+/// Синоним CheckInput
+procedure CheckInputTypes(a: array of System.Type);
+
+/// Проверить количество вводимых данных
+procedure CheckInputCount(n: integer);
+/// Проверить количество вводимых данных
+procedure CheckInput2Count(i: integer);
+/// Проверить количество выводимых данных
+procedure CheckOutput2Count(i: integer);
+
+/// Проверить последовательность значений при выводе
+procedure CheckOutputSeq(a: sequence of integer);
+/// Проверить последовательность значений при выводе
+procedure CheckOutputSeq(a: sequence of real);
+/// Проверить последовательность значений при выводе
+procedure CheckOutputSeq(a: sequence of string);
+/// Проверить последовательность значений при выводе
+procedure CheckOutputSeq(a: sequence of char);
+/// Проверить последовательность значений при выводе
+procedure CheckOutputSeq(a: sequence of boolean);
+/// Проверить последовательность значений при выводе
+procedure CheckOutputSeq(a: sequence of object);
+/// Проверить последовательность значений при выводе
+procedure CheckOutputSeq(a: sequence of word);
+/// Проверить последовательность значений при выводе
+procedure CheckOutputSeq(a: ObjectList);
+
+/// Проверить вывод в виде строки
+procedure CheckOutputString(str: string);
+
+/// Сравнить типы выведенных значений с указанными
+procedure CompareTypeWithOutput(params a: array of System.Type);
+
+/// Сравнить два значения
+function CompareValues(o1, o2: Object): boolean;
+
+/// Сравнить два массива
+function CompareArrValues(a,lst: array of object): boolean;
+
+/// Сравнить значения с выводом
+function CompareValuesWithOutput(params a: array of object): boolean;
+
+// Для совместимости
+procedure CheckOutputNew(params arr: array of object);
+procedure CheckOutputSeqNew(a: sequence of integer);
+procedure CheckOutputSeqNew(a: sequence of real);
+procedure CheckOutputSeqNew(a: sequence of string);
+procedure CheckOutputSeqNew(a: sequence of char);
+procedure CheckOutputSeqNew(a: sequence of boolean);
+procedure CheckOutputSeqNew(a: sequence of object);
+procedure CheckOutputSeqNew(a: sequence of word);
+procedure CheckOutputSeqNew(a: ObjectList);
+
+{============================================================================================}
+{   Подпрограммы для проверки начального ввода-вывода, представленного в заготовке задания   }
+{============================================================================================}
+
+/// Проверить типы данных начального ввода, начального вывода и ввода. Если ввод Input = nil, то он совпадает с начальным вводом
+procedure CheckData(InitialInput: array of System.Type := nil; 
+  InitialOutput: array of System.Type := nil; 
+  Input: array of System.Type := nil);
+
+procedure CheckInitialIO;
+procedure CheckInitialIOIsEmpty;
+procedure InitialOutput(a: array of System.Type);
+procedure InitialInput(a: array of System.Type);
+//procedure CheckInitialOutputValues(params a: array of object); - тут значений быть не должно!
+procedure CheckInitialOutput(params a: array of System.Type);
+procedure CheckInitialInput(params a: array of System.Type);
+
+procedure CheckInitialOutputSeq(a: sequence of System.Type);
+procedure CheckInitialInputSeq(a: sequence of System.Type);
+
+procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
+
+procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
+
+/// Проверить последовательность значений при выводе после начального вывода
+procedure CheckOutputAfterInitialSeq(seq: sequence of integer);
+/// Проверить последовательность значений при выводе после начального вывода
+procedure CheckOutputAfterInitialSeq(seq: sequence of real);
+/// Проверить последовательность значений при выводе после начального вывода
+procedure CheckOutputAfterInitialSeq(seq: sequence of string);
+/// Проверить последовательность значений при выводе после начального вывода
+procedure CheckOutputAfterInitialSeq(seq: sequence of boolean);
+/// Проверить последовательность значений при выводе после начального вывода
+procedure CheckOutputAfterInitialSeq(seq: sequence of char);
+/// Проверить последовательность значений при выводе после начального вывода
+procedure CheckOutputAfterInitialSeq(seq: sequence of object);
+/// Проверить последовательность значений при выводе после начального вывода
+procedure CheckOutputAfterInitialSeq(seq: ObjectList);
+
+{=========================================================}
+{       Функции для проверки элементов ввода-вывода       }
+{=========================================================}
+
+/// i-тый элемент ввода - целое 
+function IsInt(i: integer): boolean;
+/// i-тый элемент ввода - вещественное 
+function IsRe(i: integer): boolean;
+/// i-тый элемент ввода - строка 
+function IsStr(i: integer): boolean;
+/// i-тый элемент ввода - логическое 
+function IsBoo(i: integer): boolean;
+/// i-тый элемент ввода - символ 
+function IsChr(i: integer): boolean;
+
+/// i-тый элемент вывода - целое 
+function OutIsInt(i: integer): boolean;
+/// i-тый элемент вывода - вещественное 
+function OutIsRe(i: integer): boolean;
+/// i-тый элемент вывода - строка 
+function OutIsStr(i: integer): boolean;
+/// i-тый элемент вывода - логическое 
+function OutIsBoo(i: integer): boolean;
+/// i-тый элемент вывода - символ 
+function OutIsChr(i: integer): boolean;
+
+/// i-тый элемент ввода как целое 
+function Int(i: integer): integer;
+/// i-тый элемент ввода как вещественное 
+function Re(i: integer): real;
+/// i-тый элемент ввода как строка 
+function Str(i: integer): string;
+/// i-тый элемент ввода как логическое 
+function Boo(i: integer): boolean;
+/// i-тый элемент ввода как символ 
+function Chr(i: integer): char;
+
+/// i-тый элемент вывода как целое 
+function OutInt(i: integer): integer;
+/// i-тый элемент вывода как вещественное 
+function OutRe(i: integer): real;
+/// i-тый элемент вывода как строка 
+function OutBoo(i: integer): boolean;
+/// i-тый элемент вывода как логическое 
+function OutChr(i: integer): char;
+/// i-тый элемент вывода как символ 
+function OutStr(i: integer): string;
+
+/// Следующий элемент ввода как целое 
+function Int: integer;
+/// Следующий элемент ввода как вещественное
+function Re: real;
+/// Следующий элемент ввода как строка
+function Str: string;
+/// Следующий элемент ввода как логическое
+function Boo: boolean;
+/// Следующий элемент ввода как символ
+function Chr: char;
+
+/// Следующие два элемента ввода как целые 
+function Int2: (integer, integer);
+/// Следующие два элемента ввода как вещественные 
+function Re2: (real, real);
+
+/// Следующие n элементов ввода как массив целых
+function IntArr(n: integer): array of integer;
+/// Следующие n элементов ввода как массив вещественных
+function ReArr(n: integer): array of real;
+/// Следующие n элементов ввода как массив логических
+function BooArr(n: integer): array of boolean;
+/// Следующие n элементов ввода как массив символов
+function ChrArr(n: integer): array of char;
+/// Следующие n элементов ввода как массив строк
+function StrArr(n: integer): array of string;
+
+// функции, возвращающие входные и выходные списки, а также их срезы, приведенные к нужному типу
+
+function InputListAsIntegers: array of integer;
+function InputListAsReals: array of real;
+function InputListAsBooleans: array of boolean;
+function InputListAsChars: array of char;
+function InputListAsStrings: array of string;
+
+function OutputListAsIntegers: array of integer;
+function OutputListAsReals: array of real;
+function OutputListAsBooleans: array of boolean;
+function OutputListAsChars: array of char;
+function OutputListAsStrings: array of string;
+
+function InSliceIntArr(a,b: integer): array of integer;
+function InSliceReArr(a,b: integer): array of real;
+function InSliceBooArr(a,b: integer): array of boolean;
+function InSliceChrArr(a,b: integer): array of char;
+function InSliceStrArr(a,b: integer): array of string;
+
+/// Срез элементов вывода от a до b как массив целых
+function OutSliceIntArr(a,b: integer): array of integer;
+/// Срез элементов вывода от a до b как массив вещественных
+function OutSliceReArr(a,b: integer): array of real;
+/// Срез элементов вывода от a до b как массив логических
+function OutSliceBooArr(a,b: integer): array of boolean;
+/// Срез элементов вывода от a до b как массив символов
+function OutSliceChrArr(a,b: integer): array of char;
+/// Срез элементов вывода от a до b как массив строк
+function OutSliceStrArr(a,b: integer): array of string;
+
+{=========================================================}
+{                Процедуры генерации ошибок               }
+{=========================================================}
+
+/// Генерация ошибки неверного количества входных значений
+procedure ErrorInputCount(Count, n: integer);
+
+/// Генерация ошибки неверного количества выходных значений
+procedure ErrorOutputCount(Count, n: integer);
+
+/// Генерация ошибки неверного типа n-того входного значения
+procedure ErrorInputType(n: integer; ExpectedType, ActualType: string);
+
+/// Генерация ошибки неверного типа n-того выходного значения
+procedure ErrorOutputType(n: integer; ExpectedType, ActualType: string);
+
+{=========================================================}
+{               Фильтрация выходного списка               }
+{=========================================================}
+/// Преобразование строк, являющихся целыми, в целые в OutputList
+procedure ConvertStringsToNumbersInOutputList;
+/// Если в OutputList массивы, вытянуть их в единый список
+procedure FlattenOutput;
+/// Очистить выходной список от пробелов
+procedure ClearOutputListFromSpaces;
+/// Отфильтровать в выходном списке только числа
+procedure FilterOnlyNumbers;
+/// Отфильтровать в выходном списке только числа и логические
+procedure FilterOnlyNumbersAndBools;
+
+var 
+  TaskResult: TaskStatus := NotUnderControl; // Записывается в БД
+  /// Строка, содержащая вывод. Нужна для проверки решения как многострочной строки 
+  OutputString := new StringBuilder;     
+  /// Список выведенных элементов
+  OutputList := new List<object>;
+  /// Список введенных элементов
+  InputList := new List<object>;
+  /// Список типов элементов, выведенных в заготовке задания (cRe, cInt и т.д.)
+  InitialOutputList := new List<System.Type>; 
+  /// Список типов элементов, введенных в заготовке задания
+  InitialInputList := new List<System.Type>;  
+  /// Ссылка на основную процедуру проверки в модуле Task
+  CheckTask: procedure(name: string);
+  /// Погасить сообщения о неверном вводе-выводе если задача содержит только начальный ввод-вывод
+  CancelMessagesIfInitial := True;
+
+/// Целый тип для проверки ввода-вывода
+function cInt: System.Type;
+/// Вещественный тип для проверки ввода-вывода
+function cRe: System.Type;
+/// Строковый тип для проверки ввода-вывода
+function cStr: System.Type;
+/// Логический тип для проверки ввода-вывода
+function cBool: System.Type;
+/// Символьный тип для проверки ввода-вывода
+function cChar: System.Type;
+
+type 
+  /// Константа для обозначения пустого ввода или вывода
+  EmptyType = (Empty);
+
+implementation
+
+uses __RedirectIOMode;
 
 uses System.Management;
 uses System.Security.Cryptography;
@@ -23,11 +433,10 @@ uses System.Threading.Tasks;
 // Эту строку также можно писать в БД как доп параметры TaskResultInfo
 // Чем хороши исключения - их можно делать разными с абсолютно разными параметрами
 
-const lightptname = 'lightpt.dat';
+// Сервисная функция - чтобы можно было вводу, начальному вводу или начальному выводу в CheckData присвоить Empty вместо nil
+function operator implicit(Self: EmptyType): array of System.Type; extensionmethod := nil;
 
-type
-  MessageColorT = (MsgColorGreen, MsgColorRed, MsgColorOrange, MsgColorMagenta, MsgColorGray);
-  TaskStatus = (NotUnderControl, Solved, IOError, BadSolution, PartialSolution, InitialTask, BadInitialTask, InitialTaskPT4, ErrFix, Demo); // Короткий результат для БД
+const lightptname = 'lightpt.dat';
 
 type
   PTException = class(Exception) 
@@ -35,8 +444,7 @@ type
   end;
 
 var
-  DoNewLineBeforeMessage := False;
-  TaskResult: TaskStatus := NotUnderControl; // Записывается в БД
+  CreateNewLineBeforeMessage := False;
   TaskResultInfo: string; // доп. информация о результате. Как правило пуста. Или содержит TaskException.Info. Или содержит для Solved и BadSolution информацию о модуле: Robot, Drawman, PT4
   TaskException: PTException := new PTException;
 
@@ -47,6 +455,9 @@ var
   
   ServerAddr := 'https://air.mmcs.sfedu.ru/pascalabc';
 
+{=========================================================}
+{                  Типы, связанные с сетью                }
+{=========================================================}
 type 
   UserTypeEnum = (None, Student, Teacher, Admin);
   ServerAccessProvider = class
@@ -66,7 +477,7 @@ type
       client.Timeout := TimeSpan.FromSeconds(10);
     end;
     
-    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskPlatform, TaskResult, TaskResultInfo: string): Task<string>;
+    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskPlatform, TaskResult, text, TaskResultInfo: string): Task<string>;
     begin
       var values := Dict(
         ( 'shortFIO', '' ),  
@@ -76,7 +487,7 @@ type
         ( 'taskPlatform', TaskPlatform ),
         ( 'taskResult', TaskResult ),
         ( 'taskResultInfo', TaskResultInfo ),
-        ( 'content', '' ),
+        ( 'content', text ),
         ( 'password', Password )
       );
       var content := new FormUrlEncodedContent(values);
@@ -85,6 +496,10 @@ type
     end;
   end;
 
+{=========================================================}
+{               Типы исключений при решении               }
+{=========================================================}
+type
   InputCountException = class(PTException) // Ровно Count 
     Count: integer; // Count - сколько введено
     n: integer;     // n - сколько требуется ввести
@@ -165,53 +580,33 @@ type
     
     function Info: string; override := $'OutputType({n},{ExpectedType},{ActualType})';
   end;
-  
-  ObjectList = class
-    lst := new List<object>;
-  public
-    static function New: ObjectList := ObjectList.Create;
-    procedure Add(o: object) := lst.Add(o);
-    function AddRange(sq: sequence of integer): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
-    function AddRange(sq: sequence of real): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
-    function AddRange(sq: sequence of string): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
-    function AddRange(sq: sequence of char): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
-    function AddRange(sq: sequence of boolean): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
-    function AddRange(sq: sequence of object): ObjectList; begin lst.AddRange(sq); Result := Self end;
-    function AddRange(sq: sequence of System.Type): ObjectList; begin lst.AddRange(sq.Select(x -> object(x))); Result := Self end;
-    function AddFill(n: integer; elem: object): ObjectList; begin lst.AddRange(ArrFill(n,elem)); Result := Self end;
-    function AddArithm(n: integer; a0,step: integer): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x+step).Select(x -> object(x))); Result := Self end;
-    function AddArithm(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x+step).Select(x -> object(x))); Result := Self end;
-    function AddFib(n: integer): ObjectList; begin lst.AddRange(ArrGen(n,1,1,(x,y)->x+y).Select(x -> object(x))); Result := Self end;
-    function AddGeom(n: integer; a0,step: integer): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
-    function AddGeom(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
-  end;
 
 var
-  OutputString := new StringBuilder;
-  OutputList := new List<object>;
-  InputList := new List<object>;
-  InitialOutputList := new List<object>; // тут только типы и количество
-  InitialInputList := new List<object>;  // тут только типы и количество
-  
-  CheckTask: procedure(name: string);
-  
   Cur := 0;
+  TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe', '');
 
-var TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe', '');
+{=========================================================}
+{                    Сервисные функции                    }
+{=========================================================}
 
-// Сервисные функции
+procedure ErrorInputCount(Count, n: integer) := raise new InputCountException(Count,n);
 
+procedure ErrorOutputCount(Count, n: integer) := raise new OutputCountException(Count,n);
+
+procedure ErrorInputType(n: integer; ExpectedType, ActualType: string)
+  := raise new InputTypeException(n,ExpectedType,ActualType);
+
+procedure ErrorOutputType(n: integer; ExpectedType, ActualType: string)
+  := raise new OutputTypeException(n,ExpectedType,ActualType);
+
+/// Является ли задание заданием для задачника PT
 function IsPT := System.Type.GetType('PT4.PT4') <> nil;
 
+/// Является ли задание заданием для Робота
 function IsRobot := System.Type.GetType('RobotField.RobotField');
 
+/// Является ли задание заданием для Чертежника
 function IsDrawman := System.Type.GetType('DrawManField.DrawManField');
-
-function cInt := typeof(integer);
-function cRe := typeof(real);
-function cStr := typeof(string);
-function cBool := typeof(boolean);
-function cChar := typeof(char);
 
 /// Полный путь к папке auth-файла
 function FindAuthDat: string;
@@ -226,8 +621,8 @@ begin
   begin  
     Result := ExpandFileName(System.IO.Path.Combine('..',auth))
   end
-  // Если нет, в корневом каталоге сетевого диска
-  else begin
+  // Если нет, в корневом каталоге сетевого диска - Это не работает на старых Win 10 куда не устанавливается NET 4/7/1
+  {else begin
     var fullname := ExpandFileName(auth);
     var drive := ExtractFileDrive(fullname);
     var di := new System.IO.DriveInfo(drive);
@@ -236,22 +631,29 @@ begin
       var af := System.IO.Path.Combine(di.RootDirectory.FullName,auth);
       if FileExists(af) then
         Result := af;
-    end  
-  end;
+    end
+  end;}
 end;
 
-// Шифрование-дешифрование
+{=================================================================}
+{    Функции для шифрования-дешифрования при записи в auth.dat    }
+{=================================================================}
 
+// На некоторых компьютерах давала сбой, поэтому просто возвращает константу
 function ProcessorId: string;
 begin
-  var mbs := new ManagementObjectSearcher('Select ProcessorId From Win32_processor');
+  {var mbs := new ManagementObjectSearcher('Select ProcessorId From Win32_processor');
   var mbsList := mbs.Get();
   Result := '';
   foreach var mo: ManagementObject in mbsList do
   begin
-    Result := mo['ProcessorId'].ToString();
+    var pId := mo['ProcessorId'];
+    if pId <> nil then
+      Result := pId.ToString()
+    else Result := 'AAAAAAAAAAAAAAAA';
     break;
-  end;
+  end;}
+  Result := 'AAAAAAAAAAAAAAAA';
 end;
 
 function Encrypt(src: string): array of byte; // записать в файл
@@ -289,6 +691,25 @@ begin
   Result := text;
 end;
 
+{=========================================================}
+{            Функции для проверки ввода-вывода            }
+{=========================================================}
+
+function cInt := typeof(integer);
+function cRe := typeof(real);
+function cStr := typeof(string);
+function cBool := typeof(boolean);
+function cChar := typeof(char);
+
+
+procedure CheckData(InitialInput, InitialOutput, Input: array of System.Type);
+begin
+  CheckInitialIOSeqs(InitialInput, InitialOutput);
+  if Input = nil then
+    CheckInputIsInitial
+  else CheckInput(Input);
+end;  
+
 procedure CheckInitialIO;
 begin
   if (OutputList.Count = InitialOutputList.Count) and (InputList.Count = InitialInputList.Count) then
@@ -297,21 +718,20 @@ begin
     TaskResult := BadInitialTask;
 end;
 
-{function CheckBadInitialTask: boolean;
-begin
-  Result := (InputList.Count < InitialInputList.Count) or (InputList.Count = InitialInputList.Count) and (OutputList.Count < InitialOutputList.Count);
-end;}
+procedure CheckInitialIOIsEmpty := CheckInitialIO;
 
-procedure InitialOutput(params a: array of object);
+procedure InitialOutput(a: array of System.Type);
 begin
   InitialOutputList.Clear;
-  InitialOutputList.AddRange(a);
+  if a<>nil then
+    InitialOutputList.AddRange(a);
 end;
 
-procedure InitialInput(params a: array of object);
+procedure InitialInput(a: array of System.Type);
 begin
   InitialInputList.Clear;
-  InitialInputList.AddRange(a);
+  if a<>nil then
+    InitialInputList.AddRange(a);
 end;
 
 function CompareValues(o1, o2: Object): boolean;
@@ -341,28 +761,35 @@ end;
 
 function CompareValuesWithOutput(params a: array of object): boolean := CompareArrValues(a,OutputList.ToArray);
 
-procedure CheckInitialOutputValues(params a: array of object);
+{procedure CheckInitialOutputValues(params a: array of object);
 begin
   if CompareArrValues(a,OutputList.ToArray) then
     TaskResult := InitialTask;   
-end;
+end;}
 
 // По сути отдельные функции - это неправильно. Необходим CheckInitialInputOutput
-procedure CheckInitialOutput(params a: array of object);
+procedure CheckInitialOutput(params a: array of System.Type);
 begin
   InitialOutput(a);
   CheckInitialIO;
 end;
 
-procedure CheckInitialInput(params a: array of object);
+procedure CheckInitialInput(params a: array of System.Type);
 begin
   InitialInput(a);
   CheckInitialIO;
 end;
 
-procedure CheckInitialOutputSeq(a: sequence of System.Type) := CheckInitialOutput(a.Select(x->object(x)).ToArray);
+procedure CheckInitialOutputSeq(a: sequence of System.Type) := CheckInitialOutput(a.ToArray);
 
-procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(a.Select(x->object(x)).ToArray);
+procedure CheckInitialInputSeq(a: sequence of System.Type) := CheckInitialInput(a.ToArray);
+
+procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
+begin
+  InitialInput(input?.ToArray);
+  InitialOutput(output?.ToArray);
+  CheckInitialIO;
+end;
 
 procedure CheckInputCount(n: integer);
 begin
@@ -435,7 +862,7 @@ begin
   Result := char(InputList[i]);
 end;
 
-function OutAsInt(i: integer): integer;
+function OutInt(i: integer): integer;
 begin
   CheckOutput2Count(i);
   if not OutIsInt(i) then
@@ -443,7 +870,7 @@ begin
   Result := integer(OutputList[i]);
 end;
 
-function OutAsRe(i: integer): real;
+function OutRe(i: integer): real;
 begin
   CheckOutput2Count(i);
   if not OutIsRe(i) then
@@ -451,7 +878,7 @@ begin
   Result := real(OutputList[i]);
 end;
 
-function OutAsBoo(i: integer): boolean;
+function OutBoo(i: integer): boolean;
 begin
   CheckOutput2Count(i);
   if not OutIsBoo(i) then
@@ -459,7 +886,7 @@ begin
   Result := boolean(OutputList[i]);
 end;
 
-function OutAsChr(i: integer): char;
+function OutChr(i: integer): char;
 begin
   CheckOutput2Count(i);
   if not OutIsChr(i) then
@@ -467,7 +894,7 @@ begin
   Result := char(OutputList[i]);
 end;
 
-function OutAsStr(i: integer): string;
+function OutStr(i: integer): string;
 begin
   CheckOutput2Count(i);
   if not OutIsStr(i) then
@@ -510,8 +937,10 @@ function Int2: (integer, integer) := (Int, Int);
 function Re2: (real, real) := (Re, Re);
 
 function IntArr(n: integer): array of integer := (1..n).Select(x -> Int).ToArray;
-
 function ReArr(n: integer): array of real := (1..n).Select(x -> Re).ToArray;
+function BooArr(n: integer): array of boolean := (1..n).Select(x -> Boo).ToArray;
+function ChrArr(n: integer): array of char := (1..n).Select(x -> Chr).ToArray;
+function StrArr(n: integer): array of string := (1..n).Select(x -> Str).ToArray;
 
 // функции, возвращающие входные и выходные списки, а также их срезы, приведенные к нужному типу
 
@@ -521,23 +950,23 @@ function InputListAsBooleans: array of boolean := InputList.Select((x,i) -> Boo(
 function InputListAsChars: array of char := InputList.Select((x,i) -> Chr(i)).ToArray;
 function InputListAsStrings: array of string := InputList.Select((x,i) -> Str(i)).ToArray;
 
-function OutputListAsIntegers: array of integer := OutputList.Select((x,i) -> OutAsInt(i)).ToArray;
-function OutputListAsReals: array of real := OutputList.Select((x,i) -> OutAsRe(i)).ToArray;
-function OutputListAsBooleans: array of boolean := OutputList.Select((x,i) -> OutAsBoo(i)).ToArray;
-function OutputListAsChars: array of char := OutputList.Select((x,i) -> OutAsChr(i)).ToArray;
-function OutputListAsStrings: array of string := OutputList.Select((x,i) -> OutAsStr(i)).ToArray;
+function OutputListAsIntegers: array of integer := OutputList.Select((x,i) -> OutInt(i)).ToArray;
+function OutputListAsReals: array of real := OutputList.Select((x,i) -> OutRe(i)).ToArray;
+function OutputListAsBooleans: array of boolean := OutputList.Select((x,i) -> OutBoo(i)).ToArray;
+function OutputListAsChars: array of char := OutputList.Select((x,i) -> OutChr(i)).ToArray;
+function OutputListAsStrings: array of string := OutputList.Select((x,i) -> OutStr(i)).ToArray;
 
-function InputListSliceAsIntegers(a,b: integer): array of integer := (a..b).Select(i->Int(i)).ToArray;
-function InputListSliceAsReals(a,b: integer): array of real := (a..b).Select(i->Re(i)).ToArray;
-function InputListSliceAsBooleans(a,b: integer): array of boolean := (a..b).Select(i->Boo(i)).ToArray;
-function InputListSliceAsChars(a,b: integer): array of char := (a..b).Select(i->Chr(i)).ToArray;
-function InputListSliceAsStrings(a,b: integer): array of string := (a..b).Select(i->Str(i)).ToArray;
+function InSliceIntArr(a,b: integer): array of integer := (a..b).Select(i->Int(i)).ToArray;
+function InSliceReArr(a,b: integer): array of real := (a..b).Select(i->Re(i)).ToArray;
+function InSliceBooArr(a,b: integer): array of boolean := (a..b).Select(i->Boo(i)).ToArray;
+function InSliceChrArr(a,b: integer): array of char := (a..b).Select(i->Chr(i)).ToArray;
+function InSliceStrArr(a,b: integer): array of string := (a..b).Select(i->Str(i)).ToArray;
 
-function OutputListSliceAsIntegers(a,b: integer): array of integer := (a..b).Select(i->OutAsInt(i)).ToArray;
-function OutputListSliceAsReals(a,b: integer): array of real := (a..b).Select(i->OutAsRe(i)).ToArray;
-function OutputListSliceAsBooleans(a,b: integer): array of boolean := (a..b).Select(i->OutAsBoo(i)).ToArray;
-function OutputListSliceAsChars(a,b: integer): array of char := (a..b).Select(i->OutAsChr(i)).ToArray;
-function OutputListSliceAsStrings(a,b: integer): array of string := (a..b).Select(i->OutAsStr(i)).ToArray;
+function OutSliceIntArr(a,b: integer): array of integer := (a..b).Select(i->OutInt(i)).ToArray;
+function OutSliceReArr(a,b: integer): array of real := (a..b).Select(i->OutRe(i)).ToArray;
+function OutSliceBooArr(a,b: integer): array of boolean := (a..b).Select(i->OutBoo(i)).ToArray;
+function OutSliceChrArr(a,b: integer): array of char := (a..b).Select(i->OutChr(i)).ToArray;
+function OutSliceStrArr(a,b: integer): array of string := (a..b).Select(i->OutStr(i)).ToArray;
 
 function ConvertOne(ob: Object): Object;
 begin
@@ -560,8 +989,10 @@ begin
     OutputList[i] := ConvertOne(OutputList[i]);
 end;
 
-// -------------- Переопределенные функции с заполнением ввода и вывода
-
+{=========================================================================}
+{     Переопределенные функции PABCSystem с заполнением ввода и вывода    }
+{=========================================================================}
+/// Возвращает случайное целое в диапазоне от a до b
 function Random(a, b: integer): integer;
 begin
   Result := PABCSystem.Random(a, b);
@@ -569,6 +1000,14 @@ begin
   InputList.Add(Result);
 end;
 
+function Random(n: integer): integer;
+begin
+  Result := PABCSystem.Random(n);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+/// Возвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
 begin
   Result := PABCSystem.Random;
@@ -576,6 +1015,7 @@ begin
   InputList.Add(Result);
 end;
 
+/// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
 begin
   Result := PABCSystem.Random(a, b);
@@ -583,6 +1023,7 @@ begin
   InputList.Add(Result);
 end;
 
+/// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 begin
   Result := PABCSystem.Random(a, b);
@@ -590,6 +1031,38 @@ begin
   InputList.Add(Result);
 end;
 
+function RandomReal(a, b: real; digits: integer): real;
+begin
+  Result := PABCSystem.RandomReal(a, b, digits);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+/// Возвращает случайное целое в диапазоне 
+function Random(diap: IntRange): integer;
+begin
+  Result := PABCSystem.Random(diap);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+/// Возвращает случайное вещественное в диапазоне 
+function Random(diap: RealRange): real;
+begin
+  Result := PABCSystem.Random(diap);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+/// Возвращает случайный символ в диапазоне 
+function Random(diap: CharRange): char;
+begin
+  Result := PABCSystem.Random(diap);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+/// Возвращает кортеж из двух случайных целых в диапазоне от a до b
 function Random2(a, b: integer): (integer, integer);
 begin
   Result := PABCSystem.Random2(a, b);
@@ -598,6 +1071,7 @@ begin
   InputList.Add(Result[1]);
 end;
 
+/// Возвращает кортеж из двух случайных вещественных в диапазоне от a до b
 function Random2(a, b: real): (real, real);
 begin
   Result := PABCSystem.Random2(a, b);
@@ -606,13 +1080,43 @@ begin
   InputList.Add(Result[1]);
 end;
 
+/// Возвращает кортеж из двух случайных символов в диапазоне от a до b
 function Random2(a, b: char): (char, char);
 begin
   Result := PABCSystem.Random2(a, b);
   if IsPT then exit;
-  InputList.Add(Result);
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
 end;
 
+/// Возвращает кортеж из двух случайных целых в диапазоне
+function Random2(diap: IntRange): (integer, integer);
+begin
+  Result := PABCSystem.Random2(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+end;
+
+/// Возвращает кортеж из двух случайных символов в диапазоне
+function Random2(diap: CharRange): (char, char);
+begin
+  Result := PABCSystem.Random2(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+end;
+
+/// Возвращает кортеж из двух случайных вещественных в диапазоне
+function Random2(diap: RealRange): (real, real);
+begin
+  Result := PABCSystem.Random2(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+end;
+
+/// Возвращает кортеж из трех случайных целых в диапазоне от a до b
 function Random3(a, b: integer): (integer, integer, integer);
 begin
   Result := PABCSystem.Random3(a, b);
@@ -622,6 +1126,7 @@ begin
   InputList.Add(Result[2]);
 end;
 
+/// Возвращает кортеж из трех случайных вещественных в диапазоне от a до b
 function Random3(a, b: real): (real, real, real);
 begin
   Result := PABCSystem.Random3(a, b);
@@ -631,6 +1136,7 @@ begin
   InputList.Add(Result[2]);
 end;
 
+/// Возвращает кортеж из трех случайных символов в диапазоне от a до b
 function Random3(a, b: char): (char, char, char);
 begin
   Result := PABCSystem.Random3(a, b);
@@ -640,7 +1146,37 @@ begin
   InputList.Add(Result[2]);
 end;
 
-/// Возвращает массив размера n, заполненный случайными целыми значениями
+/// Возвращает кортеж из трех случайных целых в диапазоне
+function Random3(diap: IntRange): (integer, integer, integer);
+begin
+  Result := PABCSystem.Random3(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+/// Возвращает кортеж из трех случайных вещественных в диапазоне
+function Random3(diap: RealRange): (real, real, real);
+begin
+  Result := PABCSystem.Random3(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+/// Возвращает кортеж из трех случайных символов в диапазоне
+function Random3(diap: CharRange): (char, char, char);
+begin
+  Result := PABCSystem.Random3(diap);
+  if IsPT then exit;
+  InputList.Add(Result[0]);
+  InputList.Add(Result[1]);
+  InputList.Add(Result[2]);
+end;
+
+/// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от a до b
 function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
 begin
   Result := PABCSystem.ArrRandomInteger(n, a, b);
@@ -649,10 +1185,10 @@ begin
     InputList.Add(Result[i]);
 end;
 
-/// Возвращает массив размера n, заполненный случайными целыми значениями
+/// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от 0 до 100
 function ArrRandomInteger(n: integer): array of integer := ArrRandomInteger(n,0,100);
 
-/// Возвращает массив размера n, заполненный случайными вещественными значениями
+/// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
 function ArrRandomReal(n: integer; a: real; b: real): array of real;
 begin
   Result := PABCSystem.ArrRandomReal(n, a, b);
@@ -661,10 +1197,12 @@ begin
     InputList.Add(Result[i]);
 end;
 
-/// Возвращает массив размера n, заполненный случайными вещественными значениями
+/// Возвращает массив размера n, заполненный случайными вещественными значениями  в диапазоне от 0 до 10
 function ArrRandomReal(n: integer): array of real := ArrRandomReal(n,0,10);
 
-/// Возвращает массив из count элементов, заполненных значениями gen(i)
+/// Непонятно, зачем эти функции переопределять!!! Только Read и Random!!!
+
+{/// Возвращает массив из count элементов, заполненных значениями gen(i)
 function ArrGen<T>(count: integer; gen: integer->T): array of T;
 begin
   Result := PABCSystem.ArrGen(count,gen);
@@ -698,52 +1236,37 @@ begin
   if IsPT then exit;
   for var i:=0 to Result.Length-1 do
     InputList.Add(Result[i]);
-end;
+end;}
 
-/// Возвращает массив из n целых, введенных с клавиатуры
+{/// Возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(n: integer): array of integer;
 begin
-  Result := PABCSystem.ReadArrInteger(n);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);
+  Result := PABCSystem.ReadArrInteger(n); // и всё!!! Данные в InputList уже внесены!
 end;
 
 /// Возвращает массив из n вещественных, введенных с клавиатуры
 function ReadArrReal(n: integer): array of real;
 begin
   Result := PABCSystem.ReadArrReal(n);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);
 end;
 
 /// Возвращает массив из n строк, введенных с клавиатуры
 function ReadArrString(n: integer): array of string;
 begin
   Result := PABCSystem.ReadArrString(n);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);  
 end;
 
 /// Возвращает матрицу m на n целых, введенных с клавиатуры
 function ReadMatrInteger(m, n: integer): array [,] of integer;
 begin
-  Result := PABCSystem.ReadMatrInteger(m,n);
-  if IsPT then exit;
-  foreach var x in Result.ElementsByRow do
-    InputList.Add(x);
+  Result := PABCSystem.ReadMatrInteger(m,n); // и всё!!! Данные в InputList уже внесены!
 end;
 
 /// Возвращает матрицу m на n вещественных, введенных с клавиатуры
 function ReadMatrReal(m, n: integer): array [,] of real;
 begin
   Result := PABCSystem.ReadMatrReal(m,n);
-  if IsPT then exit;
-  foreach var x in Result.ElementsByRow do
-    InputList.Add(x);
-end;
+end;}
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
@@ -770,46 +1293,60 @@ end;
 function MatrRandomReal(m: integer; n: integer): array [,] of real := MatrRandomReal(m,n,0,10);
 
 /// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
-function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
+{function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
 begin
   Result := PABCSystem.MatrGen(m,n,gen);
   if IsPT then exit;
   foreach var x in Result.ElementsByRow do
     InputList.Add(x);
-end;
+end;}
 
-function ReadString: string;
+{function ReadString: string;
 begin
   Result := PABCSystem.ReadString;
   if IsPT then exit;
   InputList.Add(Result);
-  DoNewLineBeforeMessage := False;
+  CreateNewLineBeforeMessage := False;
 end;
 
 function ReadlnString := ReadString;
 
 function ReadString2 := (ReadString, ReadString);
 
-function ReadlnString2 := ReadString2;
+function ReadlnString2 := ReadString2;}
 
+/// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger(prompt: string): integer;
 begin
   Result := PABCSystem.ReadInteger(prompt);
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
   OutputList.RemoveAt(OutputList.Count - 1);
-  DoNewLineBeforeMessage := False;
+  CreateNewLineBeforeMessage := False;
 end;
 
+/// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
+function ReadlnInteger(prompt: string): integer;
+begin
+  Result := PABCSystem.ReadlnInteger(prompt);
+  if IsPT then exit;
+  OutputList.RemoveAt(OutputList.Count - 1);
+  OutputList.RemoveAt(OutputList.Count - 1);
+  CreateNewLineBeforeMessage := False;
+end;
+
+/// Выводит приглашение к вводу и возвращает два значения типа integer, введенные с клавиатуры
 function ReadInteger2(prompt: string): (integer, integer);
 begin
   Result := PABCSystem.ReadInteger2(prompt);
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
   OutputList.RemoveAt(OutputList.Count - 1);
-  DoNewLineBeforeMessage := False;
+  CreateNewLineBeforeMessage := False;
 end;
 
+///- procedure Print(a,b,...);
+/// Выводит значения a,b,... на экран, после каждого значения выводит пробел
 procedure Print(params args: array of object);
 begin
   foreach var ob in args do
@@ -818,170 +1355,46 @@ begin
     if not IsPT then
       OutputList.RemoveAt(OutputList.Count - 1)
   end;
-  DoNewLineBeforeMessage := True;
+  CreateNewLineBeforeMessage := True;
 end;
 
+///- procedure Println(a,b,...);
+/// Выводит значения a,b,... на экран, после каждого значения выводит пробел и переходит на новую строку
 procedure Println(params args: array of object);
 begin
   Print(args);
   Writeln;
   if IsPT then exit;
-  DoNewLineBeforeMessage := False;
+  CreateNewLineBeforeMessage := False;
 end;
 
+/// Выводит значение экран и выводит пробел
 procedure Print(ob: object);
 begin
   PABCSystem.Print(ob);
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
-  DoNewLineBeforeMessage := True;
+  CreateNewLineBeforeMessage := True;
 end;
 
+/// Выводит значение экран и выводит пробел
 procedure Print(s: string);
 begin
   PABCSystem.Print(s);
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
-  DoNewLineBeforeMessage := True;
+  CreateNewLineBeforeMessage := True;
 end;
 
+/// Выводит значение экран и выводит пробел
 procedure Print(c: char);
 begin
   PABCSystem.Print(object(c));
   if IsPT then exit;
   OutputList.RemoveAt(OutputList.Count - 1);
-  DoNewLineBeforeMessage := True;
+  CreateNewLineBeforeMessage := True;
 end;
 
-type
-  IOLightSystem = class(__ReadSignalOISystem)
-  public
-    procedure write(obj: object); override;
-    begin
-      inherited write(obj);
-      OutputString += _ObjectToString(obj);
-      OutputList += obj;
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure writeln; override;
-    begin
-      inherited writeln;
-      OutputString += NewLine;
-      DoNewLineBeforeMessage := False;
-    end;
-    
-    function ReadLine: string; override;
-    begin
-      Result := inherited ReadLine;
-      DoNewLineBeforeMessage := False;
-    end;
-    
-    procedure readln; override;
-    begin
-      inherited readln;
-      DoNewLineBeforeMessage := False;
-    end;
-    
-    procedure read(var x: integer); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: real); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: char); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: string); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: byte); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: shortint); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: smallint); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: word); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: longword); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: int64); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: uint64); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: single); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: boolean); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-    
-    procedure read(var x: BigInteger); override;
-    begin
-      inherited Read(x);
-      InputList.Add(x);
-      DoNewLineBeforeMessage := True;
-    end;
-  end;
-  
 // конец переопределенных функций с заполнением ввода-вывода  
 
 function ToObjArray(a: array of integer) := a.Select(x -> object(x)).ToArray;
@@ -1005,7 +1418,83 @@ begin
     raise new OutputCountException(OutputList.Count, a.Length);
 end;
 
-procedure CheckOutput(params arr: array of object);
+/// Не меняет TaskResult если типы правильные
+procedure CheckInputTypes(a: array of System.Type);
+begin
+  // Несоответствие количества вводимых параметров
+  if a.Length <> InputList.Count then
+    raise new InputCountException(InputList.Count, a.Length);
+  for var i := 0 to a.Length - 1 do
+    if a[i] <> InputList[i].GetType then
+      raise new InputTypeException(i + 1, TypeToTypeName(a[i]), TypeName(InputList[i]));
+end;
+
+/// Синоним CheckInputTypes
+procedure CheckInput(a: array of System.Type) := CheckInputTypes(a);
+procedure CheckInputIsEmpty := CheckInputTypes(new System.Type[0]);
+
+procedure CheckInputIsInitial;
+begin
+  CheckInput(InitialInputList.ToArray);
+end; 
+
+procedure CheckInput(seq: sequence of System.Type) := CheckInputTypes(seq.ToArray);
+
+procedure CheckOutputAfterInitialSeq(seq: sequence of integer) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of real) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of string) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of boolean) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of char) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of object) := CheckOutputAfterInitial(seq.ToArray);
+procedure CheckOutputAfterInitialSeq(seq: ObjectList) := CheckOutputAfterInitial(seq.lst.ToArray);
+
+
+procedure ClearOutputListFromSpaces;
+begin
+  OutputList := OutputList.Where(s -> (not (s is string)) or ((s as string) <> ' ')).ToList;
+  OutputList := OutputList.Where(s -> (not (s is char)) or ((char(s)) <> ' ')).ToList;
+end;
+
+procedure FilterOnlyNumbers;
+begin
+  OutputList := OutputList.Where(x -> (x is integer) or (x is real) or (x is int64)).ToList;
+end;
+
+procedure FilterOnlyNumbersAndBools;
+begin
+  OutputList := OutputList.Where(x -> (x is integer) or (x is real) or (x is int64) or (x is boolean)).ToList;
+end;
+
+function MsgColorCode(color: MessageColorT): char;
+begin
+  Result := #65530; // Black
+  case color of
+    MsgColorGreen: Result := #65535;
+    MsgColorRed: Result := #65534;
+    MsgColorOrange: Result := #65533;
+    MsgColorMagenta: Result := #65532;
+    MsgColorGray: Result := #65531;
+  end;
+end;
+
+procedure ColoredMessage(msg: string; color: MessageColorT);
+begin
+  if CreateNewLineBeforeMessage then
+    Console.WriteLine;
+  Console.WriteLine(MsgColorCode(color) + msg);
+  CreateNewLineBeforeMessage := False;
+end;
+
+procedure ColoredMessage(msg: string);
+begin
+  if CreateNewLineBeforeMessage then
+    Console.WriteLine;
+  Console.WriteLine(MsgColorCode(MsgColorRed) + msg);
+  CreateNewLineBeforeMessage := False;
+end;
+
+/// Здесь проверялся RuntimeType - в новом CheckOutput RuntimeType вообще не проверяется
+procedure CheckOutputOld(params arr: array of object);
 begin
   if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
     exit;
@@ -1018,7 +1507,7 @@ begin
     if (arr[i].GetType.Name = 'RuntimeType') and (arr[i] <> OutputList[i].GetType) then
       raise new OutputTypeException(i + 1, TypeToTypeName(arr[i] as System.Type), TypeName(OutputList[i]))
     else if (arr[i].GetType.Name <> 'RuntimeType') and (arr[i].GetType <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeName(arr[i]), TypeName(OutputList[i]));
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i].GetType), TypeName(OutputList[i]));
   end;  
   
   // Несоответствие количества выводимых параметров
@@ -1034,7 +1523,111 @@ begin
     end;
 end;
 
-procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
+// Добавим сюда проверку типов RuntimeType
+// Выдавать ли сообщение о дальнейшем вводе-выводе если у нас InitialTask?
+//   Сделаем глобальную настройку CancelMessagesIfInitial и по умолчанию присвоим ей False
+procedure CheckOutput(params arr: array of object);
+begin
+  // TaskResult = InitialTask - ничего выводить не надо
+  // TaskResult = BadInitialTask - потом будет выведено исключение, что часть изначальных данных удалена
+  if (TaskResult = InitialTask) and CancelMessagesIfInitial
+     or (TaskResult = BadInitialTask) then
+    exit;
+
+  var mn := Min(arr.Length, OutputList.Count);
+  
+  // Несоответствие типов или значений
+  var ind := -1;
+  for var i := 0 to mn - 1 do
+  begin  
+    // Если типы не совпадают 
+    if (arr[i].GetType.Name <> 'RuntimeType') and (arr[i].GetType <> OutputList[i].GetType) or
+      (arr[i].GetType.Name = 'RuntimeType') and (arr[i] <> OutputList[i].GetType)
+    then
+    begin
+      ind := i; // то запомнить индекс первого несовпадения
+      if ind > InitialOutputList.Count then
+        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i].GetType), TypeName(OutputList[i]));           
+    end;
+    // Если значения не совпадают (если задан маркер типа, то проверка значений пропускается)
+    if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
+    begin
+      ind := i; // то запомнить индекс первого несовпадения
+      if ind > InitialOutputList.Count then
+      begin
+        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+        ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i]}, а выведено {OutputList[i]}',MsgColorGray);
+      end;  
+      TaskResult := BadSolution;
+      exit;           
+    end;
+  end;
+  if ind = -1 then
+    ind := mn;
+  
+  if arr.Length <> OutputList.Count then
+  begin  
+    if (ind = mn) and (ind<>0) then
+      ColoredMessage('Все выведенные данные правильны',MsgColorGray)
+    else if ind > 0 then
+      ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+    raise new OutputCountException(OutputList.Count, arr.Length);
+  end;
+  TaskResult := Solved;
+end;
+
+procedure CheckOutputAfterInitial(params arr: array of object);
+begin
+  if (TaskResult = InitialTask) and CancelMessagesIfInitial
+     or (TaskResult = BadInitialTask) then
+    exit;
+
+  // Если мы попали сюда, то OutputList.Count >= InitialOutputList.Count
+  var mn := Min(arr.Length, OutputList.Count - InitialOutputList.Count);
+  
+  var i0 := InitialOutputList.Count;
+  var ind := -1;
+  for var i := i0 to i0 + mn - 1 do
+  begin  
+    // Если типы не совпадают 
+    if (arr[i-i0].GetType.Name <> 'RuntimeType') and (arr[i-i0].GetType <> OutputList[i].GetType) or
+      (arr[i-i0].GetType.Name = 'RuntimeType') and (arr[i-i0] <> OutputList[i].GetType)
+    then
+    begin
+      ind := i; // то запомнить индекс первого несовпадения
+      if ind >= InitialOutputList.Count then
+        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i-i0].GetType), TypeName(OutputList[i]));           
+    end;
+    // Если значения не совпадают (если задан маркер типа, то проверка значений пропускается)
+    if (arr[i-i0].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i-i0], OutputList[i]) then
+    begin
+      ind := i; // то запомнить индекс первого несовпадения
+      if ind > InitialOutputList.Count then
+      begin
+        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+        ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i-i0]}, а выведено {OutputList[i]}',MsgColorGray);
+      end;  
+      TaskResult := BadSolution;
+      exit;           
+    end;
+  end;
+  if ind = -1 then
+    ind := mn;
+  
+  if arr.Length <> OutputList.Count - InitialOutputList.Count then
+  begin  
+    if (ind = mn) and (ind<>i0) then
+      ColoredMessage('Все выведенные данные правильны',MsgColorGray)
+    else if ind > 0 then
+      ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+    raise new OutputCountException(OutputList.Count, arr.Length + i0);
+  end;
+  TaskResult := Solved;
+end;
+
+procedure CheckOutputAfterInitialOld(params arr: array of object); // проверить только то, что после исходного вывода
 begin
   if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
     exit;
@@ -1064,75 +1657,106 @@ begin
       TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
       exit;           
     end;
+    
+    
 end;
-
-/// Не меняет TaskResult если типы правильные
-procedure CheckInputTypes(a: array of System.Type);
-begin
-  // Несоответствие количества вводимых параметров
-  if a.Length <> InputList.Count then
-    raise new InputCountException(InputList.Count, a.Length);
-  for var i := 0 to a.Length - 1 do
-    if a[i] <> InputList[i].GetType then
-      raise new InputTypeException(i + 1, TypeToTypeName(a[i]), TypeName(InputList[i]));
-end;
-
-/// Смноним CheckInputTypes
-procedure CheckInput(a: array of System.Type) := CheckInputTypes(a);
-
-procedure CheckInput(seq: sequence of System.Type) := CheckInputTypes(seq.ToArray);
 
 procedure CheckOutputSeq(a: sequence of integer) := CheckOutput(ToObjArray(a.ToArray));
-
 procedure CheckOutputSeq(a: sequence of real) := CheckOutput(ToObjArray(a.ToArray));
-
 procedure CheckOutputSeq(a: sequence of string) := CheckOutput(ToObjArray(a.ToArray));
-
 procedure CheckOutputSeq(a: sequence of char) := CheckOutput(ToObjArray(a.ToArray));
-
 procedure CheckOutputSeq(a: sequence of boolean) := CheckOutput(ToObjArray(a.ToArray));
-
 procedure CheckOutputSeq(a: sequence of object) := CheckOutput(a.ToArray);
-
 procedure CheckOutputSeq(a: ObjectList) := CheckOutput(a.lst.ToArray);
+procedure CheckOutputSeq(a: sequence of word) := CheckOutputSeq(a.Select(x->object(x)));
 
-procedure CheckOutputAfterInitialSeq(seq: sequence of integer) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of real) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of string) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of boolean) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of char) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of object) := CheckOutputAfterInitial(seq.ToArray);
-procedure CheckOutputAfterInitialSeq(seq: ObjectList) := CheckOutputAfterInitial(seq.lst.ToArray);
+procedure CheckOutputNew(params arr: array of object) := CheckOutput(arr);
+procedure CheckOutputSeqNew(a: sequence of integer) := CheckOutputSeq(a);
+procedure CheckOutputSeqNew(a: sequence of real) := CheckOutputSeq(a);
+procedure CheckOutputSeqNew(a: sequence of string) := CheckOutputSeq(a);
+procedure CheckOutputSeqNew(a: sequence of char) := CheckOutputSeq(a);
+procedure CheckOutputSeqNew(a: sequence of boolean) := CheckOutputSeq(a);
+procedure CheckOutputSeqNew(a: sequence of object) := CheckOutputSeq(a);
+procedure CheckOutputSeqNew(a: sequence of word) := CheckOutputSeq(a);
+procedure CheckOutputSeqNew(a: ObjectList) := CheckOutputSeq(a);
 
+procedure CheckOutputSeqOld(a: sequence of integer) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of real) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of string) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of char) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of boolean) := CheckOutputOld(ToObjArray(a.ToArray));
+procedure CheckOutputSeqOld(a: sequence of object) := CheckOutputOld(a.ToArray);
+procedure CheckOutputSeqOld(a: ObjectList) := CheckOutputOld(a.lst.ToArray);
 
-procedure ClearOutputListFromSpaces;
-begin
-  OutputList := OutputList.Where(s -> (not (s is string)) or ((s as string) <> ' ')).ToList;
-end;
-
-procedure FilterOnlyNumbers;
-begin
-  OutputList := OutputList.Where(x -> (x is integer) or (x is real) or (x is int64)).ToList;
-end;
-
-function MsgColorCode(color: MessageColorT): char;
-begin
-  Result := #65530; // Black
-  case color of
-    MsgColorGreen: Result := #65535;
-    MsgColorRed: Result := #65534;
-    MsgColorOrange: Result := #65533;
-    MsgColorMagenta: Result := #65532;
-    MsgColorGray: Result := #65531;
+procedure CheckOutputString(str: string);
+  function Char2Str(c: char): string;
+  begin
+    if (c = #10) or (c = #13) then
+      Result := '''ПереходНаНовуюСтроку'''
+    else Result := '''' + c + '''';
   end;
+begin
+  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+    exit;
+  var ostr := OutputString.ToString;
+  var mn := Min(str.Length, ostr.Length);
+  
+  var ind := -1;
+  for var i := 1 to mn do
+  begin
+    if str[i] <> ostr[i] then
+    begin
+      ind := i;
+      ColoredMessage($'Элемент {i}: ожидался символ {Char2Str(str[i])}, а выведен символ {Char2Str(ostr[i])}',MsgColorGray);
+      TaskResult := BadSolution;
+      exit;           
+    end;
+  end;
+  if ind = -1 then
+    ind := mn;
+
+  if str.Length <> ostr.Length then
+  begin  
+    if (ind = mn) and (ind<>0) then
+      ColoredMessage('Все выведенные данные правильны',MsgColorGray)
+    else if ind > 0 then
+      ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+    raise new OutputCountException(ostr.Length, str.Length);
+  end;
+
+  TaskResult := Solved;
 end;
 
-procedure ColoredMessage(msg: string; color: MessageColorT := MsgColorRed);
+
+type 
+  IntAr = array of integer;
+  RealAr = array of real;
+  IntAr2 = array [,] of integer;
+  RealAr2 = array [,] of real;
+  
+function FlattenElement(x: object): List<object>; 
 begin
-  if DoNewLineBeforeMessage then
-    Console.WriteLine;
-  Console.WriteLine(MsgColorCode(color) + msg);
-  DoNewLineBeforeMessage := False;
+  var lst := new List<object>;
+  if x is IntAr (var iarr) then
+    lst.AddRange(iarr.Select(x -> object(x)))
+  else if x is RealAr (var rarr) then
+    lst.AddRange(rarr.Select(x -> object(x)))
+  else if x is IntAr2 (var iarr) then
+    lst.AddRange(iarr.ElementsByRow.Select(x -> object(x)))
+  else if x is RealAr2 (var rarr) then
+    lst.AddRange(rarr.ElementsByRow.Select(x -> object(x)))
+  else if x is List<integer> (var larr) then
+    lst.AddRange(larr.Select(x -> object(x)))
+  else if x is List<real> (var lrarr) then
+    lst.AddRange(lrarr.Select(x -> object(x)))
+  else lst.Add(x);
+  Result := lst;
+end;
+
+procedure FlattenOutput;
+begin
+  // если в OutputList массивы, вытянуть их в единый список
+  OutputList := OutputList.SelectMany(x -> FlattenElement(x)).ToList;
 end;
 
 function NValues(n: integer): string;
@@ -1140,9 +1764,13 @@ begin
   case n of
     1: Result := n + ' значение';
     2, 3, 4: Result := n + ' значения';
-    5..1000: Result := n + ' значений';
+    5..100000: Result := n + ' значений';
   end;
 end;
+
+{=========================================================}
+{          Итоговые функции для проверки решения          }
+{=========================================================}
 
 procedure RobotCheckSolution;
 begin
@@ -1474,46 +2102,6 @@ begin
     WriteInfoCallBack(LessonName,TName,TaskPlatform,TaskResult,TaskResultInfo);
 end;
 
-procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo: string);
-begin
-  // Считать логин пароль из auth
-  var data := System.IO.File.ReadAllBytes(auth);
-  var arr := Decrypt(data).Split(#10);
-  var login,pass: string;
-  if arr.Length >= 2 then
-  begin
-    login := arr[0];
-    pass := arr[1];
-    // Теперь как-то записать в БД информацию
-    var User := new ServerAccessProvider(ServerAddr);
-    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo);
-    var v := t2.Result;
-    //Console.WriteLine(v);
-  end;
-end;
-
-procedure WriteInfoToDatabases(LessonName,TaskName,TaskPlatform: string; TaskResult: TaskStatus; AdditionalInfo: string := '');
-begin
-  try
-    System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {TaskResult.ToString} {AdditionalInfo}' + #10);
-    var auth := FindAuthDat();
-    var args := System.Environment.GetCommandLineArgs;
-    if (auth <> '') and (args.Length = 3) and (args[2].ToLower = 'true') then
-      // Есть проблема паузы при плохой сети 
-      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskPlatform,TaskResult.ToString, AdditionalInfo);
-  except
-    on e: System.AggregateException do
-    begin
-      foreach var x in e.InnerExceptions do
-        if x is HTTPRequestException then
-          ColoredMessage(x.InnerException?.Message??'',MsgColorGray)
-        else ColoredMessage(x.Message,MsgColorGray); 
-    end;
-    on e: Exception do
-      ColoredMessage(e.Message,MsgColorGray);
-  end;  
-end;
-
 procedure LoadLightPTInfo;
 begin
   try
@@ -1543,6 +2131,197 @@ begin
     
   end;
 end;
+
+{=========================================================}
+{            Процедуры для записи в базы данных           }
+{=========================================================}
+
+procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo: string);
+begin
+  // Считать логин пароль из auth
+  var data := System.IO.File.ReadAllBytes(auth);
+  var arr := Decrypt(data).Split(#10);
+  var login,pass: string;
+  if arr.Length >= 2 then
+  begin
+    login := arr[0];
+    pass := arr[1];
+    // Теперь как-то записать в БД информацию
+    var User := new ServerAccessProvider(ServerAddr);
+    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo);
+    var v := t2.Result;
+    v := v;
+    if v <> 'Success' then
+      ColoredMessage('Ошибка сервера: '+v, MsgColorGray);
+    //Console.WriteLine(v);
+  end;
+end;
+
+procedure WriteInfoToDatabases(LessonName,TaskName,TaskPlatform: string; TaskResult: TaskStatus; AdditionalInfo: string := '');
+begin
+  try
+    System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {TaskResult.ToString} {AdditionalInfo}' + #10);
+  except
+    on e: Exception do
+      ColoredMessage('Ошибка записи в файл db.txt. Обратитесь к преподавателю',MsgColorGray);
+  end; 
+  // Разделили ошибки записи в локальную и глобальную базу
+  try
+    var auth := FindAuthDat(); // файл авторизации ищется либо в текущей папке либо в папке на уровень выше
+    var args := System.Environment.GetCommandLineArgs;
+    if (auth <> '') and (args.Length >= 3) and (args[2].ToLower = 'true') then
+    begin  
+      var text := '';
+      if (TaskResult <> InitialTask) and (args.Length >= 4) then
+        text := args[3];
+      // Есть проблема паузы при плохой сети 
+      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskPlatform,TaskResult.ToString, text, AdditionalInfo);
+    end  
+  except
+    on e: System.AggregateException do
+    begin
+      foreach var x in e.InnerExceptions do
+        if x is HTTPRequestException then
+          ColoredMessage(x.InnerException?.Message??'',MsgColorGray)
+        else ColoredMessage(x.Message,MsgColorGray); 
+    end;
+    on e: Exception do
+      ColoredMessage(e.Message,MsgColorGray);
+  end;  
+end;
+
+{===========================================================}
+{        Переопределенные подсистемы ввода и вывода         }
+{===========================================================}
+type
+  IOLightSystem = class(__ReadSignalOISystem)
+  public
+    procedure write(obj: object); override;
+    begin
+      inherited write(obj);
+      OutputString += _ObjectToString(obj);
+      OutputList += obj;
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure writeln; override;
+    begin
+      inherited writeln;
+      OutputString += NewLine;
+      CreateNewLineBeforeMessage := False;
+    end;
+    
+    function ReadLine: string; override;
+    begin
+      Result := inherited ReadLine;
+      InputList.Add(Result);
+      CreateNewLineBeforeMessage := False;
+    end;
+    
+    procedure readln; override;
+    begin
+      inherited readln;
+      CreateNewLineBeforeMessage := False;
+    end;
+    
+    procedure read(var x: integer); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: real); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: char); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: string); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: byte); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: shortint); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: smallint); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: word); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: longword); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: int64); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: uint64); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: single); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: boolean); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+    
+    procedure read(var x: BigInteger); override;
+    begin
+      inherited Read(x);
+      InputList.Add(x);
+      CreateNewLineBeforeMessage := True;
+    end;
+  end;
 
 initialization
   // Если LightPT добавляется в конец uses, то ее секция инициализации вызывается первой

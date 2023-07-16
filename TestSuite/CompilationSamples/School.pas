@@ -75,8 +75,16 @@ function FirstPrimes(k: integer): List<integer>;
 /// Количество простых делителей числа n
 function PrimeDivisorsCount(n: integer): integer;
 
-/// Возвращает список, содержащий цифры числа n
-function Digits(n: int64): List<integer>;
+/// Возвращает целочисленный список расширенного представления
+/// десятичного числа n по основанию base.
+/// По умолчанию base=10 и возвращается список десятичных цифр числа n.
+/// Обратное действие выполняет функция Refold. 
+function Digits(n: int64; base: integer := 10): List<integer>;
+
+/// Возвращает целое десятичное число на основе его расширенного представления
+/// по основанию base (по умолчанию base=10).
+/// Функция выполняет действие, обратное функции Digits,
+function DigitsToInt64(ext: List<integer>; base: integer := 10): int64;
 
 /// Возвращает список делителей натурального числа n
 function Divisors(n: integer): List<integer>;
@@ -667,32 +675,47 @@ function PrimeDivisorsCount(Self: integer): integer; extensionmethod := PrimeDiv
 
 {$region Digits}
 
-/// Возвращает список, содержащий цифры числа n
-function Digits(n: int64): List<integer>;
+/// Возвращает целочисленный список расширенного представления
+/// десятичного числа n по основанию base.
+/// По умолчанию base=10 и возвращается список десятичных цифр числа n.
+/// Обратное действие выполняет функция Refold.
+function Digits(n: int64; base: integer): List<integer>;
 begin
   Result := new List<integer>;
-  n := Abs(n);
-  if n = 0 then Result := |0|.ToList
+  if (n < 0) or (base < 2) then exit;
+  if n = 0 then Result := Lst(0)
   else
-  begin
     while n > 0 do
     begin
-      Result.Add(n mod 10);
-      n := n div 10
+      var rem: integer := n mod base;
+      Result.Add(rem);
+      n := n div base
     end;
     Result.Reverse
+end;
+
+function Digits(Self: integer; base: integer := 10): List<integer>;
+    extensionmethod := Digits(Self, base);
+
+function Digits(Self: int64; base: integer := 10): List<integer>;
+    extensionmethod := Digits(Self, base);
+    
+/// Возвращает целое десятичное число на основе его расширенного представления
+/// по основанию base (по умолчанию base=10).
+/// Функция выполняет действие, обратное функции Digits
+function DigitsToInt64(ext: List<integer>; base: integer): int64;
+begin
+  Result := 0;
+  var p := int64(1);
+  for var i := ext.Count -1 downto 0 do
+  begin  
+    Result += ext[i] * p;
+    p *= base
   end
 end;
 
-/// Возвращает список, содержащий цифры числа
-function Digits(Self: integer): List<integer>;
-    extensionmethod :=
-Digits(Self);
-
-/// Возвращает список, содержащий цифры числа
-function Digits(Self: int64): List<integer>;
-    extensionmethod :=
-Digits(Self);
+function DigitsToInt64(Self: List<integer>; base: integer := 10): int64;
+    extensionmethod := DigitsToInt64(Self, base);    
 
 {$endregion}
 

@@ -167,7 +167,8 @@ namespace CodeCompletion
                 var arr = tn.full_name.Split('.');
                 foreach (string s in arr)
                 {
-                    ntr.names.Add(new ident(s));
+                    if (s.IndexOf("implementation__") == -1)
+                        ntr.names.Add(new ident(s));
                 }
                 return ntr;
             }
@@ -1404,6 +1405,7 @@ namespace CodeCompletion
             //throw new Exception("The method or operation is not implemented.");
             SymScope topScope;
             ProcScope ps = null;
+            ElementScope[] predef_params = null;
             bool not_def = false;
             ProcRealization pr = null;
             bool is_realization = false;
@@ -1457,7 +1459,12 @@ namespace CodeCompletion
                         }
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         else
+                        {
+                            if (ps.parameters != null)
+                                predef_params = ps.parameters.ToArray();
                             ps = select_function_definition(ps, _procedure_header.parameters, null, topScope as TypeScope);
+                        }
+                            
                         if (ps == null)
                         {
                             ps = new ProcScope(meth_name, cur_scope);
@@ -1465,6 +1472,7 @@ namespace CodeCompletion
                         }
                         if (ps.parameters.Count != 0 && _procedure_header.parameters != null && is_proc_realization)
                         {
+                            predef_params = ps.parameters.ToArray();
                             ps.parameters.Clear();
                             ps.already_defined = true;
                         }
@@ -1560,6 +1568,7 @@ namespace CodeCompletion
                                 ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
                                 if (ss != null && ss is ProcScope)
                                 {
+
                                     ps = select_function_definition(ss as ProcScope, _procedure_header.parameters, null, null);
                                     if (ps == null && _procedure_header.parameters == null)
                                         ps = ss as ProcScope;
@@ -1568,9 +1577,11 @@ namespace CodeCompletion
                                         ps = new ProcScope(meth_name, cur_scope);
                                         ps.head_loc = loc;
                                     }
+                                    
                                     //ps = ss as ProcScope;
                                     if (ps.parameters.Count != 0 && _procedure_header.parameters != null)
                                     {
+                                        predef_params = ps.parameters.ToArray();
                                         ps.parameters.Clear();
                                         ps.already_defined = true;
                                     }
@@ -1699,7 +1710,7 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             cur_scope = ps;
             if (_procedure_header.parameters != null)
-                add_parameters(ps, _procedure_header.parameters);
+                add_parameters(ps, _procedure_header.parameters, predef_params);
             cur_scope = tmp;
             if (cur_scope is TypeScope && !ps.is_static)
                 ps.AddName("self", new ElementScope(new SymInfo("self", SymbolKind.Parameter, "self"), cur_scope, ps));
@@ -1726,6 +1737,7 @@ namespace CodeCompletion
         {
             SymScope topScope;
             ProcScope ps = null;
+            ElementScope[] predef_params = null;
             bool is_realization = false;
             TypeScope return_type = null;
             bool not_def = false;
@@ -1788,7 +1800,10 @@ namespace CodeCompletion
                             }
                         }
                         else
+                        {
                             ps = select_function_definition(ps, _function_header.parameters, return_type, topScope as TypeScope, true);
+                        }
+                            
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         if (ps == null)
                         {
@@ -1798,6 +1813,7 @@ namespace CodeCompletion
                         }
                         if (ps.parameters.Count != 0 && _function_header.parameters != null && is_proc_realization)
                         {
+                            predef_params = ps.parameters.ToArray();
                             ps.parameters.Clear();
                             ps.already_defined = true;
                         }
@@ -1898,6 +1914,8 @@ namespace CodeCompletion
                                 {
                                     //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null) ss = (ss as ProcScope).nextProc;
                                     //ps = ss as ProcScope;
+                                    if (ps.parameters != null)
+                                        predef_params = ps.parameters.ToArray();
                                     ps = select_function_definition(ss as ProcScope, _function_header.parameters, return_type, null, true);
                                     if (ps == null && _function_header.parameters == null && _function_header.return_type == null)
                                         ps = ss as ProcScope;
@@ -2051,7 +2069,7 @@ namespace CodeCompletion
 
             cur_scope = ps;
             if (_function_header.parameters != null)
-                add_parameters(ps, _function_header.parameters);
+                add_parameters(ps, _function_header.parameters, predef_params);
             cur_scope = tmp;
             if (ps.procRealization == null || ps.return_type == null)
                 ps.return_type = return_type;
@@ -2066,8 +2084,9 @@ namespace CodeCompletion
                 pr.Complete();
         }
 		
-        private void add_parameters(ProcScope ps, formal_parameters parameters)
+        private void add_parameters(ProcScope ps, formal_parameters parameters, ElementScope[] predef_params)
         {
+            int i = 0;
             foreach (typed_parameters pars in parameters.params_list)
             {
                 pars.vars_type.visit(this);
@@ -2096,7 +2115,10 @@ namespace CodeCompletion
                         ps.AddName(id.name, si);
                         si.param_kind = pars.param_kind;
                         si.MakeDescription();
+                        if (si.cnst_val == null && predef_params != null && i < predef_params.Length)
+                            si.cnst_val = predef_params[i].cnst_val;
                         ps.AddParameter(si);
+                        i++;
                     }
                 }
             }
@@ -2197,7 +2219,6 @@ namespace CodeCompletion
                     generic_params.Add(id.name);
                 }
             }
-            
             _type_declaration.type_def.visit(this);
             if (returned_scope != null && returned_scope is PointerScope && (returned_scope as PointerScope).ref_type is UnknownScope)
             {
@@ -2223,15 +2244,32 @@ namespace CodeCompletion
                         string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword(cl_def.keyword);
                         if (cl_def.attribute == class_attribute.Auto)
                             key = "auto " + key;
-                        else if (cl_def.attribute == class_attribute.Abstract)
+                        else if ((cl_def.attribute & class_attribute.Abstract) == class_attribute.Abstract)
                             key = "abstract " + key;
-                        else if (cl_def.attribute == class_attribute.Sealed)
+                        else if ((cl_def.attribute & class_attribute.Sealed) == class_attribute.Sealed)
                             key = "sealed " + key;
-                        else if (cl_def.attribute == class_attribute.Static)
+                        else if ((cl_def.attribute & class_attribute.Static) == class_attribute.Static)
                             key = "static " + key;
                         if (key != null && returned_scope.body_loc != null)
                         {
                             returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc);
+                        }
+                        if ((cl_def.attribute & class_attribute.Partial) == class_attribute.Partial)
+                        {
+                            List<SymScope> lst = cur_scope.FindOverloadNames(cur_type_name);
+                            if (lst != null)
+                            {
+                                var this_ts = returned_scope as TypeScope;
+                                foreach (SymScope ss in lst)
+                                {
+                                    var ts = ss as TypeScope;
+                                    if (ts != null)
+                                    {
+                                        ts.AddPartial(this_ts);
+                                        this_ts.AddPartial(ts);
+                                    }
+                                }
+                            }
                         }
                     }
                     if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
@@ -2547,6 +2585,7 @@ namespace CodeCompletion
                     else if (dir.Name.text.ToLower() == "includenamespace")
                     {
                         string directive = dir.Directive.text.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+                        Compiler.TryThrowInvalidPath(directive, dir.source_context);
 
                         if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
                         {
@@ -2668,9 +2707,9 @@ namespace CodeCompletion
         
 		private void add_system_unit()
 		{
-			string unit_file_name = this.converter.controller.Parser.LanguageInformation.SystemUnitName;
+			string unit_file_name = this.converter.controller.Parser?.LanguageInformation.SystemUnitName;
 			if (unit_file_name == null) return;
-			string unit_name = CodeCompletionNameHelper.FindSourceFileName(unit_file_name);
+			string unit_name = CodeCompletionNameHelper.FindSourceFileName(unit_file_name, out _);
             if (unit_name != null)
             {
                  DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -2702,7 +2741,7 @@ namespace CodeCompletion
 
         private void add_extensions_unit()
         {
-            string unit_name = CodeCompletionNameHelper.FindSourceFileName(PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name);
+            string unit_name = CodeCompletionNameHelper.FindSourceFileName(PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name, out _);
 
             if (unit_name != null)
             {
@@ -2805,6 +2844,7 @@ namespace CodeCompletion
                     else if (dir.Name.text.ToLower() == "includenamespace")
                     {
                         string directive = dir.Directive.text.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+                        Compiler.TryThrowInvalidPath(directive, dir.source_context);
 
                         if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
                         {
@@ -2862,7 +2902,7 @@ namespace CodeCompletion
                             if (i == 0)
                             {
                                 string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(_program_module.file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(_program_module.file_name));
 
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
@@ -2989,7 +3029,7 @@ namespace CodeCompletion
                                                   left_column_num,
                                                   right_line_num, right_column_num,
                                                  doc);
-                cur_scope.loc = new location(cur_scope.loc.begin_line_num, cur_scope.loc.end_line_num, right_line_num, right_column_num, doc);
+                cur_scope.loc = new location(cur_scope.loc.begin_line_num, cur_scope.loc.begin_column_num, right_line_num, right_column_num, doc);
                 _program_module.program_block.program_code.visit(this);
             }
         }
@@ -4084,12 +4124,12 @@ namespace CodeCompletion
                 if (_class_definition.template_args != null)
                 {
                     foreach (ident id in _class_definition.template_args.idents)
-                        ss.AddGenericParameter(id.name);
+                        ss.AddGenericParameter(id.name, get_location(id));
                 }
                 else if (template_args != null)
                 {
                     foreach (ident id in template_args.idents)
-                        ss.AddGenericParameter(id.name);
+                        ss.AddGenericParameter(id.name, get_location(id));
                 }
             }
             
@@ -4513,7 +4553,10 @@ namespace CodeCompletion
                             if (pars.inital_value != null)
                             {
                                 pars.inital_value.visit(this);
-                                si.cnst_val = cnst_val.prim_val;
+                                if (returned_scope is NullTypeScope)
+                                    si.cnst_val = "nil";
+                                else
+                                    si.cnst_val = cnst_val.prim_val;
                             }
                             si.param_kind = pars.param_kind;
                             si.MakeDescription();
@@ -4680,7 +4723,7 @@ namespace CodeCompletion
                             try
                             {
                                 string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
 
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
@@ -4802,7 +4845,7 @@ namespace CodeCompletion
                             try
                             {
                                 string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
 
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                        && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)

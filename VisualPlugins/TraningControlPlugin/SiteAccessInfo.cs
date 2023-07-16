@@ -213,6 +213,61 @@ namespace DBAccessPluginNamespace
             return "Success";
         }
 
+        async public Task<string> GetRating(string shortFIO, string fullFIO, string password)
+        {
+            var values = new Dictionary<string, string>
+                {
+                    //`id`, `pupilId`, `taskName`, `lessonName`, `type`, `content`, `time`, `IP`
+                    //{ "shortFIO", ShortFIO },  //  shortFIO или FIO, и они должны совпадать с такими же в базе
+                    { "FIO", FullFIO },
+                    //{ "password", Password}
+                };
+            //  Отправка запроса на сервер
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync(ServAddr + "/getRating.php", content);
+            string responseText = await response.Content.ReadAsStringAsync();
+            var pieces = responseText.Split(';');
+
+            var res = "";
+            var ClassTasksSolved = 0;
+            var ControlTasksSolved = 0;
+            var HomeworkTasksSolved = 0;
+            var AdditionalTasksSolved = 0;
+            try 
+            { 
+                foreach (var s in pieces)
+                {
+                    if (s.IndexOf(':') < 1) continue;
+                    var pair = s.Split(':');
+                    switch (pair[0])
+                    {
+                        case "ClassTasks":
+                            ClassTasksSolved = int.Parse(pair[2]); 
+                            break;
+                        case "ControlTasks":
+                            ControlTasksSolved = int.Parse(pair[2]);
+                            break;
+                        case "HomeworkTasks":
+                            HomeworkTasksSolved = int.Parse(pair[2]);
+                            break;
+                        case "AdditionalTasks":
+                            AdditionalTasksSolved = int.Parse(pair[2]);
+                            break;
+                    }
+                }
+                // великая формула !!!
+                var Rating = ClassTasksSolved * 1 + ControlTasksSolved * 5 + HomeworkTasksSolved * 3 + AdditionalTasksSolved * 2;
+                var Details = $" (Осн: {ClassTasksSolved}×1, Доп: {AdditionalTasksSolved}×2, ДЗ: {HomeworkTasksSolved}×3, КР: {ControlTasksSolved}×5)";
+                res = Rating.ToString() + '|' + Details;
+            }
+            catch (Exception e)
+            {
+                res = e.Message;
+            }
+
+            return res;
+        }
+
         //  Так как мы на сервере пока ничего не запоминаем, то процесс выхода - просто стереть всё
         public void Logout()
         {

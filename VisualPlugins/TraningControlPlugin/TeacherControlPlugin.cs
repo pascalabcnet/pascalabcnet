@@ -27,7 +27,7 @@ namespace VisualPascalABCPlugins
         private PluginGUIItem Item;
         public string Name { get => "Teacher Control Plugin"; }
         public string Version { get => "0.1"; }
-        public string Copyright { get => "Copyright © 2021-2022 by Stanislav Mikhalkovich"; }
+        public string Copyright { get => "Copyright © 2021-2023 by Stanislav Mikhalkovich"; }
 
         public string Login = null;
         public string Password = null;
@@ -97,6 +97,8 @@ namespace VisualPascalABCPlugins
                 if (answer.Result == "Success")
                 {
                     loginForm.ChangeControlsAfterLogin(login);
+                    var Rating = User.GetRating("", login, pass);
+                    loginForm.SetRating(Rating.Result);
                 }
             }
             catch (Exception e)
@@ -197,16 +199,17 @@ namespace VisualPascalABCPlugins
             //    InitItems(MenuItems, ToolBarItems);
             //else // это мехмат
 
-            // SSM 20/06/22 Решил включить плагин в инсталлят и показывать кнопки только если есть lightpt.dat в текущем или auth.dat в корне сетевого
+            // SSM 20/06/22 Решил включить плагин в инсталлят и показывать кнопки только если есть lightpt.dat в текущем 
+            // или auth.dat в корне сетевого - убрал это 11.07.23 - только если при запуске lightpt.dat в текущем!!!
             {
                 if (IsLightPTInWorkingDirectiry()) // если lightpt.dat существует в текущем
                     InitItems(MenuItems, ToolBarItems);
-                else
+                /*else
                 {
                     var AuthFileFullName = FullAuthNameFromNETDisk();
                     if (AuthFileFullName != "") // если auth.dat существует в корне сетевого диска
                         InitItems(MenuItems, ToolBarItems);
-                }
+                }*/
             }
         }
 
@@ -233,6 +236,7 @@ namespace VisualPascalABCPlugins
             {
                 // Попытка автоматического входа 
                 // AuthFileFullName для мехмата был запомнен в GetGUI
+                // SSM 11/07/23 - нет, AuthFileFullName для мехмата отдельно теперь не перевычисляется для простоты!!!
                 // Нет - только на мехмате. Заполнить если дома!!!
                 // Думаю, здесь всё надо перевычислить. Начать с текущего, потом на уровень выше и потом в корень сетевого диска
 
@@ -240,10 +244,10 @@ namespace VisualPascalABCPlugins
                 var AuthFileFullName = "";
                 if (IsLightPTInWorkingDirectiry()) // Только если lightPT.dat в текущем, ищем auth.dat в текущем или выше
                     AuthFileFullName = FullAuthNameFromWorkingDirOrParent();
-                if (AuthFileFullName == "" && IsMechmath)
+                /*if (AuthFileFullName == "" && IsMechmath)
                 {
                     AuthFileFullName = FullAuthNameFromNETDisk(); 
-                }
+                }*/
 
                 if (AuthFileFullName != "")
                 {
@@ -270,7 +274,19 @@ namespace VisualPascalABCPlugins
 
         private void ChangeArgsBeforeRunHandler(ref string args)
         {
-            args += " " + loginForm.Authorized.ToString();
+            if (Item == null) // если нет кнопок с человечком, то в глобальную базу писаться не будет в принципе!
+                return;
+            args += " " + loginForm.Authorized.ToString(); 
+            if (loginForm.Authorized) // Параметр Текст программы добавляется только если зарегистрирован
+            {
+                var FileName = Workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument.FileName;
+                var text = Workbench.VisualEnvironmentCompiler.StandartCompiler.GetSourceFileText(FileName);
+                if (text.Length > 5000)
+                    text = text.Substring(0, 5000);
+                text = text.Replace("\\\"", "\\ \"");
+                text = text.Replace("\"", "\\\"");
+                args += " " + "\"" + text + "\"";
+            }
         }
     }
 }
