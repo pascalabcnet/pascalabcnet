@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using VisualPascalABCPlugins;
@@ -80,13 +81,27 @@ namespace VisualPascalABC
                 this.miProjectExplorer.Visible = true;
                 ShowContent(ProjectExplorerWindow, false);
                 UserProjectSettings setts = ProjectUserOptionsManager.LoadOptions(projectFileName);
+
+                var preloadedAssemblies = new List<Assembly>();
+                var referenceAssemblyPaths = new List<string>();
                 foreach (IReferenceInfo ri in ProjectFactory.Instance.CurrentProject.References)
                 {
                     var path = Compiler.get_assembly_path(Path.Combine(ProjectFactory.Instance.ProjectDirectory, ri.FullAssemblyName), false);
                     if (path == null)
                         path = Compiler.get_assembly_path(ri.FullAssemblyName, false);
-                    ICSharpCode.FormsDesigner.ToolboxProvider.AddComponentsFromAssembly(PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path));
+
+                    referenceAssemblyPaths.Add(path);
+                    preloadedAssemblies.Add(PascalABCCompiler.NetHelper.NetHelper.PreloadAssembly(path));
                 }
+
+                using (new PascalABCCompiler.NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain, preloadedAssemblies))
+                {
+                    foreach (var path in referenceAssemblyPaths)
+                    {
+                        ICSharpCode.FormsDesigner.ToolboxProvider.AddComponentsFromAssembly(PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path));
+                    }
+                }
+
                 if (setts != null)
                 {
                     foreach (OpenedFileInfo fi in setts.OpenDocuments)
