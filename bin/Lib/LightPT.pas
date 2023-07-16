@@ -48,6 +48,8 @@ function Random(n: integer): integer;
 function Random: real;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
+/// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
+function RandomReal(a, b: real; digits: integer := 1): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 /// Возвращает случайное целое в диапазоне 
@@ -129,8 +131,10 @@ procedure Print(c: char);
 {                        Сервисные процедуры                              }
 {=========================================================================}
 
+// Вывести цветовое сообщение в окно вывода
 procedure ColoredMessage(msg: string; color: MessageColorT);
 
+// Вывести сообщение красным цветом в окно вывода
 procedure ColoredMessage(msg: string);
 
 {=========================================================================}
@@ -207,6 +211,7 @@ procedure CheckOutputSeqNew(a: ObjectList);
 {   Подпрограммы для проверки начального ввода-вывода, представленного в заготовке задания   }
 {============================================================================================}
 
+/// Проверить типы данных начального ввода, начального вывода и ввода. Если ввод Input = nil, то он совпадает с начальным вводом
 procedure CheckData(InitialInput: array of System.Type := nil; 
   InitialOutput: array of System.Type := nil; 
   Input: array of System.Type := nil);
@@ -226,12 +231,19 @@ procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
 
 procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
 
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of integer);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of real);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of string);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of boolean);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of char);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of object);
+/// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: ObjectList);
 
 {=========================================================}
@@ -272,15 +284,15 @@ function Boo(i: integer): boolean;
 function Chr(i: integer): char;
 
 /// i-тый элемент вывода как целое 
-function OutAsInt(i: integer): integer;
+function OutInt(i: integer): integer;
 /// i-тый элемент вывода как вещественное 
-function OutAsRe(i: integer): real;
+function OutRe(i: integer): real;
 /// i-тый элемент вывода как строка 
-function OutAsBoo(i: integer): boolean;
+function OutBoo(i: integer): boolean;
 /// i-тый элемент вывода как логическое 
-function OutAsChr(i: integer): char;
+function OutChr(i: integer): char;
 /// i-тый элемент вывода как символ 
-function OutAsStr(i: integer): string;
+function OutStr(i: integer): string;
 
 /// Следующий элемент ввода как целое 
 function Int: integer;
@@ -323,17 +335,22 @@ function OutputListAsBooleans: array of boolean;
 function OutputListAsChars: array of char;
 function OutputListAsStrings: array of string;
 
-function InputListSliceAsIntegers(a,b: integer): array of integer;
-function InputListSliceAsReals(a,b: integer): array of real;
-function InputListSliceAsBooleans(a,b: integer): array of boolean;
-function InputListSliceAsChars(a,b: integer): array of char;
-function InputListSliceAsStrings(a,b: integer): array of string;
+function InSliceIntArr(a,b: integer): array of integer;
+function InSliceReArr(a,b: integer): array of real;
+function InSliceBooArr(a,b: integer): array of boolean;
+function InSliceChrArr(a,b: integer): array of char;
+function InSliceStrArr(a,b: integer): array of string;
 
-function OutputListSliceAsIntegers(a,b: integer): array of integer;
-function OutputListSliceAsReals(a,b: integer): array of real;
-function OutputListSliceAsBooleans(a,b: integer): array of boolean;
-function OutputListSliceAsChars(a,b: integer): array of char;
-function OutputListSliceAsStrings(a,b: integer): array of string;
+/// Срез элементов вывода от a до b как массив целых
+function OutSliceIntArr(a,b: integer): array of integer;
+/// Срез элементов вывода от a до b как массив вещественных
+function OutSliceReArr(a,b: integer): array of real;
+/// Срез элементов вывода от a до b как массив логических
+function OutSliceBooArr(a,b: integer): array of boolean;
+/// Срез элементов вывода от a до b как массив символов
+function OutSliceChrArr(a,b: integer): array of char;
+/// Срез элементов вывода от a до b как массив строк
+function OutSliceStrArr(a,b: integer): array of string;
 
 {=========================================================}
 {                Процедуры генерации ошибок               }
@@ -379,6 +396,8 @@ var
   InitialInputList := new List<System.Type>;  
   /// Ссылка на основную процедуру проверки в модуле Task
   CheckTask: procedure(name: string);
+  /// Погасить сообщения о неверном вводе-выводе если задача содержит только начальный ввод-вывод
+  CancelMessagesIfInitial := True;
 
 /// Целый тип для проверки ввода-вывода
 function cInt: System.Type;
@@ -391,6 +410,9 @@ function cBool: System.Type;
 /// Символьный тип для проверки ввода-вывода
 function cChar: System.Type;
 
+type 
+  /// Константа для обозначения пустого ввода или вывода
+  EmptyType = (Empty);
 
 implementation
 
@@ -410,6 +432,9 @@ uses System.Threading.Tasks;
 //   ПодтипИсключения(парам1,...,парамn)
 // Эту строку также можно писать в БД как доп параметры TaskResultInfo
 // Чем хороши исключения - их можно делать разными с абсолютно разными параметрами
+
+// Сервисная функция - чтобы можно было вводу, начальному вводу или начальному выводу в CheckData присвоить Empty вместо nil
+function operator implicit(Self: EmptyType): array of System.Type; extensionmethod := nil;
 
 const lightptname = 'lightpt.dat';
 
@@ -452,7 +477,7 @@ type
       client.Timeout := TimeSpan.FromSeconds(10);
     end;
     
-    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskPlatform, TaskResult, TaskResultInfo: string): Task<string>;
+    function SendPostRequest(FullFIO, Password, LessonName, TaskName, TaskPlatform, TaskResult, text, TaskResultInfo: string): Task<string>;
     begin
       var values := Dict(
         ( 'shortFIO', '' ),  
@@ -462,7 +487,7 @@ type
         ( 'taskPlatform', TaskPlatform ),
         ( 'taskResult', TaskResult ),
         ( 'taskResultInfo', TaskResultInfo ),
-        ( 'content', '' ),
+        ( 'content', text ),
         ( 'password', Password )
       );
       var content := new FormUrlEncodedContent(values);
@@ -837,7 +862,7 @@ begin
   Result := char(InputList[i]);
 end;
 
-function OutAsInt(i: integer): integer;
+function OutInt(i: integer): integer;
 begin
   CheckOutput2Count(i);
   if not OutIsInt(i) then
@@ -845,7 +870,7 @@ begin
   Result := integer(OutputList[i]);
 end;
 
-function OutAsRe(i: integer): real;
+function OutRe(i: integer): real;
 begin
   CheckOutput2Count(i);
   if not OutIsRe(i) then
@@ -853,7 +878,7 @@ begin
   Result := real(OutputList[i]);
 end;
 
-function OutAsBoo(i: integer): boolean;
+function OutBoo(i: integer): boolean;
 begin
   CheckOutput2Count(i);
   if not OutIsBoo(i) then
@@ -861,7 +886,7 @@ begin
   Result := boolean(OutputList[i]);
 end;
 
-function OutAsChr(i: integer): char;
+function OutChr(i: integer): char;
 begin
   CheckOutput2Count(i);
   if not OutIsChr(i) then
@@ -869,7 +894,7 @@ begin
   Result := char(OutputList[i]);
 end;
 
-function OutAsStr(i: integer): string;
+function OutStr(i: integer): string;
 begin
   CheckOutput2Count(i);
   if not OutIsStr(i) then
@@ -925,23 +950,23 @@ function InputListAsBooleans: array of boolean := InputList.Select((x,i) -> Boo(
 function InputListAsChars: array of char := InputList.Select((x,i) -> Chr(i)).ToArray;
 function InputListAsStrings: array of string := InputList.Select((x,i) -> Str(i)).ToArray;
 
-function OutputListAsIntegers: array of integer := OutputList.Select((x,i) -> OutAsInt(i)).ToArray;
-function OutputListAsReals: array of real := OutputList.Select((x,i) -> OutAsRe(i)).ToArray;
-function OutputListAsBooleans: array of boolean := OutputList.Select((x,i) -> OutAsBoo(i)).ToArray;
-function OutputListAsChars: array of char := OutputList.Select((x,i) -> OutAsChr(i)).ToArray;
-function OutputListAsStrings: array of string := OutputList.Select((x,i) -> OutAsStr(i)).ToArray;
+function OutputListAsIntegers: array of integer := OutputList.Select((x,i) -> OutInt(i)).ToArray;
+function OutputListAsReals: array of real := OutputList.Select((x,i) -> OutRe(i)).ToArray;
+function OutputListAsBooleans: array of boolean := OutputList.Select((x,i) -> OutBoo(i)).ToArray;
+function OutputListAsChars: array of char := OutputList.Select((x,i) -> OutChr(i)).ToArray;
+function OutputListAsStrings: array of string := OutputList.Select((x,i) -> OutStr(i)).ToArray;
 
-function InputListSliceAsIntegers(a,b: integer): array of integer := (a..b).Select(i->Int(i)).ToArray;
-function InputListSliceAsReals(a,b: integer): array of real := (a..b).Select(i->Re(i)).ToArray;
-function InputListSliceAsBooleans(a,b: integer): array of boolean := (a..b).Select(i->Boo(i)).ToArray;
-function InputListSliceAsChars(a,b: integer): array of char := (a..b).Select(i->Chr(i)).ToArray;
-function InputListSliceAsStrings(a,b: integer): array of string := (a..b).Select(i->Str(i)).ToArray;
+function InSliceIntArr(a,b: integer): array of integer := (a..b).Select(i->Int(i)).ToArray;
+function InSliceReArr(a,b: integer): array of real := (a..b).Select(i->Re(i)).ToArray;
+function InSliceBooArr(a,b: integer): array of boolean := (a..b).Select(i->Boo(i)).ToArray;
+function InSliceChrArr(a,b: integer): array of char := (a..b).Select(i->Chr(i)).ToArray;
+function InSliceStrArr(a,b: integer): array of string := (a..b).Select(i->Str(i)).ToArray;
 
-function OutputListSliceAsIntegers(a,b: integer): array of integer := (a..b).Select(i->OutAsInt(i)).ToArray;
-function OutputListSliceAsReals(a,b: integer): array of real := (a..b).Select(i->OutAsRe(i)).ToArray;
-function OutputListSliceAsBooleans(a,b: integer): array of boolean := (a..b).Select(i->OutAsBoo(i)).ToArray;
-function OutputListSliceAsChars(a,b: integer): array of char := (a..b).Select(i->OutAsChr(i)).ToArray;
-function OutputListSliceAsStrings(a,b: integer): array of string := (a..b).Select(i->OutAsStr(i)).ToArray;
+function OutSliceIntArr(a,b: integer): array of integer := (a..b).Select(i->OutInt(i)).ToArray;
+function OutSliceReArr(a,b: integer): array of real := (a..b).Select(i->OutRe(i)).ToArray;
+function OutSliceBooArr(a,b: integer): array of boolean := (a..b).Select(i->OutBoo(i)).ToArray;
+function OutSliceChrArr(a,b: integer): array of char := (a..b).Select(i->OutChr(i)).ToArray;
+function OutSliceStrArr(a,b: integer): array of string := (a..b).Select(i->OutStr(i)).ToArray;
 
 function ConvertOne(ob: Object): Object;
 begin
@@ -1002,6 +1027,13 @@ end;
 function Random(a, b: char): char;
 begin
   Result := PABCSystem.Random(a, b);
+  if IsPT then exit;
+  InputList.Add(Result);
+end;
+
+function RandomReal(a, b: real; digits: integer): real;
+begin
+  Result := PABCSystem.RandomReal(a, b, digits);
   if IsPT then exit;
   InputList.Add(Result);
 end;
@@ -1492,11 +1524,14 @@ begin
 end;
 
 // Добавим сюда проверку типов RuntimeType
+// Выдавать ли сообщение о дальнейшем вводе-выводе если у нас InitialTask?
+//   Сделаем глобальную настройку CancelMessagesIfInitial и по умолчанию присвоим ей False
 procedure CheckOutput(params arr: array of object);
 begin
   // TaskResult = InitialTask - ничего выводить не надо
   // TaskResult = BadInitialTask - потом будет выведено исключение, что часть изначальных данных удалена
-  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+  if (TaskResult = InitialTask) and CancelMessagesIfInitial
+     or (TaskResult = BadInitialTask) then
     exit;
 
   var mn := Min(arr.Length, OutputList.Count);
@@ -1544,8 +1579,10 @@ end;
 
 procedure CheckOutputAfterInitial(params arr: array of object);
 begin
-  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
+  if (TaskResult = InitialTask) and CancelMessagesIfInitial
+     or (TaskResult = BadInitialTask) then
     exit;
+
   // Если мы попали сюда, то OutputList.Count >= InitialOutputList.Count
   var mn := Min(arr.Length, OutputList.Count - InitialOutputList.Count);
   
@@ -2099,7 +2136,7 @@ end;
 {            Процедуры для записи в базы данных           }
 {=========================================================}
 
-procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo: string);
+procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo: string);
 begin
   // Считать логин пароль из auth
   var data := System.IO.File.ReadAllBytes(auth);
@@ -2111,9 +2148,11 @@ begin
     pass := arr[1];
     // Теперь как-то записать в БД информацию
     var User := new ServerAccessProvider(ServerAddr);
-    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, AdditionalInfo);
+    var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo);
     var v := t2.Result;
     v := v;
+    if v <> 'Success' then
+      ColoredMessage('Ошибка сервера: '+v, MsgColorGray);
     //Console.WriteLine(v);
   end;
 end;
@@ -2122,11 +2161,22 @@ procedure WriteInfoToDatabases(LessonName,TaskName,TaskPlatform: string; TaskRes
 begin
   try
     System.IO.File.AppendAllText('db.txt', $'{LessonName} {TaskName} {dateTime.Now.ToString(''u'')} {TaskResult.ToString} {AdditionalInfo}' + #10);
-    var auth := FindAuthDat();
+  except
+    on e: Exception do
+      ColoredMessage('Ошибка записи в файл db.txt. Обратитесь к преподавателю',MsgColorGray);
+  end; 
+  // Разделили ошибки записи в локальную и глобальную базу
+  try
+    var auth := FindAuthDat(); // файл авторизации ищется либо в текущей папке либо в папке на уровень выше
     var args := System.Environment.GetCommandLineArgs;
-    if (auth <> '') and (args.Length = 3) and (args[2].ToLower = 'true') then
+    if (auth <> '') and (args.Length >= 3) and (args[2].ToLower = 'true') then
+    begin  
+      var text := '';
+      if (TaskResult <> InitialTask) and (args.Length >= 4) then
+        text := args[3];
       // Есть проблема паузы при плохой сети 
-      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskPlatform,TaskResult.ToString, AdditionalInfo);
+      WriteInfoToRemoteDatabase(auth,LessonName,TaskName,TaskPlatform,TaskResult.ToString, text, AdditionalInfo);
+    end  
   except
     on e: System.AggregateException do
     begin

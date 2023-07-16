@@ -1127,24 +1127,31 @@ namespace Mono.Debugging.Soft
 			return GetMembers (ctx, null, t, co, bindingFlags);
 		}
 
-		string [] GetTupleElementNames (IObjectSource source, EvaluationContext ctx)
+		string[] GetTupleElementNames(IObjectSource source, EvaluationContext ctx)
 		{
-			switch (source) {
-			case FieldValueReference field:
-				if ((field.Type as TypeMirror)?.Name?.StartsWith ("ValueTuple`", StringComparison.Ordinal) != true)
+			if (source is FieldValueReference)
+			{
+				FieldValueReference field = source as FieldValueReference;
+				if ((field.Type as TypeMirror)?.Name?.StartsWith("ValueTuple`", StringComparison.Ordinal) != true)
 					return null;
-				return field.GetTupleElementNames ();
-			case PropertyValueReference prop:
-				if ((prop.Type as TypeMirror)?.Name?.StartsWith ("ValueTuple`", StringComparison.Ordinal) != true)
-					return null;
-				return prop.GetTupleElementNames ();
-			case VariableValueReference variable:
-				if ((variable.Type as TypeMirror)?.Name?.StartsWith ("ValueTuple`", StringComparison.Ordinal) != true)
-					return null;
-				return variable.GetTupleElementNames ((SoftEvaluationContext)ctx);
-			default:
-				return null;
+				return field.GetTupleElementNames();
 			}
+			if (source is PropertyValueReference)
+			{
+				PropertyValueReference prop = source as PropertyValueReference;
+				if ((prop.Type as TypeMirror)?.Name?.StartsWith("ValueTuple`", StringComparison.Ordinal) != true)
+					return null;
+				return prop.GetTupleElementNames();
+			}
+			if (source is VariableValueReference)
+			{
+				VariableValueReference variable = source as VariableValueReference;
+				if ((variable.Type as TypeMirror)?.Name?.StartsWith("ValueTuple`", StringComparison.Ordinal) != true)
+					return null;
+				return variable.GetTupleElementNames((SoftEvaluationContext)ctx);
+			}
+			return null;
+
 		}
 
 		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, IObjectSource objectSource, object t, object co, BindingFlags bindingFlags)

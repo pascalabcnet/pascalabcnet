@@ -109,7 +109,9 @@ namespace PascalABCCompiler.TreeConverter
                 comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ilist1_interface.get_instance(type_params));
                 comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.icollection1_interface.get_instance(type_params));
                 comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ienumerable1_interface.get_instance(type_params));
-            }
+				if (SystemLibrary.SystemLibrary.ireadonlycollection_interface != null)
+					comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ireadonlycollection_interface.get_instance(type_params));
+			}
             //SystemLibrary.SystemLibrary.ic
             //(ssyy) Убрал 18.05.08
 			//if (this.convertion_data_and_alghoritms.syntax_tree_visitor.context.converted_namespace != null)

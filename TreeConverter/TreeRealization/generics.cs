@@ -317,6 +317,29 @@ namespace PascalABCCompiler.TreeRealization
             return null;
         }
 
+        public static void instance_default_property(generic_instance_type_node instance)
+        {
+            var original = instance.original_generic;
+            property_node orig_pn = original.default_property_node;
+            if (orig_pn != null)
+            {
+                if (orig_pn.comprehensive_type == original)
+                {
+                    //Свойство по умолчанию описано в оригинальном коде generic-a;
+                    //конвертируем его
+                    instance.default_property = instance.ConvertMember(orig_pn) as common_property_node;
+                }
+                else
+                {
+                    //Свойство по умолчанию описано в каком-то предке оригинального generic-a
+                    if (orig_pn.comprehensive_type.is_generic_type_definition)
+                    {
+                        instance.default_property = instance.find_instance_type_from(orig_pn.comprehensive_type).default_property;
+                    }
+                }
+            }
+        }
+
         public static void init_generic_instance(generic_instance_type_node instance/*, SymbolTable.ClassScope instance_scope*/)
         {
             var original = instance.original_generic;
@@ -1625,6 +1648,18 @@ namespace PascalABCCompiler.TreeRealization
                 return base.ImplementingInterfaces ?? new List<SemanticTree.ITypeNode>();
             }
         }
+
+        /*public override property_node default_property_node
+        {
+            get
+            {
+                if (default_property != null)
+                    return default_property;
+                if (original_generic.default_property_node != null)
+                    default_property = ConvertMember(original_generic.default_property_node) as common_property_node;
+                return default_property;
+            }
+        }*/
 
         private List<SymbolInfo> temp_names = new List<SymbolInfo>(3);
 

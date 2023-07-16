@@ -2,8 +2,6 @@
 
 const vmax = 50;
 
-function RandomReal(a,b: real): real := Random*(b-a)+a;
-
 type 
   BallInfo = auto class
     x,y,r,vx,vy: real;

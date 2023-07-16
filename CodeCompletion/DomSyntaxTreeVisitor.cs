@@ -2709,7 +2709,7 @@ namespace CodeCompletion
 		{
 			string unit_file_name = this.converter.controller.Parser?.LanguageInformation.SystemUnitName;
 			if (unit_file_name == null) return;
-			string unit_name = CodeCompletionNameHelper.FindSourceFileName(unit_file_name);
+			string unit_name = CodeCompletionNameHelper.FindSourceFileName(unit_file_name, out _);
             if (unit_name != null)
             {
                  DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -2741,7 +2741,7 @@ namespace CodeCompletion
 
         private void add_extensions_unit()
         {
-            string unit_name = CodeCompletionNameHelper.FindSourceFileName(PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name);
+            string unit_name = CodeCompletionNameHelper.FindSourceFileName(PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name, out _);
 
             if (unit_name != null)
             {
