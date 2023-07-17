@@ -56,6 +56,14 @@ namespace PascalABCCompiler.NETGenerator
             set { _platformtarget = value; }
         }
 
+        private string _TargetFramework = "";
+
+        public string TargetFramework
+        {
+            get { return _TargetFramework; }
+            set { _TargetFramework = value; }
+        }
+
         public string Product
         {
             get { return _Product; }
@@ -1157,6 +1165,12 @@ namespace PascalABCCompiler.NETGenerator
             ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyTitleAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Title }));
 
             ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyDescriptionAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Description }));
+            
+            if (options.TargetFramework != "")
+            {
+                string frameworkVersion = string.Join(".", options.TargetFramework.Substring(3).AsEnumerable());
+                ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(TargetFrameworkAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { $".NETFramework,Version=v{frameworkVersion}" }));
+            }
 
             if (RunOnly)
             {
