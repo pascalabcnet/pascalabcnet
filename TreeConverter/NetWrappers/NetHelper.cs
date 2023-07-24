@@ -363,6 +363,12 @@ namespace PascalABCCompiler.NetHelper
 
         public static Assembly PreloadAssembly(string name)
         {
+            if (Path.GetFileName(name).ToLowerInvariant().Contains("microsoft."))
+            {
+                // TODO: A workaround for https://github.com/pascalabcnet/pascalabcnet/issues/2905
+                return Assembly.LoadFrom(name); 
+            }
+            
             var bytes = File.ReadAllBytes(name);
             return Assembly.Load(bytes);
         }
