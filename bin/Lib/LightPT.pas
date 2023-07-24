@@ -116,6 +116,12 @@ function ReadInteger2(prompt: string): (integer, integer);
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadlnInteger(prompt: string): integer;
 
+/// Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры
+function ReadString(prompt: string): string;
+/// Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры
+function ReadlnString(prompt: string): string;
+
+
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
 procedure Print(params args: array of object);
@@ -487,6 +493,29 @@ function AutoTest: integer->();
 /// Генерация автоматических тестов - повторно вызывается заполнение из основной программы. Не использовать если в основной программе есть Read!!!
 procedure GenerateAutoTests(n: integer);
 
+/// Генерация тестов по описанию тестовых данных
+procedure GenerateTests(n: integer; testcells: sequence of TestCell);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of integer);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of real);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of string);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of char);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of boolean);
+
+/// Генерация тестов по набору кортежей тестовых данных
+procedure GenerateTests<T1,T2>(params a: array of (T1,T2));
+
+/// Генерация тестов по набору кортежей тестовых данных
+procedure GenerateTests<T1,T2,T3>(params a: array of (T1,T2,T3));
 
 {=========================================================}
 {               Фильтрация выходного списка               }
@@ -747,7 +776,9 @@ type
     constructor (FuncName: string) := Self.Funcname := Funcname;
   end;
 
+  InputTestCountMismatchException = class(LightPTException);
   
+  InputTestTypesMismatchException = class(LightPTException);
   
 var
   CurPosInInputList := 0;
@@ -805,6 +836,15 @@ begin
   Result := ArrFill(n,cell)
 end;
 
+function operator*(cell: System.Type; n: integer): array of System.Type; extensionmethod;
+begin
+  Result := ArrFill(n,cell)
+end;
+
+function operator*(n: integer; cell: System.Type): array of System.Type; extensionmethod;
+begin
+  Result := ArrFill(n,cell)
+end;
 
 {=========================================================}
 {                    Сервисные функции                    }
@@ -826,6 +866,25 @@ procedure GenerateAutoTests(n: integer);
 begin
   TestCount := n;
   GenerateTestData := AutoTest;
+end;
+
+procedure GenerateTests(n: integer; testcells: sequence of TestCell);
+begin
+  // Нужно сравнить типы в InputList и здесь. При несоотверствии бросить исключение
+  // Это можно делать только здесь - где количество входных данных заранее известно
+  // В задачах где вначале вводится n, а потом массив из n элементов, это не работает - количество данных меняется от теста нк тесту
+  var testTypes := testcells.Select(ts -> ts.typ).ToArray;
+  var inputTypes := InputList.Select(ob -> ob.GetType).ToArray;
+  if (testTypes.Length <> inputTypes.Length) then
+    raise new InputTestCountMismatchException;
+  for var i:=0 to testTypes.Length - 1 do
+    if (testTypes[i] <> inputTypes[i]) then
+      raise new InputTestTypesMismatchException;
+    
+  TestCount := n;
+  GenerateTestData := tnum -> begin
+    InputList := GenValuesByTestCells(testcells);
+  end;
 end;
 
 var 
@@ -1401,6 +1460,15 @@ begin
 end;
 
 /// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: sequence of object); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.AddRange(data.ToArray);
+end;
+
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
 procedure AddTestData(Self: List<object>; data: integer); extensionmethod;
 begin
   if TestMode <> tmGenTest then
@@ -1536,6 +1604,107 @@ function SliceAsChar(Self: List<object>; a,b: integer): array of char; extension
 function SliceAsBoolean(Self: List<object>; a,b: integer): array of boolean; extensionmethod 
   := Self[a:b].Select(x->boolean(x)).ToArray;
   
+{=========================================================}
+{           Сервисные функции - продолжение               }
+{=========================================================}
+procedure GenerateTests(params a: array of integer);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(integer) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests(params a: array of real);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(real) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests(params a: array of string);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(string) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests(params a: array of char);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(char) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests(params a: array of boolean);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(boolean) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests<T1,T2>(params a: array of (T1,T2));
+begin
+  if InputList.Count <> 2 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(T1) then 
+    raise new InputTestTypesMismatchException;
+  if InputList[1].GetType <> typeof(T2) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    var tt := a[tnum-1];
+    InputList.AddTestData(|object(tt[0]),object(tt[1])|);
+  end;
+end;
+
+procedure GenerateTests<T1,T2,T3>(params a: array of (T1,T2,T3));
+begin
+  if InputList.Count <> 2 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(T1) then 
+    raise new InputTestTypesMismatchException;
+  if InputList[1].GetType <> typeof(T2) then 
+    raise new InputTestTypesMismatchException;
+  if InputList[2].GetType <> typeof(T3) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    var tt := a[tnum-1];
+    InputList.AddTestData(|object(tt[0]),object(tt[1]),object(tt[2])|);
+  end;
+end;
 
 {=========================================================================}
 {     Переопределенные функции PABCSystem с заполнением ввода и вывода    }
@@ -1801,6 +1970,18 @@ begin
   CreateNewLineBeforeMessage := False;
 end;
 
+function ReadString(prompt: string): string;
+begin
+  Result := PABCSystem.ReadString(prompt);
+  if IsPT then exit;
+  OutputList.RemoveAt(OutputList.Count - 1);
+  OutputList.RemoveAt(OutputList.Count - 1);
+  CreateNewLineBeforeMessage := False;
+end;
+
+function ReadlnString(prompt: string) := ReadString(prompt);
+
+
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
 procedure Print(params args: array of object);
@@ -1997,7 +2178,9 @@ begin
         begin
           if i > InitialOutputList.Count then
             ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
-          ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i-i0]}, а выведено {OutputList[i]}',MsgColorGray);
+          if (i0 = 0) and (arr.Length = 1) then
+            //ColoredMessage($'Ожидалось значение {arr[i-i0]}, а выведено {OutputList[i]}',MsgColorGray)           
+          else ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i-i0]}, а выведено {OutputList[i]}',MsgColorGray);
         end;  
       end;  
       TaskResult := BadSolution;
@@ -2148,6 +2331,7 @@ end;
 function NValues(n: integer): string;
 begin
   case n of
+    0: Result := n + ' значений';
     1: Result := n + ' значение';
     2, 3, 4: Result := n + ' значения';
     5..100000: Result := n + ' значений';
@@ -2454,11 +2638,17 @@ begin
           ClearLists;
           TestMode := tmGenTest;
           GenerateTestData(i);
+          
           if TestMode<>tmAutoTest then
             TestMode := tmTest;
-          if InitProc<>nil then
-            InitProc.Invoke(nil,nil);
-          SolveProc.Invoke(nil,nil);
+          try
+            if InitProc<>nil then
+              InitProc.Invoke(nil,nil);
+            SolveProc.Invoke(nil,nil);
+          except
+            on e: System.Reflection.TargetInvocationException do
+              raise e.InnerException;
+          end;
           //InputList := InputList; 
           //OutputList := OutputList; 
           
@@ -2533,14 +2723,23 @@ begin
     on e: InputCountTest2Exception do
     begin
       Silent := False;
-      ColoredMessage($'Неверно составлен тест! Введено {NValues(e.Count)}, а требуется ввести по крайней мере {e.i}', MsgColorOrange); 
+      ColoredMessage($'Неверно составлен тест! Введено {NValues(e.Count)}, а требуется ввести по крайней мере {e.i}. Возможно, неверно заполнен InputList в GenerateTestData', MsgColorOrange); 
     end;
     on e: InputTypeTestException do
     begin
       Silent := False;
-      ColoredMessage($'Неверно составлен тест! При вводе {e.n}-го элемента типа {e.ExpectedType} использована переменная типа {e.ActualType}'); 
+      ColoredMessage($'Неверно составлен тест! При вводе {e.n}-го элемента типа {e.ExpectedType} использована переменная типа {e.ActualType}. Возможно, неверно заполнен InputList в GenerateTestData'); 
     end;
-    
+    on e: InputTestCountMismatchException do
+    begin
+      Silent := False;
+      ColoredMessage($'Неверно составлен тест! Несоответствие количества входных данных в тесте и основном запуске. Возможно, неверно заполнен InputList в GenerateTestData'); 
+    end;
+    on e: InputTestTypesMismatchException do
+    begin
+      Silent := False;
+      ColoredMessage($'Неверно составлен тест! Несоответствие типов входных данных в тесте и основном запуске. Возможно, неверно заполнен InputList в GenerateTestData'); 
+    end;
   end;
   // Для задачника надо вызывать процедуру __FinalizeModule__ из модуля PT4 jnhf;tybtv, а в модуле PT4 эту процедуру тогда не вызывть
   // Для задачника в CheckTaskPT надо сказать, что проверяется задача из задачника. И выводить на экран ничего не надо - только в базу.
@@ -2699,7 +2898,9 @@ type
     
     procedure readln; override;
     begin
-      inherited readln;
+      if TestMode = tmTest then
+        
+      else inherited readln;
       CreateNewLineBeforeMessage := False;
     end;
     
