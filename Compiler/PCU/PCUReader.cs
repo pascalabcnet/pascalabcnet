@@ -783,7 +783,7 @@ namespace PascalABCCompiler.PCU
                 t = NetHelper.NetHelper.FindTypeOrCreate(type_name);
             if (t == null || type_name.IndexOf('.') == -1)
             {
-                ts.name = type_name;
+                ts.name = type_name.Remove(0, type_name.LastIndexOf('.') + 1);
                 return ts;
             }
             Type[] template_types = new Type[pcu_file.dotnet_names[off].addit.Length];
