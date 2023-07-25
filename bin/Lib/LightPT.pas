@@ -5,6 +5,8 @@ unit LightPT;
 
 interface
 
+uses System.Runtime.InteropServices;
+
 {==============================================================}
 {                  Класс для формирования вывода               }
 {==============================================================}
@@ -29,7 +31,7 @@ type
     function AddGeom(n: integer; a0,step: integer): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
     function AddGeom(n: integer; a0,step: real): ObjectList; begin lst.AddRange(ArrGen(n,a0,x->x*step).Select(x -> object(x))); Result := Self end;
   end;
-
+  
 {==================================================================================}
 {                                  Сервисные типы                                  }
 {==================================================================================}
@@ -114,6 +116,12 @@ function ReadInteger2(prompt: string): (integer, integer);
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadlnInteger(prompt: string): integer;
 
+/// Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры
+function ReadString(prompt: string): string;
+/// Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры
+function ReadlnString(prompt: string): string;
+
+
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
 procedure Print(params args: array of object);
@@ -137,6 +145,18 @@ procedure ColoredMessage(msg: string; color: MessageColorT);
 // Вывести сообщение красным цветом в окно вывода
 procedure ColoredMessage(msg: string);
 
+function ToObjArray(a: sequence of integer): array of object;
+
+function ToObjArray(a: sequence of real): array of object;
+
+function ToObjArray(a: sequence of string): array of object;
+
+function ToObjArray(a: sequence of char): array of object;
+
+function ToObjArray(a: sequence of boolean): array of object;
+
+
+
 {=========================================================================}
 {        Основные процедуры для проверки правильности ввода-вывода        }
 {=========================================================================}
@@ -147,6 +167,9 @@ procedure ColoredMessage(msg: string);
 procedure CheckInput(a: array of System.Type);
 /// Проверить значения при выводе
 procedure CheckOutput(params arr: array of object);
+/// Проверить значения при выводе. Сообщения ColoredMessage гасить. Нужно для повторных вызовов CheckOutput
+procedure CheckOutputSilent(params arr: array of object);
+
 
 /// Проверить, что данные не вводились
 procedure CheckInputIsEmpty;
@@ -180,6 +203,23 @@ procedure CheckOutputSeq(a: sequence of object);
 procedure CheckOutputSeq(a: sequence of word);
 /// Проверить последовательность значений при выводе
 procedure CheckOutputSeq(a: ObjectList);
+
+/// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
+procedure CheckOutputSeqSilent(a: sequence of integer);
+/// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
+procedure CheckOutputSeqSilent(a: sequence of real);
+/// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
+procedure CheckOutputSeqSilent(a: sequence of string);
+/// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
+procedure CheckOutputSeqSilent(a: sequence of char);
+/// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
+procedure CheckOutputSeqSilent(a: sequence of boolean);
+/// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
+procedure CheckOutputSeqSilent(a: sequence of object);
+/// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
+procedure CheckOutputSeqSilent(a: sequence of word);
+/// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
+procedure CheckOutputSeqSilent(a: ObjectList);
 
 /// Проверить вывод в виде строки
 procedure CheckOutputString(str: string);
@@ -231,6 +271,8 @@ procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
 
 procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
 
+procedure CheckOutputAfterInitialSilent(params arr: array of object); 
+
 /// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: sequence of integer);
 /// Проверить последовательность значений при выводе после начального вывода
@@ -245,6 +287,21 @@ procedure CheckOutputAfterInitialSeq(seq: sequence of char);
 procedure CheckOutputAfterInitialSeq(seq: sequence of object);
 /// Проверить последовательность значений при выводе после начального вывода
 procedure CheckOutputAfterInitialSeq(seq: ObjectList);
+
+/// Проверить последовательность значений при выводе после начального вывода. Не выводить сообщения ColoredMessages
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of integer);
+/// Проверить последовательность значений при выводе после начального вывода. Не выводить сообщения ColoredMessages
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of real);
+/// Проверить последовательность значений при выводе после начального вывода. Не выводить сообщения ColoredMessages
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of string);
+/// Проверить последовательность значений при выводе после начального вывода. Не выводить сообщения ColoredMessages
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of boolean);
+/// Проверить последовательность значений при выводе после начального вывода. Не выводить сообщения ColoredMessages
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of char);
+/// Проверить последовательность значений при выводе после начального вывода. Не выводить сообщения ColoredMessages
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of object);
+/// Проверить последовательность значений при выводе после начального вывода. Не выводить сообщения ColoredMessages
+procedure CheckOutputAfterInitialSeqSilent(seq: ObjectList);
 
 {=========================================================}
 {       Функции для проверки элементов ввода-вывода       }
@@ -353,6 +410,64 @@ function OutSliceChrArr(a,b: integer): array of char;
 function OutSliceStrArr(a,b: integer): array of string;
 
 {=========================================================}
+{      Тип TestCell и функции для генерации тестов        }
+{=========================================================}
+type 
+  [StructLayout(LayoutKind.Explicit)]
+  /// Ячейка генерации данных для тестов
+  TestCell = class
+  public
+    [FieldOffset(0)]
+    typ: System.Type;
+    [FieldOffset(8)]
+    a: integer; 
+    [FieldOffset(12)]
+    b: integer; 
+    [FieldOffset(8)]
+    ra: real;
+    [FieldOffset(16)]
+    rb: real;
+    [FieldOffset(24)]
+    digits: integer;
+    [FieldOffset(8)]
+    ca: char;
+    [FieldOffset(10)]
+    cb: char;
+    constructor (typ: System.Type);
+    begin
+      Self.typ := typ;
+    end;
+    function GenerateData: object;
+    begin
+      if typ = typeof(integer) then
+        Result := Random(a,b)
+      else if typ = typeof(char) then 
+        Result := Random(ca,cb)
+      else if typ = typeof(real) then 
+        Result := RandomReal(ra,rb,digits)
+      else if typ = typeof(boolean) then 
+        Result := Random(2)=0 ? False : True
+      else Result := nil;
+    end;
+  end;
+  
+/// Сгенерировать по последовательности спецификаций в тестовых ячейках список данных для теста
+function GenValuesByTestCells(a: sequence of TestCell): List<object>;
+  
+/// Сгенерировать целую тестовую ячейку
+function tInt(a: integer := 1; b: integer := 10): TestCell;
+
+/// Сгенерировать вещественную тестовую ячейку
+function tRe(ra: real := 1; rb: Real := 10; digits: integer := 0): TestCell;
+
+/// Сгенерировать символьную тестовую ячейку
+function tChr(ca: char := 'а'; cb: char := 'я'): TestCell;
+
+/// Сгенерировать логическую тестовую ячейку
+function tBoo: TestCell;
+
+
+{=========================================================}
 {                Процедуры генерации ошибок               }
 {=========================================================}
 
@@ -367,6 +482,40 @@ procedure ErrorInputType(n: integer; ExpectedType, ActualType: string);
 
 /// Генерация ошибки неверного типа n-того выходного значения
 procedure ErrorOutputType(n: integer; ExpectedType, ActualType: string);
+
+
+{=========================================================}
+{       Процедура генерации автоматических тестов         }
+{=========================================================}
+
+function AutoTest: integer->();
+
+/// Генерация автоматических тестов - повторно вызывается заполнение из основной программы. Не использовать если в основной программе есть Read!!!
+procedure GenerateAutoTests(n: integer);
+
+/// Генерация тестов по описанию тестовых данных
+procedure GenerateTests(n: integer; testcells: sequence of TestCell);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of integer);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of real);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of string);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of char);
+
+/// Генерация тестов по набору значений тестовых данных
+procedure GenerateTests(params a: array of boolean);
+
+/// Генерация тестов по набору кортежей тестовых данных
+procedure GenerateTests<T1,T2>(params a: array of (T1,T2));
+
+/// Генерация тестов по набору кортежей тестовых данных
+procedure GenerateTests<T1,T2,T3>(params a: array of (T1,T2,T3));
 
 {=========================================================}
 {               Фильтрация выходного списка               }
@@ -398,6 +547,8 @@ var
   CheckTask: procedure(name: string);
   /// Погасить сообщения о неверном вводе-выводе если задача содержит только начальный ввод-вывод
   CancelMessagesIfInitial := True;
+  /// Тихий режим - сообщения ColoredMessage гасятся. Нужен для обработки нескольких вызовов CheckOutput
+  Silent := False;  
 
 /// Целый тип для проверки ввода-вывода
 function cInt: System.Type;
@@ -413,6 +564,13 @@ function cChar: System.Type;
 type 
   /// Константа для обозначения пустого ввода или вывода
   EmptyType = (Empty);
+  TestModeType = (tmNone, tmTest, tmGenTest, tmAutoTest);
+  
+var
+  TestCount := 0;
+  GenerateTestData: integer -> () := nil;
+  TestMode: TestModeType := tmNone;
+  TestNumber: integer;
 
 implementation
 
@@ -439,14 +597,14 @@ function operator implicit(Self: EmptyType): array of System.Type; extensionmeth
 const lightptname = 'lightpt.dat';
 
 type
-  PTException = class(Exception) 
+  LightPTException = class(Exception) 
     function Info: string; virtual := 'NoInfo';
   end;
 
 var
   CreateNewLineBeforeMessage := False;
   TaskResultInfo: string; // доп. информация о результате. Как правило пуста. Или содержит TaskException.Info. Или содержит для Solved и BadSolution информацию о модуле: Robot, Drawman, PT4
-  TaskException: PTException := new PTException;
+  TaskException: LightPTException := new LightPTException;
 
   WriteInfoCallBack: procedure (LessonName,TaskName,TaskPlatform: string; result: TaskStatus; AdditionalInfo: string);
 
@@ -500,7 +658,7 @@ type
 {               Типы исключений при решении               }
 {=========================================================}
 type
-  InputCountException = class(PTException) // Ровно Count 
+  InputCountException = class(LightPTException) // Ровно Count 
     Count: integer; // Count - сколько введено
     n: integer;     // n - сколько требуется ввести
     constructor(Count, n: integer);
@@ -513,7 +671,7 @@ type
     
     function Info: string; override := $'InputCount({Count},{n})';
   end;
-  InputCount2Exception = class(PTException) // Не меньше Count
+  InputCount2Exception = class(LightPTException) // Не меньше Count
     Count: integer; // Count - сколько введено
     i: integer;     // i - какой номер требуется ввести (с нуля)
     constructor(Count, i: integer);
@@ -526,7 +684,20 @@ type
     
     function Info: string; override := $'InputCount2({Count},{i})';
   end;
-  InputTypeException = class(PTException)
+  
+  InputCountTest2Exception = class(LightPTException) // Не меньше Count
+    Count: integer; // Count - сколько введено
+    i: integer;     // i - какой номер требуется ввести (с нуля)
+    constructor(Count, i: integer);
+    begin
+      Self.Count := Count;
+      Self.i := i;
+    end;
+    
+    function Info: string; override := $'InputCountTest2({Count},{i})';
+  end;
+
+  InputTypeException = class(LightPTException)
     n: integer; // номер параметра
     ExpectedType, ActualType: string;
     constructor(n: integer; ExpectedType, ActualType: string);
@@ -540,7 +711,21 @@ type
     
     function Info: string; override := $'InputType({n},{ExpectedType},{ActualType})';
   end;
-  OutputCountException = class(PTException) // Ровно Count 
+  
+    InputTypeTestException = class(LightPTException)
+    n: integer; // номер параметра
+    ExpectedType, ActualType: string;
+    constructor(n: integer; ExpectedType, ActualType: string);
+    begin
+      Self.n := n;
+      Self.ExpectedType := ExpectedType;
+      Self.ActualType := ActualType;
+    end;
+    
+    function Info: string; override := $'InputTypeTest({n},{ExpectedType},{ActualType})';
+  end;
+
+  OutputCountException = class(LightPTException) // Ровно Count 
     Count: integer; // Count - сколько выведено
     n: integer;     // n - сколько требуется вывести
     constructor(Count, n: integer);
@@ -553,7 +738,7 @@ type
     
     function Info: string; override := $'OutputCount({Count},{n})';
   end;
-  OutputCount2Exception = class(PTException) // Ровно Count 
+  OutputCount2Exception = class(LightPTException) // Ровно Count 
     Count: integer; // Count - сколько выведено
     i: integer;     // n - какой номер требуется вывести
     constructor(Count, i: integer);
@@ -566,7 +751,7 @@ type
     
     function Info: string; override := $'Output2Count({Count},{i})';
   end;
-  OutputTypeException = class(PTException)
+  OutputTypeException = class(LightPTException)
     n: integer; // номер параметра
     ExpectedType, ActualType: string;
     constructor(n: integer; ExpectedType, ActualType: string);
@@ -580,10 +765,86 @@ type
     
     function Info: string; override := $'OutputType({n},{ExpectedType},{ActualType})';
   end;
+  
+  NotInTestGenModeException = class(LightPTException)
+    FuncName: string;
+    constructor (FuncName: string) := Self.Funcname := Funcname;
+  end;
 
+  NotInTestModeException = class(LightPTException)
+    FuncName: string;
+    constructor (FuncName: string) := Self.Funcname := Funcname;
+  end;
+
+  InputTestCountMismatchException = class(LightPTException);
+  
+  InputTestTypesMismatchException = class(LightPTException);
+  
 var
-  Cur := 0;
+  CurPosInInputList := 0;
+  CurPosInInputListInTestMode := 0;
   TaskName := ExtractFileName(System.Environment.GetCommandLineArgs[0]).Replace('.exe', '');
+
+{=========================================================}
+{                Функции для генерации тестов             }
+{=========================================================}
+
+/// Сгенерировать по последовательности спецификаций в тестовых ячейках список данных для теста
+function GenValuesByTestCells(a: sequence of TestCell): List<object>;
+begin
+  Result := a.Select(tc -> tc.GenerateData).ToList;
+end;
+  
+/// Сгенерировать целую тестовую ячейку
+function tInt(a: integer; b: integer): TestCell;
+begin
+  Result := new TestCell(typeof(integer));
+  Result.a := a;
+  Result.b := b;
+end;
+
+/// Сгенерировать вещественную тестовую ячейку
+function tRe(ra: real; rb: real; digits: integer): TestCell;
+begin
+  Result := new TestCell(typeof(real));
+  Result.ra := ra;
+  Result.rb := rb;
+  Result.digits := digits;
+end;
+
+/// Сгенерировать символьную тестовую ячейку
+function tChr(ca: char; cb: char): TestCell;
+begin
+  Result := new TestCell(typeof(char));
+  Result.ca := ca;
+  Result.cb := cb;
+end;
+
+/// Сгенерировать логическую тестовую ячейку
+function tBoo: TestCell;
+begin
+  Result := new TestCell(typeof(boolean));
+end;
+
+function operator*(cell: TestCell; n: integer): array of TestCell; extensionmethod;
+begin
+  Result := ArrFill(n,cell)
+end;
+
+function operator*(n: integer; cell: TestCell): array of TestCell; extensionmethod;
+begin
+  Result := ArrFill(n,cell)
+end;
+
+function operator*(cell: System.Type; n: integer): array of System.Type; extensionmethod;
+begin
+  Result := ArrFill(n,cell)
+end;
+
+function operator*(n: integer; cell: System.Type): array of System.Type; extensionmethod;
+begin
+  Result := ArrFill(n,cell)
+end;
 
 {=========================================================}
 {                    Сервисные функции                    }
@@ -598,15 +859,83 @@ procedure ErrorInputType(n: integer; ExpectedType, ActualType: string)
 
 procedure ErrorOutputType(n: integer; ExpectedType, ActualType: string)
   := raise new OutputTypeException(n,ExpectedType,ActualType);
+  
+function AutoTest: integer->() := testnum -> (TestMode := tmAutoTest);
 
+procedure GenerateAutoTests(n: integer);
+begin
+  TestCount := n;
+  GenerateTestData := AutoTest;
+end;
+
+procedure GenerateTests(n: integer; testcells: sequence of TestCell);
+begin
+  // Нужно сравнить типы в InputList и здесь. При несоотверствии бросить исключение
+  // Это можно делать только здесь - где количество входных данных заранее известно
+  // В задачах где вначале вводится n, а потом массив из n элементов, это не работает - количество данных меняется от теста нк тесту
+  var testTypes := testcells.Select(ts -> ts.typ).ToArray;
+  var inputTypes := InputList.Select(ob -> ob.GetType).ToArray;
+  if (testTypes.Length <> inputTypes.Length) then
+    raise new InputTestCountMismatchException;
+  for var i:=0 to testTypes.Length - 1 do
+    if (testTypes[i] <> inputTypes[i]) then
+      raise new InputTestTypesMismatchException;
+    
+  TestCount := n;
+  GenerateTestData := tnum -> begin
+    InputList := GenValuesByTestCells(testcells);
+  end;
+end;
+
+var 
+  _isPT, _isRobot, _isDrawman, _isLightPT: boolean;
+  _IsPTcalculated := False;
+  _IsLightPTcalculated := False;
+  _IsRobotcalculated := False;
+  _IsDrawmancalculated := False;
+  
 /// Является ли задание заданием для задачника PT
-function IsPT := System.Type.GetType('PT4.PT4') <> nil;
+function IsPT: boolean;
+begin
+  if _IsPTcalculated then
+    Result := _isPT
+  else Result := System.Type.GetType('PT4.PT4') <> nil;
+  _isPT := Result;
+  _IsPTcalculated := True;
+end;  
 
 /// Является ли задание заданием для Робота
-function IsRobot := System.Type.GetType('RobotField.RobotField');
+function IsRobot: boolean;
+begin
+  if _IsRobotcalculated then
+    Result := _isRobot
+  else Result := System.Type.GetType('RobotField.RobotField') <> nil;
+  _isRobot := Result;
+  _IsRobotcalculated := True;
+end; 
 
 /// Является ли задание заданием для Чертежника
-function IsDrawman := System.Type.GetType('DrawManField.DrawManField');
+function IsDrawman: boolean;
+begin
+  if _IsDrawmancalculated then
+    Result := _isDrawman
+  else Result := System.Type.GetType('DrawManField.DrawManField') <> nil;
+  _isDrawman := Result;
+  _IsDrawmancalculated := True;
+end; 
+
+/// Является ли задание заданием для легковесного задачника
+function IsLightPT: boolean;
+begin
+  if _IsLightPTcalculated then
+    Result := _IsLightPT
+  else Result := not IsPT and not IsRobot and not IsDrawman;
+  _IsLightPT := Result;
+  _IsLightPTcalculated := True;
+end; 
+
+/// надо ли пополнять список ввода в функциях, используемых для ввода
+function NeedAddDataToInputList: boolean := IsLightPT and ((TestMode = tmNone) or (TestMode = tmAutoTest));
 
 /// Полный путь к папке auth-файла
 function FindAuthDat: string;
@@ -803,6 +1132,12 @@ begin
     raise new InputCount2Exception(InputList.Count, i + 1)
 end;
 
+procedure CheckInputTest2Count(i: integer);
+begin
+  if InputList.Count <= i then
+    raise new InputCountTest2Exception(InputList.Count, i + 1)
+end;
+
 procedure CheckOutput2Count(i: integer);
 begin
   if OutputList.Count <= i then
@@ -862,6 +1197,46 @@ begin
   Result := char(InputList[i]);
 end;
 
+function IntTest(i: integer): integer;
+begin
+  CheckInputTest2Count(i);
+  if not IsInt(i) then
+    raise new InputTypeTestException(i + 1, 'integer', TypeName(InputList[i]));
+  Result := integer(InputList[i]);
+end;
+
+function ReTest(i: integer): real;
+begin
+  CheckInputTest2Count(i);
+  if not IsRe(i) then
+    raise new InputTypeTestException(i + 1, 'real', TypeName(InputList[i]));
+  Result := real(InputList[i]);
+end;
+
+function StrTest(i: integer): string;
+begin
+  CheckInputTest2Count(i);
+  if not IsStr(i) then
+    raise new InputTypeTestException(i + 1, 'string', TypeName(InputList[i]));
+  Result := string(InputList[i]);
+end;
+
+function BooTest(i: integer): boolean;
+begin
+  CheckInputTest2Count(i);
+  if not IsBoo(i) then
+    raise new InputTypeTestException(i + 1, 'boolean', TypeName(InputList[i]));
+  Result := boolean(InputList[i]);
+end;
+
+function ChrTest(i: integer): char;
+begin
+  CheckInputTest2Count(i);
+  if not IsChr(i) then
+    raise new InputTypeTestException(i + 1, 'char', TypeName(InputList[i]));
+  Result := char(InputList[i]);
+end;
+
 function OutInt(i: integer): integer;
 begin
   CheckOutput2Count(i);
@@ -904,33 +1279,64 @@ end;
 
 function Int: integer;
 begin
-  Result := Int(Cur);
-  Cur += 1;
+  Result := Int(CurPosInInputList);
+  CurPosInInputList += 1;
 end;
 
 function Re: real;
 begin
-  Result := Re(Cur);
-  Cur += 1;
+  Result := Re(CurPosInInputList);
+  CurPosInInputList += 1;
 end;
 
 function Str: string;
 begin
-  Result := Str(Cur);
-  Cur += 1;
+  Result := Str(CurPosInInputList);
+  CurPosInInputList += 1;
 end;
 
 function Boo: boolean;
 begin
-  Result := Boo(Cur);
-  Cur += 1;
+  Result := Boo(CurPosInInputList);
+  CurPosInInputList += 1;
 end;
 
 function Chr: char;
 begin
-  Result := Chr(Cur);
-  Cur += 1;
+  Result := Chr(CurPosInInputList);
+  CurPosInInputList += 1;
 end;
+
+function IntTest: integer;
+begin
+  Result := IntTest(CurPosInInputListInTestMode);
+  CurPosInInputListInTestMode += 1;
+end;
+
+function ReTest: real;
+begin
+  Result := ReTest(CurPosInInputListInTestMode);
+  CurPosInInputListInTestMode += 1;
+end;
+
+function StrTest: string;
+begin
+  Result := StrTest(CurPosInInputListInTestMode);
+  CurPosInInputListInTestMode += 1;
+end;
+
+function BooTest: boolean;
+begin
+  Result := BooTest(CurPosInInputListInTestMode);
+  CurPosInInputListInTestMode += 1;
+end;
+
+function ChrTest: char;
+begin
+  Result := ChrTest(CurPosInInputListInTestMode);
+  CurPosInInputListInTestMode += 1;
+end;
+
 
 function Int2: (integer, integer) := (Int, Int);
 
@@ -989,198 +1395,499 @@ begin
     OutputList[i] := ConvertOne(OutputList[i]);
 end;
 
+function ToObjArray(a: sequence of integer): array of object := a.Select(x -> object(x)).ToArray;
+
+function ToObjArray(a: sequence of real): array of object := a.Select(x -> object(x)).ToArray;
+
+function ToObjArray(a: sequence of string): array of object := a.Select(x -> object(x)).ToArray;
+
+function ToObjArray(a: sequence of char): array of object := a.Select(x -> object(x)).ToArray;
+
+function ToObjArray(a: sequence of boolean): array of object := a.Select(x -> object(x)).ToArray;
+
+function ToObjArray(a: sequence of word): array of object := a.Select(x -> object(x)).ToArray;
+
+
+{============================================}
+{     Методы расширения для List<object>     }
+{============================================}
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: sequence of integer); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.AddRange(ToObjArray(data));
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: sequence of real); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.AddRange(ToObjArray(data));
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: sequence of string); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.AddRange(ToObjArray(data));
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: sequence of char); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.AddRange(ToObjArray(data));
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: sequence of boolean); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.AddRange(ToObjArray(data));
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: sequence of word); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.AddRange(ToObjArray(data));
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: sequence of object); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.AddRange(data.ToArray);
+end;
+
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: integer); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.Add(data);
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: real); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.Add(data);
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: string); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.Add(data);
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: char); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.Add(data);
+end;
+
+/// Заполняет InputList в GenerateTestData. Вызывать только в GenerateTestData! 
+procedure AddTestData(Self: List<object>; data: boolean); extensionmethod;
+begin
+  if TestMode <> tmGenTest then
+    raise new NotInTestGenModeException('AddTestData');
+  Self.Add(data);
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataInt(Self: List<object>): integer; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataInt');
+  Result := IntTest;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataReal(Self: List<object>): real; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataReal');
+  Result := ReTest;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataString(Self: List<object>): string; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataString');
+  Result := StrTest;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataChar(Self: List<object>): char; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataChar');
+  Result := ChrTest;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataBoolean(Self: List<object>): boolean; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataBoolean');
+  Result := BooTest;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataIntArr(Self: List<object>; n: integer): array of integer; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataIntArr');
+  Result := (1..n).Select(x->IntTest).ToArray;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataReArr(Self: List<object>; n: integer): array of real; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataReArr');
+  Result := (1..n).Select(x->ReTest).ToArray;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataStrArr(Self: List<object>; n: integer): array of string; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataStrArr');
+  Result := (1..n).Select(x->StrTest).ToArray;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataChrArr(Self: List<object>; n: integer): array of char; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataChrArr');
+  Result := (1..n).Select(x->ChrTest).ToArray;
+end;
+
+/// Только для InputList и только во время тестирования!!! TestMode = tmTest! Это внутренний метод - разработчику тестов не вызывать!!!
+function ReadTestDataBooArr(Self: List<object>; n: integer): array of boolean; extensionmethod;
+begin
+  if TestMode <> tmTest then
+    raise new NotInTestModeException('ReadTestDataBooArr');
+  Result := (1..n).Select(x->BooTest).ToArray;
+end;
+
+
+function SliceAsInt(Self: List<object>; a,b: integer): array of integer; extensionmethod 
+  := Self[a:b].Select(x->integer(x)).ToArray;
+
+function SliceAsReal(Self: List<object>; a,b: integer): array of real; extensionmethod 
+  := Self[a:b].Select(x->real(x)).ToArray;
+
+function SliceAsString(Self: List<object>; a,b: integer): array of string; extensionmethod 
+  := Self[a:b].Select(x->string(x)).ToArray;
+
+function SliceAsChar(Self: List<object>; a,b: integer): array of char; extensionmethod 
+  := Self[a:b].Select(x->char(x)).ToArray;
+
+function SliceAsBoolean(Self: List<object>; a,b: integer): array of boolean; extensionmethod 
+  := Self[a:b].Select(x->boolean(x)).ToArray;
+  
+{=========================================================}
+{           Сервисные функции - продолжение               }
+{=========================================================}
+procedure GenerateTests(params a: array of integer);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(integer) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests(params a: array of real);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(real) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests(params a: array of string);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(string) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests(params a: array of char);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(char) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests(params a: array of boolean);
+begin
+  if InputList.Count <> 1 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(boolean) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    InputList.AddTestData(a[tnum-1]);
+  end;
+end;
+  
+procedure GenerateTests<T1,T2>(params a: array of (T1,T2));
+begin
+  if InputList.Count <> 2 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(T1) then 
+    raise new InputTestTypesMismatchException;
+  if InputList[1].GetType <> typeof(T2) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    var tt := a[tnum-1];
+    InputList.AddTestData(|object(tt[0]),object(tt[1])|);
+  end;
+end;
+
+procedure GenerateTests<T1,T2,T3>(params a: array of (T1,T2,T3));
+begin
+  if InputList.Count <> 2 then
+    raise new InputTestCountMismatchException;
+  if InputList[0].GetType <> typeof(T1) then 
+    raise new InputTestTypesMismatchException;
+  if InputList[1].GetType <> typeof(T2) then 
+    raise new InputTestTypesMismatchException;
+  if InputList[2].GetType <> typeof(T3) then 
+    raise new InputTestTypesMismatchException;
+  
+  TestCount := a.Length;
+  GenerateTestData := tnum -> begin
+    var tt := a[tnum-1];
+    InputList.AddTestData(|object(tt[0]),object(tt[1]),object(tt[2])|);
+  end;
+end;
+
 {=========================================================================}
 {     Переопределенные функции PABCSystem с заполнением ввода и вывода    }
 {=========================================================================}
 /// Возвращает случайное целое в диапазоне от a до b
 function Random(a, b: integer): integer;
 begin
-  Result := PABCSystem.Random(a, b);
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataInt // считать следующее данное из заполненного в GenTestMode InputList
+  else Result := PABCSystem.Random(a, b);
+  
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
+/// Возвращает случайное целое в диапазоне от 0 до n-1
 function Random(n: integer): integer;
 begin
-  Result := PABCSystem.Random(n);
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataInt
+  else Result := PABCSystem.Random(n);
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
 /// Возвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
 begin
-  Result := PABCSystem.Random;
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataReal
+  else Result := PABCSystem.Random;
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
 begin
-  Result := PABCSystem.Random(a, b);
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataReal
+  else Result := PABCSystem.Random(a, b);
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 begin
-  Result := PABCSystem.Random(a, b);
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataChar
+  else Result := PABCSystem.Random(a, b);
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
 function RandomReal(a, b: real; digits: integer): real;
 begin
-  Result := PABCSystem.RandomReal(a, b, digits);
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataReal
+  else Result := PABCSystem.RandomReal(a, b, digits);
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
 /// Возвращает случайное целое в диапазоне 
 function Random(diap: IntRange): integer;
 begin
-  Result := PABCSystem.Random(diap);
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataInt
+  else Result := PABCSystem.Random(diap);
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
 /// Возвращает случайное вещественное в диапазоне 
 function Random(diap: RealRange): real;
 begin
-  Result := PABCSystem.Random(diap);
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataReal
+  else Result := PABCSystem.Random(diap);
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
 /// Возвращает случайный символ в диапазоне 
 function Random(diap: CharRange): char;
 begin
-  Result := PABCSystem.Random(diap);
-  if IsPT then exit;
-  InputList.Add(Result);
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataChar
+  else Result := PABCSystem.Random(diap);
+  if NeedAddDataToInputList then
+    InputList.Add(Result);
 end;
 
 /// Возвращает кортеж из двух случайных целых в диапазоне от a до b
 function Random2(a, b: integer): (integer, integer);
 begin
-  Result := PABCSystem.Random2(a, b);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
+  Result := (Random(a, b), Random(a, b));
 end;
 
 /// Возвращает кортеж из двух случайных вещественных в диапазоне от a до b
 function Random2(a, b: real): (real, real);
 begin
-  Result := PABCSystem.Random2(a, b);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
+  Result := (Random(a, b), Random(a, b));
 end;
 
 /// Возвращает кортеж из двух случайных символов в диапазоне от a до b
 function Random2(a, b: char): (char, char);
 begin
-  Result := PABCSystem.Random2(a, b);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
+  Result := (Random(a, b), Random(a, b));
 end;
 
 /// Возвращает кортеж из двух случайных целых в диапазоне
 function Random2(diap: IntRange): (integer, integer);
 begin
-  Result := PABCSystem.Random2(diap);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
+  Result := (Random(diap), Random(diap));
 end;
 
 /// Возвращает кортеж из двух случайных символов в диапазоне
 function Random2(diap: CharRange): (char, char);
 begin
-  Result := PABCSystem.Random2(diap);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
+  Result := (Random(diap), Random(diap));
 end;
 
 /// Возвращает кортеж из двух случайных вещественных в диапазоне
 function Random2(diap: RealRange): (real, real);
 begin
-  Result := PABCSystem.Random2(diap);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
+  Result := (Random(diap), Random(diap));
 end;
 
 /// Возвращает кортеж из трех случайных целых в диапазоне от a до b
 function Random3(a, b: integer): (integer, integer, integer);
 begin
-  Result := PABCSystem.Random3(a, b);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
-  InputList.Add(Result[2]);
+  Result := (Random(a, b), Random(a, b), Random(a, b));
 end;
 
 /// Возвращает кортеж из трех случайных вещественных в диапазоне от a до b
 function Random3(a, b: real): (real, real, real);
 begin
-  Result := PABCSystem.Random3(a, b);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
-  InputList.Add(Result[2]);
+  Result := (Random(a, b), Random(a, b), Random(a, b));
 end;
 
 /// Возвращает кортеж из трех случайных символов в диапазоне от a до b
 function Random3(a, b: char): (char, char, char);
 begin
-  Result := PABCSystem.Random3(a, b);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
-  InputList.Add(Result[2]);
+  Result := (Random(a, b), Random(a, b), Random(a, b));
 end;
 
 /// Возвращает кортеж из трех случайных целых в диапазоне
 function Random3(diap: IntRange): (integer, integer, integer);
 begin
-  Result := PABCSystem.Random3(diap);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
-  InputList.Add(Result[2]);
+  Result := (Random(diap), Random(diap), Random(diap));
 end;
 
 /// Возвращает кортеж из трех случайных вещественных в диапазоне
 function Random3(diap: RealRange): (real, real, real);
 begin
-  Result := PABCSystem.Random3(diap);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
-  InputList.Add(Result[2]);
+  Result := (Random(diap), Random(diap), Random(diap));
 end;
 
 /// Возвращает кортеж из трех случайных символов в диапазоне
 function Random3(diap: CharRange): (char, char, char);
 begin
-  Result := PABCSystem.Random3(diap);
-  if IsPT then exit;
-  InputList.Add(Result[0]);
-  InputList.Add(Result[1]);
-  InputList.Add(Result[2]);
+  Result := (Random(diap), Random(diap), Random(diap));
 end;
 
 /// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от a до b
 function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
 begin
-  Result := PABCSystem.ArrRandomInteger(n, a, b);
-  if IsPT then exit;
+  // Есть три состояния:
+  // 1. Вызов в основной программе (первый запуск) - TestMode = tmNone
+  // 2. Вызов в основной программе (последующие запуски) - TestMode = tmTest
+  // 3. Вызов в функции GenerateTestData - TestMode = tmGenTest - это только в состоянии TestMode = True
+  {if GenTest then
+  begin
+    Result := PABCSystem.ArrRandomInteger(n, a, b); // приходится вызывать дважды!
+    exit;
+  end;}
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataIntArr(n)
+  else Result := PABCSystem.ArrRandomInteger(n, a, b); 
+  
+  if NeedAddDataToInputList then // IsLightPT and (TestMode = tmNone)
   for var i:=0 to n-1 do
     InputList.Add(Result[i]);
 end;
@@ -1191,8 +1898,11 @@ function ArrRandomInteger(n: integer): array of integer := ArrRandomInteger(n,0,
 /// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
 function ArrRandomReal(n: integer; a: real; b: real): array of real;
 begin
-  Result := PABCSystem.ArrRandomReal(n, a, b);
-  if IsPT then exit;
+  if TestMode = tmTest then
+    Result := InputList.ReadTestDataReArr(n)
+  else Result := PABCSystem.ArrRandomReal(n, a, b);
+  
+  if NeedAddDataToInputList then
   for var i:=0 to n-1 do
     InputList.Add(Result[i]);
 end;
@@ -1200,79 +1910,14 @@ end;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями  в диапазоне от 0 до 10
 function ArrRandomReal(n: integer): array of real := ArrRandomReal(n,0,10);
 
-/// Непонятно, зачем эти функции переопределять!!! Только Read и Random!!!
-
-{/// Возвращает массив из count элементов, заполненных значениями gen(i)
-function ArrGen<T>(count: integer; gen: integer->T): array of T;
-begin
-  Result := PABCSystem.ArrGen(count,gen);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);
-end;
-
-/// Возвращает массив из count элементов, заполненных значениями gen(i), начиная с i=from
-function ArrGen<T>(count: integer; gen: integer->T; from: integer): array of T;
-begin
-  Result := PABCSystem.ArrGen(count,gen,from);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);
-end;
-
-/// Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему 
-function ArrGen<T>(count: integer; first: T; next: T->T): array of T;
-begin
-  Result := PABCSystem.ArrGen(count,first,next);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);
-end;
-
-/// Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему 
-function ArrGen<T>(count: integer; first, second: T; next: (T,T) ->T): array of T;
-begin
-  Result := PABCSystem.ArrGen(count,first,second,next);
-  if IsPT then exit;
-  for var i:=0 to Result.Length-1 do
-    InputList.Add(Result[i]);
-end;}
-
-{/// Возвращает массив из n целых, введенных с клавиатуры
-function ReadArrInteger(n: integer): array of integer;
-begin
-  Result := PABCSystem.ReadArrInteger(n); // и всё!!! Данные в InputList уже внесены!
-end;
-
-/// Возвращает массив из n вещественных, введенных с клавиатуры
-function ReadArrReal(n: integer): array of real;
-begin
-  Result := PABCSystem.ReadArrReal(n);
-end;
-
-/// Возвращает массив из n строк, введенных с клавиатуры
-function ReadArrString(n: integer): array of string;
-begin
-  Result := PABCSystem.ReadArrString(n);
-end;
-
-/// Возвращает матрицу m на n целых, введенных с клавиатуры
-function ReadMatrInteger(m, n: integer): array [,] of integer;
-begin
-  Result := PABCSystem.ReadMatrInteger(m,n); // и всё!!! Данные в InputList уже внесены!
-end;
-
-/// Возвращает матрицу m на n вещественных, введенных с клавиатуры
-function ReadMatrReal(m, n: integer): array [,] of real;
-begin
-  Result := PABCSystem.ReadMatrReal(m,n);
-end;}
-
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
 begin
-  Result := PABCSystem.MatrRandomInteger(m,n,a,b);
-  if IsPT then exit;
+  if TestMode = tmTest then 
+    Result := Matr(m,n,InputList.ReadTestDataIntArr(m*n))
+  else Result := PABCSystem.MatrRandomInteger(m,n,a,b);
+
+  if NeedAddDataToInputList then
   foreach var x in Result.ElementsByRow do
     InputList.Add(x);
 end;
@@ -1283,37 +1928,17 @@ function MatrRandomInteger(m: integer; n: integer): array [,] of integer := Matr
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer; n: integer; a: real; b: real): array [,] of real;
 begin
-  Result := PABCSystem.MatrRandomReal(m,n,a,b);
-  if IsPT then exit;
+  if TestMode = tmTest then
+    Result := Matr(m,n,InputList.ReadTestDataReArr(m*n))
+  else Result := PABCSystem.MatrRandomReal(m,n,a,b);
+
+  if NeedAddDataToInputList then
   foreach var x in Result.ElementsByRow do
     InputList.Add(x);
 end;
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer; n: integer): array [,] of real := MatrRandomReal(m,n,0,10);
-
-/// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
-{function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
-begin
-  Result := PABCSystem.MatrGen(m,n,gen);
-  if IsPT then exit;
-  foreach var x in Result.ElementsByRow do
-    InputList.Add(x);
-end;}
-
-{function ReadString: string;
-begin
-  Result := PABCSystem.ReadString;
-  if IsPT then exit;
-  InputList.Add(Result);
-  CreateNewLineBeforeMessage := False;
-end;
-
-function ReadlnString := ReadString;
-
-function ReadString2 := (ReadString, ReadString);
-
-function ReadlnString2 := ReadString2;}
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger(prompt: string): integer;
@@ -1344,6 +1969,18 @@ begin
   OutputList.RemoveAt(OutputList.Count - 1);
   CreateNewLineBeforeMessage := False;
 end;
+
+function ReadString(prompt: string): string;
+begin
+  Result := PABCSystem.ReadString(prompt);
+  if IsPT then exit;
+  OutputList.RemoveAt(OutputList.Count - 1);
+  OutputList.RemoveAt(OutputList.Count - 1);
+  CreateNewLineBeforeMessage := False;
+end;
+
+function ReadlnString(prompt: string) := ReadString(prompt);
+
 
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
@@ -1397,16 +2034,6 @@ end;
 
 // конец переопределенных функций с заполнением ввода-вывода  
 
-function ToObjArray(a: array of integer) := a.Select(x -> object(x)).ToArray;
-
-function ToObjArray(a: array of real) := a.Select(x -> object(x)).ToArray;
-
-function ToObjArray(a: array of string) := a.Select(x -> object(x)).ToArray;
-
-function ToObjArray(a: array of char) := a.Select(x -> object(x)).ToArray;
-
-function ToObjArray(a: array of boolean) := a.Select(x -> object(x)).ToArray;
-
 procedure CompareTypeWithOutput(params a: array of System.Type);
 begin
   TaskResult := Solved;
@@ -1440,13 +2067,21 @@ end;
 
 procedure CheckInput(seq: sequence of System.Type) := CheckInputTypes(seq.ToArray);
 
-procedure CheckOutputAfterInitialSeq(seq: sequence of integer) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of real) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of string) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of boolean) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
-procedure CheckOutputAfterInitialSeq(seq: sequence of char) := CheckOutputAfterInitial(ToObjArray(seq.ToArray));
+procedure CheckOutputAfterInitialSeq(seq: sequence of integer) := CheckOutputAfterInitial(ToObjArray(seq));
+procedure CheckOutputAfterInitialSeq(seq: sequence of real) := CheckOutputAfterInitial(ToObjArray(seq));
+procedure CheckOutputAfterInitialSeq(seq: sequence of string) := CheckOutputAfterInitial(ToObjArray(seq));
+procedure CheckOutputAfterInitialSeq(seq: sequence of boolean) := CheckOutputAfterInitial(ToObjArray(seq));
+procedure CheckOutputAfterInitialSeq(seq: sequence of char) := CheckOutputAfterInitial(ToObjArray(seq));
 procedure CheckOutputAfterInitialSeq(seq: sequence of object) := CheckOutputAfterInitial(seq.ToArray);
 procedure CheckOutputAfterInitialSeq(seq: ObjectList) := CheckOutputAfterInitial(seq.lst.ToArray);
+
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of integer); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of real); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of string); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of boolean); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of char); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
+procedure CheckOutputAfterInitialSeqSilent(seq: sequence of object); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
+procedure CheckOutputAfterInitialSeqSilent(seq: ObjectList); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
 
 
 procedure ClearOutputListFromSpaces;
@@ -1479,6 +2114,8 @@ end;
 
 procedure ColoredMessage(msg: string; color: MessageColorT);
 begin
+  if Silent then exit;
+
   if CreateNewLineBeforeMessage then
     Console.WriteLine;
   Console.WriteLine(MsgColorCode(color) + msg);
@@ -1487,188 +2124,128 @@ end;
 
 procedure ColoredMessage(msg: string);
 begin
+  if Silent then exit;
   if CreateNewLineBeforeMessage then
     Console.WriteLine;
   Console.WriteLine(MsgColorCode(MsgColorRed) + msg);
   CreateNewLineBeforeMessage := False;
 end;
 
-/// Здесь проверялся RuntimeType - в новом CheckOutput RuntimeType вообще не проверяется
-procedure CheckOutputOld(params arr: array of object);
-begin
-  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
-    exit;
-
-  var mn := Min(arr.Length, OutputList.Count);
-  TaskResult := Solved;
-  // Несоответствие типов
-  for var i := 0 to mn - 1 do
-  begin 
-    if (arr[i].GetType.Name = 'RuntimeType') and (arr[i] <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i] as System.Type), TypeName(OutputList[i]))
-    else if (arr[i].GetType.Name <> 'RuntimeType') and (arr[i].GetType <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i].GetType), TypeName(OutputList[i]));
-  end;  
-  
-  // Несоответствие количества выводимых параметров
-  if arr.Length <> OutputList.Count then
-    raise new OutputCountException(OutputList.Count, arr.Length);
-  
-  // Несоответствие значений
-  for var i := 0 to mn - 1 do
-    if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
-    begin
-      TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
-      exit;           
-    end;
-end;
-
-// Добавим сюда проверку типов RuntimeType
-// Выдавать ли сообщение о дальнейшем вводе-выводе если у нас InitialTask?
-//   Сделаем глобальную настройку CancelMessagesIfInitial и по умолчанию присвоим ей False
-procedure CheckOutput(params arr: array of object);
-begin
-  // TaskResult = InitialTask - ничего выводить не надо
-  // TaskResult = BadInitialTask - потом будет выведено исключение, что часть изначальных данных удалена
-  if (TaskResult = InitialTask) and CancelMessagesIfInitial
-     or (TaskResult = BadInitialTask) then
-    exit;
-
-  var mn := Min(arr.Length, OutputList.Count);
-  
-  // Несоответствие типов или значений
-  var ind := -1;
-  for var i := 0 to mn - 1 do
-  begin  
-    // Если типы не совпадают 
-    if (arr[i].GetType.Name <> 'RuntimeType') and (arr[i].GetType <> OutputList[i].GetType) or
-      (arr[i].GetType.Name = 'RuntimeType') and (arr[i] <> OutputList[i].GetType)
-    then
-    begin
-      ind := i; // то запомнить индекс первого несовпадения
-      if ind > InitialOutputList.Count then
-        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
-      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i].GetType), TypeName(OutputList[i]));           
-    end;
-    // Если значения не совпадают (если задан маркер типа, то проверка значений пропускается)
-    if (arr[i].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i], OutputList[i]) then
-    begin
-      ind := i; // то запомнить индекс первого несовпадения
-      if ind > InitialOutputList.Count then
-      begin
-        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
-        ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i]}, а выведено {OutputList[i]}',MsgColorGray);
-      end;  
-      TaskResult := BadSolution;
-      exit;           
-    end;
+procedure CheckOutputHelper(i0: integer; params arr: array of object);
+  procedure OutputTestResult;
+  begin
+    ColoredMessage($'Основной запуск верный',MsgColorGray);
+    ColoredMessage($'Ошибочное решение на тесте:',MsgColorOrange);
+    ColoredMessage($'Тестовые данные      : {InputList.JoinToString}',MsgColorGray);
+    ColoredMessage($'Полученный результат : {OutputList.JoinToString}',MsgColorGray);
+    if i0 = 0 then
+      ColoredMessage($'Правильный результат : {arr.JoinToString}',MsgColorGray)
+    else ColoredMessage($'Правильный результат : {(OutputList[:i0]+arr).JoinToString}',MsgColorGray)
   end;
-  if ind = -1 then
-    ind := mn;
-  
-  if arr.Length <> OutputList.Count then
-  begin  
-    if (ind = mn) and (ind<>0) then
-      ColoredMessage('Все выведенные данные правильны',MsgColorGray)
-    else if ind > 0 then
-      ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
-    raise new OutputCountException(OutputList.Count, arr.Length);
-  end;
-  TaskResult := Solved;
-end;
 
-procedure CheckOutputAfterInitial(params arr: array of object);
 begin
   if (TaskResult = InitialTask) and CancelMessagesIfInitial
      or (TaskResult = BadInitialTask) then
     exit;
 
   // Если мы попали сюда, то OutputList.Count >= InitialOutputList.Count
-  var mn := Min(arr.Length, OutputList.Count - InitialOutputList.Count);
+  var mn := Min(arr.Length, OutputList.Count - i0);
   
-  var i0 := InitialOutputList.Count;
-  var ind := -1;
   for var i := i0 to i0 + mn - 1 do
   begin  
     // Если типы не совпадают 
     if (arr[i-i0].GetType.Name <> 'RuntimeType') and (arr[i-i0].GetType <> OutputList[i].GetType) or
       (arr[i-i0].GetType.Name = 'RuntimeType') and (arr[i-i0] <> OutputList[i].GetType)
-    then
+    then 
     begin
-      ind := i; // то запомнить индекс первого несовпадения
-      if ind >= InitialOutputList.Count then
-        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+      if TestNumber > 0 then
+        OutputTestResult
+      else
+      begin
+        if i > InitialOutputList.Count then
+          ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+      end;  
       raise new OutputTypeException(i + 1, TypeToTypeName(arr[i-i0].GetType), TypeName(OutputList[i]));           
     end;
     // Если значения не совпадают (если задан маркер типа, то проверка значений пропускается)
     if (arr[i-i0].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i-i0], OutputList[i]) then
     begin
-      ind := i; // то запомнить индекс первого несовпадения
-      if ind > InitialOutputList.Count then
+      if i >= InitialOutputList.Count then // ? Если первое данное неправильное - всё равно попадаем сюда!!!
       begin
-        ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
-        ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i-i0]}, а выведено {OutputList[i]}',MsgColorGray);
+        if TestNumber > 0 then
+          OutputTestResult
+        else
+        begin
+          if i > InitialOutputList.Count then
+            ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+          if (i0 = 0) and (arr.Length = 1) then
+            //ColoredMessage($'Ожидалось значение {arr[i-i0]}, а выведено {OutputList[i]}',MsgColorGray)           
+          else ColoredMessage($'Элемент {i + 1}: ожидалось значение {arr[i-i0]}, а выведено {OutputList[i]}',MsgColorGray);
+        end;  
       end;  
       TaskResult := BadSolution;
       exit;           
     end;
   end;
-  if ind = -1 then
-    ind := mn;
   
-  if arr.Length <> OutputList.Count - InitialOutputList.Count then
+  if arr.Length <> OutputList.Count - i0 then
   begin  
-    if (ind = mn) and (ind<>i0) then
-      ColoredMessage('Все выведенные данные правильны',MsgColorGray)
-    else if ind > 0 then
-      ColoredMessage('Часть выведенных данных правильная',MsgColorGray);
+    if TestNumber > 0 then
+      OutputTestResult
+    else
+    if OutputList.Count > 0 then begin
+      if arr.Length > OutputList.Count - i0 then // выведено меньше чем надо
+        ColoredMessage('Все выведенные данные правильны',MsgColorGray)
+      else if arr.Length < OutputList.Count - i0 then // выведено больше чем надо
+        ColoredMessage('Все необходимые выведенные данные правильны',MsgColorGray);
+    end;  
     raise new OutputCountException(OutputList.Count, arr.Length + i0);
   end;
-  TaskResult := Solved;
+  TaskResult := Solved;  
 end;
 
-procedure CheckOutputAfterInitialOld(params arr: array of object); // проверить только то, что после исходного вывода
+// Поправим сообщения об ошибке в соответствии с TestNumber
+procedure CheckOutput(params arr: array of object);
 begin
-  if (TaskResult = InitialTask) or (TaskResult = BadInitialTask) then
-    exit;
-  
-  // Здесь всегда OutputList.Count > InitialOutputList.Count
-  // Если arr.Length > OutputList.Count - InitialOutputList.Count, то мы не вывели часть данных
-  // Если arr.Length < OutputList.Count - InitialOutputList.Count, то мы вывели больше чем надо
-  
-  if arr.Length <> OutputList.Count - InitialOutputList.Count then
-    raise new OutputCountException(OutputList.Count, InitialOutputList.Count + arr.Length);
-    
-  TaskResult := Solved;
-  // Несоответствие типов
-  var a := OutputList.Count - arr.Length;
-  for var i := a to OutputList.Count - 1 do
-  begin 
-    if (arr[i-a].GetType.Name = 'RuntimeType') and (arr[i-a] <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeToTypeName(arr[i-a] as System.Type), TypeName(OutputList[i]))
-    else if (arr[i-a].GetType.Name <> 'RuntimeType') and (arr[i-a].GetType <> OutputList[i].GetType) then
-      raise new OutputTypeException(i + 1, TypeName(arr[i-a]), TypeName(OutputList[i]));
-  end;
-  
-  // Несоответствие значений
-  for var i := a to OutputList.Count - 1 do
-    if (arr[i-a].GetType.Name <> 'RuntimeType') and not CompareValues(arr[i-a], OutputList[i]) then
-    begin
-      TaskResult := BadSolution; // Если типы разные, то IOErrorSolution
-      exit;           
-    end;
-    
-    
+  CheckOutputHelper(0,arr);
 end;
 
-procedure CheckOutputSeq(a: sequence of integer) := CheckOutput(ToObjArray(a.ToArray));
-procedure CheckOutputSeq(a: sequence of real) := CheckOutput(ToObjArray(a.ToArray));
-procedure CheckOutputSeq(a: sequence of string) := CheckOutput(ToObjArray(a.ToArray));
-procedure CheckOutputSeq(a: sequence of char) := CheckOutput(ToObjArray(a.ToArray));
-procedure CheckOutputSeq(a: sequence of boolean) := CheckOutput(ToObjArray(a.ToArray));
+procedure CheckOutputSilent(params arr: array of object);
+begin
+  Silent := True;
+  CheckOutput(arr);
+  Silent := False;
+end;
+
+procedure CheckOutputAfterInitial(params arr: array of object);
+begin
+  CheckOutputHelper(InitialOutputList.Count,arr);
+end;
+
+procedure CheckOutputAfterInitialSilent(params arr: array of object);
+begin
+  Silent := True;
+  CheckOutputAfterInitial(arr);
+  Silent := False;
+end;
+
+procedure CheckOutputSeq(a: sequence of integer) := CheckOutput(ToObjArray(a));
+procedure CheckOutputSeq(a: sequence of real) := CheckOutput(ToObjArray(a));
+procedure CheckOutputSeq(a: sequence of string) := CheckOutput(ToObjArray(a));
+procedure CheckOutputSeq(a: sequence of char) := CheckOutput(ToObjArray(a));
+procedure CheckOutputSeq(a: sequence of boolean) := CheckOutput(ToObjArray(a));
 procedure CheckOutputSeq(a: sequence of object) := CheckOutput(a.ToArray);
 procedure CheckOutputSeq(a: ObjectList) := CheckOutput(a.lst.ToArray);
-procedure CheckOutputSeq(a: sequence of word) := CheckOutputSeq(a.Select(x->object(x)));
+procedure CheckOutputSeq(a: sequence of word) := CheckOutputSeq(ToObjArray(a));
+
+procedure CheckOutputSeqSilent(a: sequence of integer) := begin Silent := True; CheckOutputSeq(a); Silent := False end;
+procedure CheckOutputSeqSilent(a: sequence of real) := begin Silent := True; CheckOutputSeq(a); Silent := False end;
+procedure CheckOutputSeqSilent(a: sequence of string) := begin Silent := True; CheckOutputSeq(a); Silent := False end;
+procedure CheckOutputSeqSilent(a: sequence of char) := begin Silent := True; CheckOutputSeq(a); Silent := False end;
+procedure CheckOutputSeqSilent(a: sequence of boolean) := begin Silent := True; CheckOutputSeq(a); Silent := False end;
+procedure CheckOutputSeqSilent(a: sequence of object) := begin Silent := True; CheckOutputSeq(a); Silent := False end;
+procedure CheckOutputSeqSilent(a: ObjectList) := begin Silent := True; CheckOutputSeq(a); Silent := False end;
+procedure CheckOutputSeqSilent(a: sequence of word) := begin Silent := True; CheckOutputSeq(a); Silent := False end;
 
 procedure CheckOutputNew(params arr: array of object) := CheckOutput(arr);
 procedure CheckOutputSeqNew(a: sequence of integer) := CheckOutputSeq(a);
@@ -1679,14 +2256,6 @@ procedure CheckOutputSeqNew(a: sequence of boolean) := CheckOutputSeq(a);
 procedure CheckOutputSeqNew(a: sequence of object) := CheckOutputSeq(a);
 procedure CheckOutputSeqNew(a: sequence of word) := CheckOutputSeq(a);
 procedure CheckOutputSeqNew(a: ObjectList) := CheckOutputSeq(a);
-
-procedure CheckOutputSeqOld(a: sequence of integer) := CheckOutputOld(ToObjArray(a.ToArray));
-procedure CheckOutputSeqOld(a: sequence of real) := CheckOutputOld(ToObjArray(a.ToArray));
-procedure CheckOutputSeqOld(a: sequence of string) := CheckOutputOld(ToObjArray(a.ToArray));
-procedure CheckOutputSeqOld(a: sequence of char) := CheckOutputOld(ToObjArray(a.ToArray));
-procedure CheckOutputSeqOld(a: sequence of boolean) := CheckOutputOld(ToObjArray(a.ToArray));
-procedure CheckOutputSeqOld(a: sequence of object) := CheckOutputOld(a.ToArray);
-procedure CheckOutputSeqOld(a: ObjectList) := CheckOutputOld(a.lst.ToArray);
 
 procedure CheckOutputString(str: string);
   function Char2Str(c: char): string;
@@ -1762,6 +2331,7 @@ end;
 function NValues(n: integer): string;
 begin
   case n of
+    0: Result := n + ' значений';
     1: Result := n + ' значение';
     2, 3, 4: Result := n + ' значения';
     5..100000: Result := n + ' значений';
@@ -2015,6 +2585,37 @@ begin
   Result := TName;
 end;
 
+procedure ClearLists;
+begin
+  CurPosInInputList := 0;
+  CurPosInInputListInTestMode := 0;
+  OutputString.Clear;
+  OutputList.Clear;
+  InputList.Clear;
+  InitialOutputList.Clear; 
+  InitialInputList.Clear;  
+end; 
+
+function InitSolveProcPair: (System.Reflection.MethodInfo, System.Reflection.MethodInfo);
+begin
+  // Взял из PT.pas
+  var asm := System.Reflection.Assembly.GetExecutingAssembly;
+  var nm := asm.FullName;
+  Delete(nm, Pos(',', nm), length(nm));
+  var prg := asm.GetType(nm+'.Program');
+  var solveproc := prg.GetMethod('$Main');
+  var initproc := prg.GetMethod('$_InitVariables_');
+  if (solveproc = nil) or (initproc = nil) then
+    foreach var prg0 in asm.GetTypes() do
+    begin
+      prg := prg0;
+      solveproc := prg0.GetMethod('$Main');
+      initproc := prg0.GetMethod('$_InitVariables_');
+      if (solveproc <> nil) and (initproc <> nil) then
+        break;
+    end;
+  Result := (InitProc,SolveProc);  
+end; 
 
 procedure CheckMyPT;
 begin
@@ -2023,40 +2624,79 @@ begin
   var TName := TaskName;
   try
     TName := ConvertTaskName(TaskName);
-
-    CheckTask(TName);
+    TestMode := tmNone;
+    TestNumber := 0;
+    CheckTask(TName); // может выдавать сообщения, предваряющие неверное решение, в CheckOutput. 
+    if {not IsPT and not IsRobot and not IsDrawMan and} (TestCount > 0) then // То это LightPT - т.к. только в LightPT TestCount м.б. > 0
+    begin
+      var (InitProc,SolveProc) := InitSolveProcPair;
+        
+      if (GenerateTestData <> nil) and (TaskResult = Solved) then
+        for var i:=1 to TestCount do
+        begin
+          TestNumber := i;
+          ClearLists;
+          TestMode := tmGenTest;
+          GenerateTestData(i);
+          
+          if TestMode<>tmAutoTest then
+            TestMode := tmTest;
+          try
+            if InitProc<>nil then
+              InitProc.Invoke(nil,nil);
+            SolveProc.Invoke(nil,nil);
+          except
+            on e: System.Reflection.TargetInvocationException do
+              raise e.InnerException;
+          end;
+          //InputList := InputList; 
+          //OutputList := OutputList; 
+          
+          CheckTask(TName);
+          if TaskResult = BadSolution then
+            break; // хоть один тест неудачный - выходим!
+          // Подумать над выводом ошибки при тестах
+        end;
+    end;
+    Silent := False;
     // Если это задача из задачника, то результат будет NotUnderControl. И дальше необходимо это преобразовывать
     case TaskResult of
       Solved: ColoredMessage('Задание выполнено', MsgColorGreen);
-      BadSolution: ColoredMessage('Неверное решение');
+      BadSolution: begin
+        ColoredMessage('Неверное решение');
+      end;
       InitialTask: ;
       BadInitialTask: ColoredMessage('Вы удалили часть кода - восстановите его!', MsgColorMagenta);
     end;
   except
+    // При тестировании тут вряд ли будут ошибки. Но могут
     on e: OutputTypeException do
     begin
-      //Writeln(#10+$'Неверно указан тип при выводе данных'); 
+      Silent := False;
       ColoredMessage($'Ошибка вывода. При выводе {e.n}-го элемента типа {e.ExpectedType} выведено значение типа {e.ActualType}'); 
     end;
     on e: OutputCountException do
     begin
+      Silent := False;
       if e.Count = 0 then
         ColoredMessage($'Требуется вывести {NValues(e.n)}', MsgColorGray)
       else ColoredMessage($'Выведено {NValues(e.Count)}, а требуется вывести {e.n}', MsgColorOrange); 
     end;
     on e: OutputCount2Exception do
     begin
+      Silent := False;
       if e.Count = 0 then
         ColoredMessage($'Требуется вывести по крайней мере {NValues(e.i)}', MsgColorGray)
       else ColoredMessage($'Выведено {NValues(e.Count)}, а требуется вывести по крайней мере {e.i}', MsgColorOrange); 
     end;
     on e: InputTypeException do
     begin
-      //Writeln(#10+$'Неверно указан тип при вводе исходных данных'); 
+      Silent := False;
       ColoredMessage($'Ошибка ввода. При вводе {e.n}-го элемента типа {e.ExpectedType} использована переменная типа {e.ActualType}'); 
     end;
     on e: InputCountException do
     begin
+      Silent := False;
       if e.Count = 0 then
         ColoredMessage($'Требуется ввести {NValues(e.n)}', MsgColorGray)
       else if e.n <> 0 then 
@@ -2065,9 +2705,40 @@ begin
     end;
     on e: InputCount2Exception do
     begin
+      Silent := False;
       if e.Count = 0 then
         ColoredMessage($'Требуется ввести по крайней мере {NValues(e.i)}', MsgColorGray)
       else ColoredMessage($'Введено {NValues(e.Count)}, а требуется ввести по крайней мере {e.i}', MsgColorOrange); 
+    end;
+    on e: NotInTestModeException do
+    begin
+      Silent := False;
+      ColoredMessage($'Метод {e.FuncName} может вызываться только в режиме тестирования вне GenerateTestData! Он - внутренний и не предназначен для вызова разработчиком теста!', MsgColorOrange); 
+    end;
+    on e: NotInTestGenModeException do
+    begin
+      Silent := False;
+      ColoredMessage($'Метод {e.FuncName} может вызываться только в режиме генерации тестов (в GenerateTestData)!', MsgColorOrange); 
+    end;
+    on e: InputCountTest2Exception do
+    begin
+      Silent := False;
+      ColoredMessage($'Неверно составлен тест! Введено {NValues(e.Count)}, а требуется ввести по крайней мере {e.i}. Возможно, неверно заполнен InputList в GenerateTestData', MsgColorOrange); 
+    end;
+    on e: InputTypeTestException do
+    begin
+      Silent := False;
+      ColoredMessage($'Неверно составлен тест! При вводе {e.n}-го элемента типа {e.ExpectedType} использована переменная типа {e.ActualType}. Возможно, неверно заполнен InputList в GenerateTestData'); 
+    end;
+    on e: InputTestCountMismatchException do
+    begin
+      Silent := False;
+      ColoredMessage($'Неверно составлен тест! Несоответствие количества входных данных в тесте и основном запуске. Возможно, неверно заполнен InputList в GenerateTestData'); 
+    end;
+    on e: InputTestTypesMismatchException do
+    begin
+      Silent := False;
+      ColoredMessage($'Неверно составлен тест! Несоответствие типов входных данных в тесте и основном запуске. Возможно, неверно заполнен InputList в GenerateTestData'); 
     end;
   end;
   // Для задачника надо вызывать процедуру __FinalizeModule__ из модуля PT4 jnhf;tybtv, а в модуле PT4 эту процедуру тогда не вызывть
@@ -2198,7 +2869,8 @@ type
   public
     procedure write(obj: object); override;
     begin
-      inherited write(obj);
+      if TestMode = tmNone then
+        inherited write(obj);
       OutputString += _ObjectToString(obj);
       OutputList += obj;
       CreateNewLineBeforeMessage := True;
@@ -2206,111 +2878,184 @@ type
     
     procedure writeln; override;
     begin
-      inherited writeln;
+      if TestMode = tmNone then
+        inherited writeln;
       OutputString += NewLine;
       CreateNewLineBeforeMessage := False;
     end;
     
     function ReadLine: string; override;
     begin
-      Result := inherited ReadLine;
+      if TestMode = tmTest then
+        Result := InputList.ReadTestDataString
+      else Result := inherited ReadLine;
+      
+      if not NeedAddDataToInputList then exit;
+        
       InputList.Add(Result);
       CreateNewLineBeforeMessage := False;
     end;
     
     procedure readln; override;
     begin
-      inherited readln;
+      if TestMode = tmTest then
+        
+      else inherited readln;
       CreateNewLineBeforeMessage := False;
     end;
     
     procedure read(var x: integer); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataInt
+      else inherited Read(x);
+
+      if not NeedAddDataToInputList then exit;
+        
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: real); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataReal
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: char); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataChar
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: string); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataString
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: byte); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataInt
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: shortint); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataInt
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: smallint); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataInt
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: word); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataInt
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: longword); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataInt
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: int64); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataInt
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: uint64); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataInt
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: single); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataReal
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
     
     procedure read(var x: boolean); override;
     begin
-      inherited Read(x);
+      if TestMode = tmTest then
+        x := InputList.ReadTestDataBoolean
+      else inherited Read(x);
+      
+      if not NeedAddDataToInputList then exit;
+
       InputList.Add(x);
       CreateNewLineBeforeMessage := True;
     end;
