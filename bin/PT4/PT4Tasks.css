@@ -18,6 +18,6 @@ P.ptCommentQuote{text-align:left;margin-left:120px;margin-top:0px;margin-bottom:
 P.ptCommentContinue{text-align:justify;}
 P.ptFooter{text-align:right;font-size:10pt;font-style:italic;margin-right:0px;}
 SPAN.ptSpecial{font-family:"Arial";}
-PRE{font-family:"Courier New";text-align:left;font-size:10pt;text-indent:0px;margin-top:5px; margin-right:10px; margin-bottom:0px; margin-left:60px;}
+PRE{text-align:left;font-size:10pt;text-indent:0px;margin-top:5px; margin-right:10px; margin-bottom:0px; margin-left:60px;}
 CODE{font-size:10pt;}
 P.ptPicture{font-family:Arial, sans-serif;margin-top: 5px;margin-bottom: 5px;margin-left: 60px;font-size: small;color: #000080;text-indent: 0pt;text-align: justify}
