@@ -1,3 +1,5 @@
+{$reference System.Windows.Forms.dll}
+
 /// Конструктор для электронного задачника Programming Taskbook 4.23
 
 unit xPT4TaskMakerNET;

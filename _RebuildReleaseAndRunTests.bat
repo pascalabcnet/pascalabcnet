@@ -5,6 +5,9 @@ call Studio.bat /t:rebuild "/property:Configuration=Release" "/p:Platform=Any CP
 cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+..\bin\pabcnetc RebuildxPT4TaskMakers.pas /rebuild
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
 
 cd PABCRtl
 ..\..\bin\pabcnetc PABCRtl.pas /rebuild
@@ -20,6 +23,9 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+..\bin\pabcnetc RebuildxPT4TaskMakers.pas /rebuild
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
 
 cd ..\bin
 REM MPGORunner.exe
