@@ -113,6 +113,11 @@
     File ..\bin\Lib\PointerTools.pcu
     File ..\bin\Lib\PointRect.pcu
     File ..\bin\Lib\PT4.pcu
+    File ..\bin\Lib\PT4Exam.pcu
+    File ..\bin\Lib\PT4MakerNetX.pcu
+    File ..\bin\Lib\PT4TaskMakerNET.pcu
+    File ..\bin\Lib\xPT4MakerNetX.pcu
+    File ..\bin\Lib\xPT4TaskMakerNET.pcu
     File ..\bin\Lib\Robot.pcu
     File ..\bin\Lib\RobotField.pcu
     File ..\bin\Lib\RobotTaskMaker.pcu
@@ -121,15 +126,12 @@
     File ..\bin\Lib\Timers.pcu
     File ..\bin\Lib\Utils.pcu
     File ..\bin\Lib\VCL.pcu
-    File ..\bin\Lib\PT4Exam.pcu
-    File ..\bin\Lib\PT4TaskMakerNET.pcu
     File ..\bin\Lib\RBDMUtils.pcu
     File ..\bin\Lib\Collections.pcu
     File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
     File ..\bin\Lib\OpenGL.pcu
-    File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\Speech.pcu
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
@@ -148,6 +150,7 @@
     File ..\bin\Lib\PlotWPF.pcu
     File ..\bin\Lib\XLSX.pcu
     File ..\bin\Lib\Мозаика.pcu
+    File ..\bin\Lib\TasksArr.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -194,6 +197,11 @@
     ${AddFile} "PointerTools.pcu"
     ${AddFile} "PointRect.pcu"
     ${AddFile} "PT4.pcu"
+    ${AddFile} "PT4Exam.pcu"
+    ${AddFile} "PT4MakerNetX.pcu"
+    ${AddFile} "PT4TaskMakerNET.pcu"
+    ${AddFile} "xPT4MakerNetX.pcu"
+    ${AddFile} "xPT4TaskMakerNET.pcu"
     ${AddFile} "Robot.pcu"
     ${AddFile} "RobotField.pcu"
     ${AddFile} "RobotTaskMaker.pcu"
@@ -202,15 +210,12 @@
     ${AddFile} "Timers.pcu"
     ${AddFile} "Utils.pcu"
     ${AddFile} "VCL.pcu"
-    ${AddFile} "PT4TaskMakerNET.pcu"
-    ${AddFile} "PT4Exam.pcu"
     ${AddFile} "RBDMUtils.pcu"
     ${AddFile} "Collections.pcu"
     ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
     ${AddFile} "OpenGL.pcu"
-    ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "Speech.pcu"
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
@@ -229,6 +234,7 @@
     ${AddFile} "PlotWPF.pcu"
     ${AddFile} "XLSX.pcu"
     ${AddFile} "Мозаика.pcu"
+    ${AddFile} "TasksArr.pcu"
 
     ${AddFile} "turtle.png"
 
@@ -294,6 +300,10 @@
     File ..\bin\Lib\PointRect.pas
     File ..\bin\Lib\PT4.pas
     File ..\bin\Lib\PT4Exam.pas
+    File ..\bin\Lib\PT4MakerNetX.pas
+    File ..\bin\Lib\xPT4MakerNetX.pas
+    File ..\bin\Lib\PT4TaskMakerNET.pas
+    File ..\bin\Lib\xPT4TaskMakerNET.pas
     File ..\bin\Lib\Robot.pas
     File ..\bin\Lib\RobotField.pas
     File ..\bin\Lib\RobotTaskMaker.pas
@@ -302,14 +312,12 @@
     File ..\bin\Lib\Timers.pas
     File ..\bin\Lib\Utils.pas
     File ..\bin\Lib\VCL.pas
-    File ..\bin\Lib\PT4TaskMakerNET.pas
     File ..\bin\Lib\RBDMUtils.pas
     File ..\bin\Lib\Collections.pas
     File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
     File ..\bin\Lib\OpenGL.pas
-    File ..\bin\Lib\PT4MakerNetX.pas
     File ..\bin\Lib\Speech.pas
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
@@ -369,6 +377,10 @@
     ${AddFile} "PointRect.pas"
     ${AddFile} "PT4.pas"
     ${AddFile} "PT4Exam.pas"
+    ${AddFile} "PT4MakerNetX.pas"
+    ${AddFile} "xPT4MakerNetX.pas"
+    ${AddFile} "PT4TaskMakerNET.pas"
+    ${AddFile} "xPT4TaskMakerNET.pas"
     ${AddFile} "Robot.pas"
     ${AddFile} "RobotField.pas"
     ${AddFile} "RobotTaskMaker.pas"
@@ -377,13 +389,11 @@
 	${AddFile} "Timers.pas"
     ${AddFile} "Utils.pas"
     ${AddFile} "VCL.pas"
-    ${AddFile} "PT4TaskMakerNET.pas"
     ${AddFile} "RBDMUtils.pas"
     ${AddFile} "Collections.pas"
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
-    ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "Speech.pas"
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
