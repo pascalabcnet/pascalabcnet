@@ -3154,15 +3154,16 @@ namespace PascalABCCompiler
             var preloadedAssemblies = new List<Assembly>();
             foreach (var reference in referenceDirectives)
                 preloadedAssemblies.Add(PreloadReference(reference));
-            
-            using (new NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain, preloadedAssemblies))
-            {
-                foreach (var reference in referenceDirectives)
-                    CompileReference(res, reference);
-            }
+
+            if (assemblyResolveScope == null)
+                assemblyResolveScope = new NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain, preloadedAssemblies);
+            foreach (var reference in referenceDirectives)
+                CompileReference(res, reference);
 
             return res;
         }
+
+        NetHelper.AssemblyResolveScope assemblyResolveScope;
 
         private bool IsPossibleNamespace(SyntaxTree.unit_or_namespace name_space, bool add_to_standard_modules, string curr_path)
         {
@@ -4086,6 +4087,9 @@ namespace PascalABCCompiler
             project = null;
             StandarModules.Clear();
             CompiledVariables.Clear();
+            if (assemblyResolveScope != null)
+                assemblyResolveScope.Dispose();
+            assemblyResolveScope = null;
             if (!close_pcu)
             {
                 SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
