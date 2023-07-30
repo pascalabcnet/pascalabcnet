@@ -92,10 +92,10 @@ function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от 0 до 100
 function ArrRandomInteger(n: integer): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
-function ArrRandomReal(n: integer; a: real; b: real): array of real;
+function ArrRandomReal(n: integer; a: real; b: real; digits: integer := 1): array of real;
 
 /// Возвращает массив размера n, заполненный случайными вещественными значениями  в диапазоне от 0 до 10
-function ArrRandomReal(n: integer): array of real;
+function ArrRandomReal(n: integer; digits: integer := 1): array of real;
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
@@ -1896,11 +1896,11 @@ end;
 function ArrRandomInteger(n: integer): array of integer := ArrRandomInteger(n,0,100);
 
 /// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
-function ArrRandomReal(n: integer; a: real; b: real): array of real;
+function ArrRandomReal(n: integer; a: real; b: real; digits: integer): array of real;
 begin
   if TestMode = tmTest then
     Result := InputList.ReadTestDataReArr(n)
-  else Result := PABCSystem.ArrRandomReal(n, a, b);
+  else Result := PABCSystem.ArrRandomReal(n, a, b, digits);
   
   if NeedAddDataToInputList then
   for var i:=0 to n-1 do
@@ -1908,7 +1908,7 @@ begin
 end;
 
 /// Возвращает массив размера n, заполненный случайными вещественными значениями  в диапазоне от 0 до 10
-function ArrRandomReal(n: integer): array of real := ArrRandomReal(n,0,10);
+function ArrRandomReal(n: integer; digits: integer): array of real := ArrRandomReal(n,0,10,digits);
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): array [,] of integer;

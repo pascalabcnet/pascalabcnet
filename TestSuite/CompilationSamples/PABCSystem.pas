@@ -2258,7 +2258,7 @@ function SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): sequen
 /// Возвращает последовательность из n случайных целых элементов
 function SeqRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): sequence of integer;
 /// Возвращает последовательность из n случайных вещественных элементов
-function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): sequence of real;
+function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10; digits: integer := 1): sequence of real;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i)
 function SeqGen<T>(count: integer; f: integer->T): sequence of T;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i), начиная с i=from
@@ -2326,9 +2326,9 @@ function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandomInteger(n: integer := 10): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
-function ArrRandomReal(n: integer; a: real; b: real): array of real;
+function ArrRandomReal(n: integer; a: real; b: real; digits: integer := 1): array of real;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
-function ArrRandomReal(n: integer := 10): array of real;
+function ArrRandomReal(n: integer := 10; digits: integer := 1): array of real;
 /// Возвращает массив из count элементов, заполненных значениями gen(i)
 function ArrGen<T>(count: integer; gen: integer->T): array of T;
 /// Возвращает массив из count элементов, заполненных значениями gen(i), начиная с i=from
@@ -4823,14 +4823,14 @@ end;
 
 function ArrRandomInteger(n: integer) := ArrRandomInteger(n,0,100);
 
-function ArrRandomReal(n: integer; a: real; b: real): array of real;
+function ArrRandomReal(n: integer; a: real; b: real; digits: integer): array of real;
 begin
   Result := new real[n];
   for var i := 0 to Result.Length - 1 do
-    Result[i] := Random() * (b - a) + a;
+    Result[i] := RandomReal(a,b,digits);
 end;
 
-function ArrRandomReal(n: integer) := ArrRandomReal(n,0,10);
+function ArrRandomReal(n: integer; digits: integer) := ArrRandomReal(n,0,10,digits);
 
 function SeqRandom(n: integer; a: integer; b: integer): sequence of integer;
 begin
@@ -4844,10 +4844,10 @@ begin
     yield Random(a, b)
 end;
 
-function SeqRandomReal(n: integer; a: real; b: real): sequence of real;
+function SeqRandomReal(n: integer; a: real; b: real; digits: integer): sequence of real;
 begin
   loop n do
-    yield Random() * (b - a) + a
+    yield RandomReal(a,b,digits)
 end;
 
 function Arr<T>(params a: array of T): array of T;
