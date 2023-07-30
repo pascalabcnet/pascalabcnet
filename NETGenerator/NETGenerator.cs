@@ -9471,8 +9471,15 @@ namespace PascalABCCompiler.NETGenerator
                     }
                 }
                 real_parameters[0].visit(this);
+                if (value.basic_function.basic_function_type == basic_function_type.uimul)
+                    il.Emit(OpCodes.Conv_I8);
                 if (real_parameters.Length > 1)
+                {
                     real_parameters[1].visit(this);
+                    if (value.basic_function.basic_function_type == basic_function_type.uimul)
+                        il.Emit(OpCodes.Conv_I8);
+                }
+                    
                 EmitOperator(value);//кладем соотв. команду
                 if (tmp_dot)
                 {
