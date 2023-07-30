@@ -2,26 +2,7 @@
 
 uses LightPT;
 
-var AllTaskNames := Arr('Arr1','Arr2','Arr3','Arr4','Arr5','Arr6',
-  'Arr_Sum0','Arr_Sum1','Arr_Sum2','Arr_Sum3','Arr_Sum4','Arr_CountA1','Arr_CountA2',
-  'Arr_Replace1','Arr_Replace2','Arr_Find1','Arr_Find2','Arr_Find3','Arr_Find4',
-  'Arr_Index1','Arr_Index2','Arr_Index2a','Arr_Index3','Arr_Index4',
-  'Arr_MinMax1','Arr_MinMax2','Arr_MinMax3','Arr_MinMax4','Arr_Neighbors1','Arr_MinMaxInd1','Arr_MinMaxInd2',
-  'Arr_Fill1','Arr_Fill2','Заполнение1','ЗаполнениеЛямбда1','Заполнение2','ЗаполнениеЛямбда2',
-  'ЗаполнениеПоПред1','ЗаполнениеПоПред2','ЗаполнениеГеом1','ЗаполнениеГеом2','ЗаполнениеСумма1','ЗаполнениеСумма2',
-  'Arr_Transf1','Arr_Transf1a','Arr_Transf2','Arr_Transf3','Arr_Transf4','Arr_Transf5','Arr_Transf7',
-  'Arr_Transf8','Arr_Transf9','Arr_Transf6',
-  'Arr_Reverse1','Arr_Reverse2','Arr_Reverse3','Arr_Reverse3a',
-  'Arr_Count1','Arr_Count2','Arr_Count3','Arr_Count4',
-  'Arr_FindIndex1','Arr_FindIndex2',
-  'Arr_Filter1','Arr_GenFilter1','Arr_GenFilter2',
-  'Arr_Op1',
-  'Arr_Slice1','Arr_Slice2','Arr_Slice3','Arr_Slice7','Arr_Slice10','Arr_Slice11','Arr_Slice12',
-  'Arr_InsDel1','Arr_InsDel2','Arr_InsDel3',
-  'Arr_Shift1','Arr_Shift2',
-  'List1','List2','List3','List4','List5','List6','List6a','List6b','List7','List8','List9','List9a','List9b',
-  'Sort1','Sort2','Sort3',
-  'BubbleSort','BubbleSort2');
+var AllTaskNames: array of string;
 
 procedure CheckTaskT(name: string);
 begin
@@ -742,5 +723,25 @@ end;
 
 initialization
   CheckTask := CheckTaskT;
+  AllTaskNames := Arr('Arr1','Arr2','Arr3','Arr4','Arr5','Arr6',
+  'Arr_Sum0','Arr_Sum1','Arr_Sum2','Arr_Sum3','Arr_Sum4','Arr_CountA1','Arr_CountA2',
+  'Arr_Replace1','Arr_Replace2','Arr_Find1','Arr_Find2','Arr_Find3','Arr_Find4',
+  'Arr_Index1','Arr_Index2','Arr_Index2a','Arr_Index3','Arr_Index4',
+  'Arr_MinMax1','Arr_MinMax2','Arr_MinMax3','Arr_MinMax4','Arr_Neighbors1','Arr_MinMaxInd1','Arr_MinMaxInd2',
+  'Arr_Fill1','Arr_Fill2','Заполнение1','ЗаполнениеЛямбда1','Заполнение2','ЗаполнениеЛямбда2',
+  'ЗаполнениеПоПред1','ЗаполнениеПоПред2','ЗаполнениеГеом1','ЗаполнениеГеом2','ЗаполнениеСумма1','ЗаполнениеСумма2',
+  'Arr_Transf1','Arr_Transf1a','Arr_Transf2','Arr_Transf3','Arr_Transf4','Arr_Transf5','Arr_Transf7',
+  'Arr_Transf8','Arr_Transf9','Arr_Transf6',
+  'Arr_Reverse1','Arr_Reverse2','Arr_Reverse3','Arr_Reverse3a',
+  'Arr_Count1','Arr_Count2','Arr_Count3','Arr_Count4',
+  'Arr_FindIndex1','Arr_FindIndex2',
+  'Arr_Filter1','Arr_GenFilter1','Arr_GenFilter2',
+  'Arr_Op1',
+  'Arr_Slice1','Arr_Slice2','Arr_Slice3','Arr_Slice7','Arr_Slice10','Arr_Slice11','Arr_Slice12',
+  'Arr_InsDel1','Arr_InsDel2','Arr_InsDel3',
+  'Arr_Shift1','Arr_Shift2',
+  'List1','List2','List3','List4','List5','List6','List6a','List6b','List7','List8','List9','List9a','List9b',
+  'Sort1','Sort2','Sort3',
+  'BubbleSort','BubbleSort2');
 finalization
 end.

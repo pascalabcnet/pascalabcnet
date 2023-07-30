@@ -116,8 +116,6 @@
     File ..\bin\Lib\PT4Exam.pcu
     File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\PT4TaskMakerNET.pcu
-    File ..\bin\Lib\xPT4MakerNetX.pcu
-    File ..\bin\Lib\xPT4TaskMakerNET.pcu
     File ..\bin\Lib\Robot.pcu
     File ..\bin\Lib\RobotField.pcu
     File ..\bin\Lib\RobotTaskMaker.pcu
@@ -151,6 +149,12 @@
     File ..\bin\Lib\XLSX.pcu
     File ..\bin\Lib\Мозаика.pcu
     File ..\bin\Lib\TasksArr.pcu
+    File ..\bin\Lib\TasksMatr.pcu
+    File ..\bin\Lib\TasksStr.pcu
+    File ..\bin\Lib\Tasks1Begin.pcu
+    File ..\bin\Lib\Tasks1BoolIfCase.pcu
+    File ..\bin\Lib\Tasks1Loops.pcu
+    File ..\bin\Lib\Tasks1Arr.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -200,8 +204,6 @@
     ${AddFile} "PT4Exam.pcu"
     ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "PT4TaskMakerNET.pcu"
-    ${AddFile} "xPT4MakerNetX.pcu"
-    ${AddFile} "xPT4TaskMakerNET.pcu"
     ${AddFile} "Robot.pcu"
     ${AddFile} "RobotField.pcu"
     ${AddFile} "RobotTaskMaker.pcu"
@@ -235,6 +237,13 @@
     ${AddFile} "XLSX.pcu"
     ${AddFile} "Мозаика.pcu"
     ${AddFile} "TasksArr.pcu"
+    ${AddFile} "TasksMatr.pcu"
+    ${AddFile} "TasksStr.pcu"
+    ${AddFile} "Tasks1Begin.pcu"
+    ${AddFile} "Tasks1BoolIfCase.pcu"
+    ${AddFile} "Tasks1Loops.pcu"
+    ${AddFile} "Tasks1Arr.pcu"
+
 
     ${AddFile} "turtle.png"
 
