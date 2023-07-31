@@ -342,12 +342,15 @@ namespace PascalABCCompiler.NetHelper
 			cur_used_assemblies[typeof(string).Assembly] = typeof(string).Assembly;
 			cur_used_assemblies[typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly] = typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly;
             type_search_cache.Clear();
+
 		}
 		
 		private static Hashtable ass_name_cache;
 		private static Hashtable file_dates;
-		
-		public static bool IsAssemblyChanged(string name)
+        private static Dictionary<Assembly, string> assm_full_paths;
+
+
+        public static bool IsAssemblyChanged(string name)
 		{
 			if (name == null) return false;
 			Assembly a = ass_name_cache[name] as Assembly;
@@ -430,6 +433,7 @@ namespace PascalABCCompiler.NetHelper
                 a = System.Reflection.Assembly.LoadFrom(name);
             }
             ass_name_cache[name] = a;
+            assm_full_paths[a] = name;
             file_dates[a] = System.IO.File.GetLastWriteTime(name);
             return a;
 		}
@@ -884,6 +888,7 @@ namespace PascalABCCompiler.NetHelper
             compiled_pascal_types = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
             namespaces = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
             ass_name_cache = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
+            assm_full_paths = new Dictionary<Assembly, string>();
             //ass_name_cache = new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
             file_dates = new Hashtable();
             //methods = new Hashtable();
@@ -933,6 +938,16 @@ namespace PascalABCCompiler.NetHelper
             EnumType = typeof(Enum);
             ArrayType = typeof(Array);
             AddToDictionaryMethod = typeof(Dictionary<string, object>).GetMethod("Add");
+        }
+
+        public static string GetAssemblyDirectory(Assembly assm)
+        {
+            string path;
+            if (assm_full_paths.TryGetValue(assm, out path))
+            {
+                return Path.GetDirectoryName(path);
+            }
+            return null;
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
