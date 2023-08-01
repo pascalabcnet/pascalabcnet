@@ -82,23 +82,23 @@ namespace VisualPascalABC
                 ShowContent(ProjectExplorerWindow, false);
                 UserProjectSettings setts = ProjectUserOptionsManager.LoadOptions(projectFileName);
 
-                var preloadedAssemblies = new List<Assembly>();
-                var referenceAssemblyPaths = new List<string>();
-                foreach (IReferenceInfo ri in ProjectFactory.Instance.CurrentProject.References)
+                using (var resolveScope = new PascalABCCompiler.NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain))
                 {
-                    var path = Compiler.get_assembly_path(Path.Combine(ProjectFactory.Instance.ProjectDirectory, ri.FullAssemblyName), false);
-                    if (path == null)
-                        path = Compiler.get_assembly_path(ri.FullAssemblyName, false);
+                    var referenceAssemblyPaths = new List<string>();
+                    foreach (IReferenceInfo ri in ProjectFactory.Instance.CurrentProject.References)
+                    {
+                        var path = Compiler.get_assembly_path(Path.Combine(ProjectFactory.Instance.ProjectDirectory, ri.FullAssemblyName), false);
+                        if (path == null)
+                            path = Compiler.get_assembly_path(ri.FullAssemblyName, false);
 
-                    referenceAssemblyPaths.Add(path);
-                    preloadedAssemblies.Add(PascalABCCompiler.NetHelper.NetHelper.PreloadAssembly(path));
-                }
+                        referenceAssemblyPaths.Add(path);
+                        resolveScope.PreloadAssembly(path);
+                    }
 
-                using (new PascalABCCompiler.NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain, preloadedAssemblies))
-                {
                     foreach (var path in referenceAssemblyPaths)
                     {
-                        ICSharpCode.FormsDesigner.ToolboxProvider.AddComponentsFromAssembly(PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path));
+                        ICSharpCode.FormsDesigner.ToolboxProvider.AddComponentsFromAssembly(
+                            PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path));
                     }
                 }
 

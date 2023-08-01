@@ -19,7 +19,7 @@ begin
     GenerateTests(10, tInt(1,10) * n);
     
     var m := MatrByRow(3,4,IntArr(n));
-    CheckOutput(m.Row(1).Max,m.Col(2).Min,m.Col(3).Sum); 
+    CheckOutputSeq(m.ElementsByRow + |m.Row(1).Max,m.Col(2).Min,m.Col(3).Sum|); 
   end;
   end;
 end;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 
 namespace PascalABCCompiler.NetHelper
@@ -11,18 +12,27 @@ namespace PascalABCCompiler.NetHelper
     public class AssemblyResolveScope : IDisposable
     {
         private readonly AppDomain _appDomain;
-        private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
+        private readonly Dictionary<string, Assembly> _assembliesByName = new Dictionary<string, Assembly>();
+        private readonly Dictionary<string, Assembly> _assembliesByPath = new Dictionary<string, Assembly>();
 
-        public AssemblyResolveScope(AppDomain appDomain, IEnumerable<Assembly> assemblies)
+        public AssemblyResolveScope(AppDomain appDomain)
         {
-            foreach (var assembly in assemblies)
-            {
-                // NOTE: assemblies with identical simple names will overwrite each other
-                _assemblies[assembly.GetName().Name] = assembly;
-            }
-
             _appDomain = appDomain;
             _appDomain.AssemblyResolve += OnAssemblyResolve;
+        }
+
+        public Assembly PreloadAssembly(string assemblyFilePath)
+        {
+            // Convert to normalized form (slashes, name case, possible relative paths):
+            assemblyFilePath = Path.GetFullPath(assemblyFilePath);
+
+            if (_assembliesByPath.TryGetValue(assemblyFilePath, out var assembly))
+                return assembly;
+            
+            assembly = NetHelper.LoadAssembly(assemblyFilePath);
+            _assembliesByName[assembly.GetName().Name] = assembly;
+            _assembliesByPath[assemblyFilePath] = assembly;
+            return assembly;
         }
 
         public void Dispose()
@@ -33,7 +43,7 @@ namespace PascalABCCompiler.NetHelper
         private Assembly OnAssemblyResolve(object obj, ResolveEventArgs args)
         {
             var requestedName = new AssemblyName(args.Name);
-            if (_assemblies.TryGetValue(requestedName.Name, out var assembly))
+            if (_assembliesByName.TryGetValue(requestedName.Name, out var assembly))
                 return assembly;
             var dir = PascalABCCompiler.NetHelper.NetHelper.GetAssemblyDirectory(args.RequestingAssembly);
             if (string.IsNullOrEmpty(dir))
@@ -43,9 +53,7 @@ namespace PascalABCCompiler.NetHelper
             {
                 try
                 {
-                    var assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path, true);
-                    _assemblies[assm.GetName().Name] = assm;
-                    return assm;
+                    return PreloadAssembly(path);
                 }
                 catch
                 {
