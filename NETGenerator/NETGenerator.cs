@@ -11046,7 +11046,7 @@ namespace PascalABCCompiler.NETGenerator
             is_dot_expr = tmp_is_dot_expr;
             is_addr = tmp_is_addr;
             il.Emit(OpCodes.Brtrue, NullLabel);
-            if (value.condition.type.is_nullable_type)
+            if (value.condition.type.is_nullable_type && tmp_is_dot_expr)
                 il.Emit(OpCodes.Ldloca, tmp_lb);
             else
                 il.Emit(OpCodes.Ldloc, tmp_lb);
