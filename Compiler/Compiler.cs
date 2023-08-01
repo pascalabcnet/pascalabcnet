@@ -1061,7 +1061,7 @@ namespace PascalABCCompiler
             //SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange();
 
             OnChangeCompilerState += ChangeCompilerStateEvent;
-            Reload();            
+            Reload();
         }
         
         public Compiler(ICompiler comp, SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
@@ -2898,7 +2898,7 @@ namespace PascalABCCompiler
         {
             var sc = GetSourceContext(reference);
             var fileName = GetReferenceFileName(reference.directive, sc, Path.GetDirectoryName(reference.source_file), true);
-            return NetHelper.NetHelper.PreloadAssembly(fileName);
+            return assemblyResolveScope.PreloadAssembly(fileName);
         }
 
         private CompilationUnit CompileReference(PascalABCCompiler.TreeRealization.unit_node_list Units, TreeRealization.compiler_directive cd)
@@ -3144,6 +3144,9 @@ namespace PascalABCCompiler
                     referenceDirectives.Add(new TreeRealization.compiler_directive("reference", ri.full_assembly_name, null, project.MainFile));
             	}
             }
+
+            if (assemblyResolveScope == null)
+                assemblyResolveScope = new NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain);
             
             // It's important to preload all the referenced assemblies before starting the compilation. During the
             // compilation, we need to access types from every referenced assembly. An attempt to access them could fail
@@ -3151,12 +3154,9 @@ namespace PascalABCCompiler
             //
             // It's not always possible to solve by re-ordering the references, since there are cases of
             // mutually-dependent assemblies (i.e. dependency loops) in the wild.
-            var preloadedAssemblies = new List<Assembly>();
             foreach (var reference in referenceDirectives)
-                preloadedAssemblies.Add(PreloadReference(reference));
+                PreloadReference(reference);
 
-            if (assemblyResolveScope == null)
-                assemblyResolveScope = new NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain, preloadedAssemblies);
             foreach (var reference in referenceDirectives)
                 CompileReference(res, reference);
 

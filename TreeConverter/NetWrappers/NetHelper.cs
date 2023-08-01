@@ -364,18 +364,6 @@ namespace PascalABCCompiler.NetHelper
 			return false;
 		}
 
-        public static Assembly PreloadAssembly(string name)
-        {
-            if (Path.GetFileName(name).ToLowerInvariant().Contains("microsoft."))
-            {
-                // TODO: A workaround for https://github.com/pascalabcnet/pascalabcnet/issues/2905
-                return Assembly.LoadFrom(name); 
-            }
-            
-            var bytes = File.ReadAllBytes(name);
-            return Assembly.Load(bytes);
-        }
-
 		public static Assembly LoadAssembly(string name, bool use_load_from = false)
 		{
             if (name == null) return null;
@@ -426,7 +414,8 @@ namespace PascalABCCompiler.NetHelper
 			//if (!System.IO.Path.GetFileName(name).ToLower().Contains("microsoft.directx"))
             try
             {
-                a = PreloadAssembly(name);
+                var bytes = File.ReadAllBytes(name);
+                a = Assembly.Load(bytes);
             }
             catch (Exception ex)
             {
