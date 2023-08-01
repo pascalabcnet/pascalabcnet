@@ -601,11 +601,11 @@ namespace PascalABCCompiler.TreeRealization
                         // Тут можно проверить на ковариантность
                         // еще где то надо проверять, что IEnumerable<Derived> -> IEnumerable<Base>, но здесь base_class предполагает, 
                         // что это - класс, и рассматривает все его интерфейсы, упуская ситуацию, когда base_class - это и есть интерфейс
-                        else if ((cgitn != null || ctn != null) && (bcgitn != null || bcctn != null)) // SSM 19/04
                         //else if (cgitn != null && (bcgitn != null || bcctn != null))
                         //else if ((cgitn != null || ctn != null) && bcgitn != null)
                         //else if (cgitn != null && bcgitn != null)
                         //else if (cgitn != null && bcgitn != null || ctn != null && bcctn != null) // SSM 18/04 немного большие ограничения
+                        else if ((cgitn != null || ctn != null) && (bcgitn != null || bcctn != null)) // SSM 19/04
                         {
                             compiled_type_node interf_original_generic = cgitn != null ? cgitn.original_generic as compiled_type_node : ctn.original_generic as compiled_type_node;
                             compiled_type_node base_original_generic = bcgitn != null ? bcgitn.original_generic as compiled_type_node : bcctn.original_generic as compiled_type_node;
@@ -637,7 +637,7 @@ namespace PascalABCCompiler.TreeRealization
                                         // ctcgi.compiled_type - это System.Type
                                         if ((interf_compiled_type.GetGenericArguments()[i].GenericParameterAttributes & System.Reflection.GenericParameterAttributes.Covariant) != 0)
                                         {
-                                            if (is_derived(base_instance_params[i], interf_instance_params[i], false))
+                                            if (is_derived(base_instance_params[i], interf_instance_params[i], false)) // is_derived(object , T, false) = true, что неверно - T - не наследник object!!!
                                             {
                                                 // OK
                                             }

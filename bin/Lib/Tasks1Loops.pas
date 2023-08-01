@@ -544,9 +544,15 @@ begin
     CheckOutput(3 in InputListAsIntegers);
   end;
   'Break2': begin 
+    TestCount := 3;
+    GenerateTestData := tnum -> begin
+      case tnum of
+        1: InputList.AddTestData(|1,2,8,4,5,6,7,1,2,9|);
+        2: InputList.AddTestData(|1,1,3|);
+        3: InputList.AddTestData(|7,6,4,3|);
+      end;  
+    end;
     var n := 10;
-    CheckData(Input := |cInt|*n);
-    GenerateTests(20,tInt(1,10)*n);
     var f := false;
     for var i:=0 to n-1 do
     begin
@@ -561,9 +567,15 @@ begin
   end;
   'Break3': begin 
     var n := 10;
-    CheckData(Input := |cInt|*n);
-    GenerateTests(10,tInt(0,10)*n);
-    var f := -1;
+    TestCount := 3;
+    GenerateTestData := tnum -> begin
+      case tnum of
+        1: InputList.AddTestData(|1,2,3,4,5,6,7,1,2,3|);
+        2: InputList.AddTestData(|1,1,9|);
+        3: InputList.AddTestData(|7,6,8|);
+      end;  
+    end;
+    var f := 0;
     for var i:=0 to n-1 do
     begin
       var x := Int(i);
