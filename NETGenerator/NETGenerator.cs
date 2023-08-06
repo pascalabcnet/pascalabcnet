@@ -15,6 +15,8 @@ using System.Runtime.Remoting;
 using System.Security;
 using System.Runtime.Versioning;
 using System.Text;
+using NETGenerator;
+using PascalABCCompiler.NetHelper;
 
 namespace PascalABCCompiler.NETGenerator
 {
@@ -1232,6 +1234,13 @@ namespace PascalABCCompiler.NETGenerator
             foreach (FileStream fs in ResStreams)
                 fs.Close();
 
+        }
+
+        public void EmitAssemblyRedirects(AssemblyResolveScope resolveScope, string targetAssemblyPath)
+        {
+            if (IsDotnet5() || IsDotnetNative()) return;
+            var appConfigPath = targetAssemblyPath + ".config";
+            AppConfigUtil.UpdateAppConfig(resolveScope.BindingRedirects, appConfigPath);
         }
 
         private void AddSpecialInitDebugCode()

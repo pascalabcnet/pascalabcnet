@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections;
+using PascalABCCompiler.NetHelper;
 
 namespace PascalABCCompiler.CodeGenerators
 {
@@ -27,6 +28,9 @@ namespace PascalABCCompiler.CodeGenerators
             il_converter = new NETGenerator.ILConverter(StandartDirectories);
 			il_converter.ConvertFromTree(ProgramTree, TargetFileName, SourceFileName, options, ResourceFiles);
 		}
+
+		public void EmitAssemblyRedirects(AssemblyResolveScope resolveScope, string outputFileName) =>
+			il_converter.EmitAssemblyRedirects(resolveScope, outputFileName);
 
 		public void Reset()
 		{
