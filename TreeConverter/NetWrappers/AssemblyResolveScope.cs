@@ -16,14 +16,24 @@ namespace PascalABCCompiler.NetHelper
         private readonly Dictionary<string, Assembly> _assembliesByName = new Dictionary<string, Assembly>();
         private readonly Dictionary<string, Assembly> _assembliesByPath = new Dictionary<string, Assembly>();
 
-        /// <remarks>Key = the resulting assembly, value = the highest version of the redirected assembly.</remarks>
-        private readonly Dictionary<AssemblyName, AssemblyName> _assemblyNameOverrides =
-            new Dictionary<AssemblyName, AssemblyName>();
+        public ICollection<AssemblyName> CalculateBindingRedirects()
+        {
+            var redirectedAssemblies = new HashSet<string>();
+            foreach (var assembly in _assembliesByName.Values)
+            {
+                foreach (var referenceName in assembly.GetReferencedAssemblies())
+                {
+                    var shortName = referenceName.Name;
+                    if (_assembliesByName.TryGetValue(shortName, out var referenceAssembly)
+                        && referenceAssembly.GetName().Version != referenceName.Version)
+                    {
+                        redirectedAssemblies.Add(shortName);
+                    }
+                }
+            }
 
-        public ICollection<AssemblyName> BindingRedirects => _assemblyNameOverrides
-            .Where(kv => kv.Key.Version != kv.Value.Version)
-            .Select(kv => kv.Key)
-            .ToList();
+            return redirectedAssemblies.Select(a => _assembliesByName[a].GetName()).ToList();
+        }
 
         public AssemblyResolveScope(AppDomain appDomain)
         {
@@ -50,7 +60,7 @@ namespace PascalABCCompiler.NetHelper
             _appDomain.AssemblyResolve -= OnAssemblyResolve;
         }
 
-        private Assembly ResolveAssembly(ResolveEventArgs args)
+        private Assembly OnAssemblyResolve(object obj, ResolveEventArgs args)
         {
             var requestedName = new AssemblyName(args.Name);
             if (_assembliesByName.TryGetValue(requestedName.Name, out var assembly))
@@ -72,27 +82,6 @@ namespace PascalABCCompiler.NetHelper
 
             }
             return null;
-        }
-
-        private Assembly OnAssemblyResolve(object obj, ResolveEventArgs args)
-        {
-            var assembly = ResolveAssembly(args);
-            if (assembly != null)
-            {
-                var resolvedName = assembly.GetName();
-                var requestingName = new AssemblyName(args.Name);
-                if (_assemblyNameOverrides.TryGetValue(resolvedName, out var overriddenName))
-                {
-                    if (overriddenName.Version < requestingName.Version)
-                        _assemblyNameOverrides[resolvedName] = requestingName;
-                }
-                else
-                {
-                    _assemblyNameOverrides.Add(resolvedName, requestingName);
-                }
-            }
-
-            return assembly;
         }
     }
 }
