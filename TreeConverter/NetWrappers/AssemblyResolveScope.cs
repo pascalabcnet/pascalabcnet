@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace PascalABCCompiler.NetHelper
@@ -14,6 +15,25 @@ namespace PascalABCCompiler.NetHelper
         private readonly AppDomain _appDomain;
         private readonly Dictionary<string, Assembly> _assembliesByName = new Dictionary<string, Assembly>();
         private readonly Dictionary<string, Assembly> _assembliesByPath = new Dictionary<string, Assembly>();
+
+        public ICollection<AssemblyName> CalculateBindingRedirects()
+        {
+            var redirectedAssemblies = new HashSet<string>();
+            foreach (var assembly in _assembliesByName.Values)
+            {
+                foreach (var referenceName in assembly.GetReferencedAssemblies())
+                {
+                    var shortName = referenceName.Name;
+                    if (_assembliesByName.TryGetValue(shortName, out var referenceAssembly)
+                        && referenceAssembly.GetName().Version != referenceName.Version)
+                    {
+                        redirectedAssemblies.Add(shortName);
+                    }
+                }
+            }
+
+            return redirectedAssemblies.Select(a => _assembliesByName[a].GetName()).ToList();
+        }
 
         public AssemblyResolveScope(AppDomain appDomain)
         {
@@ -45,11 +65,11 @@ namespace PascalABCCompiler.NetHelper
             var requestedName = new AssemblyName(args.Name);
             if (_assembliesByName.TryGetValue(requestedName.Name, out var assembly))
                 return assembly;
-            var dir = PascalABCCompiler.NetHelper.NetHelper.GetAssemblyDirectory(args.RequestingAssembly);
+            var dir = NetHelper.GetAssemblyDirectory(args.RequestingAssembly);
             if (string.IsNullOrEmpty(dir))
                 return null;
-            string path = System.IO.Path.Combine(dir, args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
-            if (System.IO.File.Exists(path))
+            string path = Path.Combine(dir, args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
+            if (File.Exists(path))
             {
                 try
                 {
