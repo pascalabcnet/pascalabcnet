@@ -1701,7 +1701,7 @@ function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
 /// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
-function RandomReal(a, b: real; digits: integer := -1): real;
+function RandomReal(a, b: real; digits: integer := 2): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
 /// Возвращает случайное целое в диапазоне 
@@ -2326,9 +2326,9 @@ function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandomInteger(n: integer := 10): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
-function ArrRandomReal(n: integer; a: real; b: real; digits: integer := 1): array of real;
+function ArrRandomReal(n: integer; a: real; b: real; digits: integer := 2): array of real;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
-function ArrRandomReal(n: integer := 10; digits: integer := 1): array of real;
+function ArrRandomReal(n: integer := 10; digits: integer := 2): array of real;
 /// Возвращает массив из count элементов, заполненных значениями gen(i)
 function ArrGen<T>(count: integer; gen: integer->T): array of T;
 /// Возвращает массив из count элементов, заполненных значениями gen(i), начиная с i=from

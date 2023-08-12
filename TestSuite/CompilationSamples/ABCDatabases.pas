@@ -60,34 +60,35 @@ type
     property InSunSchool: boolean read _inSunSchool;
   end;
 
-  {Ученик = auto class
+  ///!#
+  Ученик = auto class
   private
-    _name: string;
-    _gender: ТипПола; 
-    _height: integer;
-    _cls: integer;
-    _inSunSchool: boolean; 
-    function getGender: ТипПола := _gender;
+    _Фамилия: string;
+    _Класс: integer;
+    _Рост: integer;
+    _Пол: ТипПола; 
+    _УчитсяВКШ: boolean; 
+    function getGender: ТипПола := _Пол;
   public
     [PrintAttribute(0, -16)]
-    property Фамилия: string read _name;
+    property Фамилия: string read _Фамилия;
     [PrintAttribute(' ', 1, -3)]
     property Пол: ТипПола read getGender;
     [PrintAttribute(' ', 2, 3, 'd')]
-    property Рост: integer read _height;
+    property Рост: integer read _Рост;
     [PrintAttribute(' ',3, 2, 'd')]
-    property Класс: integer read _cls;
+    property Класс: integer read _Класс;
     [PrintAttribute(' ', 4, -5)]
-    property УчитсяВКШ: boolean read _inSunSchool;
-  end;}
+    property УчитсяВКШ: boolean read _УчитсяВКШ;
+  end;
 
   ///!#
-  Ученик = auto class
+  {Ученик = auto class
     Фамилия: string;
     Класс, Рост: integer;
     Пол: ТипПола;
     УчитсяВКШ: boolean;
-  end;
+  end;}
 
 function GenderToТипПола(a: string): ТипПола := a = 'Муж' ? Муж : Жен;
 function InSunSchoolToBoolean(a: string): boolean := a = 'Да';
