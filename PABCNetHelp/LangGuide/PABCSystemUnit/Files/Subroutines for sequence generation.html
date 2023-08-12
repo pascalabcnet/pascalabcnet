@@ -73,7 +73,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>
 <tr><td><code><b>function</b> SeqRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>
-<tr><td><code><b>function</b> SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): <b>sequence </b>  <b>of</b> real;</code>
+<tr><td><code><b>function</b> SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10; digits: integer := 1): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных вещественных элементов</td></tr>
 <tr><td><code><b>function</b> SeqWhile&lt;T&gt;(first: T; next: T-&gt;T; pred: T-&gt;boolean): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов с начальным значением first,функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности</td></tr>

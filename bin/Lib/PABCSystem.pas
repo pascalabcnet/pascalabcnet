@@ -13564,6 +13564,79 @@ begin
   Self.Remove(k);
 end;
 
+// --------------------------------------------
+//>>      Методы расширения типа Tuple # Extension methods for Tuple
+// -------------------------------------------
+// Дополнения февраль 2016
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3>(Self: (T1, T2); v: T3): (T1, T2, T3); extensionmethod;
+begin
+  Result := (Self[0], Self[1], v);
+end;
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3, T4>(Self: (T1, T2, T3); v: T4): (T1, T2, T3, T4); extensionmethod;
+begin
+  Result := (Self[0], Self[1], Self[2], v);
+end;
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4); v: T5): (T1, T2, T3, T4, T5); extensionmethod;
+begin
+  Result := (Self[0], Self[1], Self[2], Self[3], v);
+end;
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5); v: T6): (T1, T2, T3, T4, T5, T6); extensionmethod;
+begin
+  Result := (Self[0], Self[1], Self[2], Self[3], Self[4], v);
+end;
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6); v: T7): (T1, T2, T3, T4, T5, T6, T7); extensionmethod;
+begin
+  Result := (Self[0], Self[1], Self[2], Self[3], Self[4], Self[5], v);
+end;
+
+/// Выводит кортеж
+procedure Print<T1, T2>(Self: (T1, T2)); extensionmethod := Print(Self);
+/// Выводит кортеж
+procedure Print<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Print(Self);
+/// Выводит кортеж
+procedure Print<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Print(Self);
+/// Выводит кортеж
+procedure Print<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Print(Self);
+/// Выводит кортеж
+procedure Print<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Print(Self);
+/// Выводит кортеж
+procedure Print<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Print(Self);
+/// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2>(Self: (T1, T2)); extensionmethod := Println(Self);
+/// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Println(Self);
+/// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Println(Self);
+/// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Println(Self);
+/// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Println(Self);
+/// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Println(Self);
+/// Преобразует кортеж элементов одного типа в массив
+function ToArray<T>(Self: (T,T)): array of T; extensionmethod := |Self[0],Self[1]|;
+/// Преобразует кортеж элементов одного типа в массив
+function ToArray<T>(Self: (T,T,T)): array of T; extensionmethod := |Self[0],Self[1],Self[2]|;
+/// Преобразует кортеж элементов одного типа в массив
+function ToArray<T>(Self: (T,T,T,T)): array of T; extensionmethod := |Self[0],Self[1],Self[2],Self[3]|;
+/// Преобразует кортеж элементов одного типа в массив
+function ToArray<T>(Self: (T,T,T,T,T)): array of T; extensionmethod := |Self[0],Self[1],Self[2],Self[3],Self[4]|;
+/// Преобразует кортеж элементов одного типа в массив
+function ToArray<T>(Self: (T,T,T,T,T,T)): array of T; extensionmethod := |Self[0],Self[1],Self[2],Self[3],Self[4],Self[5]|;
+/// Преобразует кортеж элементов одного типа в массив
+function ToArray<T>(Self: (T,T,T,T,T,T,T)): array of T; extensionmethod := |Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],Self[6]|;
+
+
 //{{{--doc: Конец методов расширения }}}
 
 //------------------------------------------------------------------------------
@@ -13766,65 +13839,7 @@ function operator<=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T
 function operator><T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) > 0;
 ///--
 function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) >= 0;
-// --------------------------------------------
-//      Методы расширения типа Tuple # Extension methods for Tuple
-// -------------------------------------------
-// Дополнения февраль 2016
 
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3>(Self: (T1, T2); v: T3): (T1, T2, T3); extensionmethod;
-begin
-  Result := (Self[0], Self[1], v);
-end;
-
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3, T4>(Self: (T1, T2, T3); v: T4): (T1, T2, T3, T4); extensionmethod;
-begin
-  Result := (Self[0], Self[1], Self[2], v);
-end;
-
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4); v: T5): (T1, T2, T3, T4, T5); extensionmethod;
-begin
-  Result := (Self[0], Self[1], Self[2], Self[3], v);
-end;
-
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5); v: T6): (T1, T2, T3, T4, T5, T6); extensionmethod;
-begin
-  Result := (Self[0], Self[1], Self[2], Self[3], Self[4], v);
-end;
-
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6); v: T7): (T1, T2, T3, T4, T5, T6, T7); extensionmethod;
-begin
-  Result := (Self[0], Self[1], Self[2], Self[3], Self[4], Self[5], v);
-end;
-
-/// Выводит кортеж
-procedure Print<T1, T2>(Self: (T1, T2)); extensionmethod := Print(Self);
-/// Выводит кортеж
-procedure Print<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Print(Self);
-/// Выводит кортеж
-procedure Print<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Print(Self);
-/// Выводит кортеж
-procedure Print<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Print(Self);
-/// Выводит кортеж
-procedure Print<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Print(Self);
-/// Выводит кортеж
-procedure Print<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Print(Self);
-/// Выводит кортеж и переходит на новую строку
-procedure Println<T1, T2>(Self: (T1, T2)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
-procedure Println<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
-procedure Println<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
-procedure Println<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
-procedure Println<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
-procedure Println<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Println(Self);
 
 
 {// Определяет, есть ли указанный элемент в массиве
