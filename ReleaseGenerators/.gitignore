@@ -1,0 +1,16 @@
+
+
+
+/RebuildStandartModules.exe
+
+#TODO Вместо утого удалить устаревшие .pas тесты, оставив остальное без игнора
+/Samples/*
+!/Samples/_SVN/
+
+
+
+!/Samples/ExportSamples.bat
+!/Samples/GetSamples.exe
+!/Samples/GetSamples.pnet
+
+

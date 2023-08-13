@@ -25,6 +25,7 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 cd ..\bin
 REM MPGORunner.exe
+pabcnetcclear TestRunner.pas
 TestRunner.exe 1 1
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 TestRunner.exe 2 1
@@ -37,7 +38,12 @@ TestRunner.exe 5 1
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 TestRunner.exe 6 1
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
+pabcnetcclear GitIgnoreTester.pas
+GitIgnoreTester.exe NoWait
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 cd ..
+
 GOTO EXIT
 
 :ERROR
