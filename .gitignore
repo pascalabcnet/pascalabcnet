@@ -4,19 +4,6 @@
 # general ignore
 *.pcu
 *.pdb
-*.csproj.user
-#TODO Что то старое. Там, кроме всего прочего, зачем то копия древней версии инсталята паскаля
-# - удалить
-!Grammars/Oberon10Independent (by Juliet)/**/*.pcu
-#TODO Тут тоже копия древних примеров, но зачем то ещё примеры на BrainFuck и PL/0
-# - удалить паскалевские примеры
-!ReleaseGenerators/Samples/_SVN/**/*.pcu
-#TODO NodesGenerator ещё используется?
-# - удалить pdb
-!Utils/NodesGeneratorNew/**/*.pdb
-#TODO Это папка с тем тестом ML. Стоит её хотя бы в отдельную ветку. А по хорошему отдельным репозиторием...
-# - убрать целиком
-!W/**/*.pdb
 
 # vs internal files
 **/.vs/*
@@ -35,7 +22,10 @@
 !/Utils/Old/NodesGeneratorOld0/bin/*
 !/YMC/bin/*
 
-#
+
+
+# local user files
+*.csproj.user
 /bin/CompilerController.ini
 
 
@@ -80,8 +70,6 @@
 **/PascalABCNET.exe.config
 **/PascalABCNETLinux.exe
 **/PascalABCNETLinux.exe.config
-#TODO
-!Grammars/Oberon10Independent (by Juliet)/**/*.dll
 
 
 
@@ -108,7 +96,7 @@
 /bin/WeifenLuo.WinFormsUI.Docking.ThemeVS2005.dll
 /bin/WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll
 #TODO копируется только при сборке pabcnetc.sln - это норм?
-# - Этот проект, получается, подключён только к консольным компиляторам
+# - в самом проекте написано что его надо удалить...
 /bin/YieldConversionSyntax.dll
 
 # Debug-only intellisense problems
@@ -128,11 +116,6 @@
 /TestSuite/errors/nunit.framework.dll
 
 
-
-#TODO Часть в индексе, часть нет
-# - все добавить в индекс
-/bin/**/*.xml
-!/bin/Lib/en/*.xml
 
 #TODO Метаданные .dll, наверное их забывает удалить после тестирования их генерации?
 /bin/mscorlib.txt

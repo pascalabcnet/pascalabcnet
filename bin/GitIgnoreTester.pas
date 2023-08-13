@@ -11,7 +11,7 @@ end);
 try
   var dir := GetEXEFileName;
   loop 2 do dir := System.IO.Path.GetDirectoryName(dir);
-  dir.Println;
+//  dir.Println;
   
   var index_files := new HashSet<string>;
   begin

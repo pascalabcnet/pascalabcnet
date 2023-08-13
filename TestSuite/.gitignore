@@ -16,30 +16,3 @@
 /exe/*.dat
 
 
-
-#TODO Большая часть .pas файлов добавленны, некоторые нет... пока заигнорил недобавленные
-# - Вообще по моему лучше удалить все эти файлы из индекса
-# - В индекс
-/CompilationSamples/Controls.pas
-/CompilationSamples/LightPT.pas
-/CompilationSamples/NUnitABC.pas
-/CompilationSamples/PT4Databases.pas
-/CompilationSamples/Speech.pas
-/CompilationSamples/Tasks.pas
-/CompilationSamples/Tasks1Arr.pas
-/CompilationSamples/Tasks1Begin.pas
-/CompilationSamples/Tasks1BoolIfCase.pas
-/CompilationSamples/Tasks1Loops.pas
-/CompilationSamples/TasksArr.pas
-/CompilationSamples/TasksMatr.pas
-/CompilationSamples/TasksStr.pas
-/CompilationSamples/Turtle.pas
-/CompilationSamples/TurtleWPF.pas
-/CompilationSamples/TwoPanelsWindow.pas
-/CompilationSamples/XLSX.pas
-/CompilationSamples/xPT4MakerNetX.pas
-/CompilationSamples/xPT4TaskMakerNET.pas
-/CompilationSamples/Мозаика.pas
-/CompilationSamples/МозаикаABC.pas
-
-
