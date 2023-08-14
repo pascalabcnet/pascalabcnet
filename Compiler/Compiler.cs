@@ -2271,6 +2271,9 @@ namespace PascalABCCompiler
                             if (compilerOptions.UseDllForSystemUnits)
                                 cdo.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
                             CodeGeneratorsController.Compile(pn, CompilerOptions.OutputFileName, CompilerOptions.SourceFileName, cdo, CompilerOptions.StandartDirectories, ResourceFilesArray);
+                            CodeGeneratorsController.EmitAssemblyRedirects(
+                                assemblyResolveScope,
+                                CompilerOptions.OutputFileName);
                             if (res_file != null)
                                 File.Delete(res_file);
                         }

@@ -247,8 +247,14 @@ begin
      FilterOnlyNumbersAndBools;
      var n := 20;
      CheckData(|cInt|*n, |cInt|*n);
-     GenerateTests(10,tInt * n);
-     
+     TestCount := 10;
+     GenerateTestData := tnum -> begin
+       var a := ArrRandomInteger(n,2,5);
+       a[^2] := 2;
+       a[^1] := 5;
+       InputList.AddTestData(a);
+     end;
+
      var arr := IntArr(n);
      var ind2 := arr.IndexOf(2);
      var ind5 := arr.IndexOf(5);
@@ -331,10 +337,11 @@ begin
      GenerateAutoTests(10);
      
      var a := IntArr(n);
+     var acopy := Copy(a);
      var indmax := a.IndexMax;
      var indmin := a.IndexMin;
      Swap(a[indmax],a[indmin]);
-     CheckOutputSeq(a);  
+     CheckOutputSeq(acopy + a);  
   end;
 
   'Arr_Fill1': begin 
@@ -524,7 +531,7 @@ begin
      var n := 10;
      CheckData(InitialOutput := |cInt| * n);
      var a := Arr(0..9);
-     CheckOutputSeq(a + a[5::-1] + a[9::-2])
+     CheckOutputSeq(a + a[4::-1] + a[9::-2])
   end;
   'Arr_Slice10': begin 
     FilterOnlyNumbersAndBools;

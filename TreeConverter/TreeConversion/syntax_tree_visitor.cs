@@ -5974,7 +5974,7 @@ namespace PascalABCCompiler.TreeConverter
                                             catch (Exception ex)
                                             {
                                                 ThrowCompilationError = true;
-                                                if (skip_first_parameter)
+                                                if (skip_first_parameter && !sil.HasOnlyExtensionMethods())
                                                 {
                                                     sil = tmp_sil;
                                                     exprs.remove_at(0);

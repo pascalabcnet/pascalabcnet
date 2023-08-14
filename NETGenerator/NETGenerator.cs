@@ -1,20 +1,22 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
-using System.Linq;
-using PascalABCCompiler.SemanticTree;
-using System.Threading;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics.SymbolStore;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Security;
 using System.Runtime.Versioning;
+using System.Security;
 using System.Text;
+using System.Threading;
+using NETGenerator;
+using PascalABCCompiler.NetHelper;
+using PascalABCCompiler.SemanticTree;
 
 namespace PascalABCCompiler.NETGenerator
 {
@@ -1232,6 +1234,13 @@ namespace PascalABCCompiler.NETGenerator
             foreach (FileStream fs in ResStreams)
                 fs.Close();
 
+        }
+
+        public void EmitAssemblyRedirects(AssemblyResolveScope resolveScope, string targetAssemblyPath)
+        {
+            if (IsDotnet5() || IsDotnetNative()) return;
+            var appConfigPath = targetAssemblyPath + ".config";
+            AppConfigUtil.UpdateAppConfig(resolveScope.CalculateBindingRedirects(), appConfigPath);
         }
 
         private void AddSpecialInitDebugCode()
