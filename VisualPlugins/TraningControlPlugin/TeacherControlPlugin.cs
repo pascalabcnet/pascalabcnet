@@ -43,14 +43,15 @@ namespace VisualPascalABCPlugins
 
         public VisualPascalABCPlugin_TeacherControlPlugin(IWorkbench Workbench)
         {
+            this.Workbench = Workbench;
+            VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
+
             if (IsLightPTInWorkingDirectiry())
             {
                 IsMechmath = System.Environment.MachineName.ToLower().StartsWith("mil8a-");
                 User.ServAddr = "https://air.mmcs.sfedu.ru/pascalabc";
                 loginForm = new LoginForm(this);
             }
-            this.Workbench = Workbench;
-            VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             // RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler; // Пока форма регистрации никак не связана с компилятором
 
             User = new SiteAccessProvider();
