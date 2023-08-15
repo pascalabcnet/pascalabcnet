@@ -18764,7 +18764,7 @@ namespace PascalABCCompiler.TreeConverter
             foreach (SyntaxTree.type_definition id in types)
             {
                 type_node tn = null;
-                if ((id is function_header || id is procedure_header) && delegate_cache.ContainsKey(id))
+                if ((id is function_header || id is procedure_header) && delegate_cache.ContainsKey(id) && !type_synonym_instancing)
                     tn = delegate_cache[id];
                 else
                     tn = convert_strong(id);
@@ -18773,7 +18773,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(get_location(id), "TYPE_NAME_EXPECTED");
                 }
-                if ((id is function_header || id is procedure_header) && !delegate_cache.ContainsKey(id))
+                if ((id is function_header || id is procedure_header) && !delegate_cache.ContainsKey(id) && !type_synonym_instancing)
                 {
                     delegate_cache[id] = tn;
                 }
@@ -18934,6 +18934,8 @@ namespace PascalABCCompiler.TreeConverter
             return t;
         }
 
+        bool type_synonym_instancing = false;
+
         public common_type_node instance(template_class tc, List<type_node> template_params, location loc, template_type_reference used_ttr = null)
         {
             //Проверяем, что попытка инстанцирования корректна
@@ -19093,7 +19095,9 @@ namespace PascalABCCompiler.TreeConverter
                             prm.source_context = loc;
                     }
                 }
+                type_synonym_instancing = true;
                 type_node synonym_value = convert_strong(tc.type_dec.type_def);
+                type_synonym_instancing = false;
                 foreach (type_definition td in saved_sc_dict.Keys)
                     td.source_context = saved_sc_dict[td];
                 ctn.fields.AddElement(new class_field(compiler_string_consts.synonym_value_name,
