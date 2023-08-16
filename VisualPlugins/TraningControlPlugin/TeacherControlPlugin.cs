@@ -22,7 +22,7 @@ namespace VisualPascalABCPlugins
         //private TeacherControlForm RegisterForm = new TeacherControlForm(); // старая форма авторизации
         //private LoginForm RegisterFormNew = new LoginForm(); // новая форма авторизации
         // User
-        SiteAccessProvider User = new SiteAccessProvider();
+        SiteAccessProvider User;
 
         private PluginGUIItem Item;
         public string Name { get => "Teacher Control Plugin"; }
@@ -43,15 +43,18 @@ namespace VisualPascalABCPlugins
 
         public VisualPascalABCPlugin_TeacherControlPlugin(IWorkbench Workbench)
         {
+            this.Workbench = Workbench;
+            VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
+
             if (IsLightPTInWorkingDirectiry())
             {
                 IsMechmath = System.Environment.MachineName.ToLower().StartsWith("mil8a-");
                 User.ServAddr = "https://air.mmcs.sfedu.ru/pascalabc";
                 loginForm = new LoginForm(this);
             }
-            this.Workbench = Workbench;
-            VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             // RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler; // Пока форма регистрации никак не связана с компилятором
+
+            User = new SiteAccessProvider();
 
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
