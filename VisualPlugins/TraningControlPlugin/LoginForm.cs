@@ -193,7 +193,7 @@ namespace DBAccessPluginNamespace
             }
             
             // На мехмате проверяем lightPT
-            var isLightPT = Plugin.IsLightPTInWorkingDirectiry();
+            var isLightPT = Plugin.IsLightPTInWorkingDirectory();
             // Первый вариант - в родительский или текущий
             var authCreated = false;
 
