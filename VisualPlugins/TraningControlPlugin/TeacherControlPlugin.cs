@@ -46,7 +46,7 @@ namespace VisualPascalABCPlugins
             this.Workbench = Workbench;
             VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
 
-            if (IsLightPTInWorkingDirectiry())
+            if (IsLightPTInWorkingDirectory())
             {
                 IsMechmath = System.Environment.MachineName.ToLower().StartsWith("mil8a-");
                 User.ServAddr = "https://air.mmcs.sfedu.ru/pascalabc";
@@ -88,7 +88,7 @@ namespace VisualPascalABCPlugins
             return "";
         }
 
-        public bool IsLightPTInWorkingDirectiry()
+        public bool IsLightPTInWorkingDirectory()
         {
             var WorkingDir = WorkingDirectory();
             var lightptname = Path.Combine(WorkingDir, "lightpt.dat");
@@ -209,7 +209,7 @@ namespace VisualPascalABCPlugins
             // SSM 20/06/22 Решил включить плагин в инсталлят и показывать кнопки только если есть lightpt.dat в текущем 
             // или auth.dat в корне сетевого - убрал это 11.07.23 - только если при запуске lightpt.dat в текущем!!!
             {
-                if (IsLightPTInWorkingDirectiry()) // если lightpt.dat существует в текущем
+                if (IsLightPTInWorkingDirectory()) // если lightpt.dat существует в текущем
                     InitItems(MenuItems, ToolBarItems);
                 /*else
                 {
@@ -249,7 +249,7 @@ namespace VisualPascalABCPlugins
 
                 // !!! НАДО ТУТ ИСКАТЬ lightpt.dat в текущем!!!
                 var AuthFileFullName = "";
-                if (IsLightPTInWorkingDirectiry()) // Только если lightPT.dat в текущем, ищем auth.dat в текущем или выше
+                if (IsLightPTInWorkingDirectory()) // Только если lightPT.dat в текущем, ищем auth.dat в текущем или выше
                     AuthFileFullName = FullAuthNameFromWorkingDirOrParent();
                 /*if (AuthFileFullName == "" && IsMechmath)
                 {
