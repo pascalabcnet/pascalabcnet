@@ -11620,11 +11620,14 @@ namespace PascalABCCompiler.NETGenerator
             //il.Emit(OpCodes.Leave, leave_label);
             il.BeginFinallyBlock();
             //il.MarkLabel(br_lbl);
-            if (lb.LocalType.IsValueType)
-                il.Emit(OpCodes.Ldloca, lb);
-            else
-                il.Emit(OpCodes.Ldloc, lb);
-            il.Emit(OpCodes.Callvirt, TypeFactory.IDisposableType.GetMethod("Dispose", BindingFlags.Instance | BindingFlags.Public));
+            if (lb.LocalType.GetInterface("System.IDisposable") != null)
+            {
+                if (lb.LocalType.IsValueType)
+                    il.Emit(OpCodes.Ldloca, lb);
+                else
+                    il.Emit(OpCodes.Ldloc, lb);
+                il.Emit(OpCodes.Callvirt, TypeFactory.IDisposableType.GetMethod("Dispose", BindingFlags.Instance | BindingFlags.Public));
+            }
 
             il.EndExceptionBlock();
             il.MarkLabel(leave_label);
