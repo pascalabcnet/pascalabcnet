@@ -106,7 +106,8 @@
 
 
 # Regenerated before being run by .bat
-/bin/TestRunner.exe
+#TODO remove this from index
+#/bin/TestRunner.exe
 /bin/GitIgnoreTester.exe
 
 
