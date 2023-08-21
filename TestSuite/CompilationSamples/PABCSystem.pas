@@ -8884,9 +8884,10 @@ begin
   var n := l.Count;
   for var i := 0 to n - 1 do
   begin
+    var ind := Random(n);
     var v := l[i];
-    l[i] := l[Random(n)];
-    l[Random(n)] := v;
+    l[i] := l[ind];
+    l[ind] := v;
   end;
 end;
 
