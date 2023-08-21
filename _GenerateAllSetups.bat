@@ -41,7 +41,6 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 
 cd ..\bin
-pabcnetcclear TestRunner.pas
 TestRunner.exe 1
 TestRunner.exe 2
 TestRunner.exe 3
