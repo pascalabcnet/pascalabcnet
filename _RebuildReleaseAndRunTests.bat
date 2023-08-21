@@ -32,6 +32,7 @@ TestRunner.exe 4
 TestRunner.exe 5
 TestRunner.exe 6
 cd ..
+
 GOTO EXIT
 
 :ERROR
