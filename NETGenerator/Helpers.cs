@@ -918,7 +918,7 @@ namespace PascalABCCompiler.NETGenerator {
             return TypeFactory.IEnumerableType.GetMethod("GetEnumerator", Type.EmptyTypes);
         }
 
-        public void SetAsProcessing(ICommonTypeNode type)
+		public void SetAsProcessing(ICommonTypeNode type)
         {
             processing_types[type] = true;
         }

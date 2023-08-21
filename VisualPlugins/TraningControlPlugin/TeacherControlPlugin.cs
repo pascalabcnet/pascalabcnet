@@ -22,7 +22,7 @@ namespace VisualPascalABCPlugins
         //private TeacherControlForm RegisterForm = new TeacherControlForm(); // старая форма авторизации
         //private LoginForm RegisterFormNew = new LoginForm(); // новая форма авторизации
         // User
-        SiteAccessProvider User = new SiteAccessProvider();
+        SiteAccessProvider User;
 
         private PluginGUIItem Item;
         public string Name { get => "Teacher Control Plugin"; }
@@ -43,15 +43,18 @@ namespace VisualPascalABCPlugins
 
         public VisualPascalABCPlugin_TeacherControlPlugin(IWorkbench Workbench)
         {
-            if (IsLightPTInWorkingDirectiry())
+            this.Workbench = Workbench;
+            VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
+
+            if (IsLightPTInWorkingDirectory())
             {
                 IsMechmath = System.Environment.MachineName.ToLower().StartsWith("mil8a-");
                 User.ServAddr = "https://air.mmcs.sfedu.ru/pascalabc";
                 loginForm = new LoginForm(this);
             }
-            this.Workbench = Workbench;
-            VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             // RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler; // Пока форма регистрации никак не связана с компилятором
+
+            User = new SiteAccessProvider();
 
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
@@ -85,7 +88,7 @@ namespace VisualPascalABCPlugins
             return "";
         }
 
-        public bool IsLightPTInWorkingDirectiry()
+        public bool IsLightPTInWorkingDirectory()
         {
             var WorkingDir = WorkingDirectory();
             var lightptname = Path.Combine(WorkingDir, "lightpt.dat");
@@ -206,7 +209,7 @@ namespace VisualPascalABCPlugins
             // SSM 20/06/22 Решил включить плагин в инсталлят и показывать кнопки только если есть lightpt.dat в текущем 
             // или auth.dat в корне сетевого - убрал это 11.07.23 - только если при запуске lightpt.dat в текущем!!!
             {
-                if (IsLightPTInWorkingDirectiry()) // если lightpt.dat существует в текущем
+                if (IsLightPTInWorkingDirectory()) // если lightpt.dat существует в текущем
                     InitItems(MenuItems, ToolBarItems);
                 /*else
                 {
@@ -246,7 +249,7 @@ namespace VisualPascalABCPlugins
 
                 // !!! НАДО ТУТ ИСКАТЬ lightpt.dat в текущем!!!
                 var AuthFileFullName = "";
-                if (IsLightPTInWorkingDirectiry()) // Только если lightPT.dat в текущем, ищем auth.dat в текущем или выше
+                if (IsLightPTInWorkingDirectory()) // Только если lightPT.dat в текущем, ищем auth.dat в текущем или выше
                     AuthFileFullName = FullAuthNameFromWorkingDirOrParent();
                 /*if (AuthFileFullName == "" && IsMechmath)
                 {
