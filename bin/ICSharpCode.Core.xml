@@ -1,0 +1,1544 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ICSharpCode.Core</name>
+    </assembly>
+    <members>
+        <member name="P:ICSharpCode.Core.AddIn.CustomErrorMessage">
+            <summary>
+            Gets the message of a custom load error. Used only when AddInAction is set to CustomError.
+            Settings this property to a non-null value causes Enabled to be set to false and
+            Action to be set to AddInAction.CustomError.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddIn.Action">
+            <summary>
+            Action to execute when the application is restarted.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddIn.IsPreinstalled">
+            <summary>
+            Gets whether the AddIn is a preinstalled component of the host application.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.AddInLoadException">
+            <summary>
+            Exception used when loading an AddIn fails.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.BuildItemArgs">
+            <summary>
+            Argument class used for <see cref="M:ICSharpCode.Core.IDoozer.BuildItem(ICSharpCode.Core.BuildItemArgs)"/>.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.BuildItemArgs.Caller">
+            <summary>
+            The caller passed to <see cref="M:ICSharpCode.Core.AddInTree.BuildItem(System.String,System.Object)"/>.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.BuildItemArgs.Codon">
+            <summary>
+            The codon to build.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.BuildItemArgs.AddIn">
+            <summary>
+            The addin containing the codon.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.BuildItemArgs.Conditions">
+            <summary>
+            The conditions applied to this item.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.BuildItemArgs.SubItemNode">
+            <summary>
+            The addin tree node containing the sub-items.
+            Returns null if no sub-items exist.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.BuildItemArgs.BuildSubItems``1">
+            <summary>
+            Builds the sub-items.
+            Conditions on this node are also applied to the sub-nodes.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.Codon">
+            <summary>
+            Represents a node in the add in tree that can produce an item.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.NegatedCondition">
+            <summary>
+            Negates a condition
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.AndCondition">
+            <summary>
+            Gives back the and result of two conditions.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.OrCondition">
+            <summary>
+            Gives back the or result of two conditions.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.Condition.Action">
+            <summary>
+            Returns the action which occurs, when this condition fails.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ExtensionPath">
+            <summary>
+            Represents all contributions to a Path in a single .addin file.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.ExtensionPath.GroupedCodons">
+            <summary>
+            Gets the codons separated by the groups they were created in.
+            i.e. if two addins add the codons to the same path they will be in diffrent group.
+            if the same addin adds the codon in diffrent path elements they will be in diffrent groups.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.IConditionEvaluator">
+            <summary>
+            Interface for classes that can evaluate conditions defined in the addin tree.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ConditionFailedAction">
+            <summary>
+            Default actions, when a condition is failed.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ICondition">
+            <summary>
+            Interface for single condition or complex condition.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.ICondition.Action">
+            <summary>
+            Returns the action which occurs, when this condition fails.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.ICondition.IsValid(System.Object)">
+            <summary>
+            Returns true, when the condition is valid otherwise false.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.IDoozer">
+            <summary>
+            Interface for classes that can build objects out of codons.
+            </summary>
+            <remarks>http://en.wikipedia.org/wiki/Fraggle_Rock#Doozers</remarks>
+        </member>
+        <member name="P:ICSharpCode.Core.IDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.IDoozer.BuildItem(ICSharpCode.Core.BuildItemArgs)">
+            <summary>
+            Construct the item.
+            </summary>
+            <returns>
+            The constructed item.
+            May return an object implementing <see cref="T:ICSharpCode.Core.IBuildItemsModifier"/> for returning
+            multiple arguments.
+            </returns>
+        </member>
+        <member name="M:ICSharpCode.Core.Runtime.Load">
+            <summary>
+            Force loading the runtime assembly now.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.CompareConditionEvaluator">
+            <summary>
+            Compares two strings.
+            The strings are passed through the StringParser, so it is possible to compare
+            SharpDevelop properties.<br/>
+            Useful if you want to run a command only when a setting is active to prevent
+            loading your addin if that setting isn't set.
+            </summary>
+            <attribute name="string">
+            The first string.
+            </attribute>
+            <attribute name="equals">
+            The second string.
+            </attribute>
+            <attribute name="comparisonType">
+            The mode of the comparison: a field of the System.StringComparison enumeration. The default is
+            'OrdinalIgnoreCase'.
+            </attribute>
+            <example title="Check the value of a property in the PropertyService">
+            &lt;Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup}" equals = "True"&gt;
+            </example>
+        </member>
+        <member name="T:ICSharpCode.Core.LazyConditionEvaluator">
+            <summary>
+            Condition evaluator that lazy-loads another condition evaluator and executes it.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.OwnerStateConditionEvaluator">
+            <summary>
+            Condition evaluator that compares the state of the caller/owner with a specified value.
+            The caller/owner has to implement <see cref="T:ICSharpCode.Core.IOwnerState"/>.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ClassDoozer">
+            <summary>
+            Creates object instances by invocating a type's parameterless constructor
+            via System.Reflection.
+            </summary>
+            <attribute name="class" use="required">
+            The fully qualified type name of the class to create an instace of.
+            </attribute>
+            <usage>Everywhere where objects are expected.</usage>
+            <returns>
+            Any kind of object.
+            </returns>
+        </member>
+        <member name="P:ICSharpCode.Core.ClassDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.FileFilterDoozer">
+            <summary>
+            Creates file filter entries for OpenFileDialogs or SaveFileDialogs.
+            </summary>
+            <attribute name="name" use="required">
+            The name of the file filter entry.
+            </attribute>
+            <attribute name="extensions" use="required">
+            The extensions associated with this file filter entry.
+            </attribute>
+            <usage>Only in /SharpDevelop/Workbench/FileFilter</usage>
+            <returns>
+            <see cref="T:ICSharpCode.Core.FileFilterDescriptor"/> in the format "name|extensions".
+            </returns>
+        </member>
+        <member name="P:ICSharpCode.Core.FileFilterDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileFilterDescriptor.ContainsExtension(System.String)">
+            <summary>
+            Gets whether this descriptor matches the specified file extension.
+            </summary>
+            <param name="extension">File extension starting with '.'</param>
+        </member>
+        <member name="T:ICSharpCode.Core.IconDoozer">
+            <summary>
+            Creates associations between file types or node types in the project browser and
+            icons in the resource service.
+            </summary>
+            <attribute name="resource" use="required">
+            The name of a bitmap resource in the resource service.
+            </attribute>
+            <attribute name="language">
+            This attribute is specified when a project icon association should be created.
+            It specifies the language of the project types that use the icon.
+            </attribute>
+            <attribute name="extensions">
+            This attribute is specified when a file icon association should be created.
+            It specifies the semicolon-separated list of file types that use the icon.
+            </attribute>
+            <usage>Only in /Workspace/Icons</usage>
+            <returns>
+            An IconDescriptor object that exposes the attributes.
+            </returns>
+        </member>
+        <member name="P:ICSharpCode.Core.IconDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.LazyLoadDoozer">
+            <summary>
+            This doozer lazy-loads another doozer when it has to build an item.
+            It is used internally to wrap doozers specified in addins.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.LazyLoadDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.MenuItemDoozer">
+            <summary>
+            Creates menu items from a location in the addin tree.
+            </summary>
+            <attribute name="label" use="required">
+            Label of the menu item.
+            </attribute>
+            <attribute name="type" use="optional" enum="Separator;CheckBox;Item;Command;Menu;Builder">
+            This attribute must be one of these values:
+            Separator, CheckBox, Item=Command, Menu (=with subitems),
+            Builder (=class implementing ISubmenuBuilder).
+            Default: Command.
+            </attribute>
+            <attribute name="loadclasslazy" use="optional">
+            Only for the type "Item"/"Command".
+            When set to false, the command class is loaded
+            immediately instead of the usual lazy-loading.
+            </attribute>
+            <attribute name="icon" use="optional">
+            Icon of the menu item.
+            </attribute>
+            <attribute name="class" use="optional">
+            Command class that is run when item is clicked.
+            </attribute>
+            <attribute name="command" use="optional">
+            A WPF routed command that is executed when item is clicked.
+            Currently, this property is supported only for WPF Menus.
+            Only one of the "class" and "command" attributes can be used on a menu entry.
+            </attribute>
+            <attribute name="link" use="optional">
+            Only for the type "Item"/"Command". Opens a webpage instead of running a command when
+            clicking the item.
+            </attribute>
+            <attribute name="shortcut" use="optional">
+            Shortcut that activates the command (e.g. "Control|S").
+            </attribute>
+            <children childTypes="MenuItem">
+            If "type" is "Menu", the item can have sub-menuitems.
+            </children>
+            <usage>Any menu strip paths or context menu paths, e.g. /SharpDevelop/Workbench/MainMenu</usage>
+            <returns>
+            A MenuItemDescriptor object.
+            </returns>
+            <conditions>Conditions are handled by the item, "Exclude" maps to "Visible = false", "Disable" to "Enabled = false"</conditions>
+        </member>
+        <member name="P:ICSharpCode.Core.MenuItemDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.MenuItemDescriptor">
+            <summary>
+            Represents a menu item. These objects are created by the MenuItemDoozer and
+            then converted into GUI-toolkit-specific objects by the MenuService.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ToolbarItemDoozer">
+            <summary>
+            Creates tool bar items from a location in the addin tree.
+            </summary>
+            <attribute name="label" use="optional">
+            Label of the tool bar item.
+            </attribute>
+            <attribute name="icon" use="optional">
+            Icon of the tool bar item.
+            </attribute>
+            <attribute name="type" use="optional" enum="Separator;CheckBox;Item;ComboBox;DropDownButton">
+            This attribute must be one of these values:
+            Separator, CheckBox, Item, ComboBox, DropDownButton
+            </attribute>
+            <attribute name="loadclasslazy" use="optional">
+            Only for the type "Item". When set to false, the command class is loaded
+            immediately instead of the usual lazy-loading.
+            </attribute>
+            <attribute name="tooltip" use="optional">
+            Tooltip of the tool bar item.
+            </attribute>
+            <attribute name="class">
+            Command class that is run when item is clicked; or class that manages
+            the ComboBox/DropDownButton. Required for everything except "Separator".
+            </attribute>
+            <attribute name="shortcut" use="optional">
+            Shortcut that activates the command (e.g. "Control|S").
+            </attribute>
+            <usage>Any toolbar strip paths, e.g. /SharpDevelop/Workbench/ToolBar</usage>
+            <children childTypes="MenuItem">A drop down button has menu items as sub elements.</children>
+            <returns>
+            A ToolStrip* object, depending on the type attribute.
+            </returns>
+            <conditions>Conditions are handled by the item, "Exclude" maps to "Visible = false", "Disable" to "Enabled = false"</conditions>
+        </member>
+        <member name="P:ICSharpCode.Core.ToolbarItemDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ToolbarItemDescriptor">
+            <summary>
+            Represents a toolbar item. These objects are created by the ToolbarItemDoozer and
+            then converted into GUI-toolkit-specific objects by the ToolbarService.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.AddInTree">
+            <summary>
+            Static class containing the AddInTree. Contains methods for accessing tree nodes and building items.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddInTree.AddIns">
+            <summary>
+            Gets the list of loaded AddIns.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddInTree.Doozers">
+            <summary>
+            Gets a dictionary of registered doozers.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddInTree.ConditionEvaluators">
+            <summary>
+            Gets a dictionary of registered condition evaluators.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.ExistsTreeNode(System.String)">
+            <summary>
+            Checks whether the specified path exists in the AddIn tree.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.GetTreeNode(System.String)">
+            <summary>
+            Gets the <see cref="T:ICSharpCode.Core.AddInTreeNode"/> representing the specified path.
+            This method throws a <see cref="T:ICSharpCode.Core.TreePathNotFoundException"/> when the
+            path does not exist.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.GetTreeNode(System.String,System.Boolean)">
+            <summary>
+            Gets the <see cref="T:ICSharpCode.Core.AddInTreeNode"/> representing the specified path.
+            </summary>
+            <param name="path">The path of the AddIn tree node</param>
+            <param name="throwOnNotFound">
+            If set to <c>true</c>, this method throws a
+            <see cref="T:ICSharpCode.Core.TreePathNotFoundException"/> when the path does not exist.
+            If set to <c>false</c>, <c>null</c> is returned for non-existing paths.
+            </param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.BuildItem(System.String,System.Object)">
+            <summary>
+            Builds a single item in the addin tree.
+            </summary>
+            <param name="path">A path to the item in the addin tree.</param>
+            <param name="caller">The owner used to create the objects.</param>
+            <exception cref="T:ICSharpCode.Core.TreePathNotFoundException">The path does not
+            exist or does not point to an item.</exception>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.BuildItems``1(System.String,System.Object)">
+            <summary>
+            Builds the items in the path. Ensures that all items have the type T.
+            Throws a <see cref="T:ICSharpCode.Core.TreePathNotFoundException"/> if the path is not found.
+            </summary>
+            <param name="path">A path in the addin tree.</param>
+            <param name="caller">The owner used to create the objects.</param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.BuildItems``1(System.String,System.Object,System.Boolean)">
+            <summary>
+            Builds the items in the path. Ensures that all items have the type T.
+            </summary>
+            <param name="path">A path in the addin tree.</param>
+            <param name="caller">The owner used to create the objects.</param>
+            <param name="throwOnNotFound">If true, throws a <see cref="T:ICSharpCode.Core.TreePathNotFoundException"/>
+            if the path is not found. If false, an empty ArrayList is returned when the
+            path is not found.</param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.InsertAddIn(ICSharpCode.Core.AddIn)">
+            <summary>
+            The specified AddIn is added to the <see cref="P:ICSharpCode.Core.AddInTree.AddIns"/> collection.
+            If the AddIn is enabled, its doozers, condition evaluators and extension
+            paths are added to the AddInTree and its resources are added to the
+            <see cref="T:ICSharpCode.Core.ResourceService"/>.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.RemoveAddIn(ICSharpCode.Core.AddIn)">
+            <summary>
+            The specified AddIn is removed to the <see cref="P:ICSharpCode.Core.AddInTree.AddIns"/> collection.
+            This is only possible for disabled AddIns, enabled AddIns require
+            a restart of the application to be removed.
+            </summary>
+            <exception cref="T:System.ArgumentException">Occurs when trying to remove an enabled AddIn.</exception>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTree.Load(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
+            <summary>
+            Loads a list of .addin files, ensuring that dependencies are satisfied.
+            This method is normally called by <see cref="M:ICSharpCode.Core.CoreStartup.RunInitialization"/>.
+            </summary>
+            <param name="addInFiles">
+            The list of .addin file names to load.
+            </param>
+            <param name="disabledAddIns">
+            The list of disabled AddIn identity names.
+            </param>
+        </member>
+        <member name="T:ICSharpCode.Core.AddInTreeNode">
+            <summary>
+            Represents an extension path in the <see cref="T:ICSharpCode.Core.AddInTree"/>.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddInTreeNode.ChildNodes">
+            <summary>
+            A dictionary containing the child paths.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddInTreeNode.Codons">
+            <summary>
+            A list of child <see cref="T:ICSharpCode.Core.Codon"/>s.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTreeNode.BuildChildItems``1(System.Object,System.Collections.Generic.IEnumerable{ICSharpCode.Core.ICondition})">
+            <summary>
+            Builds the child items in this path. Ensures that all items have the type T.
+            </summary>
+            <param name="caller">The owner used to create the objects.</param>
+            <param name="additionalConditions">Additional conditions applied to the node.</param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTreeNode.BuildChildItems(System.Object)">
+            <summary>
+            Builds the child items in this path.
+            </summary>
+            <param name="caller">The owner used to create the objects.</param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInTreeNode.BuildChildItem(System.String,System.Object,System.Collections.Generic.IEnumerable{ICSharpCode.Core.ICondition})">
+            <summary>
+            Builds a specific child items in this path.
+            </summary>
+            <param name="childItemID">
+            The ID of the child item to build.
+            </param>
+            <param name="caller">The owner used to create the objects.</param>
+            <param name="additionalConditions">Additional conditions applied to the created object</param>
+            <exception cref="T:ICSharpCode.Core.TreePathNotFoundException">
+            Occurs when <paramref name="childItemID"/> does not exist in this path.
+            </exception>
+        </member>
+        <member name="T:ICSharpCode.Core.TopologicalSort">
+            <summary>
+            Supports sorting codons using InsertBefore/InsertAfter
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.TreePathNotFoundException">
+            <summary>
+            Is thrown when the AddInTree could not find the requested path.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.TreePathNotFoundException.#ctor(System.String)">
+            <summary>
+            Constructs a new <see cref="T:ICSharpCode.Core.TreePathNotFoundException"/>
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.TreePathNotFoundException.#ctor">
+            <summary>
+            Constructs a new <see cref="T:ICSharpCode.Core.TreePathNotFoundException"/>
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.TreePathNotFoundException.#ctor(System.String,System.Exception)">
+            <summary>
+            Constructs a new <see cref="T:ICSharpCode.Core.TreePathNotFoundException"/>
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.TreePathNotFoundException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Deserializes a <see cref="T:ICSharpCode.Core.TreePathNotFoundException"/>
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.CoreException">
+            <summary>
+            Base class for exceptions thrown by the SharpDevelop core.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.ExtensionMethods.Flatten``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Collections.Generic.IEnumerable{``0}})">
+            <summary>
+            Converts a recursive data structure into a flat list.
+            </summary>
+            <param name="input">The root elements of the recursive data structure.</param>
+            <param name="recursion">The function that gets the children of an element.</param>
+            <returns>Iterator that enumerates the tree structure in preorder.</returns>
+        </member>
+        <member name="T:ICSharpCode.Core.IAnalyticsMonitorTrackedFeature">
+            <summary>
+            Allows marking the end-time of feature uses.
+            </summary>
+            <remarks>Implementations of this interface must be thread-safe.</remarks>
+        </member>
+        <member name="T:ICSharpCode.Core.AnalyticsMonitorService">
+            <summary>
+            Allows tracking feature use.
+            All methods on this class are thread-safe.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AnalyticsMonitorService.TrackException(System.Exception)">
+            <summary>
+            Tracks an exception that has occurred.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AnalyticsMonitorService.TrackFeature(System.String)">
+            <summary>
+            Tracks a feature use.
+            </summary>
+            <param name="featureName">Name of the feature</param>
+            <returns>Object that can be used to 'end' the feature use, if measuring time spans is desired.</returns>
+        </member>
+        <member name="M:ICSharpCode.Core.AnalyticsMonitorService.TrackFeature(System.String,System.String)">
+            <summary>
+            Tracks a feature use.
+            </summary>
+            <param name="featureName">Name of the feature</param>
+            <param name="activationMethod">Method used to 'activate' the feature (e.g. Menu, Toolbar, Shortcut, etc.)</param>
+            <returns>Object that can be used to 'end' the feature use, if measuring time spans is desired.</returns>
+        </member>
+        <member name="M:ICSharpCode.Core.AnalyticsMonitorService.TrackFeature(System.Type,System.String,System.String)">
+            <summary>
+            Tracks a feature use.
+            </summary>
+            <param name="featureClass">Class containing the feature</param>
+            <param name="featureName">Name of the feature</param>
+            <param name="activationMethod">Method used to 'activate' the feature (e.g. Menu, Toolbar, Shortcut, etc.)</param>
+            <returns>Object that can be used to 'end' the feature use, if measuring time spans is desired.</returns>
+        </member>
+        <member name="T:ICSharpCode.Core.Services.IAnalyticsMonitor">
+            <summary>
+            Interface for AnalyticsMonitorService.
+            </summary>
+            <remarks>Implementations of this interface must be thread-safe.</remarks>
+        </member>
+        <member name="T:ICSharpCode.Core.Services.TextWriterLoggingService">
+            <summary>
+            LoggingService implementation that logs into a TextWriter.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.Services.TextWriterMessageService">
+            <summary>
+            IMessageService implementation that writes messages to a text writer.
+            User input is not implemented by this service.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.Services.IMessageService">
+            <summary>
+            Interface for the MessageService.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.IMessageService.ShowError(System.String)">
+            <summary>
+            Shows an error.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.IMessageService.ShowException(System.Exception,System.String)">
+            <summary>
+            Shows an exception.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.IMessageService.ShowWarning(System.String)">
+            <summary>
+            Shows a warning message.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.IMessageService.AskQuestion(System.String,System.String)">
+            <summary>
+            Asks the user a Yes/No question, using "Yes" as the default button.
+            Returns <c>true</c> if yes was clicked, <c>false</c> if no was clicked.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.IMessageService.ShowCustomDialog(System.String,System.String,System.Int32,System.Int32,System.String[])">
+            <summary>
+            Shows a custom dialog.
+            </summary>
+            <param name="caption">The title of the dialog.</param>
+            <param name="dialogText">The description shown in the dialog.</param>
+            <param name="acceptButtonIndex">
+            The number of the button that is the default accept button.
+            Use -1 if you don't want to have an accept button.
+            </param>
+            <param name="cancelButtonIndex">
+            The number of the button that is the cancel button.
+            Use -1 if you don't want to have a cancel button.
+            </param>
+            <param name="buttontexts">The captions of the buttons.</param>
+            <returns>The number of the button that was clicked, or -1 if the dialog was closed  without clicking a button.</returns>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.IMessageService.InformSaveError(System.String,System.String,System.String,System.Exception)">
+            <summary>
+            Show a message informing the user about a save error.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.IMessageService.ChooseSaveError(System.String,System.String,System.String,System.Exception,System.Boolean)">
+            <summary>
+            Show a message informing the user about a save error,
+            and allow him to retry/save under alternative name.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.Services.ServiceManager">
+            <summary>
+            Maintains a list of services that can be shutdown in the reverse order of their initialization.
+            Maintains references to the core service implementations.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.Services.ServiceManager.Instance">
+            <summary>
+            Gets the static ServiceManager instance.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.ServiceManager.GetService(System.Type)">
+            <summary>
+            Gets a service. Returns null if service is not found.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.ServiceManager.GetService``1">
+            <summary>
+            Gets a service. Returns null if service is not found.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.ServiceManager.GetRequiredService(System.Type)">
+            <summary>
+            Gets a service. Throws an exception if service is not found.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.Services.ServiceManager.GetRequiredService``1">
+            <summary>
+            Gets a service. Throws an exception if service is not found.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.Services.ServiceManager.LoggingService">
+            <summary>
+            Gets the logging service.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.Services.ServiceManager.MessageService">
+            <summary>
+            Gets the message service.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ApplicationStateInfoService">
+            <summary>
+            This service is used to summarize important information
+            about the state of the application when an exception occurs.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.ApplicationStateInfoService.RegisterStateGetter(System.String,ICSharpCode.Core.StateGetter)">
+            <summary>
+            Registers a new method to be invoked to get information about the current state of the application.
+            </summary>
+            <param name="title">The title of the new state entry.</param>
+            <param name="stateGetter">The method to be invoked to get the state value.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="title"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">A state getter with the specified <paramref name="title"/> is already registered.</exception>
+        </member>
+        <member name="M:ICSharpCode.Core.ApplicationStateInfoService.IsRegistered(System.String)">
+            <summary>
+            Determines whether a state getter with the specified title is already registered.
+            </summary>
+            <param name="title">The title to look for.</param>
+            <returns><c>true</c>, if a state getter with the specified title is already registered, otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:ICSharpCode.Core.ApplicationStateInfoService.UnregisterStateGetter(System.String)">
+            <summary>
+            Unregisters a state getter.
+            </summary>
+            <param name="title">The title of the state entry to remove.</param>
+            <returns><c>true</c> if the specified title was found and removed, otherwise <c>false</c>.</returns>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="title"/> is null.</exception>
+        </member>
+        <member name="M:ICSharpCode.Core.ApplicationStateInfoService.GetCurrentApplicationStateInfo">
+            <summary>
+            Gets a snapshot of the current application state information from all registered state getters.
+            </summary>
+            <returns>A dictionary with the titles and results of all registered state getters.</returns>
+        </member>
+        <member name="M:ICSharpCode.Core.ApplicationStateInfoService.AppendFormatted(System.Text.StringBuilder)">
+            <summary>
+            Appends the current application state information from all registered state getters
+            to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="sb">The <see cref="T:System.Text.StringBuilder"/> to append the state information to.</param>
+        </member>
+        <member name="T:ICSharpCode.Core.StateGetter">
+            <summary>
+            A delegate used to get information about the current state of the application.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.FileName">
+            <summary>
+            Represents a directory path or filename.
+            The equality operator is overloaded to compare for path equality (case insensitive, normalizing paths with '..\')
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileName.Create(System.String)">
+            <summary>
+            Creates a FileName instance from the string.
+            It is valid to pass null or an empty string to this method (in that case, a null reference will be returned).
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.FileNameEventArgs">
+            <summary>
+            EventArgs with a file name.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.FileUtility">
+            <summary>
+            A utility class related to file utilities.
+            </summary>
+            <summary>
+            A minimal version of FileUtility. Is used by ICSharpCode.SharpDevelop.Dom (which doesn't reference
+            ICSharpCode.Core)
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.FileUtility.NetFrameworkInstallRoot">
+            <summary>
+            Gets the installation root of the .NET Framework (@"C:\Windows\Microsoft.NET\Framework\")
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.FileUtility.NetSdk20InstallRoot">
+            <summary>
+            Location of the .NET 2.0 SDK install root.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.FileUtility.WindowsSdk60InstallRoot">
+            <summary>
+            Location of the .NET 3.0 SDK (Windows SDK 6.0) install root.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.FileUtility.WindowsSdk60aInstallRoot">
+            <summary>
+            Location of the Windows SDK Components in Visual Studio 2008 (.NET 3.5; Windows SDK 6.0a).
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.FileUtility.WindowsSdk61InstallRoot">
+            <summary>
+            Location of the .NET 3.5 SDK (Windows SDK 6.1) install root.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.FileUtility.WindowsSdk70InstallRoot">
+            <summary>
+            Location of the .NET 3.5 SP1 SDK (Windows SDK 7.0) install root.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.FileUtility.WindowsSdk71InstallRoot">
+            <summary>
+            Location of the .NET 4.0 SDK (Windows SDK 7.1) install root.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileUtility.GetSdkPath(System.String)">
+            <summary>
+            Searches all the .net sdk bin folders and return the path of the
+            exe from the latest sdk.
+            </summary>
+            <param name="exeName">The EXE to search for.</param>
+            <returns>The path of the executable, or null if the exe is not found.</returns>
+        </member>
+        <member name="M:ICSharpCode.Core.FileUtility.GetRelativePath(System.String,System.String)">
+            <summary>
+            Converts a given absolute path and a given base path to a path that leads
+            from the base path to the absoulte path. (as a relative path)
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileUtility.GetAbsolutePath(System.String,System.String)">
+            <summary>
+            Combines baseDirectoryPath with relPath and normalizes the resulting path.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileUtility.SearchDirectoryInternal(System.String,System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Finds all files which are valid to the mask <paramref name="filemask"/> in the path
+            <paramref name="directory"/> and all subdirectories
+            (if <paramref name="searchSubdirectories"/> is true).
+            If <paramref name="ignoreHidden"/> is true, hidden files and folders are ignored.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileUtility.IsValidPath(System.String)">
+            <summary>
+            This method checks if a path (full or relative) is valid.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileUtility.IsValidDirectoryName(System.String)">
+            <summary>
+            Checks that a single directory name (not the full path) is valid.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileUtility.IsValidDirectoryEntryName(System.String)">
+            <summary>
+            Checks that a single directory name (not the full path) is valid.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.FileUtility.NormalizePath(System.String)">
+            <summary>
+            Gets the normalized version of fileName.
+            Slashes are replaced with backslashes, backreferences "." and ".." are 'evaluated'.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.MessageService">
+            <summary>
+            Class with static methods to show message boxes.
+            All text displayed using the MessageService is passed to the
+            <see cref="T:ICSharpCode.Core.StringParser"/> to replace ${res} markers.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowException(System.Exception)">
+            <summary>
+            Shows an exception error.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowError(System.String)">
+            <summary>
+            Shows an error using a message box.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowErrorFormatted(System.String,System.Object[])">
+            <summary>
+            Shows an error using a message box.
+            <paramref name="formatstring"/> is first passed through the
+            <see cref="T:ICSharpCode.Core.StringParser"/>,
+            then through <see cref="M:System.String.Format(System.String,System.Object)"/>, using the formatitems as arguments.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowException(System.Exception,System.String)">
+            <summary>
+            Shows an exception.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowHandledException(System.Exception)">
+            <summary>
+            Shows an exception.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowHandledException(System.Exception,System.String)">
+            <summary>
+            Shows an exception.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowWarning(System.String)">
+            <summary>
+            Shows a warning message.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowWarningFormatted(System.String,System.Object[])">
+            <summary>
+            Shows a warning message.
+            <paramref name="formatstring"/> is first passed through the
+            <see cref="T:ICSharpCode.Core.StringParser"/>,
+            then through <see cref="M:System.String.Format(System.String,System.Object)"/>, using the formatitems as arguments.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.AskQuestion(System.String,System.String)">
+            <summary>
+            Asks the user a Yes/No question, using "Yes" as the default button.
+            Returns <c>true</c> if yes was clicked, <c>false</c> if no was clicked.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.AskQuestion(System.String)">
+            <summary>
+            Asks the user a Yes/No question, using "Yes" as the default button.
+            Returns <c>true</c> if yes was clicked, <c>false</c> if no was clicked.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowCustomDialog(System.String,System.String,System.Int32,System.Int32,System.String[])">
+            <summary>
+            Shows a custom dialog.
+            </summary>
+            <param name="caption">The title of the dialog.</param>
+            <param name="dialogText">The description shown in the dialog.</param>
+            <param name="acceptButtonIndex">
+            The number of the button that is the default accept button.
+            Use -1 if you don't want to have an accept button.
+            </param>
+            <param name="cancelButtonIndex">
+            The number of the button that is the cancel button.
+            Use -1 if you don't want to have a cancel button.
+            </param>
+            <param name="buttontexts">The captions of the buttons.</param>
+            <returns>The number of the button that was clicked, or -1 if the dialog was closed  without clicking a button.</returns>
+        </member>
+        <member name="M:ICSharpCode.Core.MessageService.ShowCustomDialog(System.String,System.String,System.String[])">
+            <summary>
+            Shows a custom dialog.
+            </summary>
+            <param name="caption">The title of the dialog.</param>
+            <param name="dialogText">The description shown in the dialog.</param>
+            <param name="buttontexts">The captions of the buttons.</param>
+            <returns>The number of the button that was clicked.</returns>
+        </member>
+        <member name="P:ICSharpCode.Core.MessageService.ProductName">
+            <summary>
+            Gets/Sets the name of the product using ICSharpCode.Core.
+            Is used by the string parser as replacement for ${ProductName}.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.MessageService.DefaultMessageBoxTitle">
+            <summary>
+            Gets/Sets the default title for message boxes displayed
+            by the message service.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.IMementoCapable">
+            <summary>
+            This interface flags an object beeing "mementocapable". This means that the
+            state of the object could be saved to an <see cref="T:ICSharpCode.Core.Properties"/> object
+            and set from a object from the same class.
+            This is used to save and restore the state of GUI objects.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.IMementoCapable.CreateMemento">
+            <summary>
+            Creates a new memento from the state.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.IMementoCapable.SetMemento(ICSharpCode.Core.Properties)">
+            <summary>
+            Sets the state to the given memento.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.Properties">
+            <summary>
+            Description of PropertyGroup.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.Properties.SerializedValue">
+            <summary> Needed for support of late deserialization </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.PropertyChangedEventArgs.Properties">
+            <returns>
+            returns the changed property object
+            </returns>
+        </member>
+        <member name="P:ICSharpCode.Core.PropertyChangedEventArgs.Key">
+            <returns>
+            The key of the changed property
+            </returns>
+        </member>
+        <member name="P:ICSharpCode.Core.PropertyChangedEventArgs.NewValue">
+            <returns>
+            The new value of the property
+            </returns>
+        </member>
+        <member name="P:ICSharpCode.Core.PropertyChangedEventArgs.OldValue">
+            <returns>
+            The new value of the property
+            </returns>
+        </member>
+        <member name="M:ICSharpCode.Core.PropertyService.LockPropertyFile">
+            <summary>
+            Acquires an exclusive lock on the properties file so that it can be opened safely.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.RegistryService">
+            <summary>
+            RegistryService.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.RegistryService.GetRegistryValue``1(Microsoft.Win32.RegistryHive,System.String,System.String,Microsoft.Win32.RegistryValueKind,``0@)">
+            <summary>
+            Gets the registry value.
+            </summary>
+            <param name="hive">Registry hive.</param>
+            <param name="key">Registry key.</param>
+            <param name="value">Registry value.</param>
+            <param name="kind">Registry kind.</param>
+            <param name="data">Data.</param>
+            <returns>True, if the data was found, False otherwise.</returns>
+        </member>
+        <member name="T:ICSharpCode.Core.ResourceNotFoundException">
+            <summary>
+            Is thrown when the GlobalResource manager can't find a requested
+            resource.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ResourceService">
+            <summary>
+            This Class contains two ResourceManagers, which handle string and image resources
+            for the application. It do handle localization strings on this level.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.ResourceService.strings">
+            <summary>English strings (list of resource managers)</summary>
+        </member>
+        <member name="F:ICSharpCode.Core.ResourceService.icons">
+            <summary>Neutral/English images (list of resource managers)</summary>
+        </member>
+        <member name="F:ICSharpCode.Core.ResourceService.localStrings">
+            <summary>Hashtable containing the local strings from the main application.</summary>
+        </member>
+        <member name="F:ICSharpCode.Core.ResourceService.localStringsResMgrs">
+            <summary>Strings resource managers for the current language</summary>
+        </member>
+        <member name="F:ICSharpCode.Core.ResourceService.localIconsResMgrs">
+            <summary>Image resource managers for the current language</summary>
+        </member>
+        <member name="F:ICSharpCode.Core.ResourceService.resourceAssemblies">
+            <summary>List of ResourceAssembly</summary>
+        </member>
+        <member name="M:ICSharpCode.Core.ResourceService.RegisterStrings(System.String,System.Reflection.Assembly)">
+            <summary>
+            Registers string resources in the resource service.
+            </summary>
+            <param name="baseResourceName">The base name of the resource file embedded in the assembly.</param>
+            <param name="assembly">The assembly which contains the resource file.</param>
+            <example><c>ResourceService.RegisterStrings("TestAddin.Resources.StringResources", GetType().Assembly);</c></example>
+        </member>
+        <member name="M:ICSharpCode.Core.ResourceService.RegisterImages(System.String,System.Reflection.Assembly)">
+            <summary>
+            Registers image resources in the resource service.
+            </summary>
+            <param name="baseResourceName">The base name of the resource file embedded in the assembly.</param>
+            <param name="assembly">The assembly which contains the resource file.</param>
+            <example><c>ResourceService.RegisterImages("TestAddin.Resources.BitmapResources", GetType().Assembly);</c></example>
+        </member>
+        <member name="M:ICSharpCode.Core.ResourceService.GetString(System.String)">
+            <summary>
+            Returns a string from the resource database, it handles localization
+            transparent for the user.
+            </summary>
+            <returns>
+            The string in the (localized) resource database.
+            </returns>
+            <param name="name">
+            The name of the requested resource.
+            </param>
+            <exception cref="T:ICSharpCode.Core.ResourceNotFoundException">
+            Is thrown when the GlobalResource manager can't find a requested resource.
+            </exception>
+        </member>
+        <member name="T:ICSharpCode.Core.ServiceNotFoundException">
+            <summary>
+            Is thrown when the ServiceManager cannot find a required service.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.PropertyObjectTagProvider">
+            <summary>
+            Provides properties by using Reflection on an object.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.StringParser">
+            <summary>
+            This class parses internal ${xyz} tags of #Develop.
+            All environment variables are avaible under the name env.[NAME]
+            where [NAME] represents the string under which it is avaiable in
+            the environment.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.StringParser.Parse(System.String)">
+            <summary>
+            Expands ${xyz} style property values.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.StringParser.Parse(System.String[])">
+            <summary>
+            Parses an array and replaces the elements in the existing array.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.StringParser.Parse(System.String,ICSharpCode.Core.StringTagPair[])">
+            <summary>
+            Expands ${xyz} style property values.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.StringParser.Parse(System.String,System.String[0:,0:])">
+            <summary>
+            For new code, please use the overload taking StringTagPair[]!
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.StringParser.GetValue(System.String,ICSharpCode.Core.StringTagPair[])">
+            <summary>
+            Evaluates a property using the StringParser. Equivalent to StringParser.Parse("${" + propertyName + "}");
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.StringParser.GetProperty(System.String)">
+            <summary>
+            Allow special syntax to retrieve property values:
+            ${property:PropertyName}
+            ${property:PropertyName??DefaultValue}
+            ${property:ContainerName/PropertyName}
+            ${property:ContainerName/PropertyName??DefaultValue}
+            A container is a Properties instance stored in the PropertyService. This is
+            used by many AddIns to group all their properties into one container.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.AbstractCommand">
+            <summary>
+            Abstract implementation of the <see cref="T:ICSharpCode.Core.ICommand"/> interface.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AbstractCommand.Owner">
+            <summary>
+            Returns the owner of the command.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AbstractCommand.Run">
+            <summary>
+            Invokes the command.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.CallbackOnDispose">
+            <summary>
+            Invokes a callback when this class is disposed.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.DebugTextWriter">
+            <summary>
+            TextWriter that writes into System.Diagnostics.Debug
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.ICommand">
+            <summary>
+            A basic command interface. A command has simply an owner which "runs" the command
+            and a Run method which invokes the command.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.ICommand.Owner">
+            <summary>
+            Returns the owner of the command.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.ICommand.Run">
+            <summary>
+            Invokes the command.
+            </summary>
+        </member>
+        <member name="E:ICSharpCode.Core.ICommand.OwnerChanged">
+            <summary>
+            Is called when the Owner property is changed.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.IBuildItemsModifier">
+            <summary>
+            When a <see cref="T:ICSharpCode.Core.IDoozer">doozer</see> returns an object implementing
+            this interface, the <see cref="M:ICSharpCode.Core.IBuildItemsModifier.Apply(System.Collections.IList)"/> method is called on the list of items
+            that has been built.
+            This interface can be used to support special <see cref="T:ICSharpCode.Core.IDoozer">doozers</see>
+            that do not simply build one item but want to modify the list of items built so far.
+            Example use is the <see cref="T:ICSharpCode.Core.IncludeDoozer"/> which uses this interface to return
+            multiple items instead of one.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.IncludeDoozer">
+            <summary>
+            Includes one or multiple items from another location in the addin tree.
+            You can use the attribute "item" (to include a single item) OR the
+            attribute "path" (to include all items from the target path).
+            </summary>
+            <attribute name="item">
+            When this attribute is used, the include doozer builds the item that is at the
+            addin tree location specified by this attribute.
+            </attribute>
+            <attribute name="path">
+            When this attribute is used, the include doozer builds all items inside the
+            path addin tree location specified by this attribute and returns an
+            <see cref="T:ICSharpCode.Core.IBuildItemsModifier"/> which includes all items in the output list.
+            </attribute>
+            <usage>Everywhere</usage>
+            <returns>
+            Any object, depending on the included codon(s).
+            </returns>
+        </member>
+        <member name="P:ICSharpCode.Core.IncludeDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.LoggingService">
+            <summary>
+            Class for easy logging.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.AddInManifest">
+            <summary>
+            Stores information about the manifest of an AddIn.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.AddInReference">
+            <summary>
+            Represents a versioned reference to an AddIn. Used by <see cref="T:ICSharpCode.Core.AddInManifest"/>.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInReference.Check(System.Collections.Generic.Dictionary{System.String,System.Version},System.Version@)">
+            <returns>Returns true when the reference is valid.</returns>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInReference.CompareVersion(System.Version,System.Version)">
+            <summary>
+            Compares two versions and ignores unspecified fields (unlike Version.CompareTo)
+            </summary>
+            <returns>-1 if a &lt; b, 0 if a == b, 1 if a &gt; b</returns>
+        </member>
+        <member name="T:ICSharpCode.Core.CoreStartup">
+            <summary>
+            Class that helps starting up ICSharpCode.Core.
+            </summary>
+            <remarks>
+            Initializing ICSharpCode.Core requires initializing several static classes
+            and the <see cref="T:ICSharpCode.Core.AddInTree"/>. <see cref="T:ICSharpCode.Core.CoreStartup"/> does this work
+            for you, provided you use it like this:
+            1. Create a new CoreStartup instance
+            2. (Optional) Set the values of the properties.
+            3. Call <see cref="M:ICSharpCode.Core.CoreStartup.StartCoreServices"/>.
+            4. Add "preinstalled" AddIns using <see cref="M:ICSharpCode.Core.CoreStartup.AddAddInsFromDirectory(System.String)"/>
+               and <see cref="M:ICSharpCode.Core.CoreStartup.AddAddInFile(System.String)"/>.
+            5. (Optional) Call <see cref="M:ICSharpCode.Core.CoreStartup.ConfigureExternalAddIns(System.String)"/> to support
+               disabling AddIns and installing external AddIns
+            6. (Optional) Call <see cref="M:ICSharpCode.Core.CoreStartup.ConfigureUserAddIns(System.String,System.String)"/> to support installing
+               user AddIns.
+            7. Call <see cref="M:ICSharpCode.Core.CoreStartup.RunInitialization"/>.
+            </remarks>
+        </member>
+        <member name="P:ICSharpCode.Core.CoreStartup.PropertiesName">
+            <summary>
+            Sets the name used for the properties (only name, without path or extension).
+            Must be set before StartCoreServices() is called.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.CoreStartup.ConfigDirectory">
+            <summary>
+            Sets the directory name used for the property service.
+            Must be set before StartCoreServices() is called.
+            Use null to use the default path "%ApplicationData%\%ApplicationName%",
+            where %ApplicationData% is the system setting for
+            "c:\documents and settings\username\application data"
+            and %ApplicationName% is the application name you used in the
+            CoreStartup constructor call.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.CoreStartup.DataDirectory">
+            <summary>
+            Sets the data directory used to load resources.
+            Must be set before StartCoreServices() is called.
+            Use null to use the default path "ApplicationRootPath\data".
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.CoreStartup.#ctor(System.String)">
+            <summary>
+            Creates a new CoreStartup instance.
+            </summary>
+            <param name="applicationName">
+            The name of your application.
+            This is used as default title for message boxes,
+            default name for the configuration directory etc.
+            </param>
+        </member>
+        <member name="M:ICSharpCode.Core.CoreStartup.AddAddInsFromDirectory(System.String)">
+            <summary>
+            Find AddIns by searching all .addin files recursively in <paramref name="addInDir"/>.
+            The AddIns that were found are added to the list of AddIn files to load.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.CoreStartup.AddAddInFile(System.String)">
+            <summary>
+            Add the specified .addin file to the list of AddIn files to load.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.CoreStartup.ConfigureExternalAddIns(System.String)">
+            <summary>
+            Use the specified configuration file to store information about
+            disabled AddIns and external AddIns.
+            You have to call this method to support the <see cref="T:ICSharpCode.Core.AddInManager"/>.
+            </summary>
+            <param name="addInConfigurationFile">
+            The name of the file used to store the list of disabled AddIns
+            and the list of installed external AddIns.
+            A good value for this parameter would be
+            <c>Path.Combine(<see cref="P:ICSharpCode.Core.PropertyService.ConfigDirectory"/>, "AddIns.xml")</c>.
+            </param>
+        </member>
+        <member name="M:ICSharpCode.Core.CoreStartup.ConfigureUserAddIns(System.String,System.String)">
+            <summary>
+            Configures user AddIn support.
+            </summary>
+            <param name="addInInstallTemp">
+            The AddIn installation temporary directory.
+            ConfigureUserAddIns will install the AddIns from this directory and
+            store the parameter value in <see cref="P:ICSharpCode.Core.AddInManager.AddInInstallTemp"/>.
+            </param>
+            <param name="userAddInPath">
+            The path where user AddIns are installed to.
+            AddIns from this directory will be loaded.
+            </param>
+        </member>
+        <member name="M:ICSharpCode.Core.CoreStartup.RunInitialization">
+            <summary>
+            Initializes the AddIn system.
+            This loads the AddIns that were added to the list,
+            then it executes the <see cref="T:ICSharpCode.Core.ICommand">commands</see>
+            in <c>/Workspace/Autostart</c>.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.CoreStartup.StartCoreServices">
+            <summary>
+            Starts the core services.
+            This initializes the PropertyService and ResourceService.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.AddInAction">
+            <summary>
+              Specifies the action to be taken for a specific <see cref="T:ICSharpCode.Core.AddIn"/>.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.AddInAction.Enable">
+            <summary>
+              Enable the <see cref="T:ICSharpCode.Core.AddIn"/>.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.AddInAction.Disable">
+            <summary>
+                Disable the <see cref="T:ICSharpCode.Core.AddIn"/>.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.AddInAction.Install">
+            <summary>
+                Install the <see cref="T:ICSharpCode.Core.AddIn"/>.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.AddInAction.Uninstall">
+            <summary>
+                Uninstall the <see cref="T:ICSharpCode.Core.AddIn"/>.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.AddInAction.Update">
+            <summary>
+                Update the <see cref="T:ICSharpCode.Core.AddIn"/>.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.AddInAction.InstalledTwice">
+            <summary>
+            The <see cref="T:ICSharpCode.Core.AddIn"/> is disabled because it has been installed
+            twice (duplicate identity).
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.AddInAction.DependencyError">
+            <summary>
+                Tells that the <see cref="T:ICSharpCode.Core.AddIn"/> cannot be loaded because not all dependencies are satisfied.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.Core.AddInAction.CustomError">
+            <summary>
+            A custom error has occurred (e.g. the AddIn disabled itself using a condition).
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.Core.AddInManager">
+            <summary>
+            Manages all actions performed on <see cref="T:ICSharpCode.Core.AddIn"/>s.
+            An AddInManager GUI can use the methods here to install/update/uninstall
+            <see cref="T:ICSharpCode.Core.AddIn"/>s.
+            
+            There are three types of AddIns:
+            - Preinstalled AddIns (added by host application) -> can only be disabled
+            - External AddIns -> can be added, disabled and removed
+            	Removing external AddIns only removes the reference to the .addin file
+                but does not delete the AddIn.
+            - User AddIns -> are installed to UserAddInPath, can be installed, disabled
+                and uninstalled
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddInManager.UserAddInPath">
+            <summary>
+            Gets or sets the user addin path.
+            This is the path where user AddIns are installed to.
+            This property is normally initialized by <see cref="M:ICSharpCode.Core.CoreStartup.ConfigureUserAddIns(System.String,System.String)"/>.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddInManager.AddInInstallTemp">
+            <summary>
+            Gets or sets the addin install temporary directory.
+            This is a directory used to store AddIns that should be installed on
+            the next start of the application.
+            This property is normally initialized by <see cref="M:ICSharpCode.Core.CoreStartup.ConfigureUserAddIns(System.String,System.String)"/>.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.Core.AddInManager.ConfigurationFileName">
+            <summary>
+            Gets or sets the full name of the configuration file.
+            In this file, the AddInManager stores the list of disabled AddIns
+            and the list of installed external AddIns.
+            This property is normally initialized by <see cref="M:ICSharpCode.Core.CoreStartup.ConfigureExternalAddIns(System.String)"/>.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.InstallAddIns(System.Collections.Generic.List{System.String})">
+            <summary>
+            Installs the AddIns from AddInInstallTemp to the UserAddInPath.
+            In case of installation errors, a error message is displayed to the user
+            and the affected AddIn is added to the disabled list.
+            This method is normally called by <see cref="M:ICSharpCode.Core.CoreStartup.ConfigureUserAddIns(System.String,System.String)"/>
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.RemoveUserAddInOnNextStart(System.String)">
+            <summary>
+            Uninstalls the user addin on next start.
+            <see cref="M:ICSharpCode.Core.AddInManager.RemoveUserAddInOnNextStart(System.String)"/> schedules the AddIn for
+            deinstallation, you can unschedule it using
+            <see cref="M:ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(System.String)"/>
+            </summary>
+            <param name="identity">The identity of the addin to remove.</param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(System.String)">
+            <summary>
+            Prevents a user AddIn from being uninstalled.
+            <see cref="M:ICSharpCode.Core.AddInManager.RemoveUserAddInOnNextStart(System.String)"/> schedules the AddIn for
+            deinstallation, you can unschedule it using
+            <see cref="M:ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(System.String)"/>
+            </summary>
+            <param name="identity">The identity of which to abort the removal.</param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.AddExternalAddIns(System.Collections.Generic.IList{ICSharpCode.Core.AddIn})">
+            <summary>
+            Adds the specified external AddIns to the list of registered external
+            AddIns.
+            </summary>
+            <param name="addIns">
+            The list of AddIns to add. (use <see cref="T:ICSharpCode.Core.AddIn"/> instances
+            created by <see cref="M:ICSharpCode.Core.AddIn.Load(System.IO.TextReader,System.String,System.Xml.XmlNameTable)"/>).
+            </param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.RemoveExternalAddIns(System.Collections.Generic.IList{ICSharpCode.Core.AddIn})">
+            <summary>
+            Removes the specified external AddIns from the list of registered external
+            AddIns.
+            </summary>
+            The list of AddIns to remove.
+            (use external AddIns from the <see cref="P:ICSharpCode.Core.AddInTree.AddIns"/> collection).
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.Enable(System.Collections.Generic.IList{ICSharpCode.Core.AddIn})">
+            <summary>
+            Marks the specified AddIns as enabled (will take effect after
+            next application restart).
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.Disable(System.Collections.Generic.IList{ICSharpCode.Core.AddIn})">
+            <summary>
+            Marks the specified AddIns as disabled (will take effect after
+            next application restart).
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.LoadAddInConfiguration(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
+            <summary>
+            Loads a configuration file.
+            The 'file' from XML elements in the form "&lt;AddIn file='full path to .addin file'&gt;" will
+            be added to <paramref name="addInFiles"/>, the 'addin' element from
+            "&lt;Disable addin='addin identity'&gt;" will be added to <paramref name="disabledAddIns"/>,
+            all other XML elements are ignored.
+            </summary>
+            <param name="addInFiles">File names of external AddIns are added to this collection.</param>
+            <param name="disabledAddIns">Identities of disabled addins are added to this collection.</param>
+        </member>
+        <member name="M:ICSharpCode.Core.AddInManager.SaveAddInConfiguration(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
+            <summary>
+            Saves the AddIn configuration in the format expected by
+            <see cref="M:ICSharpCode.Core.AddInManager.LoadAddInConfiguration(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})"/>.
+            </summary>
+            <param name="addInFiles">List of file names of external AddIns.</param>
+            <param name="disabledAddIns">List of Identities of disabled addins.</param>
+        </member>
+        <member name="T:ICSharpCode.Core.StringDoozer">
+            <summary>
+            Creates a string.
+            </summary>
+            <attribute name="text" use="required">
+            The string to return.
+            </attribute>
+            <returns>
+            The string specified by 'text', passed through the StringParser.
+            </returns>
+        </member>
+        <member name="P:ICSharpCode.Core.StringDoozer.HandleConditions">
+            <summary>
+            Gets if the doozer handles codon conditions on its own.
+            If this property return false, the item is excluded when the condition is not met.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1091,10 +1091,12 @@ namespace CodeCompletion
         }
 
         public static void Test()
-        {
-            string test_dir = GetTestSuiteDir() + @"\formatter_tests";
-            string[] files = Directory.GetFiles(test_dir+@"\input","*.pas");
-            StreamWriter log = new StreamWriter(test_dir + @"\output\log.txt", false, Encoding.GetEncoding(1251));
+		{
+			string test_dir = Path.Combine(GetTestSuiteDir(), @"formatter_tests");
+			string output_dir = Path.Combine(test_dir, @"output");
+            Directory.CreateDirectory(output_dir);
+			string[] files = Directory.GetFiles(test_dir+@"\input","*.pas");
+            StreamWriter log = new StreamWriter(Path.Combine(output_dir, @"log.txt"), false, Encoding.GetEncoding(1251));
             SyntaxTreeComparer stc = new SyntaxTreeComparer();
             foreach (string s in files)
             {
@@ -1106,12 +1108,12 @@ namespace CodeCompletion
                 {
                     CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
                     Text = cf.FormatTree(Text, cu, 1, 1);
-                    StreamWriter sw = new StreamWriter(Path.Combine(test_dir + @"\output", Path.GetFileName(s)), false, Encoding.GetEncoding(1251));
+                    StreamWriter sw = new StreamWriter(Path.Combine(output_dir, Path.GetFileName(s)), false, Encoding.GetEncoding(1251));
                     sw.Write(Text);
                     sw.Close();
                     Errors.Clear();
                     Warnings.Clear();
-                    compilation_unit cu2 = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(Path.Combine(test_dir + @"\output", Path.GetFileName(s)), Text, Errors, Warnings);
+                    compilation_unit cu2 = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(Path.Combine(output_dir, Path.GetFileName(s)), Text, Errors, Warnings);
                     if (Errors.Count > 0)
                     {
                         for (int i = 0; i < Errors.Count; i++)
@@ -1132,7 +1134,7 @@ namespace CodeCompletion
                         }
                 }
             }
-            files = Directory.GetFiles(test_dir+@"\output", "*.pas");
+            files = Directory.GetFiles(output_dir, "*.pas");
             foreach (string s in files)
             {
                 var sr = new StreamReader(s, System.Text.Encoding.GetEncoding(1251));

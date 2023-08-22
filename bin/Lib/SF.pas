@@ -298,6 +298,9 @@ function Cart<T>(Self: array of T; n: integer): sequence of array of T; extensio
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
 function Cart<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
 
+/// Возвращает n-тую декартову степень множества символов, заданного строкой
+function Cart(Self: string; n: integer): sequence of string; extensionmethod := Self.CartesianPower(n);
+
 /// Возвращает декартово произведение последовательностей в виде последовательности пар
 function Cart<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod := Self.Cartesian(b);
 
