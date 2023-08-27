@@ -2853,8 +2853,12 @@ begin
     begin
       foreach var x in e.InnerExceptions do
         if x is HTTPRequestException then
-          ColoredMessage(x.InnerException?.Message??'',MsgColorGray)
-        else ColoredMessage(x.Message,MsgColorGray); 
+        begin
+          if x.InnerException<>nil then
+            ColoredMessage('Ошибка сервера: '+x.InnerException.Message,MsgColorGray)
+          else ColoredMessage('Неизвестная ошибка сервера',MsgColorGray)
+        end  
+        else ColoredMessage('Ошибка сервера: '+x.Message,MsgColorGray); 
     end;
     on e: Exception do
       ColoredMessage(e.Message,MsgColorGray);

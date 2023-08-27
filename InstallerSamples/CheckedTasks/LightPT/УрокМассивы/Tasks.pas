@@ -11,6 +11,10 @@ begin
     TasksArr.CheckTaskT(name)
   else  
   case name of
+  'Введение': begin 
+    ColoredMessage('Данный урок посвящён массивам в PascalABC.NET');
+    ColoredMessage('Ознакомьтесь предварительно с теорией: https://pascalabcnet.github.io/school_arrays.html',MsgColorGray);
+  end;
   'HW2': begin 
     ClearOutputListFromSpaces;
     ConvertStringsToNumbersInOutputList;
