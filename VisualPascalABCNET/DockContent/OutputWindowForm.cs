@@ -22,7 +22,7 @@ namespace VisualPascalABC
             outputTextBox.LinkClicked += outputTextBox_LinkClicked;
         }
 
-        private void outputTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        public void outputTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
         {
             try
             {

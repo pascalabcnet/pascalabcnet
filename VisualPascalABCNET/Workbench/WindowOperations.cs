@@ -313,6 +313,8 @@ namespace VisualPascalABC
             res.BackColor = orig.BackColor;
             res.Parent = orig.Parent;
             res.ContextMenuStrip = orig.ContextMenuStrip;
+            res.DetectUrls = true;
+            res.LinkClicked += OutputWindow.outputTextBox_LinkClicked;
             return res;
         }
 
