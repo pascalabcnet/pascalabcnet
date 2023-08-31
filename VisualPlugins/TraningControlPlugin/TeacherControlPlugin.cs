@@ -46,6 +46,8 @@ namespace VisualPascalABCPlugins
             this.Workbench = Workbench;
             VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
 
+            User = new SiteAccessProvider();
+
             if (IsLightPTInWorkingDirectory())
             {
                 IsMechmath = System.Environment.MachineName.ToLower().StartsWith("mil8a-");
@@ -53,8 +55,6 @@ namespace VisualPascalABCPlugins
                 loginForm = new LoginForm(this);
             }
             // RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler; // Пока форма регистрации никак не связана с компилятором
-
-            User = new SiteAccessProvider();
 
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
