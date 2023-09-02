@@ -431,8 +431,10 @@ namespace VisualPascalABC
         
         public void NullProcessHandleIfNeed(string fileName)
         {
+#if DEBUG
             Console.WriteLine("null process handle");
-        	if (string.Compare(fileName,this.ExeFileName,true)==0)
+#endif
+            if (string.Compare(fileName,this.ExeFileName,true)==0)
         	{
         		FileName = null;
         		handle = 0;
