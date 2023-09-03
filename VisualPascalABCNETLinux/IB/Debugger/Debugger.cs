@@ -517,6 +517,7 @@ namespace VisualPascalABC
                 monoDebuggerSession.TargetHitBreakpoint += MonoDebuggerSession_TargetHitBreakpoint;
                 monoDebuggerSession.TargetStopped += MonoDebuggerSession_TargetStopped;
                 monoDebuggerSession.TargetStarted += MonoDebuggerSession_TargetStarted;
+                monoDebuggerSession.TargetUnhandledException += MonoDebuggerSession_TargetExceptionThrown;
                 //monoDebuggerSession.TargetThreadStopped += MonoDebuggerSession_TargetThreadStopped;
                 monoDebuggerSession.Run(dsi, dso);
                 int i = 0;
@@ -543,7 +544,9 @@ namespace VisualPascalABC
             }
             catch (System.Exception ex)
             {
+#if (DEBUG)
                 Console.WriteLine(ex.Message);
+#endif
             }
             return null;
         }
@@ -593,6 +596,7 @@ namespace VisualPascalABC
             monoDebuggerSession.TargetHitBreakpoint -= MonoDebuggerSession_TargetHitBreakpoint;
             monoDebuggerSession.TargetStopped -= MonoDebuggerSession_TargetStopped;
             monoDebuggerSession.TargetStarted -= MonoDebuggerSession_TargetStarted;
+            monoDebuggerSession.TargetUnhandledException += MonoDebuggerSession_TargetExceptionThrown;
             //monoDebuggerSession.TargetThreadStopped -= MonoDebuggerSession_TargetThreadStopped;
             Status = DebugStatus.None;
             Mono.Debugger.Soft.VirtualMachineManager.currentProcess = null;
@@ -623,6 +627,11 @@ namespace VisualPascalABC
         private void MonoDebuggerSession_TargetStarted(object sender, EventArgs e)
         {
             stackFrame = null;
+        }
+
+        private void MonoDebuggerSession_TargetExceptionThrown(object sender, Mono.Debugging.Client.TargetEventArgs e)
+        {
+            monoDebuggerSession.NextLine();
         }
 
         private void MonoDebuggerSession_TargetHitBreakpoint(object sender, Mono.Debugging.Client.TargetEventArgs e)
@@ -1014,7 +1023,9 @@ namespace VisualPascalABC
             {
                 //debuggedProcess.Modules[0].SymReader.GetMethod(debuggedProcess.SelectedFunction.Token);
                 string save_PrevFullFileName = PrevFullFileName;
+#if (DEBUG)
                 Console.WriteLine("jump to "+stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
+#endif
                 //CodeFileDocumentControl page = null;
                 //DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
                 if (!ShowDebugTabs)//esli eshe ne pokazany watch i lokal, pokazyvaem
@@ -1162,7 +1173,9 @@ namespace VisualPascalABC
                     CurrentLine = stackFrame.SourceLocation.Line;
                     MustDebug = false;
                 }
+#if (DEBUG)
                 Console.WriteLine("jumped to " + stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
+#endif
                 RemoveBreakpoints();
                 if (currentBreakpoint != null)
                 {
@@ -1451,7 +1464,9 @@ namespace VisualPascalABC
                         
                     foreach (var lv in lvc)
                     {
+#if (DEBUG)
                         Console.WriteLine("local var " + lv.Name);
+#endif
                         if (lv.Name.IndexOf("<>local_variables") != -1)
                         {
                             foreach (var fi in lv.GetAllChildren())
@@ -1543,7 +1558,9 @@ namespace VisualPascalABC
                     }
                     if (self_lv != null)
                     {
+#if (DEBUG)
                         Console.WriteLine("search in this");
+#endif
                         var fields = self_lv.GetAllChildren();
                         foreach (var fi in fields)
                         {
@@ -1554,7 +1571,9 @@ namespace VisualPascalABC
                     }
                     if (global_lv != null)
                     {
+#if (DEBUG)
                         Console.WriteLine(global_lv.TypeName);
+#endif
                         var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
                         var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
                         foreach (var fi in fields)
@@ -1577,7 +1596,9 @@ namespace VisualPascalABC
                     if (t != null)
                     {
                         var tm = monoDebuggerSession.GetType(t.FullName);
+#if (DEBUG)
                         Console.WriteLine("type for static " + tm);
+#endif
                         var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
                         return new BaseTypeItem(tr, t);
                     }
@@ -1738,7 +1759,9 @@ namespace VisualPascalABC
                 }
                 else
                 {
+#if (DEBUG)
                     Console.WriteLine("expression "+var);
+#endif
                     if (evaluator == null)
                         evaluator = new ExpressionEvaluator(workbench.VisualEnvironmentCompiler, FileName);
                     evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
@@ -1768,7 +1791,9 @@ namespace VisualPascalABC
             }
             catch (System.Exception e)
             {
+#if (DEBUG)
                 Console.WriteLine(e.Message + " "+ e.StackTrace);
+#endif
             }
             return null;
         }
@@ -2004,7 +2029,9 @@ namespace VisualPascalABC
             }
             catch (System.Exception e)
             {
+#if (DEBUG)
                 Console.WriteLine(e.Message);
+#endif
             }
         }
 		
@@ -2022,7 +2049,9 @@ namespace VisualPascalABC
             }
             catch (System.Exception e)
             {
+#if (DEBUG)
                 Console.WriteLine(e.Message);
+#endif
             }
         }
 		
@@ -2041,7 +2070,9 @@ namespace VisualPascalABC
             }
             catch (System.Exception e)
             {
+#if (DEBUG)
                 Console.WriteLine(e.Message);
+#endif
             }
         }
 		

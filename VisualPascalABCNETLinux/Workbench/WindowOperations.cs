@@ -698,7 +698,9 @@ namespace VisualPascalABC
             }
             catch (System.Exception ex)
             {
+#if (DEBUG)
                 Console.WriteLine(ex.Message + " " + ex.StackTrace);
+#endif
             }
         }
 

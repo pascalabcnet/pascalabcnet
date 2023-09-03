@@ -4988,7 +4988,9 @@ namespace VisualPascalABC
 
                 foreach (var lv in lvc)
                 {
+#if (DEBUG)
                     Console.WriteLine("local var " + lv.Name);
+#endif
                     if (lv.Name.IndexOf("<>local_variables") != -1)
                     {
                         foreach (var fi in lv.GetAllChildren())
@@ -5081,7 +5083,9 @@ namespace VisualPascalABC
                 }
                 if (self_lv != null)
                 {
+#if (DEBUG)
                     Console.WriteLine("search in this");
+#endif
                     var fields = self_lv.GetAllChildren();
                     foreach (var fi in fields)
                     {
@@ -5092,7 +5096,9 @@ namespace VisualPascalABC
                 }
                 if (global_lv != null)
                 {
+#if (DEBUG)
                     Console.WriteLine(global_lv.TypeName);
+#endif
                     var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
                     var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
                     foreach (var fi in fields)

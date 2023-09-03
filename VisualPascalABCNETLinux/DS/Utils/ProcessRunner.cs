@@ -216,9 +216,6 @@ namespace VisualPascalABC.Utils
             RedirectIO=redirectIO;
 			process = new Process();
             string BatFile = null;
-#if (!DEBUG)
-			attachDebugger = false;
-#endif
 			process.StartInfo.ErrorDialog = false;
             if (RunWithPause && (BatFile = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath),"ProgrammRunner.exe")/*GenerateBatFileForRunWithPause(command, arguments)*/) != null)
             {

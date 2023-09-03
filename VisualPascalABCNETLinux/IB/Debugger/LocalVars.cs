@@ -311,7 +311,9 @@ namespace VisualPascalABC
                         }
                         catch (System.Exception e)
                         {
+#if (DEBUG)
                             Console.WriteLine(e.Message + " " + e.StackTrace);
+#endif
                         }
                         
                         ret.Add(new ModuleItem(types, frame));
