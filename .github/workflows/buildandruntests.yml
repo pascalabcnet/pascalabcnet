@@ -20,10 +20,10 @@ defaults:
 jobs:
   build:
 
-    name: Prepare and build on Windows Server 2016 VM
+    name: Prepare and build on Windows Server 2019 VM
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies into Virtual Environment...
       run: _RegisterHelixNUnit.bat
@@ -31,14 +31,4 @@ jobs:
     - name: Build project in Release-mode, compile Pas-units, run tests
       run: _RebuildReleaseAndRunTestsForGitHubActions.bat
       timeout-minutes: 40
-      env:
-        PABCNET_BUILD_MODE: Release
-        PABCNET_RUN_TESTS:  false
-        PABCNET_INC_BUILD:  false
-        PABCNET_VERBOSE:    false
-
-    #- name: Publish artifacts (5/5)...
-    #  uses: actions/upload-artifact@v2
-    #  with:
-    #    name: All_distros
-    #    path: Release
+ 
