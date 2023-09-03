@@ -517,6 +517,7 @@ namespace VisualPascalABC
                 monoDebuggerSession.TargetHitBreakpoint += MonoDebuggerSession_TargetHitBreakpoint;
                 monoDebuggerSession.TargetStopped += MonoDebuggerSession_TargetStopped;
                 monoDebuggerSession.TargetStarted += MonoDebuggerSession_TargetStarted;
+                monoDebuggerSession.TargetUnhandledException += MonoDebuggerSession_TargetExceptionThrown;
                 //monoDebuggerSession.TargetThreadStopped += MonoDebuggerSession_TargetThreadStopped;
                 monoDebuggerSession.Run(dsi, dso);
                 int i = 0;
@@ -595,6 +596,7 @@ namespace VisualPascalABC
             monoDebuggerSession.TargetHitBreakpoint -= MonoDebuggerSession_TargetHitBreakpoint;
             monoDebuggerSession.TargetStopped -= MonoDebuggerSession_TargetStopped;
             monoDebuggerSession.TargetStarted -= MonoDebuggerSession_TargetStarted;
+            monoDebuggerSession.TargetUnhandledException += MonoDebuggerSession_TargetExceptionThrown;
             //monoDebuggerSession.TargetThreadStopped -= MonoDebuggerSession_TargetThreadStopped;
             Status = DebugStatus.None;
             Mono.Debugger.Soft.VirtualMachineManager.currentProcess = null;
@@ -625,6 +627,11 @@ namespace VisualPascalABC
         private void MonoDebuggerSession_TargetStarted(object sender, EventArgs e)
         {
             stackFrame = null;
+        }
+
+        private void MonoDebuggerSession_TargetExceptionThrown(object sender, Mono.Debugging.Client.TargetEventArgs e)
+        {
+            monoDebuggerSession.NextLine();
         }
 
         private void MonoDebuggerSession_TargetHitBreakpoint(object sender, Mono.Debugging.Client.TargetEventArgs e)
