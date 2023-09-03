@@ -192,7 +192,9 @@ namespace Mono.Debugging.Soft
 				UseShellExecute = false,
 				CreateNoWindow = true,
 			};
+#if (DEBUG)
 			Console.WriteLine(psi.Arguments);
+#endif
 			LaunchOptions options = null;
 			
 			if (dsi.UseExternalConsole && args.ExternalConsoleLauncher != null) {
@@ -1407,7 +1409,7 @@ namespace Mono.Debugging.Soft
 			breakpoints[request] = bi;
 		}
 
-		#region ExceptionRequest
+#region ExceptionRequest
 		//VS in Windows doesn't have the concept of a Catchpoint. In the past we did use it anyway, but that leads to all sort of issues and bugs.
 		//The most important difference is that subclasses are never caught, and that Others is a concept that the Catchpoint doesn't support properly.
 		//This region is for Windows, to be able to properly handle exceptions with an exception list. The concept of Other is supported starting with vm version 2.54.
@@ -1474,7 +1476,7 @@ namespace Mono.Debugging.Soft
 			DisableException(exceptionType, false);
 		}
 
-		#endregion
+#endregion
 
 		static bool CheckTypeName (string typeName, string name)
 		{
