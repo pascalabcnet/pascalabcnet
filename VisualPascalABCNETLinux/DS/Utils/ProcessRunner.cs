@@ -280,9 +280,15 @@ namespace VisualPascalABC.Utils
 			if (!attachDebugger || dbgFailed || fictive_attach)
             {
 				process.Start();
+
 				//ssyy
 				process.PriorityClass = ProcessPriorityClass.BelowNormal;
 				//\ssyy
+
+				if (fictive_attach)
+				{
+					WorkbenchServiceFactory.DebuggerManager.Attach((uint)process.Id, command, !fictive_attach, false);
+				}
 			}
 
 			if (redirectIO)
