@@ -6270,11 +6270,72 @@ namespace VisualPascalABC
                     eval_stack.Push(res);
                     return;
                 }
-                if (rv.monoValue.IsArray)
+                if (true)
                 {
                     
                     RetValue res = new RetValue();
-                    res.monoValue = rv.monoValue.GetArrayItem(conv_to_int_arr(indices)[0]);
+                    Type type = AssemblyHelper.GetType(rv.monoValue.TypeName);
+                    if (type != null && type.GetField("NullBasedArray") != null)
+                    {
+                        int low_bound = 0;
+                        System.Reflection.FieldInfo fi = type.GetField("LowerIndex");
+                        low_bound = Convert.ToInt32(fi.GetRawConstantValue());
+                        int[] tmp_indices = new int[1];
+                        int j = 0;
+                        try
+                        {
+                            object obj = indices[j++];
+                            int v = 0;
+                            if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
+                                tmp_indices[0] = v - low_bound;
+                            else
+                                tmp_indices[0] = Convert.ToInt32(obj) - low_bound;
+                        }
+                        catch (System.FormatException)
+                        {
+                            throw new WrongTypeInIndexer();
+                        }
+                        catch (System.InvalidCastException)
+                        {
+                            throw new WrongTypeInIndexer();
+                        }
+                        //res.obj_val = cur_mi.Invoke(rv.obj_val,indices.ToArray()) as NamedValue;
+                        var nv = rv.monoValue.GetChild("NullBasedArray");
+                        res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
+                        check_for_out_of_range(res.obj_val);
+                        nv = res.monoValue.GetChild("NullBasedArray");
+                        while (nv != null && j < indices.Count)
+                        {
+                            System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(res.monoValue.TypeName).GetField("LowerIndex");
+                            low_bound = Convert.ToInt32(tmp_fi.GetRawConstantValue());
+                            try
+                            {
+                                object obj = indices[j++];
+                                int v = 0;
+                                if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
+                                    tmp_indices[0] = v - low_bound;
+                                else
+                                    tmp_indices[0] = Convert.ToInt32(obj) - low_bound;
+                            }
+                            catch (System.FormatException)
+                            {
+                                throw new WrongTypeInIndexer();
+                            }
+                            catch (System.InvalidCastException)
+                            {
+                                throw new WrongTypeInIndexer();
+                            }
+                            res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
+                            check_for_out_of_range(res.obj_val);
+                            nv = res.monoValue.GetChild("NullBasedArray");
+
+                        }
+                        if (j < indices.Count)
+                            throw new WrongIndexersNumber();
+                        eval_stack.Push(res);
+                    }
+                    else
+                        res.monoValue = rv.monoValue.GetRangeOfChildren(conv_to_int_arr(indices)[0], 1)[0];
                     //check_for_out_of_range(res.monoValue);
                     eval_stack.Push(res);
 
