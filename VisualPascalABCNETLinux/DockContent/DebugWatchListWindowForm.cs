@@ -120,12 +120,12 @@ namespace VisualPascalABC
                         (this.watchList.Rows[i] as AdvancedDataGridView.TreeGridNode).Content = fi;
                     }
                     else
-                        if (rv.obj_val != null)
+                        if (rv.monoValue != null)
                         {
                             //this.ClearRow(i);
                             try
                             {
-                                ValueItem vi = new ValueItem(rv.obj_val, s, WorkbenchServiceFactory.DebuggerManager.evaluator.declaringType);
+                                ValueItem vi = new ValueItem(rv.monoValue, s, WorkbenchServiceFactory.DebuggerManager.evaluator.declaringType);
                                 (this.watchList.Rows[i] as AdvancedDataGridView.TreeGridNode)._grid = this.watchList;
                                 (this.watchList.Rows[i] as AdvancedDataGridView.TreeGridNode).Content = vi;
                                 this.watchList.Rows[i].Cells[1].Value = WorkbenchServiceFactory.DebuggerManager.MakeValueView(rv.obj_val);//rv.obj_val.AsString;
@@ -147,10 +147,10 @@ namespace VisualPascalABC
                             (this.watchList.Rows[i] as AdvancedDataGridView.TreeGridNode).Content = fi;
                             this.watchList.InvalidateCell(0, i);
                         }
-                        else if (rv.type != null)
+                        else if (rv.monoType != null)
                         {
                             //this.ClearRow(i);
-                            BaseTypeItem bti = new BaseTypeItem(rv.type, rv.managed_type);
+                            BaseTypeItem bti = new BaseTypeItem(rv.monoType, rv.managed_type);
                             (this.watchList.Rows[i] as AdvancedDataGridView.TreeGridNode)._grid = this.watchList;
                             (this.watchList.Rows[i] as AdvancedDataGridView.TreeGridNode).Content = bti;
                         }

@@ -427,8 +427,10 @@ namespace VisualPascalABC
         Mono.Debugging.Client.ObjectValue monoValue;
 
 		public DebugType declaringType;
-		
-		public ValueItem() {}
+        public Mono.Debugger.Soft.TypeMirror monoDeclaringType;
+
+
+        public ValueItem() {}
         
         public override bool IsLiteral
         {
@@ -899,7 +901,15 @@ namespace VisualPascalABC
         	this.name = name;
         	val.Changed += delegate { OnChanged(new ListItemEventArgs(this)); };
         }
-        
+
+        public ValueItem(Mono.Debugging.Client.ObjectValue val, string name, Mono.Debugger.Soft.TypeMirror declaringType)
+        {
+            this.monoValue = val;
+            this.monoDeclaringType = declaringType;
+            this.name = name;
+            val.ValueChanged += delegate { OnChanged(new ListItemEventArgs(this)); };
+        }
+
         public ValueItem(Value val, string name, DebugType declaringType, bool is_in_collect)
         {
         	this.val = val;
@@ -929,6 +939,7 @@ namespace VisualPascalABC
         public ValueItem(Mono.Debugging.Client.ObjectValue val)
         {
             this.monoValue = val;
+            val.ValueChanged += delegate { OnChanged(new ListItemEventArgs(this)); };
         }
 
         [HandleProcessCorruptedStateExceptionsAttribute]

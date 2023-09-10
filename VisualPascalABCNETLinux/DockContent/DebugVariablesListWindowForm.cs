@@ -196,11 +196,11 @@ namespace VisualPascalABC
                         this.watchList.Rows[i].Cells[2].Value = null;//PascalABCCompiler.StringResources.Get("EXPR_VALUE_UNDEFINED_TYPE");
                     }
                     else
-                        if (rv.obj_val != null)
+                        if (rv.monoValue != null)
                         {
                             try
                             {
-                                ValueItem vi = new ValueItem(rv.obj_val, this.watchList.Rows[i].Cells[0].Value as string, WorkbenchServiceFactory.DebuggerManager.evaluator.declaringType);
+                                ValueItem vi = new ValueItem(rv.monoValue, this.watchList.Rows[i].Cells[0].Value as string, WorkbenchServiceFactory.DebuggerManager.evaluator.declaringType);
                                 (this.watchList.Rows[i] as AdvancedDataGridView.TreeGridNode)._grid = this.watchList;
                                 (this.watchList.Rows[i] as AdvancedDataGridView.TreeGridNode).Content = vi;
                                 this.watchList.Rows[i].Cells[1].Value = WorkbenchServiceFactory.DebuggerManager.MakeValueView(rv.obj_val);//rv.obj_val.AsString;
