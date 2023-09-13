@@ -20,9 +20,11 @@
 
 Letter [[:IsLetter:]_]
 Digit [0-9]
+Digit_ [0-9_]
 LetterDigit {Letter}|{Digit}
 ID {Letter}{LetterDigit}* 
 HexDigit {Digit}|[abcdefABCDEF]
+HexDigit_ {Digit}|[abcdefABCDEF_]
 DotChr [^\r\n]
 OneLineCmnt  \/\/{DotChr}*
 
@@ -31,13 +33,13 @@ DotChr1 [^\r\n}]
 NOTASCII [^\x00-x7F]
 
 CHARACTERNUM '[^'\n]'
-INTNUM {Digit}+
+INTNUM {Digit}{Digit_}*
 BIGINTNUM {INTNUM}[bB][iI]
 FLOATNUM {INTNUM}\.{INTNUM}
 EXPNUM ({INTNUM}\.)?{INTNUM}[eE][+\-]?{INTNUM}
 STRINGNUM \'([^\'\n]|\'\')*\'
 FORMATSTRINGNUM \$\'([^\'\n]|\'\')*\'
-HEXNUM ${HexDigit}+
+HEXNUM ${HexDigit}{HexDigit_}*
 SHARPCHARNUM #{Digit}+
 OLDDIRECTIVE #{ID}
 IFDEF \{\$ifdef\ {DotChr1}*\} 
