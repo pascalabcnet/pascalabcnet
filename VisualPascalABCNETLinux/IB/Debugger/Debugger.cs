@@ -1574,13 +1574,18 @@ namespace VisualPascalABC
 #if (DEBUG)
                         Console.WriteLine(global_lv.TypeName);
 #endif
-                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
-                        var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
-                        foreach (var fi in fields)
+                        var tm = monoDebuggerSession.GetType(global_lv.TypeName);
+                        if (tm != null)
                         {
-                            if (string.Compare(fi.Name, var, true) == 0)
-                                return new ValueItem(fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions));
+                            var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+                            var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                            foreach (var fi in fields)
+                            {
+                                if (string.Compare(fi.Name, var, true) == 0)
+                                    return new ValueItem(fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions));
+                            }
                         }
+                        
 
 
                         Type global_type = AssemblyHelper.GetType(global_lv.TypeName);
@@ -1600,6 +1605,7 @@ namespace VisualPascalABC
                         Console.WriteLine("type for static " + tm);
 #endif
                         var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+
                         return new BaseTypeItem(tr, t);
                     }
 
@@ -1783,9 +1789,9 @@ namespace VisualPascalABC
                         vi.SpecialName = preformat;
                         return vi;
                     }
-                    else if (rv.type != null)
+                    else if (rv.monoType != null)
                     {
-                        return new BaseTypeItem(rv.type, rv.managed_type);
+                        return new BaseTypeItem(rv.monoType, rv.managed_type);
                     }
                 }
             }

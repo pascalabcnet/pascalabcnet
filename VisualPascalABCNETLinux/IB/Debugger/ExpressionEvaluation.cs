@@ -33,6 +33,7 @@ namespace VisualPascalABC
         public Value obj_val;
         public Mono.Debugging.Client.ObjectValue monoValue;
         public DebugType type;
+        public Mono.Debugging.Evaluation.TypeValueReference monoType;
         public Type managed_type;
         public bool syn_err;
         public string err_mes;
@@ -325,7 +326,7 @@ namespace VisualPascalABC
 
         private bool need_declaring_type;
 
-        public DebugType declaringType;
+        public Mono.Debugger.Soft.TypeMirror declaringType;
 
         private List<string> names = new List<string>();
         [HandleProcessCorruptedStateExceptionsAttribute]
@@ -6270,11 +6271,72 @@ namespace VisualPascalABC
                     eval_stack.Push(res);
                     return;
                 }
-                if (rv.monoValue.IsArray)
+                if (true)
                 {
                     
                     RetValue res = new RetValue();
-                    res.monoValue = rv.monoValue.GetArrayItem(conv_to_int_arr(indices)[0]);
+                    Type type = AssemblyHelper.GetType(rv.monoValue.TypeName);
+                    if (type != null && type.GetField("NullBasedArray") != null)
+                    {
+                        int low_bound = 0;
+                        System.Reflection.FieldInfo fi = type.GetField("LowerIndex");
+                        low_bound = Convert.ToInt32(fi.GetRawConstantValue());
+                        int[] tmp_indices = new int[1];
+                        int j = 0;
+                        try
+                        {
+                            object obj = indices[j++];
+                            int v = 0;
+                            if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
+                                tmp_indices[0] = v - low_bound;
+                            else
+                                tmp_indices[0] = Convert.ToInt32(obj) - low_bound;
+                        }
+                        catch (System.FormatException)
+                        {
+                            throw new WrongTypeInIndexer();
+                        }
+                        catch (System.InvalidCastException)
+                        {
+                            throw new WrongTypeInIndexer();
+                        }
+                        //res.obj_val = cur_mi.Invoke(rv.obj_val,indices.ToArray()) as NamedValue;
+                        var nv = rv.monoValue.GetChild("NullBasedArray");
+                        res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
+                        check_for_out_of_range(res.obj_val);
+                        nv = res.monoValue.GetChild("NullBasedArray");
+                        while (nv != null && j < indices.Count)
+                        {
+                            System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(res.monoValue.TypeName).GetField("LowerIndex");
+                            low_bound = Convert.ToInt32(tmp_fi.GetRawConstantValue());
+                            try
+                            {
+                                object obj = indices[j++];
+                                int v = 0;
+                                if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
+                                    tmp_indices[0] = v - low_bound;
+                                else
+                                    tmp_indices[0] = Convert.ToInt32(obj) - low_bound;
+                            }
+                            catch (System.FormatException)
+                            {
+                                throw new WrongTypeInIndexer();
+                            }
+                            catch (System.InvalidCastException)
+                            {
+                                throw new WrongTypeInIndexer();
+                            }
+                            res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
+                            check_for_out_of_range(res.obj_val);
+                            nv = res.monoValue.GetChild("NullBasedArray");
+
+                        }
+                        if (j < indices.Count)
+                            throw new WrongIndexersNumber();
+                        eval_stack.Push(res);
+                    }
+                    else
+                        res.monoValue = rv.monoValue.GetRangeOfChildren(conv_to_int_arr(indices)[0], 1)[0];
                     //check_for_out_of_range(res.monoValue);
                     eval_stack.Push(res);
 
@@ -6726,56 +6788,21 @@ namespace VisualPascalABC
                     if (t != null)
                     {
                         //DebugType dt = DebugType.Create(this.debuggedProcess.GetModule(name),(uint)t.MetadataToken);
-                        DebugType dt = DebugUtils.GetDebugType(t);
+                        var tm = monoDebuggerSession.GetType(t.FullName);
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
                         IList<MemberInfo> mis = new List<MemberInfo>();//dt.GetMember(id.name,BindingFlags.All);
-                        declaringType = dt;
-                        DebugType tmp = dt;
-                        while (tmp != null && mis.Count == 0)
-                        {
-                            try
-                            {
-                                mis = tmp.GetMember(id.name, BindingFlags.All);
-                                tmp = tmp.BaseType;
-                            }
-                            catch
-                            {
-
-                            }
-                        }
-                        if (mis.Count > 0)
-                        {
-                            if (mis[0] is FieldInfo)
-                            {
-                                FieldInfo fi = mis[0] as FieldInfo;
-                                res.obj_val = fi.GetValue(null);
-                                if (res.obj_val == null)
-                                    throw new UnknownName(id.name);
-                                check_for_static(res.obj_val, id.name);
-                            }
-                            else if (mis[0] is PropertyInfo)
-                            {
-                                PropertyInfo pi = mis[0] as PropertyInfo;
-                                res.obj_val = pi.GetValue(null);
-                                if (res.obj_val == null)
-                                    throw new UnknownName(id.name);
-                                check_for_static(res.obj_val, id.name);
-                            }
-                        }
-                        else
-                        {
-                            System.Reflection.FieldInfo fi = t.GetField(id.name);
-                            if (fi != null)
-                                res.prim_val = fi.GetRawConstantValue();
-                            else
-                                throw new UnknownName(id.name);
-                        }
+                        declaringType = tm;
+                        var vr = tr.GetChild(id.name, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                        res.monoValue = vr.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                        
                     }
                     else
                     {
                         t = AssemblyHelper.GetType(name + "." + id.name);
                         if (t != null)
                         {
-                            res.type = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(name),(uint)t.MetadataToken);
+                            var tm = monoDebuggerSession.GetType(t.FullName);
+                            res.monoType = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
                             res.managed_type = t;
                         }
                         //						else 

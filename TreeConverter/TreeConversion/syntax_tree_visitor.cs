@@ -17778,7 +17778,7 @@ namespace PascalABCCompiler.TreeConverter
             motivation_keeper.reset();
             switch (mot)
             {
-                case motivation.address_receiving: throw new CompilerInternalError("Addres receiving from constant"); 
+                case motivation.address_receiving: throw new CompilerInternalError("Address receiving from constant"); 
                 case motivation.expression_evaluation: return_value(en); break;
                 case motivation.semantic_node_reciving: return_semantic_value(en); break;
             }

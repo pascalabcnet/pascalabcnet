@@ -10158,7 +10158,6 @@ begin
     Result *= a
 end;
 
-
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
