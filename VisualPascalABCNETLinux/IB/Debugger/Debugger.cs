@@ -870,9 +870,10 @@ namespace VisualPascalABC
         /// </summary>
         public RetValue Evaluate(string expr)
         {
-        	if (evaluator != null)
-        	return evaluator.Evaluate(expr, false);
-        	else return new RetValue();
+            if (evaluator == null)
+                evaluator = new ExpressionEvaluator(workbench.VisualEnvironmentCompiler, FileName);
+            evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
+            return evaluator.Evaluate(expr, false);
         }
 
         private NamedValue GetNullBasedArray(Value val)
@@ -994,6 +995,7 @@ namespace VisualPascalABC
 
         private delegate void JumpToLineDelegate(int line);
         private delegate void JumpToLinePreActionsDelegate();
+        private delegate void SetDebugTabsVisibleInvokeDelegate(bool value);
         private delegate void SetCurrentLineBookmarkDelegate(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn);
 
         void JumpToLineInvoke(int line)
@@ -1010,6 +1012,12 @@ namespace VisualPascalABC
         void SetCurrentLineBookmarkInvoke(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
         {
             CurrentLineBookmark.SetPosition(fileName, document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
+        }
+
+        void SetDebugTabsVisibleInvoke(bool value)
+        {
+            workbench.WidgetController.SetDebugTabsVisible(true);
+            workbench.WidgetController.SetAddExprMenuVisible(true);
         }
 
         /// <summary>
@@ -1031,8 +1039,7 @@ namespace VisualPascalABC
                 if (!ShowDebugTabs)//esli eshe ne pokazany watch i lokal, pokazyvaem
                 {
                     ShowDebugTabs = true;
-                    workbench.WidgetController.SetDebugTabsVisible(true);
-                    workbench.WidgetController.SetAddExprMenuVisible(true);
+                    workbench.MainForm.Invoke(new SetDebugTabsVisibleInvokeDelegate(SetDebugTabsVisibleInvoke), true);
                 }
                 if (stackFrame.SourceLocation.Line == 0xFFFFFF)
                 {
@@ -1090,6 +1097,8 @@ namespace VisualPascalABC
                 bool in_comm = false;
                 bool beg = false;
                 bool in_str = false;
+                Console.WriteLine("2 jump to " + stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
+
                 for (int i = 0; i < lseg.Words.Count; i++)
                 {
                     if (lseg.Words[i].Type == TextWordType.Word)

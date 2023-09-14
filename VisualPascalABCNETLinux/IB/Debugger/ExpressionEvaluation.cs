@@ -280,8 +280,10 @@ namespace VisualPascalABC
             else
                 e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, Warnings);
             RetValue res = new RetValue(); res.syn_err = false;
+           
             try
             {
+
                 if (e != null && Errors.Count == 0)
                 {
                     e.visit(this);
