@@ -48,6 +48,7 @@ namespace Mono.Debugging.Client
 		string displayValue;
 		string childSelector;
 		object type;
+		object rawValue;
 		EvaluationContext ctx;
 		ObjectValueFlags flags;
 		IObjectValueSource source;
@@ -106,19 +107,20 @@ namespace Mono.Debugging.Client
 		{
 			var val = Create (source, path, typeName);
 			val.flags = flags | ObjectValueFlags.Object;
-			val.value = "(null)";
+			val.value = "(nil)";
 			val.type = type;
 			val.ctx = ctx;
 			val.isNull = true;
 			return val;
 		}
 		
-		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, EvaluationResult value, ObjectValueFlags flags)
+		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, EvaluationResult value, ObjectValueFlags flags, object rawValue=null)
 		{
 			var val = Create (source, path, typeName);
 			val.flags = flags | ObjectValueFlags.Primitive;
 			val.displayValue = value.DisplayValue;
 			val.value = value.Value;
+			val.rawValue = rawValue;
 			return val;
 		}
 		
@@ -335,6 +337,8 @@ namespace Mono.Debugging.Client
 		/// </remarks>
 		public object GetRawValue ()
 		{
+			if (rawValue != null)
+				return rawValue;
 			var ops = parentFrame.DebuggerSession.EvaluationOptions.Clone ();
 			ops.EllipsizeStrings = false;
 			
