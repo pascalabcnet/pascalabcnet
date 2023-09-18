@@ -575,8 +575,8 @@ namespace PascalABCCompiler.TreeRealization
                     // Но без этой строчки не работает преобразование sequence of Student к sequence of Person и sequence of object
                     // SSM 19/07/23 - снова раскомментировал - теперь не работало
                     // CheckOutputSeq(a); в Tasks где var a: array of char
-                    if (tnode.IsInterface)
-                        ImplementingInterfaces.Add(tnode);
+                    //if (tnode.IsInterface) // SSM закомментировал опять 17.09.23 - single - неточные вычисления!
+                    //    ImplementingInterfaces.Add(tnode);
                     foreach (var interf in ImplementingInterfaces)
                     {
                         var ctn = interf as compiled_type_node;
@@ -809,6 +809,18 @@ namespace PascalABCCompiler.TreeRealization
         public static type_compare compare_types(type_node left, type_node right)
         {
             type_compare ret = get_table_type_compare(left, right);
+            // SSM 18.09.23 исправление #2872 (частное!!! только первый параметр!)
+            var ctnl = left as compiled_type_node;
+            var ctnr = right as compiled_type_node;
+            if (ctnl != null && ctnr != null && ctnl.original_generic == ctnr.original_generic
+                && ctnl.compiled_type.IsInterface && ctnl.generic_params != null && ctnl.generic_params.Count == 1)
+            {
+                var interf_compiled_type = (ctnr.original_generic as compiled_type_node).compiled_type;
+                if ((interf_compiled_type.GetGenericArguments()[0].GenericParameterAttributes & System.Reflection.GenericParameterAttributes.Covariant) != 0)
+                    return compare_types(ctnl.generic_params[0], ctnr.generic_params[0]);
+            }
+            // IEnumerable<object> д.б. < IEnumerable<integer>
+            // Проверить, что оба - IEnumerable. И если object < integer, то вернуть type_compare.less_type
             if (ret != type_compare.non_comparable_type)
             {
                 return ret;
