@@ -83,6 +83,7 @@ namespace VisualPascalABC
             return dt;
         }
 
+
         public static DebugType GetDebugType(Type t, List<DebugType> gen_args)
         {
             string name;
@@ -231,11 +232,11 @@ namespace VisualPascalABC
                 }
         }
 
-        public static object GetEnumValue(Value v)
+        public static object GetEnumValue(Mono.Debugging.Client.ObjectValue v)
         {
-            Value val = v.GetMember("value__");
+            var val = v.GetChild("value__");
             if (val != null && val.IsPrimitive)
-                return val.PrimitiveValue;
+                return val.GetRawValue();
             return null;
         }
 
@@ -252,7 +253,7 @@ namespace VisualPascalABC
 
         public static Mono.Debugging.Client.ObjectValue MakeMonoValue(object obj)
         {
-            return Mono.Debugging.Client.ObjectValue.CreatePrimitive(null, new Mono.Debugging.Client.ObjectPath(""), obj.GetType().Name, new Mono.Debugging.Backend.EvaluationResult(obj.ToString()), Mono.Debugging.Client.ObjectValueFlags.Literal);
+            return Mono.Debugging.Client.ObjectValue.CreatePrimitive(null, new Mono.Debugging.Client.ObjectPath(""), obj.GetType().Name, new Mono.Debugging.Backend.EvaluationResult(obj.ToString()), Mono.Debugging.Client.ObjectValueFlags.Literal, obj);
         }
 
         public static Value MakeValue(object obj)

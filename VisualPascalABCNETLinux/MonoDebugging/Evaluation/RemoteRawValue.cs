@@ -50,7 +50,11 @@ namespace Mono.Debugging.Evaluation
 		public object TargetObject {
 			get { return targetObject; }
 		}
-		
+
+		public IObjectSource Source
+        {
+			get { return source; }
+		}
 		#region IRawValue implementation
 		public object CallMethod (string name, object[] parameters, EvaluationOptions options)
 		{
