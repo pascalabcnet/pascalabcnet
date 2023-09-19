@@ -67,11 +67,29 @@ namespace Mono.Debugging.Client
 		
 		[NonSerialized]
 		StackFrame parentFrame;
-		
-		static ObjectValue Create (IObjectValueSource source, ObjectPath path, string typeName)
+
+		static ObjectValue Create(IObjectValueSource source, ObjectPath path, string typeName)
 		{
-			var val = new ObjectValue ();
+			var val = new ObjectValue();
 			val.typeName = typeName;
+			int ptr_ind = val.typeName.IndexOf('*');
+			string ptr = "";
+			if (ptr_ind != -1)
+				ptr = val.typeName.Substring(ptr_ind).Replace('*', '^');
+			switch (val.typeName.Replace("*",""))
+			{
+				case "int": val.typeName = "integer"; break;
+				case "double": val.typeName = "real"; break;
+				case "float": val.typeName = "single"; break;
+				case "uint": val.typeName = "longword"; break;
+				case "long": val.typeName = "int64"; break;
+				case "ulong": val.typeName = "uint64"; break;
+				case "short": val.typeName = "smallint"; break;
+				case "ushort": val.typeName = "word"; break;
+				case "sbyte": val.typeName = "shortint"; break;
+				case "bool": val.typeName = "boolean"; break;
+			}
+			val.typeName = ptr+val.typeName.Replace("*", "");
 			val.source = source;
 			val.path = path;
 			return val;

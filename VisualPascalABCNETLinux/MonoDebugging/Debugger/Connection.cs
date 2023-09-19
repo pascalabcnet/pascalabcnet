@@ -1875,36 +1875,40 @@ namespace Mono.Debugger.Soft
 			return res;
 		}
 
-		static ElementType TypeCodeToElementType (TypeCode c, Type t) {
-			switch (c) {
-			case TypeCode.Boolean:
-				return ElementType.Boolean;
-			case TypeCode.Char:
-				return ElementType.Char;
-			case TypeCode.SByte:
-				return ElementType.I1;
-			case TypeCode.Byte:
-				return ElementType.U1;
-			case TypeCode.Int16:
-				return ElementType.I2;
-			case TypeCode.UInt16:
-				return ElementType.U2;
-			case TypeCode.Int32:
-				return ElementType.I4;
-			case TypeCode.UInt32:
-				return ElementType.U4;
-			case TypeCode.Int64:
-				return ElementType.I8;
-			case TypeCode.UInt64:
-				return ElementType.U8;
-			case TypeCode.Single:
-				return ElementType.R4;
-			case TypeCode.Double:
-				return ElementType.R8;
-			case TypeCode.Object:
-				return TypeCodeToElementType(Type.GetTypeCode (t.GetElementType()), t.GetElementType());
-			default:
-				throw new NotImplementedException ();
+		static ElementType TypeCodeToElementType(TypeCode c, Type t)
+		{
+			switch (c)
+			{
+				case TypeCode.Boolean:
+					return ElementType.Boolean;
+				case TypeCode.Char:
+					return ElementType.Char;
+				case TypeCode.SByte:
+					return ElementType.I1;
+				case TypeCode.Byte:
+					return ElementType.U1;
+				case TypeCode.Int16:
+					return ElementType.I2;
+				case TypeCode.UInt16:
+					return ElementType.U2;
+				case TypeCode.Int32:
+					return ElementType.I4;
+				case TypeCode.UInt32:
+					return ElementType.U4;
+				case TypeCode.Int64:
+					return ElementType.I8;
+				case TypeCode.UInt64:
+					return ElementType.U8;
+				case TypeCode.Single:
+					return ElementType.R4;
+				case TypeCode.Double:
+					return ElementType.R8;
+				case TypeCode.String:
+					return ElementType.String;
+				case TypeCode.Object:
+					return TypeCodeToElementType(Type.GetTypeCode(t.GetElementType()), t.GetElementType());
+				default:
+					throw new NotImplementedException();
 			}
 		}
 

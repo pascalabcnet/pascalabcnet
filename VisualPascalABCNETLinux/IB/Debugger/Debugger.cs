@@ -1097,7 +1097,6 @@ namespace VisualPascalABC
                 bool in_comm = false;
                 bool beg = false;
                 bool in_str = false;
-                Console.WriteLine("2 jump to " + stackFrame.SourceLocation.FileName + ":" + stackFrame.SourceLocation.Line);
 
                 for (int i = 0; i < lseg.Words.Count; i++)
                 {
