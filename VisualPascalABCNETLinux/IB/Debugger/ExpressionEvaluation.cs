@@ -6298,37 +6298,42 @@ namespace VisualPascalABC
             names.Add("]");
             if (rv.monoValue != null)
             {
-                if (rv.obj_val is MemberValue && (rv.obj_val as MemberValue).MemberInfo is PropertyInfo)
+
+                RetValue res = new RetValue();
+                Type type = AssemblyHelper.GetType(rv.monoValue.TypeName);
+                if (type != null && type.GetField("NullBasedArray") != null)
                 {
-                    PropertyInfo pi = (rv.obj_val as MemberValue).MemberInfo as PropertyInfo;
-                    Type t = AssemblyHelper.GetType(last_obj.Type.FullName);
-                    System.Reflection.PropertyInfo rpi = t.GetProperty(pi.Name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance);
-                    /*System.Reflection.MemberInfo[] props = t.GetMembers(System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.CreateInstance);
-                    System.Reflection.PropertyInfo rpi = null;
-                    foreach (System.Reflection.MemberInfo p in props)
-                    if (p is System.Reflection.PropertyInfo && p.Name == pi.Name)
+                    int low_bound = 0;
+                    System.Reflection.FieldInfo fi = type.GetField("LowerIndex");
+                    low_bound = Convert.ToInt32(fi.GetRawConstantValue());
+                    int[] tmp_indices = new int[1];
+                    int j = 0;
+                    try
                     {
-                        rpi = p as System.Reflection.PropertyInfo;
-                        break;
-                    }*/
-                    RetValue res = new RetValue();
-                    res.obj_val = ((rv.obj_val as MemberValue).MemberInfo as PropertyInfo).GetValue(last_obj,
-                                                                                                    get_val_arr(indices, false, rpi.GetGetMethod(true)));
-                    eval_stack.Push(res);
-                    return;
-                }
-                if (true)
-                {
-                    
-                    RetValue res = new RetValue();
-                    Type type = AssemblyHelper.GetType(rv.monoValue.TypeName);
-                    if (type != null && type.GetField("NullBasedArray") != null)
+                        object obj = indices[j++];
+                        int v = 0;
+                        if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
+                            tmp_indices[0] = v - low_bound;
+                        else
+                            tmp_indices[0] = Convert.ToInt32(obj) - low_bound;
+                    }
+                    catch (System.FormatException)
                     {
-                        int low_bound = 0;
-                        System.Reflection.FieldInfo fi = type.GetField("LowerIndex");
-                        low_bound = Convert.ToInt32(fi.GetRawConstantValue());
-                        int[] tmp_indices = new int[1];
-                        int j = 0;
+                        throw new WrongTypeInIndexer();
+                    }
+                    catch (System.InvalidCastException)
+                    {
+                        throw new WrongTypeInIndexer();
+                    }
+                    //res.obj_val = cur_mi.Invoke(rv.obj_val,indices.ToArray()) as NamedValue;
+                    var nv = rv.monoValue.GetChild("NullBasedArray");
+                    res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
+                    check_for_out_of_range(res.obj_val);
+                    nv = res.monoValue.GetChild("NullBasedArray");
+                    while (nv != null && j < indices.Count)
+                    {
+                        System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(res.monoValue.TypeName).GetField("LowerIndex");
+                        low_bound = Convert.ToInt32(tmp_fi.GetRawConstantValue());
                         try
                         {
                             object obj = indices[j++];
@@ -6346,162 +6351,36 @@ namespace VisualPascalABC
                         {
                             throw new WrongTypeInIndexer();
                         }
-                        //res.obj_val = cur_mi.Invoke(rv.obj_val,indices.ToArray()) as NamedValue;
-                        var nv = rv.monoValue.GetChild("NullBasedArray");
                         res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
                         check_for_out_of_range(res.obj_val);
                         nv = res.monoValue.GetChild("NullBasedArray");
-                        while (nv != null && j < indices.Count)
-                        {
-                            System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(res.monoValue.TypeName).GetField("LowerIndex");
-                            low_bound = Convert.ToInt32(tmp_fi.GetRawConstantValue());
-                            try
-                            {
-                                object obj = indices[j++];
-                                int v = 0;
-                                if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
-                                    tmp_indices[0] = v - low_bound;
-                                else
-                                    tmp_indices[0] = Convert.ToInt32(obj) - low_bound;
-                            }
-                            catch (System.FormatException)
-                            {
-                                throw new WrongTypeInIndexer();
-                            }
-                            catch (System.InvalidCastException)
-                            {
-                                throw new WrongTypeInIndexer();
-                            }
-                            res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
-                            check_for_out_of_range(res.obj_val);
-                            nv = res.monoValue.GetChild("NullBasedArray");
 
-                        }
-                        if (j < indices.Count)
-                            throw new WrongIndexersNumber();
-                        eval_stack.Push(res);
                     }
-                    else
-                        res.monoValue = rv.monoValue.GetRangeOfChildren(conv_to_int_arr(indices)[0], 1)[0];
-                    //check_for_out_of_range(res.monoValue);
+                    if (j < indices.Count)
+                        throw new WrongIndexersNumber();
                     eval_stack.Push(res);
-
                 }
                 else
                 {
-                    IList<MemberInfo> mis = rv.obj_val.Type.GetMember("get_val", BindingFlags.All);
-                    if (mis.Count > 0)
+                    var tm = rv.monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                    var mi = tm.GetMethod("get_Item");
+                    if (mi != null)
                     {
-                        MethodInfo cur_mi = null;
-                        int low_bound = 0;
-                        foreach (MemberInfo mi in mis)
+                        List<Mono.Debugging.Client.ObjectValue> ind_list = new List<Mono.Debugging.Client.ObjectValue>();
+                        foreach (var ind in indices)
                         {
-                            if (mi is MethodInfo)
-                            {
-                                cur_mi = mi as MethodInfo;
-                                //FieldInfo fi = rv.obj_val.Type.GetMember("LowerIndex",BindingFlags.All)[0] as FieldInfo;
-                                System.Reflection.FieldInfo fi = AssemblyHelper.GetType(rv.obj_val.Type.FullName).GetField("LowerIndex");
-                                low_bound = Convert.ToInt32(fi.GetRawConstantValue());
-                            }
+                            ind_list.Add(DebugUtils.MakeMonoValue(ind));
                         }
-                        RetValue res = new RetValue();
-                        uint[] tmp_indices = new uint[1];
-                        int j = 0;
-                        try
-                        {
-                            object obj = indices[j++];
-                            int v = 0;
-                            if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
-                                tmp_indices[0] = (uint)(v - low_bound);
-                            else
-                                tmp_indices[0] = (uint)(Convert.ToInt32(obj) - low_bound);
-                        }
-                        catch (System.FormatException)
-                        {
-                            throw new WrongTypeInIndexer();
-                        }
-                        catch (System.InvalidCastException)
-                        {
-                            throw new WrongTypeInIndexer();
-                        }
-                        //res.obj_val = cur_mi.Invoke(rv.obj_val,indices.ToArray()) as NamedValue;
-                        Value nv = rv.obj_val.GetMember("NullBasedArray");
-                        res.obj_val = nv.GetArrayElement(tmp_indices);
-                        check_for_out_of_range(res.obj_val);
-                        nv = res.obj_val.GetMember("NullBasedArray");
-                        while (nv != null && j < indices.Count)
-                        {
-                            System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(res.obj_val.Type.FullName).GetField("LowerIndex");
-                            low_bound = Convert.ToInt32(tmp_fi.GetRawConstantValue());
-                            try
-                            {
-                                object obj = indices[j++];
-                                int v = 0;
-                                if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
-                                    tmp_indices[0] = (uint)(v - low_bound);
-                                else
-                                    tmp_indices[0] = (uint)(Convert.ToInt32(obj) - low_bound);
-                            }
-                            catch (System.FormatException)
-                            {
-                                throw new WrongTypeInIndexer();
-                            }
-                            catch (System.InvalidCastException)
-                            {
-                                throw new WrongTypeInIndexer();
-                            }
-                            res.obj_val = nv.GetArrayElement(tmp_indices);
-                            check_for_out_of_range(res.obj_val);
-                            nv = res.obj_val.GetMember("NullBasedArray");
-
-                        }
-                        if (j < indices.Count)
-                            throw new WrongIndexersNumber();
-                        eval_stack.Push(res);
+                        res.monoValue = InvokeMethod(tm, mi, rv.monoValue, ind_list.ToArray());
                     }
                     else
-                    {
-                        string name = get_type_name(rv.obj_val.Type);
-                        Type t = AssemblyHelper.GetType(name);
-                        if (t == null && declaringType != null)
-                            t = AssemblyHelper.GetType(declaringType.FullName + "+" + name);
-                        DebugType[] gen_args = rv.obj_val.Type.GetGenericArguments();
-                        if (gen_args.Length > 0)
-                        {
-                            List<Type> gens = new List<Type>();
-                            for (int i = 0; i < gen_args.Length; i++)
-                                gens.Add(AssemblyHelper.GetType(get_type_name(gen_args[i])));
-                            t = t.MakeGenericType(gens.ToArray());
-                        }
-                        System.Reflection.MemberInfo[] def_members = t.GetDefaultMembers();
-                        System.Reflection.PropertyInfo _default_property = null;
-                        if (def_members != null && def_members.Length > 0)
-                        {
-                            foreach (System.Reflection.MemberInfo mi in def_members)
-                            {
-                                System.Reflection.PropertyInfo pi = mi as System.Reflection.PropertyInfo;
-                                if (pi != null)
-                                {
-                                    _default_property = pi;
-                                    break;
-                                }
-                            }
-                        }
-                        if (_default_property != null)
-                        {
-                            if (_default_property.GetGetMethod().GetParameters().Length != indices.Count)
-                                throw new WrongIndexersNumber();
-                            MethodInfo mi2 = rv.obj_val.Type.GetMember(_default_property.GetGetMethod().Name, Debugger.BindingFlags.All)[0] as MethodInfo;
-                            RetValue res = new RetValue();
-                            res.obj_val = mi2.Invoke(rv.obj_val, get_val_arr(indices, _default_property.DeclaringType == typeof(string), _default_property.GetGetMethod()));
-                            check_for_out_of_range(res.obj_val);
-                            eval_stack.Push(res);
-                        }
-                        else
-                            throw new NoIndexerProperty();
-
-                    }
+                        res.monoValue = rv.monoValue.GetRangeOfChildren(conv_to_int_arr(indices)[0], 1)[0];
                 }
+
+                //check_for_out_of_range(res.monoValue);
+                eval_stack.Push(res);
+
+
             }
         }
 
