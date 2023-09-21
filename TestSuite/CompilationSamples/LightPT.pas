@@ -102,7 +102,7 @@ function MatrRandomInteger(m: integer; n: integer; a: integer; b: integer): arra
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer; n: integer): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
-function MatrRandomReal(m: integer; n: integer; a: real; b: real): array [,] of real;
+function MatrRandomReal(m: integer; n: integer; a: real; b: real; digits: integer := 2): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer; n: integer): array [,] of real;
 
@@ -1926,11 +1926,11 @@ end;
 function MatrRandomInteger(m: integer; n: integer): array [,] of integer := MatrRandomInteger(m,n,0,100);
 
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
-function MatrRandomReal(m: integer; n: integer; a: real; b: real): array [,] of real;
+function MatrRandomReal(m: integer; n: integer; a: real; b: real; digits: integer): array [,] of real;
 begin
   if TestMode = tmTest then
     Result := Matr(m,n,InputList.ReadTestDataReArr(m*n))
-  else Result := PABCSystem.MatrRandomReal(m,n,a,b);
+  else Result := PABCSystem.MatrRandomReal(m,n,a,b,digits);
 
   if NeedAddDataToInputList then
   foreach var x in Result.ElementsByRow do
