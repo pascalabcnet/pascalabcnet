@@ -312,7 +312,7 @@ namespace VisualPascalABC
             }
 
             // Для Linux сделать все Debug-кнопки неактивными
-            SetDebugButtonsInvisible();
+            // SetDebugButtonsInvisible();
 
             AddOwnedForm(CompilerForm1 = new CompilerForm());
             AddOwnedForm(AboutBox1 = new AboutBox());
