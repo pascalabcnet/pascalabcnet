@@ -1,7 +1,135 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (09.10.2023)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (21.09.2023)
 unit School;
 
 interface
+
+type
+  Addr32 = class
+  private
+    addr: string;         // адрес в десятичном виде с октетами
+    addr2: string;        // двоичный адрес
+    addr10: longword;     // адрес в виде десятичного числа
+    
+    function AddressValid(address: string): boolean;
+    
+    function AddressBinValid(address: string): boolean;
+     
+    /// Перевод ip-адреса/маски из десятичного представления с октетами в 32-битное
+    function AddressToBin(address: string): string;
+       
+    /// Десятичное значение 32-битного строкового представления двоичного числа
+    function BinToDec(bits: string): longword;
+   
+    /// Двоичное представление десятичного числа с дополением слева нулями до длины 32 символа
+    static function Bin32(n:integer): string;
+   
+    /// Преобразование двоичной записи адреса (с октетами или без них)
+    /// в десятичное представление с октетами
+    static function BinToAddress(pic: string): string;
+        
+    static procedure SetAddress(a: Addr32);
+    
+    procedure SetAddress(value: string);
+        
+    procedure SetAddressBin(value: string);
+  
+  public
+    /// конструктор для адреса, заданного строкой
+    /// задать можно для десятичный адрес с октетами или 32-битный двоичный адрес
+    constructor(address: string);  // для десятичной записи с октетами
+        
+    /// конструктор для маски, заданной числовым суффиксом CIDR (1..31)
+    constructor(suffix: integer);
+    
+    static function operator and (a, b: Addr32): Addr32;
+        
+    static function operator or (a, b: Addr32): Addr32;
+        
+    static function operator not (a: Addr32): Addr32;
+        
+    static function operator + (a: Addr32; b: longword): Addr32;
+       
+    /// Формирование октетов для 32-битного представления адреса
+    function AddrFormat(addr: string): string;
+        
+    function ToString: string; override;
+       
+    property value: string read addr write SetAddress;
+    property value2: string read addr2;
+    property value10: longword read addr10;
+    
+  end;
+    
+  CalcIP = class
+  private
+    ip32: Addr32;                // ip-адрес
+    mask32: Addr32;              // маска
+    bit_mask: byte;              // длина маски адреса сети (количество единиц в маске)
+    n_hosts: integer;            // количество хостов
+    wildcard32: Addr32;          // маска хостов
+    network32: Addr32;           // адрес сети
+    broadcast32: Addr32;         // широковещательный адрес
+    hostmin32: Addr32;           // адрес первого хоста
+    hostmax32: Addr32;           // адрес последнего хоста
+ 
+    /// Двоичное представление десятичного числа
+    function Bin(n:int64): string;
+    
+    /// Двоичное представление десятичного числа с дополением слева нулями до длины 32 символа
+    function Bin32(n:int64): string;
+    
+    /// Десятичное значение 32-битного строкового представления двоичного числа
+    function BinToDec(bits: string): integer;
+    
+    /// Формирование октетов для 32-битного представления адреса
+    function AddrFormat(addr: string): string;
+        
+    /// Формирование октетов для 32-битного представления адреса с разделением
+    /// в позиции bit_mask + 1 двумя пробелами адресов сети и хоста 
+    function AddrFine(addr: Addr32): string;
+        
+    /// Проверка корректности десятичной записи ip-адреса с октетами
+    function AddressValid(addr: string): boolean;
+        
+    /// Перевод ip-адреса/маски из десятичного представления с октетами в 32-битное
+    function AddressToBin(addr: string): string;
+                
+    /// Преобразование двоичной записи адреса (с октетами или без них)
+    /// в десятичное представление с октетами
+    function BinToAddress(pic: string): string;
+        
+    /// Проверка корректности маски
+    function MaskValid(mask: Addr32): boolean;
+  
+    procedure Calc;
+      
+    function AddressFormat(pic: string): string;
+    
+  public
+    
+    /// конструктор для пары адрес - маска
+    constructor(addr: string; mask: string);
+       
+    /// конструктор для пары адрес - длина маски адреса
+    constructor(addr: string; bitmask: byte);
+       
+    function ToString: string; override;
+       
+    function GenAddrBin: sequence of string;
+        
+    function GenAddr: sequence of Addr32;
+    
+    property Address: Addr32 read ip32;
+    property Netmask: Addr32 read mask32;
+    property Bitmask: byte read bit_mask;
+    property Hosts: integer read n_hosts;
+    property Wildcard: Addr32 read wildcard32;
+    property Network: Addr32 read network32;
+    property Broadcast: Addr32 read broadcast32;
+    property Hostmin: Addr32 read hostmin32;
+    property Hostmax: Addr32 read hostmax32;
+
+  end;
 
 /// Перевод десятичного числа в двоичную систему счисления
 function Bin(number: int64): string;
@@ -1010,6 +1138,256 @@ end;
 /// В строке s меняет местами подстроки ss1 и ss2
 procedure SwapSubstr(var Self: string; ss1, ss2: string);
   extensionmethod := SwapSubstr(Self, ss1, ss2);
+
+{$endregion}
+
+{$region ipCalc}
+/// 
+function Addr32.AddressValid(address: string) := 
+    (address = address.MatchValue('(\d{1,3}\.){3}\d{1,3}')) and
+    address.Split('.').All(t -> t.ToInteger <= 255);
+        
+function Addr32.AddressBinValid(address: string) :=
+    address.MatchValue('[0|1]*').Length = 32;
+      
+/// Перевод ip-адреса/маски из десятичного представления с октетами в 32-битное
+function Addr32.AddressToBin(address: string) :=
+    address.Split('.')
+    .Select(t -> Convert.ToString(Convert.ToByte(t), 2).PadLeft(8, '0'))
+    .JoinToString('');
+       
+/// Десятичное значение 32-битного строкового представления двоичного числа
+function Addr32.BinToDec(bits: string) := Convert.ToUInt32(bits, 2);
+   
+/// Двоичное представление десятичного числа с дополением слева нулями до длины 32 символа
+static function Addr32.Bin32(n:integer) := (Convert.ToString(n, 2)).PadLeft(32, '0');
+   
+/// Преобразование двоичной записи адреса (с октетами или без них)
+/// в десятичное представление с октетами
+static function Addr32.BinToAddress(pic: string): string;
+begin
+  var s := if '.' in pic then pic.Split('.') else pic.Batch(8).Select(t -> t.JoinToString(''));
+  Result := s.Select(t -> Convert.ToByte(t, 2)).JoinToString('.')
+end;
+    
+static procedure Addr32.SetAddress(a: Addr32);   // addr10 задано
+begin
+  a.addr2 := Bin32(a.addr10);
+  a.addr := BinToAddress(a.addr2)
+end;
+    
+procedure Addr32.SetAddress(value: string);
+begin
+  if AddressValid(value) then
+  begin
+    addr := value;
+    addr2 := AddressToBin(value);
+    addr10 := BinToDec(addr2)
+  end
+  else
+  begin
+    Println('Некорректная запись адреса:', value);
+    Halt
+  end
+end;
+    
+procedure Addr32.SetAddressBin(value: string);
+begin
+  if AddressBinValid(value) then
+  begin
+    addr := Addr32.BinToAddress(value);
+    addr2 := value;
+    addr10 := BinToDec(addr2)
+  end
+  else
+  begin
+    Println('Некорректная запись адреса:', value);
+    Halt
+  end
+ 
+end;
+  
+/// конструктор для адреса, заданного строкой
+/// задать можно для десятичный адрес с октетами или 32-битный двоичный адрес
+constructor Addr32.Create(address: string);
+begin
+  if '.' in address then SetAddress(address)
+  else SetAddressBin(address);
+end;
+    
+/// конструктор для маски, заданной числовым суффиксом CIDR (1..31)
+constructor Addr32.Create(suffix: integer);
+begin
+  if suffix.Between(1, 31) then SetAddressBin('1' * suffix + (32 - suffix) * '0')
+  else
+  begin
+    Println('Недопустимое значение суффикса:', suffix);
+    Halt
+  end
+end;
+    
+static function Addr32.operator and (a, b: Addr32): Addr32;
+begin
+  Result := new Addr32;
+  Result.addr10 := a.addr10 and b.addr10;
+  SetAddress(Result) 
+end;
+    
+static function Addr32.operator or (a, b: Addr32): Addr32;
+begin
+  Result := new Addr32;
+  Result.addr10 := a.addr10 or b.addr10;
+  SetAddress(Result)
+end;
+    
+static function Addr32.operator not (a: Addr32): Addr32;
+begin
+  Result := new Addr32;
+  Result.addr10 := not a.addr10;
+  SetAddress(Result)
+end;
+    
+static function Addr32.operator + (a: Addr32; b: longword): Addr32;
+begin
+  Result := new Addr32;
+  Result.addr10 := a.addr10 + b;
+  SetAddress(Result)
+end;
+   
+/// Формирование октетов для 32-битного представления адреса
+function Addr32.AddrFormat(addr: string): string;
+begin
+  Result := addr.Substring(0, 8);
+  for var i := 1 to 3 do
+    Result += '.' + addr.Substring(8 * i, 8);
+end;
+    
+function Addr32.ToString: string := $'{addr + '','', -15}{AddrFormat(addr2)}';
+
+/// Двоичное представление десятичного числа
+function CalcIP.Bin(n:int64) := Convert.ToString(n, 2);
+    
+/// Двоичное представление десятичного числа с дополением слева нулями до длины 32 символа
+function CalcIP.Bin32(n:int64) := Convert.ToString(n, 2).PadLeft(32, '0');
+    
+/// Десятичное значение 32-битного строкового представления двоичного числа
+function CalcIP.BinToDec(bits: string) := integer(Convert.ToInt64(bits, 2));
+    
+/// Формирование октетов для 32-битного представления адреса
+function CalcIP.AddrFormat(addr: string): string;
+begin
+  Result := addr.Substring(0, 8);
+  for var i := 1 to 3 do
+    Result += '.' + addr.Substring(8 * i, 8);
+end;
+    
+/// Формирование октетов для 32-битного представления адреса с разделением
+/// в позиции bit_mask + 1 двумя пробелами адресов сети и хоста 
+function CalcIP.AddrFine(addr: Addr32): string;
+begin
+  Result := AddrFormat(addr.value2);
+  var d := bit_mask + bit_mask div 8 + 1;
+  if bit_mask > 0 then Result := Result[:d] + '  ' + Result[d:]
+end;
+    
+/// Проверка корректности десятичной записи ip-адреса с октетами
+function CalcIP.AddressValid(addr: string) :=
+    (addr = addr.MatchValue('(\d{1,3}\.){3}\d{1,3}')) and
+    addr.Split('.').All(t -> t.ToInteger <= 255);
+        
+/// Перевод ip-адреса/маски из десятичного представления с октетами в 32-битное
+function CalcIP.AddressToBin(addr: string) :=
+    addr.Split('.')
+    .Select(t -> Convert.ToString(Convert.ToByte(t), 2).PadLeft(8, '0'))
+    .JoinToString('');
+        
+/// Преобразование двоичной записи адреса (с октетами или без них)
+/// в десятичное представление с октетами
+function CalcIP.BinToAddress(pic: string): string;
+begin
+  var s := if '.' in pic then pic.Split('.') else pic.Batch(8).Select(t -> t.JoinToString(''));
+  Result := s.Select(t -> Convert.ToByte(t, 2)).JoinToString('.')
+end;
+    
+/// Проверка корректности маски
+function CalcIP.MaskValid(mask: Addr32) :=
+    mask.value2.MatchValue('1+0+').Length = 32;
+ 
+procedure CalcIP.Calc;
+begin
+  bit_mask := Pos('0', mask32.value2) - 1;
+  n_hosts := integer(2 ** (32 - bit_mask)) - 2;
+  var addr := mask32.value.Split('.').Select(t -> (255 - Convert.ToByte(t)).ToString).JoinToString('.');
+  wildcard32 := new Addr32(addr);
+  network32 := ip32 and mask32;
+  broadcast32 := network32 or wildcard32;
+  hostmin32 := network32 + 1;
+  hostmax32 := network32 + n_hosts
+end;
+  
+function CalcIP.AddressFormat(pic: string) := pic[:bit_mask + 1] + '  ' + pic[bit_mask + 1:];
+
+/// конструктор для пары адрес - маска
+constructor CalcIP.Create(addr: string; mask: string);
+begin
+  ip32 := new Addr32(addr);
+  mask32 := new Addr32(mask);
+  if not MaskValid(mask32) then
+  begin
+    Println($'Запись маски неверна: {mask32.value} ({mask32.value2})');
+    Halt
+  end;
+  Calc
+end;
+
+/// конструктор для пары адрес - длина маски адреса
+constructor CalcIP.Create(addr: string; bitmask: byte);
+begin
+  if (bitmask < 1) or (bitmask > 31) then
+  begin
+    Println($'Длина маски адреса неверна: {bitmask}');
+    Halt
+  end;
+  ip32 := new Addr32(addr);
+  var mask := bitmask * '1' + (32 - bitmask) * '0';
+  mask32 := new Addr32(BinToAddress(mask));
+  Calc
+end;
+    
+function CalcIP.ToString: string;
+begin
+  var s := 
+       $'IP адрес (Address)                  | {ip32.value, -15} | {AddrFine(ip32)}{NewLine}';
+  s += $'Префикс маски подсети (Bitmask)     | /{bit_mask}{NewLine}';
+  s += $'Маска подсети (Netmask)             | {mask32.value, -15} | {AddrFine(mask32)}{NewLine}';
+  s += $'Маска хостов (Wildcard)             | {Wildcard32.value, -15} | {AddrFine(wildcard32)}{NewLine}';
+  s += $'IP адрес сети (Network)             | {network32.value, -15} | {AddrFine(network32)}{NewLine}';
+  s += $'Широковещательный адрес (Broadcast) | {broadcast32.value, -15} | {AddrFine(broadcast32)}{NewLine}';
+  s += $'Доступно адресов для хостов (Hosts) | {n_hosts}{NewLine}';
+  s += $'Адрес первого хоста (Hostmin)       | {hostmin32.value, -15} | {AddrFine(hostmin32)}{NewLine}';
+  s += $'Адрес последнего хоста (Hostmax)    | {hostmax32.value, -15} | {AddrFine(hostmax32)}{NewLine}';
+  Result := s
+end;
+   
+function CalcIP.GenAddrBin: sequence of string;
+begin
+  var n := n_hosts;
+  if n > 0 then
+  begin  
+    for var i := network32.addr10 to broadcast32.addr10 do
+      yield Bin32(i)
+  end
+  else yield sequence Seq&<string>;
+end;
+    
+function CalcIP.GenAddr: sequence of Addr32;
+begin
+  var n := n_hosts;
+  if n > 0 then
+    for var i := 0 to n_hosts - 1 do
+      yield network32 + i
+  else yield sequence Seq&<Addr32>;
+end;
 
 {$endregion}
 

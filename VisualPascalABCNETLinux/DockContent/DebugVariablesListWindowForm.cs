@@ -103,7 +103,8 @@ namespace VisualPascalABC
             // Column3
             // 
             this.WColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.WColumn3.FillWeight = 101.5228F;
+            this.WColumn3.FillWeight = 221.0297F;
+            this.WColumn3.MinimumWidth = 221;
             this.WColumn3.Frozen = false;
             this.WColumn3.HeaderText = "WT_VALUE";
             this.WColumn3.Name = "WColumn3";

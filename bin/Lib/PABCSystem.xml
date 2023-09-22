@@ -2403,7 +2403,7 @@
     <member name="M:MatrRandomInteger(System.Int32,System.Int32,System.Int32,System.Int32)">
       <summary>Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями</summary>
     </member>
-    <member name="M:MatrRandomReal(System.Int32,System.Int32,System.Double,System.Double)">
+    <member name="M:MatrRandomReal(System.Int32,System.Int32,System.Double,System.Double,System.Int32)">
       <summary>Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями</summary>
     </member>
     <member name="M:MatrGen``1(System.Int32,System.Int32,System.Func{System.Int32,System.Int32,``0})">
