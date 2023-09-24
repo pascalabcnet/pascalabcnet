@@ -613,12 +613,16 @@ namespace VisualPascalABC
         private void MonoDebuggerSession_TargetThreadStopped(object sender, Mono.Debugging.Client.TargetEventArgs e)
         {
             stackFrame = e.Thread.Backtrace.GetFrame(0);
+            if (evaluator != null)
+                evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
             JumpToCurrentLine();
         }
 
         private void MonoDebuggerSession_TargetStopped(object sender, Mono.Debugging.Client.TargetEventArgs e)
         {
             stackFrame = e.Thread.Backtrace.GetFrame(0);
+            if (evaluator != null)
+                evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
             JumpToCurrentLine();
             workbench.WidgetController.SetStartDebugEnabled();
             WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(stackFrame).SubItems);
@@ -637,6 +641,8 @@ namespace VisualPascalABC
         private void MonoDebuggerSession_TargetHitBreakpoint(object sender, Mono.Debugging.Client.TargetEventArgs e)
         {
             stackFrame = e.Thread.Backtrace.GetFrame(0);
+            if (evaluator != null)
+                evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
             JumpToCurrentLine();
             workbench.WidgetController.SetStartDebugEnabled();
         }

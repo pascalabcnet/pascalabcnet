@@ -290,19 +290,10 @@ namespace VisualPascalABC
                     if (eval_stack.Count > 0)
                     {
                         res = eval_stack.Pop();
-                        if (res.prim_val == null && res.obj_val != null)
-                            if (res.obj_val.IsObject && res.obj_val.Type.IsValueType)
-                            {
-                                Value tmp = res.obj_val;
-                                res.obj_val = DebugUtils.unbox(res.obj_val);
-                                if (res.obj_val != null && res.obj_val.IsPrimitive)
-                                {
-                                    res.prim_val = res.obj_val.PrimitiveValue;
-                                    res.obj_val = null;
-                                }
-                                else
-                                    res.obj_val = tmp;
-                            }
+                        if (res.prim_val == null && res.monoValue != null && res.monoValue.IsPrimitive)
+                        {
+                            res.prim_val = res.monoValue.GetRawValue();
+                        }
                     }
                 }
                 else if (Errors.Count > 0)
@@ -766,6 +757,8 @@ namespace VisualPascalABC
             Mono.Debugger.Soft.Value this_obj = null;
             if (obj != null)
             {
+                if (obj.parentFrame == null)
+                    obj.parentFrame = stackFrame;
                 this_obj = obj.GetRawValue() as Mono.Debugger.Soft.Value;
                 if (this_obj == null && obj.GetRawValue() is Mono.Debugging.Client.RawValue)
                 {
@@ -5032,7 +5025,9 @@ namespace VisualPascalABC
                     if (lv.Name == var)
                         return lv;
                 }
-
+#if (DEBUG)
+                Console.WriteLine("find var " + var+", "+ stackFrame.SourceLocation.Line);
+#endif
                 foreach (var lv in lvc)
                 {
 #if (DEBUG)
@@ -5053,8 +5048,14 @@ namespace VisualPascalABC
                             int num_line = stackFrame.SourceLocation.Line;
                             int start_line = Convert.ToInt32(lv.Name.Substring(pos + 1, lv.Name.LastIndexOf(':') - pos - 1));
                             int end_line = Convert.ToInt32(lv.Name.Substring(lv.Name.LastIndexOf(':') + 1));
-                            if (num_line >= start_line - 1 && num_line <= end_line - 1)
+                            if (num_line >= start_line && num_line <= end_line)
+                            {
+#if (DEBUG)
+                                Console.WriteLine("found var " + lv.Name);
+#endif
                                 return lv;
+                            }
+                            
                         }
                     }
                     if (string.Compare(lv.Name, var, true) == 0)
@@ -5301,7 +5302,9 @@ namespace VisualPascalABC
             catch (System.Exception e)
             {
                 //System.Windows.Forms.MessageBox.Show(e.ToString());
-
+#if (DEBUG)
+                Console.WriteLine(e.Message + " "+ e.StackTrace);
+#endif
             }
             return null;
             //throw new UnknownName(var);
@@ -6305,7 +6308,7 @@ namespace VisualPascalABC
                 {
                     int low_bound = 0;
                     System.Reflection.FieldInfo fi = type.GetField("LowerIndex");
-                    low_bound = Convert.ToInt32(fi.GetRawConstantValue());
+                   // low_bound = Convert.ToInt32(fi.GetRawConstantValue());
                     int[] tmp_indices = new int[1];
                     int j = 0;
                     try
@@ -6326,14 +6329,20 @@ namespace VisualPascalABC
                         throw new WrongTypeInIndexer();
                     }
                     //res.obj_val = cur_mi.Invoke(rv.obj_val,indices.ToArray()) as NamedValue;
-                    var nv = rv.monoValue.GetChild("NullBasedArray");
-                    res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
+                    var tm = rv.monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                    var mi = tm.GetMethod("get_val");
+                    if (mi != null)
+                    {
+                        List<Mono.Debugging.Client.ObjectValue> ind_list = new List<Mono.Debugging.Client.ObjectValue>();
+                        ind_list.Add(DebugUtils.MakeMonoValue(tmp_indices[0]));
+                        res.monoValue = InvokeMethod(tm, mi, rv.monoValue, ind_list.ToArray());
+                    }
                     check_for_out_of_range(res.obj_val);
-                    nv = res.monoValue.GetChild("NullBasedArray");
+                    var nv = res.monoValue.GetChild("NullBasedArray");
                     while (nv != null && j < indices.Count)
                     {
                         System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(res.monoValue.TypeName).GetField("LowerIndex");
-                        low_bound = Convert.ToInt32(tmp_fi.GetRawConstantValue());
+                        low_bound = 0;// Convert.ToInt32(tmp_fi.GetRawConstantValue());
                         try
                         {
                             object obj = indices[j++];
@@ -6351,10 +6360,16 @@ namespace VisualPascalABC
                         {
                             throw new WrongTypeInIndexer();
                         }
-                        res.monoValue = nv.GetRangeOfChildren(tmp_indices[0], 1)[0];
-                        check_for_out_of_range(res.obj_val);
+                        tm = res.monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                        mi = tm.GetMethod("get_val");
+                        if (mi != null)
+                        {
+                            
+                            List<Mono.Debugging.Client.ObjectValue> ind_list = new List<Mono.Debugging.Client.ObjectValue>();
+                            ind_list.Add(DebugUtils.MakeMonoValue(tmp_indices[0]));
+                            res.monoValue = InvokeMethod(tm, mi, res.monoValue, ind_list.ToArray());
+                        }
                         nv = res.monoValue.GetChild("NullBasedArray");
-
                     }
                     if (j < indices.Count)
                         throw new WrongIndexersNumber();
