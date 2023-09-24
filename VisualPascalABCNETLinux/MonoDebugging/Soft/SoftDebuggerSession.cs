@@ -1715,6 +1715,11 @@ namespace Mono.Debugging.Soft
 			Step (StepDepth.Over, StepSize.Line);
 		}
 
+		public void StepOut()
+        {
+			Step(StepDepth.Out, StepSize.Line);
+        }
+
 		void Step (StepDepth depth, StepSize size)
 		{
 			try {
