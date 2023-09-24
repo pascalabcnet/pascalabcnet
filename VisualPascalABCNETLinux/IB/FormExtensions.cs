@@ -266,23 +266,7 @@ namespace VisualPascalABC
             this.mSTEPINToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mRUNTOCURToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mDEBUGENDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-
-            /*this.mShowVarsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mDEBUGSTARTToolStripMenuItem,
-            this.mDEBUGSTOPToolStripMenuItem,
-            this.mDEBUGENDToolStripMenuItem,
-            this._toolStripMenuItem10,
-            this.mSTEPOVERToolStripMenuItem,
-            this.mSTEPINToolStripMenuItem,
-            this.mSTEPToolStripMenuItem,
-            this.mRUNTOCURToolStripMenuItem});*/
-
-            this.mrProgram.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._toolStripMenuItem10,
-            this.mSTEPOVERToolStripMenuItem,
-            this.mSTEPINToolStripMenuItem,
-            this.mSTEPToolStripMenuItem,
-            this.mRUNTOCURToolStripMenuItem});
+            
             
             this.mShowVarsMenuItem.Name = "mShowVarsMenuItem";
             this.mShowVarsMenuItem.Size = new System.Drawing.Size(73, 24);
@@ -358,6 +342,14 @@ namespace VisualPascalABC
             this.mRUNTOCURToolStripMenuItem.Text = "M_RUNTOCUR";
             this.mRUNTOCURToolStripMenuItem.Enabled = true;
             this.mRUNTOCURToolStripMenuItem.Click += new System.EventHandler(this.mRUNTOCURToolStripMenuItem_Click);
+
+            this.mrProgram.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripMenuItem10,
+            this.mSTEPOVERToolStripMenuItem,
+            this.mSTEPINToolStripMenuItem,
+            this.mSTEPToolStripMenuItem,
+            this.mRUNTOCURToolStripMenuItem});
+
             //this.tpVarList.ResumeLayout(false);
             //this.ResumeLayout(false);
             //this.PerformLayout();
@@ -462,6 +454,10 @@ namespace VisualPascalABC
             this.cmRename.Click += RenameClicked;
             //this.cmRename.ShortcutKeys = Keys.F2;
             this.cmEditor.Items.Insert(3,cmRename);
+            //this.menuStrip1.SuspendLayout();
+            //this.menuStrip1.ResumeLayout(false);
+            //this.ResumeLayout(false);
+            //this.PerformLayout();
         }
 
         void tsIntellisense_DropDownOpened(object sender, EventArgs e)
