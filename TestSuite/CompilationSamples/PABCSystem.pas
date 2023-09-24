@@ -2406,7 +2406,7 @@ function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: intege
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
-function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
+function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10; digits: integer := 2): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
 function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный элементами x 
@@ -11696,12 +11696,12 @@ begin
       Result[i, j] := Random(a, b);
 end;
 
-function MatrRandomReal(m: integer; n: integer; a, b: real): array [,] of real;
+function MatrRandomReal(m: integer; n: integer; a, b: real; digits: integer): array [,] of real;
 begin
   Result := new real[m, n];
   for var i := 0 to Result.RowCount - 1 do
     for var j := 0 to Result.ColCount - 1 do
-      Result[i, j] := Random() * (b - a) + a;
+      Result[i, j] := RandomReal(a,b,digits);
 end;
 
 function MatrFill<T>(m, n: integer; x: T): array [,] of T;
