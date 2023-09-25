@@ -613,12 +613,16 @@ namespace VisualPascalABC
         private void MonoDebuggerSession_TargetThreadStopped(object sender, Mono.Debugging.Client.TargetEventArgs e)
         {
             stackFrame = e.Thread.Backtrace.GetFrame(0);
+            if (evaluator != null)
+                evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
             JumpToCurrentLine();
         }
 
         private void MonoDebuggerSession_TargetStopped(object sender, Mono.Debugging.Client.TargetEventArgs e)
         {
             stackFrame = e.Thread.Backtrace.GetFrame(0);
+            if (evaluator != null)
+                evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
             JumpToCurrentLine();
             workbench.WidgetController.SetStartDebugEnabled();
             WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(stackFrame).SubItems);
@@ -637,6 +641,8 @@ namespace VisualPascalABC
         private void MonoDebuggerSession_TargetHitBreakpoint(object sender, Mono.Debugging.Client.TargetEventArgs e)
         {
             stackFrame = e.Thread.Backtrace.GetFrame(0);
+            if (evaluator != null)
+                evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
             JumpToCurrentLine();
             workbench.WidgetController.SetStartDebugEnabled();
         }
@@ -2025,18 +2031,6 @@ namespace VisualPascalABC
             try
             {
                 workbench.WidgetController.SetStartDebugDisabled();
-                /*if (monoDebuggerSession.ActiveThread.Backtrace.GetFrame(0).SourceLocation.MethodName == ".cctor")
-                {
-                    var sequencePoints = debuggedProcess.SelectedFunction.symMethod.SequencePoints;
-                    if (sequencePoints != null && debuggedProcess.NextStatement.StartLine == sequencePoints[sequencePoints.Length-1].Line)
-                    {
-                        debuggedProcess.StepOut();
-                    }
-                    else
-                        debuggedProcess.StepOver();
-                }
-                else
-                    debuggedProcess.StepOver();*/
                 
                 CurrentLineBookmark.Remove();
                 monoDebuggerSession.NextLine();
@@ -2101,7 +2095,7 @@ namespace VisualPascalABC
                 if (IsRunning)
                 {
                     workbench.WidgetController.SetStartDebugDisabled();
-                    dbg.Processes[0].StepOut();
+                    monoDebuggerSession.StepOut();
                     CurrentLineBookmark.Remove();
                 }
             }

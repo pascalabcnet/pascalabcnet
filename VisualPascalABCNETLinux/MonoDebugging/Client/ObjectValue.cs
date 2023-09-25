@@ -66,7 +66,7 @@ namespace Mono.Debugging.Client
 		EventHandler valueChanged;
 		
 		[NonSerialized]
-		StackFrame parentFrame;
+		public StackFrame parentFrame;
 
 		static ObjectValue Create(IObjectValueSource source, ObjectPath path, string typeName)
 		{
@@ -357,7 +357,8 @@ namespace Mono.Debugging.Client
 		{
 			if (rawValue != null)
 				return rawValue;
-			var ops = parentFrame.DebuggerSession.EvaluationOptions.Clone ();
+
+			var ops = parentFrame.DebuggerSession.EvaluationOptions.Clone();
 			ops.EllipsizeStrings = false;
 			
 			return GetRawValue (ops);
