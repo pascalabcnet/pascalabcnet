@@ -28,6 +28,7 @@ namespace VisualPascalABC
         private static Hashtable stand_types = new Hashtable(StringComparer.OrdinalIgnoreCase);
         private static List<Type> unit_types = new List<Type>();//spisok tipov-obertok nad moduljami
         private static List<DebugType> unit_debug_types;//to zhe samoe, no tipy Debugger.Core
+        private static List<Mono.Debugger.Soft.TypeMirror> unit_mono_types;
         private static DebugType pabc_system_type = null;
 
         static AssemblyHelper()
@@ -235,6 +236,17 @@ namespace VisualPascalABC
         	}
         	return unit_debug_types;
         }
+
+        public static List<Mono.Debugger.Soft.TypeMirror> GetUsesMonoTypes(Mono.Debugging.Soft.SoftDebuggerSession session)
+        {
+            if (unit_mono_types == null)
+            {
+                unit_mono_types = new List<Mono.Debugger.Soft.TypeMirror>();
+                foreach (var t in unit_types)
+                    unit_mono_types.Add(session.GetType(t.FullName));
+            }
+            return unit_mono_types;
+        }
         
         public static void Unload()
         {
@@ -245,6 +257,9 @@ namespace VisualPascalABC
             if (unit_debug_types != null)
             unit_debug_types.Clear();
             unit_debug_types = null;
+            if (unit_mono_types != null)
+                unit_mono_types.Clear();
+            unit_mono_types = null;
         }
     }
 	
@@ -858,7 +873,14 @@ namespace VisualPascalABC
         }
 		
         public ExpressionEvaluator evaluator;
-        
+
+        public Mono.Debugging.Soft.SoftDebuggerSession DebuggerSession
+        {
+            get
+            {
+                return monoDebuggerSession;
+            }
+        }
         void debugProcessStarted(object sender, ProcessEventArgs e)
         {
             workbench.WidgetController.SetDebugTabsVisible(true);
@@ -1530,6 +1552,8 @@ namespace VisualPascalABC
                         if (lv.Name == "$obj$")
                             self_lv = lv;
                     }
+                    if (var.ToLower() == "result" && ret_lv != null)
+                        return new ValueItem(ret_lv);
                     if (var.ToLower() == "self")
                     {
                         try
@@ -1600,7 +1624,12 @@ namespace VisualPascalABC
                             foreach (var fi in fields)
                             {
                                 if (string.Compare(fi.Name, var, true) == 0)
-                                    return new ValueItem(fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions));
+                                {
+                                    var val = fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                                    val.parentFrame = stackFrame;
+                                    return new ValueItem(val);
+                                }
+                                   
                             }
                         }
                         
@@ -1627,8 +1656,33 @@ namespace VisualPascalABC
                         return new BaseTypeItem(tr, t);
                     }
 
+                    List<Mono.Debugger.Soft.TypeMirror> types = AssemblyHelper.GetUsesMonoTypes(monoDebuggerSession);
+                    foreach (var tm in types)
+                    {
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+                        var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                        foreach (var fi in fields)
+                        {
+                            if (string.Compare(fi.Name, var, true) == 0)
+                            {
+                                var val = fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                                val.parentFrame = stackFrame;
+                                return new ValueItem(val);
+                            }
 
-                    nvc = debuggedProcess.SelectedFunction.LocalVariables;
+                        }
+
+                        Type unit_type = AssemblyHelper.GetType(tm.FullName);
+                        if (unit_type != null)
+                        {
+                            System.Reflection.FieldInfo fi = unit_type.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                            if (fi != null && fi.IsLiteral)
+                                return new ValueItem(DebugUtils.MakeMonoValue(fi.GetRawConstantValue()));
+                        }
+                    }
+
+
+                    /*nvc = debuggedProcess.SelectedFunction.LocalVariables;
                     List<NamedValue> val_list = new List<NamedValue>();
                     foreach (NamedValue nv in nvc)//smotrim sredi lokalnyh peremennyh
                     {
@@ -1770,15 +1824,8 @@ namespace VisualPascalABC
                         }
                     }
 
-                    /*foreach (NamedValue nv in unit_vars)
-                    {
-                        IList<FieldInfo> fields = nv.Type.GetFields(BindingFlags.All);
-                        foreach (FieldInfo fi in fields)
-                            if (string.Compare(fi.Name, var, true) == 0) return new ValueItem(fi.GetValue(nv),fi.DeclaringType);
-                    }*/
-
                     if (ret_nv != null && string.Compare(var, "Result", true) == 0)
-                        return new ValueItem(ret_nv, null);
+                        return new ValueItem(ret_nv, null);*/
                     
                 }
                 else

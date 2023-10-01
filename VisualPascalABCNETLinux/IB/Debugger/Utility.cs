@@ -253,6 +253,10 @@ namespace VisualPascalABC
 
         public static Mono.Debugging.Client.ObjectValue MakeMonoValue(object obj)
         {
+            if (obj is Mono.Debugging.Client.ObjectValue)
+                return obj as Mono.Debugging.Client.ObjectValue;
+            if (obj is string)
+                return Mono.Debugging.Client.ObjectValue.CreateString(null, new Mono.Debugging.Client.ObjectPath(""), obj.GetType().Name, obj as string);
             return Mono.Debugging.Client.ObjectValue.CreatePrimitive(null, new Mono.Debugging.Client.ObjectPath(""), obj.GetType().Name, new Mono.Debugging.Backend.EvaluationResult(obj.ToString()), Mono.Debugging.Client.ObjectValueFlags.Literal, obj);
         }
 

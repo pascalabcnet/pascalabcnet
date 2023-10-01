@@ -584,6 +584,8 @@ namespace VisualPascalABC
                 {
                     if (monoValue.Name.IndexOf(':') != -1)
                         return monoValue.Name.Substring(0, monoValue.Name.IndexOf(':'));
+                    if (monoValue.Name.StartsWith("$rv_"))
+                        return "Result";
                     return monoValue.Name;
                 }
                 catch
@@ -801,7 +803,26 @@ namespace VisualPascalABC
                 if (monoValue.IsObject)
                 {
                     if (monoValue.TypeName.IndexOf("System.Collections.Generic.") != -1)
+                    {
+                        var tm = monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                        var fields = tm.GetFields();
+                        foreach (var fi in fields)
+                        {
+                            try
+                            {
+                                var valref = new Mono.Debugging.Evaluation.UserVariableReference(monoValue.Context, fi.Name);
+                                valref.Value = tm.GetValue(fi, fi.VirtualMachine.GetThread(VisualPascalABC.WorkbenchServiceFactory.DebuggerManager.DebuggerSession.ActiveThread.Id));
+                                
+                                list.Add(new ValueItem(valref.CreateObjectValue(false)));
+                            }
+                            catch (System.Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                            
+                        }
                         return list;
+                    }
 
                     foreach (var element in monoValue.GetAllChildren())
                     {

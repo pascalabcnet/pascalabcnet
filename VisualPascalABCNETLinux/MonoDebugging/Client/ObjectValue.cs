@@ -127,7 +127,14 @@ namespace Mono.Debugging.Client
 			val.path = path;
 			return val;
 		}
-		
+
+		public static ObjectValue CreateString(IObjectValueSource source, ObjectPath path, string typeName, string value)
+		{
+			var obj = CreateObject(source, path, typeName, new EvaluationResult(value), ObjectValueFlags.Object, new ObjectValue[0]);
+			obj.rawValue = value;
+			return obj;
+		}
+
 		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValueFlags flags, ObjectValue[] children)
 		{
 			return CreateObject (source, path, typeName, new EvaluationResult (value), flags, children);
@@ -139,6 +146,46 @@ namespace Mono.Debugging.Client
 			val.flags = flags | ObjectValueFlags.Object;
 			val.displayValue = value.DisplayValue;
 			val.value = value.Value;
+			if (val.value != null && val.value.IndexOf("[") != -1 && val.typeName != null && val.typeName.IndexOf("array of") != -1)
+            {
+				string t = val.value.Substring(0, val.value.IndexOf("["));
+				StringBuilder sb = new StringBuilder();
+				StringBuilder buf = new StringBuilder();
+				int i = 0;
+				while (i < t.Length)
+				{
+					char c = t[i];
+					if (char.IsLetterOrDigit(c))
+						buf.Append(c);
+					else if (c != ']')
+					{
+						string tt = buf.ToString();
+						string pascalType = "";
+						if (c == '*')
+							sb.Append("^");
+						else if (c == '[')
+							sb.Append("array of ");
+						if (pascalTypes.TryGetValue(tt, out pascalType))
+							sb.Append(pascalType);
+						else
+							sb.Append(tt);
+						if (c != '*' && c != ']' && c != '[')
+							sb.Append(c);
+						buf.Clear();
+					}
+					i++;
+				}
+				if (buf.Length > 0)
+				{
+					string tt = buf.ToString();
+					string pascalType = "";
+					if (pascalTypes.TryGetValue(tt, out pascalType))
+						sb.Append(pascalType);
+					else
+						sb.Append(type);
+				}
+				val.value = sb.ToString() + val.value.Substring(val.value.IndexOf("["));
+			}
 			val.type = type;
 			val.ctx = ctx;
 			if (children != null) {
