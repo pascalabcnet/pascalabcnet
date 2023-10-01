@@ -585,11 +585,6 @@ namespace VisualPascalABC
                     if (monoValue.Name.IndexOf(':') != -1)
                         return monoValue.Name.Substring(0, monoValue.Name.IndexOf(':'));
                     return monoValue.Name;
-                    if (!string.IsNullOrEmpty(name))
-                        return name;
-                    if (!((val is NamedValue) ? (val as NamedValue).Name : name).Contains("$rv"))
-                        return (val is NamedValue) ? ((val as NamedValue).Name.IndexOf(':') != -1 ? (val as NamedValue).Name.Substring(0, (val as NamedValue).Name.IndexOf(':')) : (val as NamedValue).Name) : name;
-                    return "Result";
                 }
                 catch
                 {
@@ -745,17 +740,6 @@ namespace VisualPascalABC
             get
             {
                 return false;
-            	try
-            	{
-            		if (!failed)
-            			return val.IsInteger && !ShowValuesInHexadecimal || val.IsPrimitive;
-            		else 
-            			return false;
-            	}
-            	catch
-            	{
-            		return false;
-            	}
             }
         }
 

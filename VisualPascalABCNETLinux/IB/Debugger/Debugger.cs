@@ -554,7 +554,7 @@ namespace VisualPascalABC
 
         private delegate void EndDebuggerSessionDelegate();
 
-        public void EndDebuggerSession()
+        private void EndDebuggerSessionSafe()
         {
             if (Mono.Debugger.Soft.VirtualMachineManager.currentProcess == null)
                 return;
@@ -606,8 +606,12 @@ namespace VisualPascalABC
         
         private void Process_Exited(object sender, EventArgs e)
         {
-            VisualPABCSingleton.MainForm.Invoke(new EndDebuggerSessionDelegate(EndDebuggerSession));
-            
+            EndDebuggerSession();
+        }
+
+        public void EndDebuggerSession()
+        {
+            VisualPABCSingleton.MainForm.Invoke(new EndDebuggerSessionDelegate(EndDebuggerSessionSafe));
         }
 
         private void MonoDebuggerSession_TargetThreadStopped(object sender, Mono.Debugging.Client.TargetEventArgs e)

@@ -33,6 +33,7 @@ using System.Linq;
 
 using Mono.Debugging.Backend;
 using Mono.Debugging.Evaluation;
+using System.Text;
 
 namespace Mono.Debugging.Client
 {
@@ -67,29 +68,61 @@ namespace Mono.Debugging.Client
 		
 		[NonSerialized]
 		public StackFrame parentFrame;
+		static Dictionary<string, string> pascalTypes;
+		static ObjectValue()
+        {
+			pascalTypes = new Dictionary<string, string>();
+			pascalTypes.Add("int", "integer");
+			pascalTypes.Add("double", "real");
+			pascalTypes.Add("float", "single");
+			pascalTypes.Add("uint", "longword");
+			pascalTypes.Add("long", "int64");
+			pascalTypes.Add("short", "smallint");
+			pascalTypes.Add("ushort", "word");
+			pascalTypes.Add("sbyte", "shortint");
+			pascalTypes.Add("bool", "boolean");
+		}
 
 		static ObjectValue Create(IObjectValueSource source, ObjectPath path, string typeName)
 		{
 			var val = new ObjectValue();
 			val.typeName = typeName;
-			int ptr_ind = val.typeName.IndexOf('*');
-			string ptr = "";
-			if (ptr_ind != -1)
-				ptr = val.typeName.Substring(ptr_ind).Replace('*', '^');
-			switch (val.typeName.Replace("*",""))
-			{
-				case "int": val.typeName = "integer"; break;
-				case "double": val.typeName = "real"; break;
-				case "float": val.typeName = "single"; break;
-				case "uint": val.typeName = "longword"; break;
-				case "long": val.typeName = "int64"; break;
-				case "ulong": val.typeName = "uint64"; break;
-				case "short": val.typeName = "smallint"; break;
-				case "ushort": val.typeName = "word"; break;
-				case "sbyte": val.typeName = "shortint"; break;
-				case "bool": val.typeName = "boolean"; break;
+			StringBuilder sb = new StringBuilder();
+			StringBuilder buf = new StringBuilder();
+			int i = 0;
+			while (i < val.typeName.Length)
+            {
+				char c = val.typeName[i];
+				if (char.IsLetterOrDigit(c))
+					buf.Append(c);
+				else if (c != ']')
+                {
+					string type = buf.ToString();
+					string pascalType = "";
+					if (c == '*')
+						sb.Append("^");
+					else if (c == '[')
+						sb.Append("array of ");
+					if (pascalTypes.TryGetValue(type, out pascalType))
+						sb.Append(pascalType);
+					else
+						sb.Append(type);
+					if (c != '*' && c != ']' && c != '[')
+						sb.Append(c);
+					buf.Clear();
+				}
+				i++;
+            }
+			if (buf.Length > 0)
+            {
+				string type = buf.ToString();
+				string pascalType = "";
+				if (pascalTypes.TryGetValue(type, out pascalType))
+					sb.Append(pascalType);
+				else
+					sb.Append(type);
 			}
-			val.typeName = ptr+val.typeName.Replace("*", "");
+			val.typeName = sb.ToString();
 			val.source = source;
 			val.path = path;
 			return val;
