@@ -615,7 +615,10 @@ namespace VisualPascalABC
             //monoDebuggerSession.TargetThreadStopped -= MonoDebuggerSession_TargetThreadStopped;
             Status = DebugStatus.None;
             Mono.Debugger.Soft.VirtualMachineManager.currentProcess = null;
+            var oldSession = monoDebuggerSession;
             monoDebuggerSession = new Mono.Debugging.Soft.SoftDebuggerSession();
+            foreach (var bp in oldSession.Breakpoints.GetBreakpoints())
+                monoDebuggerSession.Breakpoints.Add(bp);
         }
 
         
@@ -1543,8 +1546,11 @@ namespace VisualPascalABC
                         else if (lv.Name.Contains("$class_var"))
                         {
                             global_lv = lv;
+#if (DEBUG)
+                            Console.WriteLine("found global variables class " + lv.Name + " " + lv.TypeName);
+#endif
                         }
-                            
+
                         else if (lv.Name.Contains("$unit_var")) 
                             unit_lvs.Add(lv);
                         else if (lv.Name == "$disp$") 
@@ -1626,6 +1632,7 @@ namespace VisualPascalABC
                         Console.WriteLine(global_lv.TypeName);
 #endif
                         var tm = monoDebuggerSession.GetType(global_lv.TypeName);
+                        
                         if (tm != null)
                         {
                             var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
