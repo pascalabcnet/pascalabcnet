@@ -881,6 +881,15 @@ namespace VisualPascalABC
                 return monoDebuggerSession;
             }
         }
+
+        public Mono.Debugging.Client.StackFrame StackFrame
+        {
+            get
+            {
+                return stackFrame;
+            }
+        }
+
         void debugProcessStarted(object sender, ProcessEventArgs e)
         {
             workbench.WidgetController.SetDebugTabsVisible(true);

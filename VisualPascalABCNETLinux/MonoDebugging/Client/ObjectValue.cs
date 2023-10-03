@@ -246,6 +246,9 @@ namespace Mono.Debugging.Client
 		
 		public static ObjectValue CreateUnknown (string name)
 		{
+#if (DEBUG)
+			Console.WriteLine("unknown " + name);
+#endif
 			return CreateUnknown (null, new ObjectPath (name), "");
 		}
 		
@@ -276,7 +279,9 @@ namespace Mono.Debugging.Client
 		public static ObjectValue CreateFatalError (string name, string message, ObjectValueFlags flags)
 		{
 			var val = new ObjectValue ();
-			Console.WriteLine("create value " + name);
+#if (DEBUG)
+			Console.WriteLine("create fatal error value " + name);
+#endif
 			val.flags = flags | ObjectValueFlags.Error;
 			val.value = message;
 			val.name = name;

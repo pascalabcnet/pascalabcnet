@@ -112,6 +112,9 @@ namespace Mono.Debugging.Evaluation
 				return DC.ObjectValue.CreateError (this, new ObjectPath (Name), Context.Adapter.GetDisplayTypeName (GetContext (options), Type), ex.Message, Flags);
 			} catch (Exception ex) {
 				Context.WriteDebuggerError (ex);
+#if (DEBUG)
+				Console.WriteLine(ex.Message + " " + ex.StackTrace);
+#endif
 				return DC.ObjectValue.CreateUnknown (Name);
 			}
 		}

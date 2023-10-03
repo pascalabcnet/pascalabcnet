@@ -740,6 +740,8 @@ namespace VisualPascalABC
         {
             var tm = type as Mono.Debugger.Soft.TypeMirror;
             var mi = tm.GetMethod(method);
+            if (mi == null)
+                return null;
             return InvokeMethod(type, mi, obj, args);
         }
 
@@ -6738,6 +6740,8 @@ namespace VisualPascalABC
                     //IList<Debugger.MemberInfo> members = rv.obj_val.Type.GetMember(id.name, BindingFlags.All);
                     if (string.Compare(id.name, "Count", true) == 0)
                         res.monoValue = InvokeMethod(rv.monoValue.Type, "get_Count", rv.monoValue, new Mono.Debugging.Client.ObjectValue[0]);
+                    else if (string.Compare(id.name, "Length", true) == 0)
+                        res.monoValue = InvokeMethod(rv.monoValue.Type, "get_Length", rv.monoValue, new Mono.Debugging.Client.ObjectValue[0]);
                     else if (rv.monoValue.IsArray)
                     {
                         if (string.Compare(id.name, "Length", true) == 0)
