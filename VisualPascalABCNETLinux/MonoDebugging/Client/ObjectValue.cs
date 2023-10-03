@@ -86,17 +86,24 @@ namespace Mono.Debugging.Client
 		static ObjectValue Create(IObjectValueSource source, ObjectPath path, string typeName)
 		{
 			var val = new ObjectValue();
-			val.typeName = typeName;
+			val.typeName = GetPascalTypeName(typeName);
+			val.source = source;
+			val.path = path;
+			return val;
+		}
+
+		public static string GetPascalTypeName(string typeName)
+        {
 			StringBuilder sb = new StringBuilder();
 			StringBuilder buf = new StringBuilder();
 			int i = 0;
-			while (i < val.typeName.Length)
-            {
-				char c = val.typeName[i];
+			while (i < typeName.Length)
+			{
+				char c = typeName[i];
 				if (char.IsLetterOrDigit(c))
 					buf.Append(c);
 				else if (c != ']')
-                {
+				{
 					string type = buf.ToString();
 					string pascalType = "";
 					if (c == '*')
@@ -112,9 +119,9 @@ namespace Mono.Debugging.Client
 					buf.Clear();
 				}
 				i++;
-            }
+			}
 			if (buf.Length > 0)
-            {
+			{
 				string type = buf.ToString();
 				string pascalType = "";
 				if (pascalTypes.TryGetValue(type, out pascalType))
@@ -122,10 +129,7 @@ namespace Mono.Debugging.Client
 				else
 					sb.Append(type);
 			}
-			val.typeName = sb.ToString();
-			val.source = source;
-			val.path = path;
-			return val;
+			return sb.ToString();
 		}
 
 		public static ObjectValue CreateString(IObjectValueSource source, ObjectPath path, string typeName, string value)

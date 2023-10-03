@@ -728,24 +728,28 @@ namespace VisualPascalABC
 
                 List<IListItem> list = new List<IListItem>();
                
-                if (monoValue.IsObject)
+                if (monoValue != null && monoValue.IsObject)
                 {
                     if (monoValue.TypeName.IndexOf("System.Collections.Generic.") != -1)
                     {
                         var tm = monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                        if (tm == null)
+                            return list;
                         var fields = tm.GetFields();
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(VisualPascalABC.WorkbenchServiceFactory.DebuggerManager.StackFrame.SourceBacktrace.GetEvaluationContext(VisualPascalABC.WorkbenchServiceFactory.DebuggerManager.StackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
                         foreach (var fi in fields)
                         {
                             try
                             {
-                                var valref = new Mono.Debugging.Evaluation.UserVariableReference(monoValue.Context, fi.Name);
-                                valref.Value = tm.GetValue(fi, fi.VirtualMachine.GetThread(VisualPascalABC.WorkbenchServiceFactory.DebuggerManager.DebuggerSession.ActiveThread.Id));
+                                var valref = tr.GetChild(fi.Name, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
                                 
                                 list.Add(new ValueItem(valref.CreateObjectValue(false)));
                             }
                             catch (System.Exception ex)
                             {
-                                Console.WriteLine(ex.Message);
+#if (DEBUG)
+                                Console.WriteLine(ex.Message+" "+ex.StackTrace);
+#endif
                             }
                             
                         }
@@ -1003,7 +1007,7 @@ namespace VisualPascalABC
         {
             get
             {
-            	return monoType.Name;
+            	return Mono.Debugging.Client.ObjectValue.GetPascalTypeName(monoType.Name);
             }
         }
 		
