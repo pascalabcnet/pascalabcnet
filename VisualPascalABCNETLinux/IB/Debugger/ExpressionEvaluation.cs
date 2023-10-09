@@ -740,6 +740,8 @@ namespace VisualPascalABC
         {
             var tm = type as Mono.Debugger.Soft.TypeMirror;
             var mi = tm.GetMethod(method);
+            if (mi == null)
+                return null;
             return InvokeMethod(type, mi, obj, args);
         }
 
@@ -769,7 +771,9 @@ namespace VisualPascalABC
             var val = tm.InvokeMethod(mi.VirtualMachine.GetThread(monoDebuggerSession.ActiveThread.Id), mi, obj != null ? this_obj : null, vals);
             var valref = new Mono.Debugging.Evaluation.UserVariableReference(obj.Context, "");
             valref.Value = val;
-            return valref.CreateObjectValue(false);
+            var objval = valref.CreateObjectValue(false);
+            objval.parentFrame = stackFrame;
+            return objval;
         }
 
         private Mono.Debugging.Client.ObjectValue EvalCommonOperation(Mono.Debugging.Client.ObjectValue left, Mono.Debugging.Client.ObjectValue right, string op, string sn)
@@ -5085,6 +5089,8 @@ namespace VisualPascalABC
                     if (lv.Name == "$obj$")
                         self_lv = lv;
                 }
+                if (var.ToLower() == "result" && ret_lv != null) 
+                    return ret_lv;
                 if (var.ToLower() == "self")
                 {
                     try
@@ -5152,7 +5158,12 @@ namespace VisualPascalABC
                     foreach (var fi in fields)
                     {
                         if (string.Compare(fi.Name, var, true) == 0)
-                            return fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                        {
+                            var val = fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                            val.parentFrame = stackFrame;
+                            return val;
+                        }
+                            
                     }
 
 
@@ -5165,7 +5176,33 @@ namespace VisualPascalABC
                     }*/
                 }
 
-                
+                List<Mono.Debugger.Soft.TypeMirror> types = AssemblyHelper.GetUsesMonoTypes(monoDebuggerSession);
+                foreach (var tm in types)
+                {
+                    var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+                    var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                    foreach (var fi in fields)
+                    {
+                        if (string.Compare(fi.Name, var, true) == 0)
+                        {
+                            Console.WriteLine("fount unit var " + var);
+                            var val = fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                            val.parentFrame = stackFrame;
+                            return val;
+                        }
+
+                    }
+
+                    Type unit_type = AssemblyHelper.GetType(tm.FullName);
+                    if (unit_type != null)
+                    {
+                        System.Reflection.FieldInfo fi = unit_type.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                        if (fi != null && fi.IsLiteral)
+                            return DebugUtils.MakeMonoValue(fi.GetRawConstantValue());
+                    }
+                }
+
+
                 /*List<NamedValue> unit_vars = new List<NamedValue>();
                 NamedValueCollection nvc = null;
                 NamedValue ret_nv = null;
@@ -5407,7 +5444,8 @@ namespace VisualPascalABC
                     Type t = AssemblyHelper.GetType(_ident.name);
                     if (t != null)
                     {
-                        val.type = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(name),(uint)t.MetadataToken);
+                        var tm = monoDebuggerSession.GetType(t.FullName);
+                        val.monoType = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
                         val.managed_type = t;
                     }
                 }
@@ -6702,6 +6740,8 @@ namespace VisualPascalABC
                     //IList<Debugger.MemberInfo> members = rv.obj_val.Type.GetMember(id.name, BindingFlags.All);
                     if (string.Compare(id.name, "Count", true) == 0)
                         res.monoValue = InvokeMethod(rv.monoValue.Type, "get_Count", rv.monoValue, new Mono.Debugging.Client.ObjectValue[0]);
+                    else if (string.Compare(id.name, "Length", true) == 0)
+                        res.monoValue = InvokeMethod(rv.monoValue.Type, "get_Length", rv.monoValue, new Mono.Debugging.Client.ObjectValue[0]);
                     else if (rv.monoValue.IsArray)
                     {
                         if (string.Compare(id.name, "Length", true) == 0)
@@ -6736,7 +6776,7 @@ namespace VisualPascalABC
                         declaringType = tm;
                         var vr = tr.GetChild(id.name, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
                         res.monoValue = vr.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
-                        
+                        res.monoValue.parentFrame = stackFrame;
                     }
                     else
                     {
@@ -6792,8 +6832,8 @@ namespace VisualPascalABC
         public object GetSimpleValue(RetValue rv)
         {
             if (rv.prim_val != null) return rv.prim_val;
-            else if (rv.obj_val != null && rv.obj_val.IsPrimitive) return rv.obj_val.PrimitiveValue;
-            else if (rv.obj_val != null) return rv.obj_val;
+            else if (rv.monoValue != null && rv.monoValue.IsPrimitive) return rv.monoValue.GetRawValue();
+            else if (rv.monoValue != null) return rv.monoValue;
             return null;
         }
 
@@ -6815,9 +6855,9 @@ namespace VisualPascalABC
                             args.Add(GetSimpleValue(rv));
                         }
                     res.prim_val = EvalStandFuncWithParam(id.name, args.ToArray());
-                    if (res.prim_val is Value)
+                    if (res.prim_val is Mono.Debugging.Client.ObjectValue)
                     {
-                        res.obj_val = res.prim_val as Value;
+                        res.monoValue = res.prim_val as Mono.Debugging.Client.ObjectValue;
                         res.prim_val = null;
                     }
                 }

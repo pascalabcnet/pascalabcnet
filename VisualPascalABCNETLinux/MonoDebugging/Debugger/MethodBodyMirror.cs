@@ -58,8 +58,8 @@ namespace Mono.Debugger.Soft
 
 		static bool opcodes_inited;
 
-		static OpCode [] OneByteOpCode = new OpCode [0xe0 + 1];
-		static OpCode [] TwoBytesOpCode = new OpCode [0x1e + 1];
+		static OpCode [] OneByteOpCode = new OpCode [0xff + 1];
+		static OpCode [] TwoBytesOpCode = new OpCode [0xff + 1];
 
 		Dictionary<int, ResolvedToken> tokensCache = new Dictionary<int, ResolvedToken> ();
 
@@ -100,24 +100,45 @@ namespace Mono.Debugger.Soft
 					index = isOneByteOpCode ? value : value & 0xff;
 #endif
 					if (isOneByteOpCode)
-						OneByteOpCode [index] = val;
+                    {
+						if (index >= OneByteOpCode.Length)
+							throw new IndexOutOfRangeException("OpCode "+index.ToString());
+						OneByteOpCode[index] = val;
+					}
 					else
-						TwoBytesOpCode [index] = val;
+                    {
+						if (index >= OneByteOpCode.Length)
+							throw new IndexOutOfRangeException("OpCode " + index.ToString());
+						TwoBytesOpCode[index] = val;
+					}
+						
 				}
 				opcodes_inited = true;
 			}
 
 			while (br.BaseStream.Position < start + code_size) {
-				OpCode op;
+				OpCode op = default(OpCode);
 				long offset = br.BaseStream.Position - start;
 				int cursor = br.ReadByte ();
 				int token;
 				ResolvedToken t;
 
 				if (cursor == 0xfe)
-					op = TwoBytesOpCode [br.ReadByte ()];
+                {
+					byte b = br.ReadByte();
+					if (b >= 0 && b < TwoBytesOpCode.Length)
+						op = TwoBytesOpCode[b];
+					else
+						throw new IndexOutOfRangeException("OpCode " + b.ToString());
+				}
 				else
-					op = OneByteOpCode [cursor];
+                {
+					if (cursor >= 0 && cursor < OneByteOpCode.Length)
+						op = OneByteOpCode[cursor];
+					else
+						throw new IndexOutOfRangeException("OpCode " + cursor.ToString());
+				}
+					
 
 				ILInstruction instr = new ILInstruction ((int)offset, op, null);
 
