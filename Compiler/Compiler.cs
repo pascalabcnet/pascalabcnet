@@ -1857,6 +1857,7 @@ namespace PascalABCCompiler
             {
                 //var timer = System.Diagnostics.Stopwatch.StartNew(); //////
 
+                // компиляция не паскалевских файлов
                 if (Path.GetExtension(CompilerOptions.SourceFileName) == ".vb")
                 {
                     return CompileVB();
@@ -1867,22 +1868,30 @@ namespace PascalABCCompiler
                     return CompileCS();
                 }
                 
+                // вызов события смены состояния компилятора - начало компиляции
 				OnChangeCompilerState(this, CompilerState.CompilationStarting, CompilerOptions.SourceFileName);
 
+                // очистка всех переменных и списков, используемых в процессе
                 Reset();
                 //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  //////
+
+                // если проект скомпилирован, то заполнение информации о проекте в опциях компилятора
                 if (CompilerOptions.ProjectCompiled)
                 {
                 	PrepareCompileOptionsForProject();
                 }
+                // создание корня синтаксического дерева ?
                 CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
                 
+                // компиляция текущего юнита
                 CompileUnit(
                     new PascalABCCompiler.TreeRealization.unit_node_list(),
                     new Dictionary<unit_node, CompilationUnit>(),
                     CurrentSyntaxUnit, null);
                 
                 //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  //////
+                
+                // проход по всем юнитам для компиляции
                 foreach (CompilationUnit CurrentUnit in UnitsToCompile)
                     if (CurrentUnit.State != UnitState.Compiled)
                     {
@@ -1890,25 +1899,31 @@ namespace PascalABCCompiler
                         string UnitName = CurrentCompilationUnit.SyntaxTree.file_name;
                         //if(CurrentUnit.State!=UnitState.InterfaceCompiled)													//DEBUG
                         //Console.WriteLine("ERROR! interface not compiled "+GetUnitFileName(CurrentUnit.SyntaxUnitName));//DEBUG
+
+                        // получение списка используемых модулей в файле (uses 1, 2, 3...)
                         System.Collections.Generic.List<SyntaxTree.unit_or_namespace> SyntaxUsesList = GetSyntaxImplementationUsesList(CurrentUnit.SyntaxTree);
+                        
                         CurrentUnit.PossibleNamespaces.Clear();
                         if (HasIncludeNamespacesDirective(CurrentUnit))
                             compilerOptions.UseDllForSystemUnits = false;
                         if (SyntaxUsesList != null)
                         {
+                            // Обход используемых модулей в обратном порядке
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                                 if (!IsPossibleNamespace(SyntaxUsesList[i], false, Path.GetDirectoryName(UnitName)))
                                 {
-                                    compilerOptions.UseDllForSystemUnits = false;
+                                    compilerOptions.UseDllForSystemUnits = false; // установка флага о не использовании dll для системных модулей, если нашли не пространство имен
                                     break;
                                 }
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                                 if (!IsPossibleNamespace(SyntaxUsesList[i], true, Path.GetDirectoryName(UnitName)))
                                 {
+                                    // компилируем юнит, если он не является пространством имен
                                     CompileUnit(CurrentUnit.ImplementationUsedUnits, CurrentUnit.DirectImplementationCompilationUnits, SyntaxUsesList[i], Path.GetDirectoryName(UnitName));
                                 }
                                 else
                                 {
+                                    // добавление в списки только пространств имен
                                     CurrentUnit.ImplementationUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])), null);
                                     CurrentUnit.PossibleNamespaces.Add(SyntaxUsesList[i]);
                                 }
@@ -1919,11 +1934,14 @@ namespace PascalABCCompiler
                         AddNamespaces(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.PossibleNamespaces, true, null);
 
 #if DEBUG
-                        if (InternalDebug.SemanticAnalysis)
+                        if (InternalDebug.SemanticAnalysis) // Семантический анализ - всегда в release
 #endif
                         {
+                            // состояние компиляции реализации
                             OnChangeCompilerState(this, CompilerState.CompileImplementation, UnitName);
                             PascalABCCompiler.TreeConverter.SemanticRules.SymbolTableCaseSensitive = CurrentUnit.CaseSensitive;
+
+                            // вызов компиляции реализации
                             SyntaxTreeToSemanticTreeConverter.CompileImplementation(
                                 (PascalABCCompiler.TreeRealization.common_unit_node)CurrentUnit.SemanticTree,
                                 CurrentUnit.SyntaxTree,
@@ -1938,20 +1956,21 @@ namespace PascalABCCompiler
                                 CompilerOptions.ForIntellisense,
                                 CompiledVariables
                                 );
-                            CheckErrors();
+                            CheckErrors(); // выбрасывание ошибок из ErrorList при необходимости
                         }
-                        CurrentUnit.State = UnitState.Compiled;
-                        OnChangeCompilerState(this, CompilerState.EndCompileFile, UnitName);
+                        CurrentUnit.State = UnitState.Compiled; // отметка о скомпилированности
+                        OnChangeCompilerState(this, CompilerState.EndCompileFile, UnitName); // состояние конец компиляции
                         //SavePCU(CurrentUnit, UnitName);
                         CurrentUnit.UnitFileName = UnitName;
                     }
-
+                // ???
                 ClosePCUReadersAndWriters();
                 if (CompilerOptions.SaveDocumentation)
                 SaveDocumentations();
                 
                 compilerDirectives = GetCompilerDirectives(UnitsSortedList);
 
+                // выяснение типа выходного файла по соотв. директиве компилятора
                 if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_apptype))
                 {
                     string directive = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_apptype][0].directive;
@@ -1968,6 +1987,7 @@ namespace PascalABCCompiler
                                     CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                 }
 
+                // перемещаем системный модуль в начало списка
                 moveSystemUnitToForwardUnitSortedList();
                 PascalABCCompiler.TreeRealization.common_unit_node system_unit = null;
                 if (UnitsSortedList.Count>0) 
@@ -1978,6 +1998,8 @@ namespace PascalABCCompiler
                 TreeRealization.program_node pn = null;
                 NETGenerator.CompilerOptions cdo = new NETGenerator.CompilerOptions();
                 List<TreeRealization.compiler_directive> cds;
+                
+                // выяснение целевой платформы
                 if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_platformtarget, out cds))
                 {
                     string plt = cds[0].directive.ToLower();
@@ -2005,6 +2027,8 @@ namespace PascalABCCompiler
                 }
                 if (this.compilerOptions.Only32Bit)
                     cdo.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
+
+                // целевой framework
                 if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_targetframework, out cds))
                 {
                     cdo.TargetFramework = cds[0].directive;
@@ -2012,6 +2036,7 @@ namespace PascalABCCompiler
                         .Contains(cdo.TargetFramework))
                         ErrorsList.Add(new UnsupportetTargetFramework(cdo.TargetFramework, cds[0].location));
                 }
+                // остальные директивы
                 if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.product_string, out cds))
                 {
                     cdo.Product = cds[0].directive;
