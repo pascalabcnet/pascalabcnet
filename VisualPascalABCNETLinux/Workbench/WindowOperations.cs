@@ -193,7 +193,7 @@ namespace VisualPascalABC
             // SSM 03.06.22 - это надо убрать здесь - почему-то не работает активация - надо туда
             //_currentCodeFileDocument = tp; // должно по DockStateChanged - но мб неверно
             //tp.BorderStyle=BorderStyle.Fixed3D;
-            //tp.Font = new Font("MS Sans Serif", tp.Font.Size);
+            //tp.Font = new System.Drawing.Font("MS Sans Serif", tp.Font.Size);
             RichTextBox tb = OutputWindow.outputTextBox;
             if (OpenDocuments.Count > 0)
                 tb = CopyTextBox(OutputWindow.outputTextBox);
