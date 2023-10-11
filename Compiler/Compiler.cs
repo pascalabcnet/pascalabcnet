@@ -1858,6 +1858,7 @@ namespace PascalABCCompiler
                 //var timer = System.Diagnostics.Stopwatch.StartNew(); //////
 
                 // компиляция не паскалевских файлов
+                // TODO избавиться от компиляции .vb
                 if (Path.GetExtension(CompilerOptions.SourceFileName) == ".vb")
                 {
                     return CompileVB();
@@ -1881,6 +1882,7 @@ namespace PascalABCCompiler
                 	PrepareCompileOptionsForProject();
                 }
                 // создание корня синтаксического дерева ?
+                // TODO: заменить название, не соответствует реальности
                 CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
                 
                 // компиляция текущего юнита
@@ -1888,9 +1890,7 @@ namespace PascalABCCompiler
                     new PascalABCCompiler.TreeRealization.unit_node_list(),
                     new Dictionary<unit_node, CompilationUnit>(),
                     CurrentSyntaxUnit, null);
-                
-                //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  //////
-                
+     
                 // проход по всем юнитам для компиляции
                 foreach (CompilationUnit CurrentUnit in UnitsToCompile)
                     if (CurrentUnit.State != UnitState.Compiled)
@@ -1909,6 +1909,7 @@ namespace PascalABCCompiler
                         if (SyntaxUsesList != null)
                         {
                             // Обход используемых модулей в обратном порядке
+                            // TODO: IsPossibleNamespace переименовать
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                                 if (!IsPossibleNamespace(SyntaxUsesList[i], false, Path.GetDirectoryName(UnitName)))
                                 {
@@ -1928,7 +1929,6 @@ namespace PascalABCCompiler
                                     CurrentUnit.PossibleNamespaces.Add(SyntaxUsesList[i]);
                                 }
                         }
-                        //Console.WriteLine("Compile Implementation "+UnitName);//DEBUG
                         //TODO: Избавиться от преобразования типа.
 
                         AddNamespaces(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.PossibleNamespaces, true, null);
@@ -1963,7 +1963,7 @@ namespace PascalABCCompiler
                         //SavePCU(CurrentUnit, UnitName);
                         CurrentUnit.UnitFileName = UnitName;
                     }
-                // ???
+                // Закрытие чтения и записи .pcu файлов
                 ClosePCUReadersAndWriters();
                 if (CompilerOptions.SaveDocumentation)
                 SaveDocumentations();
@@ -1971,6 +1971,7 @@ namespace PascalABCCompiler
                 compilerDirectives = GetCompilerDirectives(UnitsSortedList);
 
                 // выяснение типа выходного файла по соотв. директиве компилятора
+                // TODO: вынести в отдельную функцию. Для switch нужно использовать ToLower!!!
                 if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_apptype))
                 {
                     string directive = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_apptype][0].directive;
@@ -1988,6 +1989,7 @@ namespace PascalABCCompiler
                 }
 
                 // перемещаем системный модуль в начало списка
+                // TODO: UnitsSortedList? Там правда есть сортировка?
                 moveSystemUnitToForwardUnitSortedList();
                 PascalABCCompiler.TreeRealization.common_unit_node system_unit = null;
                 if (UnitsSortedList.Count>0) 
@@ -2000,6 +2002,7 @@ namespace PascalABCCompiler
                 List<TreeRealization.compiler_directive> cds;
                 
                 // выяснение целевой платформы
+                // TODO: switch по строкам!
                 if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_platformtarget, out cds))
                 {
                     string plt = cds[0].directive.ToLower();
@@ -2085,7 +2088,7 @@ namespace PascalABCCompiler
                         ErrorsList.Add(new ResourceFileNotFound(cds[0].directive, cds[0].location));
                 }
 
-                // добавление ресурсных файлов (что бы это ни значило :))
+                // добавление ресурсных файлов
                 List<string> ResourceFiles = null;
                 if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_resource))
                 {
@@ -2121,6 +2124,7 @@ namespace PascalABCCompiler
                         cdo.Title = project.title;
                     if (!string.IsNullOrEmpty(project.description))
                         cdo.Description = project.description;
+                    // TODO: разобраться, что за условие
                     if (!string.IsNullOrEmpty(project.app_icon) && false) // ???
                     {
                         //cdo.MainResourceFileName = project.app_icon;
@@ -2188,8 +2192,8 @@ namespace PascalABCCompiler
                         case CompilerOptions.OutputType.ClassLibrary: cdo.target = NETGenerator.TargetType.Dll; break;
                         case CompilerOptions.OutputType.ConsoleApplicaton: cdo.target = NETGenerator.TargetType.Exe; break;
                         case CompilerOptions.OutputType.WindowsApplication: cdo.target = NETGenerator.TargetType.WinExe; break;
-
                     }
+                    // TODO: вынести связанное с project отдельно (или хотя бы отметить это отдельно)
                     if (project != null && project.ProjectType == ProjectType.WindowsApp)
                         cdo.target = PascalABCCompiler.NETGenerator.TargetType.WinExe;
                     // Debug / Release
@@ -2207,9 +2211,10 @@ namespace PascalABCCompiler
                     
                     for (int i = 0; i < UnitsSortedList.Count; i++)
                         programNode.units.AddElement(UnitsSortedList[i].SemanticTree as TreeRealization.common_unit_node);
-
+               
                     //(ssyy) Добавил в условие c_module
                     // если компилируем exe или WinExe
+                    // TODO: вырезать поддержку c_module
                     if (FirstCompilationUnit.SyntaxTree is SyntaxTree.program_module ||
                         FirstCompilationUnit.SyntaxTree is SyntaxTree.c_module)
                     {
@@ -2218,6 +2223,7 @@ namespace PascalABCCompiler
                             if (UnitsSortedList.Count > 0)
                             {
                                 programNode.main_function = ((PascalABCCompiler.TreeRealization.common_unit_node)UnitsSortedList[UnitsSortedList.Count - 1].SemanticTree).main_function;
+        
                                 /***************************Ivan added*******************************/
                                 if (programNode.main_function.function_code.location != null)
                                 {
@@ -2229,11 +2235,13 @@ namespace PascalABCCompiler
                                         if (nv.inital_value != null && nv.inital_value.location != null && !(nv.inital_value is PascalABCCompiler.TreeRealization.constant_node)
                                             && !(nv.inital_value is PascalABCCompiler.TreeRealization.record_initializer) && !(nv.inital_value is PascalABCCompiler.TreeRealization.array_initializer))
                                         {
+                                            // TODO: разобраться, что делает varBeginOffset
                                             varBeginOffset = main_ns.variables[i].inital_value.location.begin_line_num;
                                             flag = true;
                                             break;
                                         }
                                     }
+                                    // TODO: разобраться, что делает BeginOffset
                                     beginOffset = programNode.main_function.function_code.location.begin_line_num;
                                 }
                                 /*******************************************************************/
@@ -2252,9 +2260,11 @@ namespace PascalABCCompiler
                     // если мы компилируем dll
                     else if (FirstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && cdo.target == NETGenerator.TargetType.Dll)
                     {
+                        // TODO: посмотреть инициализирующий код .dll
                     	programNode.create_main_function_as_in_module();
                     }
                     if (compilerOptions.GenerateCode)
+                        // семантические преобразования с оптимизацией кода
                         programNode = semanticTreeConvertersController.Convert(programNode) as TreeRealization.program_node;
 
                     _semantic_tree = programNode;
@@ -2270,7 +2280,7 @@ namespace PascalABCCompiler
                         if( CompilerOptions.OutputFileType!= CompilerOptions.OutputType.SemanticTree)
 #if DEBUG
                         if (InternalDebug.CodeGeneration)
-#endif
+#endif                  
                         {
                             int n = 1;
                             try
@@ -2305,6 +2315,7 @@ namespace PascalABCCompiler
                             if (compilerOptions.UseDllForSystemUnits)
                                 cdo.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
                             // трансляция в IL-код
+                            // TODO: переназвать Compile для трансляции в IL
                             CodeGeneratorsController.Compile(programNode, CompilerOptions.OutputFileName, CompilerOptions.SourceFileName, cdo, CompilerOptions.StandartDirectories, ResourceFilesArray);
                             CodeGeneratorsController.EmitAssemblyRedirects(
                                 assemblyResolveScope,
@@ -2315,6 +2326,7 @@ namespace PascalABCCompiler
                     }
                 }
             }
+            // TODO: просмотреть возможные ParserError
             catch (TreeConverter.ParserError err)
             {
                 //конвертор уткнулся в ошибку. ничего не делаем
@@ -2338,10 +2350,13 @@ namespace PascalABCCompiler
                 else
                     if (err != ErrorsList[0])
                     {
+                    // TODO: переделать insert в ErrorsList
                         if (err is SemanticError)
                         {
                             int pos = ErrorsList.Count;
-                            SourceLocation loc = (err as SemanticError).SourceLocation, loctmp;
+
+                            SourceLocation loc = (err as SemanticError).SourceLocation;
+                            SourceLocation loctmp;
                             if (loc != null)
                                 for (int i = 0; i < ErrorsList.Count; i++)
                                     if (ErrorsList[i] is LocatedError)
@@ -2391,8 +2406,10 @@ namespace PascalABCCompiler
                 ErrorsList.Add(new Errors.CompilerInternalError("Compiler.ClosePCUReadersAndWriters", e));
             }
             bool need_recompiled = false;
+            // на случай ошибки в самом .pcu формате
             if (ErrorsList.Count > 0)
             {
+                // rtl - та самая dll со всей паскалевской системой
                 if (compilerOptions.UseDllForSystemUnits && !has_only_syntax_errors(ErrorsList) && compilerOptions.IgnoreRtlErrors)
                 {
                     compilerOptions.UseDllForSystemUnits = false;
