@@ -449,6 +449,18 @@ namespace VisualPascalABC
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Куча констант - VS2005DockPaneStrip.cs строка 98
+            // _DocumentIconGapBottom сделать 5 вместо 2
+            // _DocumentTabMaxWidth 600 сделать и в Win версии!!!
+
+            MainDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = menuStrip1.Font;
+            BottomDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = menuStrip1.Font;
+            statusStrip1.Font = menuStrip1.Font;
+            //var name = BottomDockPanel.Theme.Skin.DockPaneStripSkin.TextFont.Name;
+            //var sz = (float)9.0;
+            //MainDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = new Font(name, sz);
+            //BottomDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = new Font(name, sz);
+
             BottomDockPanel.AllowEndUserDocking = false;
 
             //CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;

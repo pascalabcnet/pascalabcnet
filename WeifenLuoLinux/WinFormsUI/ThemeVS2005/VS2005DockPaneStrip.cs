@@ -119,7 +119,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         private const int _DocumentTabGapTop = 3;
         private const int _DocumentTabGapLeft = 3;
         private const int _DocumentTabGapRight = 3;
-        private const int _DocumentIconGapBottom = 2;
+        private const int _DocumentIconGapBottom = 5;
         private const int _DocumentIconGapLeft = 8;
         private const int _DocumentIconGapRight = 0;
         private const int _DocumentIconHeight = 16;
@@ -1364,6 +1364,8 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
             else
                 rectText.Width = rect.Width - DocumentIconGapLeft - DocumentTextGapRight;
+
+            rectText.Height = rectText.Height + 4;
 
             Rectangle rectTab = DrawHelper.RtlTransform(this, rect);
             Rectangle rectBack = DrawHelper.RtlTransform(this, rect);

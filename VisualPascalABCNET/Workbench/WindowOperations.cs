@@ -188,7 +188,7 @@ namespace VisualPascalABC
         {
             CodeFileDocumentControl tp = new CodeFileDocumentControl(this);
             //tp.BorderStyle=BorderStyle.Fixed3D;
-            //tp.Font = new Font("MS Sans Serif", tp.Font.Size);
+            //tp.Font = new System.Drawing.Font("MS Sans Serif", tp.Font.Size);
             RichTextBox tb = OutputWindow.outputTextBox;
             if (OpenDocuments.Count > 0)
                 tb = CopyTextBox(OutputWindow.outputTextBox);

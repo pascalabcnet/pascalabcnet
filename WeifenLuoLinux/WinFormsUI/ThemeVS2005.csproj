@@ -22,7 +22,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>dockpanelsuite.snk</AssemblyOriginatorKeyFile>
     <EnableDefaultItems>false</EnableDefaultItems>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,21 +37,13 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="ThemeVS2005\VS2005AutoHideStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2005\VS2005AutoHideStrip.cs" />
     <Compile Include="ThemeVS2005\VS2005AutoHideWindowFactory.cs" />
     <Compile Include="ThemeVS2005\VS2005DockIndicatorFactory.cs" />
-    <Compile Include="ThemeVS2005\VS2005DockPaneCaption.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2005\VS2005DockPaneCaption.cs" />
     <Compile Include="ThemeVS2005\VS2005DockPaneSplitterControlFactory.cs" />
-    <Compile Include="ThemeVS2005\VS2005DockPaneStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeVS2005\VS2005Theme.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ThemeVS2005\VS2005DockPaneStrip.cs" />
+    <Compile Include="ThemeVS2005\VS2005Theme.cs" />
     <Compile Include="ThemeVS2005\VS2005PaneIndicatorFactory.cs" />
     <Compile Include="ThemeVS2005\VS2005PanelIndicatorFactory.cs" />
     <Compile Include="ThemeVS2005\VS2005DockOutlineFactory.cs" />
@@ -63,12 +55,6 @@
     <None Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="WeifenLuo.WinFormsUI.Docking.Linux.csproj">
-      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
-      <Name>WinFormsUI</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ThemeVS2005\Resources.resx">
@@ -153,6 +139,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ThemeVS2005\Resources\DockPane_OptionOverflow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="WeifenLuo.WinFormsUI.Docking.Linux.csproj" />
   </ItemGroup>
 
 </Project>

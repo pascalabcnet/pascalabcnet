@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (21.09.2023)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (02.10.2023)
 unit School;
 
 interface
@@ -10,8 +10,10 @@ type
     addr2: string;        // двоичный адрес
     addr10: longword;     // адрес в виде десятичного числа
     
+    /// Проверка правильности записи адреса в десятичном формате с октетами
     function AddressValid(address: string): boolean;
     
+    /// Проверка правильности записи 32-разрядного адреса в бинарном представлении
     function AddressBinValid(address: string): boolean;
      
     /// Перевод ip-адреса/маски из десятичного представления с октетами в 32-битное
@@ -291,6 +293,12 @@ function ReplaceMany(s: string; source, target: IList<string>): string;
 /// В строке s меняет местами подстроки ss1 и ss2
 procedure SwapSubstr(var s: string; ss1, ss2: string);
 
+/// Множественная замена символов в строке s
+/// Каждый символ строки s[i] последовательно ищется в source.
+/// Если найден, source[j] заменяется target[j], если не найден - не меняется.
+/// Если j больше длины строки target, символ s[i] удаляется.
+function Translate(s, source, target: string): string;
+
 implementation
 
 type
@@ -368,7 +376,7 @@ function Oct(number: BigInteger): string;
 begin
   if number < 0 then number := -number;
   Result := '';
-  while number >= 2 do
+  while number >= 8 do
   begin
     Result += byte(number mod 8);
     number := number div 8
@@ -1138,6 +1146,33 @@ end;
 /// В строке s меняет местами подстроки ss1 и ss2
 procedure SwapSubstr(var Self: string; ss1, ss2: string);
   extensionmethod := SwapSubstr(Self, ss1, ss2);
+  
+/// Множественная замена символов в строке s
+/// Каждый символ строки s[i] последовательно ищется в source.
+/// Если найден, source[j] заменяется target[j], если не найден - не меняется.
+/// Если j больше длины строки target, символ s[i] удаляется.
+function Translate(s, source, target: string): string;
+begin
+  var sb := new StringBuilder(s.Length);
+  foreach var x in s do 
+  begin
+    var ind := source.IndexOf(x); 
+    if ind >= 0 then
+    begin
+      if ind <= target.Length - 1 then
+        sb.Append(target[ind + 1])
+    end
+    else sb.Append(x)
+  end;
+  Result := sb.ToString
+end;
+
+/// Множественная замена символов в строке s
+/// Каждый символ строки s[i] последовательно ищется в source.
+/// Если найден, source[j] заменяется target[j], если не найден - не меняется.
+/// Если j больше длины строки target, символ s[i] удаляется.
+function Translate(Self, source, target: string): string;
+  extensionmethod := Translate(Self, source, target);
 
 {$endregion}
 
