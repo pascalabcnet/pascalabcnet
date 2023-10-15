@@ -1870,6 +1870,7 @@ namespace PascalABCCompiler
                 }
                 
                 // вызов события смены состояния компилятора - начало компиляции
+                // событие имеет много потенциальных обработчиков
 				OnChangeCompilerState(this, CompilerState.CompilationStarting, CompilerOptions.SourceFileName);
 
                 // очистка всех переменных и списков, используемых в процессе
@@ -1881,11 +1882,11 @@ namespace PascalABCCompiler
                 {
                 	PrepareCompileOptionsForProject();
                 }
-                // создание корня синтаксического дерева ?
+                // модули и пространства имен из секции uses - используется только в CompileUnit
                 // TODO: заменить название, не соответствует реальности
                 CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
                 
-                // компиляция текущего юнита
+                // компиляция юнита из исходного файла
                 CompileUnit(
                     new PascalABCCompiler.TreeRealization.unit_node_list(),
                     new Dictionary<unit_node, CompilationUnit>(),
@@ -1909,7 +1910,7 @@ namespace PascalABCCompiler
                         if (SyntaxUsesList != null)
                         {
                             // Обход используемых модулей в обратном порядке
-                            // TODO: IsPossibleNamespace переименовать
+                            // TODO: IsPossibleNamespace переименовать - проверка, является ли пространством имен net
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                                 if (!IsPossibleNamespace(SyntaxUsesList[i], false, Path.GetDirectoryName(UnitName)))
                                 {
@@ -1988,8 +1989,8 @@ namespace PascalABCCompiler
                                     CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                 }
 
-                // перемещаем системный модуль в начало списка
-                // TODO: UnitsSortedList? Там правда есть сортировка?
+                // перемещаем PABCSystem в начало списка
+                // TODO: UnitsSortedList? Сортировки нет
                 moveSystemUnitToForwardUnitSortedList();
                 PascalABCCompiler.TreeRealization.common_unit_node system_unit = null;
                 if (UnitsSortedList.Count>0) 
@@ -2176,7 +2177,7 @@ namespace PascalABCCompiler
                         res_file = Path.Combine(Path.GetDirectoryName(project.app_icon), Path.GetFileNameWithoutExtension(project.app_icon) + ".res");
                         if (File.Exists(res_file))
                         {
-                            cdo.MainResourceFileName = res_file;
+                            cdo.MainResourceFileName = res_file; // !!! главный ресурсный файл
                         }
                         File.Delete(rc_file);
                     }
@@ -2409,7 +2410,7 @@ namespace PascalABCCompiler
             // на случай ошибки в самом .pcu формате
             if (ErrorsList.Count > 0)
             {
-                // rtl - та самая dll со всей паскалевской системой
+                // rtl - та самая dll со всей паскалевской системой (PABCSystem)
                 if (compilerOptions.UseDllForSystemUnits && !has_only_syntax_errors(ErrorsList) && compilerOptions.IgnoreRtlErrors)
                 {
                     compilerOptions.UseDllForSystemUnits = false;
