@@ -2191,7 +2191,7 @@ namespace PascalABCCompiler.SystemLibrary
             Type arr_type = typeof(System.Array);
             System.Reflection.MethodInfo resize_func_mi = arr_type.GetMethod("Resize");
             _resize_func = compiled_function_node.get_compiled_method(resize_func_mi);
-            _resize_func.parameters.clear();
+            _resize_func.parameters.Clear();
             common_parameter par0 = new common_parameter("Array", _object_type, SemanticTree.parameter_type.value, null,
                 concrete_parameter_type.cpt_none, null, null);
             common_parameter par1 = new common_parameter("Length", _integer_type, SemanticTree.parameter_type.value, null,

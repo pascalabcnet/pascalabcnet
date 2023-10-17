@@ -11389,13 +11389,13 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class uses_unit_in : unit_or_namespace
+	public partial class uses_in_section : unit_or_namespace
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public uses_unit_in()
+		public uses_in_section()
 		{
 
 		}
@@ -11403,7 +11403,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public uses_unit_in(string_const _in_file)
+		public uses_in_section(string_const _in_file)
 		{
 			this._in_file=_in_file;
 			FillParentsInDirectChilds();
@@ -11412,7 +11412,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public uses_unit_in(string_const _in_file,SourceContext sc)
+		public uses_in_section(string_const _in_file,SourceContext sc)
 		{
 			this._in_file=_in_file;
 			source_context = sc;
@@ -11422,7 +11422,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public uses_unit_in(ident_list _name,string_const _in_file)
+		public uses_in_section(ident_list _name,string_const _in_file)
 		{
 			this._name=_name;
 			this._in_file=_in_file;
@@ -11432,7 +11432,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public uses_unit_in(ident_list _name,string_const _in_file,SourceContext sc)
+		public uses_in_section(ident_list _name,string_const _in_file,SourceContext sc)
 		{
 			this._name=_name;
 			this._in_file=_in_file;
@@ -11462,7 +11462,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			uses_unit_in copy = new uses_unit_in();
+			uses_in_section copy = new uses_in_section();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -11480,9 +11480,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new uses_unit_in TypedClone()
+		public new uses_in_section TypedClone()
 		{
-			return Clone() as uses_unit_in;
+			return Clone() as uses_in_section;
 		}
 
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>

@@ -427,7 +427,7 @@ namespace VisualPascalABCPlugins
 		}
 
 
-		public override void visit(uses_unit_in _uses_unit_in)
+		public override void visit(uses_in_section _uses_unit_in)
 		{
 			prepare_node(_uses_unit_in.name,"name");
 			prepare_node(_uses_unit_in.in_file,"file name");

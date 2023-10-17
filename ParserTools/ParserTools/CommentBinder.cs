@@ -663,7 +663,7 @@ namespace PascalABCCompiler.Parsers
             _unit_or_namespace.name.visit(this);
         }
 
-        public override void visit(uses_unit_in _uses_unit_in)
+        public override void visit(uses_in_section _uses_unit_in)
         {
             _uses_unit_in.name.visit(this);
             _uses_unit_in.in_file.visit(this);

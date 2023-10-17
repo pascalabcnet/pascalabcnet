@@ -125,7 +125,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 51:
 					return new unit_or_namespace();
 				case 52:
-					return new uses_unit_in();
+					return new uses_in_section();
 				case 53:
 					return new uses_list();
 				case 54:
@@ -1390,12 +1390,12 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(uses_unit_in _uses_unit_in)
+		public void visit(uses_in_section _uses_unit_in)
 		{
 			read_uses_unit_in(_uses_unit_in);
 		}
 
-		public void read_uses_unit_in(uses_unit_in _uses_unit_in)
+		public void read_uses_unit_in(uses_in_section _uses_unit_in)
 		{
 			read_unit_or_namespace(_uses_unit_in);
 			_uses_unit_in.in_file = _read_node() as string_const;

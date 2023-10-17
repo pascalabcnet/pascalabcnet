@@ -1636,7 +1636,7 @@ namespace CodeFormatters
             }
         }
 
-        public override void visit(uses_unit_in _uses_unit_in)
+        public override void visit(uses_in_section _uses_unit_in)
         {
             for (int i = 0; i < _uses_unit_in.name.idents.Count; i++)
             {

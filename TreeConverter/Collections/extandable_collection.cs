@@ -208,7 +208,7 @@ namespace PascalABCCompiler.Collections
             _elements_as_arr = null;
         }
 
-        public void clear()
+        public void Clear()
         {
             _elements.Clear();
             _elements_as_arr = null;

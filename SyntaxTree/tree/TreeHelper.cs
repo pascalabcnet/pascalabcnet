@@ -2041,7 +2041,7 @@ namespace PascalABCCompiler.SyntaxTree
         public object ext = null;
     }
 
-    public partial class uses_unit_in
+    public partial class uses_in_section
     {
         public override string UsesPath() => in_file.Value;
     }
