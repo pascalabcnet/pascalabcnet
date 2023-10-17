@@ -1870,18 +1870,16 @@ namespace PascalABCCompiler
                     if (implementationUsesSection != null)
                     {
                         // Обход используемых модулей в обратном порядке
-                        int indexOfNotNamespace = implementationUsesSection.Count - 1;
                         for (int i = implementationUsesSection.Count - 1; i >= 0; i--)
                         {
                             if (!IsPossibleNetNamespaceOrStandardPasFile(implementationUsesSection[i], false, Path.GetDirectoryName(UnitName)))
                             {
                                 compilerOptions.UseDllForSystemUnits = false; // установка флага о не использовании dll для системных модулей, если нашли не пространство имен
-                                indexOfNotNamespace = i;
                                 break;
                             }
                         }
                             
-                        for (int i = indexOfNotNamespace; i >= 0; i--)
+                        for (int i = implementationUsesSection.Count - 1; i >= 0; i--)
                         {
                             if (!IsPossibleNetNamespaceOrStandardPasFile(implementationUsesSection[i], true, Path.GetDirectoryName(UnitName)))
                             {
