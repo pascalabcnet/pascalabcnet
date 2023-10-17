@@ -3453,7 +3453,8 @@ namespace PascalABCCompiler
             // Используется для подключения модулей, $include и т.п. из модуля, подключённого с uses-in
             var curr_path = Path.GetDirectoryName(UnitFileName);
 
-            // ошибка - пространство имен не может содержать in секцию (для указания файла)
+            // ошибка - пространство имен не может содержать in секцию (для указания файла
+            // TODO: скинуть семантические проверки в кучу (если получится)
             CompilationUnit CurrentUnit = UnitTable[UnitId];
             if (CurrentUnit != null && CurrentUnit.SemanticTree is PascalABCCompiler.TreeRealization.dot_net_unit_node 
                 && currentUsesSection is PascalABCCompiler.SyntaxTree.uses_unit_in ui && ui.in_file != null) // значит, это пространство имен и секция in у него должна отсутствовать
@@ -3465,6 +3466,7 @@ namespace PascalABCCompiler
             if (CurrentUnit != null)
                 if (CurrentUnit.State != UnitState.BeginCompilation || CurrentUnit.SemanticTree != null)  //ИЗБАВИТЬСЯ ОТ ВТОРОГО УСЛОВИЯ
                 {
+                    // TODO: подумать над названием DirectCompilationUnits
                     if (Units.AddElement(CurrentUnit.SemanticTree, currentUsesSection.UsesPath()))
                         DirectCompilationUnits.Add(CurrentUnit.SemanticTree, CurrentUnit);
                     Units.AddRange(GetReferences(CurrentUnit));
@@ -3491,6 +3493,7 @@ namespace PascalABCCompiler
                     {
                         //Перекомпилируем....
                     }
+                    // Так надо (для дебага)
                     catch (Error)
                     {
                         throw;
@@ -3520,6 +3523,7 @@ namespace PascalABCCompiler
                 OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName); // начало компиляции модуля
                 if (compilerOptions.UnitSyntaxTree == null)
                 {
+                    // TODO: подебажить GetSourceFileText
                     SourceText = GetSourceFileText(UnitFileName);
                     if (SourceText == null)
                         if (CurrentUnit == FirstCompilationUnit)
@@ -3560,8 +3564,10 @@ namespace PascalABCCompiler
                             CurrentUnit.Documented = true;
                     }
                 }
+            
                 if (CurrentUnit.SyntaxTree is SyntaxTree.unit_module)
                 {
+                    // Проверка на явный namespace
                     if ((CurrentUnit.SyntaxTree as SyntaxTree.unit_module).unit_name.HeaderKeyword == SyntaxTree.UnitHeaderKeyword.Namespace)
                         throw new NamespacesCanBeCompiledOnlyInProjects(CurrentUnit.SyntaxTree.source_context);
                     compilerOptions.UseDllForSystemUnits = false;
@@ -3570,7 +3576,9 @@ namespace PascalABCCompiler
                 // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
 
                 var ccu = CurrentUnit.SyntaxTree;
+                // TODO: пофиксить разбор ошибок в директивах компилятора и разбросанные директивы компилятора собрать
                 // !!!!!!!!!!!!!!!!!!!!!!
+                // Странно, почему именно такая проверка (а если library и не dll?)
                 if (ccu != null) // SSM 06.06.22 - здесь была ошибка - ccu может быть null и тогда исключение!!! Добавил if
                     foreach (SyntaxTree.compiler_directive cd in ccu.compiler_directives)
                     if (string.Compare(cd.Name.text, "apptype", true) == 0 && string.Compare(cd.Directive.text, "dll", true) == 0)
@@ -3582,8 +3590,7 @@ namespace PascalABCCompiler
                             break;
                         }
                     }
-                // ???
-
+                // TODO: возможно, имплементировать переключение парсеров
                 if (is_dll(CurrentUnit.SyntaxTree))
                     compilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary;
                 if (ParsersController.LastParser != null)
@@ -3653,10 +3660,9 @@ namespace PascalABCCompiler
             var namespaces = IncludeNamespaces(CurrentUnit);
             if (SyntaxUsesList != null)
             {
-                
+                // TODO: выяснить, что за условие в for
                 for (int i = SyntaxUsesList.Count - 1 - CurrentUnit.InterfaceUsedUnits.Count; i >= 0; i--)
                 {
-                    // тоже было в Compile
                     if (IsPossibleNetNamespaceOrStandardPasFile(SyntaxUsesList[i], true, curr_path) || namespaces.ContainsKey(SyntaxUsesList[i].name.idents[0].name))
                     {
                         CurrentUnit.InterfaceUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])), null);
@@ -3682,7 +3688,7 @@ namespace PascalABCCompiler
                                         throw new CycleUnitReference(UnitFileName, SyntaxUsesList[i]);
                                 }
                             }
-                        // компиляция и возврат модуля
+                        // компиляция модулей из интерфейса
                         CompileUnit(CurrentUnit.InterfaceUsedUnits, CurrentUnit.DirectInterfaceCompilationUnits, SyntaxUsesList[i], curr_path);
                         if (CurrentUnit.State == UnitState.Compiled)
                         {
@@ -3745,6 +3751,7 @@ namespace PascalABCCompiler
             CompilationUnit compilationUnit = null; bool interfcompile = true;
             CurrentUnit.ImplementationUsedUnits.clear();
             CurrentUnit.PossibleNamespaces.Clear();
+            // Непонятная логика сборки компилируемых юнитов // EVA 17.10.23
             if (SyntaxUsesList != null)
             {
                 for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
