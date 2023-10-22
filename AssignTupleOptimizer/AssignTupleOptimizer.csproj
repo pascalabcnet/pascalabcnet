@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{ADD567B7-8157-45E8-9673-FC6BCF5930D1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>AssignTupleOptimizer</RootNamespace>
+    <AssemblyName>AssignTupleOptimizer</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssignTupleFilterVisitor.cs" />
+    <Compile Include="AssignTupleOptimizerVisitor.cs" />
+    <Compile Include="SymInfoFilterVisitor.cs" />
+    <Compile Include="graph\Assign.cs" />
+    <Compile Include="graph\AssignGraph.cs" />
+    <Compile Include="graph\Cycle.cs" />
+    <Compile Include="graph\Edge.cs" />
+    <Compile Include="graph\GraphUtils.cs" />
+    <Compile Include="graph\Symbol.cs" />
+    <Compile Include="graph\SymbolNode.cs" />
+    <Compile Include="ILightScopeCreator.cs" />
+    <Compile Include="MyCollectLightSymInfoVisitor.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj">
+      <Project>{1443f539-dcc7-4491-b4fd-b716c739db3c}</Project>
+      <Name>PascalABCSaushkinParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ParserTools\ParserTools.csproj">
+      <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
+      <Name>ParserTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
+      <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
+      <Name>SyntaxTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
+      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
+      <Name>SyntaxVisitors</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="simple_test.pas" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

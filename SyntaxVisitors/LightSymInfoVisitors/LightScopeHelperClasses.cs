@@ -57,6 +57,27 @@ namespace PascalABCCompiler.SyntaxTree
         public List<ScopeSyntax> Children = new List<ScopeSyntax>();
         public List<SymInfoSyntax> Symbols = new List<SymInfoSyntax>();
         public override string ToString() => GetType().Name.Replace("Syntax", "");
+
+        protected virtual SymInfoSyntax searchSymbol(ident id)
+        {
+            foreach(var s in Symbols)
+            {
+                if (s.Id.name == id.name && s.Id.source_context.Less(id.source_context))
+                {
+                    Console.WriteLine("Found!!");
+                    return s;
+                }
+            }
+            return null;
+        }
+
+        public virtual SymInfoSyntax bind(ident id)
+        {
+            var res = searchSymbol(id);
+            if (res != null) return res;
+            return Parent?.bind(id);
+        }
+
     }
     public class ScopeWithDefsSyntax : ScopeSyntax { } // 
     public class GlobalScopeSyntax : ScopeWithDefsSyntax { } // program_module unit_module
@@ -75,7 +96,47 @@ namespace PascalABCCompiler.SyntaxTree
     public class ParamsScopeSyntax : ScopeSyntax { } // formal_parameters
     public class ClassScopeSyntax : NamedScopeSyntax
     {
+
+        public List<ClassScopeSyntax> classParents = new List<ClassScopeSyntax>();
+
         public ClassScopeSyntax(ident Name) : base(Name) { }
+
+        protected override SymInfoSyntax searchSymbol(ident id)
+        {
+            foreach (var s in Symbols)
+            {
+                if (s.Id.name == id.name)
+                {
+                    Console.WriteLine("Found!!");
+                    return s;
+                }
+            }
+            return null;
+        }
+
+        private SymInfoSyntax bindInParentClass(ident id)
+        {
+            SymInfoSyntax res = searchSymbol(id);
+            if (res != null) return res;
+            foreach (var parent in classParents)
+            {
+                res = parent.bindInParentClass(id);
+                if (res != null) return res;
+            }
+            return null;
+        }
+
+        public override SymInfoSyntax bind(ident id)
+        {
+            SymInfoSyntax res = searchSymbol(id);
+            if (res != null) return res;
+            foreach(var parent in classParents)
+            {
+                res = parent.bindInParentClass(id);
+                if (res != null) return res;
+            }
+            return Parent?.bind(id);
+        }
     } // 
     public class RecordScopeSyntax : NamedScopeSyntax
     {

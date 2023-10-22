@@ -54,13 +54,13 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             IndexVisitor.New.ProcessNode(root);
 
             // slice_expr и slice_expr_question
-            SliceDesugarVisitor.New.ProcessNode(root); 
+            SliceDesugarVisitor.New.ProcessNode(root);
             // поставил раньше AssignTuplesDesugarVisitor из за var (a,b) := a[1:3];
 
             // теперь коллизия с (a[1:6], a[6:11]):= (a[6:11], a[1:6]);
             // assign_tuple и assign_var_tuple
             AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
-
+            
 
             // question_point_desugar_visitor
             QuestionPointDesugarVisitor.New.ProcessNode(root);

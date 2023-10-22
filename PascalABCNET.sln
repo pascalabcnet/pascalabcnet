@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1000
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34031.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualPascalABCNET", "VisualPascalABCNET", "{26843C5D-9D7E-4C2C-AC14-2D227FA5592E}"
 EndProject
@@ -106,6 +106,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeacherControlPlugin", "VisualPlugins\TraningControlPlugin\TeacherControlPlugin.csproj", "{536CC813-7C4E-42BC-AE3A-BA1427F38756}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssignOptimizer", "AssignOptimizer", "{DBC58508-7EF1-49E5-8645-C6AF7A99CBEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignTupleOptimizer", "AssignTupleOptimizer\AssignTupleOptimizer.csproj", "{ADD567B7-8157-45E8-9673-FC6BCF5930D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -501,6 +505,18 @@ Global
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.ActiveCfg = Release|Any CPU
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.Build.0 = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|x86.Build.0 = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|x86.ActiveCfg = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -546,6 +562,8 @@ Global
 		{E009E776-9280-4061-B5CA-7F0C3E2D3C2A} = {26843C5D-9D7E-4C2C-AC14-2D227FA5592E}
 		{536CC813-7C4E-42BC-AE3A-BA1427F38756} = {EC68A3D8-6D63-4A79-ABA6-BF8E9D7756D7}
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98} = {F8CE2712-826B-450B-A72F-D32D80C99858}
+		{DBC58508-7EF1-49E5-8645-C6AF7A99CBEC} = {F8CE2712-826B-450B-A72F-D32D80C99858}
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1} = {DBC58508-7EF1-49E5-8645-C6AF7A99CBEC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68E993E6-EE86-4DDF-B0A1-4FE884F8AC39}
