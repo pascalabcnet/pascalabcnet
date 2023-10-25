@@ -398,9 +398,9 @@ namespace PascalABCCompiler
         }
     }
 
-    public class UnsupportetTargetFramework : CompilerCompilationError
+    public class UnsupportedTargetFramework : CompilerCompilationError
     {
-        public UnsupportetTargetFramework(string FrameworkName, TreeRealization.location sl)
+        public UnsupportedTargetFramework(string FrameworkName, TreeRealization.location sl)
             : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGETFRAMEWORK_{0}"), FrameworkName))
         {
             this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
@@ -2007,7 +2007,7 @@ namespace PascalABCCompiler
                     compilerOptions.TargetFramework = compilerDirectivesList[0].directive;
                     if (!(new string[] { "net40", "net403", "net45", "net451", "net452", "net46", "net461", "net462", "net47", "net471", "net472", "net48", "net481" })
                         .Contains(compilerOptions.TargetFramework))
-                        ErrorsList.Add(new UnsupportetTargetFramework(compilerOptions.TargetFramework, compilerDirectivesList[0].location));
+                        ErrorsList.Add(new UnsupportedTargetFramework(compilerOptions.TargetFramework, compilerDirectivesList[0].location));
                 }
             }
         }
@@ -2324,7 +2324,7 @@ namespace PascalABCCompiler
             {
                 //конвертор уткнулся в ошибку. ничего не делаем
             }
-            catch (Errors.CompilerInternalError err)
+            catch (CompilerInternalError err)
             {
                 if (ErrorsList.Count == 0)
                     ErrorsList.Add(err);
@@ -2336,7 +2336,7 @@ namespace PascalABCCompiler
 #endif
                 }
             }
-            catch (Errors.Error err)
+            catch (Error err)
             {
                 if (ErrorsList.Count == 0)
                     ErrorsList.Add(err);
@@ -2396,41 +2396,51 @@ namespace PascalABCCompiler
             }
             catch (Exception e)
             {
-                ErrorsList.Add(new Errors.CompilerInternalError("Compiler.ClosePCUReadersAndWriters", e));
+                ErrorsList.Add(new CompilerInternalError("Compiler.ClosePCUReadersAndWriters", e));
             }
-            bool need_recompiled = false;
-            // на случай ошибки в самом .pcu формате
-            if (ErrorsList.Count > 0)
-            {
-                // rtl - та самая dll со всей паскалевской системой (PABCSystem)
-                if (CompilerOptions.UseDllForSystemUnits && !has_only_syntax_errors(ErrorsList) && CompilerOptions.IgnoreRtlErrors)
-                {
-                    CompilerOptions.UseDllForSystemUnits = false;
-                    ErrorsList.Clear();
 
-                    need_recompiled = true;
-
-                }
-            }
             OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished
             if (ClearAfterCompilation)
                 ClearAll();
 
-            if (!need_recompiled)
-                OnChangeCompilerState(this, CompilerState.Ready, null); // компилятор готов
+            // на случай ошибки в самом .pcu формате / здесь могут быть не только pcu errors   EVA
+            bool recompilationNeeded = CheckForInternalErrors();
+
+            if (!recompilationNeeded)
+                OnChangeCompilerState(this, CompilerState.Ready, null); // компилятор окончательно завершил работу
+
             if (ErrorsList.Count > 0)
             {
                 return null;
             }
-            // перекомпиляция при внешних ошибках ?
-            else if (need_recompiled)
+            else if (recompilationNeeded)
             {
                 //Compiler c = new Compiler(sourceFilesProvider,OnChangeCompilerState);
                 //return c.GenerateILCodeAndSaveAssembly(this.compilerOptions);
                 return Compile();
             }
-            else
-                return CompilerOptions.OutputFileName;
+            else return CompilerOptions.OutputFileName;
+        }
+
+        // TODO: перепроверить этот метод, возможно, он может найти не те ошибки и перекомпиляция ничего не даст   EVA
+        private bool CheckForInternalErrors()
+        {
+            bool anyExternalErrors = false;
+            
+            if (ErrorsList.Count > 0)
+            {
+                // rtl - та самая dll со всей паскалевской системой (PABCSystem)
+                if (CompilerOptions.UseDllForSystemUnits && !HasOnlySyntaxErrors(ErrorsList) && CompilerOptions.IgnoreRtlErrors)
+                {
+                    CompilerOptions.UseDllForSystemUnits = false;
+                    ErrorsList.Clear();
+
+                    anyExternalErrors = true;
+
+                }
+            }
+
+            return anyExternalErrors;
         }
 
         private void GenerateILCode(program_node programNode, NETGenerator.CompilerOptions compilerOptions)
@@ -2508,7 +2518,7 @@ namespace PascalABCCompiler
             return ResourceFiles;
         }
 
-        private bool has_only_syntax_errors(List<Error> errors)
+        private bool HasOnlySyntaxErrors(List<Error> errors)
         {
             foreach (Error err in errors)
             {
