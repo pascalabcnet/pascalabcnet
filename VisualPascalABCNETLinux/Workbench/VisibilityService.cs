@@ -643,9 +643,13 @@ namespace VisualPascalABC
                 {
                     if (!BottomTabsVisible)
                         BottomTabsVisible = true;
+                    //BPanel_Resize(null, EventArgs.Empty);
+                    BottomDockPanel.Size = new System.Drawing.Size(1920, 1080);
                     if (DebugWatchListWindow != null)
                         ShowContent(DebugWatchListWindow, false);
                     ShowContent(DebugVariablesListWindow, false);
+                    this.Width = this.Width + 1;
+                    this.Width = this.Width - 1;
                 }
             }
             else
