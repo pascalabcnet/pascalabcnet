@@ -2468,7 +2468,7 @@ namespace CodeCompletion
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public override void visit(uses_in_section _uses_unit_in)
+        public override void visit(uses_unit_in _uses_unit_in)
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -2902,7 +2902,7 @@ namespace CodeCompletion
                             if (i == 0)
                             {
                                 string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_in_section uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(_program_module.file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(_program_module.file_name));
 
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
@@ -4723,7 +4723,7 @@ namespace CodeCompletion
                             try
                             {
                                 string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_in_section uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
 
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
@@ -4845,7 +4845,7 @@ namespace CodeCompletion
                             try
                             {
                                 string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_in_section uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
 
                                 /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                        && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)

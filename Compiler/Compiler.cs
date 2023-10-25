@@ -2205,7 +2205,7 @@ namespace PascalABCCompiler
                     PrepareCompileOptionsForProject();
                 }
                 // модули и пространства имен из секции uses - используется только в CompileUnit
-                usesSection = new SyntaxTree.uses_in_section(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
+                usesSection = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
 
                 // компиляция всех юнитов произойдет рекурсивно (кроме отложенных)
                 CompileUnit(
@@ -2891,12 +2891,12 @@ namespace PascalABCCompiler
 
         public string GetUnitFileName(SyntaxTree.unit_or_namespace SyntaxUsesUnit, string curr_path)
         {
-            //ToDo В корневом Compile() создаётся uses_in_section без name. Выглядит как костыль
-            if (SyntaxUsesUnit is SyntaxTree.uses_in_section && (SyntaxUsesUnit as SyntaxTree.uses_in_section).name == null) return (SyntaxUsesUnit as SyntaxTree.uses_in_section).in_file.Value;
+            //ToDo В корневом Compile() создаётся uses_unit_in без name. Выглядит как костыль
+            if (SyntaxUsesUnit is SyntaxTree.uses_unit_in && (SyntaxUsesUnit as SyntaxTree.uses_unit_in).name == null) return (SyntaxUsesUnit as SyntaxTree.uses_unit_in).in_file.Value;
             if (curr_path == null) throw new InvalidOperationException(SyntaxUsesUnit.UsesPath());
             var UnitName = SyntaxUsesUnit.name.idents[0].name;
 
-            if (SyntaxUsesUnit is SyntaxTree.uses_in_section uui)
+            if (SyntaxUsesUnit is SyntaxTree.uses_unit_in uui)
             {
 
                 TryThrowInvalidPath(uui.in_file.Value, uui.in_file.source_context);
@@ -2973,7 +2973,7 @@ namespace PascalABCCompiler
             //if (FileInSearchDirectory(cu.file_name)) return;
 
             string ModuleName = null;
-            SyntaxTree.uses_in_section uses_unit_in = null;
+            SyntaxTree.uses_unit_in uses_unit_in = null;
             SyntaxTree.unit_or_namespace uses_unit = null;
             List<SyntaxTree.unit_or_namespace> UsesList = GetInterfaceUsesSection(cu);
             if (UsesList == null)
@@ -3003,10 +3003,10 @@ namespace PascalABCCompiler
                 PascalABCCompiler.SyntaxTree.unit_or_namespace to_add;
                 if (Path.GetExtension(Module.Name) != "" /*&& Path.GetExtension(ModuleFileName).ToLower() != ".dll"*/)
                 {
-                    uses_unit_in = new SyntaxTree.uses_in_section(
+                    uses_unit_in = new SyntaxTree.uses_unit_in(
                         _name: new SyntaxTree.ident_list(new SyntaxTree.ident(ModuleName)),
                         _in_file: new SyntaxTree.string_const(Module.Name));
-                    //uses_in_section.source_context = uses_in_section.in_file.source_context = uses_in_section.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
+                    //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
                     to_add = uses_unit_in;
                 }
                 else
@@ -3304,7 +3304,7 @@ namespace PascalABCCompiler
 
         private bool IsPossibleNetNamespaceOrStandardPasFile(SyntaxTree.unit_or_namespace name_space, bool addToStandardModules, string currentPath)
         {
-            if (name_space is SyntaxTree.uses_in_section)
+            if (name_space is SyntaxTree.uses_unit_in)
                 return false;
 
             // если это "что-то"."что-то"... (полный путь к пространству имен)
@@ -3583,7 +3583,7 @@ namespace PascalABCCompiler
         private void SemanticCheckUsesInIsNotNamespace(SyntaxTree.unit_or_namespace unitToCompile, CompilationUnit currentUnit)
         {
             if (currentUnit != null && currentUnit.SemanticTree is dot_net_unit_node
-                            && unitToCompile is SyntaxTree.uses_in_section ui && ui.in_file != null) // значит, это пространство имен и секция in у него должна отсутствовать
+                            && unitToCompile is SyntaxTree.uses_unit_in ui && ui.in_file != null) // значит, это пространство имен и секция in у него должна отсутствовать
             {
                 ErrorsList.Add(new NamespaceCannotHaveInSection(ui.in_file.source_context));
             }
@@ -4289,7 +4289,7 @@ namespace PascalABCCompiler
         /*public CompilationUnit RecompileUnit(string unit_name)
         {
             Console.WriteLine("recompile {0}", unit_name);
-            currentSyntaxUnit = new SyntaxTree.uses_in_section(new SyntaxTree.string_const(program_folder + "\\" + unit_name+".pas"));
+            currentSyntaxUnit = new SyntaxTree.uses_unit_in(new SyntaxTree.string_const(program_folder + "\\" + unit_name+".pas"));
             CompileUnit(unitsFromUsesSection, currentSyntaxUnit);
             CompilationUnit cu = new CompilationUnit();
             if (unitsFromUsesSection.Count != 0)

@@ -268,7 +268,7 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_unit_or_namespace);
 		}
 
-		public virtual void visit(uses_in_section _uses_unit_in)
+		public virtual void visit(uses_unit_in _uses_unit_in)
 		{
 			DefaultVisit(_uses_unit_in);
 		}

@@ -11627,7 +11627,7 @@ namespace PascalABCCompiler.TreeConverter
             throw new NotSupportedError(get_location(_uses_list));
         }
 
-        public override void visit(SyntaxTree.uses_in_section _uses_unit_in)
+        public override void visit(SyntaxTree.uses_unit_in _uses_unit_in)
         {
             throw new NotSupportedError(get_location(_uses_unit_in));
         }

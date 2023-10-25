@@ -2102,8 +2102,8 @@ namespace PascalABCCompiler.SyntaxTree
             {
                 if (left.GetType() != right.GetType())
                     throw_not_equal(left, right);
-                if (left is uses_in_section)
-                    CompareInternal(left as uses_in_section, right as uses_in_section);
+                if (left is uses_unit_in)
+                    CompareInternal(left as uses_unit_in, right as uses_unit_in);
                 else
                     CompareInternal(left.name, right.name);
             }
@@ -2124,7 +2124,7 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
-        public void CompareInternal(uses_in_section left, uses_in_section right)
+        public void CompareInternal(uses_unit_in left, uses_unit_in right)
         {
             if (left == null && right != null || left != null && right == null)
                 throw_not_equal(left, right);

@@ -374,7 +374,7 @@ namespace VisualPascalABCPlugins
 		}
 
 
-		public override void visit(uses_in_section _uses_unit_in)
+		public override void visit(uses_unit_in _uses_unit_in)
 		{
 			
 		}

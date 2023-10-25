@@ -317,11 +317,11 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(unit_or_namespace _unit_or_namespace);
 		///<summary>
-		///Method to visit uses_in_section.
+		///Method to visit uses_unit_in.
 		///</summary>
 		///<param name="_uses_unit_in">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(uses_in_section _uses_unit_in);
+		void visit(uses_unit_in _uses_unit_in);
 		///<summary>
 		///Method to visit uses_list.
 		///</summary>

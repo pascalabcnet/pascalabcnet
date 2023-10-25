@@ -1441,13 +1441,13 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(uses_in_section _uses_unit_in)
+		public void visit(uses_unit_in _uses_unit_in)
 		{
 			bw.Write((Int16)52);
 			write_uses_unit_in(_uses_unit_in);
 		}
 
-		public void write_uses_unit_in(uses_in_section _uses_unit_in)
+		public void write_uses_unit_in(uses_unit_in _uses_unit_in)
 		{
 			write_unit_or_namespace(_uses_unit_in);
 			if (_uses_unit_in.in_file == null)

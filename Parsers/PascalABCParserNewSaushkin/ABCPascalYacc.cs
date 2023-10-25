@@ -3110,7 +3110,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { 
         	if (ValueStack[ValueStack.Depth-1].stn is char_const _cc)
         		ValueStack[ValueStack.Depth-1].stn = new string_const(_cc.cconst.ToString());
-			CurrentSemanticValue.stn = new uses_in_section(ValueStack[ValueStack.Depth-3].stn as ident_list, ValueStack[ValueStack.Depth-1].stn as string_const, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new uses_unit_in(ValueStack[ValueStack.Depth-3].stn as ident_list, ValueStack[ValueStack.Depth-1].stn as string_const, CurrentLocationSpan);
         }
         break;
       case 47: // unit_file -> unit_header, interface_part, implementation_part, 
