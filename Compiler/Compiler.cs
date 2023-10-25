@@ -2319,68 +2319,24 @@ namespace PascalABCCompiler
                     }
                 }
             }
-            // TODO: просмотреть возможные ParserError
+            // TODO: просмотреть возможные ParserError   EVA
             catch (TreeConverter.ParserError err)
             {
                 //конвертор уткнулся в ошибку. ничего не делаем
             }
             catch (CompilerInternalError err)
             {
-                if (ErrorsList.Count == 0)
-                    ErrorsList.Add(err);
-                else
-                {
-#if DEBUG
-                    if (!InternalDebug.SkipInternalErrorsIfSyntaxTreeIsCorrupt)
-                        ErrorsList.Add(err);
-#endif
-                }
+                AddInternalErrorToErrorList(err);
             }
             catch (Error err)
             {
-                if (ErrorsList.Count == 0)
-                    ErrorsList.Add(err);
-                else
-                    if (err != ErrorsList[0])
-                {
-                    // TODO: переделать insert в ErrorsList
-                    if (err is SemanticError)
-                    {
-                        int pos = ErrorsList.Count;
-
-                        SourceLocation loc = (err as SemanticError).SourceLocation;
-                        SourceLocation loctmp;
-                        if (loc != null)
-                            for (int i = 0; i < ErrorsList.Count; i++)
-                                if (ErrorsList[i] is LocatedError)
-                                    if ((loctmp = (ErrorsList[i] as LocatedError).SourceLocation) != null)
-                                        if (loctmp > loc)
-                                        {
-                                            pos = i;
-                                            break;
-                                        }
-
-                        ErrorsList.Insert(pos, err);
-                    }
-                    else
-                        ErrorsList.Add(err);
-                }
+                // здесь учитывается позиция Located error
+                AddErrorToErrorListConsideringPosition(err);
             }
             catch (Exception err)
             {
-
-                string fn = "Compiler";
-                if (currentCompilationUnit != null && this.currentCompilationUnit.SyntaxTree != null) fn = Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name);
-                Errors.CompilerInternalError comp_err = new Errors.CompilerInternalError(string.Format("Compiler.GenerateILCodeAndSaveAssembly[{0}]", fn), err);
-                if (ErrorsList.Count == 0)
-                    ErrorsList.Add(comp_err);
-                else
-                {
-#if DEBUG
-                    if (!InternalDebug.SkipInternalErrorsIfSyntaxTreeIsCorrupt)
-                        ErrorsList.Add(comp_err);
-#endif
-                }
+                // здесь добавляются только ошибки генерации кода
+                AddCodeGenerationErrorToErrorsList(err);
             }
 
             //удаляем лишние ошибки
@@ -2420,6 +2376,68 @@ namespace PascalABCCompiler
                 return Compile();
             }
             else return CompilerOptions.OutputFileName;
+        }
+
+        private void AddErrorToErrorListConsideringPosition(Error err)
+        {
+            if (ErrorsList.Count == 0)
+                ErrorsList.Add(err);
+            else if (err != ErrorsList[0])
+            {
+                // TODO: переделать insert в ErrorsList
+                if (err is SemanticError)
+                {
+                    int position = FindPositionForSemanticErrorInTheErrorList(err); // семантические ошибки отсортированы по location
+
+                    ErrorsList.Insert(position, err);
+                }
+                else ErrorsList.Add(err);
+            }
+        }
+
+        private int FindPositionForSemanticErrorInTheErrorList(Error err)
+        {
+            int position = ErrorsList.Count;
+
+            SourceLocation location = (err as SemanticError).SourceLocation;
+            SourceLocation locationTemp;
+            if (location != null)
+            {
+                for (int i = 0; i < ErrorsList.Count; i++)
+                {
+                    if ((locationTemp = (ErrorsList[i] as LocatedError)?.SourceLocation) != null)
+                    {
+                        if (locationTemp > location)
+                        {
+                            position = i;
+                            break;
+                        }
+                    }       
+                }   
+            }
+             
+            return position;
+        }
+
+        private void AddCodeGenerationErrorToErrorsList(Exception err)
+        {
+            string fileName = Path.GetFileName(currentCompilationUnit?.SyntaxTree?.file_name) ?? "Compiler";
+            CompilerInternalError compilationError = new CompilerInternalError(string.Format("Compiler.GenerateILCodeAndSaveAssembly[{0}]", fileName), err);
+            
+            AddInternalErrorToErrorList(compilationError);
+        }
+
+        private void AddInternalErrorToErrorList(CompilerInternalError internalError)
+        {
+            if (ErrorsList.Count == 0)
+                ErrorsList.Add(internalError);
+            else
+            {
+#if DEBUG
+                if (!InternalDebug.SkipInternalErrorsIfSyntaxTreeIsCorrupt)
+                    ErrorsList.Add(internalError);
+#endif
+            }
         }
 
         // TODO: перепроверить этот метод, возможно, он может найти не те ошибки и перекомпиляция ничего не даст   EVA
