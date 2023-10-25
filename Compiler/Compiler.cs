@@ -935,7 +935,7 @@ namespace PascalABCCompiler
         public CompilationUnitHashTable UnitTable { get { return unitTable; } }
         public List<CompilationUnit> UnitsSortedList = new List<CompilationUnit>();
 
-        private List<string> StandarModules = new List<string>();
+        private List<string> StandardModules = new List<string>();
         public CompilerOptions CompilerOptions { get; set; } = new CompilerOptions();
 
         internal Dictionary<string, CompilationUnit> DLLCache = new Dictionary<string, CompilationUnit>();
@@ -966,7 +966,13 @@ namespace PascalABCCompiler
         public CompilationUnit currentCompilationUnit = null;
         private CompilationUnit firstCompilationUnit = null;
         private bool PCUReadersAndWritersClosed;
+        /// <summary>
+        /// Начало основной программы
+        /// </summary>
         public int beginOffset;
+        /// <summary>
+        /// Положение первых переменных в пространстве имен основной программы
+        /// </summary>
         public int varBeginOffset;
         private bool _clear_after_compilation = true;
         private static Dictionary<string, CompilationUnit> pcuCompilationUnits = new Dictionary<string, CompilationUnit>();
@@ -983,6 +989,7 @@ namespace PascalABCCompiler
             }
         }
 
+        
         public int BeginOffset
         {
             get
@@ -2226,7 +2233,7 @@ namespace PascalABCCompiler
                 if (system_unit != null)
                     system_unit.IsConsoleApplicationVariable = CompilerOptions.OutputFileType == CompilerOptions.OutputType.ConsoleApplicaton;
 
-                program_node programNode = null;
+                program_node programRoot = null;
 
                 NETGenerator.CompilerOptions compilerOptions = new NETGenerator.CompilerOptions();
 
@@ -2245,77 +2252,20 @@ namespace PascalABCCompiler
                     SetTargetType(compilerOptions);
 
                     //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter.
-                    programNode = new program_node(null, null);
-
-                    for (int i = 0; i < UnitsSortedList.Count; i++)
-                        programNode.units.AddElement(UnitsSortedList[i].SemanticTree as TreeRealization.common_unit_node);
-
-                    // если компилируем exe или WinExe (первый модуль - основная программа
-                    if (firstCompilationUnit.SyntaxTree is SyntaxTree.program_module)
-                    {
-                        if ((compilerOptions.target == NETGenerator.TargetType.Exe) || (compilerOptions.target == NETGenerator.TargetType.WinExe))
-                        {
-                            if (UnitsSortedList.Count > 0)
-                            {
-                                programNode.main_function = ((common_unit_node)UnitsSortedList[UnitsSortedList.Count - 1].SemanticTree).main_function;
-
-                                /***************************Ivan added*******************************/
-                                if (programNode.main_function.function_code.location != null)
-                                {
-                                    bool flag = false;
-                                    PascalABCCompiler.TreeRealization.common_namespace_node main_ns = programNode.main_function.namespace_node;
-                                    for (int i = 0; i < main_ns.variables.Count; i++)
-                                    {
-                                        PascalABCCompiler.TreeRealization.namespace_variable nv = main_ns.variables[i];
-                                        if (nv.inital_value != null && nv.inital_value.location != null && !(nv.inital_value is PascalABCCompiler.TreeRealization.constant_node)
-                                            && !(nv.inital_value is PascalABCCompiler.TreeRealization.record_initializer) && !(nv.inital_value is PascalABCCompiler.TreeRealization.array_initializer))
-                                        {
-                                            // TODO: разобраться, что делает varBeginOffset
-                                            varBeginOffset = main_ns.variables[i].inital_value.location.begin_line_num;
-                                            flag = true;
-                                            break;
-                                        }
-                                    }
-                                    // TODO: разобраться, что делает BeginOffset
-                                    beginOffset = programNode.main_function.function_code.location.begin_line_num;
-                                }
-                                /*******************************************************************/
-                                // локализация
-                                Dictionary<string, object> config_dic = new Dictionary<string, object>();
-                                if (CompilerOptions.Locale != null && PascalABCCompiler.StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale) != null)
-                                {
-                                    config_dic["locale"] = CompilerOptions.Locale;
-                                    config_dic["full_locale"] = PascalABCCompiler.StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale);
-                                }
-                                programNode.create_main_function(StandarModules.ToArray(), config_dic);
-
-                            }
-                        }
-                    }
-                    // если мы компилируем dll
-                    else if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && compilerOptions.target == NETGenerator.TargetType.Dll)
-                    {
-                        // TODO: посмотреть инициализирующий код .dll
-                        programNode.create_main_function_as_in_module();
-                    }
-                    if (CompilerOptions.GenerateCode)
-                        // семантические преобразования с оптимизацией кода
-                        programNode = semanticTreeConvertersController.Convert(programNode) as program_node;
-
-                    _semantic_tree = programNode;
+                    programRoot = BuildFullSemanticTree(compilerOptions); // получние полного семантического дерева, включающего все зависимости
 
                     if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && CompilerOptions.OutputFileType != CompilerOptions.OutputType.ClassLibrary)
                     {
                         // если мы комилируем PCU
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                     }
-                    // часть генерации кода   EVA
+                    // генерация IL кода
                     else if (CompilerOptions.GenerateCode)
                     {
                         if (CompilerOptions.UseDllForSystemUnits)
                             compilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
 
-                        GenerateILCode(programNode, compilerOptions);
+                        GenerateILCode(programRoot, compilerOptions);
                     }
                 }
             }
@@ -2376,6 +2326,72 @@ namespace PascalABCCompiler
                 return Compile();
             }
             else return CompilerOptions.OutputFileName;
+        }
+
+        private program_node BuildFullSemanticTree(NETGenerator.CompilerOptions compilerOptions)
+        {
+            program_node programRoot = new program_node(null, null);
+            
+            for (int i = 0; i < UnitsSortedList.Count; i++)
+                programRoot.units.AddElement(UnitsSortedList[i].SemanticTree as common_unit_node);
+
+            CreateMainFunction(programRoot, compilerOptions); // планируется вынесение в другой класс, поэтому рефакторинг функции не проведен  EVA
+
+            if (CompilerOptions.GenerateCode) // семантические преобразования с оптимизацией кода
+                programRoot = semanticTreeConvertersController.Convert(programRoot) as program_node;
+
+            _semantic_tree = programRoot;
+            return programRoot;
+        }
+
+        private void CreateMainFunction(program_node programNode, NETGenerator.CompilerOptions compilerOptions)
+        {
+            // если компилируем exe или WinExe (первый модуль - основная программа)
+            if (firstCompilationUnit.SyntaxTree is SyntaxTree.program_module)
+            {
+                if ((compilerOptions.target == NETGenerator.TargetType.Exe) || (compilerOptions.target == NETGenerator.TargetType.WinExe))
+                {
+                    if (UnitsSortedList.Count > 0)
+                    {
+                        programNode.main_function = ((common_unit_node)UnitsSortedList[UnitsSortedList.Count - 1].SemanticTree).main_function;
+
+                        /***************************Ivan added*******************************/
+                        if (programNode.main_function.function_code.location != null)
+                        {
+                            bool flag = false;
+                            common_namespace_node main_ns = programNode.main_function.namespace_node;
+                            for (int i = 0; i < main_ns.variables.Count; i++)
+                            {
+                                namespace_variable nv = main_ns.variables[i];
+                                if (nv.inital_value != null && nv.inital_value.location != null && !(nv.inital_value is constant_node)
+                                    && !(nv.inital_value is record_initializer) && !(nv.inital_value is array_initializer))
+                                {
+                                    varBeginOffset = main_ns.variables[i].inital_value.location.begin_line_num;
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                            beginOffset = programNode.main_function.function_code.location.begin_line_num;
+                        }
+                        /*******************************************************************/
+                        // локализация
+                        Dictionary<string, object> config_dic = new Dictionary<string, object>();
+                        if (CompilerOptions.Locale != null && PascalABCCompiler.StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale) != null)
+                        {
+                            config_dic["locale"] = CompilerOptions.Locale;
+                            config_dic["full_locale"] = PascalABCCompiler.StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale);
+                        }
+                        programNode.create_main_function(StandardModules.ToArray(), config_dic);
+
+                    }
+                }
+            }
+            // если мы компилируем dll
+            else if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && compilerOptions.target == NETGenerator.TargetType.Dll)
+            {
+                // TODO: посмотреть инициализирующий код .dll  EVA
+                programNode.create_main_function_as_in_module();
+            }
         }
 
         private void AddErrorToErrorListConsideringPosition(Error err)
@@ -2474,7 +2490,7 @@ namespace PascalABCCompiler
 
                     OnChangeCompilerState(this, CompilerState.CodeGeneration, CompilerOptions.OutputFileName); // состояние генерации кода
 
-                    // трансляция в IL-код | В programNode находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
+                    // трансляция в IL-код | В programRoot находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
                     CodeGeneratorsController.GenerateILCodeAndSaveAssembly(programNode, CompilerOptions.OutputFileName,
                         CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandartDirectories,
                         GetResourceFilesFromCompilerDirectives()?.ToArray());
@@ -3353,8 +3369,8 @@ namespace PascalABCCompiler
                 && isStandardFile)
             {
                 string s = Path.GetFileNameWithoutExtension(fileName).ToLower();
-                if (addToStandardModules && !StandarModules.Contains(s))
-                    StandarModules.Add(s);
+                if (addToStandardModules && !StandardModules.Contains(s))
+                    StandardModules.Add(s);
                 return true;
             }
 
@@ -3371,8 +3387,8 @@ namespace PascalABCCompiler
                 )
             {
                 string s = Path.GetFileNameWithoutExtension(pcuFileName).ToLower();
-                if (addToStandardModules && !StandarModules.Contains(s))
-                    StandarModules.Add(s);
+                if (addToStandardModules && !StandardModules.Contains(s))
+                    StandardModules.Add(s);
                 return true;
             }*/
             return false;
@@ -4387,7 +4403,7 @@ namespace PascalABCCompiler
             if (close_pcu)
                 PCUReader.AllReaders.Clear();
             project = null;
-            StandarModules.Clear();
+            StandardModules.Clear();
             CompiledVariables.Clear();
             if (assemblyResolveScope != null)
                 assemblyResolveScope.Dispose();
