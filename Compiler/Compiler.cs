@@ -936,19 +936,7 @@ namespace PascalABCCompiler
         public List<CompilationUnit> UnitsSortedList = new List<CompilationUnit>();
 
         private List<string> StandarModules = new List<string>();
-
-        private CompilerOptions compilerOptions = new CompilerOptions();
-        public CompilerOptions CompilerOptions
-        {
-            get
-            {
-                return compilerOptions;
-            }
-            set
-            {
-                compilerOptions = value;
-            }
-        }
+        public CompilerOptions CompilerOptions { get; set; } = new CompilerOptions();
 
         internal Dictionary<string, CompilationUnit> DLLCache = new Dictionary<string, CompilationUnit>();
 
@@ -970,7 +958,7 @@ namespace PascalABCCompiler
         //public PascalToCppConverter.Controller PABCToCppCodeGeneratorsController = null;
         public SyntaxTree.unit_or_namespace usesSection;
         /// <summary>
-        /// список отложенной компиляции реализации (она будет откомпилирована в Compile, а не в СompileUnit)
+        /// список отложенной компиляции реализации (она будет откомпилирована в GenerateILCodeAndSaveAssembly, а не в СompileUnit)
         /// </summary>
 		private List<CompilationUnit> UnitsToCompileDelayedList = new List<CompilationUnit>();
         public Hashtable RecompileList = new Hashtable(StringComparer.OrdinalIgnoreCase);
@@ -1252,7 +1240,7 @@ namespace PascalABCCompiler
 
         void CheckErrorsAndThrowTheFirstOne()
         {
-            if (compilerOptions.ForIntellisense)
+            if (CompilerOptions.ForIntellisense)
                 return;
             if (ErrorsList.Count > 0)
                 throw ErrorsList[0];
@@ -1553,9 +1541,9 @@ namespace PascalABCCompiler
             public override void ErrorReported(ScriptSource source, string message, SourceSpan span, int errorCode, Severity severity)
             {
                 if (severity == Severity.Warning)
-                    c.warnings.Add(new Errors.CommonWarning(message, c.compilerOptions.SourceFileName, span.Start.Line, span.Start.Column));
+                    c.warnings.Add(new Errors.CommonWarning(message, c.CompilerOptions.SourceFileName, span.Start.Line, span.Start.Column));
                 else
-                    c.errorsList.Add(new Errors.CommonCompilerError(message, c.compilerOptions.SourceFileName, span.Start.Line, span.Start.Column));
+                    c.errorsList.Add(new Errors.CommonCompilerError(message, c.CompilerOptions.SourceFileName, span.Start.Line, span.Start.Column));
             }
         }
 
@@ -1876,7 +1864,7 @@ namespace PascalABCCompiler
 
                     CurrentUnit.possibleNamespaces.Clear();
                     if (HasIncludeNamespaceDirective(CurrentUnit))
-                        compilerOptions.UseDllForSystemUnits = false;
+                        CompilerOptions.UseDllForSystemUnits = false;
 
                     if (implementationUsesSection != null)
                     {
@@ -1885,7 +1873,7 @@ namespace PascalABCCompiler
                         {
                             if (!IsPossibleNetNamespaceOrStandardPasFile(implementationUsesSection[i], false, Path.GetDirectoryName(UnitName)))
                             {
-                                compilerOptions.UseDllForSystemUnits = false; // установка флага о не использовании dll для системных модулей, если нашли не пространство имен
+                                CompilerOptions.UseDllForSystemUnits = false; // установка флага о не использовании dll для системных модулей, если нашли не пространство имен
                                 break;
                             }
                         }
@@ -2010,7 +1998,7 @@ namespace PascalABCCompiler
                     default:
                         throw new Exception("Unknown platform!");
                 }
-                if (this.compilerOptions.Only32Bit)
+                if (CompilerOptions.Only32Bit)
                     compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
 
                 // целевой framework
@@ -2078,9 +2066,8 @@ namespace PascalABCCompiler
 
         }
 
-        private string FillCompilerOptionsFromProject(NETGenerator.CompilerOptions compilerOptions)
+        private void FillCompilerOptionsFromProject(NETGenerator.CompilerOptions compilerOptions)
         {
-            string res_file = null;
             if (project != null)
             {
                 if (!(project.major_version == 0 && project.minor_version == 0 && project.build_version == 0 && project.revision_version == 0))
@@ -2146,7 +2133,7 @@ namespace PascalABCCompiler
                     prc.StartInfo.RedirectStandardError = true;
                     prc.Start();
                     prc.WaitForExit();
-                    res_file = Path.Combine(Path.GetDirectoryName(project.app_icon), Path.GetFileNameWithoutExtension(project.app_icon) + ".res");
+                    string res_file = Path.Combine(Path.GetDirectoryName(project.app_icon), Path.GetFileNameWithoutExtension(project.app_icon) + ".res");
                     if (File.Exists(res_file))
                     {
                         compilerOptions.MainResourceFileName = res_file; // !!! главный ресурсный файл
@@ -2154,7 +2141,6 @@ namespace PascalABCCompiler
                     File.Delete(rc_file);
                 }
             }
-            return res_file;
         }
 
         private void SetTargetType(NETGenerator.CompilerOptions compilerOptions)
@@ -2179,7 +2165,7 @@ namespace PascalABCCompiler
             if (CompilerOptions.ForDebugging)
                 compilerOptions.dbg_attrs = NETGenerator.DebugAttributes.ForDebugging;
         }
-        // TODO! Разделить Compile на две части: одна возвращает семантическое дерево всей программы
+        // TODO! Разделить GenerateILCodeAndSaveAssembly на две части: одна возвращает семантическое дерево всей программы
         // с зависимостями, а вторая выполняет трансляцию в IL            EVA
         public string Compile()
         {
@@ -2250,28 +2236,8 @@ namespace PascalABCCompiler
                 // остальные директивы
                 FillOtherCompilerOptions(compilerOptions);
 
-                // добавление ресурсных файлов
-                List<string> ResourceFiles = null;
-                if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_resource))
-                {
-                    ResourceFiles = new List<string>();
-                    List<compiler_directive> ResourceDirectives = this.compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_resource];
-                    foreach (TreeRealization.compiler_directive cd in ResourceDirectives)
-                    {
-                        TryThrowInvalidPath(cd.directive, cd.location);
-                        var resource_fname = Path.Combine(Path.GetDirectoryName(cd.source_file), cd.directive);
-
-                        // Так же как с main_resource
-                        if (File.Exists(resource_fname))
-                            ResourceFiles.Add(resource_fname);
-                        else
-                            ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
-
-                    }
-                }
-
                 // заполнение опций компилятора из заголовка проекта
-                string res_file = FillCompilerOptionsFromProject(compilerOptions);
+                FillCompilerOptionsFromProject(compilerOptions);
 
                 if (ErrorsList.Count == 0)
                 {
@@ -2279,22 +2245,19 @@ namespace PascalABCCompiler
                     SetTargetType(compilerOptions);
 
                     //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter.
-                    programNode = new PascalABCCompiler.TreeRealization.program_node(null, null);
+                    programNode = new program_node(null, null);
 
                     for (int i = 0; i < UnitsSortedList.Count; i++)
                         programNode.units.AddElement(UnitsSortedList[i].SemanticTree as TreeRealization.common_unit_node);
 
-                    //(ssyy) Добавил в условие c_module
-                    // если компилируем exe или WinExe
-                    // TODO: вырезать поддержку c_module
-                    if (firstCompilationUnit.SyntaxTree is SyntaxTree.program_module ||
-                        firstCompilationUnit.SyntaxTree is SyntaxTree.c_module)
+                    // если компилируем exe или WinExe (первый модуль - основная программа
+                    if (firstCompilationUnit.SyntaxTree is SyntaxTree.program_module)
                     {
                         if ((compilerOptions.target == NETGenerator.TargetType.Exe) || (compilerOptions.target == NETGenerator.TargetType.WinExe))
                         {
                             if (UnitsSortedList.Count > 0)
                             {
-                                programNode.main_function = ((PascalABCCompiler.TreeRealization.common_unit_node)UnitsSortedList[UnitsSortedList.Count - 1].SemanticTree).main_function;
+                                programNode.main_function = ((common_unit_node)UnitsSortedList[UnitsSortedList.Count - 1].SemanticTree).main_function;
 
                                 /***************************Ivan added*******************************/
                                 if (programNode.main_function.function_code.location != null)
@@ -2335,70 +2298,24 @@ namespace PascalABCCompiler
                         // TODO: посмотреть инициализирующий код .dll
                         programNode.create_main_function_as_in_module();
                     }
-                    if (this.compilerOptions.GenerateCode)
+                    if (CompilerOptions.GenerateCode)
                         // семантические преобразования с оптимизацией кода
-                        programNode = semanticTreeConvertersController.Convert(programNode) as TreeRealization.program_node;
+                        programNode = semanticTreeConvertersController.Convert(programNode) as program_node;
 
                     _semantic_tree = programNode;
 
                     if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && CompilerOptions.OutputFileType != CompilerOptions.OutputType.ClassLibrary)
                     {
-                        //если мы комилируем PCU
+                        // если мы комилируем PCU
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                     }
-                    else if (this.compilerOptions.GenerateCode)
+                    // часть генерации кода   EVA
+                    else if (CompilerOptions.GenerateCode)
                     {
-                        // генерация файла для дебага
-                        if (CompilerOptions.OutputFileType != CompilerOptions.OutputType.SemanticTree)
-#if DEBUG
-                            if (InternalDebug.CodeGeneration)
-#endif
-                            {
-                                int n = 1;
-                                try
-                                {
-                                    n = 2;
-                                    var fs = File.Create(CompilerOptions.OutputFileName);
-                                    n = 3;
-                                    fs.Close();
-                                    n = 4;
-                                    ///////File.Delete(CompilerOptions.OutputFileName);
-                                    string pdb_file_name = Path.ChangeExtension(CompilerOptions.OutputFileName, ".pdb");
-                                    if (File.Exists(pdb_file_name))
-                                        File.Delete(pdb_file_name);
-                                    n = 5; // PVS 01/2022
-                                }
-                                catch (Exception e)
-                                {
-                                    throw new UnauthorizedAccessToFile(CompilerOptions.OutputFileName + " -- " + n + "  " + e.ToString());
-                                    //throw e;
-                                }
-                                OnChangeCompilerState(this, CompilerState.CodeGeneration, CompilerOptions.OutputFileName); // генерация кода
-                                string[] ResourceFilesArray = null;
-                                if (ResourceFiles != null)
-                                    ResourceFilesArray = ResourceFiles.ToArray();
-                                /*compilerDirectivesList = null;
-                                if (compilerDirectives.TryGetValue("platform", out cds) && cds[0].directive.ToLower() == "native")
-                                {
-                                    //LLVMCodeGeneratorsController.Compile(pn, CompilerOptions.OutputFileName, CompilerOptions.SourceFileName, ResourceFilesArray);
-                                    PABCToCppCodeGeneratorsController.Compile(pn, CompilerOptions.OutputFileName, CompilerOptions.SourceFileName, ResourceFilesArray);
-                                }
-                                else*/
-                                if (this.compilerOptions.UseDllForSystemUnits)
-                                    compilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
-                                
-                                // В programNode находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
-                                
-                                // трансляция в IL-код
-                                // TODO: переназвать Compile для трансляции в IL
-                                CodeGeneratorsController.Compile(programNode, CompilerOptions.OutputFileName, 
-                                    CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandartDirectories, ResourceFilesArray);
-                                CodeGeneratorsController.EmitAssemblyRedirects(
-                                    assemblyResolveScope,
-                                    CompilerOptions.OutputFileName);
-                                if (res_file != null)
-                                    File.Delete(res_file);
-                            }
+                        if (CompilerOptions.UseDllForSystemUnits)
+                            compilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
+
+                        GenerateILCode(programNode, compilerOptions);
                     }
                 }
             }
@@ -2454,7 +2371,7 @@ namespace PascalABCCompiler
 
                 string fn = "Compiler";
                 if (currentCompilationUnit != null && this.currentCompilationUnit.SyntaxTree != null) fn = Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name);
-                Errors.CompilerInternalError comp_err = new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", fn), err);
+                Errors.CompilerInternalError comp_err = new Errors.CompilerInternalError(string.Format("Compiler.GenerateILCodeAndSaveAssembly[{0}]", fn), err);
                 if (ErrorsList.Count == 0)
                     ErrorsList.Add(comp_err);
                 else
@@ -2486,9 +2403,9 @@ namespace PascalABCCompiler
             if (ErrorsList.Count > 0)
             {
                 // rtl - та самая dll со всей паскалевской системой (PABCSystem)
-                if (compilerOptions.UseDllForSystemUnits && !has_only_syntax_errors(ErrorsList) && compilerOptions.IgnoreRtlErrors)
+                if (CompilerOptions.UseDllForSystemUnits && !has_only_syntax_errors(ErrorsList) && CompilerOptions.IgnoreRtlErrors)
                 {
-                    compilerOptions.UseDllForSystemUnits = false;
+                    CompilerOptions.UseDllForSystemUnits = false;
                     ErrorsList.Clear();
 
                     need_recompiled = true;
@@ -2509,11 +2426,86 @@ namespace PascalABCCompiler
             else if (need_recompiled)
             {
                 //Compiler c = new Compiler(sourceFilesProvider,OnChangeCompilerState);
-                //return c.Compile(this.compilerOptions);
+                //return c.GenerateILCodeAndSaveAssembly(this.compilerOptions);
                 return Compile();
             }
             else
                 return CompilerOptions.OutputFileName;
+        }
+
+        private void GenerateILCode(program_node programNode, NETGenerator.CompilerOptions compilerOptions)
+        {
+            
+            if (CompilerOptions.OutputFileType != CompilerOptions.OutputType.SemanticTree)
+#if DEBUG
+                if (InternalDebug.CodeGeneration)
+#endif
+                {
+                    // генерация файла .pdb для дебага
+                    DebugOutputFileCreationUsingPDB();
+
+                    OnChangeCompilerState(this, CompilerState.CodeGeneration, CompilerOptions.OutputFileName); // состояние генерации кода
+
+                    // трансляция в IL-код | В programNode находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
+                    CodeGeneratorsController.GenerateILCodeAndSaveAssembly(programNode, CompilerOptions.OutputFileName,
+                        CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandartDirectories,
+                        GetResourceFilesFromCompilerDirectives()?.ToArray());
+
+                    CodeGeneratorsController.EmitAssemblyRedirects(
+                        assemblyResolveScope,
+                        CompilerOptions.OutputFileName);
+
+                    if (compilerOptions.MainResourceFileName != null)
+                        File.Delete(compilerOptions.MainResourceFileName);
+                }
+        }
+
+        private void DebugOutputFileCreationUsingPDB()
+        {
+            int n = 1;
+            try
+            {
+                n = 2;
+                var fs = File.Create(CompilerOptions.OutputFileName);
+                n = 3;
+                fs.Close();
+                n = 4;
+                ///////File.Delete(CompilerOptions.OutputFileName);
+                string pdb_file_name = Path.ChangeExtension(CompilerOptions.OutputFileName, ".pdb");
+                if (File.Exists(pdb_file_name))
+                    File.Delete(pdb_file_name);
+                n = 5; // PVS 01/2022
+            }
+            catch (Exception e)
+            {
+                throw new UnauthorizedAccessToFile(CompilerOptions.OutputFileName + " -- " + n + "  " + e.ToString());
+                //throw e;
+            }
+        }
+
+        private List<string> GetResourceFilesFromCompilerDirectives()
+        {
+            List<string> ResourceFiles = null;
+            if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_resource))
+            {
+                ResourceFiles = new List<string>();
+                List<compiler_directive> ResourceDirectives = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_resource];
+                
+                foreach (compiler_directive cd in ResourceDirectives)
+                {
+                    TryThrowInvalidPath(cd.directive, cd.location);
+                    var resourceFileName = Path.Combine(Path.GetDirectoryName(cd.source_file), cd.directive);
+
+                    // Так же как с main_resource
+                    if (File.Exists(resourceFileName))
+                        ResourceFiles.Add(resourceFileName);
+                    else
+                        ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
+
+                }
+            }
+
+            return ResourceFiles;
         }
 
         private bool has_only_syntax_errors(List<Error> errors)
@@ -2865,7 +2857,7 @@ namespace PascalABCCompiler
             var FullFileName = Path.Combine(curr_path, FileName);
             if (System.IO.File.Exists(FullFileName))
             {
-                var NewFileName = Path.Combine(compilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
+                var NewFileName = Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
                 if (FullFileName != NewFileName)
                 {
                     if (overwrite)
@@ -2891,7 +2883,7 @@ namespace PascalABCCompiler
 
         public string GetUnitFileName(SyntaxTree.unit_or_namespace SyntaxUsesUnit, string curr_path)
         {
-            //ToDo В корневом Compile() создаётся uses_unit_in без name. Выглядит как костыль
+            //ToDo В корневом GenerateILCodeAndSaveAssembly() создаётся uses_unit_in без name. Выглядит как костыль
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in && (SyntaxUsesUnit as SyntaxTree.uses_unit_in).name == null) return (SyntaxUsesUnit as SyntaxTree.uses_unit_in).in_file.Value;
             if (curr_path == null) throw new InvalidOperationException(SyntaxUsesUnit.UsesPath());
             var UnitName = SyntaxUsesUnit.name.idents[0].name;
@@ -3213,7 +3205,7 @@ namespace PascalABCCompiler
             string SourceText = GetSourceFileText(FileName);
             List<string> DefinesList = new List<string>();
             DefinesList.Add("PASCALABC"); // SSM 11/07/20
-            if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
+            if (!CompilerOptions.Debug && !CompilerOptions.ForDebugging)
                 DefinesList.Add("RELEASE");
             else
                 DefinesList.Add("DEBUG");
@@ -3510,7 +3502,7 @@ namespace PascalABCCompiler
             AddNamespaces(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
             AddNamespaces(currentUnit.InterfaceUsingNamespaceList, GetInterfaceSyntaxUsingList(currentUnit.SyntaxTree));
 
-            //Console.WriteLine("Compile Interface "+UnitName);//DEBUG
+            //Console.WriteLine("GenerateILCodeAndSaveAssembly Interface "+UnitName);//DEBUG
 
             // компилируем интерфейс текущего модуля EVA
             CompileCurrentUnitInterface(UnitFileName, currentUnit, docs);
@@ -3543,7 +3535,7 @@ namespace PascalABCCompiler
             if (CompileImplementationDependencies(curr_path, currentUnit, syntaxUsesList, namespaces, commonUnitNode, ref compilationUnit, ref interfcompile))
                 return currentUnit;
 
-            //Console.WriteLine("Compile Implementation "+UnitName);//DEBUG
+            //Console.WriteLine("GenerateILCodeAndSaveAssembly Implementation "+UnitName);//DEBUG
 
             // компилируем реализацию текущего модуля EVA
             CompileCurrentUnitImplementation(UnitFileName, currentUnit, docs);
@@ -3560,7 +3552,7 @@ namespace PascalABCCompiler
             return currentUnit;
             /*if(currentUnit.State!=UnitState.Compiled)
             { 
-                //Console.WriteLine("Compile Interface "+UnitName);//DEBUG
+                //Console.WriteLine("GenerateILCodeAndSaveAssembly Interface "+UnitName);//DEBUG
                 currentUnit.SemanticTree=SyntaxTreeToSemanticTreeConverter.CompileInterface(currentUnit.SyntaxTree,
                     currentUnit.InterfaceUsedUnits,currentUnit.syntax_error);
                 currentUnit.State=UnitState.InterfaceCompiled;
@@ -3568,7 +3560,7 @@ namespace PascalABCCompiler
                 if(syntaxUsesList!=null)
                     for(int i=syntaxUsesList.Count-1;i>=0;i--)
                         CompileUnit(currentUnit.ImplementationUsedUnits,syntaxUsesList[i]);        
-                //Console.WriteLine("Compile Implementation "+UnitName);//DEBUG
+                //Console.WriteLine("GenerateILCodeAndSaveAssembly Implementation "+UnitName);//DEBUG
                 if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
                 {
                     SyntaxTreeToSemanticTreeConverter.CompileImplementation(currentUnit.SemanticTree,
@@ -3752,7 +3744,7 @@ namespace PascalABCCompiler
                 {
                     if (!IsPossibleNetNamespaceOrStandardPasFile(syntaxUsesList[i], false, curr_path))
                     {
-                        compilerOptions.UseDllForSystemUnits = false;
+                        CompilerOptions.UseDllForSystemUnits = false;
                         break;
                     }
                 }
@@ -3792,7 +3784,7 @@ namespace PascalABCCompiler
                     // Проверка на явный namespace (паскалевский)
                     if ((currentUnit.SyntaxTree as SyntaxTree.unit_module).unit_name.HeaderKeyword == SyntaxTree.UnitHeaderKeyword.Namespace)
                         throw new NamespacesCanBeCompiledOnlyInProjects(currentUnit.SyntaxTree.source_context);
-                    compilerOptions.UseDllForSystemUnits = false;
+                    CompilerOptions.UseDllForSystemUnits = false;
                 }
 
                 // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
@@ -3803,7 +3795,7 @@ namespace PascalABCCompiler
 
                 // TODO: возможно, имплементировать переключение парсеров
                 if (IsDll(currentUnit.SyntaxTree))
-                    compilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary;
+                    CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary;
                 if (ParsersController.LastParser != null)
                     currentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
                 currentCompilationUnit = currentUnit;
@@ -3885,15 +3877,15 @@ namespace PascalABCCompiler
         {
             List<string> DefinesList = new List<string>();
             DefinesList.Add("PASCALABC");
-            if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
+            if (!CompilerOptions.Debug && !CompilerOptions.ForDebugging)
                 DefinesList.Add("RELEASE");
             else
                 DefinesList.Add("DEBUG");
             DefinesList.AddRange(CompilerOptions.ForceDefines);
-            if (compilerOptions.UnitSyntaxTree != null)
+            if (CompilerOptions.UnitSyntaxTree != null)
             {
-                currentUnit.SyntaxTree = compilerOptions.UnitSyntaxTree;
-                compilerOptions.UnitSyntaxTree = null;
+                currentUnit.SyntaxTree = CompilerOptions.UnitSyntaxTree;
+                CompilerOptions.UnitSyntaxTree = null;
             }
             // синтаксический анализ
             else
@@ -3902,7 +3894,7 @@ namespace PascalABCCompiler
 
         private void GetSourceCode(SyntaxTree.unit_or_namespace unitToCompile, string UnitFileName, CompilationUnit currentUnit, ref string SourceText)
         {
-            if (compilerOptions.UnitSyntaxTree == null)
+            if (CompilerOptions.UnitSyntaxTree == null)
             {
                 // TODO: подебажить GetSourceFileText
                 SourceText = GetSourceFileText(UnitFileName);
@@ -4046,7 +4038,7 @@ namespace PascalABCCompiler
 #if DEBUG
                 if (InternalDebug.PCUGenerate)
 #endif
-                    if (compilerOptions.SavePCU)
+                    if (CompilerOptions.SavePCU)
                         if ((Unit.SemanticTree as TreeRealization.common_unit_node).namespaces.Count > 1 &&
                             Unit.SyntaxTree != null &&
                             Unit.State == UnitState.Compiled)
@@ -4064,11 +4056,11 @@ namespace PascalABCCompiler
             }
             catch (Exception err)
             {
-                //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err));
+                //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.GenerateILCodeAndSaveAssembly[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err));
                 OnChangeCompilerState(this, CompilerState.PCUWritingError, Unit.UnitFileName);
 #if DEBUG
                 if (!InternalDebug.SkipPCUErrors)
-                    throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err);
+                    throw new Errors.CompilerInternalError(string.Format("Compiler.GenerateILCodeAndSaveAssembly[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err);
                 writer.RemoveSelf();
 #endif
             }
@@ -4076,7 +4068,7 @@ namespace PascalABCCompiler
 
         public CompilationUnit ReadPCU(string FileName)
         {
-            if (compilerOptions.ForIntellisense && false)
+            if (CompilerOptions.ForIntellisense && false)
             {
                 CompilationUnit unit = null;
                 if (pcuCompilationUnits.ContainsKey(FileName))
