@@ -307,14 +307,36 @@ namespace WeifenLuo.WinFormsUI.Docking
 
                 if (m_boldFont == null)
                 {
-                    m_font = TextFont;
-                    m_boldFont = new Font(TextFont, FontStyle.Bold);
+                    FontFamily validFontFamily = TextFont.FontFamily; // SSM 12/10/23
+                    foreach (FontFamily ff in FontFamily.Families)
+                    {
+                        if (ff.Name == TextFont.FontFamily.Name)
+                        {
+                            validFontFamily = ff;
+                            break;
+                        }
+                    }
+                    m_font = new Font(validFontFamily, TextFont.Size, FontStyle.Regular);
+
+                    //m_font = TextFont;
+                    m_boldFont = new Font(m_font, FontStyle.Bold);
                 }
                 else if (m_font != TextFont)
                 {
                     m_boldFont.Dispose();
-                    m_font = TextFont;
-                    m_boldFont = new Font(TextFont, FontStyle.Bold);
+
+                    FontFamily validFontFamily = TextFont.FontFamily; // SSM 12/10/23
+                    foreach (FontFamily ff in FontFamily.Families)
+                    {
+                        if (ff.Name == TextFont.FontFamily.Name)
+                        {
+                            validFontFamily = ff;
+                            break;
+                        }
+                    }
+                    m_font = new Font(validFontFamily, TextFont.Size, FontStyle.Regular);
+                    //m_font = TextFont;
+                    m_boldFont = new Font(m_font, FontStyle.Bold);
                 }
 
                 return m_boldFont;

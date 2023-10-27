@@ -299,6 +299,20 @@ namespace VisualPascalABC
                 this.ResumeLayout(false);
                 this.PerformLayout();
             }
+            else if (gr.DpiX >= 144)
+            {
+                this.SuspendLayout();
+                this.toolStripPanel.SuspendLayout();
+                this.menuStrip1.SuspendLayout();
+
+                toolStrip1.ImageScalingSize = new Size(24, 24);
+                menuStrip1.ImageScalingSize = new Size(24, 24);
+                toolStripPanel.Size = new Size(toolStripPanel.Size.Width, 30);
+                this.toolStripPanel.ResumeLayout(false);
+                this.menuStrip1.ResumeLayout(false);
+                this.ResumeLayout(false);
+                this.PerformLayout();
+            }
             // !!
             gr.Dispose();
             serviceContainer = new WorkbenchServiceContainer();
