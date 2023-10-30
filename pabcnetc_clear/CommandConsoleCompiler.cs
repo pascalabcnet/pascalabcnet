@@ -245,13 +245,13 @@ namespace PascalABCCompiler
                     sendWorkingSet();
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsClearStandartModules:
-                    compiler.CompilerOptions.StandartModules.Clear();
+                    compiler.CompilerOptions.StandardModules.Clear();
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsStandartModule:
                     CompilerOptions.StandartModule sm = new CompilerOptions.StandartModule(args[0],
                         (CompilerOptions.StandartModuleAddMethod)Convert.ToInt32(args[1]),
                         (PascalABCCompiler.SyntaxTree.LanguageId)Convert.ToInt32(args[2]));
-                    compiler.CompilerOptions.StandartModules.Add(sm);
+                    compiler.CompilerOptions.StandardModules.Add(sm);
                     break;
                 case ConsoleCompilerConstants.InternalDebug:
                     compiler.InternalDebug = (CompilerInternalDebug)ReadObject();
