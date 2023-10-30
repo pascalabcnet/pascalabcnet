@@ -369,7 +369,7 @@ namespace PascalABCCompiler.PCU
                     {
                         var sub_u = pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo);
                         if (sub_u == null) return true;
-                        this.unit.DirectInterfaceCompilationUnits.Add(sub_u.SemanticTree, sub_u);
+                        this.unit.InterfaceUsedPascalUnits.Add(sub_u.SemanticTree, sub_u);
                         this.unit.InterfaceUsedUnits.AddElement(sub_u.SemanticTree, pcu_file.incl_modules[i]);
                     }
                 }
