@@ -11753,6 +11753,11 @@ namespace PascalABCCompiler.NETGenerator
             value.DefaultOperator.visit(this);
         }
 
+        public override void visit(ISizeOfOperatorAsConstant value)
+        {
+            value.SizeOfOperator.visit(this);
+        }
+
         public override void visit(ITypeOfOperatorAsConstant value)
         {
             value.TypeOfOperator.visit(this);

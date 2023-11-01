@@ -3728,6 +3728,11 @@ namespace PascalABCCompiler.PCU
             VisitCompiledConstructorCall(node.method_call);
         }
 
+        private void VisitSizeOfOperatorAsConstant(sizeof_operator_as_constant node)
+        {
+            VisitSizeOfOperator(node.sizeof_operator);
+        }
+
         private void VisitCommonNamespaceFunctionCallNodeAsConstant(common_namespace_function_call_as_constant node)
         {
             VisitCommonNamespaceFunctionCall(node.method_call);
@@ -3762,7 +3767,9 @@ namespace PascalABCCompiler.PCU
                 case semantic_node_type.common_namespace_function_call_node_as_constant:
                     VisitCommonNamespaceFunctionCallNodeAsConstant((common_namespace_function_call_as_constant)en); break;
                 case semantic_node_type.compiled_constructor_call_as_constant:
-                    VisitCompiledConstructorCallAsConstant((compiled_constructor_call_as_constant)en); break;                
+                    VisitCompiledConstructorCallAsConstant((compiled_constructor_call_as_constant)en); break;
+                case semantic_node_type.sizeof_operator_as_constant:
+                    VisitSizeOfOperatorAsConstant((sizeof_operator_as_constant)en); break;
                 case semantic_node_type.array_const:
                     VisitArrayConst((array_const)en); break;
                 case semantic_node_type.record_const:

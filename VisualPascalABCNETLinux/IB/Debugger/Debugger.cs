@@ -566,7 +566,6 @@ namespace VisualPascalABC
             return null;
         }
 
-
         private delegate void EndDebuggerSessionDelegate();
 
         private void EndDebuggerSessionSafe()
