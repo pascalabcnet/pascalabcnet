@@ -2649,6 +2649,14 @@ namespace PascalABCCompiler.TreeRealization
                     par.default_value, null);
                 cpar.inital_value = par.inital_value;
                 cpar.default_value = par.default_value;
+                if (cpar.default_value is default_operator_node)
+                    (cpar.default_value as default_operator_node).type = generic_convertions.determine_type(cpar.default_value.type, _instance_params, true, orig_gen_params);
+                else if (cpar.default_value is default_operator_node_as_constant)
+                {
+                    (cpar.default_value as default_operator_node_as_constant).type = generic_convertions.determine_type(cpar.default_value.type, _instance_params, true, orig_gen_params);
+                    (cpar.default_value as default_operator_node_as_constant).default_operator.type = (cpar.default_value as default_operator_node_as_constant).type;
+                }
+                    
                 cpar.intrenal_is_params = par.is_params;
                 cpar.is_ret_value = par.is_ret_value;
                 cpar.is_special_name = par.is_special_name;
