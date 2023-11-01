@@ -1141,19 +1141,19 @@
     <member name="M:TypedFileRead(PABCSystem.TypedFile)">
       <summary>--</summary>
     </member>
-    <member name="M:FilePos(@file)">
+    <member name="M:FilePos(PABCSystem.BinaryFile)">
       <summary>--</summary>
     </member>
-    <member name="M:FileSize(@file)">
+    <member name="M:FileSize(PABCSystem.BinaryFile)">
       <summary>--</summary>
     </member>
-    <member name="M:Seek(@file,System.Int64)">
+    <member name="M:Seek(PABCSystem.BinaryFile,System.Int64)">
       <summary>--</summary>
     </member>
-    <member name="M:BinaryFileInit(@file@)">
+    <member name="M:BinaryFileInit(PABCSystem.BinaryFile@)">
       <summary>--</summary>
     </member>
-    <member name="M:BinaryFileRead(@file@,System.Type)">
+    <member name="M:BinaryFileRead(PABCSystem.BinaryFile@,System.Type)">
       <summary>--</summary>
     </member>
     <member name="M:PascalABCVersion">
@@ -3022,6 +3022,9 @@
     </member>
     <member name="M:PrintLines``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
       <summary>Выводит последовательность, каждый элемент отображается с помощью функции map и выводится на новой строке</summary>
+    </member>
+    <member name="M:Flatten``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.IEnumerable{``0}})">
+      <summary>Преобразует последовательность последовательностей в плоскую последовательность</summary>
     </member>
     <member name="M:JoinToString``1(System.Collections.Generic.IEnumerable{``0},System.String)">
       <summary>Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя</summary>
