@@ -2196,6 +2196,8 @@ namespace PascalABCCompiler
                 // компиляция юнитов из списка отложенной компиляции, если он не пуст
                 CompileUnitsFromDelayedList();
 
+                // TODO: Prebuild semantic tree actions method
+
                 // Закрытие чтения и записи .pcu файлов
                 ClosePCUReadersAndWriters();
 
@@ -2239,7 +2241,7 @@ namespace PascalABCCompiler
                     SetTargetType(compilerOptions);
 
                     //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter.
-                    program_node programRoot = BuildFullSemanticTree(compilerOptions); // получние полного семантического дерева, включающего все зависимости
+                    program_node semanticTree = BuildFullSemanticTree(compilerOptions); // получние полного семантического дерева, включающего все зависимости
 
                     if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && CompilerOptions.OutputFileType != CompilerOptions.OutputType.ClassLibrary)
                     {
@@ -2252,7 +2254,7 @@ namespace PascalABCCompiler
                         if (CompilerOptions.UseDllForSystemUnits)
                             compilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
 
-                        GenerateILCode(programRoot, compilerOptions);
+                        GenerateILCode(semanticTree, compilerOptions);
                     }
                 }
             }
@@ -2323,7 +2325,7 @@ namespace PascalABCCompiler
             for (int i = 0; i < UnitsLogicallySortedList.Count; i++)
                 programRoot.units.AddElement(UnitsLogicallySortedList[i].SemanticTree as common_unit_node);
 
-            CreateMainFunction(programRoot, compilerOptions); // планируется вынесение в другой класс, поэтому рефакторинг функции не проведен  EVA
+            CreateMainFunction(programRoot, compilerOptions); // TODO: планируется вынесение в другой класс  EVA
 
             if (CompilerOptions.GenerateCode) // семантические преобразования с оптимизацией кода
                 programRoot = semanticTreeConvertersController.Convert(programRoot) as program_node;
@@ -2478,7 +2480,7 @@ namespace PascalABCCompiler
 
                     OnChangeCompilerState(this, CompilerState.CodeGeneration, CompilerOptions.OutputFileName); // состояние генерации кода
 
-                    // трансляция в IL-код | В programRoot находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
+                    // трансляция в IL-код | В semanticTree находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
                     CodeGeneratorsController.GenerateILCodeAndSaveAssembly(programNode, CompilerOptions.OutputFileName,
                         CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandartDirectories,
                         GetResourceFilesFromCompilerDirectives()?.ToArray());
@@ -3476,6 +3478,9 @@ namespace PascalABCCompiler
             return false;
         }
 
+        /// <summary>
+        /// TODO: еще сократить метод   EVA
+        /// </summary>
         public CompilationUnit CompileUnit(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> PascalUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, string previousPath)
         {
             string unitFileName = GetUnitFileName(currentUnitNode, previousPath);
@@ -3487,7 +3492,7 @@ namespace PascalABCCompiler
             CompilationUnit currentUnit = UnitTable[unitId];
 
             // ошибка - пространство имен не может содержать in секцию (для указания файла)
-            // TODO: скинуть семантические проверки в кучу (если получится) | P.S. не получится :)   EVA
+            // TODO: скинуть семантические проверки в кучу (если получится) | P.S. не получится :) отделять секцией семантические проверки   EVA
             SemanticCheckUsesInIsNotNamespace(currentUnitNode, currentUnit);
 
             // если модуль уже скомпилирован - возвращаем (возможно, только интерфейс модуля и тогда он докомпилируется в другом рекурсивном вызове)   EVA
@@ -3515,9 +3520,9 @@ namespace PascalABCCompiler
             if (interfaceUsesList != null)
             {
                 CompileInterfaceDependencies(unitsFromUsesSection, PascalUnitsFromUsesSection, currentUnitNode,
-                    unitFileName, currentDirectory, currentUnit, interfaceUsesList, References, namespaces, out bool shouldReturnCurrentUnit);
+                    unitFileName, currentDirectory, currentUnit, interfaceUsesList, References, namespaces, out bool shouldReturnCurUnit);
 
-                if (shouldReturnCurrentUnit)
+                if (shouldReturnCurUnit)
                     return currentUnit;
             }
 
@@ -3841,7 +3846,7 @@ namespace PascalABCCompiler
                 UnitTable[UnitId] = currentUnit;
 
                 // ошибки не UnitModule | TODO: может быть, можно объединить с семантической проверкой выше  EVA
-                SemanticCheckCurrentUnitIsReallyUnit(UnitFileName, currentUnit);
+                SemanticCheckCurrentUnitIsPascalUnit(UnitFileName, currentUnit);
 
                 // здесь в начало uses добавляем стандартные модули
 #if DEBUG
@@ -3870,7 +3875,7 @@ namespace PascalABCCompiler
 
         // Синтактико-семантическая ошибка - проверка, что currentUnit является модулем,
         // а не основной программой и не dll EVA
-        private void SemanticCheckCurrentUnitIsReallyUnit(string UnitFileName, CompilationUnit currentUnit)
+        private void SemanticCheckCurrentUnitIsPascalUnit(string UnitFileName, CompilationUnit currentUnit)
         {
             if (UnitTable.Count > 1) // если это не главный модуль (программа в unittable всегда идет первой)
             {
