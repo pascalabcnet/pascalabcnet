@@ -9824,6 +9824,15 @@ namespace PascalABCCompiler.TreeConverter
                     bfc = new common_method_call(cmn, (bfc as common_method_call).obj, bfc.location);
                 }
             }
+            else if (bfc is common_namespace_function_call)
+            {
+                common_namespace_function_node bcnfn = (bfc as common_namespace_function_call).function_node;
+                if (bcnfn.is_generic_function && !bcnfn.is_generic_function_instance && bcnfn.parameters.Count == 0)
+                {
+                    bcnfn = (common_namespace_function_node)generic_convertions.DeduceFunction(bcnfn, new expressions_list(), true, context, bfc.location);
+                    bfc = new common_namespace_function_call(bcnfn, bfc.location);
+                }
+            }
             return bfc;
         }
 
