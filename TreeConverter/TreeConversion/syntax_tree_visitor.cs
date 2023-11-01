@@ -21055,14 +21055,14 @@ namespace PascalABCCompiler.TreeConverter
                 if (_modern_proc_type.el != null)
                 {
                     var en = _modern_proc_type.el;
-                    if (en.enumerators.Count == 1)
-                        AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
+                    //if (en.enumerators.Count == 1)
+                    //    AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
                     for (int i = 0; i < en.enumerators.Count; i++)
                     {
                         if (en.enumerators[i].value != null)
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
-                        if (!(en.enumerators[i].name is named_type_reference))
+                        if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         t.Add(en.enumerators[i].name); // ???????????????
@@ -21084,15 +21084,15 @@ namespace PascalABCCompiler.TreeConverter
                 if (_modern_proc_type.el != null)
                 {
                     var en = _modern_proc_type.el;
-                    if (en.enumerators.Count == 1)
-                        AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
+                    //if (en.enumerators.Count == 1)
+                    //    AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
                     for (int i = 0; i < en.enumerators.Count; i++)
                     {
 
                         if (en.enumerators[i].value != null)
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
-                        if (!(en.enumerators[i].name is named_type_reference))
+                        if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         t.Add(en.enumerators[i].name);
