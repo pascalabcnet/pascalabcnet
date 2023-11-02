@@ -9824,6 +9824,15 @@ namespace PascalABCCompiler.TreeConverter
                     bfc = new common_method_call(cmn, (bfc as common_method_call).obj, bfc.location);
                 }
             }
+            else if (bfc is common_namespace_function_call)
+            {
+                common_namespace_function_node bcnfn = (bfc as common_namespace_function_call).function_node;
+                if (bcnfn.is_generic_function && !bcnfn.is_generic_function_instance && bcnfn.parameters.Count == 0)
+                {
+                    bcnfn = (common_namespace_function_node)generic_convertions.DeduceFunction(bcnfn, new expressions_list(), true, context, bfc.location);
+                    bfc = new common_namespace_function_call(bcnfn, bfc.location);
+                }
+            }
             return bfc;
         }
 
@@ -15107,9 +15116,9 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             }
-            else if (expr is common_namespace_function_call) 
+            else if (expr is common_namespace_function_call)
             {
-                common_namespace_function_call cnfc=expr as common_namespace_function_call;
+                common_namespace_function_call cnfc = expr as common_namespace_function_call;
                 foreach (expression_node el in cnfc.parameters)
                     convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
@@ -15119,7 +15128,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (expr is basic_function_call)
             {
-            	basic_function_call cnfc=expr as basic_function_call;
+                basic_function_call cnfc = expr as basic_function_call;
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //  throw new ConstantExpressionExpected(loc);
                 foreach (expression_node el in cnfc.parameters)
@@ -15128,69 +15137,69 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (expr is typed_expression)
             {
-            	expr = convertion_data_and_alghoritms.convert_type(expr, tn);
-            	if (expr is common_constructor_call)
-            	{
-            		constant = new common_constructor_call_as_constant(expr as common_constructor_call, null);
-            	}
-            	else
-            	if (expr is typed_expression)
-            	{
-            		if (const_def_type != null)
-            		{
-            			expr = convertion_data_and_alghoritms.convert_type(expr, const_def_type);
-            			tn = const_def_type;
-            			constant = new common_constructor_call_as_constant(expr as common_constructor_call, null);
-            		}
-            		else
-            		{
-            			base_function_call bfc = ((expr as typed_expression).type as delegated_methods).proper_methods[0];
-            			common_type_node del =
-            				convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
-            			context.converted_namespace.types.AddElement(del);
-            			tn = del;
-            			expr = convertion_data_and_alghoritms.explicit_convert_type(expr, del);
-            			expr.type = tn;
-            			constant = new common_constructor_call_as_constant(expr as common_constructor_call, loc);
-            		}
-            	}
+                expr = convertion_data_and_alghoritms.convert_type(expr, tn);
+                if (expr is common_constructor_call)
+                {
+                    constant = new common_constructor_call_as_constant(expr as common_constructor_call, null);
+                }
+                else
+                if (expr is typed_expression)
+                {
+                    if (const_def_type != null)
+                    {
+                        expr = convertion_data_and_alghoritms.convert_type(expr, const_def_type);
+                        tn = const_def_type;
+                        constant = new common_constructor_call_as_constant(expr as common_constructor_call, null);
+                    }
+                    else
+                    {
+                        base_function_call bfc = ((expr as typed_expression).type as delegated_methods).proper_methods[0];
+                        common_type_node del =
+                            convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
+                        context.converted_namespace.types.AddElement(del);
+                        tn = del;
+                        expr = convertion_data_and_alghoritms.explicit_convert_type(expr, del);
+                        expr.type = tn;
+                        constant = new common_constructor_call_as_constant(expr as common_constructor_call, loc);
+                    }
+                }
             }
-            
+
             else if (expr is namespace_constant_reference)
             {
-            	constant = (expr as namespace_constant_reference).constant.const_value;
-            	convertion_data_and_alghoritms.check_convert_type(constant,tn,expr.location);
-            	if ((tn.type_special_kind == SemanticTree.type_special_kind.set_type || tn.type_special_kind == SemanticTree.type_special_kind.base_set_type) && tn.element_type != null)
+                constant = (expr as namespace_constant_reference).constant.const_value;
+                convertion_data_and_alghoritms.check_convert_type(constant, tn, expr.location);
+                if ((tn.type_special_kind == SemanticTree.type_special_kind.set_type || tn.type_special_kind == SemanticTree.type_special_kind.base_set_type) && tn.element_type != null)
                 {
                     ordinal_type_interface oti = tn.element_type.get_internal_interface(internal_interface_kind.ordinal_interface) as ordinal_type_interface;
                     if (oti != null)
                     {
-                    	common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipFunction.sym_info as common_namespace_function_node,null);
-        				cmc.parameters.AddElement(expr);
-        				cmc.parameters.AddElement(oti.lower_value.get_constant_copy(null));
-        				cmc.parameters.AddElement(oti.upper_value.get_constant_copy(null));
-        				cmc.ret_type = tn;
-        				constant = new common_namespace_function_call_as_constant(cmc,null);
+                        common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipFunction.sym_info as common_namespace_function_node, null);
+                        cmc.parameters.AddElement(expr);
+                        cmc.parameters.AddElement(oti.lower_value.get_constant_copy(null));
+                        cmc.parameters.AddElement(oti.upper_value.get_constant_copy(null));
+                        cmc.ret_type = tn;
+                        constant = new common_namespace_function_call_as_constant(cmc, null);
                     }
                     else if (tn.element_type.type_special_kind == SemanticTree.type_special_kind.short_string)
                     {
-                    	common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringInSetFunction.sym_info as common_namespace_function_node,null);
-        				cmc.parameters.AddElement(expr);
-        				cmc.parameters.AddElement(new int_const_node((tn.element_type as short_string_type_node).Length,null));
-        				cmc.ret_type = tn;
-        				constant = new common_namespace_function_call_as_constant(cmc,null);
+                        common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringInSetFunction.sym_info as common_namespace_function_node, null);
+                        cmc.parameters.AddElement(expr);
+                        cmc.parameters.AddElement(new int_const_node((tn.element_type as short_string_type_node).Length, null));
+                        cmc.ret_type = tn;
+                        constant = new common_namespace_function_call_as_constant(cmc, null);
                     }
-                 }
-            	else
-            	if (tn.type_special_kind == SemanticTree.type_special_kind.short_string)
-            	{
-            		/*common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as common_namespace_function_node,null);
+                }
+                else
+                if (tn.type_special_kind == SemanticTree.type_special_kind.short_string)
+                {
+                    /*common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as common_namespace_function_node,null);
         			cmc.parameters.AddElement(expr);
         			cmc.parameters.AddElement(new int_const_node((tn as short_string_type_node).Length,null));*/
-            		expression_node cmc = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node,null,convertion_data_and_alghoritms.convert_type(expr,SystemLibrary.SystemLibrary.string_type),new int_const_node((tn as short_string_type_node).Length,null));
-        			constant = new common_namespace_function_call_as_constant(cmc as common_namespace_function_call,null);
-            	}
-            	/*expression_node e = convertion_data_and_alghoritms.convert_type(constant.get_constant_copy(expr.location), tn);
+                    expression_node cmc = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, null, convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.string_type), new int_const_node((tn as short_string_type_node).Length, null));
+                    constant = new common_namespace_function_call_as_constant(cmc as common_namespace_function_call, null);
+                }
+                /*expression_node e = convertion_data_and_alghoritms.convert_type(constant.get_constant_copy(expr.location), tn);
             	switch (e.semantic_node_type)
                 {
                    case semantic_node_type.compiled_constructor_call:
@@ -15200,7 +15209,7 @@ namespace PascalABCCompiler.TreeConverter
                       constant = e as constant_node;
                       break;
                }*/
-            	/*if (constant.get_object_value() != null)
+                /*if (constant.get_object_value() != null)
             	{
             		//if (const_def_type != null)
             		{
@@ -15232,43 +15241,43 @@ namespace PascalABCCompiler.TreeConverter
                     	}
             		}
             	}*/
-            	return constant;
+                return constant;
             }
             else if (expr is function_constant_reference)
             {
-            	constant = (expr as function_constant_reference).constant.const_value;
-            	convertion_data_and_alghoritms.check_convert_type(constant,tn,expr.location);
-            	if ((tn.type_special_kind == SemanticTree.type_special_kind.set_type || tn.type_special_kind == SemanticTree.type_special_kind.base_set_type) && tn.element_type != null)
+                constant = (expr as function_constant_reference).constant.const_value;
+                convertion_data_and_alghoritms.check_convert_type(constant, tn, expr.location);
+                if ((tn.type_special_kind == SemanticTree.type_special_kind.set_type || tn.type_special_kind == SemanticTree.type_special_kind.base_set_type) && tn.element_type != null)
                 {
                     ordinal_type_interface oti = tn.element_type.get_internal_interface(internal_interface_kind.ordinal_interface) as ordinal_type_interface;
                     if (oti != null)
                     {
-                    	common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipFunction.sym_info as common_namespace_function_node,null);
-        				cmc.parameters.AddElement(expr);
-        				cmc.parameters.AddElement(oti.lower_value.get_constant_copy(null));
-        				cmc.parameters.AddElement(oti.upper_value.get_constant_copy(null));
-        				cmc.ret_type = tn;
-        				constant = new common_namespace_function_call_as_constant(cmc,null);
+                        common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipFunction.sym_info as common_namespace_function_node, null);
+                        cmc.parameters.AddElement(expr);
+                        cmc.parameters.AddElement(oti.lower_value.get_constant_copy(null));
+                        cmc.parameters.AddElement(oti.upper_value.get_constant_copy(null));
+                        cmc.ret_type = tn;
+                        constant = new common_namespace_function_call_as_constant(cmc, null);
                     }
                     else if (tn.element_type.type_special_kind == SemanticTree.type_special_kind.short_string)
                     {
-                    	common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringInSetFunction.sym_info as common_namespace_function_node,null);
-        				cmc.parameters.AddElement(expr);
-        				cmc.parameters.AddElement(new int_const_node((tn.element_type as short_string_type_node).Length,null));
-        				cmc.ret_type = tn;
-        				constant = new common_namespace_function_call_as_constant(cmc,null);
+                        common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringInSetFunction.sym_info as common_namespace_function_node, null);
+                        cmc.parameters.AddElement(expr);
+                        cmc.parameters.AddElement(new int_const_node((tn.element_type as short_string_type_node).Length, null));
+                        cmc.ret_type = tn;
+                        constant = new common_namespace_function_call_as_constant(cmc, null);
                     }
-                 }
-            	else
-            	if (tn.type_special_kind == SemanticTree.type_special_kind.short_string)
-            	{
-            		/*common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as common_namespace_function_node,null);
+                }
+                else
+                if (tn.type_special_kind == SemanticTree.type_special_kind.short_string)
+                {
+                    /*common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as common_namespace_function_node,null);
         			cmc.parameters.AddElement(expr);
         			cmc.parameters.AddElement(new int_const_node((tn as short_string_type_node).Length,null));*/
-            		expression_node cmc = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node,null,convertion_data_and_alghoritms.convert_type(expr,SystemLibrary.SystemLibrary.string_type),new int_const_node((tn as short_string_type_node).Length,null));
-        			constant = new common_namespace_function_call_as_constant(cmc as common_namespace_function_call,null);
-            	}
-            	return constant;
+                    expression_node cmc = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, null, convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.string_type), new int_const_node((tn as short_string_type_node).Length, null));
+                    constant = new common_namespace_function_call_as_constant(cmc as common_namespace_function_call, null);
+                }
+                return constant;
             }
             else if (expr is static_compiled_variable_reference && !(expr as static_compiled_variable_reference).var.IsLiteral)
             {
@@ -15277,6 +15286,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (expr is default_operator_node)
                 constant = new default_operator_node_as_constant(expr as default_operator_node, null);
+            else if (expr is sizeof_operator)
+                constant = new sizeof_operator_as_constant(expr as sizeof_operator, null);
             else if (expr is typeof_operator && !is_const_section)
                 constant = new typeof_operator_as_constant(expr as typeof_operator, null);
             else if (expr is common_static_method_call)
@@ -15289,7 +15300,7 @@ namespace PascalABCCompiler.TreeConverter
                         constant = new common_static_method_call_as_constant(csmc, null);
                         break;
                     }
-                    
+
             }
             else
             {
@@ -21053,14 +21064,14 @@ namespace PascalABCCompiler.TreeConverter
                 if (_modern_proc_type.el != null)
                 {
                     var en = _modern_proc_type.el;
-                    if (en.enumerators.Count == 1)
-                        AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
+                    //if (en.enumerators.Count == 1)
+                    //    AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
                     for (int i = 0; i < en.enumerators.Count; i++)
                     {
                         if (en.enumerators[i].value != null)
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
-                        if (!(en.enumerators[i].name is named_type_reference))
+                        if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         t.Add(en.enumerators[i].name); // ???????????????
@@ -21082,15 +21093,15 @@ namespace PascalABCCompiler.TreeConverter
                 if (_modern_proc_type.el != null)
                 {
                     var en = _modern_proc_type.el;
-                    if (en.enumerators.Count == 1)
-                        AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
+                    //if (en.enumerators.Count == 1)
+                    //    AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
                     for (int i = 0; i < en.enumerators.Count; i++)
                     {
 
                         if (en.enumerators[i].value != null)
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
-                        if (!(en.enumerators[i].name is named_type_reference))
+                        if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         t.Add(en.enumerators[i].name);
