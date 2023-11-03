@@ -15462,7 +15462,15 @@ namespace PascalABCCompiler.TreeConverter
         {
             common_type_node del =
                 convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), fn.return_value_type, fn.parameters, context.converted_namespace, null);
-            context.converted_namespace.types.AddElement(del);
+            bool has_lambda_any_type = false;
+            foreach (common_method_node cmn in del.methods)
+                if (cmn.parameters.Count > 0 && cmn.parameters[0].type is lambda_any_type_node)
+                {
+                    has_lambda_any_type = true;
+                    break;
+                }
+            if (!has_lambda_any_type)
+                context.converted_namespace.types.AddElement(del);
             return del;
         }
 
