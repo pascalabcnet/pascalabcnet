@@ -21079,8 +21079,8 @@ namespace PascalABCCompiler.TreeConverter
                         if (en.enumerators[i].value != null)
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
-                        if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
-                            AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+                        //if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
+                        //    AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         t.Add(en.enumerators[i].name); // ???????????????
                     }
@@ -21109,8 +21109,8 @@ namespace PascalABCCompiler.TreeConverter
                         if (en.enumerators[i].value != null)
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
-                        if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
-                            AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+                        //if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
+                        //    AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         t.Add(en.enumerators[i].name);
                     }
