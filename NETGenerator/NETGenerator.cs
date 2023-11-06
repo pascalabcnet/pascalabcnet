@@ -7614,6 +7614,7 @@ namespace PascalABCCompiler.NETGenerator
                 && !(value.obj is ICommonConstructorCall) && !(value.obj is ICommonNamespaceFunctionCallNode) 
                 && !(value.obj is ICommonNestedInFunctionFunctionCallNode)
                 && !(value.obj is IQuestionColonExpressionNode)
+                && !(value.obj is IDoubleQuestionColonExpressionNode)
                 && !(value.obj.conversion_type != null && !value.obj.conversion_type.is_value_type))
             {
                 LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.obj.type).tp);
