@@ -956,9 +956,10 @@ namespace PascalABCCompiler
         public CodeGenerators.Controller CodeGeneratorsController = null;
         //public LLVMConverter.Controller LLVMCodeGeneratorsController = null;
         //public PascalToCppConverter.Controller PABCToCppCodeGeneratorsController = null;
-        public SyntaxTree.unit_or_namespace usesSection;
+        //public SyntaxTree.unit_or_namespace currentUnitNode;
+        
         /// <summary>
-        /// список отложенной компиляции реализации (она будет откомпилирована в GenerateILCodeAndSaveAssembly, а не в СompileUnit)
+        /// список отложенной компиляции реализации (она будет откомпилирована в Compile, а не в СompileUnit)
         /// </summary>
 		private List<CompilationUnit> UnitsToCompileDelayedList = new List<CompilationUnit>();
         public Hashtable RecompileList = new Hashtable(StringComparer.OrdinalIgnoreCase);
@@ -1912,7 +1913,7 @@ namespace PascalABCCompiler
             }  
         }
 
-        private void SetOutputFileType()
+        private void SetOutputFileTypeOption()
         {
             if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_apptype))
             {
@@ -1937,7 +1938,7 @@ namespace PascalABCCompiler
             }
         }
 
-        private void SetOutputPlatform(NETGenerator.CompilerOptions compilerOptions)
+        private void SetOutputPlatformOption(NETGenerator.CompilerOptions compilerOptions)
         {
             List<compiler_directive> compilerDirectivesList = new List<compiler_directive>();
             if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_platformtarget, out compilerDirectivesList))
@@ -1994,7 +1995,7 @@ namespace PascalABCCompiler
             }
         }
 
-        private void FillOtherCompilerOptions(NETGenerator.CompilerOptions compilerOptions)
+        private void FillCompilerInfoOptions(NETGenerator.CompilerOptions compilerOptions)
         {
             var compilerDirectives = new List<compiler_directive>();
 
@@ -2140,7 +2141,7 @@ namespace PascalABCCompiler
             }
         }
 
-        private void SetTargetType(NETGenerator.CompilerOptions compilerOptions)
+        private void SetTargetTypeOption(NETGenerator.CompilerOptions compilerOptions)
         {
             compilerOptions.ForRunningWithEnvironment = CompilerOptions.RunWithEnvironment;
             
@@ -2183,62 +2184,29 @@ namespace PascalABCCompiler
                 {
                     PrepareCompileOptionsForProject();
                 }
-                
+
                 // модули и пространства имен из секции uses - возможно стоит перенести это в CompileUnit (только аккуратно)   EVA
-                usesSection = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
+                //currentUnitNode = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
 
                 // компиляция всех юнитов произойдет рекурсивно (кроме отложенных)
                 CompileUnit(
                     new unit_node_list(),
                     new Dictionary<unit_node, CompilationUnit>(),
-                    usesSection, null);
+                    new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName))),
+                    null);
 
                 // компиляция юнитов из списка отложенной компиляции, если он не пуст
                 CompileUnitsFromDelayedList();
 
-                // TODO: Prebuild semantic tree actions method
-
                 // Закрытие чтения и записи .pcu файлов
                 ClosePCUReadersAndWriters();
 
-                // -------------------------- семантические деревья получены, далее генерация кода (или перекомпиляция)
+                // -------------------------------- семантические деревья получены, далее генерация кода (или перекомпиляция)
 
-                if (CompilerOptions.SaveDocumentation)
-                {
-                    SaveDocumentationsForUnits();
-                }
-
-                compilerDirectives = GetCompilerDirectives(UnitsLogicallySortedList);
-
-                // выяснение типа выходного файла по соотв. директиве компилятора
-                SetOutputFileType();
-
-                // перемещаем PABCSystem в начало списка
-                MoveSystemUnitForwardInUnitLogicallySortedList();
-
-                // передача информации о типе выходного файла системному юниту
-                if (UnitsLogicallySortedList.Count > 0)
-                {
-                    bool isConsoleApplication = CompilerOptions.OutputFileType == CompilerOptions.OutputType.ConsoleApplicaton;
-                    common_unit_node systemUnit = UnitsLogicallySortedList[0].SemanticTree as common_unit_node;
-                    systemUnit.IsConsoleApplicationVariable = isConsoleApplication;
-                }
-
-                NETGenerator.CompilerOptions compilerOptions = new NETGenerator.CompilerOptions();
-
-                // выяснение целевой платформы
-                SetOutputPlatform(compilerOptions);
-
-                // остальные директивы
-                FillOtherCompilerOptions(compilerOptions);
-
-                // заполнение опций компилятора из заголовка проекта
-                FillCompilerOptionsFromProject(compilerOptions);
+                PrebuildSemanticTreeActions(out var compilerOptions);
 
                 if (ErrorsList.Count == 0)
                 {
-                    // Устанавливает опции компилятора, связанные с типом выходного файла
-                    SetTargetType(compilerOptions);
 
                     //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter.
                     program_node semanticTree = BuildFullSemanticTree(compilerOptions); // получние полного семантического дерева, включающего все зависимости
@@ -2248,6 +2216,7 @@ namespace PascalABCCompiler
                         // если мы комилируем PCU
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                     }
+                    
                     // генерация IL кода
                     else if (CompilerOptions.GenerateCode)
                     {
@@ -2284,7 +2253,7 @@ namespace PascalABCCompiler
 
             }*/
 
-            //на случай если мы вывалились по исключению но у нас есть откомпилированные модули
+            // на случай если мы вывалились по исключению, но у нас есть откомпилированные модули
             try
             {
                 ClosePCUReadersAndWriters();
@@ -2294,12 +2263,12 @@ namespace PascalABCCompiler
                 ErrorsList.Add(new CompilerInternalError("Compiler.ClosePCUReadersAndWriters", e));
             }
 
-            OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished
+            OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished state
+            
             if (ClearAfterCompilation)
                 ClearAll();
 
-            // на случай ошибки в самом .pcu формате | здесь могут быть не только pcu errors   EVA
-            // TODO: перепроверить этот метод, возможно, он может учесть не те ошибки и перекомпиляция приведет к бесконечному циклу EVA
+            // на случай ошибки в самом .pcu формате | теоретически, здесь могут быть не только pcu errors   EVA
             bool recompilationNeeded = CheckForInternalErrors(); 
 
             if (!recompilationNeeded)
@@ -2312,14 +2281,54 @@ namespace PascalABCCompiler
             else if (recompilationNeeded)
             {
                 //Compiler c = new Compiler(sourceFilesProvider,OnChangeCompilerState);
-                //return c.GenerateILCodeAndSaveAssembly(this.compilerOptions);
+                //return c.Compile(this.compilerOptions);
                 return Compile();
             }
             else return CompilerOptions.OutputFileName;
         }
 
+        private void PrebuildSemanticTreeActions(out NETGenerator.CompilerOptions compilerOptions)
+        {
+            if (CompilerOptions.SaveDocumentation)
+            {
+                SaveDocumentationsForUnits();
+            }
+
+            compilerDirectives = GetCompilerDirectives(UnitsLogicallySortedList);
+
+            // выяснение типа выходного файла по соотв. директиве компилятора
+            SetOutputFileTypeOption();
+
+            // перемещаем PABCSystem в начало списка
+            MoveSystemUnitForwardInUnitLogicallySortedList();
+
+            // передача информации о типе выходного файла системному юниту
+            if (UnitsLogicallySortedList.Count > 0)
+            {
+                bool isConsoleApplication = CompilerOptions.OutputFileType == CompilerOptions.OutputType.ConsoleApplicaton;
+                common_unit_node systemUnit = UnitsLogicallySortedList[0].SemanticTree as common_unit_node;
+                systemUnit.IsConsoleApplicationVariable = isConsoleApplication;
+            }
+
+            compilerOptions = new NETGenerator.CompilerOptions();
+
+            // выяснение целевой платформы
+            SetOutputPlatformOption(compilerOptions);
+
+            // остальные директивы
+            FillCompilerInfoOptions(compilerOptions);
+
+            // заполнение опций компилятора из заголовка проекта
+            FillCompilerOptionsFromProject(compilerOptions);
+
+            // Устанавливает опции компилятора, связанные с типом выходного файла
+            SetTargetTypeOption(compilerOptions);
+        }
+
         private program_node BuildFullSemanticTree(NETGenerator.CompilerOptions compilerOptions)
         {
+
+
             program_node programRoot = new program_node(null, null);
             
             for (int i = 0; i < UnitsLogicallySortedList.Count; i++)
@@ -2428,7 +2437,7 @@ namespace PascalABCCompiler
         private void AddCodeGenerationErrorToErrorList(Exception err)
         {
             string fileName = Path.GetFileName(currentCompilationUnit?.SyntaxTree?.file_name) ?? "Compiler";
-            CompilerInternalError compilationError = new CompilerInternalError(string.Format("Compiler.GenerateILCodeAndSaveAssembly[{0}]", fileName), err);
+            CompilerInternalError compilationError = new CompilerInternalError(string.Format("Compiler.Compile[{0}]", fileName), err);
             
             AddInternalErrorToErrorList(compilationError);
         }
@@ -2679,10 +2688,10 @@ namespace PascalABCCompiler
             return result;
         }
 
-        private List<SyntaxTree.unit_or_namespace> GetImplementationUsesSection(SyntaxTree.compilation_unit currentSyntaxUnit)
+        private List<SyntaxTree.unit_or_namespace> GetImplementationUsesSection(SyntaxTree.compilation_unit currentCompilationUnit)
         {
 
-            List<SyntaxTree.unit_or_namespace> usesSection = (currentSyntaxUnit as SyntaxTree.unit_module)?.implementation_part?.uses_modules?.units;
+            List<SyntaxTree.unit_or_namespace> usesSection = (currentCompilationUnit as SyntaxTree.unit_module)?.implementation_part?.uses_modules?.units;
 
             CheckForDuplicatesInUsesSection(usesSection);
 
@@ -2909,24 +2918,26 @@ namespace PascalABCCompiler
             }
         }
 
-        public string GetUnitFileName(SyntaxTree.unit_or_namespace SyntaxUsesUnit, string curr_path)
+        public string GetUnitFileName(SyntaxTree.unit_or_namespace unitNode, string currentPath)
         {
-            //ToDo В корневом GenerateILCodeAndSaveAssembly() создаётся uses_unit_in без name. Выглядит как костыль
-            if (SyntaxUsesUnit is SyntaxTree.uses_unit_in && (SyntaxUsesUnit as SyntaxTree.uses_unit_in).name == null) return (SyntaxUsesUnit as SyntaxTree.uses_unit_in).in_file.Value;
-            if (curr_path == null) throw new InvalidOperationException(SyntaxUsesUnit.UsesPath());
-            var UnitName = SyntaxUsesUnit.name.idents[0].name;
+            if (unitNode is SyntaxTree.uses_unit_in unitNodeCasted && unitNodeCasted.name == null)
+                return unitNodeCasted.in_file.Value;
+            
+            if (currentPath == null) throw new InvalidOperationException(unitNode.UsesPath());
+            
+            var UnitName = unitNode.name.idents[0].name;
 
-            if (SyntaxUsesUnit is SyntaxTree.uses_unit_in uui)
+            if (unitNode is SyntaxTree.uses_unit_in uui)
             {
 
                 TryThrowInvalidPath(uui.in_file.Value, uui.in_file.source_context);
 
                 if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
-                    throw new UsesInWrongName(SyntaxUsesUnit.source_context.FileName, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
+                    throw new UsesInWrongName(unitNode.source_context.FileName, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
             }
 
-            return GetUnitFileName(UnitName, SyntaxUsesUnit.UsesPath(), curr_path, SyntaxUsesUnit.source_context);
+            return GetUnitFileName(UnitName, unitNode.UsesPath(), currentPath, unitNode.source_context);
         }
 
         public string GetUnitFileName(string UnitName, string path, string curr_path, SyntaxTree.SourceContext source_context)
@@ -3581,7 +3592,7 @@ namespace PascalABCCompiler
             
             /*if(currentUnit.State!=UnitState.Compiled)
             { 
-                //Console.WriteLine("GenerateILCodeAndSaveAssembly Interface "+unitFileName);//DEBUG
+                //Console.WriteLine("Compile Interface "+unitFileName);//DEBUG
                 currentUnit.SemanticTree=SyntaxTreeToSemanticTreeConverter.CompileInterface(currentUnit.SyntaxTree,
                     currentUnit.InterfaceUsedUnits,currentUnit.syntax_error);
                 currentUnit.State=UnitState.InterfaceCompiled;
@@ -3589,7 +3600,7 @@ namespace PascalABCCompiler
                 if(implementationUsesList!=null)
                     for(int i=implementationUsesList.Count-1;i>=0;i--)
                         CompileUnit(currentUnit.ImplementationUsedUnits,implementationUsesList[i]);        
-                //Console.WriteLine("GenerateILCodeAndSaveAssembly Implementation "+unitFileName);//DEBUG
+                //Console.WriteLine("Compile Implementation "+unitFileName);//DEBUG
                 if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
                 {
                     SyntaxTreeToSemanticTreeConverter.CompileImplementation(currentUnit.SemanticTree,
@@ -3856,7 +3867,7 @@ namespace PascalABCCompiler
 
             }
 
-            usesSection = currentUnitNode;
+            //this.currentUnitNode = currentUnitNode;
             currentCompilationUnit = currentUnit;
 
             currentUnit.possibleNamespaces.Clear();
@@ -4119,11 +4130,11 @@ namespace PascalABCCompiler
             }
             catch (Exception err)
             {
-                //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.GenerateILCodeAndSaveAssembly[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err));
+                //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err));
                 OnChangeCompilerState(this, CompilerState.PCUWritingError, Unit.UnitFileName);
 #if DEBUG
                 if (!InternalDebug.SkipPCUErrors)
-                    throw new Errors.CompilerInternalError(string.Format("Compiler.GenerateILCodeAndSaveAssembly[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err);
+                    throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err);
                 writer.RemoveSelf();
 #endif
             }
