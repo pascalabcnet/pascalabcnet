@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (02.10.2023)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (04.11.2023)
 unit School;
 
 interface
@@ -270,6 +270,11 @@ function TrueTable(f: function(a, b, c, d: boolean): boolean):
 
 /// Возвращает таблицу истинности для пяти переменных
 function TrueTable(f: function(a, b, c, d, e: boolean): boolean):
+    array[,] of boolean;
+    
+/// Возвращает таблицу истинности для n переменных
+// автор - Александр Хазанчук
+function TrueTable(n: integer; f: (array of boolean) -> boolean):
     array[,] of boolean;
 
 /// Выводит на монитор таблицу истинности
@@ -1060,6 +1065,22 @@ begin
             Result[i, 5] := f(a, b, c, d, e);
             i += 1
           end;
+end;
+
+/// Возвращает таблицу истинности для n переменных
+// автор - Александр Хазанчук
+function TrueTable(n: integer; f: (array of boolean) -> boolean):
+    array[,] of boolean;
+begin
+  Result := new boolean[1 shl n, n + 1];
+  foreach var values in |False, True|.CartesianPower(n) index i do
+  begin
+    foreach var val in values index j do 
+    begin
+      Result[i, j] := val
+    end;
+    Result[i, ^1] := f(values)
+  end
 end;
 
 /// Выводит на монитор таблицу истинности
