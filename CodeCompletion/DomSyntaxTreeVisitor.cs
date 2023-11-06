@@ -164,6 +164,11 @@ namespace CodeCompletion
                     ntr.names.Add(new ident(tn.PrintableName.Replace("()", "")));
                     return ntr;
                 }
+                else if (tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_kind)
+                {
+                    array_type arr_type = new array_type(null, BuildSyntaxNodeForTypeReference(tn.element_type));
+                    return arr_type;
+                }
                 var arr = tn.full_name.Split('.');
                 foreach (string s in arr)
                 {
