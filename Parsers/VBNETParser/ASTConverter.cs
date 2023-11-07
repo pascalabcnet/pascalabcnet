@@ -25,7 +25,7 @@ namespace PascalABCCompiler.VBNETParser
 				{
 					mod = new unit_module();
 					mod.Language = LanguageId.VBNET;
-					mod.fileName = FileName;
+					mod.FileName = FileName;
 					mod.unit_name = new unit_name();
 					mod.unit_name.idunit_name = new ident(td.Name);
 					mod.compilerDirectives = new List<compiler_directive>();

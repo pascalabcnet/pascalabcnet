@@ -61,7 +61,7 @@ namespace VisualPascalABC
 
         public static void LoadAssembly(string file_name)
         {
-        	//ad = AppDomain.CreateDomain("DebugDomain",null,Path.GetDirectoryName(fileName),Path.GetDirectoryName(fileName),false);
+        	//ad = AppDomain.CreateDomain("DebugDomain",null,Path.GetDirectoryName(FileName),Path.GetDirectoryName(FileName),false);
             try
             {
                 FileStream fs = File.OpenRead(file_name);
@@ -342,7 +342,7 @@ namespace VisualPascalABC
         }
 
         /// <summary>
-        /// Добавить Breakpoint в файл fileName строку line
+        /// Добавить Breakpoint в файл FileName строку line
         /// </summary>
         public Breakpoint AddBreakPoint(string fileName, int line, bool commonBreakpoint)
         {
@@ -367,7 +367,7 @@ namespace VisualPascalABC
         }
 		
         /// <summary>
-        /// Получить список Breakpointov в файле fileName
+        /// Получить список Breakpointov в файле FileName
         /// </summary>
         public List<Breakpoint> GetBreakpointsInFile(string fileName)
         {
@@ -412,7 +412,7 @@ namespace VisualPascalABC
             dbg.ProcessExited += debugProcessExit;
             dbg.BreakpointHit += debugBreakpointHit;
             //if (brPoint != null) dbg.RemoveBreakpoint(brPoint);
-            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(FileName) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             this.PrevFullFileName = FullFileName;
@@ -460,7 +460,7 @@ namespace VisualPascalABC
         	    sourceFileName = workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName;
         	else
         	    sourceFileName = ProjectFactory.Instance.CurrentProject.MainFile;
-        	this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+        	this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(FileName) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;

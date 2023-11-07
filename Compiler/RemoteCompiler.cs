@@ -371,7 +371,7 @@ namespace PascalABCCompiler
             byte[] encoded = Encoding.Unicode.GetBytes(compilerOptions.SourceFileName);
             string file_name = Encoding.UTF8.GetString(encoded);
             sendObjectAsByteArray(ConsoleCompilerConstants.CompilerOptionsFileName, compilerOptions.SourceFileName);
-            //sendCommand(ConsoleCompilerConstants.CompilerOptionsFileName, fileName);//compilerOptions.SourceFileName);
+            //sendCommand(ConsoleCompilerConstants.CompilerOptionsFileName, FileName);//compilerOptions.SourceFileName);
             sendCommand(ConsoleCompilerConstants.CompilerOptionsProjectCompiled, compilerOptions.ProjectCompiled);
             sendCommand(ConsoleCompilerConstants.UseDllForSystemUnits, compilerOptions.UseDllForSystemUnits);
             sendCommand(ConsoleCompilerConstants.CompilerOptionsDebug, compilerOptions.Debug);
@@ -388,7 +388,7 @@ namespace PascalABCCompiler
             sendCommand(ConsoleCompilerConstants.CompilerOptionsClearStandartModules);
             if (compilerOptions.Locale != null)
                 sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
-            foreach (PascalABCCompiler.CompilerOptions.StandartModule sm in compilerOptions.StandardModules)
+            foreach (PascalABCCompiler.CompilerOptions.StandardModule sm in compilerOptions.StandardModules)
                 sendCommand(
                     ConsoleCompilerConstants.CompilerOptionsStandartModule,
                     sm.Name,(int)sm.AddMethod,(int)sm.AddToLanguages);

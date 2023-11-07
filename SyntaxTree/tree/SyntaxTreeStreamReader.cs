@@ -1451,11 +1451,11 @@ namespace PascalABCCompiler.SyntaxTree
 			read_syntax_tree_node(_compilation_unit);
 			if (br.ReadByte() == 0)
 			{
-				_compilation_unit.fileName = null;
+				_compilation_unit.FileName = null;
 			}
 			else
 			{
-				_compilation_unit.fileName = br.ReadString();
+				_compilation_unit.FileName = br.ReadString();
 			}
 			if (br.ReadByte() == 0)
 			{

@@ -788,7 +788,7 @@ namespace CodeCompletionTools
 		
 		public static XmlDoc Load(string fileName, string cachePath, bool ru)
 		{
-			//LoggingService.Debug("Loading XmlDoc for " + fileName);
+			//LoggingService.Debug("Loading XmlDoc for " + FileName);
 			XmlDoc doc;
 			string cacheName = null;
 			if (cachePath != null) {
@@ -814,12 +814,12 @@ namespace CodeCompletionTools
 					doc = Load(xmlReader);
 				}
 			} catch (XmlException ex) {
-				//LoggingService.Warn("Error loading XmlDoc " + fileName, ex);
+				//LoggingService.Warn("Error loading XmlDoc " + FileName, ex);
 				return new XmlDoc();
 			}
 			
 			if (cachePath != null && doc.xmlDescription.Count > cacheLength * 2) {
-				//LoggingService.Debug("XmlDoc: Creating cache for " + fileName);
+				//LoggingService.Debug("XmlDoc: Creating cache for " + FileName);
 				DateTime date = File.GetLastWriteTimeUtc(fileName);
 				try {
 					doc.Save(cacheName, date);

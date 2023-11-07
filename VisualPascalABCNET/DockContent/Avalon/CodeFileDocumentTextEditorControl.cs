@@ -87,13 +87,13 @@ namespace VisualPascalABC.Avalon
 
         private void textEditorDragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
-            string[] fileName = e.Data.GetData(DataFormats.FileDrop) as string[];
-            if (fileName != null && fileName.Length > 0)
+            string[] FileName = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (FileName != null && FileName.Length > 0)
             {
-                if (string.Compare(System.IO.Path.GetExtension(fileName[0]), Constants.ProjectExtension, true) == 0)
-                    VisualPABCSingleton.ProjectService.OpenProject(fileName[0]);
+                if (string.Compare(System.IO.Path.GetExtension(FileName[0]), Constants.ProjectExtension, true) == 0)
+                    VisualPABCSingleton.ProjectService.OpenProject(FileName[0]);
                 else
-                    VisualPABCSingleton.FileService.OpenFile(fileName[0], null);
+                    VisualPABCSingleton.FileService.OpenFile(FileName[0], null);
             }
         }
 
@@ -107,13 +107,13 @@ namespace VisualPascalABC.Avalon
             CodeCompletionParserController.open_files[this.FileName] = true;
         }
 
-        public void UpdateFolding(object parseInfo, string fileName)
+        public void UpdateFolding(object parseInfo, string FileName)
         {
             try
             {
-                if (EnableFolding && fileName == this.FileName)
+                if (EnableFolding && FileName == this.FileName)
                 {
-                    foldingManager.UpdateFoldings(fileName, parseInfo);
+                    foldingManager.UpdateFoldings(FileName, parseInfo);
                     refresh_Folding();
                 }
             }

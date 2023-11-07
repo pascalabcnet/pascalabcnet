@@ -69,7 +69,7 @@ namespace VisualPascalABC
             if (Path.GetDirectoryName(CompilerOptions1.SourceFileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
                 Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
             if (RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandartModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
             string ofn = Workbench.VisualEnvironmentCompiler.Compile(CompilerOptions1);
             Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = savePCU;
@@ -109,9 +109,9 @@ namespace VisualPascalABC
             CompilerOptions1.RunWithEnvironment = RunWithEnvironment;
             //string runtimeModuleFileName = CompilerOptions1.SearchDirectory + "\\" + RuntimeServicesModule;
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
-            //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandartModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
+            //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
             if (RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandartModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
             ErrorsList.Clear();
 
@@ -160,9 +160,9 @@ namespace VisualPascalABC
             CompilerOptions1.RunWithEnvironment = RunWithEnvironment;
             //string runtimeModuleFileName = CompilerOptions1.SearchDirectory + "\\" + RuntimeServicesModule;
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
-            //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandartModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
+            //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
             if (__RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandartModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
 
             ErrorsList.Clear();
@@ -196,9 +196,9 @@ namespace VisualPascalABC
             CompilerOptions1.RunWithEnvironment = RunWithEnvironment;
             //string runtimeModuleFileName = CompilerOptions1.SearchDirectory + "\\" + RuntimeServicesModule;
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
-            //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandartModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
+            //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
             if (__RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandartModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
 
             ErrorsList.Clear();

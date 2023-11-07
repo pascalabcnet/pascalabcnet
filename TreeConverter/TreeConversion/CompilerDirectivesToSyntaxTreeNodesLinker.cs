@@ -25,7 +25,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (!links.ContainsKey(sn))
                                 links.Add(sn, cd);
                             else
-                                ErrorsList.Add(new PascalABCCompiler.Errors.CommonCompilerError("Повторное объявление директивы", unit.fileName, sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num));
+                                ErrorsList.Add(new PascalABCCompiler.Errors.CommonCompilerError("Повторное объявление директивы", unit.FileName, sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num));
                     }
             return links;
         }

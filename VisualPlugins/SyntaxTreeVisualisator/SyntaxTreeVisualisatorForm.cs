@@ -94,7 +94,7 @@ namespace VisualPascalABCPlugins
             syntaxTreeSelectComboBox.Items.Clear();
             foreach (PascalABCCompiler.CompilationUnit unit in VisualEnvironmentCompiler.Compiler.UnitTable.Values)
                 if (unit.SyntaxTree != null)
-                    syntaxTreeSelectComboBox.Items.Add(new SyntaxTreeSelectComboBoxItem(unit.SyntaxTree, unit.SyntaxTree.fileName));
+                    syntaxTreeSelectComboBox.Items.Add(new SyntaxTreeSelectComboBoxItem(unit.SyntaxTree, unit.SyntaxTree.FileName));
             if (lastItem != null)
                 foreach (SyntaxTreeSelectComboBoxItem item in syntaxTreeSelectComboBox.Items)
                     if (item.ToString() == lastItem.ToString())
@@ -125,7 +125,7 @@ namespace VisualPascalABCPlugins
             {
                 PascalABCCompiler.SyntaxTree.compilation_unit cu = (syntaxTreeSelectComboBox.SelectedItem as SyntaxTreeSelectComboBoxItem).Node as PascalABCCompiler.SyntaxTree.compilation_unit;
                 PascalABCCompiler.SyntaxTree.CPSyntaxTreeStreamWriter sw = new PascalABCCompiler.SyntaxTree.CPSyntaxTreeStreamWriter();
-                System.IO.FileStream fs = new System.IO.FileStream(cu.fileName + ".tre", System.IO.FileMode.Create, System.IO.FileAccess.Write);
+                System.IO.FileStream fs = new System.IO.FileStream(cu.FileName + ".tre", System.IO.FileMode.Create, System.IO.FileAccess.Write);
                 System.IO.BinaryWriter fbw = new System.IO.BinaryWriter(fs);
                 sw.bw = fbw;
                 fbw.Write((byte)1);

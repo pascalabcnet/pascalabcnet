@@ -269,7 +269,7 @@ namespace VisualPascalABC
         static int endLine;
         static int endColumn;
         
-        //public static void SetPosition(string fileName, IDocument document, int makerStartLine, int makerEndLine)
+        //public static void SetPosition(string FileName, IDocument document, int makerStartLine, int makerEndLine)
         public static void SetPosition(TextEditorControl ctrl, int makerStartLine)
         {
             try
@@ -342,7 +342,7 @@ namespace VisualPascalABC
         static int endLine;
         static int endColumn;
         
-        //public static void SetPosition(string fileName, IDocument document, int makerStartLine, int makerEndLine)
+        //public static void SetPosition(string FileName, IDocument document, int makerStartLine, int makerEndLine)
         public static void SetPosition(TextEditorControl ctrl, int makerStartLine)
         {
             try

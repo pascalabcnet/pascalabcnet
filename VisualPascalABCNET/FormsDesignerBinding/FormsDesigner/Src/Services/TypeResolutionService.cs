@@ -65,9 +65,9 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			/* We don't need to debug controls inside the forms designer
 			files = Directory.GetFiles(Path.GetTempPath(), "*.pdb");
-			foreach (string fileName in files) {
+			foreach (string FileName in files) {
 				try {
-					File.Delete(fileName);
+					File.Delete(FileName);
 				} catch {}
 			}*/
 		}
@@ -268,7 +268,7 @@ namespace ICSharpCode.FormsDesigner.Services
 						File.Copy(fileName, tempPath);
 						
 						/* We don't need to debug controls inside the forms designer
-						string pdbpath = Path.GetDirectoryName(fileName) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(fileName) + ".pdb";
+						string pdbpath = Path.GetDirectoryName(FileName) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(FileName) + ".pdb";
 						if (File.Exists(pdbpath)) {
 							string newpdbpath = Path.GetTempPath() + Path.DirectorySeparatorChar + Path.GetFileName(pdbpath);
 							try {

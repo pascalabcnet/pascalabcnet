@@ -286,7 +286,7 @@ namespace PascalABCCompiler
         public ResourceFileNotFound(string ResFileName)
             : base(string.Format(StringResources.Get("COMPILATIONERROR_RESOURCEFILE_{0}_NOT_FOUND"), ResFileName), null)
         {
-            //this.sourceLocation = new SourceLocation(sl.doc.fileName, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+            //this.sourceLocation = new SourceLocation(sl.doc.FileName, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
         }
     }
 
@@ -606,40 +606,40 @@ namespace PascalABCCompiler
 
         public enum StandartModuleAddMethod { LeftToAll, RightToMain };
         [Serializable()]
-        public class StandartModule : MarshalByRefObject
+        public class StandardModule : MarshalByRefObject
         {
             public string Name = null;
             public StandartModuleAddMethod AddMethod = StandartModuleAddMethod.LeftToAll;
             public SyntaxTree.LanguageId AddToLanguages = SyntaxTree.LanguageId.PascalABCNET;
-            public StandartModule(string Name, StandartModuleAddMethod AddMethod)
+            public StandardModule(string Name, StandartModuleAddMethod AddMethod)
             {
                 this.Name = Name;
                 this.AddMethod = AddMethod;
             }
-            public StandartModule(string Name, StandartModuleAddMethod AddMethod, SyntaxTree.LanguageId AddToLanguages)
+            public StandardModule(string Name, StandartModuleAddMethod AddMethod, SyntaxTree.LanguageId AddToLanguages)
             {
                 this.Name = Name;
                 this.AddToLanguages = AddToLanguages;
                 this.AddMethod = AddMethod;
             }
-            public StandartModule(string Name)
+            public StandardModule(string Name)
             {
                 this.Name = Name;
             }
-            public StandartModule(string Name, SyntaxTree.LanguageId AddToLanguages)
+            public StandardModule(string Name, SyntaxTree.LanguageId AddToLanguages)
             {
                 this.AddToLanguages = AddToLanguages;
                 this.Name = Name;
             }
         }
         /// <summary>
-        /// Module at index 0 is System module
+        /// module at index 0 is System module
         /// </summary>
-        public List<StandartModule> StandardModules;
+        public List<StandardModule> StandardModules;
         public void RemoveStandartModule(string Name)
         {
-            StandartModule module_to_del = null;
-            foreach (StandartModule module in StandardModules)
+            StandardModule module_to_del = null;
+            foreach (StandardModule module in StandardModules)
                 if (module.Name == Name)
                 {
                     module_to_del = module;
@@ -677,9 +677,9 @@ namespace PascalABCCompiler
 
         private void SetStandartModules()
         {
-            StandardModules = new List<StandartModule>();
-            StandardModules.Add(new StandartModule("PABCSystem", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
-            StandardModules.Add(new StandartModule("PABCExtensions", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
+            StandardModules = new List<StandardModule>();
+            StandardModules.Add(new StandardModule("PABCSystem", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
+            StandardModules.Add(new StandardModule("PABCExtensions", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
         }
 
         private void SetDirectories()
@@ -1203,7 +1203,7 @@ namespace PascalABCCompiler
             System.Collections.Generic.List<TreeRealization.compiler_directive> list = new System.Collections.Generic.List<TreeRealization.compiler_directive>();
             foreach (SyntaxTree.compiler_directive sncd in cu.compilerDirectives)
             {
-                list.Add(new TreeRealization.compiler_directive(sncd.Name.text, sncd.Directive != null ? sncd.Directive.text : "", get_location_from_treenode(sncd, cu.fileName), cu.fileName));
+                list.Add(new TreeRealization.compiler_directive(sncd.Name.text, sncd.Directive != null ? sncd.Directive.text : "", get_location_from_treenode(sncd, cu.FileName), cu.FileName));
             }
             return list;
         }
@@ -1723,8 +1723,8 @@ namespace PascalABCCompiler
             }
             else
             {
-                sw.WriteLine("Module _RedirectIOMode");
-                sw.WriteLine("End Module");
+                sw.WriteLine("module _RedirectIOMode");
+                sw.WriteLine("End module");
             }
             sw.Close();
 
@@ -1868,7 +1868,7 @@ namespace PascalABCCompiler
                 if (CurrentUnit.State != UnitState.Compiled)
                 {
                     currentCompilationUnit = CurrentUnit;
-                    string unitFileName = currentCompilationUnit.SyntaxTree.fileName;
+                    string unitFileName = currentCompilationUnit.SyntaxTree.FileName;
 
                     // получение списка используемых модулей в файле (uses 1, 2, 3...)
                     List<SyntaxTree.unit_or_namespace> implementationUsesList = GetImplementationUsesSection(CurrentUnit.SyntaxTree);
@@ -2427,7 +2427,7 @@ namespace PascalABCCompiler
 
         private void AddCodeGenerationErrorToErrorList(Exception err)
         {
-            string fileName = Path.GetFileName(currentCompilationUnit?.SyntaxTree?.fileName) ?? "Compiler";
+            string fileName = Path.GetFileName(currentCompilationUnit?.SyntaxTree?.FileName) ?? "Compiler";
             CompilerInternalError compilationError = new CompilerInternalError(string.Format("Compiler.Compile[{0}]", fileName), err);
             
             AddInternalErrorToErrorList(compilationError);
@@ -2632,7 +2632,7 @@ namespace PascalABCCompiler
                 if (un.source_context != null)
                 {
                     if (names.Contains(name))
-                        throw new DuplicateUsesUnit(currentCompilationUnit.SyntaxTree.fileName, name, un.source_context);
+                        throw new DuplicateUsesUnit(currentCompilationUnit.SyntaxTree.FileName, name, un.source_context);
                     else
                         names.Add(name);
                 }
@@ -2900,12 +2900,12 @@ namespace PascalABCCompiler
             {
                 string name = get_assembly_path(FileName, false);//? а надо ли tolover?
                 if (name == null)
-                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.fileName, FileName, sc);
+                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.FileName, FileName, sc);
                 else
                     if (File.Exists(name))
                     return name;
                 else
-                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.fileName, FileName, sc);
+                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.FileName, FileName, sc);
             }
         }
 
@@ -2990,63 +2990,72 @@ namespace PascalABCCompiler
             return res;
         }
 
-        public void AddStandardUnitsToUsesSection(SyntaxTree.compilation_unit compilationUnit)
+        public void AddStandardUnitsToInterfaceUsesSection(SyntaxTree.compilation_unit compilationUnit)
         {
-            string ModuleName = null;
-            SyntaxTree.uses_unit_in uses_unit_in = null;
-            SyntaxTree.unit_or_namespace uses_unit = null;
             
             List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(compilationUnit);
             
             if (usesList == null)
                 return;
             
-            string cu_module_name = Path.GetFileNameWithoutExtension(compilationUnit.fileName).ToLower();
+            string currentModuleName = Path.GetFileNameWithoutExtension(compilationUnit.FileName).ToLower();
             
-            foreach (CompilerOptions.StandartModule Module in CompilerOptions.StandardModules)
+            // проверка, является ли текущий модуль стандартным | Вопрос  EVA
+            foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModules)
             {
-                //Я стандартный??
-                ModuleName = Path.GetFileNameWithoutExtension(Module.Name);
-                if (ModuleName.ToLower() == cu_module_name)
+                string moduleName = Path.GetFileNameWithoutExtension(module.Name);
+                if (moduleName.ToLower() == currentModuleName)
                     return;
             }
-            foreach (CompilerOptions.StandartModule Module in CompilerOptions.StandardModules)
-            {
-                if ((Module.AddToLanguages & firstCompilationUnit.SyntaxTree.Language) != firstCompilationUnit.SyntaxTree.Language
-                    && (Module.AddToLanguages & currentCompilationUnit.SyntaxTree.Language) != currentCompilationUnit.SyntaxTree.Language)
-                    continue;
-                ModuleName = Path.GetFileNameWithoutExtension(Module.Name);
-                if (Module.AddMethod == CompilerOptions.StandartModuleAddMethod.RightToMain && currentCompilationUnit != firstCompilationUnit)
-                    continue;
-                foreach (SyntaxTree.unit_or_namespace curunit in usesList)
-                {
-                    if (curunit.name.idents.Count == 1 && curunit.name.idents[0].name.ToLower() == ModuleName.ToLower())
-                        continue;
-                }
 
-                PascalABCCompiler.SyntaxTree.unit_or_namespace to_add;
-                if (Path.GetExtension(Module.Name) != "" /*&& Path.GetExtension(ModuleFileName).ToLower() != ".dll"*/)
+            foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModules)
+            {
+                if ((module.AddToLanguages & firstCompilationUnit.SyntaxTree.Language) != firstCompilationUnit.SyntaxTree.Language
+                    && (module.AddToLanguages & currentCompilationUnit.SyntaxTree.Language) != currentCompilationUnit.SyntaxTree.Language)
+                    continue;
+                
+                if (module.AddMethod == CompilerOptions.StandartModuleAddMethod.RightToMain && currentCompilationUnit != firstCompilationUnit)
+                    continue;
+
+                string moduleName = Path.GetFileNameWithoutExtension(module.Name);
+
+                // если стандартный модуль уже подключен
+                bool isModuleAlreadyInUsesSection = false;
+                foreach (SyntaxTree.unit_or_namespace currentUnitNode in usesList)
                 {
-                    uses_unit_in = new SyntaxTree.uses_unit_in(
-                        _name: new SyntaxTree.ident_list(new SyntaxTree.ident(ModuleName)),
-                        _in_file: new SyntaxTree.string_const(Module.Name));
-                    //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
-                    to_add = uses_unit_in;
+                    if (currentUnitNode.name.idents.Count == 1 && currentUnitNode.name.idents[0].name.ToLower() == moduleName.ToLower())
+                    {
+                        isModuleAlreadyInUsesSection = true;
+                        break;
+                    }
+                         
+                }
+                if (isModuleAlreadyInUsesSection) continue;
+
+                // здесь присвоится либо паскалевский юнит, либо пространство имен
+                SyntaxTree.unit_or_namespace unitToAdd;
+                
+                if (Path.GetExtension(module.Name) != "" /*&& Path.GetExtension(ModuleFileName).ToLower() != ".dll"*/)
+                {
+                    unitToAdd = new SyntaxTree.uses_unit_in(
+                        new SyntaxTree.ident_list(new SyntaxTree.ident(moduleName)),
+                        new SyntaxTree.string_const(module.Name));
+                    //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1); Вопрос  EVA
                 }
                 else
                 {
-                    uses_unit = new SyntaxTree.unit_or_namespace(new SyntaxTree.ident_list(new SyntaxTree.ident(ModuleName)));
+                    unitToAdd = new SyntaxTree.unit_or_namespace(new SyntaxTree.ident_list(new SyntaxTree.ident(moduleName)));
                     //uses_unit.source_context = uses_unit.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
-                    to_add = uses_unit;
                 }
-                switch (Module.AddMethod)
+
+                // добавление
+                if (module.AddMethod == CompilerOptions.StandartModuleAddMethod.RightToMain)
                 {
-                    case CompilerOptions.StandartModuleAddMethod.RightToMain:
-                        usesList.Add(to_add);
-                        break;
-                    case CompilerOptions.StandartModuleAddMethod.LeftToAll:
-                        usesList.Insert(0, to_add);
-                        break;
+                    usesList.Add(unitToAdd);
+                }
+                else if (module.AddMethod == CompilerOptions.StandartModuleAddMethod.LeftToAll)
+                {
+                    usesList.Insert(0, unitToAdd);
                 }
 
             }
@@ -3074,7 +3083,7 @@ namespace PascalABCCompiler
             //ToDo плохо, пока дебажил - тут постоянно ловились другие исключения, не связанные с неправильным знаками в пути к сборке
             catch (Exception ex)
             {
-                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.fileName, sc);
+                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.FileName, sc);
             }
             CompilationUnit CurrentUnit = null;
             if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
@@ -3086,7 +3095,7 @@ namespace PascalABCCompiler
             }
             else
                 //throw new DLLReadingError(unitFileName);
-                throw new AssemblyReadingError(currentCompilationUnit.SyntaxTree.fileName, UnitName, sc);
+                throw new AssemblyReadingError(currentCompilationUnit.SyntaxTree.FileName, UnitName, sc);
         }
 
         private SyntaxTree.SourceContext GetSourceContext(TreeRealization.compiler_directive cd)
@@ -3117,7 +3126,7 @@ namespace PascalABCCompiler
         private Dictionary<string, SyntaxTree.syntax_namespace_node> IncludeNamespaces(CompilationUnit Unit)
         {
             if (HasIncludeNamespaceDirective(Unit) && Unit.SyntaxTree is SyntaxTree.unit_module && (Unit.SyntaxTree as SyntaxTree.unit_module).unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library)
-                throw new IncludeNamespaceInUnit(currentCompilationUnit.SyntaxTree.fileName, currentCompilationUnit.SyntaxTree.source_context);
+                throw new IncludeNamespaceInUnit(currentCompilationUnit.SyntaxTree.FileName, currentCompilationUnit.SyntaxTree.source_context);
             var directives = ConvertDirectives(Unit.SyntaxTree);
             SyntaxTree.unit_module main_library = Unit.SyntaxTree as SyntaxTree.unit_module;
             SyntaxTree.program_module main_program = Unit.SyntaxTree as SyntaxTree.program_module;
@@ -3130,7 +3139,7 @@ namespace PascalABCCompiler
 
                     if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
                     {
-                        string dir = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.fileName), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
+                        string dir = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.FileName), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
                         foreach (string file in Directory.EnumerateFiles(dir, "*.pas"))
                         {
                             if (!File.Exists(file))
@@ -3141,7 +3150,7 @@ namespace PascalABCCompiler
                     }
                     else
                     {
-                        string file = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.fileName), directive);
+                        string file = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.FileName), directive);
                         if (!File.Exists(file))
                             throw new FileNotFound(file, cd.location);
                         files.Add(file);
@@ -3188,7 +3197,7 @@ namespace PascalABCCompiler
                         {
                             if (IsPossibleNetNamespaceOrStandardPasFile(name_space, false, Path.GetDirectoryName(file)))
                             {
-                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space), get_location_from_treenode(name_space, tree.fileName)), null);
+                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space), get_location_from_treenode(name_space, tree.FileName)), null);
                             }
                             else
                             {
@@ -3393,8 +3402,8 @@ namespace PascalABCCompiler
             {
                 if (possible_is_unit)
                     if (!full_namespace_name.Contains("."))
-                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.fileName, full_namespace_name, _name_space.source_context);
-                throw new TreeConverter.NamespaceNotFound(full_namespace_name, get_location_from_treenode(_name_space.name, currentCompilationUnit.SyntaxTree.fileName));
+                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.FileName, full_namespace_name, _name_space.source_context);
+                throw new TreeConverter.NamespaceNotFound(full_namespace_name, get_location_from_treenode(_name_space.name, currentCompilationUnit.SyntaxTree.FileName));
             }
             return new TreeRealization.using_namespace(full_namespace_name);
         }
@@ -3818,7 +3827,7 @@ namespace PascalABCCompiler
                 }
             }
         }
-A
+
         // Получение исходного кода модуля, заполнение документации,
         // генерация синтаксического дерева,
         // обработка синтаксических ошибок
@@ -3882,11 +3891,11 @@ A
 
                 UnitTable[UnitId] = currentUnit;
 
-                // здесь в начало uses добавляем стандартные модули
+                // здесь добавляем стандартные модули в секцию uses интерфейса
 #if DEBUG
                 if (InternalDebug.AddStandartUnits)
 #endif
-                    AddStandardUnitsToUsesSection(currentUnit.SyntaxTree); // TODO: порефакторить функцию  EVA
+                    AddStandardUnitsToInterfaceUsesSection(currentUnit.SyntaxTree);
 
             }
 
@@ -3946,7 +3955,7 @@ A
                             (unitSyntaxTree is SyntaxTree.unit_module unitNode && unitNode.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library))
                         {
                             // если в директивах появилось {$apptype dll}, но это не Library
-                            ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.fileName, directive.source_context));
+                            ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.FileName, directive.source_context));
                         }
                     }
                 }
@@ -3966,7 +3975,7 @@ A
                             (unitSyntaxTree is SyntaxTree.unit_module unitNode && unitNode.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library))
                 {
                     // если в директивах появилось {$apptype dll}, но это не Library
-                    ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.fileName, dllDirective.source_context)); 
+                    ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.FileName, dllDirective.source_context)); 
                 }
             }    
         }
@@ -4005,7 +4014,7 @@ A
                     if (currentUnit == firstCompilationUnit)
                         throw new SourceFileNotFound(UnitFileName);
                     else
-                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.fileName, UnitFileName, currentUnitNode.source_context);
+                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.FileName, UnitFileName, currentUnitNode.source_context);
                 } 
             }
             return SourceText;
@@ -4092,8 +4101,8 @@ A
         {
             List<PascalABCCompiler.Errors.Error> errors = new List<PascalABCCompiler.Errors.Error>();
             List<PascalABCCompiler.Errors.CompilerWarning> warnings = new List<CompilerWarning>();
-            string doctagsParserExtension = Path.GetExtension(cu.fileName) + "dt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
-            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParsersController.Compile(System.IO.Path.ChangeExtension(cu.fileName, doctagsParserExtension), Text, errors, warnings, PascalABCCompiler.Parsers.ParseMode.Normal) as PascalABCCompiler.SyntaxTree.documentation_comment_list;
+            string doctagsParserExtension = Path.GetExtension(cu.FileName) + "dt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
+            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParsersController.Compile(System.IO.Path.ChangeExtension(cu.FileName, doctagsParserExtension), Text, errors, warnings, PascalABCCompiler.Parsers.ParseMode.Normal) as PascalABCCompiler.SyntaxTree.documentation_comment_list;
             if (errors.Count > 0) return null;
             PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
             return docconst.Construct(cu, dt);
@@ -4105,7 +4114,7 @@ A
                 return true;
             if (cu == null)
                 return false;
-            if (cu.fileName != null && internalDebug.DocumentedUnits.Contains(cu.fileName.ToLower()))
+            if (cu.FileName != null && internalDebug.DocumentedUnits.Contains(cu.FileName.ToLower()))
                 return true;
             foreach (SyntaxTree.compiler_directive cd in cu.compilerDirectives)
                 if (string.Compare(cd.Name.text, "gendoc", true) == 0 && string.Compare(cd.Directive.text, "true", true) == 0)
@@ -4168,11 +4177,11 @@ A
             }
             catch (Exception err)
             {
-                //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.fileName)), err));
+                //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.FileName)), err));
                 OnChangeCompilerState(this, CompilerState.PCUWritingError, Unit.UnitFileName);
 #if DEBUG
                 if (!InternalDebug.SkipPCUErrors)
-                    throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.fileName)), err);
+                    throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.FileName)), err);
                 writer.RemoveSelf();
 #endif
             }

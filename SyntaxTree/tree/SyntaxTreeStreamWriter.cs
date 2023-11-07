@@ -1552,14 +1552,14 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_compilation_unit(compilation_unit _compilation_unit)
 		{
 			write_syntax_tree_node(_compilation_unit);
-			if (_compilation_unit.fileName == null)
+			if (_compilation_unit.FileName == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				bw.Write(_compilation_unit.fileName);
+				bw.Write(_compilation_unit.FileName);
 			}
 			if (_compilation_unit.compilerDirectives == null)
 			{

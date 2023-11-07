@@ -62,7 +62,7 @@ namespace VisualPascalABC
 
         public static void LoadAssembly(string file_name)
         {
-        	//ad = AppDomain.CreateDomain("DebugDomain",null,Path.GetDirectoryName(fileName),Path.GetDirectoryName(fileName),false);
+        	//ad = AppDomain.CreateDomain("DebugDomain",null,Path.GetDirectoryName(FileName),Path.GetDirectoryName(FileName),false);
             try
             {
                 FileStream fs = File.OpenRead(file_name);
@@ -362,7 +362,7 @@ namespace VisualPascalABC
         }
 
         /// <summary>
-        /// Добавить Breakpoint в файл fileName строку line
+        /// Добавить Breakpoint в файл FileName строку line
         /// </summary>
         public Mono.Debugging.Client.Breakpoint AddBreakPoint(string fileName, int line, bool commonBreakpoint)
         {
@@ -387,7 +387,7 @@ namespace VisualPascalABC
         }
 		
         /// <summary>
-        /// Получить список Breakpointov в файле fileName
+        /// Получить список Breakpointov в файле FileName
         /// </summary>
         public List<Mono.Debugging.Client.Breakpoint> GetBreakpointsInFile(string fileName)
         {
@@ -432,7 +432,7 @@ namespace VisualPascalABC
             dbg.ProcessExited += debugProcessExit;
             dbg.BreakpointHit += debugBreakpointHit;
             //if (brPoint != null) dbg.RemoveBreakpoint(brPoint);
-            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(FileName) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             this.PrevFullFileName = FullFileName;
@@ -484,7 +484,7 @@ namespace VisualPascalABC
         	    sourceFileName = workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName;
         	else
         	    sourceFileName = ProjectFactory.Instance.CurrentProject.MainFile;
-        	this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+        	this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(FileName) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
@@ -508,7 +508,7 @@ namespace VisualPascalABC
                 sourceFileName = workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName;
             else
                 sourceFileName = ProjectFactory.Instance.CurrentProject.MainFile;
-            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(FileName) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
@@ -519,7 +519,7 @@ namespace VisualPascalABC
             Mono.Debugging.Client.DebuggerSessionOptions dso = new Mono.Debugging.Client.DebuggerSessionOptions();
             dso.EvaluationOptions = Mono.Debugging.Client.EvaluationOptions.DefaultOptions.Clone();
             
-            //monoDebuggerSession.AttachToProcess(new Mono.Debugging.Client.ProcessInfo(handle, fileName), dso);
+            //monoDebuggerSession.AttachToProcess(new Mono.Debugging.Client.ProcessInfo(handle, FileName), dso);
             Mono.Debugging.Soft.SoftDebuggerStartInfo dsi = new Mono.Debugging.Soft.SoftDebuggerStartInfo("", new Dictionary<string, string>());
             dsi.Command = fileName;
             dsi.Arguments = args;
@@ -742,7 +742,7 @@ namespace VisualPascalABC
         
         public void SetFirstBreakpoint(string fileName, int line)
         {
-            //brPoint = dbg.AddBreakpoint(fileName, line);
+            //brPoint = dbg.AddBreakpoint(FileName, line);
             brPoint = new Mono.Debugging.Client.Breakpoint(fileName, line, 1);
             monoDebuggerSession.Breakpoints.Add(brPoint);
         }

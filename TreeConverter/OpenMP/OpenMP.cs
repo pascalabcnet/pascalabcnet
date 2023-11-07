@@ -705,7 +705,7 @@ namespace PascalABCCompiler.TreeConverter
             //Будем надеяться, что условие никогда не выполнится. Без постороннего вмешательства (замена файлов старыми версиями) - не должно.
             //if (SystemLibrary.SystemLibInitializer.OMP_Available == null || SystemLibrary.SystemLibInitializer.OMP_Available.NotFound)
             //{
-            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_OMP_NOT_AVAILABLE"), cu.fileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
+            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_OMP_NOT_AVAILABLE"), cu.FileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
             //    return;
             //}
             foreach (SyntaxTree.compiler_directive dir in directives)
@@ -734,12 +734,12 @@ namespace PascalABCCompiler.TreeConverter
             //уже не нужно
             //if (ForsFound && SystemLibrary.SystemLibInitializer.OMP_ParallelFor.NotFound)
             //{
-            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_PARALLELIZATION_FOR_NOT_AVAILABLE"), cu.fileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
+            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_PARALLELIZATION_FOR_NOT_AVAILABLE"), cu.FileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
             //    ForsFound = false;
             //}
             //if (SectionsFound && SystemLibrary.SystemLibInitializer.OMP_ParallelSections.NotFound)
             //{
-            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_PARALLELIZATION_SECTIONS_NOT_AVAILABLE"), cu.fileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
+            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_PARALLELIZATION_SECTIONS_NOT_AVAILABLE"), cu.FileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
             //    SectionsFound = false;
             //}
 
@@ -747,7 +747,7 @@ namespace PascalABCCompiler.TreeConverter
             //можно использовать директивы синхронизации и вне параллельных областей.
             //if (!SectionsFound && !ForsFound && LocksFound)
             //{
-            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_USING_CRITICAL_SECTIONS_OUTSIDE_PARALLEL_STRUCTURES"), cu.fileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
+            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_USING_CRITICAL_SECTIONS_OUTSIDE_PARALLEL_STRUCTURES"), cu.FileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
             //    LocksFound = false;
             //}
 

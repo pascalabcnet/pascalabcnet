@@ -12189,7 +12189,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public string fileName
+		public string FileName
 		{
 			get
 			{
@@ -12387,7 +12387,7 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			copy.fileName = fileName;
+			copy.FileName = FileName;
 			if (compilerDirectives != null)
 			{
 				foreach (compiler_directive elem in compilerDirectives)
@@ -12695,7 +12695,7 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			copy.fileName = fileName;
+			copy.FileName = FileName;
 			if (compilerDirectives != null)
 			{
 				foreach (compiler_directive elem in compilerDirectives)
@@ -13043,7 +13043,7 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			copy.fileName = fileName;
+			copy.FileName = FileName;
 			if (compilerDirectives != null)
 			{
 				foreach (compiler_directive elem in compilerDirectives)
@@ -34552,7 +34552,7 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			copy.fileName = fileName;
+			copy.FileName = FileName;
 			if (compilerDirectives != null)
 			{
 				foreach (compiler_directive elem in compilerDirectives)

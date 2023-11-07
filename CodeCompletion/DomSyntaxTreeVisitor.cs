@@ -2495,7 +2495,7 @@ namespace CodeCompletion
 
         public override void visit(unit_module _unit_module)
         {
-            string path = get_assembly_path("mscorlib.dll", _unit_module.fileName);
+            string path = get_assembly_path("mscorlib.dll", _unit_module.FileName);
             Assembly _as = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
             AssemblyDocCache.Load(_as, path);
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
@@ -2506,7 +2506,7 @@ namespace CodeCompletion
             is_namespace = _unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace;
             if (_unit_module.unit_name.HeaderKeyword != UnitHeaderKeyword.Namespace || !CodeCompletionController.pabcNamespaces.TryGetValue(_unit_module.unit_name.idunit_name.name.ToLower(), out unit_scope))
             {
-                cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo(_unit_module.unit_name.idunit_name.name, SymbolKind.Namespace, _unit_module.unit_name.idunit_name.name), null, _unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace, _unit_module.fileName);
+                cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo(_unit_module.unit_name.idunit_name.name, SymbolKind.Namespace, _unit_module.unit_name.idunit_name.name), null, _unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace, _unit_module.FileName);
                 if (_unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace /*&& CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null*/)
                 {
                     CodeCompletionController.pabcNamespaces.Add(_unit_module.unit_name.idunit_name.name.ToLower(), unit_scope);
@@ -2514,24 +2514,24 @@ namespace CodeCompletion
             }
             else
             {
-                cur_scope = new InterfaceUnitScope(new SymInfo(_unit_module.unit_name.idunit_name.name, SymbolKind.Namespace, _unit_module.unit_name.idunit_name.name), null, _unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace, _unit_module.fileName);
+                cur_scope = new InterfaceUnitScope(new SymInfo(_unit_module.unit_name.idunit_name.name, SymbolKind.Namespace, _unit_module.unit_name.idunit_name.name), null, _unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace, _unit_module.FileName);
                 existed_ns = true;
                 //cur_scope = unit_scope;
                 cur_scope.symbol_table = unit_scope.symbol_table;
                 unit_scope.AddNamespaceUnit(cur_scope as InterfaceUnitScope);
                 unit_scope = cur_scope as InterfaceUnitScope;
-                //cur_scope.members.RemoveAll(x => x.loc != null && x.loc.doc.fileName == _unit_module.fileName);
+                //cur_scope.members.RemoveAll(x => x.loc != null && x.loc.doc.FileName == _unit_module.FileName);
             }
-            this.cur_unit_file_name = _unit_module.fileName;
-            //if (XmlDoc.LookupLocalizedXmlDocForUnitWithSources(_unit_module.fileName) != null)
+            this.cur_unit_file_name = _unit_module.FileName;
+            //if (XmlDoc.LookupLocalizedXmlDocForUnitWithSources(_unit_module.FileName) != null)
             if (!add_doc_from_text)
             {
-                UnitDocCache.LoadWithSources(cur_scope, _unit_module.fileName);
+                UnitDocCache.LoadWithSources(cur_scope, _unit_module.FileName);
                 //this.add_doc_from_text = false;
             }
             //add_standart_types_simple();
             Stack<Position> regions_stack = new Stack<Position>();
-            if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_unit_module.fileName))
+            if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_unit_module.FileName))
             {
                 IReferenceInfo[] refs = CodeCompletionController.comp.CompilerOptions.CurrentProject.References;
                 if (_unit_module.compilerDirectives == null)
@@ -2550,8 +2550,8 @@ namespace CodeCompletion
                     {
                         try
                         {
-                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_unit_module.fileName));
-                            path = get_assembly_path(dir.Directive.text, _unit_module.fileName);
+                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_unit_module.FileName));
+                            path = get_assembly_path(dir.Directive.text, _unit_module.FileName);
                             System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
                             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
                             AssemblyDocCache.Load(assm, path);
@@ -2589,20 +2589,20 @@ namespace CodeCompletion
 
                         if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
                         {
-                            string udir = Path.Combine(Path.GetDirectoryName(_unit_module.fileName), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
+                            string udir = Path.Combine(Path.GetDirectoryName(_unit_module.FileName), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
                             foreach (string file in Directory.EnumerateFiles(udir, "*.pas"))
                                 included_files.Add(file);
                         }
                         else
-                            included_files.Add(Path.Combine(Path.GetDirectoryName(_unit_module.fileName), directive));
+                            included_files.Add(Path.Combine(Path.GetDirectoryName(_unit_module.FileName), directive));
                     }
                 }
             ns_cache = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 
-            doc = new document(_unit_module.fileName);
+            doc = new document(_unit_module.FileName);
 
             cur_scope.head_loc = get_location(_unit_module.unit_name);
-            cur_scope.file_name = _unit_module.fileName;
+            cur_scope.file_name = _unit_module.FileName;
             cur_scope.loc = get_location(_unit_module);
             //if (!existed_ns)
                 cur_scope.AddName(_unit_module.unit_name.idunit_name.name, cur_scope);
@@ -2632,7 +2632,7 @@ namespace CodeCompletion
             {
                 is_extensions_unit = true;
             }
-            CodeCompletionController.comp_modules[_unit_module.fileName] = this.converter;
+            CodeCompletionController.comp_modules[_unit_module.FileName] = this.converter;
             if (!existed_ns)
                 foreach (string s in namespaces)
                 {
@@ -2769,8 +2769,8 @@ namespace CodeCompletion
 
         public override void visit(program_module _program_module)
         {
-            //Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_program_module.fileName));
-            string path = get_assembly_path("mscorlib.dll", _program_module.fileName);
+            //Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_program_module.FileName));
+            string path = get_assembly_path("mscorlib.dll", _program_module.FileName);
             System.Reflection.Assembly _as = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
             List<string> namespaces = new List<string>();
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
@@ -2781,9 +2781,9 @@ namespace CodeCompletion
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
             InterfaceUnitScope unit_scope = null;
             cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo(_program_module.program_name != null? _program_module.program_name.prog_name.name:"", SymbolKind.Namespace, "program"), null);
-            CodeCompletionController.comp_modules[_program_module.fileName] = this.converter;
+            CodeCompletionController.comp_modules[_program_module.FileName] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
-            if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.fileName))
+            if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.FileName))
             {
                 IReferenceInfo[] refs = CodeCompletionController.comp.CompilerOptions.CurrentProject.References;
                 if (_program_module.compilerDirectives == null)
@@ -2807,8 +2807,8 @@ namespace CodeCompletion
                     {
                         try
                         {
-                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_program_module.fileName));
-                            path = get_assembly_path(dir.Directive.text, _program_module.fileName);
+                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_program_module.FileName));
+                            path = get_assembly_path(dir.Directive.text, _program_module.FileName);
                             System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
                             if (assm != null)
                             {
@@ -2848,18 +2848,18 @@ namespace CodeCompletion
 
                         if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
                         {
-                            string udir = Path.Combine(Path.GetDirectoryName(_program_module.fileName), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
+                            string udir = Path.Combine(Path.GetDirectoryName(_program_module.FileName), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
                             foreach (string file in Directory.EnumerateFiles(udir, "*.pas"))
                                 included_files.Add(file);
                         }
                         else
-                            included_files.Add(Path.Combine(Path.GetDirectoryName(_program_module.fileName), directive));
+                            included_files.Add(Path.Combine(Path.GetDirectoryName(_program_module.FileName), directive));
                     }
                 }
 
-            doc = new document(_program_module.fileName);
+            doc = new document(_program_module.FileName);
             cur_scope.loc = get_location(_program_module);
-            cur_scope.file_name = _program_module.fileName;
+            cur_scope.file_name = _program_module.FileName;
             entry_scope = cur_scope;
             if (_program_module.program_name != null)
             {
@@ -2902,10 +2902,10 @@ namespace CodeCompletion
                             if (i == 0)
                             {
                                 string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(_program_module.fileName));
+                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(_program_module.FileName));
 
-                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.fileName), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
-                                    && string.Compare(System.IO.Path.GetDirectoryName(_program_module.fileName), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
+                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.FileName), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                    && string.Compare(System.IO.Path.GetDirectoryName(_program_module.FileName), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
                                     unit_name = null;*/
                                 if (unit_name != null)
                                 {
@@ -2956,7 +2956,7 @@ namespace CodeCompletion
                                         }
                                         
                                     }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.fileName)+"\\"+str+System.IO.Path.GetExtension(_program_module.fileName);
+                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.FileName)+"\\"+str+System.IO.Path.GetExtension(_program_module.FileName);
                                 }
                             }
                             if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
@@ -4776,7 +4776,7 @@ namespace CodeCompletion
                                             cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
                                         }
                                     }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.fileName)+"\\"+str+System.IO.Path.GetExtension(_program_module.fileName);
+                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.FileName)+"\\"+str+System.IO.Path.GetExtension(_program_module.FileName);
                                 }
                             }
                             catch (Exception e)
@@ -4891,7 +4891,7 @@ namespace CodeCompletion
                                             cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
                                         }
                                     }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.fileName)+"\\"+str+System.IO.Path.GetExtension(_program_module.fileName);
+                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.FileName)+"\\"+str+System.IO.Path.GetExtension(_program_module.FileName);
                                 }
                             }
                             catch (Exception e)
@@ -5447,8 +5447,8 @@ namespace CodeCompletion
 
         public override void visit(c_module _c_module)
         {
-            //Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_c_module.fileName));
-            System.Reflection.Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_c_module.fileName));
+            //Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_c_module.FileName));
+            System.Reflection.Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_c_module.FileName));
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
             //add_standart_types_simple();
             //List<Scope> netScopes = new List<Scope>();
@@ -5460,8 +5460,8 @@ namespace CodeCompletion
                     {
                         try
                         {
-                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_c_module.fileName));
-                            System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(get_assembly_path(dir.Directive.text, _c_module.fileName));
+                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_c_module.FileName));
+                            System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(get_assembly_path(dir.Directive.text, _c_module.FileName));
                             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
                         }
                         catch (Exception e)
@@ -5473,7 +5473,7 @@ namespace CodeCompletion
                     }
                 }
             cur_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Block,"module"),null);
-            doc = new document(_c_module.fileName);
+            doc = new document(_c_module.FileName);
             cur_scope.loc = get_location(_c_module);
             entry_scope = cur_scope;
             
@@ -5500,10 +5500,10 @@ namespace CodeCompletion
                                 }
                                 else
                                 {
-                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.fileName), out _);
+                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.FileName), out _);
                                     if (unit_name == null)
                                     {
-                                        unit_name = Path.Combine(System.IO.Path.GetDirectoryName(_c_module.fileName), str) + System.IO.Path.GetExtension(_c_module.fileName);
+                                        unit_name = Path.Combine(System.IO.Path.GetDirectoryName(_c_module.FileName), str) + System.IO.Path.GetExtension(_c_module.FileName);
                                         if (!System.IO.File.Exists(unit_name)) unit_name = null;
                                     }
                                     if (unit_name != null)

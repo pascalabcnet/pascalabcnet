@@ -598,7 +598,7 @@ namespace VisualPascalABC
 
         public void AddTextToOutputWindowSync(string fileName, string text)
         {
-            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
+            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), FileName, text);
             Invoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
         }
 

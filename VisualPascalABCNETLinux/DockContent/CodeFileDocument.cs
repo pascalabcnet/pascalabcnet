@@ -399,7 +399,7 @@ namespace VisualPascalABC
             if (Designer.IsDirty) //roman//
             {
                 Designer.ResetGeneratedCode();
-                /*Designer.loader.fileName = Path.GetFileNameWithoutExtension(_file_name);
+                /*Designer.loader.FileName = Path.GetFileNameWithoutExtension(_file_name);
                 Designer.loader.form_name = FormName;
                 Designer.loader.Flush();
                 Designer.DesignSurface.Flush();

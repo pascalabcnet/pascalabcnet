@@ -11188,7 +11188,7 @@ namespace PascalABCCompiler.TreeConverter
             System.Collections.Generic.List<compiler_directive> list = new System.Collections.Generic.List<compiler_directive>();
             foreach (SyntaxTree.compiler_directive sncd in cu.compilerDirectives)
             {
-            	list.Add(new compiler_directive(sncd.Name.text, sncd.Directive!=null?sncd.Directive.text:"", get_location(sncd), cu.fileName));
+            	list.Add(new compiler_directive(sncd.Name.text, sncd.Directive!=null?sncd.Directive.text:"", get_location(sncd), cu.FileName));
             }
             return list;
         }
@@ -11280,7 +11280,7 @@ namespace PascalABCCompiler.TreeConverter
             OpenMP.InitOpenMP(_unit_module.compilerDirectives, this, _unit_module);
             //\MikhailoMMX
             
-            //current_document=new document(_unit_module.fileName);
+            //current_document=new document(_unit_module.FileName);
             string namespace_name = "";
             _is_interface_part = true;
             location loc = null;
@@ -11288,7 +11288,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 namespace_name = _unit_module.unit_name.idunit_name.name;
                 loc = get_location(_unit_module.unit_name.idunit_name);
-                if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_unit_module.fileName).ToLower())
+                if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_unit_module.FileName).ToLower())
                     AddError(loc, "UNIT_NAME_MUST_BE_EQUAL_UNIT_FILE_NAME");
             }
 
@@ -20061,7 +20061,7 @@ namespace PascalABCCompiler.TreeConverter
             //            {
             //                namespace_name = _program_module.program_name.prog_name.name;
             //                loc = get_location(_program_module.program_name.prog_name);
-            //                if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_program_module.fileName).ToLower())
+            //                if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_program_module.FileName).ToLower())
             //                    throw new ProgramNameMustBeEqualProgramFileName(loc);
             //            }
 
