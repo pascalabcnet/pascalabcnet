@@ -11186,9 +11186,9 @@ namespace PascalABCCompiler.TreeConverter
         private System.Collections.Generic.List<compiler_directive> ConvertDirectives(SyntaxTree.compilation_unit cu)
         {
             System.Collections.Generic.List<compiler_directive> list = new System.Collections.Generic.List<compiler_directive>();
-            foreach (SyntaxTree.compiler_directive sncd in cu.compiler_directives)
+            foreach (SyntaxTree.compiler_directive sncd in cu.compilerDirectives)
             {
-            	list.Add(new compiler_directive(sncd.Name.text, sncd.Directive!=null?sncd.Directive.text:"", get_location(sncd), cu.file_name));
+            	list.Add(new compiler_directive(sncd.Name.text, sncd.Directive!=null?sncd.Directive.text:"", get_location(sncd), cu.fileName));
             }
             return list;
         }
@@ -11197,7 +11197,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.program_module _program_module)
         {
             //MikhailoMMX Инициализация OpenMP
-            OpenMP.InitOpenMP(_program_module.compiler_directives, this, _program_module);
+            OpenMP.InitOpenMP(_program_module.compilerDirectives, this, _program_module);
             //\MikhailoMMX
 
             string namespace_name = "";
@@ -11277,10 +11277,10 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.unit_module _unit_module)
         {
             //MikhailoMMX Инициализация OpenMP
-            OpenMP.InitOpenMP(_unit_module.compiler_directives, this, _unit_module);
+            OpenMP.InitOpenMP(_unit_module.compilerDirectives, this, _unit_module);
             //\MikhailoMMX
             
-            //current_document=new document(_unit_module.file_name);
+            //current_document=new document(_unit_module.fileName);
             string namespace_name = "";
             _is_interface_part = true;
             location loc = null;
@@ -11288,7 +11288,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 namespace_name = _unit_module.unit_name.idunit_name.name;
                 loc = get_location(_unit_module.unit_name.idunit_name);
-                if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_unit_module.file_name).ToLower())
+                if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_unit_module.fileName).ToLower())
                     AddError(loc, "UNIT_NAME_MUST_BE_EQUAL_UNIT_FILE_NAME");
             }
 
@@ -20061,7 +20061,7 @@ namespace PascalABCCompiler.TreeConverter
             //            {
             //                namespace_name = _program_module.program_name.prog_name.name;
             //                loc = get_location(_program_module.program_name.prog_name);
-            //                if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_program_module.file_name).ToLower())
+            //                if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_program_module.fileName).ToLower())
             //                    throw new ProgramNameMustBeEqualProgramFileName(loc);
             //            }
 
@@ -20069,7 +20069,7 @@ namespace PascalABCCompiler.TreeConverter
             _compiled_unit = new common_unit_node();
 
             _compiled_unit.compiler_directives = ConvertDirectives(node);
-            //PrepareDirectives(_compiled_unit.compiler_directives);
+            //PrepareDirectives(_compiled_unit.compilerDirectives);
 
             //using_list.AddRange(interface_using_list);
             //weak_node_test_and_visit(_program_module.using_namespaces);

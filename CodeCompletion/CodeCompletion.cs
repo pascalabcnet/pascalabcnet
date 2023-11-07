@@ -187,7 +187,7 @@ namespace CodeCompletion
                 }
             prog.source_context = new SourceContext(1, 1, line + 3, 3);
             prog.program_block = new block();
-            prog.file_name = FileName;
+            prog.fileName = FileName;
             statement_list sl = new statement_list();
             prog.program_block.program_code = sl;
             prog.program_block.program_code.left_logical_bracket = new token_info("begin");

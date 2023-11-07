@@ -54,7 +54,7 @@
  *     ТаблицаМодулей[ИмяФайла]=ТекущийМодуль;
  *     ТекущийМодуль.Состояние=BeginCompilation;
  *   
- *   5.СинтаксическийСписокМодулей=ТекущийМодуль.СинтаксическоеДерево.Interface.UsesList;
+ *   5.СинтаксическийСписокМодулей=ТекущийМодуль.СинтаксическоеДерево.Interface.usesList;
  *     Для(i=СинтаксическийСписокМодулей.Количество-1-ТекущийМодуль.КомпилированыеВInterface.Количество;i>=0;i--)
  *        ТекушийМодуль.ТекущийUsesМодуль=СинтаксическийСписокМодулей[i].ИмяФайла;
  *        ИмяUsesФайла=СинтаксическийСписокМодулей[i].ИмяФайла;
@@ -72,7 +72,7 @@
  *                                         ТекущийМодуль.КомпилированыеВInterface,
  *                                         ТекущийМодуль.СписокОшибок);
  *     СписокМодулей.Добавить(ТекущийМодуль);    
- *     СинтаксическийСписокМодулей=ТекущийМодуль.СинтаксическоеДерево.Implementation.UsesList;
+ *     СинтаксическийСписокМодулей=ТекущийМодуль.СинтаксическоеДерево.Implementation.usesList;
  *     Для(i=СинтаксическийСписокМодулей.Количество-1;i>=0;i--)
  *       Если (ТаблицаМодулей[СинтаксическийСписокМодулей[i].ИмяФайла].Состояние=BeginCompilation)
  *         СписокОтложенойКомпиляции.Добавить(ТаблицаМодулей[СинтаксическийСписокМодулей[i].ИмяФайла]);
@@ -286,7 +286,7 @@ namespace PascalABCCompiler
         public ResourceFileNotFound(string ResFileName)
             : base(string.Format(StringResources.Get("COMPILATIONERROR_RESOURCEFILE_{0}_NOT_FOUND"), ResFileName), null)
         {
-            //this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+            //this.sourceLocation = new SourceLocation(sl.doc.fileName, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
         }
     }
 
@@ -1201,9 +1201,9 @@ namespace PascalABCCompiler
         private System.Collections.Generic.List<TreeRealization.compiler_directive> ConvertDirectives(SyntaxTree.compilation_unit cu)
         {
             System.Collections.Generic.List<TreeRealization.compiler_directive> list = new System.Collections.Generic.List<TreeRealization.compiler_directive>();
-            foreach (SyntaxTree.compiler_directive sncd in cu.compiler_directives)
+            foreach (SyntaxTree.compiler_directive sncd in cu.compilerDirectives)
             {
-                list.Add(new TreeRealization.compiler_directive(sncd.Name.text, sncd.Directive != null ? sncd.Directive.text : "", get_location_from_treenode(sncd, cu.file_name), cu.file_name));
+                list.Add(new TreeRealization.compiler_directive(sncd.Name.text, sncd.Directive != null ? sncd.Directive.text : "", get_location_from_treenode(sncd, cu.fileName), cu.fileName));
             }
             return list;
         }
@@ -1868,7 +1868,7 @@ namespace PascalABCCompiler
                 if (CurrentUnit.State != UnitState.Compiled)
                 {
                     currentCompilationUnit = CurrentUnit;
-                    string unitFileName = currentCompilationUnit.SyntaxTree.file_name;
+                    string unitFileName = currentCompilationUnit.SyntaxTree.fileName;
 
                     // получение списка используемых модулей в файле (uses 1, 2, 3...)
                     List<SyntaxTree.unit_or_namespace> implementationUsesList = GetImplementationUsesSection(CurrentUnit.SyntaxTree);
@@ -2185,9 +2185,6 @@ namespace PascalABCCompiler
                     PrepareCompileOptionsForProject();
                 }
 
-                // модули и пространства имен из секции uses - возможно стоит перенести это в CompileUnit (только аккуратно)   EVA
-                //currentUnitNode = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
-
                 // компиляция всех юнитов произойдет рекурсивно (кроме отложенных)
                 CompileUnit(
                     new unit_node_list(),
@@ -2228,9 +2225,9 @@ namespace PascalABCCompiler
                 }
             }
             // TODO: просмотреть возможные ParserError   EVA
-            catch (TreeConverter.ParserError err)
+            catch (TreeConverter.ParserError)
             {
-                //конвертор уткнулся в ошибку. ничего не делаем
+                // конвертор уткнулся в ошибку. ничего не делаем
             }
             catch (CompilerInternalError err)
             {
@@ -2246,12 +2243,6 @@ namespace PascalABCCompiler
                 // здесь добавляются только ошибки генерации кода
                 AddCodeGenerationErrorToErrorList(err);
             }
-
-            //удаляем лишние ошибки
-            /*foreach(Error er in errorsList)
-            {
-
-            }*/
 
             // на случай если мы вывалились по исключению, но у нас есть откомпилированные модули
             try
@@ -2436,7 +2427,7 @@ namespace PascalABCCompiler
 
         private void AddCodeGenerationErrorToErrorList(Exception err)
         {
-            string fileName = Path.GetFileName(currentCompilationUnit?.SyntaxTree?.file_name) ?? "Compiler";
+            string fileName = Path.GetFileName(currentCompilationUnit?.SyntaxTree?.fileName) ?? "Compiler";
             CompilerInternalError compilationError = new CompilerInternalError(string.Format("Compiler.Compile[{0}]", fileName), err);
             
             AddInternalErrorToErrorList(compilationError);
@@ -2641,7 +2632,7 @@ namespace PascalABCCompiler
                 if (un.source_context != null)
                 {
                     if (names.Contains(name))
-                        throw new DuplicateUsesUnit(currentCompilationUnit.SyntaxTree.file_name, name, un.source_context);
+                        throw new DuplicateUsesUnit(currentCompilationUnit.SyntaxTree.fileName, name, un.source_context);
                     else
                         names.Add(name);
                 }
@@ -2909,12 +2900,12 @@ namespace PascalABCCompiler
             {
                 string name = get_assembly_path(FileName, false);//? а надо ли tolover?
                 if (name == null)
-                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.fileName, FileName, sc);
                 else
                     if (File.Exists(name))
                     return name;
                 else
-                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.fileName, FileName, sc);
             }
         }
 
@@ -2999,17 +2990,19 @@ namespace PascalABCCompiler
             return res;
         }
 
-        public void AddStandardUnitsToUsesSection(SyntaxTree.compilation_unit cu)
+        public void AddStandardUnitsToUsesSection(SyntaxTree.compilation_unit compilationUnit)
         {
-            //if (FileInSearchDirectory(cu.file_name)) return;
-
             string ModuleName = null;
             SyntaxTree.uses_unit_in uses_unit_in = null;
             SyntaxTree.unit_or_namespace uses_unit = null;
-            List<SyntaxTree.unit_or_namespace> UsesList = GetInterfaceUsesSection(cu);
-            if (UsesList == null)
+            
+            List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(compilationUnit);
+            
+            if (usesList == null)
                 return;
-            string cu_module_name = Path.GetFileNameWithoutExtension(cu.file_name).ToLower();
+            
+            string cu_module_name = Path.GetFileNameWithoutExtension(compilationUnit.fileName).ToLower();
+            
             foreach (CompilerOptions.StandartModule Module in CompilerOptions.StandardModules)
             {
                 //Я стандартный??
@@ -3025,7 +3018,7 @@ namespace PascalABCCompiler
                 ModuleName = Path.GetFileNameWithoutExtension(Module.Name);
                 if (Module.AddMethod == CompilerOptions.StandartModuleAddMethod.RightToMain && currentCompilationUnit != firstCompilationUnit)
                     continue;
-                foreach (SyntaxTree.unit_or_namespace curunit in UsesList)
+                foreach (SyntaxTree.unit_or_namespace curunit in usesList)
                 {
                     if (curunit.name.idents.Count == 1 && curunit.name.idents[0].name.ToLower() == ModuleName.ToLower())
                         continue;
@@ -3049,10 +3042,10 @@ namespace PascalABCCompiler
                 switch (Module.AddMethod)
                 {
                     case CompilerOptions.StandartModuleAddMethod.RightToMain:
-                        UsesList.Add(to_add);
+                        usesList.Add(to_add);
                         break;
                     case CompilerOptions.StandartModuleAddMethod.LeftToAll:
-                        UsesList.Insert(0, to_add);
+                        usesList.Insert(0, to_add);
                         break;
                 }
 
@@ -3081,7 +3074,7 @@ namespace PascalABCCompiler
             //ToDo плохо, пока дебажил - тут постоянно ловились другие исключения, не связанные с неправильным знаками в пути к сборке
             catch (Exception ex)
             {
-                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sc);
+                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.fileName, sc);
             }
             CompilationUnit CurrentUnit = null;
             if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
@@ -3093,7 +3086,7 @@ namespace PascalABCCompiler
             }
             else
                 //throw new DLLReadingError(unitFileName);
-                throw new AssemblyReadingError(currentCompilationUnit.SyntaxTree.file_name, UnitName, sc);
+                throw new AssemblyReadingError(currentCompilationUnit.SyntaxTree.fileName, UnitName, sc);
         }
 
         private SyntaxTree.SourceContext GetSourceContext(TreeRealization.compiler_directive cd)
@@ -3110,9 +3103,9 @@ namespace PascalABCCompiler
 
             return directives.Any(directive => directive.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive);
 
-            /*foreach (compiler_directive cd in directives)
+            /*foreach (compiler_directive directive in directives)
             {
-                if (cd.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive)
+                if (directive.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive)
                 {
                     return true;
                 }
@@ -3124,7 +3117,7 @@ namespace PascalABCCompiler
         private Dictionary<string, SyntaxTree.syntax_namespace_node> IncludeNamespaces(CompilationUnit Unit)
         {
             if (HasIncludeNamespaceDirective(Unit) && Unit.SyntaxTree is SyntaxTree.unit_module && (Unit.SyntaxTree as SyntaxTree.unit_module).unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library)
-                throw new IncludeNamespaceInUnit(currentCompilationUnit.SyntaxTree.file_name, currentCompilationUnit.SyntaxTree.source_context);
+                throw new IncludeNamespaceInUnit(currentCompilationUnit.SyntaxTree.fileName, currentCompilationUnit.SyntaxTree.source_context);
             var directives = ConvertDirectives(Unit.SyntaxTree);
             SyntaxTree.unit_module main_library = Unit.SyntaxTree as SyntaxTree.unit_module;
             SyntaxTree.program_module main_program = Unit.SyntaxTree as SyntaxTree.program_module;
@@ -3137,7 +3130,7 @@ namespace PascalABCCompiler
 
                     if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
                     {
-                        string dir = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
+                        string dir = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.fileName), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
                         foreach (string file in Directory.EnumerateFiles(dir, "*.pas"))
                         {
                             if (!File.Exists(file))
@@ -3148,7 +3141,7 @@ namespace PascalABCCompiler
                     }
                     else
                     {
-                        string file = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), directive);
+                        string file = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.fileName), directive);
                         if (!File.Exists(file))
                             throw new FileNotFound(file, cd.location);
                         files.Add(file);
@@ -3195,7 +3188,7 @@ namespace PascalABCCompiler
                         {
                             if (IsPossibleNetNamespaceOrStandardPasFile(name_space, false, Path.GetDirectoryName(file)))
                             {
-                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space), get_location_from_treenode(name_space, tree.file_name)), null);
+                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space), get_location_from_treenode(name_space, tree.fileName)), null);
                             }
                             else
                             {
@@ -3400,8 +3393,8 @@ namespace PascalABCCompiler
             {
                 if (possible_is_unit)
                     if (!full_namespace_name.Contains("."))
-                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.file_name, full_namespace_name, _name_space.source_context);
-                throw new TreeConverter.NamespaceNotFound(full_namespace_name, get_location_from_treenode(_name_space.name, currentCompilationUnit.SyntaxTree.file_name));
+                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.fileName, full_namespace_name, _name_space.source_context);
+                throw new TreeConverter.NamespaceNotFound(full_namespace_name, get_location_from_treenode(_name_space.name, currentCompilationUnit.SyntaxTree.fileName));
             }
             return new TreeRealization.using_namespace(full_namespace_name);
         }
@@ -3473,19 +3466,39 @@ namespace PascalABCCompiler
 
         /*private bool check_for_library(List<compiler_directive> directives)
         {
-        	foreach (compiler_directive cd in directives)
+        	foreach (compiler_directive directive in directives)
         	{
-        		if (string.Compare(cd.name,"apptype")==0 && string.Compare(cd.directive,"dll")==0)
+        		if (string.Compare(directive.name,"apptype")==0 && string.Compare(directive.directive,"dll")==0)
         			return true;
         	}
         	return false;
         }*/
 
-        public static bool IsDll(SyntaxTree.compilation_unit cu)
+        public static bool IsDll(SyntaxTree.compilation_unit compilationUnit)
         {
-            foreach (SyntaxTree.compiler_directive cd in cu.compiler_directives)
-                if (string.Compare(cd.Name.text, "apptype", true) == 0 && string.Compare(cd.Directive.text, "dll", true) == 0)
+            foreach (SyntaxTree.compiler_directive directive in compilationUnit.compilerDirectives)
+            {
+                if (string.Equals(directive.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase)
+                    && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
+                {
                     return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool IsDll(SyntaxTree.compilation_unit compilationUnit, out SyntaxTree.compiler_directive dllDirective)
+        {
+            foreach (SyntaxTree.compiler_directive directive in compilationUnit.compilerDirectives)
+            {
+                if (string.Equals(directive.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase)
+                                    && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    dllDirective = directive;
+                    return true;
+                }
+            }
+            dllDirective = null;        
             return false;
         }
 
@@ -3503,7 +3516,7 @@ namespace PascalABCCompiler
             CompilationUnit currentUnit = UnitTable[unitId];
 
             // ошибка - пространство имен не может содержать in секцию (для указания файла)
-            // TODO: скинуть семантические проверки в кучу (если получится) | P.S. не получится :) отделять секцией семантические проверки   EVA
+            // TODO: отделять секцией семантические проверки   EVA
             SemanticCheckUsesInIsNotNamespace(currentUnitNode, currentUnit);
 
             // если модуль уже скомпилирован - возвращаем (возможно, только интерфейс модуля и тогда он докомпилируется в другом рекурсивном вызове)   EVA
@@ -3805,8 +3818,7 @@ namespace PascalABCCompiler
                 }
             }
         }
-
-        // TODO: Выделить из метода чистое составление синтаксического дерева с параметрами  | P.S. нужно уточнить   EVA
+A
         // Получение исходного кода модуля, заполнение документации,
         // генерация синтаксического дерева,
         // обработка синтаксических ошибок
@@ -3819,12 +3831,15 @@ namespace PascalABCCompiler
                 currentUnit = new CompilationUnit();
                 if (firstCompilationUnit == null)
                     firstCompilationUnit = currentUnit;
+                
                 OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName); // начало компиляции модуля
 
+                #region SYNTAX TREE CONSTRUCTING
+                // получение синтаксического дерева
                 string sourceText = GetSourceCode(currentUnitNode, UnitFileName, currentUnit);
 
-                // получение синтаксического дерева EVA
                 GenSyntaxTree(UnitFileName, currentUnit, sourceText);
+                #endregion
 
                 if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
                     CompilerOptions.UseDllForSystemUnits = false;
@@ -3837,11 +3852,22 @@ namespace PascalABCCompiler
                 // генерация документации к узлам синтаксического дерева EVA
                 docs = GenUnitDocumentation(currentUnit, sourceText);
 
-                // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
-                // TODO: пофиксить разбор ошибок в директивах компилятора и разбросанные директивы компилятора собрать  EVA
-                SemanticCheckDLLDirectiveOnlyForLibraries(currentUnit.SyntaxTree);
+                #region SEMANTIC CHECKS : OUTPUT FILE LOGIC
 
-                // TODO: возможно, имплементировать переключение парсеров   EVA
+                // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
+                // TODO: разбросанные директивы компилятора собрать  EVA
+                bool isDll = IsDll(currentUnit.SyntaxTree, out var dllDirective);
+                SemanticCheckDLLDirectiveOnlyForLibraries(currentUnit.SyntaxTree, isDll, dllDirective);
+
+                // ошибка - компилируем вторую основную программу или вторую dll вместо юнита | TODO: может быть, можно объединить с семантической проверкой выше  EVA
+                SemanticCheckCurrentUnitIsPascalUnit(UnitFileName, currentUnit, isDll);
+
+                #endregion
+
+                // Set output file type for dll
+                if (isDll)
+                    CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // Вопрос, нужно ли это здесь, если это есть в Compile в конце  EVA
+
                 if (ParsersController.LastParser != null)
                     currentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
                 
@@ -3856,9 +3882,6 @@ namespace PascalABCCompiler
 
                 UnitTable[UnitId] = currentUnit;
 
-                // ошибки не UnitModule | TODO: может быть, можно объединить с семантической проверкой выше  EVA
-                SemanticCheckCurrentUnitIsPascalUnit(UnitFileName, currentUnit);
-
                 // здесь в начало uses добавляем стандартные модули
 #if DEBUG
                 if (InternalDebug.AddStandartUnits)
@@ -3867,7 +3890,6 @@ namespace PascalABCCompiler
 
             }
 
-            //this.currentUnitNode = currentUnitNode;
             currentCompilationUnit = currentUnit;
 
             currentUnit.possibleNamespaces.Clear();
@@ -3886,13 +3908,13 @@ namespace PascalABCCompiler
 
         // Синтактико-семантическая ошибка - проверка, что currentUnit является модулем,
         // а не основной программой и не dll EVA
-        private void SemanticCheckCurrentUnitIsPascalUnit(string UnitFileName, CompilationUnit currentUnit)
+        private void SemanticCheckCurrentUnitIsPascalUnit(string UnitFileName, CompilationUnit currentUnit, bool isDll)
         {
-            if (UnitTable.Count > 1) // если это не главный модуль (программа в unittable всегда идет первой)
+            if (UnitTable.Count > 0) // если это не главный модуль (программа в unittable всегда идет первой)
             {
                 if (currentUnit.SyntaxTree is SyntaxTree.program_module)
                     throw new UnitModuleExpected(UnitFileName, currentUnit.SyntaxTree.source_context.LeftSourceContext);
-                else if (IsDll(currentUnit.SyntaxTree))
+                else if (isDll)
                     throw new UnitModuleExpectedLibraryFound(UnitFileName, currentUnit.SyntaxTree.source_context.LeftSourceContext);
             } 
         }
@@ -3908,27 +3930,43 @@ namespace PascalABCCompiler
             }
         }
 
+        /// <summary>
+        /// Проверка, что директива dll только в Library - ищет директиву dll самостоятельно
+        /// </summary>
         private void SemanticCheckDLLDirectiveOnlyForLibraries(SyntaxTree.compilation_unit unitSyntaxTree)
         {
-            // Странно, почему именно такая проверка (а если library и не dll?)  EVA
-            if (unitSyntaxTree != null) // SSM 06.06.22 - здесь была ошибка - unitSyntaxTree может быть null и тогда исключение!!! Добавил if
+            if (unitSyntaxTree != null)
             {
-                foreach (SyntaxTree.compiler_directive cd in unitSyntaxTree.compiler_directives)
+                foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compilerDirectives)
                 {
-                    if (string.Equals(cd.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase) 
-                        && string.Equals(cd.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
+                    if (string.Equals(directive.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase)
+                       && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        // Set output file type for dll
-                        CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary;
-
-                        // Check for semantic error
                         if (!(unitSyntaxTree is SyntaxTree.unit_module) ||
                             (unitSyntaxTree is SyntaxTree.unit_module unitNode && unitNode.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library))
                         {
-                            ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.file_name, cd.source_context)); // если в директивах появилось dll, но это не Library
-                            break;
+                            // если в директивах появилось {$apptype dll}, но это не Library
+                            ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.fileName, directive.source_context));
                         }
                     }
+                }
+                    
+            }
+        }
+
+        /// <summary>
+        /// Проверка, что директива dll только в Library - требует передачу директивы dll
+        /// </summary>
+        private void SemanticCheckDLLDirectiveOnlyForLibraries(SyntaxTree.compilation_unit unitSyntaxTree, bool isDll, SyntaxTree.compiler_directive dllDirective)
+        {
+            // Если Library и apptype dll не указано, то никакой ошибки нет  EVA
+            if (unitSyntaxTree != null && isDll)
+            {
+                if (!(unitSyntaxTree is SyntaxTree.unit_module) ||
+                            (unitSyntaxTree is SyntaxTree.unit_module unitNode && unitNode.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library))
+                {
+                    // если в директивах появилось {$apptype dll}, но это не Library
+                    ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.fileName, dllDirective.source_context)); 
                 }
             }    
         }
@@ -3967,7 +4005,7 @@ namespace PascalABCCompiler
                     if (currentUnit == firstCompilationUnit)
                         throw new SourceFileNotFound(UnitFileName);
                     else
-                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.file_name, UnitFileName, currentUnitNode.source_context);
+                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.fileName, UnitFileName, currentUnitNode.source_context);
                 } 
             }
             return SourceText;
@@ -4054,8 +4092,8 @@ namespace PascalABCCompiler
         {
             List<PascalABCCompiler.Errors.Error> errors = new List<PascalABCCompiler.Errors.Error>();
             List<PascalABCCompiler.Errors.CompilerWarning> warnings = new List<CompilerWarning>();
-            string doctagsParserExtension = Path.GetExtension(cu.file_name) + "dt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
-            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParsersController.Compile(System.IO.Path.ChangeExtension(cu.file_name, doctagsParserExtension), Text, errors, warnings, PascalABCCompiler.Parsers.ParseMode.Normal) as PascalABCCompiler.SyntaxTree.documentation_comment_list;
+            string doctagsParserExtension = Path.GetExtension(cu.fileName) + "dt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
+            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParsersController.Compile(System.IO.Path.ChangeExtension(cu.fileName, doctagsParserExtension), Text, errors, warnings, PascalABCCompiler.Parsers.ParseMode.Normal) as PascalABCCompiler.SyntaxTree.documentation_comment_list;
             if (errors.Count > 0) return null;
             PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
             return docconst.Construct(cu, dt);
@@ -4067,9 +4105,9 @@ namespace PascalABCCompiler
                 return true;
             if (cu == null)
                 return false;
-            if (cu.file_name != null && internalDebug.DocumentedUnits.Contains(cu.file_name.ToLower()))
+            if (cu.fileName != null && internalDebug.DocumentedUnits.Contains(cu.fileName.ToLower()))
                 return true;
-            foreach (SyntaxTree.compiler_directive cd in cu.compiler_directives)
+            foreach (SyntaxTree.compiler_directive cd in cu.compilerDirectives)
                 if (string.Compare(cd.Name.text, "gendoc", true) == 0 && string.Compare(cd.Directive.text, "true", true) == 0)
                     return true;
             return false;
@@ -4096,7 +4134,7 @@ namespace PascalABCCompiler
                 {
                     if (((SyntaxTree.unit_module)Unit.SyntaxTree).unit_name.HeaderKeyword == PascalABCCompiler.SyntaxTree.UnitHeaderKeyword.Library)
                         return;
-                    foreach (SyntaxTree.compiler_directive cd in Unit.SyntaxTree.compiler_directives)
+                    foreach (SyntaxTree.compiler_directive cd in Unit.SyntaxTree.compilerDirectives)
                         if (cd.Name.text.ToLower() == TreeConverter.compiler_string_consts.compiler_savepcu)
                             if (!Convert.ToBoolean(cd.Directive.text))
                                 return;
@@ -4130,11 +4168,11 @@ namespace PascalABCCompiler
             }
             catch (Exception err)
             {
-                //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err));
+                //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.fileName)), err));
                 OnChangeCompilerState(this, CompilerState.PCUWritingError, Unit.UnitFileName);
 #if DEBUG
                 if (!InternalDebug.SkipPCUErrors)
-                    throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err);
+                    throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.fileName)), err);
                 writer.RemoveSelf();
 #endif
             }
@@ -4357,12 +4395,12 @@ namespace PascalABCCompiler
             Console.WriteLine("recompile {0}", unit_name);
             currentUnitNode = new SyntaxTree.uses_unit_in(new SyntaxTree.string_const(program_folder + "\\" + unit_name+".pas"));
             CompileUnit(unitsFromUsesSection, currentUnitNode);
-            CompilationUnit cu = new CompilationUnit();
+            CompilationUnit compilationUnit = new CompilationUnit();
             if (unitsFromUsesSection.Count != 0)
-                cu.SemanticTree = unitsFromUsesSection[unitsFromUsesSection.Count - 1];
+                compilationUnit.SemanticTree = unitsFromUsesSection[unitsFromUsesSection.Count - 1];
             else
                 return null;
-            return cu;
+            return compilationUnit;
         }*/
         public bool NeedRecompiled(string pcu_name, string[] included, PCUReader pr)
         {

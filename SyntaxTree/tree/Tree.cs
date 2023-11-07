@@ -12189,7 +12189,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public string file_name
+		public string fileName
 		{
 			get
 			{
@@ -12204,7 +12204,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public List<compiler_directive> compiler_directives
+		public List<compiler_directive> compilerDirectives
 		{
 			get
 			{
@@ -12234,7 +12234,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public compilation_unit Add(compiler_directive elem, SourceContext sc = null)
 		{
-			compiler_directives.Add(elem);
+			compilerDirectives.Add(elem);
 			if (elem != null)
 				elem.Parent = this;
 			if (sc != null)
@@ -12246,7 +12246,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (el == null)
 				throw new ArgumentNullException(nameof(el));
-			compiler_directives.Insert(0, el);
+			compilerDirectives.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
@@ -12254,7 +12254,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (els == null)
 				throw new ArgumentNullException(nameof(els));
-			compiler_directives.InsertRange(0, els);
+			compilerDirectives.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
 					el.Parent = this;
@@ -12264,7 +12264,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (els == null)
 				throw new ArgumentNullException(nameof(els));
-			compiler_directives.AddRange(els);
+			compilerDirectives.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
 					el.Parent = this;
@@ -12274,7 +12274,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (el == null)
 				throw new ArgumentNullException(nameof(el));
-			var ind = compiler_directives.FindIndex(x => x == el);
+			var ind = compilerDirectives.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
@@ -12286,7 +12286,7 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new ArgumentNullException(nameof(el));
 			if (newel == null)
 				throw new ArgumentNullException(nameof(newel));
-			compiler_directives.Insert(FindIndexInList(el) + 1, newel);
+			compilerDirectives.Insert(FindIndexInList(el) + 1, newel);
 			newel.Parent = this;
 		}
 		
@@ -12296,7 +12296,7 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new ArgumentNullException(nameof(el));
 			if (newels == null)
 				throw new ArgumentNullException(nameof(newels));
-			compiler_directives.InsertRange(FindIndexInList(el) + 1, newels);
+			compilerDirectives.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
 					newel.Parent = this;
@@ -12308,7 +12308,7 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new ArgumentNullException(nameof(el));
 			if (newel == null)
 				throw new ArgumentNullException(nameof(newel));
-			compiler_directives.Insert(FindIndexInList(el), newel);
+			compilerDirectives.Insert(FindIndexInList(el), newel);
 			newel.Parent = this;
 		}
 		
@@ -12318,7 +12318,7 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new ArgumentNullException(nameof(el));
 			if (newels == null)
 				throw new ArgumentNullException(nameof(newels));
-			compiler_directives.InsertRange(FindIndexInList(el), newels);
+			compilerDirectives.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
 					newel.Parent = this;
@@ -12326,7 +12326,7 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public bool Remove(compiler_directive el)
 		{
-			return compiler_directives.Remove(el);
+			return compilerDirectives.Remove(el);
 		}
 		
 		public void ReplaceInList(compiler_directive el, compiler_directive newel)
@@ -12335,7 +12335,7 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new ArgumentNullException(nameof(el));
 			if (newel == null)
 				throw new ArgumentNullException(nameof(newel));
-			compiler_directives[FindIndexInList(el)] = newel;
+			compilerDirectives[FindIndexInList(el)] = newel;
 			newel.Parent = this;
 		}
 		
@@ -12346,8 +12346,8 @@ namespace PascalABCCompiler.SyntaxTree
 			if (newels == null)
 				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
-			compiler_directives.RemoveAt(ind);
-			compiler_directives.InsertRange(ind, newels);
+			compilerDirectives.RemoveAt(ind);
+			compilerDirectives.InsertRange(ind, newels);
 		    foreach (var newel in newels)
 				if (newel != null)
 					newel.Parent = this;
@@ -12355,26 +12355,26 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public int RemoveAll(Predicate<compiler_directive> match)
 		{
-			return compiler_directives.RemoveAll(match);
+			return compilerDirectives.RemoveAll(match);
 		}
 		
 		public compiler_directive Last()
 		{
-			if (compiler_directives.Count > 0)
-		        return compiler_directives[compiler_directives.Count - 1];
+			if (compilerDirectives.Count > 0)
+		        return compilerDirectives[compilerDirectives.Count - 1];
 			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
 		{
-		    get { return compiler_directives.Count; }
+		    get { return compilerDirectives.Count; }
 		}
 		
 		public void Insert(int pos, compiler_directive el)
 		{
 			if (el == null)
 				throw new ArgumentNullException(nameof(el));
-			compiler_directives.Insert(pos,el);
+			compilerDirectives.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
 		}
@@ -12387,10 +12387,10 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			copy.file_name = file_name;
-			if (compiler_directives != null)
+			copy.fileName = fileName;
+			if (compilerDirectives != null)
 			{
-				foreach (compiler_directive elem in compiler_directives)
+				foreach (compiler_directive elem in compilerDirectives)
 				{
 					if (elem != null)
 					{
@@ -12414,9 +12414,9 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
 		public override void FillParentsInDirectChilds()
 		{
-			if (compiler_directives != null)
+			if (compilerDirectives != null)
 			{
-				foreach (var child in compiler_directives)
+				foreach (var child in compilerDirectives)
 					if (child != null)
 						child.Parent = this;
 			}
@@ -12426,9 +12426,9 @@ namespace PascalABCCompiler.SyntaxTree
 		public override void FillParentsInAllChilds()
 		{
 			FillParentsInDirectChilds();
-			if (compiler_directives != null)
+			if (compilerDirectives != null)
 			{
-				foreach (var child in compiler_directives)
+				foreach (var child in compilerDirectives)
 					child?.FillParentsInAllChilds();
 			}
 		}
@@ -12450,7 +12450,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 0 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 0 + (compilerDirectives == null ? 0 : compilerDirectives.Count);
 			}
 		}
 		///<summary>
@@ -12463,11 +12463,11 @@ namespace PascalABCCompiler.SyntaxTree
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
 				Int32 index_counter=ind - 0;
-				if(compiler_directives != null)
+				if(compilerDirectives != null)
 				{
-					if(index_counter < compiler_directives.Count)
+					if(index_counter < compilerDirectives.Count)
 					{
-						return compiler_directives[index_counter];
+						return compilerDirectives[index_counter];
 					}
 				}
 				return null;
@@ -12477,11 +12477,11 @@ namespace PascalABCCompiler.SyntaxTree
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
 				Int32 index_counter=ind - 0;
-				if(compiler_directives != null)
+				if(compilerDirectives != null)
 				{
-					if(index_counter < compiler_directives.Count)
+					if(index_counter < compilerDirectives.Count)
 					{
-						compiler_directives[index_counter]= (compiler_directive)value;
+						compilerDirectives[index_counter]= (compiler_directive)value;
 						return;
 					}
 				}
@@ -12695,10 +12695,10 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			copy.file_name = file_name;
-			if (compiler_directives != null)
+			copy.fileName = fileName;
+			if (compilerDirectives != null)
 			{
-				foreach (compiler_directive elem in compiler_directives)
+				foreach (compiler_directive elem in compilerDirectives)
 				{
 					if (elem != null)
 					{
@@ -12752,9 +12752,9 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
 		public override void FillParentsInDirectChilds()
 		{
-			if (compiler_directives != null)
+			if (compilerDirectives != null)
 			{
-				foreach (var child in compiler_directives)
+				foreach (var child in compilerDirectives)
 					if (child != null)
 						child.Parent = this;
 			}
@@ -12776,9 +12776,9 @@ namespace PascalABCCompiler.SyntaxTree
 		public override void FillParentsInAllChilds()
 		{
 			FillParentsInDirectChilds();
-			if (compiler_directives != null)
+			if (compilerDirectives != null)
 			{
-				foreach (var child in compiler_directives)
+				foreach (var child in compilerDirectives)
 					child?.FillParentsInAllChilds();
 			}
 			unit_name?.FillParentsInAllChilds();
@@ -12806,7 +12806,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 6 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 6 + (compilerDirectives == null ? 0 : compilerDirectives.Count);
 			}
 		}
 		///<summary>
@@ -12834,11 +12834,11 @@ namespace PascalABCCompiler.SyntaxTree
 						return attributes;
 				}
 				Int32 index_counter=ind - 6;
-				if(compiler_directives != null)
+				if(compilerDirectives != null)
 				{
-					if(index_counter < compiler_directives.Count)
+					if(index_counter < compilerDirectives.Count)
 					{
-						return compiler_directives[index_counter];
+						return compilerDirectives[index_counter];
 					}
 				}
 				return null;
@@ -12869,11 +12869,11 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 				}
 				Int32 index_counter=ind - 6;
-				if(compiler_directives != null)
+				if(compilerDirectives != null)
 				{
-					if(index_counter < compiler_directives.Count)
+					if(index_counter < compilerDirectives.Count)
 					{
-						compiler_directives[index_counter]= (compiler_directive)value;
+						compilerDirectives[index_counter]= (compiler_directive)value;
 						return;
 					}
 				}
@@ -13043,10 +13043,10 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			copy.file_name = file_name;
-			if (compiler_directives != null)
+			copy.fileName = fileName;
+			if (compilerDirectives != null)
 			{
-				foreach (compiler_directive elem in compiler_directives)
+				foreach (compiler_directive elem in compilerDirectives)
 				{
 					if (elem != null)
 					{
@@ -13090,9 +13090,9 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
 		public override void FillParentsInDirectChilds()
 		{
-			if (compiler_directives != null)
+			if (compilerDirectives != null)
 			{
-				foreach (var child in compiler_directives)
+				foreach (var child in compilerDirectives)
 					if (child != null)
 						child.Parent = this;
 			}
@@ -13110,9 +13110,9 @@ namespace PascalABCCompiler.SyntaxTree
 		public override void FillParentsInAllChilds()
 		{
 			FillParentsInDirectChilds();
-			if (compiler_directives != null)
+			if (compilerDirectives != null)
 			{
-				foreach (var child in compiler_directives)
+				foreach (var child in compilerDirectives)
 					child?.FillParentsInAllChilds();
 			}
 			program_name?.FillParentsInAllChilds();
@@ -13138,7 +13138,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 4 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 4 + (compilerDirectives == null ? 0 : compilerDirectives.Count);
 			}
 		}
 		///<summary>
@@ -13162,11 +13162,11 @@ namespace PascalABCCompiler.SyntaxTree
 						return using_namespaces;
 				}
 				Int32 index_counter=ind - 4;
-				if(compiler_directives != null)
+				if(compilerDirectives != null)
 				{
-					if(index_counter < compiler_directives.Count)
+					if(index_counter < compilerDirectives.Count)
 					{
-						return compiler_directives[index_counter];
+						return compilerDirectives[index_counter];
 					}
 				}
 				return null;
@@ -13191,11 +13191,11 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 				}
 				Int32 index_counter=ind - 4;
-				if(compiler_directives != null)
+				if(compilerDirectives != null)
 				{
-					if(index_counter < compiler_directives.Count)
+					if(index_counter < compilerDirectives.Count)
 					{
-						compiler_directives[index_counter]= (compiler_directive)value;
+						compilerDirectives[index_counter]= (compiler_directive)value;
 						return;
 					}
 				}
@@ -34552,10 +34552,10 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			copy.file_name = file_name;
-			if (compiler_directives != null)
+			copy.fileName = fileName;
+			if (compilerDirectives != null)
 			{
-				foreach (compiler_directive elem in compiler_directives)
+				foreach (compiler_directive elem in compilerDirectives)
 				{
 					if (elem != null)
 					{
@@ -34589,9 +34589,9 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
 		public override void FillParentsInDirectChilds()
 		{
-			if (compiler_directives != null)
+			if (compilerDirectives != null)
 			{
-				foreach (var child in compiler_directives)
+				foreach (var child in compilerDirectives)
 					if (child != null)
 						child.Parent = this;
 			}
@@ -34605,9 +34605,9 @@ namespace PascalABCCompiler.SyntaxTree
 		public override void FillParentsInAllChilds()
 		{
 			FillParentsInDirectChilds();
-			if (compiler_directives != null)
+			if (compilerDirectives != null)
 			{
-				foreach (var child in compiler_directives)
+				foreach (var child in compilerDirectives)
 					child?.FillParentsInAllChilds();
 			}
 			defs?.FillParentsInAllChilds();
@@ -34631,7 +34631,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 2 + (compilerDirectives == null ? 0 : compilerDirectives.Count);
 			}
 		}
 		///<summary>
@@ -34651,11 +34651,11 @@ namespace PascalABCCompiler.SyntaxTree
 						return used_units;
 				}
 				Int32 index_counter=ind - 2;
-				if(compiler_directives != null)
+				if(compilerDirectives != null)
 				{
-					if(index_counter < compiler_directives.Count)
+					if(index_counter < compilerDirectives.Count)
 					{
-						return compiler_directives[index_counter];
+						return compilerDirectives[index_counter];
 					}
 				}
 				return null;
@@ -34674,11 +34674,11 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 				}
 				Int32 index_counter=ind - 2;
-				if(compiler_directives != null)
+				if(compilerDirectives != null)
 				{
-					if(index_counter < compiler_directives.Count)
+					if(index_counter < compilerDirectives.Count)
 					{
-						compiler_directives[index_counter]= (compiler_directive)value;
+						compilerDirectives[index_counter]= (compiler_directive)value;
 						return;
 					}
 				}

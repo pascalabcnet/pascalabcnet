@@ -1029,13 +1029,13 @@ namespace PascalABCCompiler.TreeConverter
         private readonly string _file_name;
         private readonly location _loc;
 
-        public FileIsNotAssembly(string file_name,location loc)
+        public FileIsNotAssembly(string fileName,location loc)
         {
-            _file_name=file_name;
+            _file_name=fileName;
             _loc=loc;
         }
 
-        public string file_name
+        public string fileName
         {
             get
             {
@@ -1057,13 +1057,13 @@ namespace PascalABCCompiler.TreeConverter
         private readonly string _file_name;
         private readonly location _loc;
 
-        public UnitNotFound(string file_name,location loc)
+        public UnitNotFound(string fileName,location loc)
         {
-            _file_name=file_name;
+            _file_name=fileName;
             _loc=loc;
         }
 
-        public string file_name
+        public string fileName
         {
             get
             {
@@ -1084,12 +1084,12 @@ namespace PascalABCCompiler.TreeConverter
     {
         private readonly string _file_name;
 
-        public MainProgramUnitNotFound(string file_name)
+        public MainProgramUnitNotFound(string fileName)
         {
-            _file_name=file_name;
+            _file_name=fileName;
         }
 
-        public string file_name
+        public string fileName
         {
             get
             {

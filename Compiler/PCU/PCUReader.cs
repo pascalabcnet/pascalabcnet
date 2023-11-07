@@ -674,8 +674,8 @@ namespace PascalABCCompiler.PCU
                 //{
                 string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll", Path.GetDirectoryName(this.FileName));
                 //Assembly a = Assembly.LoadFrom(name_with_path);
-                /*if (pcu_file.compiler_directives != null)
-                foreach (compiler_directive cd in pcu_file.compiler_directives)
+                /*if (pcu_file.compilerDirectives != null)
+                foreach (compiler_directive cd in pcu_file.compilerDirectives)
                 {
                     if (cd.name == "reference" && cd.directive != null && cd.directive.IndexOf("\\") != -1 && cd.directive.IndexOf(tmp + ".dll") != -1)
                     {

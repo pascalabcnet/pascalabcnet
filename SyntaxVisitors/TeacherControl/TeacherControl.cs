@@ -23,7 +23,7 @@ namespace SyntaxVisitors
                 var program = root as program_module;
                 if (program == null) // если это не главная программа, то не преобразовывать
                     return root;
-                var FileName = program.file_name;
+                var FileName = program.fileName;
                 var fi = new System.IO.FileInfo(FileName);
                 var SourceFileDirectory = fi.DirectoryName;
 

@@ -62,7 +62,7 @@ namespace VisualPascalABC
 
         public static void LoadAssembly(string file_name)
         {
-        	//ad = AppDomain.CreateDomain("DebugDomain",null,Path.GetDirectoryName(file_name),Path.GetDirectoryName(file_name),false);
+        	//ad = AppDomain.CreateDomain("DebugDomain",null,Path.GetDirectoryName(fileName),Path.GetDirectoryName(fileName),false);
             try
             {
                 FileStream fs = File.OpenRead(file_name);

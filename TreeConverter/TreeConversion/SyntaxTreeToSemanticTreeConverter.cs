@@ -85,7 +85,7 @@ namespace PascalABCCompiler.TreeConverter
             stv.using_list.Clear();
             stv.interface_using_list.Clear();
             stv.using_list.AddRange(namespaces);
-            stv.current_document = new TreeRealization.document(SyntaxUnit.file_name);
+            stv.current_document = new TreeRealization.document(SyntaxUnit.fileName);
             stv.ErrorsList = ErrorsList;
             stv.WarningsList = WarningsList;
             stv.SymbolTable.CaseSensitive = SemanticRules.SymbolTableCaseSensitive;
@@ -97,7 +97,7 @@ namespace PascalABCCompiler.TreeConverter
             SetSemanticRules(SyntaxUnit);
             
 
-            foreach (SyntaxTree.compiler_directive cd in SyntaxUnit.compiler_directives)
+            foreach (SyntaxTree.compiler_directive cd in SyntaxUnit.compilerDirectives)
                 cd.visit(stv);
 
             stv.DirectivesToNodesLinks = CompilerDirectivesToSyntaxTreeNodesLinker.BuildLinks(SyntaxUnit, ErrorsList);  //MikhailoMMX добавил передачу списка ошибок (02.10.10)
@@ -155,9 +155,9 @@ namespace PascalABCCompiler.TreeConverter
 			}
             //TODO: Переделать, чтобы Сашин код работал с common_unit_node.
 			stv.compiled_unit=(PascalABCCompiler.TreeRealization.common_unit_node)SemanticUnit;
-            stv.current_document = new TreeRealization.document(SyntaxUnit.file_name);
+            stv.current_document = new TreeRealization.document(SyntaxUnit.fileName);
 
-            foreach (SyntaxTree.compiler_directive cd in umod.compiler_directives)
+            foreach (SyntaxTree.compiler_directive cd in umod.compilerDirectives)
                 cd.visit(stv);
 
 			stv.visit_implementation(umod);

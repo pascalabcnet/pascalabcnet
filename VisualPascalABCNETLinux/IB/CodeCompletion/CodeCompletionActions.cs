@@ -203,8 +203,8 @@ namespace VisualPascalABC
                 if (pos.from_metadata || pos.file_name != null && (bool)WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(pos.file_name, PascalABCCompiler.SourceFileOperation.Exists))
                     return true;
             return false;
-            //string file_name = GetDefinitionPosition(textArea).file_name;
-            //return file_name != null && (bool)VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(file_name, PascalABCCompiler.SourceFileOperation.Exists);
+            //string fileName = GetDefinitionPosition(textArea).fileName;
+            //return fileName != null && (bool)VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(fileName, PascalABCCompiler.SourceFileOperation.Exists);
         }
 
         public static bool CanGoToRealization(TextArea textArea)
@@ -216,8 +216,8 @@ namespace VisualPascalABC
                 if (pos.file_name != null && (bool)WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(pos.file_name, PascalABCCompiler.SourceFileOperation.Exists))
                     return true;
             return false;
-            //        	string file_name = GetRealizationPosition(textArea).file_name;
-            //          return file_name != null && (bool)VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(file_name, PascalABCCompiler.SourceFileOperation.Exists);
+            //        	string fileName = GetRealizationPosition(textArea).fileName;
+            //          return fileName != null && (bool)VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(fileName, PascalABCCompiler.SourceFileOperation.Exists);
         }
 
         public static bool CanFindReferences(TextArea textArea)

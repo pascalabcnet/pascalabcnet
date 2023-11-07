@@ -87,13 +87,13 @@ namespace VisualPascalABC.Avalon
 
         private void textEditorDragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
-            string[] file_name = e.Data.GetData(DataFormats.FileDrop) as string[];
-            if (file_name != null && file_name.Length > 0)
+            string[] fileName = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (fileName != null && fileName.Length > 0)
             {
-                if (string.Compare(System.IO.Path.GetExtension(file_name[0]), Constants.ProjectExtension, true) == 0)
-                    VisualPABCSingleton.ProjectService.OpenProject(file_name[0]);
+                if (string.Compare(System.IO.Path.GetExtension(fileName[0]), Constants.ProjectExtension, true) == 0)
+                    VisualPABCSingleton.ProjectService.OpenProject(fileName[0]);
                 else
-                    VisualPABCSingleton.FileService.OpenFile(file_name[0], null);
+                    VisualPABCSingleton.FileService.OpenFile(fileName[0], null);
             }
         }
 

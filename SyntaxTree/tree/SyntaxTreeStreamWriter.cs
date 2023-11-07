@@ -1552,33 +1552,33 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_compilation_unit(compilation_unit _compilation_unit)
 		{
 			write_syntax_tree_node(_compilation_unit);
-			if (_compilation_unit.file_name == null)
+			if (_compilation_unit.fileName == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				bw.Write(_compilation_unit.file_name);
+				bw.Write(_compilation_unit.fileName);
 			}
-			if (_compilation_unit.compiler_directives == null)
+			if (_compilation_unit.compilerDirectives == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				bw.Write(_compilation_unit.compiler_directives.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _compilation_unit.compiler_directives.Count; ssyy_i++)
+				bw.Write(_compilation_unit.compilerDirectives.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _compilation_unit.compilerDirectives.Count; ssyy_i++)
 				{
-					if (_compilation_unit.compiler_directives[ssyy_i] == null)
+					if (_compilation_unit.compilerDirectives[ssyy_i] == null)
 					{
 						bw.Write((byte)0);
 					}
 					else
 					{
 						bw.Write((byte)1);
-						_compilation_unit.compiler_directives[ssyy_i].visit(this);
+						_compilation_unit.compilerDirectives[ssyy_i].visit(this);
 					}
 				}
 			}

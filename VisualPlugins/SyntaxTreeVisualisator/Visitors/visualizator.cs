@@ -450,7 +450,7 @@ namespace VisualPascalABCPlugins
 
 		public override void visit(compilation_unit _compilation_unit)
         {
-            prepare_collection(_compilation_unit.compiler_directives, "compiler_directives");			
+            prepare_collection(_compilation_unit.compilerDirectives, "compilerDirectives");			
 		}
 
 
@@ -461,7 +461,7 @@ namespace VisualPascalABCPlugins
 			prepare_node(_unit_module.implementation_part,"implementation");
 			prepare_node(_unit_module.initialization_part,"initialization");
 			prepare_node(_unit_module.finalization_part,"finalization");
-            prepare_collection(_unit_module.compiler_directives, "compiler_directives");
+            prepare_collection(_unit_module.compilerDirectives, "compilerDirectives");
 		}
 
 
@@ -471,7 +471,7 @@ namespace VisualPascalABCPlugins
 			prepare_node(_program_module.used_units,"used_units");
 			prepare_node(_program_module.using_namespaces,"using_namespaces");
 			prepare_node(_program_module.program_block,"program block");
-            prepare_collection(_program_module.compiler_directives, "compiler_directives");
+            prepare_collection(_program_module.compilerDirectives, "compilerDirectives");
         }
 
 		public override void visit(typed_parameters _typed_parametres)

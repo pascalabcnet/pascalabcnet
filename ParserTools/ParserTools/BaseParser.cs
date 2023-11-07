@@ -143,11 +143,11 @@ namespace PascalABCCompiler.Parsers
 
             if (root != null && root is compilation_unit)
             {
-                (root as compilation_unit).file_name = FileName;
-                (root as compilation_unit).compiler_directives = CompilerDirectives;
+                (root as compilation_unit).fileName = FileName;
+                (root as compilation_unit).compilerDirectives = CompilerDirectives;
                 if (root is unit_module)
                     if ((root as unit_module).unit_name.HeaderKeyword == UnitHeaderKeyword.Library)
-                        (root as compilation_unit).compiler_directives.Add(new compiler_directive(new token_info("apptype"), new token_info("dll")));
+                        (root as compilation_unit).compilerDirectives.Add(new compiler_directive(new token_info("apptype"), new token_info("dll")));
             }
 
             return root;

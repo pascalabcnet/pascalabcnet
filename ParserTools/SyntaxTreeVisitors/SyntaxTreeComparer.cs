@@ -1407,10 +1407,10 @@ namespace PascalABCCompiler.SyntaxTree
                 CompareInternal(left.program_name, right.program_name);
                 CompareInternal(left.used_units, right.used_units);
                 CompareInternal(left.program_block, right.program_block);
-                if (left.compiler_directives.Count != right.compiler_directives.Count)
+                if (left.compilerDirectives.Count != right.compilerDirectives.Count)
                     throw_not_equal(left, right);
-                for (int i = 0; i < left.compiler_directives.Count; i++)
-                    CompareInternal(left.compiler_directives[i], right.compiler_directives[i]);
+                for (int i = 0; i < left.compilerDirectives.Count; i++)
+                    CompareInternal(left.compilerDirectives[i], right.compilerDirectives[i]);
             }
         }
 

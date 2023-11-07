@@ -150,7 +150,7 @@ namespace CodeCompletion
 				
 			}
             int num_directives = br.ReadInt32();
-            //pcu_file.compiler_directives = new List<compiler_directive>();
+            //pcu_file.compilerDirectives = new List<compiler_directive>();
             for (int i = 0; i < num_directives; i++)
             {
                 br.ReadString(); 
