@@ -400,13 +400,13 @@ namespace VisualPascalABCPlugins
 
 		public override void visit(unit_module _unit_module)
 		{
-            text = System.IO.Path.GetFileName(_unit_module.FileName);
+            text = System.IO.Path.GetFileName(_unit_module.file_name);
 		}
 
 
 		public override void visit(program_module _program_module)
 		{
-			text=System.IO.Path.GetFileName(_program_module.FileName);
+			text=System.IO.Path.GetFileName(_program_module.file_name);
 		}
 
 		public override void visit(typed_parameters _typed_parametres)

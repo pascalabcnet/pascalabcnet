@@ -203,8 +203,8 @@ namespace VisualPascalABC
                 if (pos.from_metadata || pos.file_name != null && (bool)WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(pos.file_name, PascalABCCompiler.SourceFileOperation.Exists))
                     return true;
             return false;
-            //string FileName = GetDefinitionPosition(textArea).FileName;
-            //return FileName != null && (bool)VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.Exists);
+            //string file_name = GetDefinitionPosition(textArea).file_name;
+            //return file_name != null && (bool)VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(file_name, PascalABCCompiler.SourceFileOperation.Exists);
         }
 
         public static bool CanGoToRealization(TextArea textArea)
@@ -216,8 +216,8 @@ namespace VisualPascalABC
                 if (pos.file_name != null && (bool)WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(pos.file_name, PascalABCCompiler.SourceFileOperation.Exists))
                     return true;
             return false;
-            //        	string FileName = GetRealizationPosition(textArea).FileName;
-            //          return FileName != null && (bool)VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.Exists);
+            //        	string file_name = GetRealizationPosition(textArea).file_name;
+            //          return file_name != null && (bool)VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(file_name, PascalABCCompiler.SourceFileOperation.Exists);
         }
 
         public static bool CanFindReferences(TextArea textArea)
@@ -600,7 +600,7 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
-            //    FileName, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
+            //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
                 CodeCompletion.CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(

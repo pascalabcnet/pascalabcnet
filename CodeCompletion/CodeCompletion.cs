@@ -133,8 +133,8 @@ namespace CodeCompletion
                 Warnings.Clear();
                 try
                 {
-                    //cu = ParsersController.GetComilationUnit(FileName, Text+")))));end.",comp.CompilerOptions.ParserSearchPatchs,ErrorsList);
-                    //cu = ParsersControllerGetComilationUnit(FileName, get_temp_text(Text), ErrorsList, true);
+                    //cu = ParsersController.GetComilationUnit(file_name, Text+")))));end.",comp.CompilerOptions.ParserSearchPatchs,ErrorsList);
+                    //cu = ParsersControllerGetComilationUnit(file_name, get_temp_text(Text), ErrorsList, true);
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
                     if (tmp != null)
                     {
@@ -164,7 +164,7 @@ namespace CodeCompletion
                 }
             }
             if (docs != null) docs.Clear();
-            //if (dconv.is_compiled) comp_modules[FileName]=dconv;
+            //if (dconv.is_compiled) comp_modules[file_name]=dconv;
             return dconv;
             //ConvertToDom(cu);
         }
@@ -187,7 +187,7 @@ namespace CodeCompletion
                 }
             prog.source_context = new SourceContext(1, 1, line + 3, 3);
             prog.program_block = new block();
-            prog.FileName = FileName;
+            prog.file_name = FileName;
             statement_list sl = new statement_list();
             prog.program_block.program_code = sl;
             prog.program_block.program_code.left_logical_bracket = new token_info("begin");
@@ -233,7 +233,7 @@ namespace CodeCompletion
             {
                 ErrorsList.Clear();
                 Warnings.Clear();
-                //cu = ParsersControllerGetComilationUnit(FileName, Text, ErrorsList, true);
+                //cu = ParsersControllerGetComilationUnit(file_name, Text, ErrorsList, true);
                 if (comp_modules[FileName] == null)
                 {
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
@@ -260,7 +260,7 @@ namespace CodeCompletion
                     dconv.ConvertToDom(cu);
                 }
             }
-            //comp_modules[FileName] = dconv;
+            //comp_modules[file_name] = dconv;
             if (dconv.is_compiled) comp_modules[FileName] = dconv;
             	
             if (docs != null) docs.Clear();
@@ -299,7 +299,7 @@ namespace CodeCompletion
             {
                 ErrorsList.Clear();
                 Warnings.Clear();
-                //cu = ParsersControllerGetComilationUnit(FileName, Text, ErrorsList, true);
+                //cu = ParsersControllerGetComilationUnit(file_name, Text, ErrorsList, true);
                 if (comp_modules[FileName] == null)
                 {
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
@@ -327,7 +327,7 @@ namespace CodeCompletion
             }
             if (dconv.is_compiled) comp_modules[FileName] = dconv;
             if (docs != null) docs.Clear();
-            //comp_modules[FileName] = dconv;
+            //comp_modules[file_name] = dconv;
             // GC.Collect();
             return dconv;
         }

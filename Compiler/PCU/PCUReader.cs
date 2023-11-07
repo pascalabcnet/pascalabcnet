@@ -259,7 +259,7 @@ namespace PascalABCCompiler.PCU
                 PCUReader pr = (PCUReader)units[FileName];
                 if (pr != null) return pr.unit;
                 if (!File.Exists(FileName)) return null;
-                //fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+                //fs = new FileStream(file_name, FileMode.Open, FileAccess.Read);
                 ms = new MemoryStream(File.ReadAllBytes(FileName));
                 br = new BinaryReader(ms);
                 ReadPCUHeader();
@@ -274,7 +274,7 @@ namespace PascalABCCompiler.PCU
                     CloseUnit();
                     this.unit = null;
                     need = true;
-                    return null; // return comp.RecompileUnit(FileName);
+                    return null; // return comp.RecompileUnit(file_name);
                 }
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
                 cun.scope = new WrappedUnitInterfaceScope(this);
@@ -674,8 +674,8 @@ namespace PascalABCCompiler.PCU
                 //{
                 string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll", Path.GetDirectoryName(this.FileName));
                 //Assembly a = Assembly.LoadFrom(name_with_path);
-                /*if (pcu_file.compilerDirectives != null)
-                foreach (compiler_directive cd in pcu_file.compilerDirectives)
+                /*if (pcu_file.compiler_directives != null)
+                foreach (compiler_directive cd in pcu_file.compiler_directives)
                 {
                     if (cd.name == "reference" && cd.directive != null && cd.directive.IndexOf("\\") != -1 && cd.directive.IndexOf(tmp + ".dll") != -1)
                     {

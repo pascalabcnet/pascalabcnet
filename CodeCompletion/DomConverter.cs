@@ -114,7 +114,7 @@ namespace CodeCompletion
         public void ConvertToDom(compilation_unit cu)
         {
             if (CodeCompletionController.comp != null)
-                CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.FileName;
+                CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
             visitor.Convert(cu);
             is_compiled = true;
             cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();

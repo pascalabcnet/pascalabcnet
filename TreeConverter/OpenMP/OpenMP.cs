@@ -705,7 +705,7 @@ namespace PascalABCCompiler.TreeConverter
             //Будем надеяться, что условие никогда не выполнится. Без постороннего вмешательства (замена файлов старыми версиями) - не должно.
             //if (SystemLibrary.SystemLibInitializer.OMP_Available == null || SystemLibrary.SystemLibInitializer.OMP_Available.NotFound)
             //{
-            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_OMP_NOT_AVAILABLE"), cu.FileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
+            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_OMP_NOT_AVAILABLE"), cu.file_name, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
             //    return;
             //}
             foreach (SyntaxTree.compiler_directive dir in directives)
@@ -734,12 +734,12 @@ namespace PascalABCCompiler.TreeConverter
             //уже не нужно
             //if (ForsFound && SystemLibrary.SystemLibInitializer.OMP_ParallelFor.NotFound)
             //{
-            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_PARALLELIZATION_FOR_NOT_AVAILABLE"), cu.FileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
+            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_PARALLELIZATION_FOR_NOT_AVAILABLE"), cu.file_name, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
             //    ForsFound = false;
             //}
             //if (SectionsFound && SystemLibrary.SystemLibInitializer.OMP_ParallelSections.NotFound)
             //{
-            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_PARALLELIZATION_SECTIONS_NOT_AVAILABLE"), cu.FileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
+            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_PARALLELIZATION_SECTIONS_NOT_AVAILABLE"), cu.file_name, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
             //    SectionsFound = false;
             //}
 
@@ -747,7 +747,7 @@ namespace PascalABCCompiler.TreeConverter
             //можно использовать директивы синхронизации и вне параллельных областей.
             //if (!SectionsFound && !ForsFound && LocksFound)
             //{
-            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_USING_CRITICAL_SECTIONS_OUTSIDE_PARALLEL_STRUCTURES"), cu.FileName, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
+            //    visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get("OMPERROR_USING_CRITICAL_SECTIONS_OUTSIDE_PARALLEL_STRUCTURES"), cu.file_name, cu.source_context.begin_position.line_num, cu.source_context.begin_position.column_num));
             //    LocksFound = false;
             //}
 
@@ -943,10 +943,10 @@ namespace PascalABCCompiler.TreeConverter
                 VarFinderSyntaxVisitor VFvis = new VarFinderSyntaxVisitor(syntax_body, syntax_tree_visitor.context, true);
                 SyntaxTree.compiler_directive dir = syntax_tree_visitor.DirectivesToNodesLinks[for_node];
                 //if (DirInfosTable[dir].ErrorName == "WARNING_IN_CLAUSE_PARAMETERS_REPEATED_VARS")
-                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                 //else if (DirInfosTable[dir].ErrorName == "ERROR_IN_CLAUSE_PARAMETERS")
                 //{
-                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                 //}
                 //else
                
@@ -1057,10 +1057,10 @@ namespace PascalABCCompiler.TreeConverter
                     SyntaxTree.compiler_directive dir = syntax_tree_visitor.DirectivesToNodesLinks[syntax_stmts];
                     
                     //if (DirInfosTable[dir].ErrorName == "WARNING_IN_CLAUSE_PARAMETERS_REPEATED_VARS")
-                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                     //else if (DirInfosTable[dir].ErrorName == "ERROR_IN_CLAUSE_PARAMETERS")
                     //{
-                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                     //}
                     //else
                     if (DirInfosTable[dir].ErrorName != null)

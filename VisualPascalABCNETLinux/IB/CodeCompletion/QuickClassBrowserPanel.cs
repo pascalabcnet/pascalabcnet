@@ -317,7 +317,7 @@ namespace VisualPascalABC
         {
             // Still needed ?
             /*if (currentCompilationUnit == null) {
-                currentCompilationUnit = (ICompilationUnit)ParserService.GetParseInformation(Path.GetFullPath(textAreaControl.FileName)).MostRecentCompilationUnit;
+                currentCompilationUnit = (ICompilationUnit)ParserService.GetParseInformation(Path.GetFullPath(textAreaControl.file_name)).MostRecentCompilationUnit;
             }*/
 
             autoselect = false;
@@ -803,7 +803,7 @@ namespace VisualPascalABC
                     {
                         //textAreaControl.ActiveTextAreaControl.Caret.Position = new ICSharpCode.TextEditor.TextLocation(item.Column, item.Line);
                         //textAreaControl.ActiveTextAreaControl.TextArea.Focus();
-                        //VisualPABCSingleton.MainForm.ExecuteSourceLocationAction(new PascalABCCompiler.SourceLocation(textAreaControl.FileName,item.Line+1,item.Column,
+                        //VisualPABCSingleton.MainForm.ExecuteSourceLocationAction(new PascalABCCompiler.SourceLocation(textAreaControl.file_name,item.Line+1,item.Column,
                         //                                                                                              item.EndLine+1,item.Column),VisualPascalABCPlugins.SourceLocationAction.NavigationGoto);
                         VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.ExecuteSourceLocationAction(
                             new PascalABCCompiler.SourceLocation(textAreaControl.FileName, item.Line + 1, item.Column + 1, item.Line + 1, item.Column + 1), VisualPascalABCPlugins.SourceLocationAction.GotoBeg);

@@ -66,7 +66,7 @@ namespace PascalABCCompiler.TreeConverter
     public class CompilationError : Errors.SemanticError
     {
         public CompilationError()
-            : base("???", "Undefined FileName")
+            : base("???", "Undefined file_name")
         {
         }
 
@@ -1029,13 +1029,13 @@ namespace PascalABCCompiler.TreeConverter
         private readonly string _file_name;
         private readonly location _loc;
 
-        public FileIsNotAssembly(string FileName,location loc)
+        public FileIsNotAssembly(string file_name,location loc)
         {
-            _file_name=FileName;
+            _file_name=file_name;
             _loc=loc;
         }
 
-        public string FileName
+        public string file_name
         {
             get
             {
@@ -1057,13 +1057,13 @@ namespace PascalABCCompiler.TreeConverter
         private readonly string _file_name;
         private readonly location _loc;
 
-        public UnitNotFound(string FileName,location loc)
+        public UnitNotFound(string file_name,location loc)
         {
-            _file_name=FileName;
+            _file_name=file_name;
             _loc=loc;
         }
 
-        public string FileName
+        public string file_name
         {
             get
             {
@@ -1084,12 +1084,12 @@ namespace PascalABCCompiler.TreeConverter
     {
         private readonly string _file_name;
 
-        public MainProgramUnitNotFound(string FileName)
+        public MainProgramUnitNotFound(string file_name)
         {
-            _file_name=FileName;
+            _file_name=file_name;
         }
 
-        public string FileName
+        public string file_name
         {
             get
             {

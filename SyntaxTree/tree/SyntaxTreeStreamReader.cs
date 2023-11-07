@@ -1451,23 +1451,23 @@ namespace PascalABCCompiler.SyntaxTree
 			read_syntax_tree_node(_compilation_unit);
 			if (br.ReadByte() == 0)
 			{
-				_compilation_unit.FileName = null;
+				_compilation_unit.file_name = null;
 			}
 			else
 			{
-				_compilation_unit.FileName = br.ReadString();
+				_compilation_unit.file_name = br.ReadString();
 			}
 			if (br.ReadByte() == 0)
 			{
-				_compilation_unit.compilerDirectives = null;
+				_compilation_unit.compiler_directives = null;
 			}
 			else
 			{
-				_compilation_unit.compilerDirectives = new List<compiler_directive>();
+				_compilation_unit.compiler_directives = new List<compiler_directive>();
 				Int32 ssyy_count = br.ReadInt32();
 				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
 				{
-					_compilation_unit.compilerDirectives.Add(_read_node() as compiler_directive);
+					_compilation_unit.compiler_directives.Add(_read_node() as compiler_directive);
 				}
 			}
 			_compilation_unit.Language = (LanguageId)br.ReadByte();

@@ -25,14 +25,14 @@ namespace PascalABCCompiler.VBNETParser
 				{
 					mod = new unit_module();
 					mod.Language = LanguageId.VBNET;
-					mod.FileName = FileName;
+					mod.file_name = FileName;
 					mod.unit_name = new unit_name();
 					mod.unit_name.idunit_name = new ident(td.Name);
-					mod.compilerDirectives = new List<compiler_directive>();
-					mod.compilerDirectives.Add(new compiler_directive(new token_info("reference"),new token_info("System.dll")));
-					mod.compilerDirectives.Add(new compiler_directive(new token_info("reference"),new token_info("Microsoft.VisualBasic.dll")));
-					mod.compilerDirectives.Add(new compiler_directive(new token_info("reference"),new token_info("System.Windows.Forms.dll")));
-					mod.compilerDirectives.Add(new compiler_directive(new token_info("reference"),new token_info("System.Drawing.dll")));
+					mod.compiler_directives = new List<compiler_directive>();
+					mod.compiler_directives.Add(new compiler_directive(new token_info("reference"),new token_info("System.dll")));
+					mod.compiler_directives.Add(new compiler_directive(new token_info("reference"),new token_info("Microsoft.VisualBasic.dll")));
+					mod.compiler_directives.Add(new compiler_directive(new token_info("reference"),new token_info("System.Windows.Forms.dll")));
+					mod.compiler_directives.Add(new compiler_directive(new token_info("reference"),new token_info("System.Drawing.dll")));
 					mod.source_context = get_source_context(td);
 					mod.interface_part = new interface_node();
 					mod.interface_part.interface_definitions = new declarations();

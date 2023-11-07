@@ -169,7 +169,7 @@ namespace VisualPascalABC
 
             //CompilerOptions1.SavePCUInThreadPull = true;
             __savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
-            //if (Path.GetDirectoryName(FileName).ToLower() == ((string)StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
+            //if (Path.GetDirectoryName(file_name).ToLower() == ((string)StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
             //    VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
 
             Workbench.VisualEnvironmentCompiler.Compiler.OnChangeCompilerState += CompilationOnChangeCompilerState;

@@ -94,7 +94,7 @@ namespace VisualPascalABCPlugins
             syntaxTreeSelectComboBox.Items.Clear();
             foreach (PascalABCCompiler.CompilationUnit unit in VisualEnvironmentCompiler.Compiler.UnitTable.Values)
                 if (unit.SyntaxTree != null)
-                    syntaxTreeSelectComboBox.Items.Add(new SyntaxTreeSelectComboBoxItem(unit.SyntaxTree, unit.SyntaxTree.FileName));
+                    syntaxTreeSelectComboBox.Items.Add(new SyntaxTreeSelectComboBoxItem(unit.SyntaxTree, unit.SyntaxTree.file_name));
             if (lastItem != null)
                 foreach (SyntaxTreeSelectComboBoxItem item in syntaxTreeSelectComboBox.Items)
                     if (item.ToString() == lastItem.ToString())
@@ -125,7 +125,7 @@ namespace VisualPascalABCPlugins
             {
                 PascalABCCompiler.SyntaxTree.compilation_unit cu = (syntaxTreeSelectComboBox.SelectedItem as SyntaxTreeSelectComboBoxItem).Node as PascalABCCompiler.SyntaxTree.compilation_unit;
                 PascalABCCompiler.SyntaxTree.CPSyntaxTreeStreamWriter sw = new PascalABCCompiler.SyntaxTree.CPSyntaxTreeStreamWriter();
-                System.IO.FileStream fs = new System.IO.FileStream(cu.FileName + ".tre", System.IO.FileMode.Create, System.IO.FileAccess.Write);
+                System.IO.FileStream fs = new System.IO.FileStream(cu.file_name + ".tre", System.IO.FileMode.Create, System.IO.FileAccess.Write);
                 System.IO.BinaryWriter fbw = new System.IO.BinaryWriter(fs);
                 sw.bw = fbw;
                 fbw.Write((byte)1);
@@ -206,7 +206,7 @@ namespace VisualPascalABCPlugins
             string FileText = (string)VisualEnvironmentCompiler.Compiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
             List<Error> Errors=new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
-            //PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.Compiler.ParsersController.Compile(FileName, FileText, Errors, PascalABCCompiler.ParserTools.ParseMode.Expression);
+            //PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.Compiler.ParsersController.Compile(file_name, FileText, Errors, PascalABCCompiler.ParserTools.ParseMode.Expression);
             PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression(FileName, FileText, Errors, Warnings);
             if (Errors.Count > 0)
                 StatusLabel.Text = Errors.Count + " errors";

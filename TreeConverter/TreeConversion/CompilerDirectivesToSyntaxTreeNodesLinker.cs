@@ -16,8 +16,8 @@ namespace PascalABCCompiler.TreeConverter
 
             SyntaxTreeNodeFinder finder = new SyntaxTreeNodeFinder();
 
-            if (unit.compilerDirectives != null)
-                foreach (compiler_directive cd in unit.compilerDirectives)
+            if (unit.compiler_directives != null)
+                foreach (compiler_directive cd in unit.compiler_directives)
                     if (IsKnownDirectivee(cd))
                     {
                         syntax_tree_node sn = finder.Find(unit, cd.source_context);
@@ -25,7 +25,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (!links.ContainsKey(sn))
                                 links.Add(sn, cd);
                             else
-                                ErrorsList.Add(new PascalABCCompiler.Errors.CommonCompilerError("Повторное объявление директивы", unit.FileName, sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num));
+                                ErrorsList.Add(new PascalABCCompiler.Errors.CommonCompilerError("Повторное объявление директивы", unit.file_name, sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num));
                     }
             return links;
         }

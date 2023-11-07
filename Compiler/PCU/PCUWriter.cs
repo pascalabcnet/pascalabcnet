@@ -290,10 +290,10 @@ namespace PascalABCCompiler.PCU
             ChangeState(this, PCUReaderWriterState.BeginSaveTree, TargetFileName);
 
             pcu_file.compiler_directives = cun.compiler_directives;
-            if (Path.GetDirectoryName(TargetFileName).ToLower() == Path.GetDirectoryName(Unit.SyntaxTree.FileName).ToLower())
-                pcu_file.SourceFileName = Path.GetFileName(Unit.SyntaxTree.FileName);
+            if (Path.GetDirectoryName(TargetFileName).ToLower() == Path.GetDirectoryName(Unit.SyntaxTree.file_name).ToLower())
+                pcu_file.SourceFileName = Path.GetFileName(Unit.SyntaxTree.file_name);
             else
-                pcu_file.SourceFileName = Unit.SyntaxTree.FileName;
+                pcu_file.SourceFileName = Unit.SyntaxTree.file_name;
 			ms = new MemoryStream();
 			bw = new BinaryWriter(ms);
 			//if (Unit.InterfaceUsedUnits.Count > 0) Console.WriteLine("{0} {1}",name,Unit.InterfaceUsedUnits[0].namespaces[0].namespace_name);
