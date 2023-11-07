@@ -671,7 +671,7 @@ type
     function ToString: string; override := $'{l}..{h}';
     
     function GetHashCode: integer; override :=
-      ValueTuple.Create(l,h).GetHashCode;
+      l.GetHashCode*668265263 xor h.GetHashCode;
     
     function ToArray: array of integer;
     begin
@@ -741,7 +741,7 @@ type
     function ToString: string; override := $'''{l}''..''{h}''';
     
     function GetHashCode: integer; override :=
-      ValueTuple.Create(l,h).GetHashCode;
+      l.GetHashCode*668265263 xor h.GetHashCode;
     
     function ToArray: array of char;
     begin
@@ -790,7 +790,8 @@ type
     
     function ToString: string; override := $'{l}..{h}';
     
-    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
+    function GetHashCode: integer; override :=
+      l.GetHashCode*668265263 xor h.GetHashCode;
     
   end;
   
