@@ -3994,11 +3994,11 @@ namespace PascalABCCompiler
             {
                 foreach (var assm in assemblyResolveScope.missingAssemblies)
                     errorsList.Add(new AssemblyNotFound(CurrentCompilationUnit.UnitFileName, assm, sc));
-                Console.Error.WriteLine(e.Message);
+                /*Console.Error.WriteLine(e.Message);
                 foreach (var eLoaderException in e.LoaderExceptions)
                 {
                     Console.Error.WriteLine(eLoaderException.Message);
-                }
+                }*/
 
                 return null;
             }
