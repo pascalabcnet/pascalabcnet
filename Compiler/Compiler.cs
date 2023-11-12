@@ -2923,7 +2923,7 @@ namespace PascalABCCompiler
             }
             CompilationUnit CurrentUnit = null;
             if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
-            if ((CurrentUnit = ReadDLL(UnitName)) != null)
+            if ((CurrentUnit = ReadDLL(UnitName, sc)) != null)
             {
                 Units.AddElement(CurrentUnit.SemanticTree, null);
                 UnitTable[UnitName] = CurrentUnit;
@@ -3969,7 +3969,7 @@ namespace PascalABCCompiler
 		
 		
 
-		public CompilationUnit ReadDLL(string FileName)
+		public CompilationUnit ReadDLL(string FileName, SyntaxTree.SourceContext sc=null)
 		{
             if (DLLCache.ContainsKey(FileName))
                 return DLLCache[FileName];
@@ -3992,6 +3992,8 @@ namespace PascalABCCompiler
             }
             catch (ReflectionTypeLoadException e)
             {
+                foreach (var assm in assemblyResolveScope.missingAssemblies)
+                    errorsList.Add(new AssemblyNotFound(CurrentCompilationUnit.UnitFileName, assm, sc));
                 Console.Error.WriteLine(e.Message);
                 foreach (var eLoaderException in e.LoaderExceptions)
                 {
