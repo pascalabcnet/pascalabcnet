@@ -684,6 +684,15 @@ namespace PascalABCCompiler.TreeRealization
 
             }
         }
+
+        public override string PrintableName
+        {
+            get
+            {
+                return "λ_anytype";
+            }
+        }
+
         public override string ToString() => "λ_anytype";
     }
 	
