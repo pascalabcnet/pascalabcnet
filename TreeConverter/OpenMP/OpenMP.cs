@@ -1205,6 +1205,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             return null;
         }
+
         private static SyntaxTree.type_definition get_diapason(type_node sem_type)
         {
             if (sem_type is compiled_type_node)
@@ -1223,6 +1224,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             return null;
         }
+
         /// <summary>
         /// Возвращает по семантическому типу соответсвующий ему синтаксический тип
         /// </summary>
