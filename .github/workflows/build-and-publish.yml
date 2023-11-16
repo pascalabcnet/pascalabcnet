@@ -16,8 +16,8 @@ defaults:
 jobs:
   build:
 
-    name: Prepare and build on Windows Server VM (2019)
-    runs-on: windows-2019
+    name: Prepare and build on Windows Server VM (2022)
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
 
