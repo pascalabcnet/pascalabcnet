@@ -9996,6 +9996,10 @@ begin
   Result := Self
 end;
 
+/// Преобразует последовательность последовательностей в плоскую последовательность
+function Flatten<T>(Self: sequence of sequence of T): sequence of T; extensionmethod
+  := Self.SelectMany(x -> x);
+
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
 function JoinToString<T>(Self: sequence of T; delim: string): string; extensionmethod;
 begin
