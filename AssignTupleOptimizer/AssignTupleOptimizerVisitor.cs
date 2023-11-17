@@ -19,16 +19,16 @@ namespace AssignTupleOptimizer
         public override void Enter(syntax_tree_node st)
         {
             base.Enter(st);
-            if (AbstractLightScopeCreator.IsScopeCreator(st))
+            if (AbstractScopeCreator.IsScopeCreator(st))
             {
-                Current = symInfoVisitor?.map[st];
+                Current = symInfoVisitor.GetScope(st);
             }
         }
 
         public override void Exit(syntax_tree_node st)
         {
            
-            if (AbstractLightScopeCreator.IsScopeCreator(st))
+            if (AbstractScopeCreator.IsScopeCreator(st))
             {
                 Current = Current?.Parent;
             }
@@ -37,7 +37,7 @@ namespace AssignTupleOptimizer
 
         public override void visit(program_module pm)
         {
-            visit(pm.program_block.defs);
+          /*  visit(pm.program_block.defs);
             var assign_count = new AssignTupleFilterVisitor();
 
             var code = pm.program_block.program_code;
@@ -48,11 +48,11 @@ namespace AssignTupleOptimizer
             assign_count.visit(code);
             if (assign_count.count >  0)
             {
-                symInfoVisitor = new SymInfoFilterVisitor(assign_count.targets);
+                symInfoVisitor = new SymInfoFilterVisitor(pm, assign_count.targets);
                 symInfoVisitor.map.Add(pm, Root);
                 symInfoVisitor.ProcessNode(code);
                 visit(code);
-            }
+            }*/
 
         }
 
@@ -62,7 +62,7 @@ namespace AssignTupleOptimizer
             infoVisitor.visit(def);
             if (infoVisitor.count > 0)
             {
-                symInfoVisitor = new SymInfoFilterVisitor(infoVisitor.targets);
+                symInfoVisitor = new SymInfoFilterVisitor(null ,infoVisitor.targets);
                 symInfoVisitor.visit(def);
                 base.visit(def);
             }

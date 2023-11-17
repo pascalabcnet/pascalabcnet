@@ -4,10 +4,10 @@ using SyntaxVisitors.SugarVisitors;
 
 namespace AssignTupleOptimizer
 {
-    class SymInfoFilterVisitor : MyCollectLightSymInfoVisitor
+    class SymInfoFilterVisitor : CollectFullLightSymInfoVisitor
     {
         public HashSet<string> targets;    
-        public SymInfoFilterVisitor(IEnumerable<string> t)
+        public SymInfoFilterVisitor(program_module root, IEnumerable<string> t) : base(root)
         {
             targets = new HashSet<string>();
             foreach (var target in t) targets.Add(target);

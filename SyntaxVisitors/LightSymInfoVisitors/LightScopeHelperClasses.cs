@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,10 +18,11 @@ using System.Text;
 
 namespace PascalABCCompiler.SyntaxTree
 {
-    public enum SymKind { var, field, param, procname, funcname, classname, recordname, interfacename };
+    public enum SymKind { var, field, param, procname, funcname, classname,
+        recordname, interfacename, template_param, type_alias, const_var, property };
 
     [Flags]
-    public enum Attributes { class_attr = 1, varparam_attr = 2};
+    public enum Attributes { class_attr = 1, varparam_attr = 2, private_attr = 4};
 
     public class SymInfoSyntax
     {
@@ -47,35 +49,33 @@ namespace PascalABCCompiler.SyntaxTree
         }
         public void AddAttribute(Attributes attr)
         {
-            Attr &= attr;
+            Attr |= attr;
         }
     }
 
     public class ScopeSyntax
     {
+        public syntax_tree_node node;
+
         public ScopeSyntax Parent { get; set; }
         public List<ScopeSyntax> Children = new List<ScopeSyntax>();
-        public List<SymInfoSyntax> Symbols = new List<SymInfoSyntax>();
+        public HashSet<SymInfoSyntax> Symbols = new HashSet<SymInfoSyntax>();
         public override string ToString() => GetType().Name.Replace("Syntax", "");
 
-        protected virtual SymInfoSyntax searchSymbol(ident id)
+        public void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
         {
-            foreach(var s in Symbols)
+            Symbols.Add(new SymInfoSyntax(name, kind, td, attr));
+        }
+        public virtual SymInfoSyntax bind(ident id)
+        {
+            foreach (var s in Symbols)
             {
                 if (s.Id.name == id.name && s.Id.source_context.Less(id.source_context))
                 {
-                    Console.WriteLine("Found!!");
                     return s;
                 }
             }
             return null;
-        }
-
-        public virtual SymInfoSyntax bind(ident id)
-        {
-            var res = searchSymbol(id);
-            if (res != null) return res;
-            return Parent?.bind(id);
         }
 
     }
@@ -91,37 +91,50 @@ namespace PascalABCCompiler.SyntaxTree
 
     public class ProcScopeSyntax : NamedScopeSyntax // procedure_definition
     {
+        public ClassScopeSyntax classParent;
+
         public ProcScopeSyntax(ident Name) : base(Name) { }
+
+        public override SymInfoSyntax bind(ident id)
+        {
+
+            var res = classParent?.bind(id);
+            if (res != null) return res;
+            return base.bind(id);
+        }
     }
     public class ParamsScopeSyntax : ScopeSyntax { } // formal_parameters
-    public class ClassScopeSyntax : NamedScopeSyntax
+    public class ClassScopeSyntax 
+        : NamedScopeSyntax
     {
 
-        public List<ClassScopeSyntax> classParents = new List<ClassScopeSyntax>();
+        public ClassScopeSyntax classParent;
 
         public ClassScopeSyntax(ident Name) : base(Name) { }
 
-        protected override SymInfoSyntax searchSymbol(ident id)
+        protected  SymInfoSyntax searchSymbol(ident id)
         {
+            //Console.WriteLine("searching " + id.ToString() + " in " + Name);
             foreach (var s in Symbols)
             {
+              //  Console.WriteLine("Checking " + s.Id);
                 if (s.Id.name == id.name)
                 {
-                    Console.WriteLine("Found!!");
                     return s;
                 }
             }
             return null;
         }
 
-        private SymInfoSyntax bindInParentClass(ident id)
+        protected SymInfoSyntax searchInParentClass(ident id)
         {
-            SymInfoSyntax res = searchSymbol(id);
-            if (res != null) return res;
-            foreach (var parent in classParents)
+            if (classParent == null) return null;
+            foreach (var symbol in classParent.Symbols)
             {
-                res = parent.bindInParentClass(id);
-                if (res != null) return res;
+                if (symbol.Id.name == id.name && !symbol.Attr.HasFlag(Attributes.private_attr))
+                {
+                    return symbol;
+                }
             }
             return null;
         }
@@ -130,12 +143,14 @@ namespace PascalABCCompiler.SyntaxTree
         {
             SymInfoSyntax res = searchSymbol(id);
             if (res != null) return res;
-            foreach(var parent in classParents)
+            var cur = this;
+            while(cur != null)
             {
-                res = parent.bindInParentClass(id);
+                res = cur.searchInParentClass(id);
                 if (res != null) return res;
+                cur = cur.classParent;
             }
-            return Parent?.bind(id);
+            return res;
         }
     } // 
     public class RecordScopeSyntax : NamedScopeSyntax
