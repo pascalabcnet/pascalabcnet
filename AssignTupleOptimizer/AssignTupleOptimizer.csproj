@@ -39,8 +39,7 @@
   <ItemGroup>
     <Compile Include="AssignTupleFilterVisitor.cs" />
     <Compile Include="AssignTupleOptimizerVisitor.cs" />
-    <Compile Include="LightSymInfo\CollectFullLightSymInfoVisitor.cs" />
-    <Compile Include="LightSymInfo\SymInfoFilterVisitor.cs" />
+    <Compile Include="SymInfoFilterVisitor.cs" />
     <Compile Include="graph\Assign.cs" />
     <Compile Include="graph\AssignGraph.cs" />
     <Compile Include="graph\Cycle.cs" />
@@ -48,9 +47,6 @@
     <Compile Include="graph\GraphUtils.cs" />
     <Compile Include="graph\Symbol.cs" />
     <Compile Include="graph\SymbolNode.cs" />
-    <Compile Include="LightSymInfo\ILightScopeCreator.cs" />
-    <Compile Include="LightSymInfo\CollectLightSymInfoVisitor.cs" />
-    <Compile Include="LightSymInfo\BindCollectLightSymInfo.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

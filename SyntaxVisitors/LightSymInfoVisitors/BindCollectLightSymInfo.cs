@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using PascalABCCompiler.SyntaxTree;
 
-namespace AssignTupleOptimizer
+
+namespace PascalABCCompiler.SyntaxTree
 {
    public class BindCollectLightSymInfo : CollectLightSymInfoVisitor 
     {

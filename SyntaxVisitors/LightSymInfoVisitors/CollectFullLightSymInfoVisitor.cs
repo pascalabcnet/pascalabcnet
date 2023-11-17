@@ -1,12 +1,11 @@
-﻿using PascalABCCompiler.SyntaxTree;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AssignTupleOptimizer
+namespace PascalABCCompiler.SyntaxTree
 {
-    class CollectFullLightSymInfoVisitor : CollectLightSymInfoVisitor
+    public class CollectFullLightSymInfoVisitor : CollectLightSymInfoVisitor
     {
         protected override AbstractScopeCreator scopeCreator => _scopeCreator;
 
