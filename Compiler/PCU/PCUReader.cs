@@ -3498,6 +3498,11 @@ namespace PascalABCCompiler.PCU
             return new default_operator_node_as_constant(CreateDefaultOperator(), null);
         }
 
+        private sizeof_operator_as_constant CreateSizeOfOperatorAsConstant()
+        {
+            return new sizeof_operator_as_constant(CreateSizeOfOperator(), null);
+        }
+
         private expression_node CreateExpression(semantic_node_type snt)
 		{
             //location loc = ReadDebugInfo();
@@ -3528,6 +3533,8 @@ namespace PascalABCCompiler.PCU
                     return CreateCompiledConstructorCallAsConstant();
                 case semantic_node_type.default_operator_node_as_constant:
                     return CreateDefaultOperatorAsConstant();
+                case semantic_node_type.sizeof_operator_as_constant:
+                    return CreateSizeOfOperatorAsConstant();
                 case semantic_node_type.array_const:
                     return CreateArrayConst();
                 case semantic_node_type.record_const:

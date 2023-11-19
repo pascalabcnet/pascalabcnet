@@ -2892,32 +2892,39 @@ namespace PascalABCCompiler
 
             }
             //\MikhailoMMX
-
-            var FullFileName = Path.Combine(curr_path, FileName);
-            if (System.IO.File.Exists(FullFileName))
+            try
             {
-                var NewFileName = Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
-                if (FullFileName != NewFileName)
+                var FullFileName = Path.Combine(curr_path, FileName);
+                if (System.IO.File.Exists(FullFileName))
                 {
-                    if (overwrite)
-                        File.Copy(FullFileName, NewFileName, true);
-                    else if (!File.Exists(NewFileName))
-                        File.Copy(FullFileName, NewFileName, false);
-                }
+                    var NewFileName = Path.Combine(compilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
+                    if (FullFileName != NewFileName)
+                    {
+                        if (overwrite)
+                            File.Copy(FullFileName, NewFileName, true);
+                        else if (!File.Exists(NewFileName))
+                            File.Copy(FullFileName, NewFileName, false);
+                    }
 
-                return NewFileName;
+                    return NewFileName;
+                }
+                else
+                {
+                    string name = get_assembly_path(FileName, false);//? а надо ли tolover?
+                    if (name == null)
+                        throw new AssemblyNotFound(this.CurrentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                    else
+                        if (File.Exists(name))
+                        return name;
+                    else
+                        throw new AssemblyNotFound(this.CurrentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                }
             }
-            else
+            catch (ArgumentException ex)
             {
-                string name = get_assembly_path(FileName, false);//? а надо ли tolover?
-                if (name == null)
-                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.file_name, FileName, sc);
-                else
-                    if (File.Exists(name))
-                    return name;
-                else
-                    throw new AssemblyNotFound(this.currentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                throw new InvalidAssemblyPathError(CurrentCompilationUnit.SyntaxTree.file_name, sc);
             }
+            
         }
 
         public string GetUnitFileName(SyntaxTree.unit_or_namespace unitNode, string currentPath)
@@ -3096,10 +3103,9 @@ namespace PascalABCCompiler
                 throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sourceContext);
             }
             
-            if (UnitTable.Count == 0) throw new ProgramModuleExpected(dllName, null);
-
-            CompilationUnit currentDll;
-            if ((currentDll = ReadDLL(dllName)) != null)
+            CompilationUnit CurrentUnit = null;
+            if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
+            if ((CurrentUnit = ReadDLL(UnitName, sc)) != null)
             {
                 dlls.AddElement(currentDll.SemanticTree, null);
                 UnitTable[dllName] = currentDll;
@@ -4460,10 +4466,8 @@ namespace PascalABCCompiler
             return get_standart_assembly_path(name);
         }
 
-
-
-        public CompilationUnit ReadDLL(string FileName)
-        {
+		public CompilationUnit ReadDLL(string FileName, SyntaxTree.SourceContext sc=null)
+		{
             if (DLLCache.ContainsKey(FileName))
                 return DLLCache[FileName];
             OnChangeCompilerState(this, CompilerState.ReadDLL, FileName);
@@ -4485,11 +4489,13 @@ namespace PascalABCCompiler
             }
             catch (ReflectionTypeLoadException e)
             {
-                Console.Error.WriteLine(e.Message);
+                foreach (var assm in assemblyResolveScope.missingAssemblies)
+                    errorsList.Add(new AssemblyNotFound(CurrentCompilationUnit.UnitFileName, assm, sc));
+                /*Console.Error.WriteLine(e.Message);
                 foreach (var eLoaderException in e.LoaderExceptions)
                 {
                     Console.Error.WriteLine(eLoaderException.Message);
-                }
+                }*/
 
                 return null;
             }

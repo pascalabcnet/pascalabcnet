@@ -3346,6 +3346,17 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="ref_var_def_statement" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="var" SyntaxType="ident" />
+        <SyntaxField Name="initial_value" SyntaxType="addressed_value" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3419,6 +3430,7 @@
       <HelpData Key=".in_what" Value="" />
       <HelpData Key=".index" Value="" />
       <HelpData Key=".index_expr" Value="" />
+      <HelpData Key=".initial_value" Value="ссылка на addrvalue, которой интциализируется идентификатор" />
       <HelpData Key=".inverted" Value="" />
       <HelpData Key=".item_expression" Value="" />
       <HelpData Key=".left" Value="" />
@@ -3468,6 +3480,7 @@
       <HelpData Key=".v" Value="" />
       <HelpData Key=".val" Value="" />
       <HelpData Key=".value" Value="" />
+      <HelpData Key=".var" Value="" />
       <HelpData Key=".var_attr" Value="" />
       <HelpData Key=".variants" Value="" />
       <HelpData Key=".vars" Value="" />
@@ -4460,6 +4473,9 @@
       <HelpData Key="recursive_tuple_parameter" Value="Рекурсивный паттерн-параметр." />
       <HelpData Key="ref_type" Value="" />
       <HelpData Key="ref_type.pointed_to" Value="" />
+      <HelpData Key="ref_var_def_statement" Value="Для конструкции refvar id := ref addrValue, которая не имеет аналога в языке и генерируется при развертывании кортежного присваивания в конструкции (a,a[i]) := (b,666);" />
+      <HelpData Key="ref_var_def_statement.initial_value" Value="" />
+      <HelpData Key="ref_var_def_statement.var" Value="ref var id := ref add_value" />
       <HelpData Key="repeat_node" Value="Цикл с постусловием (repeat)" />
       <HelpData Key="repeat_node.expr" Value="Условие завершения цикла" />
       <HelpData Key="repeat_node.statements" Value="Тело цикла" />
