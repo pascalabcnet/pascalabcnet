@@ -2730,32 +2730,39 @@ namespace PascalABCCompiler
 
             }
             //\MikhailoMMX
-
-            var FullFileName = Path.Combine(curr_path, FileName);
-            if (System.IO.File.Exists(FullFileName))
+            try
             {
-                var NewFileName = Path.Combine(compilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
-                if (FullFileName != NewFileName)
+                var FullFileName = Path.Combine(curr_path, FileName);
+                if (System.IO.File.Exists(FullFileName))
                 {
-                    if (overwrite)
-                        File.Copy(FullFileName, NewFileName, true);
-                    else if (!File.Exists(NewFileName))
-                        File.Copy(FullFileName, NewFileName, false);
-                }
+                    var NewFileName = Path.Combine(compilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
+                    if (FullFileName != NewFileName)
+                    {
+                        if (overwrite)
+                            File.Copy(FullFileName, NewFileName, true);
+                        else if (!File.Exists(NewFileName))
+                            File.Copy(FullFileName, NewFileName, false);
+                    }
 
-                return NewFileName;
-            }
-            else
-            {
-                string name = get_assembly_path(FileName,false);//? а надо ли tolover?
-                if (name == null)
-                    throw new AssemblyNotFound(this.CurrentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                    return NewFileName;
+                }
                 else
-                    if (File.Exists(name))
+                {
+                    string name = get_assembly_path(FileName, false);//? а надо ли tolover?
+                    if (name == null)
+                        throw new AssemblyNotFound(this.CurrentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                    else
+                        if (File.Exists(name))
                         return name;
                     else
                         throw new AssemblyNotFound(this.CurrentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                }
             }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidAssemblyPathError(CurrentCompilationUnit.SyntaxTree.file_name, sc);
+            }
+            
         }
         
         public string GetUnitFileName(SyntaxTree.unit_or_namespace SyntaxUsesUnit, string curr_path)
