@@ -1202,6 +1202,10 @@ namespace PascalABCCompiler
                 tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, new TreeRealization.document(FileName));
         }
 
+        // TODO: добавить memo
+        /// <summary>
+        /// преобразует в директивы семантического уровня
+        /// </summary>
         private List<compiler_directive> ConvertDirectives(SyntaxTree.compilation_unit syntaxTree)
         {
             List<compiler_directive> list = new List<compiler_directive>();
@@ -2675,7 +2679,7 @@ namespace PascalABCCompiler
                     if (CompilerOptions.StandardModules.Count > 0)
                     {
                         programModule.used_units = new SyntaxTree.uses_list();
-                        programModule.used_units.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1, 1, 1);
+                        programModule.used_units.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1, 1, 1); // в начало файла позиция (пустой used units не имеет 
                     }
                     else return null;
                 }
@@ -3006,7 +3010,6 @@ namespace PascalABCCompiler
             
             string currentModuleName = Path.GetFileNameWithoutExtension(compilationUnit.file_name).ToLower();
             
-            // проверка, является ли текущий модуль стандартным | Вопрос  EVA
             foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModules)
             {
                 string moduleName = Path.GetFileNameWithoutExtension(module.Name);
@@ -3086,7 +3089,8 @@ namespace PascalABCCompiler
             {
                 throw;
             }
-            // ToDo плохо, пока дебажил - тут постоянно ловились другие исключения, не связанные с неправильным знаками в пути к сборке | Вопрос   EVA
+            // ToDo плохо, пока дебажил - тут постоянно ловились другие исключения, не связанные с неправильным знаками в пути к сборке |
+            // EVA  (проверить)
             catch (Exception)
             {
                 throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sourceContext);
@@ -3583,7 +3587,7 @@ namespace PascalABCCompiler
             // Используется для подключения модулей, $include и т.п. из модуля, подключённого с uses-in
             var currentDirectory = Path.GetDirectoryName(unitFileName);
 
-            CompilationUnit currentUnit = UnitTable[unitId];
+            CompilationUnit currentUnit = UnitTable[unitId]; // TODO: неочевидный момент, что уже заполнено (глобальная переменная)
 
             #region SEMANTIC CHECKS : USES IN SECTION LOGIC
 
@@ -3603,7 +3607,7 @@ namespace PascalABCCompiler
             InitializeNewUnit(currentUnitNode, unitFileName, unitId,
                 ref currentUnit, out var docs);
 
-            PrepareDependencies(currentUnit, currentDirectory, out var interfaceUsesList, out var references, out var namespaces);
+            PrepareDependencies(currentUnit, currentDirectory, out var interfaceUsesList, out var references, out var namespaces); // для чего
 
             #region INTERFACE PART
             // комплируем зависимости из интерфейса  EVA
@@ -3620,6 +3624,7 @@ namespace PascalABCCompiler
 
             currentUnit.InterfaceUsedUnits.AddRange(references);
 
+            // TODO: какие про-ва имен
             AddNamespaces(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
             AddNamespaces(currentUnit.InterfaceUsingNamespaceList, GetInterfaceSyntaxUsingList(currentUnit.SyntaxTree));
 
@@ -3941,7 +3946,7 @@ namespace PascalABCCompiler
                 // получение синтаксического дерева
                 string sourceText = GetSourceCode(currentUnitNode, UnitFileName, currentUnit);
 
-                GenSyntaxTree(UnitFileName, currentUnit, sourceText);
+                GenSyntaxTree(UnitFileName, currentUnit, sourceText); // TODO: убрать void
                 #endregion
 
                 if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
