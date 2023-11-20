@@ -489,11 +489,8 @@ namespace PascalABCCompiler
 
     public class CompilationUnitHashTable : Hashtable
     {
-        public CompilationUnitHashTable()
-            //DarkStar: fixed error in test_standartuses.pas at rebuild
-            : base(StringComparer.InvariantCultureIgnoreCase)
-        {
-        }
+        public CompilationUnitHashTable() : base(StringComparer.InvariantCultureIgnoreCase) { }
+        
         public CompilationUnit this[string key]
         {
             get
@@ -1908,7 +1905,7 @@ namespace PascalABCCompiler
                     }
                     
                     //TODO: Избавиться от преобразования типа.
-                    AddNamespaces(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.possibleNamespaces, true, null);
+                    AddNamespacesToUsingList(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.possibleNamespaces, true, null);
 
                     // Console.WriteLine("Compiling implementation delayed " + unitFileName);
 
@@ -2662,10 +2659,10 @@ namespace PascalABCCompiler
             {
                 if (unitModule.interface_part.uses_modules == null)
                 {
-                    if (CompilerOptions.StandardModules.Count > 0) // если есть стандартые модули то создать список | Вопрос  EVA
+                    if (CompilerOptions.StandardModules.Count > 0)
                     {
                         unitModule.interface_part.uses_modules = new SyntaxTree.uses_list();
-                        unitModule.interface_part.uses_modules.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1, 1, 1);
+                        unitModule.interface_part.uses_modules.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1, 1, 1); // TODO: Обернуть в дефолтный конструктор
                     }
                     else return null;
                 }
@@ -2679,7 +2676,7 @@ namespace PascalABCCompiler
                     if (CompilerOptions.StandardModules.Count > 0)
                     {
                         programModule.used_units = new SyntaxTree.uses_list();
-                        programModule.used_units.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1, 1, 1); // в начало файла позиция (пустой used units не имеет 
+                        programModule.used_units.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1, 1, 1); // позиция начала файла для пустого списка used_units
                     }
                     else return null;
                 }
@@ -2897,7 +2894,7 @@ namespace PascalABCCompiler
                 var FullFileName = Path.Combine(curr_path, FileName);
                 if (System.IO.File.Exists(FullFileName))
                 {
-                    var NewFileName = Path.Combine(compilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
+                    var NewFileName = Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
                     if (FullFileName != NewFileName)
                     {
                         if (overwrite)
@@ -2912,17 +2909,17 @@ namespace PascalABCCompiler
                 {
                     string name = get_assembly_path(FileName, false);//? а надо ли tolover?
                     if (name == null)
-                        throw new AssemblyNotFound(this.CurrentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                        throw new AssemblyNotFound(currentCompilationUnit.SyntaxTree.file_name, FileName, sc);
                     else
                         if (File.Exists(name))
                         return name;
                     else
-                        throw new AssemblyNotFound(this.CurrentCompilationUnit.SyntaxTree.file_name, FileName, sc);
+                        throw new AssemblyNotFound(currentCompilationUnit.SyntaxTree.file_name, FileName, sc);
                 }
             }
             catch (ArgumentException ex)
             {
-                throw new InvalidAssemblyPathError(CurrentCompilationUnit.SyntaxTree.file_name, sc);
+                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sc);
             }
             
         }
@@ -3077,7 +3074,7 @@ namespace PascalABCCompiler
             }
         }
 
-        private Assembly PreloadReference(TreeRealization.compiler_directive reference)
+        private Assembly PreloadReference(compiler_directive reference)
         {
             var sc = GetSourceContext(reference);
             var fileName = GetReferenceFileName(reference.directive, sc, Path.GetDirectoryName(reference.source_file), true);
@@ -3087,10 +3084,10 @@ namespace PascalABCCompiler
         private CompilationUnit CompileReference(unit_node_list dlls, compiler_directive reference)
         {
             var sourceContext = GetSourceContext(reference);
-            string dllName;
+            string unitName;
             try
             {
-                dllName = GetReferenceFileName(reference.directive, sourceContext, Path.GetDirectoryName(reference.source_file), false);
+                unitName = GetReferenceFileName(reference.directive, sourceContext, Path.GetDirectoryName(reference.source_file), false);
             }
             catch (AssemblyNotFound)
             {
@@ -3103,15 +3100,15 @@ namespace PascalABCCompiler
                 throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sourceContext);
             }
             
-            CompilationUnit CurrentUnit = null;
-            if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
-            if ((CurrentUnit = ReadDLL(UnitName, sc)) != null)
+            CompilationUnit currentUnit = null;
+            if (UnitTable.Count == 0) throw new ProgramModuleExpected(unitName, null);
+            if ((currentUnit = ReadDLL(unitName, sourceContext)) != null)
             {
-                dlls.AddElement(currentDll.SemanticTree, null);
-                UnitTable[dllName] = currentDll;
-                return currentDll;
+                dlls.AddElement(currentUnit.SemanticTree, null);
+                UnitTable[unitName] = currentUnit;
+                return currentUnit;
             }
-            else throw new AssemblyReadingError(currentCompilationUnit.SyntaxTree.file_name, dllName, sourceContext);
+            else throw new AssemblyReadingError(currentCompilationUnit.SyntaxTree.file_name, unitName, sourceContext);
         }
 
         private SyntaxTree.SourceContext GetSourceContext(compiler_directive directive)
@@ -3130,7 +3127,7 @@ namespace PascalABCCompiler
         }
 
 
-        private Dictionary<string, SyntaxTree.syntax_namespace_node> IncludeNamespaces(CompilationUnit compilationUnit)
+        private Dictionary<string, SyntaxTree.syntax_namespace_node> IncludePascalNamespaces(CompilationUnit compilationUnit)
         {
             var directives = ConvertDirectives(compilationUnit.SyntaxTree);
 
@@ -3138,7 +3135,7 @@ namespace PascalABCCompiler
 
             Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces = new Dictionary<string, SyntaxTree.syntax_namespace_node>(StringComparer.OrdinalIgnoreCase);
 
-            List<SyntaxTree.unit_or_namespace> namespace_modules = new List<SyntaxTree.unit_or_namespace>();
+            List<SyntaxTree.unit_or_namespace> namespaceModules = new List<SyntaxTree.unit_or_namespace>();
 
             foreach (string file in files)
             {
@@ -3161,7 +3158,7 @@ namespace PascalABCCompiler
                     namespaces[unitModule.unit_name.idunit_name.name] = namespaceNode;
                 }
 
-                AddDeclarationsAndReferencedUnitsToNamespaces(namespace_modules, file, unitModule, namespaceNode);
+                AddDeclarationsAndReferencedUnitsToNamespaces(namespaceModules, file, unitModule, namespaceNode);
             }
 
             SyntaxTree.unit_module mainLibrary = compilationUnit.SyntaxTree as SyntaxTree.unit_module;
@@ -3175,7 +3172,7 @@ namespace PascalABCCompiler
                     main_program.program_block.defs.Insert(0, namespaces[s]);
             }
 
-            SyntaxTree.uses_list mainUsesList = GetMainUsesList(mainLibrary, main_program, namespace_modules);
+            SyntaxTree.uses_list mainUsesList = GetMainUsesList(mainLibrary, main_program, namespaceModules);
 
             if (mainLibrary != null)
                 mainLibrary.interface_part.uses_modules = mainUsesList;
@@ -3467,31 +3464,39 @@ namespace PascalABCCompiler
             return new using_namespace(SyntaxTree.Utils.IdentListToString(_name_space.name.idents, "."));
         }
 
-        private TreeRealization.using_namespace GetNamespace(TreeRealization.using_namespace_list using_list, string full_namespace_name, SyntaxTree.unit_or_namespace _name_space, bool possible_is_unit, Dictionary<string, SyntaxTree.syntax_namespace_node> pabc_namespaces)
+        /// <summary>
+        /// Формирует узел семантического дерева, соответствующий пространству имен (NET или Паскаля), unit Паскаля тоже считается пространством имен
+        /// </summary>
+        /// <exception cref="UnitNotFound"></exception>
+        /// <exception cref="TreeConverter.NamespaceNotFound"></exception>
+        private using_namespace GetNamespace(using_namespace_list usingList, string fullNamespaceName, SyntaxTree.unit_or_namespace name_space, bool mightBeUnit, Dictionary<string, SyntaxTree.syntax_namespace_node> pascalNamespaces)
         {
-            if (!NetHelper.NetHelper.NamespaceExists(full_namespace_name) && !(pabc_namespaces != null && pabc_namespaces.ContainsKey(full_namespace_name)))
+            if (!NetHelper.NetHelper.NamespaceExists(fullNamespaceName) && (pascalNamespaces == null || !pascalNamespaces.ContainsKey(fullNamespaceName)))
             {
-                if (possible_is_unit)
-                    if (!full_namespace_name.Contains("."))
-                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.file_name, full_namespace_name, _name_space.source_context);
-                throw new TreeConverter.NamespaceNotFound(full_namespace_name, get_location_from_treenode(_name_space.name, currentCompilationUnit.SyntaxTree.file_name));
+                if (mightBeUnit && !fullNamespaceName.Contains("."))
+                        throw new UnitNotFound(currentCompilationUnit.SyntaxTree.file_name, fullNamespaceName, name_space.source_context);
+
+                throw new TreeConverter.NamespaceNotFound(fullNamespaceName, get_location_from_treenode(name_space.name, currentCompilationUnit.SyntaxTree.file_name));
             }
-            return new TreeRealization.using_namespace(full_namespace_name);
+            return new using_namespace(fullNamespaceName);
         }
 
-        public void AddNamespaces(using_namespace_list using_list, List<SyntaxTree.unit_or_namespace> namespaces, bool possible_is_units, Dictionary<string, SyntaxTree.syntax_namespace_node> pabc_namespaces)
+        public void AddNamespacesToUsingList(using_namespace_list usingList, List<SyntaxTree.unit_or_namespace> namespaces, bool mightContainUnits, Dictionary<string, SyntaxTree.syntax_namespace_node> pascalNamespaces)
         {
-            foreach (SyntaxTree.unit_or_namespace ns in namespaces)
-                using_list.AddElement(GetNamespace(using_list, SyntaxTree.Utils.IdentListToString(ns.name.idents, "."), ns, possible_is_units, pabc_namespaces));
+            foreach (SyntaxTree.unit_or_namespace name_space in namespaces)
+            {
+                usingList.AddElement(GetNamespace(usingList, SyntaxTree.Utils.IdentListToString(name_space.name.idents, "."),
+                    name_space, mightContainUnits, pascalNamespaces));
+            }
         }
 
-        public void AddNamespaces(TreeRealization.using_namespace_list using_list, SyntaxTree.using_list ul)
+        public void AddNamespacesToUsingList(using_namespace_list using_list, SyntaxTree.using_list ul)
         {
             if (ul != null)
-                AddNamespaces(using_list, ul.namespaces, false, null);
+                AddNamespacesToUsingList(using_list, ul.namespaces, false, null);
         }
 
-        public SyntaxTree.using_list GetInterfaceSyntaxUsingList(SyntaxTree.compilation_unit cu)
+        public SyntaxTree.using_list GetInterfaceUsingList(SyntaxTree.compilation_unit cu)
         {
             if (cu is SyntaxTree.unit_module)
                 return (cu as SyntaxTree.unit_module).interface_part.using_namespaces;
@@ -3583,7 +3588,7 @@ namespace PascalABCCompiler
         }
 
         /// <summary>
-        /// TODO: еще сократить метод | Вопрос  EVA
+        /// TODO: еще сократить метод
         /// </summary>
         public CompilationUnit CompileUnit(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> pascalUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, string previousPath)
         {
@@ -3593,7 +3598,8 @@ namespace PascalABCCompiler
             // Используется для подключения модулей, $include и т.п. из модуля, подключённого с uses-in
             var currentDirectory = Path.GetDirectoryName(unitFileName);
 
-            CompilationUnit currentUnit = UnitTable[unitId]; // TODO: неочевидный момент, что уже заполнено (глобальная переменная)
+            // вернет null, если юнит еще не был инициализирован
+            CompilationUnit currentUnit = UnitTable[unitId]; // Вопрос   EVA
 
             #region SEMANTIC CHECKS : USES IN SECTION LOGIC
 
@@ -3613,14 +3619,15 @@ namespace PascalABCCompiler
             InitializeNewUnit(currentUnitNode, unitFileName, unitId,
                 ref currentUnit, out var docs);
 
-            PrepareDependencies(currentUnit, currentDirectory, out var interfaceUsesList, out var references, out var namespaces); // для чего
+            // формирование списков зависимостей текущего модуля (uses list, dll, пространства имен)
+            CreateDependencyListsForCurrentUnit(currentUnit, currentDirectory, out var interfaceUsesList, out var references, out var pascalNamespaces);
 
             #region INTERFACE PART
             // комплируем зависимости из интерфейса  EVA
             if (interfaceUsesList != null)
             {
                 CompileInterfaceDependencies(unitsFromUsesSection, pascalUnitsFromUsesSection, currentUnitNode,
-                    unitFileName, currentDirectory, currentUnit, interfaceUsesList, references, namespaces, out bool shouldReturnCurUnit); // Вопрос, нужно ли заморачиваться по уменьшению кол-ва параметров  EVA
+                    unitFileName, currentDirectory, currentUnit, interfaceUsesList, references, pascalNamespaces, out bool shouldReturnCurUnit);
 
                 if (shouldReturnCurUnit)
                     return currentUnit;
@@ -3630,9 +3637,11 @@ namespace PascalABCCompiler
 
             currentUnit.InterfaceUsedUnits.AddRange(references);
 
-            // TODO: какие про-ва имен
-            AddNamespaces(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
-            AddNamespaces(currentUnit.InterfaceUsingNamespaceList, GetInterfaceSyntaxUsingList(currentUnit.SyntaxTree));
+            // Добавление пространств имен из uses list (могут быть разных видов)
+            AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, pascalNamespaces);
+
+            // Добавление пространств имен NET из using list
+            AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, GetInterfaceUsingList(currentUnit.SyntaxTree));
 
             // Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
@@ -3642,6 +3651,7 @@ namespace PascalABCCompiler
             // интерфейс скомпилирован - переходим к секции реализации 
             currentUnit.State = UnitState.InterfaceCompiled;
 
+            // заполнение списков uses семантического уровня
             FillUsesLists(unitsFromUsesSection, pascalUnitsFromUsesSection, currentUnitNode, currentUnit, references); 
             #endregion
 
@@ -3655,7 +3665,7 @@ namespace PascalABCCompiler
             common_unit_node semanticTreeAsCommonNode = currentUnit.SemanticTree as common_unit_node;
 
             // Компиляция зависимостей в области реализации    EVA
-            CompileImplementationDependencies(currentDirectory, currentUnit, implementationUsesList, namespaces, semanticTreeAsCommonNode, out bool shouldReturnCurrentUnit);
+            CompileImplementationDependencies(currentDirectory, currentUnit, implementationUsesList, pascalNamespaces, semanticTreeAsCommonNode, out bool shouldReturnCurrentUnit);
 
             if (shouldReturnCurrentUnit)
                 return currentUnit;
@@ -3667,15 +3677,18 @@ namespace PascalABCCompiler
             #endregion
 
             currentUnit.State = UnitState.Compiled;
+            
             if (semanticTreeAsCommonNode != null)
             {
                 if (!UnitsLogicallySortedList.Contains(currentUnit))//vnimanie zdes inogda pri silnoj zavisimosti modulej moduli popadajut neskolko raz
                     UnitsLogicallySortedList.Add(currentUnit);
             }
+            
             OnChangeCompilerState(this, CompilerState.EndCompileFile, unitFileName);
 
             //SavePCU(syntaxTree, unitFileName);
             currentUnit.UnitFileName = unitFileName;
+            
             return currentUnit;
 
 
@@ -3701,10 +3714,9 @@ namespace PascalABCCompiler
             }*/
         }
 
-        private void PrepareDependencies(CompilationUnit currentUnit, string currentDirectory, out List<SyntaxTree.unit_or_namespace> interfaceUsesList, 
-            out unit_node_list references, out Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces)
+        private void CreateDependencyListsForCurrentUnit(CompilationUnit currentUnit, string currentDirectory, out List<SyntaxTree.unit_or_namespace> interfaceUsesList, 
+            out unit_node_list references, out Dictionary<string, SyntaxTree.syntax_namespace_node> pascalNamespaces)
         {
-            // TODO: переделать, некоторый код дублируется 
             interfaceUsesList = GetInterfaceUsesSection(currentUnit.SyntaxTree);
             
             SetUseDLLForSystemUnits(currentDirectory, interfaceUsesList, interfaceUsesList.Count - 1 - currentUnit.InterfaceUsedUnits.Count);
@@ -3712,7 +3724,7 @@ namespace PascalABCCompiler
             references = GetReferences(currentUnit);
 
             // TODO: закончить рефакторинг
-            namespaces = IncludeNamespaces(currentUnit);
+            pascalNamespaces = IncludePascalNamespaces(currentUnit);
         }
 
         private void FillUsesLists(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> pascalUnitsFromUsesSection, 
@@ -3772,6 +3784,7 @@ namespace PascalABCCompiler
         /// </summary>
         private void CompileImplementationDependencies(string currentPath, CompilationUnit currentUnit, List<SyntaxTree.unit_or_namespace> implementationUsesList, 
             Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces, common_unit_node commonUnitNode, out bool shouldReturnCurrentUnit)
+        
         {
             shouldReturnCurrentUnit = false;
 
@@ -3809,8 +3822,8 @@ namespace PascalABCCompiler
 
             currentCompilationUnit = currentUnit;
 
-            AddNamespaces(currentUnit.ImplementationUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
-            AddNamespaces(currentUnit.ImplementationUsingNamespaceList, GetImplementationSyntaxUsingList(currentUnit.SyntaxTree));
+            AddNamespacesToUsingList(currentUnit.ImplementationUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
+            AddNamespacesToUsingList(currentUnit.ImplementationUsingNamespaceList, GetImplementationSyntaxUsingList(currentUnit.SyntaxTree));
 
             if (shouldReturnCurrentUnit)
             {
@@ -3860,12 +3873,12 @@ namespace PascalABCCompiler
         /// <exception cref="CycleUnitReference"></exception>
         private void CompileInterfaceDependencies(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> pascalUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, 
             string unitFileName, string currentPath, CompilationUnit currentUnit, List<SyntaxTree.unit_or_namespace> interfaceUsesList, unit_node_list references, 
-            Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces, out bool shouldReturnCurrentUnit)
+            Dictionary<string, SyntaxTree.syntax_namespace_node> pascalNamespaces, out bool shouldReturnCurrentUnit)
         {
             shouldReturnCurrentUnit = false;
             for (int i = interfaceUsesList.Count - 1 - currentUnit.InterfaceUsedUnits.Count; i >= 0; i--) // здесь откидываются модули с уже откомпилированными интерфейсами из секции uses (см. комментарий, обозначенный #1710)
             {
-                if (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || namespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name))
+                if (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || pascalNamespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name))
                 {
                     currentUnit.InterfaceUsedUnits.AddElement(new namespace_unit_node(GetNamespace(interfaceUsesList[i])), null);
                     currentUnit.possibleNamespaces.Add(interfaceUsesList[i]);
@@ -4490,7 +4503,7 @@ namespace PascalABCCompiler
             catch (ReflectionTypeLoadException e)
             {
                 foreach (var assm in assemblyResolveScope.missingAssemblies)
-                    errorsList.Add(new AssemblyNotFound(CurrentCompilationUnit.UnitFileName, assm, sc));
+                    errorsList.Add(new AssemblyNotFound(currentCompilationUnit.UnitFileName, assm, sc));
                 /*Console.Error.WriteLine(e.Message);
                 foreach (var eLoaderException in e.LoaderExceptions)
                 {
