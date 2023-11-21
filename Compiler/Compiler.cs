@@ -3965,7 +3965,7 @@ namespace PascalABCCompiler
                 // получение синтаксического дерева
                 string sourceText = GetSourceCode(currentUnitNode, UnitFileName, currentUnit);
 
-                GenSyntaxTree(UnitFileName, currentUnit, sourceText); // TODO: убрать void
+                currentUnit.SyntaxTree = ConstructSyntaxTree(UnitFileName, currentUnit, sourceText);
                 #endregion
 
                 if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
@@ -4100,7 +4100,7 @@ namespace PascalABCCompiler
             }    
         }
 
-        private void GenSyntaxTree(string UnitFileName, CompilationUnit currentUnit, string SourceText)
+        private SyntaxTree.compilation_unit ConstructSyntaxTree(string UnitFileName, CompilationUnit currentUnit, string SourceText)
         {
             List<string> DefinesList = new List<string> { "PASCALABC" };
             if (!CompilerOptions.Debug && !CompilerOptions.ForDebugging)
@@ -4108,18 +4108,22 @@ namespace PascalABCCompiler
             else
                 DefinesList.Add("DEBUG");
             DefinesList.AddRange(CompilerOptions.ForceDefines);
-            
+
+            SyntaxTree.compilation_unit syntaxTree;
+
             if (CompilerOptions.UnitSyntaxTree != null)
             {
-                currentUnit.SyntaxTree = CompilerOptions.UnitSyntaxTree;
+                syntaxTree = CompilerOptions.UnitSyntaxTree;
                 CompilerOptions.UnitSyntaxTree = null;
             }
             // синтаксический анализ
             else
-                currentUnit.SyntaxTree = InternalParseText(UnitFileName, SourceText, errorsList, warnings, DefinesList);
+                syntaxTree = InternalParseText(UnitFileName, SourceText, errorsList, warnings, DefinesList);
 
             // проверка, что пространства имен только в проектах
             SemanticCheckNamespacesOnlyInProjects(currentUnit);
+
+            return syntaxTree;
         }
 
         private string GetSourceCode(SyntaxTree.unit_or_namespace currentUnitNode, string UnitFileName, CompilationUnit currentUnit)
