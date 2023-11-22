@@ -238,7 +238,9 @@ namespace SyntaxVisitors
                 NegativePercent += stat.OldStrings;
             }
             if (NegativePercent < 0)
+            {
                 NegativePercent = 0;
+            }
 
             Percent -= NegativePercent;
 
@@ -271,11 +273,11 @@ namespace SyntaxVisitors
             }
             if (stat.TuplesCount > 0)
             {
-                PositivePercent += Math.Min(stat.PrintCount, 4) * 5;
+                PositivePercent += Math.Min(stat.TuplesCount, 4) * 5;
             }
             if (stat.DynamicArrays > 0)
             {
-                PositivePercent += Math.Min(stat.PrintCount, 4) * 5;
+                PositivePercent += Math.Min(stat.DynamicArrays, 4) * 5;
             }
             if (stat.UnpackingAssign > 0)
             {
