@@ -904,7 +904,7 @@ namespace PascalABCCompiler.PCU
             common_namespace_node comp_cnn = cnfn.namespace_node;
             if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
             {
-                var path = Compiler.GetUnitPath(unit, compiler.UnitsSortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
+                var path = Compiler.GetUnitPath(unit, compiler.UnitsLogicallySortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
 
                 if (interf)
                     unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit, path);
