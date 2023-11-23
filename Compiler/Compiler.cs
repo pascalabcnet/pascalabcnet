@@ -2193,12 +2193,13 @@ namespace PascalABCCompiler
                 }
 
                 #region CONSTRUCTING SYNTAX AND SEMANTIC TREES STAGE
+                currentUnitSyntaxTree = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
+
                 // компиляция всех юнитов произойдет рекурсивно (кроме отложенных)
                 CompileUnit(
                     new unit_node_list(),
                     new Dictionary<unit_node, CompilationUnit>(),
-                    new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName))),
-                    null);
+                    currentUnitSyntaxTree, null);
 
                 // компиляция юнитов из списка отложенной компиляции, если он не пуст
                 CompileUnitsFromDelayedList(); 
