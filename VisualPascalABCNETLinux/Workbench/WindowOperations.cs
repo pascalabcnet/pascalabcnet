@@ -257,7 +257,7 @@ namespace VisualPascalABC
             SetTabPageText(edit);
             edit.SetHighlightingStrategyForFile(FileName);
             OpenDocuments.Add(Tools.FileNameToLower(FileName), edit);
-            //this.codeCompletionParserController.SetAsChanged(file_name);
+            //this.codeCompletionParserController.SetAsChanged(FileName);
             //ivan
             AddBreakPointHandler(edit, FileName);
             var RunService = WorkbenchServiceFactory.RunService;
@@ -483,7 +483,7 @@ namespace VisualPascalABC
                 AddEditorHandlers(edit);
             }
             WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + ".pas");
-            //edit.file_name = file_name;
+            //edit.FileName = FileName;
             //SetTabPageText(edit);
         }
 
@@ -573,7 +573,7 @@ namespace VisualPascalABC
 
         public void AddTextToOutputWindowSync(string fileName, string text)
         {
-            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), file_name, text);
+            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
             Invoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
         }
 

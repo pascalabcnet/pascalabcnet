@@ -104,16 +104,16 @@ namespace VisualPascalABC.Avalon
 
         public void UpdateFolding()
         {
-            CodeCompletionParserController.open_files[this.file_name] = true;
+            CodeCompletionParserController.open_files[this.FileName] = true;
         }
 
-        public void UpdateFolding(object parseInfo, string file_name)
+        public void UpdateFolding(object parseInfo, string fileName)
         {
             try
             {
-                if (EnableFolding && file_name == this.file_name)
+                if (EnableFolding && fileName == this.FileName)
                 {
-                    foldingManager.UpdateFoldings(file_name, parseInfo);
+                    foldingManager.UpdateFoldings(fileName, parseInfo);
                     refresh_Folding();
                 }
             }

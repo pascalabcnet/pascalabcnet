@@ -246,7 +246,7 @@ namespace VisualPascalABC
         
         public void SendText(string FileName, string Text)
         {
-            //messageServer.SendText(file_name, Text);
+            //messageServer.SendText(FileName, Text);
         }
 
         /*private void MessageQueueReceive_Callback(IAsyncResult ar)

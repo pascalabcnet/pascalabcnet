@@ -23,7 +23,7 @@ namespace VisualPascalABC
         {
             SourceLocation sl = null;
             /*if (lines_to_locations.TryGetValue(LineNum, out sl))
-                if (sl.file_name == file_name)
+                if (sl.FileName == FileName)
                 {
                     sl.BeginPosition.Column = sl.EndPosition.Column = ColumnNum;
                     locations.Remove(sl);

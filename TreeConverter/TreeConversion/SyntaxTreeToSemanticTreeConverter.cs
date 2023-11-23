@@ -82,8 +82,8 @@ namespace PascalABCCompiler.TreeConverter
 			//stv.comp_units=UsedUnits;
 			//stv.visit(SyntaxUnit
             //stv.interface_using_list = namespaces;
-            stv.using_list.Clear();
-            stv.interface_using_list.Clear();
+            stv.using_list.clear();
+            stv.interface_using_list.clear();
             stv.using_list.AddRange(namespaces);
             stv.current_document = new TreeRealization.document(SyntaxUnit.file_name);
             stv.ErrorsList = ErrorsList;
@@ -133,7 +133,7 @@ namespace PascalABCCompiler.TreeConverter
             stv.bad_nodes_in_syntax_tree = bad_nodes;
             stv.referenced_units = UsedUnits;
 
-            stv.using_list.Clear();
+            stv.using_list.clear();
             stv.using_list.AddRange(interface_namespaces);
             stv.interface_using_list.AddRange(interface_namespaces);
             stv.using_list.AddRange(imlementation_namespaces);

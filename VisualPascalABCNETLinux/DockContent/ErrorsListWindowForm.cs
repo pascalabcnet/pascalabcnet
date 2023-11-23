@@ -140,7 +140,7 @@ namespace VisualPascalABC
                             MainForm.ExecuteErrorPos(er.SourceLocation, 2);
                         else // ImageIndex==2 - ошибка выполнения
                             MainForm.ExecuteErrorPos(er.SourceLocation, 1);
-                        //OpenFile(er.SourceLocation.file_name);
+                        //OpenFile(er.SourceLocation.FileName);
                         //(tabControl1.SelectedTab.ag as CodeFileDocumentControl).TextEditor.CaretPosition(er.SourceLocation.BeginPosition.Line,er.SourceLocation.BeginPosition.Column);
                     }
             }

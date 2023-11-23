@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor;
 using System.Text.RegularExpressions;
-using System.Drawing.Imaging;
 
 namespace VisualPascalABC
 {
@@ -251,7 +250,7 @@ namespace VisualPascalABC
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
-                    if (ta.Caret.Column >= cur.Length && prev != null)
+                    if (ta.Caret.Column >= cur.Length)
                     {
                         var prevTrimEnd = prev.TrimEnd();
                         // если prev заканчивается на then, а cur не начинается с begin, то отступ назад

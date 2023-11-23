@@ -40,7 +40,7 @@ namespace VisualPascalABC
 
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            //ReplaceLastFile(CurrentSourceFileName, saveFileDialog1.file_name);
+            //ReplaceLastFile(CurrentSourceFileName, saveFileDialog1.FileName);
             string fn = Tools.FileNameToLower(saveFileDialog1.FileName);
             if (OpenDocuments.ContainsKey(fn) && OpenDocuments[fn] != CurrentCodeFileDocument)
             {
