@@ -388,7 +388,7 @@ namespace PascalABCCompiler
             sendCommand(ConsoleCompilerConstants.CompilerOptionsClearStandartModules);
             if (compilerOptions.Locale != null)
                 sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
-            foreach (PascalABCCompiler.CompilerOptions.StandartModule sm in compilerOptions.StandartModules)
+            foreach (PascalABCCompiler.CompilerOptions.StandardModule sm in compilerOptions.StandardModules)
                 sendCommand(
                     ConsoleCompilerConstants.CompilerOptionsStandartModule,
                     sm.Name,(int)sm.AddMethod,(int)sm.AddToLanguages);

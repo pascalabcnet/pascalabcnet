@@ -156,7 +156,7 @@ namespace VisualPascalABC
         {
             ITextEditorControlProvider tecp = viewContent as ITextEditorControlProvider;
             if (tecp != null)
-                SetPosition(tecp.TextEditorControl.FileName, tecp.TextEditorControl.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
+                SetPosition(tecp.TextEditorControl.file_name, tecp.TextEditorControl.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
             else
                 Remove();
         }*/
@@ -269,7 +269,7 @@ namespace VisualPascalABC
         static int endLine;
         static int endColumn;
         
-        //public static void SetPosition(string fileName, IDocument document, int makerStartLine, int makerEndLine)
+        //public static void SetPosition(string file_name, IDocument document, int makerStartLine, int makerEndLine)
         public static void SetPosition(TextEditorControl ctrl, int makerStartLine)
         {
             try
@@ -342,7 +342,7 @@ namespace VisualPascalABC
         static int endLine;
         static int endColumn;
         
-        //public static void SetPosition(string fileName, IDocument document, int makerStartLine, int makerEndLine)
+        //public static void SetPosition(string file_name, IDocument document, int makerStartLine, int makerEndLine)
         public static void SetPosition(TextEditorControl ctrl, int makerStartLine)
         {
             try
@@ -426,7 +426,7 @@ namespace VisualPascalABC
         {
             ITextEditorControlProvider tecp = viewContent as ITextEditorControlProvider;
             if (tecp != null)
-                SetPosition(tecp.TextEditorControl.FileName, tecp.TextEditorControl.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
+                SetPosition(tecp.TextEditorControl.file_name, tecp.TextEditorControl.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
             else
                 Remove();
         }*/

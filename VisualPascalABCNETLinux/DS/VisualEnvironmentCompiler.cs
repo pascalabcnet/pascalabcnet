@@ -250,7 +250,7 @@ namespace VisualPascalABC
                         return ed.Document.TextContent;
                     if (!File.Exists(FileName))
                         return null;
-                    /*TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
+                    /*TextReader tr = new StreamReader(file_name, System.Text.Encoding.GetEncoding(1251));
                     string Text = tr.ReadToEnd();
                     tr.Close();*/
                     string Text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);

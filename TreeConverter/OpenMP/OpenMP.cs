@@ -943,10 +943,10 @@ namespace PascalABCCompiler.TreeConverter
                 VarFinderSyntaxVisitor VFvis = new VarFinderSyntaxVisitor(syntax_body, syntax_tree_visitor.context, true);
                 SyntaxTree.compiler_directive dir = syntax_tree_visitor.DirectivesToNodesLinks[for_node];
                 //if (DirInfosTable[dir].ErrorName == "WARNING_IN_CLAUSE_PARAMETERS_REPEATED_VARS")
-                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                 //else if (DirInfosTable[dir].ErrorName == "ERROR_IN_CLAUSE_PARAMETERS")
                 //{
-                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                 //}
                 //else
                
@@ -1057,10 +1057,10 @@ namespace PascalABCCompiler.TreeConverter
                     SyntaxTree.compiler_directive dir = syntax_tree_visitor.DirectivesToNodesLinks[syntax_stmts];
                     
                     //if (DirInfosTable[dir].ErrorName == "WARNING_IN_CLAUSE_PARAMETERS_REPEATED_VARS")
-                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                     //else if (DirInfosTable[dir].ErrorName == "ERROR_IN_CLAUSE_PARAMETERS")
                     //{
-                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                     //}
                     //else
                     if (DirInfosTable[dir].ErrorName != null)

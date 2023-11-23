@@ -190,7 +190,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             Errors.Clear();
             Warnings.Clear();
             /*string[] file_names = new string[1];
-            file_names[0] = FileName;
+            file_names[0] = file_name;
 
             preprocessor2.Build(file_names, Errors, null);*/
 

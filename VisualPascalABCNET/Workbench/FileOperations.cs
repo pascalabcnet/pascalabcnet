@@ -150,7 +150,7 @@ namespace VisualPascalABC
                 visualStates.FileOpened = true;//?????
                 if (!IsNewFile && !File.Exists(FileName))
                 {
-                    //MessageBox.Show(string.Format(PascalABCCompiler.StringResources.Get("!FILE_NOT_FOUND{0}"), FileName), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //MessageBox.Show(string.Format(PascalABCCompiler.StringResources.Get("!FILE_NOT_FOUND{0}"), file_name), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     bool exists = false;
                     foreach (string s in search_debug_paths)
                     {
@@ -189,7 +189,7 @@ namespace VisualPascalABC
                 else
                     if (!IsNewFile)
                     {
-                        //CheckErrorListAndClear((tabControl1.TabPages[TabIndex].ag as CodeFileDocumentControl).FileName);
+                        //CheckErrorListAndClear((tabControl1.TabPages[TabIndex].ag as CodeFileDocumentControl).file_name);
                         CurrentCodeFileDocument.FileName = FileName;
                         if (!ProjectFactory.Instance.ProjectLoaded)
                             SetTabPageText(CurrentCodeFileDocument);

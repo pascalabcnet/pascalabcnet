@@ -576,7 +576,7 @@ namespace PascalABCCompiler.TreeConverter
             _compiled_unit = null;
             _referenced_units = null;
             current_document = null;
-            using_list.clear();
+            using_list.Clear();
             //_referenced_units.clear();
             ret.reset();
             motivation_keeper.reset();
@@ -1481,7 +1481,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                     	if (cmn.cont_type.IsAbstract)
                                             AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name);
-                                    	ret.clear();
+                                    	ret.Clear();
                                         ret.AddElement(new common_constructor_call(cmn, loc));
                                         return ret;
                                     }
@@ -8869,7 +8869,7 @@ namespace PascalABCCompiler.TreeConverter
                     check_on_loop_variable(en);
                     //if (en.type == null)
                     //throw new CanNotRead(en.location);
-                    exl.clear();
+                    exl.Clear();
                     if (read_from_file)
                         exl.AddElement(file);
                     if (read_from_typed_file)
@@ -8983,7 +8983,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (last_call != null && convertion_data_and_alghoritms.statement_list_stack.size > 0)
                         convertion_data_and_alghoritms.statement_list_stack.top().statements.AddElement(last_call);
-                    exl.clear();
+                    exl.Clear();
 
                     if (read_from_file)
                         exl.AddElement(file);
@@ -11796,7 +11796,7 @@ namespace PascalABCCompiler.TreeConverter
                 parameter_list temp_params = new parameter_list();
                 foreach (SyntaxTree.typed_parameters tpars in syn_parametres.params_list)
                 {
-                    temp_params.clear();
+                    temp_params.Clear();
                     SemanticTree.parameter_type pt = SemanticTree.parameter_type.value;
                     concrete_parameter_type cpt = concrete_parameter_type.cpt_none;
                     switch (tpars.param_kind)
@@ -19053,7 +19053,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 current_using_list.AddElement(un);
             }
-            using_list.clear();
+            using_list.Clear();
             foreach (using_namespace un in tc.using_list)
             {
                 using_list.AddElement(un);
@@ -19149,7 +19149,7 @@ namespace PascalABCCompiler.TreeConverter
                             context.converted_namespace = pdi.nspace;
                             using_namespace_list ulist =
                                 (pdi.nspace == tc.cnn) ? tc.using_list : tc.using_list2;
-                            using_list.clear();
+                            using_list.Clear();
                             foreach (using_namespace un in ulist)
                             {
                                 using_list.AddElement(un);
@@ -19198,7 +19198,7 @@ namespace PascalABCCompiler.TreeConverter
             type_section_converting = current_type_section_converting;
             context.member_decls = current_member_decls;
             context.var_defs = current_var_defs;
-            using_list.clear();
+            using_list.Clear();
             foreach (using_namespace un in current_using_list)
             {
                 using_list.AddElement(un);

@@ -493,7 +493,7 @@ namespace Mono.Debugging.Soft
 
 				var parameters = eval.GetParameters (ctx);
 				var startInfo = parameters.First();
-				var exe = (string) startInfo.GetChild ("FileName", evalOptions).GetRawValue (evalOptions);
+				var exe = (string) startInfo.GetChild ("file_name", evalOptions).GetRawValue (evalOptions);
 
 				// The process being launched is a mono process if the target file is a .exe or .dll, or if the launcher is mono.
 

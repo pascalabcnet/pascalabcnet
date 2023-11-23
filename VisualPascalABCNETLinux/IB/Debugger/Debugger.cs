@@ -362,7 +362,7 @@ namespace VisualPascalABC
         }
 
         /// <summary>
-        /// Добавить Breakpoint в файл fileName строку line
+        /// Добавить Breakpoint в файл file_name строку line
         /// </summary>
         public Mono.Debugging.Client.Breakpoint AddBreakPoint(string fileName, int line, bool commonBreakpoint)
         {
@@ -387,7 +387,7 @@ namespace VisualPascalABC
         }
 		
         /// <summary>
-        /// Получить список Breakpointov в файле fileName
+        /// Получить список Breakpointov в файле file_name
         /// </summary>
         public List<Mono.Debugging.Client.Breakpoint> GetBreakpointsInFile(string fileName)
         {
@@ -432,11 +432,11 @@ namespace VisualPascalABC
             dbg.ProcessExited += debugProcessExit;
             dbg.BreakpointHit += debugBreakpointHit;
             //if (brPoint != null) dbg.RemoveBreakpoint(brPoint);
-            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(file_name) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             this.PrevFullFileName = FullFileName;
-            //if (need_first_brpt) brPoint = dbg.AddBreakpoint(FileName, workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
+            //if (need_first_brpt) brPoint = dbg.AddBreakpoint(file_name, workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
             AssemblyHelper.LoadAssembly(fileName);
             debuggedProcess = dbg.Start(fileName, workingDirectory, arguments);
             SelectProcess(debuggedProcess);
@@ -484,7 +484,7 @@ namespace VisualPascalABC
         	    sourceFileName = workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName;
         	else
         	    sourceFileName = ProjectFactory.Instance.CurrentProject.MainFile;
-        	this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+        	this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(file_name) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
@@ -508,7 +508,7 @@ namespace VisualPascalABC
                 sourceFileName = workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName;
             else
                 sourceFileName = ProjectFactory.Instance.CurrentProject.MainFile;
-            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(file_name) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
@@ -519,7 +519,7 @@ namespace VisualPascalABC
             Mono.Debugging.Client.DebuggerSessionOptions dso = new Mono.Debugging.Client.DebuggerSessionOptions();
             dso.EvaluationOptions = Mono.Debugging.Client.EvaluationOptions.DefaultOptions.Clone();
             
-            //monoDebuggerSession.AttachToProcess(new Mono.Debugging.Client.ProcessInfo(handle, fileName), dso);
+            //monoDebuggerSession.AttachToProcess(new Mono.Debugging.Client.ProcessInfo(handle, file_name), dso);
             Mono.Debugging.Soft.SoftDebuggerStartInfo dsi = new Mono.Debugging.Soft.SoftDebuggerStartInfo("", new Dictionary<string, string>());
             dsi.Command = fileName;
             dsi.Arguments = args;
@@ -552,7 +552,7 @@ namespace VisualPascalABC
                 workbench.ServiceContainer.EditorService.SetEditorDisabled(true);
                 TooltipServiceManager.hideToolTip();
                 IsRunning = true;
-                //evaluator = new ExpressionEvaluator(e.Process, workbench.VisualEnvironmentCompiler, FileName);
+                //evaluator = new ExpressionEvaluator(e.Process, workbench.VisualEnvironmentCompiler, file_name);
                 var process = (Mono.Debugger.Soft.VirtualMachineManager.currentProcess as Mono.Debugger.Soft.ProcessWrapper).Process;
                 process.Exited += Process_Exited;
                 return (Mono.Debugger.Soft.VirtualMachineManager.currentProcess as Mono.Debugger.Soft.ProcessWrapper).Process;
@@ -741,7 +741,7 @@ namespace VisualPascalABC
         
         public void SetFirstBreakpoint(string fileName, int line)
         {
-            //brPoint = dbg.AddBreakpoint(fileName, line);
+            //brPoint = dbg.AddBreakpoint(file_name, line);
             brPoint = new Mono.Debugging.Client.Breakpoint(fileName, line, 1);
             monoDebuggerSession.Breakpoints.Add(brPoint);
         }
@@ -1199,7 +1199,7 @@ namespace VisualPascalABC
                         }
                     }
                 }
-                //CurrentLineBookmark.SetPosition(stackFrame.SourceLocation.FileName, curPage.TextEditor.Document, stackFrame.SourceLocation.Line, 1, stackFrame.SourceLocation.Line,
+                //CurrentLineBookmark.SetPosition(stackFrame.SourceLocation.file_name, curPage.TextEditor.Document, stackFrame.SourceLocation.Line, 1, stackFrame.SourceLocation.Line,
                 //   len);
 
                 curPage.TextEditor.ActiveTextAreaControl.Invoke(new JumpToLineDelegate(JumpToLineInvoke), stackFrame.SourceLocation.Line - 1);
@@ -2178,7 +2178,7 @@ namespace VisualPascalABC
         {
             try
             {
-                //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).FileName,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
+                //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).file_name,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
                   //  (frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column+100), true);
                 workbench.WidgetController.SetStartDebugDisabled();
                 currentBreakpoint = monoDebuggerSession.Breakpoints.Add(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);

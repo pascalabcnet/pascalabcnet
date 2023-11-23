@@ -206,7 +206,7 @@ namespace VisualPascalABCPlugins
             string FileText = (string)VisualEnvironmentCompiler.Compiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
             List<Error> Errors=new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
-            //PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.Compiler.ParsersController.Compile(FileName, FileText, Errors, PascalABCCompiler.ParserTools.ParseMode.Expression);
+            //PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.Compiler.ParsersController.Compile(file_name, FileText, Errors, PascalABCCompiler.ParserTools.ParseMode.Expression);
             PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression(FileName, FileText, Errors, Warnings);
             if (Errors.Count > 0)
                 StatusLabel.Text = Errors.Count + " errors";

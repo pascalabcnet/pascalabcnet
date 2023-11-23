@@ -75,7 +75,7 @@ namespace Mono.Debugging.Soft
 		{
 			// Get the exe and arguments from the start info and store them
 			this.arguments = (string)startInfo.GetChild ("Arguments", ops).GetRawValue (ops);
-			this.exe = (string)startInfo.GetChild ("FileName", ops).GetRawValue (ops);
+			this.exe = (string)startInfo.GetChild ("file_name", ops).GetRawValue (ops);
 
 			// Create the new session and custom start arguments.
 			// The actual arguments don't matter much since we'll use a custom launcher for the process.
@@ -124,7 +124,7 @@ namespace Mono.Debugging.Soft
 				startInfo.GetChild ("Arguments", ops).SetRawValue (debuggerArgs + " " + arguments, ops);
 			} else {
 				startInfo.GetChild ("Arguments", ops).SetRawValue (debuggerStartInfo.Arguments, ops);
-				startInfo.GetChild ("FileName", ops).SetRawValue (debuggerStartInfo.FileName, ops);
+				startInfo.GetChild ("file_name", ops).SetRawValue (debuggerStartInfo.FileName, ops);
 			}
 			return true;
 		}
@@ -165,7 +165,7 @@ namespace Mono.Debugging.Soft
 
 			// Assign the original exe and arguments to the start info object
 			startInfo.GetChild ("Arguments", ctx.Options).SetRawValue (arguments, ctx.Options);
-			startInfo.GetChild ("FileName", ctx.Options).SetRawValue (exe, ctx.Options);
+			startInfo.GetChild ("file_name", ctx.Options).SetRawValue (exe, ctx.Options);
 
 			// Signal TargetProcessLauncher that the process has started and the process ID is available.
 			startedEvent.Set ();
