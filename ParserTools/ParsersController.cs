@@ -4,7 +4,8 @@ using System;
 using System.IO;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -45,6 +46,8 @@ namespace PascalABCCompiler.Parsers
             	//	continue;
                 if (Path.GetFileName(fi.FullName) == "VBNETParser.dll" || Path.GetFileName(fi.FullName) == "PascalABCPartParser.dll")
                     continue;
+                //if (Path.GetFileName(fi.FullName) == "VeryBasicParser.dll")
+                //    continue;
             	asssembly = System.Reflection.Assembly.LoadFile(fi.FullName);
                 try
                 {
@@ -142,6 +145,7 @@ namespace PascalABCCompiler.Parsers
                 return null;
             if (cu is SyntaxTree.compilation_unit)
                 return cu as SyntaxTree.compilation_unit;
+
             Errors.Add(new Errors.UnexpectedNodeType(FileName, cu.source_context,null));
             return null;
             //throw new Errors.CompilerInternalError("Parsers.Controller.GetComilationUnit", new Exception("bad node type"));

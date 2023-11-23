@@ -1,0 +1,120 @@
+
+// ==========================================================================
+//  GPLEX error listing for lex source file <LexerABC.lex>
+// ==========================================================================
+//  Version:  1.1.3.301
+//  Machine:  LAPTOP-MPBGOA9N
+//  DateTime: 01.11.2023 16:12:29
+//  UserName: krylo
+// ==========================================================================
+
+
+%using PascalABCCompiler.VeryBasicParser;
+%using QUT.Gppg;
+%using System.Linq;
+
+%namespace Lexer
+
+Alpha 	[a-zA-Z_]
+Digit   [0-9]
+AlphaDigit {Alpha}|{Digit}
+INTNUM  {Digit}+
+REALNUM {INTNUM}\.{INTNUM}
+ID {Alpha}{AlphaDigit}*
+
+{
+// Error: Illegal character in this context
+// ----------------------------------------
+  public VeryBasicParserTools parsertools;
+  LexLocation currentLexLocation;
+}
+// Error: Illegal character in this context
+// ----------------------------------------
+
+%%
+
+{INTNUM} {
+  currentLexLocation = CurrentLexLocation;
+  yylval.ex = parsertools.create_int_const(yytext,currentLexLocation);
+  return (int)Tokens.tkInteger;
+}
+
+{REALNUM} {
+  currentLexLocation = CurrentLexLocation;
+  yylval.ex = parsertools.create_double_const(yytext,currentLexLocation);
+  return (int)Tokens.tkInteger;
+}
+
+{ID}  {
+  int res = ScannerHelper.GetIDToken(yytext);
+  yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
+  return res;
+}
+
+"+"  { yylval.sVal = yytext; return (int)Tokens.PLUS; }
+"-"  { yylval.sVal = yytext; return (int)Tokens.MINUS; }
+"*"  { yylval.sVal = yytext; return (int)Tokens.MULTIPLY; }
+"/"  { yylval.sVal = yytext; return (int)Tokens.DIVIDE; }
+"<"  { yylval.sVal = yytext; return (int)Tokens.LOWER; }
+">"  { yylval.sVal = yytext; return (int)Tokens.GREATER; }
+
+"{"  { return (int)Tokens.LBRACE; }
+"}"  { return (int)Tokens.RBRACE; }
+"["  { return (int)Tokens.LBRACKET; }
+"]"  { return (int)Tokens.RBRACKET; }
+
+"."  { return (int)Tokens.DOT; }
+","  { return (int)Tokens.COMMA; }
+";"  { return (int)Tokens.SEMICOLON; }
+"("  { return (int)Tokens.LPAR; }
+")"  { return (int)Tokens.RPAR; }
+"="  { return (int)Tokens.ASSIGN; }
+
+
+[^ \r\n] {
+	LexError();
+	return (int)Tokens.EOF;
+}
+
+%{
+  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol); // ������� ������� (������������� ��� ���������������), ������������ @1 @2 � �.�.
+%}
+
+%%
+
+public override void yyerror(string format, params object[] args) // ��������� �������������� ������
+{
+  var ww = args.Skip(1).Cast<string>().ToArray();
+  string errorMsg = string.Format("({0},{1}): Met {2}, expected {3}", yyline, yycol, args[0], string.Join(" ��� ", ww));
+  throw new LexException(errorMsg);
+}
+
+public void LexError()
+{
+	string errorMsg = string.Format("({0},{1}): Unknown symbol {2}", yyline, yycol, yytext);
+    throw new SyntaxException(errorMsg);
+}
+
+class ScannerHelper
+{
+  private static Dictionary<string,int> keywords;
+
+  static ScannerHelper()
+  {
+    keywords = new Dictionary<string,int>();
+    keywords.Add("for",(int)Tokens.FOR);
+    keywords.Add("in",(int)Tokens.IN);
+    keywords.Add("while",(int)Tokens.WHILE);
+    keywords.Add("if",(int)Tokens.IF);
+    keywords.Add("else",(int)Tokens.ELSE);
+  }
+  public static int GetIDToken(string s)
+  {
+    if (keywords.ContainsKey(s.ToLower())) // ���� �������������� � ��������
+      return keywords[s];
+    else
+      return (int)Tokens.ID;
+  }
+}
+// ==========================================================================
+

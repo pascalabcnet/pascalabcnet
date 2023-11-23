@@ -3960,6 +3960,14 @@ namespace PascalABCCompiler
                 if (firstCompilationUnit == null)
                     firstCompilationUnit = currentUnit;
 
+                // Если файл .vbp то надо заменить исходный файл на другой с предварительной обработкой
+                if (Path.GetExtension(UnitFileName) == ".yavb")
+                {
+                    IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
+                    ia.ArrangeIndents();
+                    UnitFileName = ia.CreatedFilePath;
+                }
+
                 OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName); // начало компиляции модуля
 
                 #region SYNTAX TREE CONSTRUCTING
