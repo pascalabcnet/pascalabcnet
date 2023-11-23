@@ -957,12 +957,13 @@ namespace PascalABCCompiler
         public CodeGenerators.Controller CodeGeneratorsController = null;
         //public LLVMConverter.Controller LLVMCodeGeneratorsController = null;
         //public PascalToCppConverter.Controller PABCToCppCodeGeneratorsController = null;
-        //public SyntaxTree.unit_or_namespace syntaxTree;
-        
+        public SyntaxTree.unit_or_namespace currentUnitSyntaxTree;
+        public SyntaxTree.unit_or_namespace CurrentSyntaxUnit;
+
         /// <summary>
         /// список отложенной компиляции реализации (она будет откомпилирована в Compile, а не в СompileUnit)
         /// </summary>
-		private List<CompilationUnit> UnitsToCompileDelayedList = new List<CompilationUnit>();
+        private List<CompilationUnit> UnitsToCompileDelayedList = new List<CompilationUnit>();
         public Hashtable RecompileList = new Hashtable(StringComparer.OrdinalIgnoreCase);
         private Hashtable CycleUnits = new Hashtable();
         public CompilationUnit currentCompilationUnit = null;
@@ -1203,13 +1204,13 @@ namespace PascalABCCompiler
         /// <summary>
         /// преобразует в директивы семантического уровня
         /// </summary>
-        private List<compiler_directive> ConvertDirectives(SyntaxTree.compilation_unit syntaxTree)
+        private List<compiler_directive> ConvertDirectives(SyntaxTree.compilation_unit compilationUnit)
         {
             List<compiler_directive> list = new List<compiler_directive>();
-            foreach (SyntaxTree.compiler_directive directive in syntaxTree.compiler_directives)
+            foreach (SyntaxTree.compiler_directive directive in compilationUnit.compiler_directives)
             {
                 list.Add(new compiler_directive(directive.Name.text, directive.Directive != null ? directive.Directive.text : "", 
-                    get_location_from_treenode(directive, syntaxTree.file_name), syntaxTree.file_name));
+                    get_location_from_treenode(directive, compilationUnit.file_name), compilationUnit.file_name));
             }
             return list;
         }
@@ -1913,7 +1914,7 @@ namespace PascalABCCompiler
 
                     CurrentUnit.State = UnitState.Compiled; // отметка о скомпилированности
                     OnChangeCompilerState(this, CompilerState.EndCompileFile, unitFileName); // состояние конец компиляции
-                    //SavePCU(syntaxTree, unitFileName);
+                    //SavePCU(compilationUnit, unitFileName);
                     CurrentUnit.UnitFileName = unitFileName;
                 }
             }  
@@ -2651,11 +2652,11 @@ namespace PascalABCCompiler
         /// <summary>
         /// Возвращает список зависимостей из интерфейсной части модуля (или основной программы)
         /// </summary>
-        public List<SyntaxTree.unit_or_namespace> GetInterfaceUsesSection(SyntaxTree.compilation_unit syntaxTree)
+        public List<SyntaxTree.unit_or_namespace> GetInterfaceUsesSection(SyntaxTree.compilation_unit compilationUnit)
         {
             List<SyntaxTree.unit_or_namespace> usesList = null;
 
-            if (syntaxTree is SyntaxTree.unit_module unitModule)
+            if (compilationUnit is SyntaxTree.unit_module unitModule)
             {
                 if (unitModule.interface_part.uses_modules == null)
                 {
@@ -2669,7 +2670,7 @@ namespace PascalABCCompiler
 
                 usesList = unitModule.interface_part.uses_modules.units;
             }
-            else if (syntaxTree is SyntaxTree.program_module programModule)
+            else if (compilationUnit is SyntaxTree.program_module programModule)
             {
                 if (programModule.used_units == null)
                 {
@@ -3235,12 +3236,12 @@ namespace PascalABCCompiler
             }
         }
 
-        private void SemanticCheckIsPascalNamespace(string file, SyntaxTree.compilation_unit syntaxTree)
+        private void SemanticCheckIsPascalNamespace(string file, SyntaxTree.compilation_unit currentUnit)
         {
-            if (!(syntaxTree is SyntaxTree.unit_module))
-                throw new NamespaceModuleExpected(syntaxTree.source_context);
+            if (!(currentUnit is SyntaxTree.unit_module))
+                throw new NamespaceModuleExpected(currentUnit.source_context);
             
-            SyntaxTree.unit_module unitModule = syntaxTree as SyntaxTree.unit_module;
+            SyntaxTree.unit_module unitModule = currentUnit as SyntaxTree.unit_module;
             
             if (unitModule.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Namespace)
                 throw new NamespaceModuleExpected(unitModule.unit_name.source_context);
@@ -3686,31 +3687,31 @@ namespace PascalABCCompiler
             
             OnChangeCompilerState(this, CompilerState.EndCompileFile, unitFileName);
 
-            //SavePCU(syntaxTree, unitFileName);
+            //SavePCU(currentUnit, unitFileName);
             currentUnit.UnitFileName = unitFileName;
             
             return currentUnit;
 
 
-            /*if(syntaxTree.State!=UnitState.Compiled)
+            /*if(currentUnit.State!=UnitState.Compiled)
             { 
                 //Console.WriteLine("Compile Interface "+unitFileName);//DEBUG
-                syntaxTree.SemanticTree=SyntaxTreeToSemanticTreeConverter.CompileInterface(syntaxTree.SyntaxTree,
-                    syntaxTree.InterfaceUsedUnits,syntaxTree.syntax_error);
-                syntaxTree.State=UnitState.InterfaceCompiled;
-                implementationUsesList=GetSemanticImplementationUsesList(syntaxTree.SyntaxTree);
+                currentUnit.SemanticTree=SyntaxTreeToSemanticTreeConverter.CompileInterface(currentUnit.SyntaxTree,
+                    currentUnit.InterfaceUsedUnits,currentUnit.syntax_error);
+                currentUnit.State=UnitState.InterfaceCompiled;
+                implementationUsesList=GetSemanticImplementationUsesList(currentUnit.SyntaxTree);
                 if(implementationUsesList!=null)
                     for(int i=implementationUsesList.Count-1;i>=0;i--)
-                        CompileUnit(syntaxTree.ImplementationUsedUnits,implementationUsesList[i]);        
+                        CompileUnit(currentUnit.ImplementationUsedUnits,implementationUsesList[i]);        
                 //Console.WriteLine("Compile Implementation "+unitFileName);//DEBUG
-                if (syntaxTree.SyntaxTree is SyntaxTree.unit_module)
+                if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
                 {
-                    SyntaxTreeToSemanticTreeConverter.CompileImplementation(syntaxTree.SemanticTree,
-                        syntaxTree.SyntaxTree,syntaxTree.ImplementationUsedUnits,syntaxTree.syntax_error);
+                    SyntaxTreeToSemanticTreeConverter.CompileImplementation(currentUnit.SemanticTree,
+                        currentUnit.SyntaxTree,currentUnit.ImplementationUsedUnits,currentUnit.syntax_error);
                 }
-                syntaxTree.State=UnitState.Compiled;
-                unitsFromUsesSection.Add(syntaxTree.SemanticTree);
-                SaveSemanticTreeToFile(syntaxTree,unitFileName);
+                currentUnit.State=UnitState.Compiled;
+                unitsFromUsesSection.Add(currentUnit.SemanticTree);
+                SaveSemanticTreeToFile(currentUnit,unitFileName);
             }*/
         }
 
@@ -4035,7 +4036,7 @@ namespace PascalABCCompiler
             }
         }
 
-        // Синтактико-семантическая ошибка - проверка, что syntaxTree является модулем,
+        // Синтактико-семантическая ошибка - проверка, что compilationUnit является модулем,
         // а не основной программой и не dll EVA
         private void SemanticCheckCurrentUnitMustBePascalUnit(string UnitFileName, CompilationUnit currentUnit, bool isDll)
         {
@@ -4354,7 +4355,7 @@ namespace PascalABCCompiler
 
             }
         }
-        /*                            TreeRealization.common_unit_node cun11 = syntaxTree.SemanticTree as TreeRealization.common_unit_node;
+        /*                            TreeRealization.common_unit_node cun11 = currentUnit.SemanticTree as TreeRealization.common_unit_node;
                             if (cun11 != null)
                                 UnitsLogicallySortedList.AddElement(cun11);*/
 
@@ -4526,8 +4527,8 @@ namespace PascalABCCompiler
         /*public CompilationUnit RecompileUnit(string unit_name)
         {
             Console.WriteLine("recompile {0}", unit_name);
-            syntaxTree = new SyntaxTree.uses_unit_in(new SyntaxTree.string_const(program_folder + "\\" + unit_name+".pas"));
-            CompileUnit(unitsFromUsesSection, syntaxTree);
+            currentUnit = new SyntaxTree.uses_unit_in(new SyntaxTree.string_const(program_folder + "\\" + unit_name+".pas"));
+            CompileUnit(unitsFromUsesSection, compilationUnit);
             CompilationUnit compilationUnit = new CompilationUnit();
             if (unitsFromUsesSection.Count != 0)
                 compilationUnit.SemanticTree = unitsFromUsesSection[unitsFromUsesSection.Count - 1];
