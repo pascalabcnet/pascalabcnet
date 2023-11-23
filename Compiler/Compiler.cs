@@ -1882,7 +1882,7 @@ namespace PascalABCCompiler
                     new Dictionary<unit_node, CompilationUnit>(),
                     CurrentSyntaxUnit, null);
                 
-                //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  //////
+                //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  ////
                 foreach (CompilationUnit CurrentUnit in UnitsToCompile)
                     if (CurrentUnit.State != UnitState.Compiled)
                     {
