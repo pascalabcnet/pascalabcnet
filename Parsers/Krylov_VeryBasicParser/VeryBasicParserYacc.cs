@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-56159VE
-// DateTime: 21.11.2023 9:25:18
-// UserName: ????
+// Machine:  LAPTOP-MPBGOA9N
+// DateTime: 25.11.2023 18:44:46
+// UserName: krylo
 // Input file <ParserABC.y>
 
 // options: no-lines gplex
