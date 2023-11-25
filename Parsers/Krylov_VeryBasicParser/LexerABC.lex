@@ -1,11 +1,11 @@
-%using PascalABCCompiler.VeryBasicParser;
+%using VeryBasicParser;
 %using QUT.Gppg;
 %using PascalABCCompiler.SyntaxTree;
 %using PascalABCCompiler.ParserTools;
 %using VeryBasicParserYacc;
 %using VeryBasicParser;
 
-%namespace PascalABCCompiler.VeryBasicParser
+%namespace VeryBasicParser
 
 Alpha 	[a-zA-Z_]
 Digit   [0-9]

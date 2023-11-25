@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using VeryBasicParserYacc;
 
-namespace PascalABCCompiler.VeryBasicParser
+namespace VeryBasicParser
 {
     // Статический класс, определяющий ключевые слова языка
     public static class Keywords

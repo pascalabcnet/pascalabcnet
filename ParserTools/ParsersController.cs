@@ -6,6 +6,7 @@ using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -46,8 +47,8 @@ namespace PascalABCCompiler.Parsers
             	//	continue;
                 if (Path.GetFileName(fi.FullName) == "VBNETParser.dll" || Path.GetFileName(fi.FullName) == "PascalABCPartParser.dll")
                     continue;
-                //if (Path.GetFileName(fi.FullName) == "VeryBasicParser.dll")
-                //    continue;
+                //if (Path.GetFileName(fi.FullName) == "VeryBasicLanguageParser.dll")
+                //    Console.WriteLine("VeryBasic is loading!");
             	asssembly = System.Reflection.Assembly.LoadFile(fi.FullName);
                 try
                 {
@@ -72,6 +73,11 @@ namespace PascalABCCompiler.Parsers
                         }
                     }
                 }
+                /*catch (System.Reflection.ReflectionTypeLoadException e)
+                {
+                    var exc = e.LoaderExceptions.ToList();
+                    var coll = e.Types.Where(t => t != null).ToList();
+                }*/
                 catch (Exception e)
                 {
                     Console.Error.WriteLine("Parser {0} loading error {1}", Path.GetFileName(fi.FullName),e);

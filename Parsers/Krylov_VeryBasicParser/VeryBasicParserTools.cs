@@ -7,11 +7,11 @@ using QUT.Gppg;
 
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
-using PascalABCCompiler.UniversalParserHelper;
+using UniversalParserHelper;
 
 namespace VeryBasicParser
 {
-    public class VeryBasicParserTools: UniversalParserHelper
+    public class VeryBasicParserTools: UniversalParserHelper.UniversalParserHelper
     {
     }
 }

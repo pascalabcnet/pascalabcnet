@@ -9,7 +9,7 @@ using QUT.Gppg;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
 
-namespace PascalABCCompiler.UniversalParserHelper
+namespace UniversalParserHelper
 {
     public abstract class UniversalParserHelper
     {

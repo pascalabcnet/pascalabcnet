@@ -8,20 +8,21 @@ using PascalABCCompiler.Parsers;
 using PascalABCCompiler.ParserTools;
 using VeryBasicParser;
 using VeryBasicParserYacc;
+using PascalABCCompiler.Errors;
 
 
 
-namespace PascalABCCompiler.VeryBasicParser
+namespace VeryBasicParser
 {
     public class VeryBasicGPPGParserHelper
     {
-        private List<Errors.Error> Errs;
-        private List<Errors.CompilerWarning> Warnings;
+        private List<Error> Errs;
+        private List<CompilerWarning> Warnings;
         private string FileName;
         public bool build_tree_for_formatter = false;
         public List<string> DefinesList = null;
 
-        public VeryBasicGPPGParserHelper(List<Errors.Error> Errs, List<Errors.CompilerWarning> Warnings, string FileName)
+        public VeryBasicGPPGParserHelper(List<Error> Errs, List<CompilerWarning> Warnings, string FileName)
         {
             this.Errs = Errs;
             this.Warnings = Warnings;
@@ -65,7 +66,7 @@ namespace PascalABCCompiler.VeryBasicParser
             return parser.root;
         }
     }
-    internal class VeryBasicLanguageParser: BaseParser, IParser
+    public class VeryBasicLanguageParser: BaseParser, IParser
     {
         private VeryBasicGPPGParserHelper localparserhelper;
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
@@ -81,7 +82,7 @@ namespace PascalABCCompiler.VeryBasicParser
             Errors.Clear();
         }
 
-        public override SourceFilesProviderDelegate SourceFilesProvider
+        public override PascalABCCompiler.SourceFilesProviderDelegate SourceFilesProvider
         {
             get
             {
