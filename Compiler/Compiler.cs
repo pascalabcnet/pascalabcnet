@@ -2207,7 +2207,7 @@ namespace PascalABCCompiler
                 // Закрытие чтения и записи .pcu файлов
                 ClosePCUReadersAndWriters();
 
-                PrebuildMainSemanticTreeActions(out var compilerOptions);
+                PrebuildMainSemanticTreeActions(out var compilerOptions, out var resourceFiles);
 
                 #region GENERATING CODE STAGE
                 if (ErrorsList.Count == 0)
@@ -2221,14 +2221,13 @@ namespace PascalABCCompiler
                         // если мы комилируем PCU
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                     }
-
                     // генерация IL кода
                     else if (CompilerOptions.GenerateCode)
                     {
                         if (CompilerOptions.UseDllForSystemUnits)
                             compilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
 
-                        GenerateILCode(semanticTree, compilerOptions);
+                        GenerateILCode(semanticTree, compilerOptions, resourceFiles);
                     }
                 }
                 #endregion
@@ -2288,7 +2287,7 @@ namespace PascalABCCompiler
             else return CompilerOptions.OutputFileName;
         }
 
-        private void PrebuildMainSemanticTreeActions(out NETGenerator.CompilerOptions compilerOptions)
+        private void PrebuildMainSemanticTreeActions(out NETGenerator.CompilerOptions compilerOptions, out List<string> resourceFiles)
         {
             if (CompilerOptions.SaveDocumentation)
             {
@@ -2324,6 +2323,8 @@ namespace PascalABCCompiler
 
             // Устанавливает опции компилятора, связанные с типом выходного файла
             SetTargetTypeOption(compilerOptions);
+
+            resourceFiles = GetResourceFilesFromCompilerDirectives();
         }
 
         private program_node ConstructMainSemanticTree(NETGenerator.CompilerOptions compilerOptions)
@@ -2477,7 +2478,7 @@ namespace PascalABCCompiler
             return anyExternalErrors;
         }
 
-        private void GenerateILCode(program_node programNode, NETGenerator.CompilerOptions compilerOptions)
+        private void GenerateILCode(program_node programNode, NETGenerator.CompilerOptions compilerOptions, List<string> resourceFiles)
         {
 
             if (CompilerOptions.OutputFileType != CompilerOptions.OutputType.SemanticTree)
@@ -2493,7 +2494,7 @@ namespace PascalABCCompiler
                     // трансляция в IL-код | В semanticTree находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
                     CodeGeneratorsController.GenerateILCodeAndSaveAssembly(programNode, CompilerOptions.OutputFileName,
                         CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandartDirectories,
-                        GetResourceFilesFromCompilerDirectives()?.ToArray());
+                        resourceFiles?.ToArray());
 
                     CodeGeneratorsController.EmitAssemblyRedirects(
                         assemblyResolveScope,
@@ -3532,7 +3533,7 @@ namespace PascalABCCompiler
         private SyntaxTree.compilation_unit InternalParseText(string FileName, string Text, List<Error> ErrorList, List<CompilerWarning> Warnings, List<string> DefinesList = null)
         {
             OnChangeCompilerState(this, CompilerState.BeginParsingFile, FileName);
-            SyntaxTree.compilation_unit cu = ParsersController.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, DefinesList);
+            SyntaxTree.compilation_unit cu = ParsersController.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, DefinesList); // ошибка Error выбрасыавается при err0524_res_unit.pas  | Вопрос EVA
             OnChangeCompilerState(this, CompilerState.EndParsingFile, FileName);
             //Вычисляем сколько строк скомпилировали
             if (ErrorList.Count == 0 && cu != null && cu.source_context != null)
