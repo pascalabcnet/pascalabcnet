@@ -21810,5 +21810,9 @@ namespace PascalABCCompiler.TreeConverter
 
         }
 
+        public override void visit(SyntaxTree.ref_var_def_statement rf)
+        {
+
+        }
     }
 }

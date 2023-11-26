@@ -2458,12 +2458,6 @@
     <member name="M:LLst``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>Возвращает двусвязный список, заполненный значениями из последовательности</summary>
     </member>
-    <member name="M:LLst(PABCSystem.IntRange)">
-      <summary>Возвращает двусвязный список, заполненный диапазоном значений</summary>
-    </member>
-    <member name="M:LLst(PABCSystem.CharRange)">
-      <summary>Возвращает двусвязный список, заполненный диапазоном значений</summary>
-    </member>
     <member name="M:HSet``1(``0[])">
       <summary>Возвращает множество на базе хеш таблицы, заполненное указанными значениями</summary>
     </member>
@@ -2487,12 +2481,6 @@
     </member>
     <member name="M:SSet``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности</summary>
-    </member>
-    <member name="M:SSet(PABCSystem.IntRange)">
-      <summary>Возвращает множество на базе бинарного дерева поиска, заполненное диапазоном значений</summary>
-    </member>
-    <member name="M:SSet(PABCSystem.CharRange)">
-      <summary>Возвращает множество на базе бинарного дерева поиска, заполненное диапазоном значений</summary>
     </member>
     <member name="M:SSetInt(System.Int32[])">
       <summary>Возвращает множество на базе бинарного дерева поиска, заполненное целыми значениями</summary>
