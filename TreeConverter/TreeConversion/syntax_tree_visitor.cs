@@ -1268,9 +1268,12 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        if (!(left is typed_expression))
+                        if (!(left is typed_expression) && !(left.type is delegated_methods))
                             AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
-                        bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
+                        if (left is typed_expression)
+                            bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
+                        else
+                            bfc = (left.type as delegated_methods).proper_methods[0];
                         left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
                     }
                     
@@ -5777,8 +5780,8 @@ namespace PascalABCCompiler.TreeConverter
                                                                 var fl = fld.lambda_visit_mode;
 
                                                                 // запомнили типы параметров лямбды - SSM
-                                                                object[] realparamstype = new object[fld.formal_parameters.params_list.Count]; // здесь хранятся выведенные типы лямбд или null если типы явно заданы
-                                                                for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                                                object[] realparamstype = new object[fld.formal_parameters != null ? fld.formal_parameters.params_list.Count : 0]; // здесь хранятся выведенные типы лямбд или null если типы явно заданы
+                                                                for (var k = 0; k < (fld.formal_parameters != null ? fld.formal_parameters.params_list.Count : 0); k++)
                                                                 {
                                                                     var laminftypeK = fld.formal_parameters.params_list[k].vars_type as SyntaxTree.lambda_inferred_type;
                                                                     if (laminftypeK == null)
@@ -5833,7 +5836,7 @@ namespace PascalABCCompiler.TreeConverter
                                                                     if (restype != null)
                                                                         restype.real_type = realrestype;
                                                                     // восстанавливаем сохраненные типы параметров лямбды, которые не были заданы явно
-                                                                    for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                                                    for (var k = 0; k < (fld.formal_parameters != null ? fld.formal_parameters.params_list.Count:0); k++)
                                                                     {
                                                                         var laminftypeK = fld.formal_parameters.params_list[k].vars_type as SyntaxTree.lambda_inferred_type;
                                                                         if (laminftypeK != null)
@@ -21807,5 +21810,9 @@ namespace PascalABCCompiler.TreeConverter
 
         }
 
+        public override void visit(SyntaxTree.ref_var_def_statement rf)
+        {
+
+        }
     }
 }
