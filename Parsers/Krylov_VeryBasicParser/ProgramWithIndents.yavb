@@ -1,4 +1,7 @@
-﻿a = 1
-while a < 127:
-  a = a * 2
-  print(a)
+﻿a = 5
+b = 4
+if a < b:
+  mn = a
+else:
+  mn = b
+print(mn)

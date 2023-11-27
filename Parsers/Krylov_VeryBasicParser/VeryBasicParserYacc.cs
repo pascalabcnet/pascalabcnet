@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 27.11.2023 22:27:09
+// DateTime: 27.11.2023 22:52:38
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -70,7 +70,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
   private static State[] states = new State[57];
   private static string[] nonTerms = new string[] {
       "ident", "expr", "var_reference", "variable", "proc_func_call", "exprlist", 
-      "assign", "ifstatement", "stmt", "proccall", "while_stmt", "stlist", "block", 
+      "assign", "if_stmt", "stmt", "proccall", "while_stmt", "stlist", "block", 
       "progr", "$accept", };
 
   static VeryBasicGPPGParser() {
@@ -179,6 +179,10 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
       case 2: // progr -> stlist
 {
 		var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
+		foreach (string elem in symbolTable) {
+			var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, CurrentLocationSpan);
+			stl.AddFirst((new var_statement(vds, CurrentLocationSpan)) as statement);
+		}
 		var decl = new declarations();
 		root = CurrentSemanticValue.stn = NewProgramModule(null, null, null, new block(decl, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan);
 		}
@@ -195,7 +199,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
       case 6: // stmt -> block
 { CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
         break;
-      case 7: // stmt -> ifstatement
+      case 7: // stmt -> if_stmt
 { CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
         break;
       case 8: // stmt -> proccall
@@ -209,14 +213,17 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 11: // assign -> ident, ASSIGN, expr
 {
-			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name)) {
+			// if (!symbolTable.Contains($1.name)) {
+			// 	symbolTable.Add($1.name);
+			// 	var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
+			// 	$$ = new var_statement(vds, @$);
+			// }
+			// else {
+			// 	$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+			// }
+			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name))
 				symbolTable.Add(ValueStack[ValueStack.Depth-3].id.name);
-				var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), null, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
-				CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
-			}
-			else {
-				CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
-			}
+			CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
 		}
         break;
       case 12: // expr -> expr, PLUS, expr
@@ -252,10 +259,10 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
       case 22: // exprlist -> exprlist, COMMA, expr
 { CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as expression_list).Add(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);  }
         break;
-      case 23: // ifstatement -> IF, expr, COLON, block
+      case 23: // if_stmt -> IF, expr, COLON, block
 { CurrentSemanticValue.stn = new if_node(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].stn as statement, null, CurrentLocationSpan); }
         break;
-      case 24: // ifstatement -> IF, expr, COLON, block, ELSE, COLON, block
+      case 24: // if_stmt -> IF, expr, COLON, block, ELSE, COLON, block
 { CurrentSemanticValue.stn = new if_node(ValueStack[ValueStack.Depth-6].ex, ValueStack[ValueStack.Depth-4].stn as statement, ValueStack[ValueStack.Depth-1].stn as statement, CurrentLocationSpan); }
         break;
       case 25: // while_stmt -> WHILE, expr, COLON, block

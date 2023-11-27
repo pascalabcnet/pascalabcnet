@@ -48,7 +48,7 @@
 %type <id> ident
 %type <ex> expr, var_reference, variable, proc_func_call
 %type <stn> exprlist
-%type <stn> assign ifstatement stmt proccall while_stmt
+%type <stn> assign if_stmt stmt proccall while_stmt
 %type <stn> stlist block
 %type <stn> progr
 
@@ -57,6 +57,13 @@
 %%
 progr   : stlist {
 		var stl = $1 as statement_list;
+
+		// добавляем ноды инициализации глобальных переменных
+		foreach (string elem in symbolTable) {
+			var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
+			stl.AddFirst((new var_statement(vds, @$)) as statement);
+		}
+
 		var decl = new declarations();
 		root = $$ = NewProgramModule(null, null, null, new block(decl, stl, @$), new token_info(""), @$);
 		}
@@ -66,25 +73,27 @@ stlist	: stmt { $$ = new statement_list($1 as statement, @1); }
 		| stlist SEMICOLON stmt { $$ = ($1 as statement_list).Add($3 as statement, @$); }
 		;
 
-stmt	: assign { $$ = $1; }
-		| block	{ $$ = $1; }
-		| ifstatement { $$ = $1; }
-		| proccall { $$ = $1; }
-		| while_stmt { $$ = $1; }
+stmt	: assign		{ $$ = $1; }
+		| block			{ $$ = $1; }
+		| if_stmt		{ $$ = $1; }
+		| proccall		{ $$ = $1; }
+		| while_stmt	{ $$ = $1; }
 		;
 
-ident 	: ID { $$ = $1; }
+ident 	: ID	{ $$ = $1; }
 		;
 
 assign 	: ident ASSIGN expr         {
-			if (!symbolTable.Contains($1.name)) {
-				symbolTable.Add($1.name);
-				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
-				$$ = new var_statement(vds, @$);
-			}
-			else {
-				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
-			}
+			// if (!symbolTable.Contains($1.name)) {
+			// 	symbolTable.Add($1.name);
+			// 	var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
+			// 	$$ = new var_statement(vds, @$);
+			// }
+			// else {
+			// 	$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+			// }
+			symbolTable.Add($1.name);
+			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
 		;
 
@@ -103,7 +112,7 @@ exprlist	: expr { $$ = new expression_list($1, @$); }
 			| exprlist COMMA expr { $$ = ($1 as expression_list).Add($3, @$);  }
 			;
 
-ifstatement	: IF expr COLON block { $$ = new if_node($2, $4 as statement, null, @$); }
+if_stmt	: IF expr COLON block { $$ = new if_node($2, $4 as statement, null, @$); }
 			| IF expr COLON block ELSE COLON block { $$ = new if_node($2, $4 as statement, $7 as statement, @$); }
 			;
 
