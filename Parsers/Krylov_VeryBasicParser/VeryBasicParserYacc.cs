@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 27.11.2023 21:50:58
+// DateTime: 27.11.2023 22:05:58
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -19,6 +19,7 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
 using System.Linq;
+using System.Collections.Generic;
 using SyntaxVisitors;
 using VeryBasicParser;
 
@@ -59,6 +60,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
 	public VeryBasicParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
    	public VeryBasicGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
+	private SortedSet<string> symbolTable = new SortedSet<string>();
   // End verbatim content from ParserABC.y
 
 #pragma warning disable 649
@@ -197,8 +199,14 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 10: // assign -> ident, ASSIGN, expr
 {
-			var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), null, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
-			CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
+			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name)) {
+				symbolTable.Add(ValueStack[ValueStack.Depth-3].id.name);
+				var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), null, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
+				CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
+			}
+			else {
+				CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
+			}
 		}
         break;
       case 11: // expr -> expr, PLUS, expr

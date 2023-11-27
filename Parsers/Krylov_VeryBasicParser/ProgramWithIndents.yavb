@@ -2,7 +2,8 @@
 if a > 2:
     print(sin(a))
     print(cos(a))
+    a = 9
     if a > 3:
-        print(a > 4)
+        print(a)
 else:
     print(10)

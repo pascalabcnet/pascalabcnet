@@ -6,12 +6,14 @@
 	public VeryBasicParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
    	public VeryBasicGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
+	private SortedSet<string> symbolTable = new SortedSet<string>();
 %}
 
 %using PascalABCCompiler.SyntaxTree;
 %using PascalABCCompiler.ParserTools;
 %using PascalABCCompiler.Errors;
 %using System.Linq;
+%using System.Collections.Generic;
 %using SyntaxVisitors;
 %using VeryBasicParser;
 
@@ -74,8 +76,14 @@ ident 	: ID { $$ = $1; }
 		;
 
 assign 	: ident ASSIGN expr         {
-			var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
-			$$ = new var_statement(vds, @$);
+			if (!symbolTable.Contains($1.name)) {
+				symbolTable.Add($1.name);
+				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
+				$$ = new var_statement(vds, @$);
+			}
+			else {
+				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+			}
 		}
 		;
 
