@@ -1,3 +1,4 @@
-﻿a = 100000000
-while a > 0:
-  a = a - 1
+﻿a = 1
+while a < 127:
+  a = a * 2
+  print(a)

@@ -45,11 +45,11 @@ ID {Alpha}{AlphaDigit}*
   return res;
 }
 
-//"+"  { yylval.sVal = yytext; return (int)Tokens.PLUS; }
+"+"  { yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.PLUS; }
 "-"  { yylval.op = new op_type_node(Operators.Minus); return (int)Tokens.MINUS; }
-//"*"  { yylval.sVal = yytext; return (int)Tokens.MULTIPLY; }
-//"/"  { yylval.sVal = yytext; return (int)Tokens.DIVIDE; }
-//"<"  { yylval.sVal = yytext; return (int)Tokens.LOWER; }
+"*"  { yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.MULTIPLY; }
+"/"  { yylval.op = new op_type_node(Operators.Division); return (int)Tokens.DIVIDE; }
+"<"  { yylval.op = new op_type_node(Operators.Less); return (int)Tokens.LOWER; }
 ">"  { yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.GREATER; }
 
 //"{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACE; }
