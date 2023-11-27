@@ -18,7 +18,7 @@ namespace IndentArranger
         public string CreatedFilePath { get; private set; }
 
         // количество пробелов соответствующее одному \t (в одном отступе)
-        private const int indentSpaceNumber = 4;
+        private const int indentSpaceNumber = 2;
         private const string indentToken = "{";
         private const string unindentToken = "}";
         public const string createdFileNameAddition = "_indented";
