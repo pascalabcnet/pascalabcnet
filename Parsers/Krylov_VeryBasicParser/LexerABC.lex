@@ -13,8 +13,6 @@ AlphaDigit {Alpha}|{Digit}
 INTNUM  {Digit}+
 REALNUM {INTNUM}\.{INTNUM}
 ID {Alpha}{AlphaDigit}*
-INDENT "@Indent"
-UNINDENT "@Unindent"
 
 %{
   public VeryBasicParserTools parsertools;
@@ -36,14 +34,6 @@ UNINDENT "@Unindent"
   return (int)Tokens.REALNUM;
 }
 
-{INDENT} {
-  return (int)Tokens.INDENT;
-}
-
-{UNINDENT} {
-  return (int)Tokens.UNINDENT;
-}
-
 {ID}  {
   string cur_yytext = yytext;
   int res = Keywords.KeywordOrIDToken(cur_yytext);
@@ -56,7 +46,7 @@ UNINDENT "@Unindent"
 }
 
 //"+"  { yylval.sVal = yytext; return (int)Tokens.PLUS; }
-//"-"  { yylval.sVal = yytext; return (int)Tokens.MINUS; }
+"-"  { yylval.op = new op_type_node(Operators.Minus); return (int)Tokens.MINUS; }
 //"*"  { yylval.sVal = yytext; return (int)Tokens.MULTIPLY; }
 //"/"  { yylval.sVal = yytext; return (int)Tokens.DIVIDE; }
 //"<"  { yylval.sVal = yytext; return (int)Tokens.LOWER; }

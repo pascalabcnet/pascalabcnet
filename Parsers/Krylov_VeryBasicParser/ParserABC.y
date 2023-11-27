@@ -48,7 +48,7 @@
 %type <id> ident
 %type <ex> expr, var_reference, variable, proc_func_call
 %type <stn> exprlist
-%type <stn> assign ifstatement stmt proccall
+%type <stn> assign ifstatement stmt proccall while_stmt
 %type <stn> stlist block
 %type <stn> progr
 
@@ -70,6 +70,7 @@ stmt	: assign { $$ = $1; }
 		| block	{ $$ = $1; }
 		| ifstatement { $$ = $1; }
 		| proccall { $$ = $1; }
+		| while_stmt { $$ = $1; }
 		;
 
 ident 	: ID { $$ = $1; }
@@ -104,6 +105,9 @@ exprlist	: expr { $$ = new expression_list($1, @$); }
 
 ifstatement	: IF expr COLON block { $$ = new if_node($2, $4 as statement, null, @$); }
 			| IF expr COLON block ELSE COLON block { $$ = new if_node($2, $4 as statement, $7 as statement, @$); }
+			;
+
+while_stmt	: WHILE expr COLON block { $$ = new while_node($2, $4 as statement, WhileCycleType.While, @$); }
 			;
 
 proccall	:  var_reference
