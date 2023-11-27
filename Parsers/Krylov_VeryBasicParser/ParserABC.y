@@ -53,7 +53,7 @@
 %start progr
 
 %%
-progr   : block {
+progr   : stlist {
 		var stl = $1 as statement_list;
 		var decl = new declarations();
 		root = $$ = NewProgramModule(null, null, null, new block(decl, stl, @$), new token_info(""), @$);
