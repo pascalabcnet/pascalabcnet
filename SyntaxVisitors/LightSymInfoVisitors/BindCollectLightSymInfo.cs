@@ -12,7 +12,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         private CachingScopeCreator _scopeCreator = new CachingScopeCreator();
 
-        public BindCollectLightSymInfo(program_module root) : base(root)
+        public BindCollectLightSymInfo(compilation_unit root) : base(root)
         {
             visit(root);
             Current = null;
@@ -59,6 +59,7 @@ namespace PascalABCCompiler.SyntaxTree
                 {
                     var attr = pd.proc_header.class_keyword ? Attributes.class_attr : 0;
                     var name = pd.proc_header?.name?.meth_name;
+                    if (name != null)
                     if (pd.proc_header is function_header)
                         Current.AddSymbol(name, SymKind.funcname, null, attr);
                     else

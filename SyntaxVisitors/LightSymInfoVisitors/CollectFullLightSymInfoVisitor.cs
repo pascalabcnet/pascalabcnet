@@ -11,9 +11,9 @@ namespace PascalABCCompiler.SyntaxTree
 
         private CachingScopeCreator _scopeCreator = new CachingScopeCreator();
 
-        public CollectFullLightSymInfoVisitor(program_module root) : base(root)
+        public CollectFullLightSymInfoVisitor(compilation_unit root) : base(root)
         {
-            visit(root);
+            
         }
 
         public override void Enter(syntax_tree_node st)

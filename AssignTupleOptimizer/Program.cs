@@ -9,8 +9,8 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace AssignTupleOptimizer
 {
-    class Program  
-    {
+    class Program
+    { 
         public static void Main()
         {
             string name = "../../test5.pas";
@@ -23,6 +23,9 @@ namespace AssignTupleOptimizer
             var binder = new BindCollectLightSymInfo(root as program_module);
 
             root.FillParentsInAllChilds();
+
+            var varVisitor = new PascalABCCompiler.SyntaxTreeConverters.VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as program_module);
+            varVisitor.ProcessNode(root);
 
             var visitor = new BindTestVisitor(binder);
             visitor.ProcessNode(root);

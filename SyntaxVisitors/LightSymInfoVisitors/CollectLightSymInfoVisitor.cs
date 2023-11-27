@@ -14,7 +14,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         protected bool inPrivate = false; 
 
-        public CollectLightSymInfoVisitor(program_module root)
+        public CollectLightSymInfoVisitor(compilation_unit root)
         {
             Root = scopeCreator.GetScope(root);
             Current = Root;
@@ -102,7 +102,8 @@ namespace PascalABCCompiler.SyntaxTree
             var name = node.proc_header?.name?.meth_name;
             var attr = node.proc_header.class_keyword ? Attributes.class_attr : 0;
             
-            if (node.proc_header.name.class_name != null) {
+            if(name != null)
+            if (node.proc_header?.name?.class_name != null) {
                 (Current as ProcScopeSyntax).classParent = classes[node.proc_header.name.class_name.name];
                 (Current as ProcScopeSyntax).classParent.AddSymbol(name, SymKind.funcname, null, attr);
             }

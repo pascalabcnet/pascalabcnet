@@ -11,7 +11,7 @@ namespace PascalABCCompiler.SyntaxTree
         public static bool IsScopeCreator(syntax_tree_node st)
         {
 
-            if (st is program_module || st is procedure_definition || st is statement_list ||
+            if (st is compilation_unit || st is procedure_definition || st is statement_list ||
                 st is for_node || st is foreach_stmt || st is class_definition || st is record_type ||
                 st is function_lambda_definition || st is case_node) return true;
 
@@ -21,7 +21,7 @@ namespace PascalABCCompiler.SyntaxTree
         public virtual ScopeSyntax GetScope(syntax_tree_node st)
         {
             ScopeSyntax res = null;
-            if (st is program_module p) res = CreateScope(p);
+            if (st is compilation_unit p) res = CreateScope(p);
             else if (st is procedure_definition pd) res = CreateScope(pd);
             else if (st is statement_list sl) res = CreateScope(sl);
             else if (st is for_node f) res = CreateScope(f);
@@ -34,7 +34,8 @@ namespace PascalABCCompiler.SyntaxTree
             return res;
         }
 
-        protected abstract ScopeSyntax CreateScope(program_module node);
+        
+        protected abstract ScopeSyntax CreateScope(compilation_unit node);
         protected abstract ScopeSyntax CreateScope(procedure_definition node);
         protected abstract ScopeSyntax CreateScope(statement_list node);
         protected abstract ScopeSyntax CreateScope(for_node node);
@@ -51,7 +52,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override ScopeSyntax GetScope(syntax_tree_node st)
         {
-
+            if (st == null) return null;
             if (!map.ContainsKey(st))
             {
                 var scope = base.GetScope(st);
@@ -61,7 +62,7 @@ namespace PascalABCCompiler.SyntaxTree
             return map[st];
         }
 
-        protected override ScopeSyntax CreateScope(program_module node) => new GlobalScopeSyntax();
+        protected override ScopeSyntax CreateScope(compilation_unit node) => new GlobalScopeSyntax();
         protected override ScopeSyntax CreateScope(procedure_definition node) 
         {
 

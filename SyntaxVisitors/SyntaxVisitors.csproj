@@ -48,7 +48,7 @@
     <Compile Include="LightSymInfoVisitors\BindCollectLightSymInfo.cs" />
     <Compile Include="LightSymInfoVisitors\CollectFullLightSymInfoVisitor.cs" />
     <Compile Include="LightSymInfoVisitors\CollectLightSymInfoVisitor.cs" />
-    <Compile Include="LightSymInfoVisitors\ILightScopeCreator.cs" />
+    <Compile Include="LightSymInfoVisitors\LightScopeCreator.cs" />
     <Compile Include="SugarVisitors\CacheFunctionVisitor.cs" />
     <Compile Include="SugarVisitors\UnpackLambdaParametersVisitor.cs" />
     <Compile Include="TeacherControl\TeacherControl.cs" />
