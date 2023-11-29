@@ -47,9 +47,11 @@ namespace VeryBasicParser
                 ReloadKeyMap();
             keywords.Clear();
             keywords.Add(Convert("if"), (int)Tokens.IF);
+            keywords.Add(Convert("elif"), (int)Tokens.ELIF);
             keywords.Add(Convert("else"), (int)Tokens.ELSE);
             keywords.Add(Convert("while"), (int)Tokens.WHILE);
-            keywords.Add(Convert("elif"), (int)Tokens.ELIF);
+            keywords.Add(Convert("for"), (int)Tokens.FOR);
+            keywords.Add(Convert("in"), (int)Tokens.IN);
         }
 
         static Keywords()
