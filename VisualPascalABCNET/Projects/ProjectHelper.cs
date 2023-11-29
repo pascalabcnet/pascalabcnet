@@ -198,7 +198,8 @@ namespace VisualPascalABC
         public PascalABCCompiler.IReferenceInfo AddReference(string s)
         {
             PascalABCCompiler.ReferenceInfo ri = new PascalABCCompiler.ReferenceInfo(s, s + ".dll");
-            currentProject.references.Add(ri);
+            if (currentProject.references.FindIndex(r => r.assembly_name == s) == -1)
+                currentProject.references.Add(ri);
             Dirty = true;
             return ri;
         }
