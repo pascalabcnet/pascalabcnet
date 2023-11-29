@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 28.11.2023 19:12:39
+// DateTime: 29.11.2023 11:53:28
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -191,10 +191,10 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
 		var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
 
 		// добавляем нод�? ини�?иализа�?ии глобал�?н�?�? пе�?еменн�?�?
-		foreach (string elem in symbolTable) {
-			var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, CurrentLocationSpan);
-			stl.AddFirst((new var_statement(vds, CurrentLocationSpan)) as statement);
-		}
+		// foreach (string elem in symbolTable) {
+		// 	var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
+		// 	stl.AddFirst((new var_statement(vds, @$)) as statement);
+		// }
 
 		var decl = new declarations();
 		root = CurrentSemanticValue.stn = NewProgramModule(null, null, null, new block(decl, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan);
@@ -226,16 +226,16 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 11: // assign -> ident, ASSIGN, expr
 {
-			// if (!symbolTable.Contains($1.name)) {
-			// 	symbolTable.Add($1.name);
-			// 	var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
-			// 	$$ = new var_statement(vds, @$);
-			// }
-			// else {
-			// 	$$ = new assign($1 as addressed_value, $3, $2.type, @$);
-			// }
-			symbolTable.Add(ValueStack[ValueStack.Depth-3].id.name);
-			CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
+			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name)) {
+				symbolTable.Add(ValueStack[ValueStack.Depth-3].id.name);
+				var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), null, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
+				CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
+			}
+			else {
+				CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
+			}
+			// symbolTable.Add($1.name);
+			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
         break;
       case 12: // expr -> expr, PLUS, expr

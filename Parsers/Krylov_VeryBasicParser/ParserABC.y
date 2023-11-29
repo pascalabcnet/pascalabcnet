@@ -59,10 +59,10 @@ progr   : stlist {
 		var stl = $1 as statement_list;
 
 		// добавляем ноды инициализации глобальных переменных
-		foreach (string elem in symbolTable) {
-			var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
-			stl.AddFirst((new var_statement(vds, @$)) as statement);
-		}
+		// foreach (string elem in symbolTable) {
+		// 	var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
+		// 	stl.AddFirst((new var_statement(vds, @$)) as statement);
+		// }
 
 		var decl = new declarations();
 		root = $$ = NewProgramModule(null, null, null, new block(decl, stl, @$), new token_info(""), @$);
@@ -84,16 +84,16 @@ ident 	: ID	{ $$ = $1; }
 		;
 
 assign 	: ident ASSIGN expr         {
-			// if (!symbolTable.Contains($1.name)) {
-			// 	symbolTable.Add($1.name);
-			// 	var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
-			// 	$$ = new var_statement(vds, @$);
-			// }
-			// else {
-			// 	$$ = new assign($1 as addressed_value, $3, $2.type, @$);
-			// }
-			symbolTable.Add($1.name);
-			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+			if (!symbolTable.Contains($1.name)) {
+				symbolTable.Add($1.name);
+				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
+				$$ = new var_statement(vds, @$);
+			}
+			else {
+				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+			}
+			// symbolTable.Add($1.name);
+			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
 		;
 
