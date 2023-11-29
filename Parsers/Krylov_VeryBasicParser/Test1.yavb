@@ -1,0 +1,8 @@
+﻿a = 8
+b = 3
+if a < 5:
+    print(a)
+elif b < 5:
+    print(cos(b))
+while a > 0:
+    a -= 1

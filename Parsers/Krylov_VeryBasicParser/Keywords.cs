@@ -49,6 +49,7 @@ namespace VeryBasicParser
             keywords.Add(Convert("if"), (int)Tokens.IF);
             keywords.Add(Convert("else"), (int)Tokens.ELSE);
             keywords.Add(Convert("while"), (int)Tokens.WHILE);
+            keywords.Add(Convert("elif"), (int)Tokens.ELIF);
         }
 
         static Keywords()

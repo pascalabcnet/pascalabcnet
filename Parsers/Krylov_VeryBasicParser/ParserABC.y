@@ -33,7 +33,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR, IN, WHILE, IF, ELSE
+%token <ti> FOR, IN, WHILE, IF, ELSE, ELIF
 %token <ex> INTNUM, REALNUM
 %token <ti> LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET, DOT, COMMA, COLON, SEMICOLON, INDENT, UNINDENT
 %token <op> ASSIGN
@@ -48,7 +48,7 @@
 %type <id> ident
 %type <ex> expr, var_reference, variable, proc_func_call
 %type <stn> exprlist
-%type <stn> assign if_stmt stmt proccall while_stmt
+%type <stn> assign if_stmt stmt proccall while_stmt, optional_else, optional_elif
 %type <stn> stlist block
 %type <stn> progr
 
@@ -112,9 +112,16 @@ exprlist	: expr { $$ = new expression_list($1, @$); }
 			| exprlist COMMA expr { $$ = ($1 as expression_list).Add($3, @$);  }
 			;
 
-if_stmt	: IF expr COLON block { $$ = new if_node($2, $4 as statement, null, @$); }
-			| IF expr COLON block ELSE COLON block { $$ = new if_node($2, $4 as statement, $7 as statement, @$); }
-			;
+if_stmt	: IF expr COLON block optional_elif { $$ = new if_node($2, $4 as statement, $5 as statement, @$); }
+		;
+
+optional_elif	: ELIF expr COLON block optional_elif { $$ = new if_node($2, $4 as statement, $5 as statement, @$); }
+				| optional_else { $$ = $1; }
+				;
+
+optional_else	: ELSE COLON block { $$ = $3; }
+				| { $$ = null; }
+				;
 
 while_stmt	: WHILE expr COLON block { $$ = new while_node($2, $4 as statement, WhileCycleType.While, @$); }
 			;

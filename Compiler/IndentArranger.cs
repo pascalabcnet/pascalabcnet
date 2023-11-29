@@ -18,7 +18,7 @@ namespace IndentArranger
         public string CreatedFilePath { get; private set; }
 
         // количество пробелов соответствующее одному \t (в одном отступе)
-        private const int indentSpaceNumber = 2;
+        private const int indentSpaceNumber = 4;
         private const string indentToken = "{";
         private const string unindentToken = "}";
         public const string createdFileNameAddition = "_indented";
@@ -169,8 +169,7 @@ namespace IndentArranger
 
                     // если был if и сейчас на том же отступе else, то это не конец команды
                     // поэтому ставить ; в конце не надо (она будет после блока else)
-                    bool isEndOfStatement = !(previousFirstTokenType == FirstTokenType.If 
-                                            && currentFirstTokenType == FirstTokenType.Else);
+                    bool isEndOfStatement = !(currentFirstTokenType == FirstTokenType.Elif || currentFirstTokenType == FirstTokenType.Else);
 
                     firstTokensTypesStack.Push(currentFirstTokenType);
 
