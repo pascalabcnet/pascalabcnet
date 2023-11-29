@@ -47,15 +47,15 @@
 
 %type <id> ident
 %type <ex> expr, var_reference, variable, proc_func_call
-%type <stn> exprlist
+%type <stn> expr_lst, optional_expr_lst
 %type <stn> assign if_stmt stmt proccall while_stmt, optional_else, optional_elif
-%type <stn> stlist block
+%type <stn> stmt_lst block
 %type <stn> progr
 
 %start progr
 
 %%
-progr   : stlist {
+progr   : stmt_lst {
 		var stl = $1 as statement_list;
 
 		// добавляем ноды инициализации глобальных переменных
@@ -69,8 +69,8 @@ progr   : stlist {
 		}
 		;
 
-stlist	: stmt { $$ = new statement_list($1 as statement, @1); }
-		| stlist SEMICOLON stmt { $$ = ($1 as statement_list).Add($3 as statement, @$); }
+stmt_lst: stmt { $$ = new statement_list($1 as statement, @1); }
+		| stmt_lst SEMICOLON stmt { $$ = ($1 as statement_list).Add($3 as statement, @$); }
 		;
 
 stmt	: assign		{ $$ = $1; }
@@ -109,8 +109,12 @@ expr 	: expr PLUS expr { $$ = new bin_expr($1, $3, $2.type, @$); }
 		| LPAR expr RPAR { $$ = $2; }
 		;
 
-exprlist	: expr { $$ = new expression_list($1, @$); }
-			| exprlist COMMA expr { $$ = ($1 as expression_list).Add($3, @$);  }
+optional_expr_lst	: expr_lst { $$ = $1; }
+					| { $$ = null; }
+					;
+
+expr_lst	: expr { $$ = new expression_list($1, @$); }
+			| expr_lst COMMA expr { $$ = ($1 as expression_list).Add($3, @$);  }
 			;
 
 if_stmt	: IF expr COLON block optional_elif { $$ = new if_node($2, $4 as statement, $5 as statement, @$); }
@@ -140,10 +144,10 @@ variable	: ident { $$ = $1; }
 			| proc_func_call { $$ = $1; }
 			;
 
-block	: INDENT stlist SEMICOLON UNINDENT { $$ = $2 as statement_list; }
+block	: INDENT stmt_lst SEMICOLON UNINDENT { $$ = $2 as statement_list; }
 		;
 
-proc_func_call	: ident LPAR exprlist RPAR { $$ = new method_call($1 as addressed_value,$3 as expression_list, @$); }
+proc_func_call	: ident LPAR optional_expr_lst RPAR { $$ = new method_call($1 as addressed_value, $3 as expression_list, @$); }
 				;
 
 %%
