@@ -99,6 +99,7 @@ assign 	: ident ASSIGN expr         {
 
 expr 	: expr PLUS expr { $$ = new bin_expr($1, $3, $2.type, @$); }
 		| expr MULTIPLY expr { $$ = new bin_expr($1, $3, $2.type, @$); }
+		| expr DIVIDE expr { $$ = new bin_expr($1, $3, $2.type, @$); }
 		| expr MINUS expr { $$ = new bin_expr($1, $3, $2.type, @$); }
   		| expr LOWER expr { $$ = new bin_expr($1, $3, $2.type, @$); }
 		| expr GREATER expr { $$ = new bin_expr($1, $3, $2.type, @$); }
