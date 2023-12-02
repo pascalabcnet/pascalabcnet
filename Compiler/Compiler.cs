@@ -145,7 +145,6 @@
 //#undef DEBUG
 
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
 using Microsoft.Scripting;
 //using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
@@ -427,23 +426,23 @@ namespace PascalABCCompiler
         //private SemanticTree.compilation_unitArrayList _interfaceUsedUnits=new SemanticTree.compilation_unitArrayList();
 
         /// <summary>
-        /// Только "реальные" паскалевские юниты (не dll и namespace)
+        /// Только "реальные" юниты (не dll и namespace)
         /// </summary>
-        public Dictionary<unit_node, CompilationUnit> InterfaceUsedPascalUnits { get; } = new Dictionary<unit_node, CompilationUnit>();
+        public Dictionary<unit_node, CompilationUnit> InterfaceUsedDirectUnits { get; } = new Dictionary<unit_node, CompilationUnit>();
 
         public unit_node_list InterfaceUsedUnits { get; } = new unit_node_list();
         /// <summary>
-        /// Только "реальные" паскалевские юниты (не dll и namespace)
+        /// Только "реальные" юниты (не dll и namespace)
         /// </summary>
-        public Dictionary<unit_node, CompilationUnit> ImplementationUsedPascalUnits { get; } = new Dictionary<unit_node, CompilationUnit>();
+        public Dictionary<unit_node, CompilationUnit> ImplementationUsedDirectUnits { get; } = new Dictionary<unit_node, CompilationUnit>();
         public unit_node_list ImplementationUsedUnits { get; } = new unit_node_list();
 
         public bool ForEachDirectCompilationUnit(Func<CompilationUnit, string, bool> on_unit)
         {
-            foreach (var kvp in InterfaceUsedPascalUnits)
+            foreach (var kvp in InterfaceUsedDirectUnits)
                 if (!on_unit(kvp.Value, InterfaceUsedUnits.unit_uses_paths[kvp.Key]))
                     return false;
-            foreach (var kvp in ImplementationUsedPascalUnits)
+            foreach (var kvp in ImplementationUsedDirectUnits)
                 if (!on_unit(kvp.Value, ImplementationUsedUnits.unit_uses_paths[kvp.Key]))
                     return false;
             return true;
@@ -1892,7 +1891,7 @@ namespace PascalABCCompiler
                             if (!IsPossibleNetNamespaceOrStandardPasFile(implementationUsesList[i], true, Path.GetDirectoryName(unitFileName)))
                             {
                                 // докомпилируем юнит, если он не является пространством имен или стандартным pas файлом из Lib
-                                CompileUnit(CurrentUnit.ImplementationUsedUnits, CurrentUnit.ImplementationUsedPascalUnits, implementationUsesList[i], Path.GetDirectoryName(unitFileName));
+                                CompileUnit(CurrentUnit.ImplementationUsedUnits, CurrentUnit.ImplementationUsedDirectUnits, implementationUsesList[i], Path.GetDirectoryName(unitFileName));
                             }
                             else
                             {
@@ -3466,6 +3465,7 @@ namespace PascalABCCompiler
             return new using_namespace(SyntaxTree.Utils.IdentListToString(_name_space.name.idents, "."));
         }
 
+        // TODO: Перепроверить   EVA
         /// <summary>
         /// Формирует узел семантического дерева, соответствующий пространству имен (NET или Паскаля), unit Паскаля тоже считается пространством имен
         /// </summary>
@@ -3590,9 +3590,18 @@ namespace PascalABCCompiler
         }
 
         /// <summary>
-        /// TODO: еще сократить метод
+        /// Компилирует основную программу и все используемые ей юниты рекурсивно
         /// </summary>
-        public CompilationUnit CompileUnit(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> pascalUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, string previousPath)
+        /// <param name="unitsFromUsesSection"> Вспомогательная переменная для заполнения CompilationUnit.interfaceUsedUnits и 
+        /// CompilationUnit.implementationUsedUnits (здесь могут содержаться юниты и dll) </param>
+        /// 
+        /// <param name="directUnitsFromUsesSection">Вспомогательная переменная для заполнения CompilationUnit.interfaceUsedDirectUnits и 
+        /// CompilationUnit.implementationUsedDirectUnits</param>
+        /// 
+        /// <param name="currentUnitNode">Синтаксический узел текущего модуля (или пространства имен)</param>
+        /// <param name="previousPath">Директория родительского модуля</param>
+        /// <returns>Скомпилированный юнит</returns>
+        public CompilationUnit CompileUnit(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> directUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, string previousPath)
         {
             string unitFileName = GetUnitFileName(currentUnitNode, previousPath);
             string unitId = Path.ChangeExtension(unitFileName, null);
@@ -3610,11 +3619,11 @@ namespace PascalABCCompiler
             #endregion
 
             // если модуль уже скомпилирован - возвращаем (возможно, только интерфейс модуля и тогда он докомпилируется в другом рекурсивном вызове)   EVA
-            if (IsUnitCompiled(unitsFromUsesSection, pascalUnitsFromUsesSection, currentUnitNode, currentUnit))
+            if (IsUnitCompiled(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, currentUnit))
                 return currentUnit;
 
             // если есть pcu - возврат  EVA
-            if (UnitHasPCU(unitsFromUsesSection, pascalUnitsFromUsesSection, currentUnitNode, ref unitFileName, ref currentUnit))
+            if (UnitHasPCU(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, ref unitFileName, ref currentUnit))
                 return currentUnit;
 
             // нет pcu и модуль не откомпилирован => новый модуль   EVA
@@ -3622,14 +3631,14 @@ namespace PascalABCCompiler
                 ref currentUnit, out var docs);
 
             // формирование списков зависимостей текущего модуля (uses list, dll, пространства имен)
-            CreateDependencyListsForCurrentUnit(currentUnit, currentDirectory, out var interfaceUsesList, out var references, out var pascalNamespaces);
+            CreateDependencyListsForCurrentUnit(currentUnit, currentDirectory, out var interfaceUsesList, out var references, out var namespaces);
 
             #region INTERFACE PART
             // комплируем зависимости из интерфейса  EVA
             if (interfaceUsesList != null)
             {
-                CompileInterfaceDependencies(unitsFromUsesSection, pascalUnitsFromUsesSection, currentUnitNode,
-                    unitFileName, currentDirectory, currentUnit, interfaceUsesList, references, pascalNamespaces, out bool shouldReturnCurUnit);
+                CompileInterfaceDependencies(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode,
+                    unitFileName, currentDirectory, currentUnit, interfaceUsesList, references, namespaces, out bool shouldReturnCurUnit);
 
                 if (shouldReturnCurUnit)
                     return currentUnit;
@@ -3640,12 +3649,12 @@ namespace PascalABCCompiler
             currentUnit.InterfaceUsedUnits.AddRange(references);
 
             // Добавление пространств имен из uses list (могут быть разных видов)
-            AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, pascalNamespaces);
+            AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
 
             // Добавление пространств имен NET из using list
             AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, GetInterfaceUsingList(currentUnit.SyntaxTree));
 
-            // Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
+            //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
             // компилируем интерфейс текущего модуля EVA
             CompileCurrentUnitInterface(unitFileName, currentUnit, docs);
@@ -3654,8 +3663,9 @@ namespace PascalABCCompiler
             currentUnit.State = UnitState.InterfaceCompiled;
 
             // заполнение списков uses семантического уровня
-            FillUsesLists(unitsFromUsesSection, pascalUnitsFromUsesSection, currentUnitNode, currentUnit, references);
+            AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, currentUnit, references);
             #endregion
+
 
             #region IMPLEMENTATION PART
             // берем модули из секции uses в реализации
@@ -3667,7 +3677,7 @@ namespace PascalABCCompiler
             common_unit_node semanticTreeAsCommonNode = currentUnit.SemanticTree as common_unit_node;
 
             // Компиляция зависимостей в области реализации    EVA
-            CompileImplementationDependencies(currentDirectory, currentUnit, implementationUsesList, pascalNamespaces, semanticTreeAsCommonNode, out bool shouldReturnCurrentUnit);
+            CompileImplementationDependencies(currentDirectory, currentUnit, implementationUsesList, namespaces, semanticTreeAsCommonNode, out bool shouldReturnCurrentUnit);
 
             if (shouldReturnCurrentUnit)
                 return currentUnit;
@@ -3717,7 +3727,7 @@ namespace PascalABCCompiler
         }
 
         private void CreateDependencyListsForCurrentUnit(CompilationUnit currentUnit, string currentDirectory, out List<SyntaxTree.unit_or_namespace> interfaceUsesList,
-            out unit_node_list references, out Dictionary<string, SyntaxTree.syntax_namespace_node> pascalNamespaces)
+            out unit_node_list references, out Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces)
         {
             interfaceUsesList = GetInterfaceUsesSection(currentUnit.SyntaxTree);
 
@@ -3726,16 +3736,16 @@ namespace PascalABCCompiler
             references = GetReferences(currentUnit);
 
             // TODO: закончить рефакторинг
-            pascalNamespaces = IncludePascalNamespaces(currentUnit);
+            namespaces = IncludePascalNamespaces(currentUnit);
         }
 
-        private void FillUsesLists(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> pascalUnitsFromUsesSection,
+        private void AddCurrentUnitAndItsReferencesToUsesLists(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> directUnitsFromUsesSection,
             SyntaxTree.unit_or_namespace currentUnitNode, CompilationUnit currentUnit, unit_node_list references)
         {
             if (unitsFromUsesSection != null)
             {
                 if (unitsFromUsesSection.AddElement(currentUnit.SemanticTree, currentUnitNode.UsesPath()))
-                    pascalUnitsFromUsesSection.Add(currentUnit.SemanticTree, currentUnit);
+                    directUnitsFromUsesSection.Add(currentUnit.SemanticTree, currentUnit);
                 unitsFromUsesSection.AddRange(references);
             }
         }
@@ -3810,7 +3820,7 @@ namespace PascalABCCompiler
                         }
                         else
                         {
-                            CompileUnit(currentUnit.ImplementationUsedUnits, currentUnit.ImplementationUsedPascalUnits, implementationUsesList[i], currentPath);
+                            CompileUnit(currentUnit.ImplementationUsedUnits, currentUnit.ImplementationUsedDirectUnits, implementationUsesList[i], currentPath);
                         }
                     }
                     else
@@ -3873,14 +3883,14 @@ namespace PascalABCCompiler
         /// Компилирует модули из секции uses интерфейса текущего модуля рекурсивно
         /// </summary>
         /// <exception cref="CycleUnitReference"></exception>
-        private void CompileInterfaceDependencies(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> pascalUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode,
+        private void CompileInterfaceDependencies(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> directUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode,
             string unitFileName, string currentPath, CompilationUnit currentUnit, List<SyntaxTree.unit_or_namespace> interfaceUsesList, unit_node_list references,
-            Dictionary<string, SyntaxTree.syntax_namespace_node> pascalNamespaces, out bool shouldReturnCurrentUnit)
+            Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces, out bool shouldReturnCurrentUnit)
         {
             shouldReturnCurrentUnit = false;
             for (int i = interfaceUsesList.Count - 1 - currentUnit.InterfaceUsedUnits.Count; i >= 0; i--) // здесь откидываются модули с уже откомпилированными интерфейсами из секции uses (см. комментарий, обозначенный #1710)
             {
-                if (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || pascalNamespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name))
+                if (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || namespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name))
                 {
                     currentUnit.InterfaceUsedUnits.AddElement(new namespace_unit_node(GetNamespace(interfaceUsesList[i])), null);
                     currentUnit.possibleNamespaces.Add(interfaceUsesList[i]);
@@ -3894,12 +3904,12 @@ namespace PascalABCCompiler
                     #endregion
 
                     // компиляция модулей из интерфейса текущего модуля 
-                    CompileUnit(currentUnit.InterfaceUsedUnits, currentUnit.InterfaceUsedPascalUnits, interfaceUsesList[i], currentPath);
+                    CompileUnit(currentUnit.InterfaceUsedUnits, currentUnit.InterfaceUsedDirectUnits, interfaceUsesList[i], currentPath);
 
                     // если текущий модуль был откомпилирован в другом рекурсивном вызове 
                     if (currentUnit.State == UnitState.Compiled)
                     {
-                        FillUsesLists(unitsFromUsesSection, pascalUnitsFromUsesSection, currentUnitNode, currentUnit, references); // #1710 добавление в список модулей из uses происходит только в конце компиляции интерфейса юнита или позже во всех случаях
+                        AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, currentUnit, references); // #1710 добавление в список модулей из uses происходит только в конце компиляции интерфейса юнита или позже во всех случаях
                         shouldReturnCurrentUnit = true;
                     }
                 }
