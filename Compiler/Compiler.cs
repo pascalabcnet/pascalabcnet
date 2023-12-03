@@ -8,8 +8,6 @@
 * 
 ***************************************************************************/
 
-//TODO разобраться с ToLower()!!!
-
 #region algorithm
 /***************************************************************************
  *               Рекурсивный алгоритм компиляции модулей
@@ -2400,7 +2398,6 @@ namespace PascalABCCompiler
                 ErrorsList.Add(err);
             else if (err != ErrorsList[0])
             {
-                // TODO: переделать insert в ErrorsList
                 if (err is SemanticError)
                 {
                     int position = FindPositionForSemanticErrorInTheErrorList(err); // семантические ошибки отсортированы по location
@@ -2663,7 +2660,7 @@ namespace PascalABCCompiler
                     if (CompilerOptions.StandardModules.Count > 0)
                     {
                         unitModule.interface_part.uses_modules = new SyntaxTree.uses_list();
-                        unitModule.interface_part.uses_modules.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1, 1, 1); // TODO: Обернуть в дефолтный конструктор
+                        unitModule.interface_part.uses_modules.source_context = new SyntaxTree.SourceContext();
                     }
                     else return null;
                 }
@@ -2677,7 +2674,7 @@ namespace PascalABCCompiler
                     if (CompilerOptions.StandardModules.Count > 0)
                     {
                         programModule.used_units = new SyntaxTree.uses_list();
-                        programModule.used_units.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1, 1, 1); // позиция начала файла для пустого списка used_units
+                        programModule.used_units.source_context = new SyntaxTree.SourceContext();
                     }
                     else return null;
                 }
@@ -3128,7 +3125,7 @@ namespace PascalABCCompiler
         }
 
 
-        private Dictionary<string, SyntaxTree.syntax_namespace_node> IncludePascalNamespaces(CompilationUnit compilationUnit)
+        private Dictionary<string, SyntaxTree.syntax_namespace_node> PrepareUserNamespacesUsedInTheCurrentUnit(CompilationUnit compilationUnit)
         {
             var directives = ConvertDirectives(compilationUnit.SyntaxTree);
 
@@ -3161,6 +3158,8 @@ namespace PascalABCCompiler
 
                 AddDeclarationsAndReferencedUnitsToNamespaces(namespaceModules, file, unitModule, namespaceNode);
             }
+
+            // TODO: выделить в другой метод
 
             SyntaxTree.unit_module mainLibrary = compilationUnit.SyntaxTree as SyntaxTree.unit_module;
             SyntaxTree.program_module main_program = compilationUnit.SyntaxTree as SyntaxTree.program_module;
@@ -3467,13 +3466,13 @@ namespace PascalABCCompiler
 
         // TODO: Перепроверить   EVA
         /// <summary>
-        /// Формирует узел семантического дерева, соответствующий пространству имен (NET или Паскаля), unit Паскаля тоже считается пространством имен
+        /// Формирует узел семантического дерева, соответствующий пространству имен (.NET или пользовательскому)
         /// </summary>
         /// <exception cref="UnitNotFound"></exception>
         /// <exception cref="TreeConverter.NamespaceNotFound"></exception>
-        private using_namespace GetNamespace(using_namespace_list usingList, string fullNamespaceName, SyntaxTree.unit_or_namespace name_space, bool mightBeUnit, Dictionary<string, SyntaxTree.syntax_namespace_node> pascalNamespaces)
+        private using_namespace GetNamespace(using_namespace_list usingList, string fullNamespaceName, SyntaxTree.unit_or_namespace name_space, bool mightBeUnit, Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces)
         {
-            if (!NetHelper.NetHelper.NamespaceExists(fullNamespaceName) && (pascalNamespaces == null || !pascalNamespaces.ContainsKey(fullNamespaceName)))
+            if (!NetHelper.NetHelper.NamespaceExists(fullNamespaceName) && (namespaces == null || !namespaces.ContainsKey(fullNamespaceName)))
             {
                 if (mightBeUnit && !fullNamespaceName.Contains("."))
                     throw new UnitNotFound(currentCompilationUnit.SyntaxTree.file_name, fullNamespaceName, name_space.source_context);
@@ -3483,12 +3482,12 @@ namespace PascalABCCompiler
             return new using_namespace(fullNamespaceName);
         }
 
-        public void AddNamespacesToUsingList(using_namespace_list usingList, List<SyntaxTree.unit_or_namespace> namespaces, bool mightContainUnits, Dictionary<string, SyntaxTree.syntax_namespace_node> pascalNamespaces)
+        public void AddNamespacesToUsingList(using_namespace_list usingList, List<SyntaxTree.unit_or_namespace> possibleNamespaces, bool mightContainUnits, Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces)
         {
-            foreach (SyntaxTree.unit_or_namespace name_space in namespaces)
+            foreach (SyntaxTree.unit_or_namespace name_space in possibleNamespaces)
             {
                 usingList.AddElement(GetNamespace(usingList, SyntaxTree.Utils.IdentListToString(name_space.name.idents, "."),
-                    name_space, mightContainUnits, pascalNamespaces));
+                    name_space, mightContainUnits, namespaces));
             }
         }
 
@@ -3651,7 +3650,7 @@ namespace PascalABCCompiler
             // Добавление пространств имен из uses list (могут быть разных видов)
             AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
 
-            // Добавление пространств имен NET из using list
+            // Добавление пространств имен NET из using list - устаревшее ключевое слово using  |  Вопрос EVA
             AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, GetInterfaceUsingList(currentUnit.SyntaxTree));
 
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
@@ -3665,7 +3664,6 @@ namespace PascalABCCompiler
             // заполнение списков uses семантического уровня
             AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, currentUnit, references);
             #endregion
-
 
             #region IMPLEMENTATION PART
             // берем модули из секции uses в реализации
@@ -3735,8 +3733,8 @@ namespace PascalABCCompiler
 
             references = GetReferences(currentUnit);
 
-            // TODO: закончить рефакторинг
-            namespaces = IncludePascalNamespaces(currentUnit);
+            // TODO: закончить рефакторинг  | Вопрос, как мы будем подключать про-ва имен из других языков  EVA
+            namespaces = PrepareUserNamespacesUsedInTheCurrentUnit(currentUnit);
         }
 
         private void AddCurrentUnitAndItsReferencesToUsesLists(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> directUnitsFromUsesSection,
@@ -4002,11 +4000,10 @@ namespace PascalABCCompiler
                 #region SEMANTIC CHECKS : DIRECTIVES AND OUTPUT FILE TYPE
 
                 // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
-                // TODO: разбросанные директивы компилятора собрать  EVA
                 bool isDll = IsDll(currentUnit.SyntaxTree, out var dllDirective);
                 SemanticCheckDLLDirectiveOnlyForLibraries(currentUnit.SyntaxTree, isDll, dllDirective);
 
-                // ошибка - компилируем вторую основную программу или вторую dll вместо юнита | TODO: может быть, можно объединить с семантической проверкой выше  EVA
+                // ошибка - компилируем вторую основную программу или вторую dll вместо юнита
                 SemanticCheckCurrentUnitMustBePascalUnit(UnitFileName, currentUnit, isDll);
 
                 // ошибка директива include в паскалевском юните
@@ -4151,7 +4148,6 @@ namespace PascalABCCompiler
             string SourceText = null;
             if (CompilerOptions.UnitSyntaxTree == null)
             {
-                // TODO: подебажить GetSourceFileText
                 SourceText = GetSourceFileText(UnitFileName);
                 if (SourceText == null)
                 {

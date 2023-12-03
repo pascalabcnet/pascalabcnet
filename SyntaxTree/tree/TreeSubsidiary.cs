@@ -239,7 +239,6 @@ namespace PascalABCCompiler.SyntaxTree
         private int _begin_symbol_position;
         private int _end_symbol_position;
         private string _file_name=null;
-
         public string FileName
         {
             get
@@ -251,6 +250,11 @@ namespace PascalABCCompiler.SyntaxTree
                 _file_name = value;
             }
         }
+
+        /// <summary>
+        /// дефолтный конструктор (присваивает всем позициям единицы, что соответствует позиции начала файла)
+        /// </summary>
+        public SourceContext() : this(1, 1, 1, 1, 1, 1) { }
 
         public SourceContext(int beg_line_num, int beg_column_num, int end_line_num, int end_column_num, int _begin_symbol_position, int _end_symbol_position)
 		{
