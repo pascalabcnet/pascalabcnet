@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-56159VE
-// DateTime: 29.11.2023 12:52:16
-// UserName: ????
+// Machine:  LAPTOP-MPBGOA9N
+// DateTime: 03.12.2023 12:39:43
+// UserName: krylo
 // Input file <ParserABC.y>
 
 // options: no-lines gplex
@@ -20,7 +20,6 @@ using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
 using System.Linq;
 using System.Collections.Generic;
-using SyntaxVisitors;
 using VeryBasicParser;
 
 namespace VeryBasicParserYacc
@@ -362,7 +361,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
                 var err_stn = progBlock;
 			    if ((progBlock is block) && (progBlock as block).program_code != null && (progBlock as block).program_code.subnodes != null && (progBlock as block).program_code.subnodes.Count > 0)
                     err_stn = (progBlock as block).program_code.subnodes[(progBlock as block).program_code.subnodes.Count - 1];
-                parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                parsertools.errors.Add(new SPythonUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             return progModule;
         }

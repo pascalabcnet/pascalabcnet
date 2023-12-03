@@ -14,7 +14,6 @@
 %using PascalABCCompiler.Errors;
 %using System.Linq;
 %using System.Collections.Generic;
-%using SyntaxVisitors;
 %using VeryBasicParser;
 
 %output = VeryBasicParserYacc.cs
@@ -55,7 +54,7 @@
 %start progr
 
 %%
-progr   : stmt_lst 
+progr   : stmt_lst
 		{
 			var stl = $1 as statement_list;
 
@@ -70,9 +69,9 @@ progr   : stmt_lst
 		}
 		;
 
-stmt_lst	: stmt 
+stmt_lst	: stmt
 			{ $$ = new statement_list($1 as statement, @1); }
-			| stmt_lst SEMICOLON stmt 
+			| stmt_lst SEMICOLON stmt
 			{ $$ = ($1 as statement_list).Add($3 as statement, @$); }
 			;
 
@@ -87,7 +86,7 @@ stmt	: assign		{ $$ = $1; }
 ident 	: ID	{ $$ = $1; }
 		;
 
-assign 	: ident ASSIGN expr 
+assign 	: ident ASSIGN expr
 		{
 			if (!symbolTable.Contains($1.name)) {
 				symbolTable.Add($1.name);
@@ -118,19 +117,19 @@ optional_expr_lst	: expr_lst	{ $$ = $1; }
 					| 			{ $$ = null; }
 					;
 
-expr_lst	: expr 
+expr_lst	: expr
 			{ $$ = new expression_list($1, @$); }
-			| expr_lst COMMA expr 
+			| expr_lst COMMA expr
 			{ $$ = ($1 as expression_list).Add($3, @$); }
 			;
 
-if_stmt	: IF expr COLON block optional_elif 
+if_stmt	: IF expr COLON block optional_elif
 		{ $$ = new if_node($2, $4 as statement, $5 as statement, @$); }
 		;
 
-optional_elif	: ELIF expr COLON block optional_elif 
+optional_elif	: ELIF expr COLON block optional_elif
 				{ $$ = new if_node($2, $4 as statement, $5 as statement, @$); }
-				| optional_else 
+				| optional_else
 				{ $$ = $1; }
 				;
 
@@ -138,11 +137,11 @@ optional_else	: ELSE COLON block	{ $$ = $3; }
 				|					{ $$ = null; }
 				;
 
-while_stmt	: WHILE expr COLON block 
+while_stmt	: WHILE expr COLON block
 			{ $$ = new while_node($2, $4 as statement, WhileCycleType.While, @$); }
 			;
 
-for_stmt	: FOR ident IN expr COLON block 
+for_stmt	: FOR ident IN expr COLON block
 			{ $$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$); }
 			;
 
@@ -157,11 +156,11 @@ variable	: ident				{ $$ = $1; }
 			| proc_func_call	{ $$ = $1; }
 			;
 
-block	: INDENT stmt_lst SEMICOLON UNINDENT 
+block	: INDENT stmt_lst SEMICOLON UNINDENT
 		{ $$ = $2 as statement_list; }
 		;
 
-proc_func_call	: ident LPAR optional_expr_lst RPAR 
+proc_func_call	: ident LPAR optional_expr_lst RPAR
 				{ $$ = new method_call($1 as addressed_value, $3 as expression_list, @$); }
 				;
 
@@ -177,7 +176,7 @@ proc_func_call	: ident LPAR optional_expr_lst RPAR
                 var err_stn = progBlock;
 			    if ((progBlock is block) && (progBlock as block).program_code != null && (progBlock as block).program_code.subnodes != null && (progBlock as block).program_code.subnodes.Count > 0)
                     err_stn = (progBlock as block).program_code.subnodes[(progBlock as block).program_code.subnodes.Count - 1];
-                parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                parsertools.errors.Add(new SPythonUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             return progModule;
         }
