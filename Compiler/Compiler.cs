@@ -3313,7 +3313,7 @@ namespace PascalABCCompiler
 
         public unit_node_list GetReferences(CompilationUnit compilationUnit)
         {
-            //TODO переделать, ConvertDirectives определена дважды и вызывается дважды!  |  Вопрос   EVA
+            //TODO переделать, ConvertDirectives вызывается дважды!
             unit_node_list dlls = new unit_node_list();
             List<compiler_directive> directives;
             if (compilationUnit.SemanticTree is common_unit_node)
@@ -3464,7 +3464,6 @@ namespace PascalABCCompiler
             return new using_namespace(SyntaxTree.Utils.IdentListToString(_name_space.name.idents, "."));
         }
 
-        // TODO: Перепроверить   EVA
         /// <summary>
         /// Формирует узел семантического дерева, соответствующий пространству имен (.NET или пользовательскому)
         /// </summary>
@@ -3609,25 +3608,36 @@ namespace PascalABCCompiler
             var currentDirectory = Path.GetDirectoryName(unitFileName);
 
             // вернет null, если юнит еще не был инициализирован
-            CompilationUnit currentUnit = UnitTable[unitId]; // Вопрос   EVA
+            CompilationUnit currentUnit = UnitTable[unitId];
 
-            #region SEMANTIC CHECKS : USES IN SECTION LOGIC
+            Dictionary<SyntaxTree.syntax_tree_node, string> docs = null;
 
-            // ошибка - пространство имен не может содержать in секцию (для указания файла)
-            SemanticCheckUsesInIsNotNamespace(currentUnitNode, currentUnit);
-            #endregion
+            if (currentUnit != null)
+            {
+                #region SEMANTIC CHECKS : USES IN SECTION LOGIC
 
-            // если модуль уже скомпилирован - возвращаем (возможно, только интерфейс модуля и тогда он докомпилируется в другом рекурсивном вызове)   EVA
-            if (IsUnitCompiled(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, currentUnit))
-                return currentUnit;
+                // ошибка - пространство имен не может содержать in секцию (для указания файла)
+                SemanticCheckUsesInIsNotNamespace(currentUnitNode, currentUnit);
+                #endregion
 
-            // если есть pcu - возврат  EVA
-            if (UnitHasPCU(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, ref unitFileName, ref currentUnit))
-                return currentUnit;
+                // если модуль уже скомпилирован - возвращаем (возможно, только интерфейс модуля и тогда он докомпилируется в другом рекурсивном вызове)   EVA
+                if (currentUnit.State != UnitState.BeginCompilation || currentUnit.SemanticTree != null)  //TODO: ИЗБАВИТЬСЯ ОТ ВТОРОГО УСЛОВИЯ
+                {
+                    AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, 
+                                                              currentUnitNode, currentUnit, GetReferences(currentUnit));
+                    return currentUnit;
+                }
+            }
+            else
+            {
+                // если есть pcu - возврат  EVA
+                if (UnitHasPCU(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, ref unitFileName, ref currentUnit))
+                    return currentUnit;
 
-            // нет pcu и модуль не откомпилирован => новый модуль   EVA
-            InitializeNewUnit(currentUnitNode, unitFileName, unitId,
-                ref currentUnit, out var docs);
+                // нет pcu и модуль не откомпилирован => новый модуль   EVA
+                InitializeNewUnit(currentUnitNode, unitFileName, unitId,
+                    ref currentUnit, ref docs);
+            }
 
             // формирование списков зависимостей текущего модуля (uses list, dll, пространства имен)
             CreateDependencyListsForCurrentUnit(currentUnit, currentDirectory, out var interfaceUsesList, out var references, out var namespaces);
@@ -3750,7 +3760,7 @@ namespace PascalABCCompiler
 
         private void SemanticCheckUsesInIsNotNamespace(SyntaxTree.unit_or_namespace currentUnitNode, CompilationUnit currentUnit)
         {
-            if (currentUnit != null && currentUnit.SemanticTree is dot_net_unit_node
+            if (currentUnit.SemanticTree is dot_net_unit_node
                             && currentUnitNode is SyntaxTree.uses_unit_in ui && ui.in_file != null) // значит, это пространство имен и секция in у него должна отсутствовать
             {
                 ErrorsList.Add(new NamespaceCannotHaveInSection(ui.in_file.source_context));
@@ -3959,82 +3969,77 @@ namespace PascalABCCompiler
         /// генерация синтаксического дерева,
         /// обработка синтаксических ошибок
         /// </summary>
-        private void InitializeNewUnit(SyntaxTree.unit_or_namespace currentUnitNode, string UnitFileName, string UnitId, ref CompilationUnit currentUnit, out Dictionary<SyntaxTree.syntax_tree_node, string> docs)
+        private void InitializeNewUnit(SyntaxTree.unit_or_namespace currentUnitNode, string UnitFileName, string UnitId, ref CompilationUnit currentUnit, ref Dictionary<SyntaxTree.syntax_tree_node, string> docs)
         {
-            docs = null;
-            if (currentUnit == null)
+            currentUnit = new CompilationUnit();
+            if (firstCompilationUnit == null)
+                firstCompilationUnit = currentUnit;
+
+            // Если файл .yavb то надо заменить исходный файл на другой с предварительной обработкой
+            if (Path.GetExtension(UnitFileName) == ".yavb")
             {
-
-                currentUnit = new CompilationUnit();
-                if (firstCompilationUnit == null)
-                    firstCompilationUnit = currentUnit;
-
-                // Если файл .yavb то надо заменить исходный файл на другой с предварительной обработкой
-                if (Path.GetExtension(UnitFileName) == ".yavb")
-                {
-                    IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
-                    ia.ArrangeIndents();
-                    UnitFileName = ia.CreatedFilePath;
-                }
-
-                OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName); // начало компиляции модуля
-
-                #region SYNTAX TREE CONSTRUCTING
-                // получение синтаксического дерева
-                string sourceText = GetSourceCode(currentUnitNode, UnitFileName, currentUnit);
-
-                currentUnit.SyntaxTree = ConstructSyntaxTree(UnitFileName, currentUnit, sourceText);
-                #endregion
-
-                if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
-                    CompilerOptions.UseDllForSystemUnits = false;
-
-                if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне (синтаксический сахар)
-                {
-                    currentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(currentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
-                }
-
-                // генерация документации к узлам синтаксического дерева EVA
-                docs = GenUnitDocumentation(currentUnit, sourceText);
-
-                #region SEMANTIC CHECKS : DIRECTIVES AND OUTPUT FILE TYPE
-
-                // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
-                bool isDll = IsDll(currentUnit.SyntaxTree, out var dllDirective);
-                SemanticCheckDLLDirectiveOnlyForLibraries(currentUnit.SyntaxTree, isDll, dllDirective);
-
-                // ошибка - компилируем вторую основную программу или вторую dll вместо юнита
-                SemanticCheckCurrentUnitMustBePascalUnit(UnitFileName, currentUnit, isDll);
-
-                // ошибка директива include в паскалевском юните
-                SemanticCheckNoIncludeDirectivesInPascalUnit(currentUnit);
-                #endregion
-
-                // Set output file type for dll
-                if (isDll)
-                    CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // Вопрос, нужно ли это здесь, если это есть в Compile в конце  EVA
-
-                if (ParsersController.LastParser != null)
-                    currentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
-
-                currentCompilationUnit = currentUnit;
-
-                currentUnit.SyntaxUnitName = currentUnitNode;
-
-                // сопоставление нодам ошибок     EVA
-                MatchErrorsToBadNodes(currentUnit);
-
-                CheckErrorsAndThrowTheFirstOne();
-
-                UnitTable[UnitId] = currentUnit;
-
-                // здесь добавляем стандартные модули в секцию uses интерфейса
-#if DEBUG
-                if (InternalDebug.AddStandartUnits)
-#endif
-                    AddStandardUnitsToInterfaceUsesSection(currentUnit.SyntaxTree);
-
+                IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
+                ia.ArrangeIndents();
+                UnitFileName = ia.CreatedFilePath;
             }
+
+            OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName); // начало компиляции модуля
+
+            #region SYNTAX TREE CONSTRUCTING
+            // получение синтаксического дерева
+            string sourceText = GetSourceCode(currentUnitNode, UnitFileName, currentUnit);
+
+            currentUnit.SyntaxTree = ConstructSyntaxTree(UnitFileName, currentUnit, sourceText);
+            #endregion
+
+            if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
+                CompilerOptions.UseDllForSystemUnits = false;
+
+            if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне (синтаксический сахар)
+            {
+                currentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(currentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
+            }
+
+            // генерация документации к узлам синтаксического дерева EVA
+            docs = GenUnitDocumentation(currentUnit, sourceText);
+
+            #region SEMANTIC CHECKS : DIRECTIVES AND OUTPUT FILE TYPE
+
+            // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
+            bool isDll = IsDll(currentUnit.SyntaxTree, out var dllDirective);
+            SemanticCheckDLLDirectiveOnlyForLibraries(currentUnit.SyntaxTree, isDll, dllDirective);
+
+            // ошибка - компилируем вторую основную программу или вторую dll вместо юнита
+            SemanticCheckCurrentUnitMustBePascalUnit(UnitFileName, currentUnit, isDll);
+
+            // ошибка директива include в паскалевском юните
+            SemanticCheckNoIncludeDirectivesInPascalUnit(currentUnit);
+            #endregion
+
+            // Set output file type for dll
+            if (isDll)
+                CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // Вопрос, нужно ли это здесь, если это есть в Compile в конце  EVA
+
+            if (ParsersController.LastParser != null)
+                currentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
+
+            currentCompilationUnit = currentUnit;
+
+            currentUnit.SyntaxUnitName = currentUnitNode;
+
+            // сопоставление нодам ошибок     EVA
+            MatchErrorsToBadNodes(currentUnit);
+
+            CheckErrorsAndThrowTheFirstOne();
+
+            UnitTable[UnitId] = currentUnit;
+
+            // здесь добавляем стандартные модули в секцию uses интерфейса
+#if DEBUG
+            if (InternalDebug.AddStandartUnits)
+#endif
+                AddStandardUnitsToInterfaceUsesSection(currentUnit.SyntaxTree);
+
 
             currentCompilationUnit = currentUnit;
 
@@ -4191,9 +4196,9 @@ namespace PascalABCCompiler
             return false;
         }
 
-        private bool UnitHasPCU(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> PascalUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, ref string UnitFileName, ref CompilationUnit currentUnit)
+        private bool UnitHasPCU(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> directUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, ref string UnitFileName, ref CompilationUnit currentUnit)
         {
-            if (currentUnit == null && Path.GetExtension(UnitFileName).ToLower() == CompilerOptions.CompiledUnitExtension)
+            if (Path.GetExtension(UnitFileName).ToLower() == CompilerOptions.CompiledUnitExtension)
             {
                 if (File.Exists(UnitFileName))
                 {
@@ -4202,9 +4207,9 @@ namespace PascalABCCompiler
                     {
                         if ((currentUnit = ReadPCU(UnitFileName)) != null)
                         {
-                            if (unitsFromUsesSection.AddElement(currentUnit.SemanticTree, currentUnitNode.UsesPath()))
-                                PascalUnitsFromUsesSection.Add(currentUnit.SemanticTree, currentUnit);
-                            unitsFromUsesSection.AddRange(GetReferences(currentUnit));
+                            AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, 
+                                                                      currentUnitNode, currentUnit, GetReferences(currentUnit));
+
                             UnitTable[Path.ChangeExtension(UnitFileName, null)] = currentUnit;
                             return true;
                         }
