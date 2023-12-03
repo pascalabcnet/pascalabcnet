@@ -2210,8 +2210,9 @@ namespace PascalABCCompiler
                 if (ErrorsList.Count == 0)
                 {
 
-                    //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter.
-                    program_node semanticTree = ConstructMainSemanticTree(compilerOptions); // получние полного семантического дерева, включающего все зависимости
+                    //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Вопрос о целесоообразности  EVA
+                    // получние полного семантического дерева, включающего все зависимости
+                    program_node semanticTree = ConstructMainSemanticTree(compilerOptions); 
 
                     if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && CompilerOptions.OutputFileType != CompilerOptions.OutputType.ClassLibrary)
                     {
@@ -2326,70 +2327,32 @@ namespace PascalABCCompiler
 
         private program_node ConstructMainSemanticTree(NETGenerator.CompilerOptions compilerOptions)
         {
-
-
-            program_node programRoot = new program_node(null, null);
+            program_node mainSemanticTree = new program_node(null, null);
 
             for (int i = 0; i < UnitsLogicallySortedList.Count; i++)
-                programRoot.units.AddElement(UnitsLogicallySortedList[i].SemanticTree as common_unit_node);
+                mainSemanticTree.units.AddElement(UnitsLogicallySortedList[i].SemanticTree as common_unit_node);
 
-            CreateMainFunction(programRoot, compilerOptions); // TODO: планируется вынесение в другой класс  EVA
+            bool targetTypeIsExe = compilerOptions.target == NETGenerator.TargetType.Exe || compilerOptions.target == NETGenerator.TargetType.WinExe;
 
-            if (CompilerOptions.GenerateCode) // семантические преобразования с оптимизацией кода
-                programRoot = semanticTreeConvertersController.Convert(programRoot) as program_node;
-
-            semanticTree = programRoot;
-            return programRoot;
-        }
-
-        private void CreateMainFunction(program_node programNode, NETGenerator.CompilerOptions compilerOptions)
-        {
             // если компилируем exe или WinExe (первый модуль - основная программа)
-            if (firstCompilationUnit.SyntaxTree is SyntaxTree.program_module)
+            if (firstCompilationUnit.SyntaxTree is SyntaxTree.program_module && targetTypeIsExe && UnitsLogicallySortedList.Count > 0)
             {
-                if ((compilerOptions.target == NETGenerator.TargetType.Exe) || (compilerOptions.target == NETGenerator.TargetType.WinExe))
-                {
-                    if (UnitsLogicallySortedList.Count > 0)
-                    {
-                        programNode.main_function = ((common_unit_node)UnitsLogicallySortedList[UnitsLogicallySortedList.Count - 1].SemanticTree).main_function;
+                mainSemanticTree.main_function = ((common_unit_node)UnitsLogicallySortedList.Last().SemanticTree).main_function;
 
-                        /***************************Ivan added*******************************/
-                        if (programNode.main_function.function_code.location != null)
-                        {
-                            bool flag = false;
-                            common_namespace_node main_ns = programNode.main_function.namespace_node;
-                            for (int i = 0; i < main_ns.variables.Count; i++)
-                            {
-                                namespace_variable nv = main_ns.variables[i];
-                                if (nv.inital_value != null && nv.inital_value.location != null && !(nv.inital_value is constant_node)
-                                    && !(nv.inital_value is record_initializer) && !(nv.inital_value is array_initializer))
-                                {
-                                    varBeginOffset = main_ns.variables[i].inital_value.location.begin_line_num;
-                                    flag = true;
-                                    break;
-                                }
-                            }
-                            beginOffset = programNode.main_function.function_code.location.begin_line_num;
-                        }
-                        /*******************************************************************/
-                        // локализация
-                        Dictionary<string, object> config_dic = new Dictionary<string, object>();
-                        if (CompilerOptions.Locale != null && PascalABCCompiler.StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale) != null)
-                        {
-                            config_dic["locale"] = CompilerOptions.Locale;
-                            config_dic["full_locale"] = PascalABCCompiler.StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale);
-                        }
-                        programNode.create_main_function(StandardModules.ToArray(), config_dic);
-
-                    }
-                }
+                SyntaxTreeToSemanticTreeConverter.PrepareFinalMainFunctionForExe(mainSemanticTree, StandardModules.ToArray(), CompilerOptions.Locale, ref varBeginOffset, ref beginOffset);
             }
             // если мы компилируем dll
-            else if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && compilerOptions.target == NETGenerator.TargetType.Dll)
+            else if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module)
             {
                 // TODO: посмотреть инициализирующий код .dll  EVA
-                programNode.create_main_function_as_in_module();
+                mainSemanticTree.create_main_function_as_in_module();
             }
+
+            if (CompilerOptions.GenerateCode) // семантические преобразования с оптимизацией кода
+                mainSemanticTree = semanticTreeConvertersController.Convert(mainSemanticTree) as program_node;
+
+            semanticTree = mainSemanticTree;
+            return mainSemanticTree;
         }
 
         private void AddErrorToErrorListConsideringPosition(Error err)

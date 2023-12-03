@@ -8,7 +8,7 @@
  *
  ***************************************************************************/
 
-using System;
+using PascalABCCompiler.TreeRealization;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.TreeConverter
@@ -165,6 +165,38 @@ namespace PascalABCCompiler.TreeConverter
 			//stv.visit(SyntaxUnit);
 			//return stv.compiled_unit;
 		}
+
+
+        public void PrepareFinalMainFunctionForExe(program_node mainSemanticTree, string[] standardModules, string locale, ref int varBeginOffset, ref int beginOffset)
+        {
+            // вычисляем номер строку первой переменной и строки с началом основной программы
+            if (mainSemanticTree.main_function.function_code.location != null)
+            {
+                common_namespace_node main_ns = mainSemanticTree.main_function.namespace_node;
+                
+                foreach (namespace_variable variable in main_ns.variables)
+                {
+                    if (variable.inital_value?.location != null && !(variable.inital_value is constant_node)
+                        && !(variable.inital_value is record_initializer) && !(variable.inital_value is array_initializer))
+                    {
+                        varBeginOffset = variable.inital_value.location.begin_line_num;
+                        break;
+                    }
+                }
+                beginOffset = mainSemanticTree.main_function.function_code.location.begin_line_num;
+            }
+
+            // локализация
+            Dictionary<string, object> config_dict = new Dictionary<string, object>();
+            if (locale != null && StringResourcesLanguage.GetLCIDByTwoLetterISO(locale) != null)
+            {
+                config_dict["locale"] = locale;
+                config_dict["full_locale"] = StringResourcesLanguage.GetLCIDByTwoLetterISO(locale);
+            }
+            mainSemanticTree.create_main_function(standardModules, config_dict);
+        }
+
+
 		public void Reset()
 		{
 			stv.reset();
