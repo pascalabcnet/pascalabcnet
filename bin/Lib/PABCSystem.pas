@@ -786,7 +786,7 @@ type
     end;
     
     /// Возвращает True если диапазон пуст
-    function IsEmpty: boolean := l>=h;
+    function IsEmpty: boolean := l>h;
     
     function ToString: string; override := $'{l}..{h}';
     

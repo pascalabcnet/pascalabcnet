@@ -19,3 +19,5 @@ Assert( 2 in rr );
 Assert( 2.5 in rr );
 Assert( 3 in rr );
 Assert( 4 not in rr );
+
+Assert( 2 in 2.0..2 );
