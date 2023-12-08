@@ -1984,7 +1984,20 @@ method_header
 			$$ = $2;
 		}
     | method_procfunc_header
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
+    | tkAsync class_or_static method_procfunc_header
+        { 
+			($3 as procedure_header).class_keyword = true;
+			($3 as procedure_header).IsAsync = true;
+			$$ = $3;
+		}
+    | tkAsync method_procfunc_header
+		{ 
+			($2 as procedure_header).IsAsync = true;
+			$$ = $2; 
+		}
     | constr_destr_header
 		{ $$ = $1; }
     ;
