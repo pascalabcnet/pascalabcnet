@@ -5,7 +5,7 @@
     File "..\bin\Compiler.dll"
     File "..\bin\CompilerTools.dll"
     File "..\bin\Errors.dll"
-	File "..\bin\GPPG.dll"
+	File "..\bin\ShiftReduceParser.dll"
     File "..\bin\Localization.dll"
     File "..\bin\NETGenerator.dll"
     File "..\bin\ParserTools.dll"
@@ -56,7 +56,7 @@
 	;dobavljaem fajly v uninst.log
 	${AddFile} "Compiler.dll"
     ${AddFile} "CompilerTools.dll"
-	${AddFile} "GPPG.dll"
+	${AddFile} "ShiftReduceParser.dll"
     ${AddFile} "Errors.dll"
     ${AddFile} "Localization.dll"
     ${AddFile} "NETGenerator.dll"
