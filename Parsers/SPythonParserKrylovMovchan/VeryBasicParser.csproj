@@ -62,9 +62,9 @@
       <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
       <Name>Errors</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\GPPG\GPPG.csproj">
+    <ProjectReference Include="..\..\GPPG\ShiftReduceParser.csproj">
       <Project>{ad4e1292-2537-467a-934d-e9fda3f18d87}</Project>
-      <Name>GPPG</Name>
+      <Name>ShiftReduceParser</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Localization\Localization.csproj">
       <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
