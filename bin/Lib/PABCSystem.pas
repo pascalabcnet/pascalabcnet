@@ -618,7 +618,7 @@ type
   end;
   
 type 
-  //TODO #2982
+  //TODO #2983
   /// Тип диапазона целых
   IntRange = record(ICollection<integer>{, IReadOnlyCollection<integer>}, IEquatable<IntRange>)
   private
@@ -691,7 +691,7 @@ type
     
   end;
   
-  //TODO #2982
+  //TODO #2983
   /// Тип диапазона символов
   CharRange = record(ICollection<char>{, IReadOnlyCollection<char>}, IEquatable<CharRange>)
   private
