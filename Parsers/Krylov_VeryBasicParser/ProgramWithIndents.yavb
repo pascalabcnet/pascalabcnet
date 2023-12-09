@@ -1,8 +1,0 @@
-﻿a = 4
-if a > 2:
-    print(sin(a))
-    print(cos(a))
-    if a > 3:
-        print(a > 4)
-else:
-    print(10)

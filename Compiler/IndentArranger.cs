@@ -19,8 +19,8 @@ namespace IndentArranger
 
         // количество пробелов соответствующее одному \t (в одном отступе)
         private const int indentSpaceNumber = 4;
-        private const string indentToken = "@Indent";
-        private const string unindentToken = "@Unindent";
+        private const string indentToken = "{";
+        private const string unindentToken = "}";
         public const string createdFileNameAddition = "_indented";
 
         public IndentArranger(string path)
@@ -86,7 +86,7 @@ namespace IndentArranger
             {
                 lineCounter++;
                 // вывод номера текущей строки для дебага (+1 т.к. нумерация с нуля)
-                Console.Write($"{lineCounter + 1}:\t");
+                //Console.Write($"{lineCounter + 1}:\t");
 
                 bool isEmptyLine = true; // строка не содержит символов кроме 'space'\t\n\r
                 bool readFirstToken = false;
@@ -127,7 +127,7 @@ namespace IndentArranger
                 // пропуск строки не содержащей код 
                 if (isEmptyLine)
                 {
-                    Console.WriteLine("EmptyLine");
+                    //Console.WriteLine("EmptyLine");
                     continue;
                 }
 
@@ -154,8 +154,8 @@ namespace IndentArranger
                     if (lastNotEmptyLine != -1)
                         programLines[lastNotEmptyLine] += indentToken;
                     // закомментировать ветку else если нет блока оборачивающего всю программу
-                    else
-                        File.AppendAllText(CreatedFilePath, indentToken + "\n");
+                    //else
+                        //File.AppendAllText(CreatedFilePath, indentToken + "\n");
                 }
                 // текущий отступ соответствует уменьшению на один или несколько отступов
                 else if (currentLineIndentLevel < previousIndentLevel)
@@ -169,8 +169,7 @@ namespace IndentArranger
 
                     // если был if и сейчас на том же отступе else, то это не конец команды
                     // поэтому ставить ; в конце не надо (она будет после блока else)
-                    bool isEndOfStatement = !(previousFirstTokenType == FirstTokenType.If 
-                                            && currentFirstTokenType == FirstTokenType.Else);
+                    bool isEndOfStatement = !(currentFirstTokenType == FirstTokenType.Elif || currentFirstTokenType == FirstTokenType.Else);
 
                     firstTokensTypesStack.Push(currentFirstTokenType);
 
@@ -195,15 +194,15 @@ namespace IndentArranger
                 previousIndentLevel = currentLineIndentLevel;
                 lastNotEmptyLine = lineCounter;
 
-                Console.Write(firstTokensTypesStack.Peek() + " #" + firstTokensTypesStack.Count);
+                //Console.Write(firstTokensTypesStack.Peek() + " #" + firstTokensTypesStack.Count);
 
-                Console.WriteLine();
+                //Console.WriteLine();
             }
 
             // закрытие всех отступов в конце файла
-            // (убрать "+ 1" если нет блока оборачивающего всю программу)
+            // (заменить "currentLineIndentLevel + 1" на "currentLineIndentLevel" если нет блока оборачивающего всю программу)
             programLines[lastNotEmptyLine] +=
-                string.Concat(Enumerable.Repeat(";" + unindentToken, currentLineIndentLevel + 1));
+                string.Concat(Enumerable.Repeat(";" + unindentToken, currentLineIndentLevel));
 
             //Console.WriteLine("EOF:\t" + 
             //    string.Concat(Enumerable.Repeat(unindentLiteral + " ", currentLineIndentCounter + 1)));

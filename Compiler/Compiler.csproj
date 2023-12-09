@@ -134,10 +134,6 @@
       <Project>{A25D26FB-3043-4BCF-833E-E3F4C3BE795E}</Project>
       <Name>CompilerTools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Parsers\Krylov_VeryBasicParser\IndentArranger\IndentArranger.csproj">
-      <Project>{5d2db497-0e6d-43c8-8334-b42b0cc9540f}</Project>
-      <Name>IndentArranger</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ParserTools\ParserTools.csproj">
       <Project>{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}</Project>
       <Name>ParserTools</Name>

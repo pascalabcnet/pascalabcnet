@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Errors.cs" />
     <Compile Include="Keywords.cs" />
     <Compile Include="LexerABC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,10 +85,6 @@
     <ProjectReference Include="..\..\UniversalParserHelper\UniversalParserHelper.csproj">
       <Project>{e862a9ef-836b-414b-aac4-9d207cabdc82}</Project>
       <Name>UniversalParserHelper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj">
-      <Project>{1443f539-dcc7-4491-b4fd-b716c739db3c}</Project>
-      <Name>PascalABCSaushkinParser</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

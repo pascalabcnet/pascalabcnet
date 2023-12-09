@@ -11,6 +11,18 @@ using PascalABCCompiler.Errors;
 
 namespace UniversalParserHelper
 {
+    public static class StringResources
+    {
+        private static string prefix = "PASCALABCPARSER_";
+        public static string Get(string Id)
+        {
+            string ret = PascalABCCompiler.StringResources.Get(prefix + Id);
+            if (ret == prefix + Id)
+                return Id;
+            else
+                return ret;
+        }
+    }
     public abstract class UniversalParserHelper
     {
         private const int max_char_const = 0xFFFF;
@@ -218,13 +230,35 @@ namespace UniversalParserHelper
         {
             errors.Add(new SyntaxError(message, CurrentFileName, loc, null));
         }
-
         public string CreateErrorString(string yytext, LexLocation yyloc, params object[] args)
+        {
+            string prefix = "";
+            if (yytext != "")
+                prefix = StringResources.Get("FOUND{0}");
+            else
+                prefix = StringResources.Get("FOUNDEOF");
+
+            if (this.build_tree_for_format_strings && prefix == StringResources.Get("FOUNDEOF"))
+            {
+                yytext = "}";
+                prefix = StringResources.Get("FOUND{0}");
+            }
+
+            // Преобразовали в список строк - хорошо
+            string expected = String.Join(", ", args.Skip(1).Select(x => x.ToString()));
+
+            var ExpectedString = StringResources.Get("EXPECTED{1}");
+
+            // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
+
+            return string.Format(prefix + ExpectedString, "'" + yytext + "'", expected);
+        }
+       /* public string CreateErrorString(string yytext, LexLocation yyloc, params object[] args)
         {
             string expected = String.Join(", ", args.Skip(1).Select(x => x.ToString()));
             string err = $"PARSER ERROR \"{yytext}\" AT LINE #{yyloc.StartLine}: EXPECTED  {expected}, FOUND {args[0]}";
             return err;
-        }
+        }*/
         public List<object> ident_list11(object lr1, object lr3)
         {
             List<object> ar = (List<object>)lr3;

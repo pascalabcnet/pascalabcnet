@@ -13,8 +13,6 @@ AlphaDigit {Alpha}|{Digit}
 INTNUM  {Digit}+
 REALNUM {INTNUM}\.{INTNUM}
 ID {Alpha}{AlphaDigit}*
-INDENT "@Indent"
-UNINDENT "@Unindent"
 
 %{
   public VeryBasicParserTools parsertools;
@@ -36,14 +34,6 @@ UNINDENT "@Unindent"
   return (int)Tokens.REALNUM;
 }
 
-{INDENT} {
-  return (int)Tokens.INDENT;
-}
-
-{UNINDENT} {
-  return (int)Tokens.UNINDENT;
-}
-
 {ID}  {
   string cur_yytext = yytext;
   int res = Keywords.KeywordOrIDToken(cur_yytext);
@@ -55,15 +45,17 @@ UNINDENT "@Unindent"
   return res;
 }
 
-//"+"  { yylval.sVal = yytext; return (int)Tokens.PLUS; }
-//"-"  { yylval.sVal = yytext; return (int)Tokens.MINUS; }
-//"*"  { yylval.sVal = yytext; return (int)Tokens.MULTIPLY; }
-//"/"  { yylval.sVal = yytext; return (int)Tokens.DIVIDE; }
-//"<"  { yylval.sVal = yytext; return (int)Tokens.LOWER; }
+"+"  { yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.PLUS; }
+"-"  { yylval.op = new op_type_node(Operators.Minus); return (int)Tokens.MINUS; }
+"*"  { yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.MULTIPLY; }
+"/"  { yylval.op = new op_type_node(Operators.Division); return (int)Tokens.DIVIDE; }
+"<"  { yylval.op = new op_type_node(Operators.Less); return (int)Tokens.LOWER; }
 ">"  { yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.GREATER; }
 
-"{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACE; }
-"}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACE; }
+//"{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACE; }
+"{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.INDENT; }
+//"}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACE; }
+"}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.UNINDENT; }
 "["  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACKET; }
 "]"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACKET; }
 
