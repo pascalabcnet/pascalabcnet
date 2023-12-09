@@ -391,6 +391,8 @@ UNICODEARROW \x890
     case (int)Tokens.tkWhen:
     case (int)Tokens.tkStatic:
     case (int)Tokens.tkStep:
+    case (int)Tokens.tkAsync:
+    case (int)Tokens.tkAwait:
 		yylval = new Union();
         yylval.ti = new token_info(cur_yytext,currentLexLocation);
         break;
@@ -582,4 +584,4 @@ UNICODEARROW \x890
             }
     }
 
-// Статический класс, определяющий ключевые слова языка, находится в файле Keywords.cs
+// РЎС‚Р°С‚РёС‡РµСЃРєРёР№ РєР»Р°СЃСЃ, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РєР»СЋС‡РµРІС‹Рµ СЃР»РѕРІР° СЏР·С‹РєР°, РЅР°С…РѕРґРёС‚СЃСЏ РІ С„Р°Р№Р»Рµ Keywords.cs
