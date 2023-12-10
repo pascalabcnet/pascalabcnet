@@ -32,7 +32,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR, IN, WHILE, IF, ELSE, ELIF
+%token <ti> FOR, IN, WHILE, IF, ELSE, ELIF, LOCAL
 %token <ex> INTNUM, REALNUM
 %token <ti> LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET, DOT, COMMA, COLON, SEMICOLON, INDENT, UNINDENT
 %token <op> ASSIGN
@@ -96,6 +96,14 @@ assign 	: ident ASSIGN expr
 			else {
 				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 			}
+			// symbolTable.Add($1.name);
+			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
+		}
+		| LOCAL ident ASSIGN expr
+		{
+			symbolTable.Add($2.name);
+			var vds = new var_def_statement(new ident_list($2, @2), null, $4, definition_attribute.None, false, @$);
+			$$ = new var_statement(vds, @$);
 			// symbolTable.Add($1.name);
 			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
