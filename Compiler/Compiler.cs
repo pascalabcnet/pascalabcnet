@@ -1196,17 +1196,18 @@ namespace PascalABCCompiler
                 tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, new TreeRealization.document(FileName));
         }
 
-        // TODO: добавить memo
         /// <summary>
         /// преобразует в директивы семантического уровня
         /// </summary>
-        private List<compiler_directive> ConvertDirectives(SyntaxTree.compilation_unit compilationUnit)
+        private List<compiler_directive> GetDirectivesAsSemanticNodes(List<SyntaxTree.compiler_directive> compilerDirectives, string unitFileName)
         {
             List<compiler_directive> list = new List<compiler_directive>();
-            foreach (SyntaxTree.compiler_directive directive in compilationUnit.compiler_directives)
+            foreach (SyntaxTree.compiler_directive directive in compilerDirectives)
             {
-                list.Add(new compiler_directive(directive.Name.text, directive.Directive != null ? directive.Directive.text : "",
-                    get_location_from_treenode(directive, compilationUnit.file_name), compilationUnit.file_name));
+                list.Add(new compiler_directive(directive.Name.text, 
+                    directive.Directive?.text ?? "",
+                    get_location_from_treenode(directive, unitFileName), 
+                    unitFileName));
             }
             return list;
         }
@@ -3080,9 +3081,9 @@ namespace PascalABCCompiler
                 loc.end_column_num, 0, 0);
         }
 
-        private bool HasIncludeNamespaceDirective(CompilationUnit Unit)
+        private bool HasIncludeNamespaceDirective(CompilationUnit unit)
         {
-            var directives = ConvertDirectives(Unit.SyntaxTree);
+            var directives = GetDirectivesAsSemanticNodes(unit.SyntaxTree.compiler_directives, unit.SyntaxTree.file_name);
 
             return directives.Any(directive => directive.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive);
         }
@@ -3090,7 +3091,7 @@ namespace PascalABCCompiler
 
         private Dictionary<string, SyntaxTree.syntax_namespace_node> PrepareUserNamespacesUsedInTheCurrentUnit(CompilationUnit compilationUnit)
         {
-            var directives = ConvertDirectives(compilationUnit.SyntaxTree);
+            var directives = GetDirectivesAsSemanticNodes(compilationUnit.SyntaxTree.compiler_directives, compilationUnit.SyntaxTree.file_name);
 
             List<string> files = GetIncludedFilesFromDirectives(compilationUnit, directives);
 
@@ -3276,13 +3277,12 @@ namespace PascalABCCompiler
 
         public unit_node_list GetReferences(CompilationUnit compilationUnit)
         {
-            //TODO переделать, ConvertDirectives вызывается дважды!
             unit_node_list dlls = new unit_node_list();
             List<compiler_directive> directives;
             if (compilationUnit.SemanticTree is common_unit_node)
                 directives = (compilationUnit.SemanticTree as common_unit_node).compiler_directives;
             else
-                directives = ConvertDirectives(compilationUnit.SyntaxTree);
+                directives = GetDirectivesAsSemanticNodes(compilationUnit.SyntaxTree.compiler_directives, compilationUnit.SyntaxTree.file_name);
 
             AddReferencesToSystemUnits(compilationUnit, directives);
 
@@ -3357,10 +3357,11 @@ namespace PascalABCCompiler
                             directives.Add(new compiler_directive("reference", "%GAC%\\PresentationCore.dll", null, "."));
                             directives.Add(new compiler_directive("reference", "%GAC%\\HelixToolkit.Wpf.dll", null, "."));
                             directives.Add(new compiler_directive("reference", "%GAC%\\HelixToolkit.dll", null, "."));
+
+                            break;
                         }
                     }
                 }
-                // Вопрос, не нужен ли тут break   EVA
             }
         }
 
@@ -3383,10 +3384,11 @@ namespace PascalABCCompiler
                 return true;
 
             // если есть что-то одно
-            string fileName = sourceFileName ?? pcuFileName;
+            /*string fileName = sourceFileName ?? pcuFileName;
 
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
 
+            // оставить только PT4 и протестировать
             string[] standardFiles = new string[] { "PT4", "CRT", "Arrays", "MPI", "LibForHaskell", "Collections", "Core", "Oberon00System" };
 
             bool isStandardFile = standardFiles.Any(standardFile => standardFile.Equals(fileNameWithoutExtension, StringComparison.CurrentCultureIgnoreCase)); // current culture ?
@@ -3397,24 +3399,6 @@ namespace PascalABCCompiler
                 && isStandardFile)
             {
                 string s = Path.GetFileNameWithoutExtension(fileName).ToLower();
-                if (addToStandardModules && !StandardModules.Contains(s))
-                    StandardModules.Add(s);
-                return true;
-            }
-
-            /*if (CompilerOptions.UseDllForSystemUnits && pcuFileName != null && string.Compare(Path.GetDirectoryName(pcuFileName), Path.Combine(CompilerOptions.SystemDirectory, "Lib"), true) == 0
-                && string.Compare(Path.GetFileNameWithoutExtension(pcuFileName), "PT4", true) != 0 
-                && string.Compare(Path.GetFileNameWithoutExtension(pcuFileName), "CRT", true) != 0 
-                && string.Compare(Path.GetFileNameWithoutExtension(pcuFileName), "Arrays", true) != 0
-                //&& string.Compare(Path.GetFileNameWithoutExtension(pcu), "FormsABC", true) != 0
-                && string.Compare(Path.GetFileNameWithoutExtension(pcuFileName), "MPI", true) != 0
-                && string.Compare(Path.GetFileNameWithoutExtension(pcuFileName), "LibForHaskell", true) != 0
-                && string.Compare(Path.GetFileNameWithoutExtension(pcuFileName), "Collections", true) != 0
-                && string.Compare(Path.GetFileNameWithoutExtension(pcuFileName), "Core", true) != 0
-                && string.Compare(Path.GetFileNameWithoutExtension(pcuFileName), "Oberon00System", true) != 0
-                )
-            {
-                string s = Path.GetFileNameWithoutExtension(pcuFileName).ToLower();
                 if (addToStandardModules && !StandardModules.Contains(s))
                     StandardModules.Add(s);
                 return true;
@@ -3623,7 +3607,7 @@ namespace PascalABCCompiler
             // Добавление пространств имен из uses list (могут быть разных видов)
             AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
 
-            // Добавление пространств имен NET из using list - устаревшее ключевое слово using  |  Вопрос EVA
+            // Добавление пространств имен NET из using list - устаревшее ключевое слово using
             AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, GetInterfaceUsingList(currentUnit.SyntaxTree));
 
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
@@ -4142,21 +4126,6 @@ namespace PascalABCCompiler
                 }
             }
             return docs;
-        }
-
-        private bool IsUnitCompiled(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> PascalUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, CompilationUnit currentUnit)
-        {
-            if (currentUnit != null)
-            {
-                if (currentUnit.State != UnitState.BeginCompilation || currentUnit.SemanticTree != null)  //TODO: ИЗБАВИТЬСЯ ОТ ВТОРОГО УСЛОВИЯ
-                {
-                    if (unitsFromUsesSection.AddElement(currentUnit.SemanticTree, currentUnitNode.UsesPath()))
-                        PascalUnitsFromUsesSection.Add(currentUnit.SemanticTree, currentUnit);
-                    unitsFromUsesSection.AddRange(GetReferences(currentUnit));
-                    return true;
-                }
-            }
-            return false;
         }
 
         private bool UnitHasPCU(unit_node_list unitsFromUsesSection, Dictionary<unit_node, CompilationUnit> directUnitsFromUsesSection, SyntaxTree.unit_or_namespace currentUnitNode, ref string UnitFileName, ref CompilationUnit currentUnit)
