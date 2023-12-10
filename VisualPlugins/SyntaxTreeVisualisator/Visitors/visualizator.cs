@@ -34,12 +34,18 @@ namespace VisualPascalABCPlugins
 			tn.Text=text;
 			tn.Tag=subnode;
 			string s=get_node_info.node(subnode);
-			if (s!=null)
-			{
-				tn.Text+="     "+s;
-			}
-			//tn.Nodes.Clear();
-			visualizator vs=new visualizator(tn.Nodes);
+			//get_async_info.node(subnode);
+			//if (s!=null)
+			//{
+			//	if (s.EndsWith("Async"))
+			//		tn.Text += "     " + s + "  ASYNCcount =" + get_async_info.AsyncCount;
+			//	else
+			//		tn.Text += "     " + s;
+
+   //         }
+            tn.Text += "     " + s;
+            //tn.Nodes.Clear();
+            visualizator vs=new visualizator(tn.Nodes);
 			subnode.visit(vs);
 			nodes.Add(tn);
 		}
