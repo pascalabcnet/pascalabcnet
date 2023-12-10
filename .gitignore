@@ -74,6 +74,7 @@
 **/UniversalParserHelper.dll
 
 
+
 # external .dll files copied to bin
 /bin/AvalonDock.dll
 /bin/PT4Tools.dll
