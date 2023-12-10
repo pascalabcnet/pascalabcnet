@@ -167,7 +167,7 @@ namespace PascalABCCompiler.TreeConverter
 		}
 
 
-        public void PrepareFinalMainFunctionForExe(program_node mainSemanticTree, string[] standardModules, string locale, ref int varBeginOffset, ref int beginOffset)
+        public void PrepareFinalMainFunctionForExe(program_node mainSemanticTree, string locale, ref int varBeginOffset, ref int beginOffset)
         {
             // вычисляем номер строку первой переменной и строки с началом основной программы
             if (mainSemanticTree.main_function.function_code.location != null)
@@ -193,7 +193,7 @@ namespace PascalABCCompiler.TreeConverter
                 config_dict["locale"] = locale;
                 config_dict["full_locale"] = StringResourcesLanguage.GetLCIDByTwoLetterISO(locale);
             }
-            mainSemanticTree.create_main_function(standardModules, config_dict);
+            mainSemanticTree.create_main_function(config_dict);
         }
 
 
