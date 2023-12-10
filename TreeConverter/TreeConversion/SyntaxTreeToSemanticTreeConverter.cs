@@ -166,7 +166,6 @@ namespace PascalABCCompiler.TreeConverter
 			//return stv.compiled_unit;
 		}
 
-
 		public void Reset()
 		{
 			stv.reset();

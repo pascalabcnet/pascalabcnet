@@ -115,8 +115,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversalParserHelper", "UniversalParserHelper\UniversalParserHelper.csproj", "{E862A9EF-836B-414B-AAC4-9D207CABDC82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VeryBasicParser", "Parsers\SPythonParserKrylovMovchan\VeryBasicParser.csproj", "{81FE2BAA-D100-4596-A392-F03BBE30F829}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -537,18 +535,6 @@ Global
 		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|x86.ActiveCfg = Release|Any CPU
 		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|x86.Build.0 = Release|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Debug|x86.Build.0 = Debug|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|x86.ActiveCfg = Release|Any CPU
-		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -596,7 +582,6 @@ Global
 		{AD4E1292-2537-467A-934D-E9FDA3F18D87} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C} = {BB6973BA-B3A2-4B31-A986-7CB008F22C4F}
 		{E862A9EF-836B-414B-AAC4-9D207CABDC82} = {F8CE2712-826B-450B-A72F-D32D80C99858}
-		{81FE2BAA-D100-4596-A392-F03BBE30F829} = {BB6973BA-B3A2-4B31-A986-7CB008F22C4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68E993E6-EE86-4DDF-B0A1-4FE884F8AC39}

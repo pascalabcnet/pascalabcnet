@@ -247,7 +247,7 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        public void create_main_function(Dictionary<string, object> config)
+        public void create_main_function(string[] used_stand_modules, Dictionary<string, object> config)
         {
         	add_needed_cctors();
         	common_namespace_function_node temp = _main_function;
@@ -329,6 +329,21 @@ namespace PascalABCCompiler.TreeRealization
                 	}
                 }
             }
+            //if (units.Count == 1)
+            for (int i = 0; i < used_stand_modules.Length; i++)
+            {
+                Type t = NetHelper.NetHelper.FindRtlType(used_stand_modules[i] + "." + used_stand_modules[i]);
+                if (t == null)
+                    continue;
+                compiled_type_node ctn = compiled_type_node.get_type_node(t);
+                System.Reflection.MethodInfo mi = ctn.compiled_type.GetMethod("__InitModule__");
+                if (mi == null)
+                {
+                    continue;
+                }
+                compiled_static_method_call csmc = new compiled_static_method_call(compiled_function_node.get_compiled_method(mi), null);
+                sl.statements.AddElement(csmc);
+            }
             for (int i = units.Count - 1; i >= 0; i--)
             {
                 if (units[i].finalization_method != null)
@@ -336,6 +351,19 @@ namespace PascalABCCompiler.TreeRealization
                     common_namespace_function_call cnfc = new common_namespace_function_call(units[i].finalization_method, loc);
                     sl2.statements.AddElement(cnfc);
                 }
+            }
+            //if (units.Count == 1)
+            for (int i = 0; i < used_stand_modules.Length; i++)
+            {
+                Type t = NetHelper.NetHelper.FindRtlType(used_stand_modules[i] + "." + used_stand_modules[i]);
+                if (t == null)
+                    continue;
+                compiled_type_node ctn = compiled_type_node.get_type_node(t);
+                System.Reflection.MethodInfo mi = ctn.compiled_type.GetMethod("__FinalizeModule__");
+                if (mi == null)
+                    continue;
+                compiled_static_method_call csmc = new compiled_static_method_call(compiled_function_node.get_compiled_method(mi), null);
+                sl2.statements.AddElement(csmc);
             }
             sl2 = new statements_list(loc);
             basic_function_call bfc = new basic_function_call(SystemLibrary.SystemLibrary.bool_assign as basic_function_node,null);

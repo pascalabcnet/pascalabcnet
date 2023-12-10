@@ -1887,7 +1887,7 @@ namespace PascalABCCompiler
 
                         for (int i = implementationUsesList.Count - 1; i >= 0; i--)
                         {
-                            if (!IsPossibleNetNamespace(implementationUsesList[i], Path.GetDirectoryName(unitFileName)))
+                            if (!IsPossibleNetNamespaceOrStandardPasFile(implementationUsesList[i], true, Path.GetDirectoryName(unitFileName)))
                             {
                                 // докомпилируем юнит, если он не является пространством имен или стандартным pas файлом из Lib
                                 CompileUnit(CurrentUnit.ImplementationUsedUnits, CurrentUnit.ImplementationUsedDirectUnits, implementationUsesList[i], Path.GetDirectoryName(unitFileName));
@@ -1902,6 +1902,7 @@ namespace PascalABCCompiler
 
                     }
 
+                    //TODO: Избавиться от преобразования типа.
                     AddNamespacesToUsingList(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.possibleNamespaces, true, null);
 
                     // Console.WriteLine("Compiling implementation delayed " + unitFileName);
@@ -2381,7 +2382,7 @@ namespace PascalABCCompiler
                 config_dict["locale"] = CompilerOptions.Locale;
                 config_dict["full_locale"] = StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale);
             }
-            mainSemanticTree.create_main_function(config_dict);
+            mainSemanticTree.create_main_function(StandardModules.ToArray(), config_dict);
         }
 
         private void AddErrorToErrorListConsideringPosition(Error err)
@@ -3043,7 +3044,7 @@ namespace PascalABCCompiler
                     unitToAdd = new SyntaxTree.uses_unit_in(
                         new SyntaxTree.ident_list(new SyntaxTree.ident(moduleName)),
                         new SyntaxTree.string_const(module.Name));
-                    //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
+                    //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1); Вопрос  EVA
                 }
                 else
                 {
@@ -3214,7 +3215,7 @@ namespace PascalABCCompiler
                     CheckForDuplicatesInUsesSection(unitModule.interface_part.uses_modules.units);
                     foreach (SyntaxTree.unit_or_namespace name_space in unitModule.interface_part.uses_modules.units)
                     {
-                        if (IsPossibleNetNamespace(name_space, Path.GetDirectoryName(file)))
+                        if (IsPossibleNetNamespaceOrStandardPasFile(name_space, false, Path.GetDirectoryName(file)))
                         {
                             namespaceNode.referenced_units.AddElement(new namespace_unit_node(GetNamespace(name_space), get_location_from_treenode(name_space, unitModule.file_name)), null);
                         }
@@ -3395,7 +3396,7 @@ namespace PascalABCCompiler
 
         NetHelper.AssemblyResolveScope assemblyResolveScope;
 
-        private bool IsPossibleNetNamespace(SyntaxTree.unit_or_namespace name_space, string currentPath)
+        private bool IsPossibleNetNamespaceOrStandardPasFile(SyntaxTree.unit_or_namespace name_space, bool addToStandardModules, string currentPath)
         {
             if (name_space is SyntaxTree.uses_unit_in)
                 return false;
@@ -3410,6 +3411,27 @@ namespace PascalABCCompiler
             // если нет исходников и pcu
             if (sourceFileName == null && pcuFileName == null)
                 return true;
+
+            // если есть что-то одно
+            string fileName = sourceFileName ?? pcuFileName;
+
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+
+            // оставить только PT4 и протестировать
+            string[] standardFiles = new string[] { "PT4", "CRT", "Arrays", "MPI", "Collections", "Core"};
+
+            bool isStandardFile = standardFiles.Any(standardFile => standardFile.Equals(fileNameWithoutExtension, StringComparison.CurrentCultureIgnoreCase)); // current culture ?
+
+            // если это исходный файл из папки Lib (стандартные паскалевские библиотеки)
+            if (CompilerOptions.UseDllForSystemUnits
+                && Path.GetDirectoryName(fileName).Equals(Path.Combine(CompilerOptions.SystemDirectory, "Lib"), StringComparison.CurrentCultureIgnoreCase)
+                && isStandardFile)
+            {
+                string s = Path.GetFileNameWithoutExtension(fileName).ToLower();
+                if (addToStandardModules && !StandardModules.Contains(s))
+                    StandardModules.Add(s);
+                return true;
+            }
             
             return false;
         }
@@ -3486,7 +3508,7 @@ namespace PascalABCCompiler
         private SyntaxTree.compilation_unit InternalParseText(string FileName, string Text, List<Error> ErrorList, List<CompilerWarning> Warnings, List<string> DefinesList = null)
         {
             OnChangeCompilerState(this, CompilerState.BeginParsingFile, FileName);
-            SyntaxTree.compilation_unit cu = ParsersController.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, DefinesList);
+            SyntaxTree.compilation_unit cu = ParsersController.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, DefinesList); // ошибка Error выбрасыавается при err0524_res_unit.pas  | Вопрос EVA
             OnChangeCompilerState(this, CompilerState.EndParsingFile, FileName);
             //Вычисляем сколько строк скомпилировали
             if (ErrorList.Count == 0 && cu != null && cu.source_context != null)
@@ -3767,7 +3789,7 @@ namespace PascalABCCompiler
             {
                 for (int i = implementationUsesList.Count - 1; i >= 0; i--)
                 {
-                    if (!IsPossibleNetNamespace(implementationUsesList[i], currentPath))
+                    if (!IsPossibleNetNamespaceOrStandardPasFile(implementationUsesList[i], true, currentPath))
                     {
                         CompilationUnit unitFromUsesSection = UnitTable[Path.ChangeExtension(GetUnitFileName(implementationUsesList[i], currentPath), null)];
 
@@ -3853,7 +3875,7 @@ namespace PascalABCCompiler
             shouldReturnCurrentUnit = false;
             for (int i = interfaceUsesList.Count - 1 - currentUnit.InterfaceUsedUnits.Count; i >= 0; i--) // здесь откидываются модули с уже откомпилированными интерфейсами из секции uses (см. комментарий, обозначенный #1710)
             {
-                if (IsPossibleNetNamespace(interfaceUsesList[i], currentPath) || namespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name))
+                if (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || namespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name))
                 {
                     currentUnit.InterfaceUsedUnits.AddElement(new namespace_unit_node(GetNamespace(interfaceUsesList[i])), null);
                     currentUnit.possibleNamespaces.Add(interfaceUsesList[i]);
@@ -3894,6 +3916,9 @@ namespace PascalABCCompiler
                 string transitivelyUsedUnit = UnitTable[usedUnitId].currentUsedUnitId;
                 if (transitivelyUsedUnit != null)
                 {
+                    // если сначала взяли pcu а потом решили его перекомпилировать, поэтому в таблице его нет
+                    if (UnitTable[transitivelyUsedUnit] == null)
+                        UnitTable[usedUnitId].currentUsedUnitId = transitivelyUsedUnit; // Вопрос  EVA
                     // если "используемый используемого" (транзитивно зависимый) модуль находится в том же состоянии, что и просто используемый, то это означает циклическую зависимость
                     if (UnitTable[usedUnitId].currentUsedUnitId != null && UnitTable[UnitTable[usedUnitId].currentUsedUnitId].State == UnitState.BeginCompilation)
                         throw new CycleUnitReference(unitFileName, usedUnitNode);
@@ -3907,7 +3932,7 @@ namespace PascalABCCompiler
             {
                 for (int i = lastUnitIndex; i >= 0; i--)
                 {
-                    if (!IsPossibleNetNamespace(usesList[i], currentDirectory))
+                    if (!IsPossibleNetNamespaceOrStandardPasFile(usesList[i], false, currentDirectory))
                     {
                         CompilerOptions.UseDllForSystemUnits = false;
                         break;
@@ -3926,14 +3951,6 @@ namespace PascalABCCompiler
             currentUnit = new CompilationUnit();
             if (firstCompilationUnit == null)
                 firstCompilationUnit = currentUnit;
-
-            // Если файл .yavb то надо заменить исходный файл на другой с предварительной обработкой
-            if (Path.GetExtension(UnitFileName) == ".yavb")
-            {
-                IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
-                ia.ArrangeIndents();
-                UnitFileName = ia.CreatedFilePath;
-            }
 
             OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName); // начало компиляции модуля
 
@@ -3968,9 +3985,9 @@ namespace PascalABCCompiler
             SemanticCheckNoIncludeDirectivesInPascalUnit(currentUnit);
             #endregion
 
-            // помечаем, что это dll (сложно сказать, нужно ли это здесь, т.к. в конце Compile это произойдет во второй раз)
+            // Set output file type for dll
             if (isDll)
-                CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; 
+                CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // Вопрос, нужно ли это здесь, если это есть в Compile в конце  EVA
 
             if (ParsersController.LastParser != null)
                 currentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
