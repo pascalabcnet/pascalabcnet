@@ -1372,7 +1372,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 for (var i = 0; i < left_original.parameters.Count; i++)
                 {
-                    if (left_original.parameters[i].is_params || right_original.parameters[i].is_params)
+                    if (left_original.parameters[i].is_params || i < right_original.parameters.Count && right_original.parameters[i].is_params || i >= right_original.parameters.Count)
                     {
                         return MoreSpecific.None;
                     }
