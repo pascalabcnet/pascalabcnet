@@ -391,7 +391,7 @@ begin
     end;
   end;
   'TranslateRobot': begin 
-    CheckData(InitialInput := |cInt|);
+    CheckData(InitialInput := |cStr|);
     GenerateTests('Left','Right','Up','Down');
     case Str(0) of
     'Left': CheckOutput('Влево');
