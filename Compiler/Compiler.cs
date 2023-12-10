@@ -2210,7 +2210,7 @@ namespace PascalABCCompiler
                 if (ErrorsList.Count == 0)
                 {
 
-                    //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Вопрос о целесоообразности  EVA
+                    //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Вопрос о коде в programs.cs  EVA
                     // получние полного семантического дерева, включающего все зависимости
                     program_node semanticTree = ConstructMainSemanticTree(compilerOptions); 
 
@@ -2339,7 +2339,7 @@ namespace PascalABCCompiler
             {
                 mainSemanticTree.main_function = ((common_unit_node)UnitsLogicallySortedList.Last().SemanticTree).main_function;
 
-                SyntaxTreeToSemanticTreeConverter.PrepareFinalMainFunctionForExe(mainSemanticTree, CompilerOptions.Locale, ref varBeginOffset, ref beginOffset);
+                PrepareFinalMainFunctionForExe(mainSemanticTree);
             }
             // если мы компилируем dll
             else if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module)
@@ -2353,6 +2353,35 @@ namespace PascalABCCompiler
 
             semanticTree = mainSemanticTree;
             return mainSemanticTree;
+        }
+
+        public void PrepareFinalMainFunctionForExe(program_node mainSemanticTree)
+        {
+            // вычисляем номер строку первой переменной и строки с началом основной программы
+            if (mainSemanticTree.main_function.function_code.location != null)
+            {
+                common_namespace_node main_ns = mainSemanticTree.main_function.namespace_node;
+
+                foreach (namespace_variable variable in main_ns.variables)
+                {
+                    if (variable.inital_value?.location != null && !(variable.inital_value is constant_node)
+                        && !(variable.inital_value is record_initializer) && !(variable.inital_value is array_initializer))
+                    {
+                        varBeginOffset = variable.inital_value.location.begin_line_num;
+                        break;
+                    }
+                }
+                beginOffset = mainSemanticTree.main_function.function_code.location.begin_line_num;
+            }
+
+            // локализация
+            Dictionary<string, object> config_dict = new Dictionary<string, object>();
+            if (CompilerOptions.Locale != null && StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale) != null)
+            {
+                config_dict["locale"] = CompilerOptions.Locale;
+                config_dict["full_locale"] = StringResourcesLanguage.GetLCIDByTwoLetterISO(CompilerOptions.Locale);
+            }
+            mainSemanticTree.create_main_function(config_dict);
         }
 
         private void AddErrorToErrorListConsideringPosition(Error err)
