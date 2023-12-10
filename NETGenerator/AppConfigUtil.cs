@@ -95,57 +95,54 @@ namespace NETGenerator
                 if (string.IsNullOrEmpty(culture)) culture = "neutral";
 
                 if (name == assemblyName.Name
-                    && PublicKeyTokenCorresponds(publicKeyToken)
+                    && publicKeyToken.Equals(publicKeyTokenString, StringComparison.CurrentCultureIgnoreCase)
                     && assemblyCulture == culture)
                 {
                     var bindingRedirect = dependentAssembly.GetOrCreateElement(Elements.BindingRedirect);
                     {
-                        return UpdateBindingRedirect(bindingRedirect);
+                        return UpdateBindingRedirect(assemblyName, bindingRedirect);
                     }
                 }
             }
 
             var newAssembly = new XElement(
                 Elements.DependentAssembly,
-                CreateIdentityElement(),
-                CreateBindingRedirect());
+                CreateIdentityElement(assemblyName, publicKeyTokenString, assemblyCulture),
+                CreateBindingRedirect(assemblyName));
             assemblyBinding.Add(newAssembly);
             return true;
 
-            bool PublicKeyTokenCorresponds(string publicKeyToken)
-            {
-                return publicKeyToken.Equals(publicKeyTokenString, StringComparison.CurrentCultureIgnoreCase);
-            }
+            
+        }
 
-            bool UpdateBindingRedirect(XElement bindingRedirect)
-            {
-                var newVersion = assemblyName.Version.ToString(4);
-                var oldVersionRange = $"0.0.0.0-{newVersion}";
-                var hasChanges =
-                    bindingRedirect.Attribute("oldVersion")?.Value != oldVersionRange
-                    || bindingRedirect.Attribute("newVersion")?.Value != newVersion;
-                if (!hasChanges) return false;
+        static bool UpdateBindingRedirect(AssemblyName assemblyName, XElement bindingRedirect)
+        {
+            var newVersion = assemblyName.Version.ToString(4);
+            var oldVersionRange = $"0.0.0.0-{newVersion}";
+            var hasChanges =
+                bindingRedirect.Attribute("oldVersion")?.Value != oldVersionRange
+                || bindingRedirect.Attribute("newVersion")?.Value != newVersion;
+            if (!hasChanges) return false;
 
-                bindingRedirect.SetAttributeValue("oldVersion", oldVersionRange);
-                bindingRedirect.SetAttributeValue("newVersion", newVersion);
-                return true;
-            }
+            bindingRedirect.SetAttributeValue("oldVersion", oldVersionRange);
+            bindingRedirect.SetAttributeValue("newVersion", newVersion);
+            return true;
+        }
 
-            XElement CreateIdentityElement()
-            {
-                var element = new XElement(Elements.AssemblyIdentity);
-                element.SetAttributeValue("name", assemblyName.Name);
-                element.SetAttributeValue("publicKeyToken", publicKeyTokenString);
-                element.SetAttributeValue("culture", assemblyCulture);
-                return element;
-            }
+        static XElement CreateIdentityElement(AssemblyName assemblyName, string publicKeyTokenString, string assemblyCulture)
+        {
+            var element = new XElement(Elements.AssemblyIdentity);
+            element.SetAttributeValue("name", assemblyName.Name);
+            element.SetAttributeValue("publicKeyToken", publicKeyTokenString);
+            element.SetAttributeValue("culture", assemblyCulture);
+            return element;
+        }
 
-            XElement CreateBindingRedirect()
-            {
-                var element = new XElement(Elements.BindingRedirect);
-                UpdateBindingRedirect(element);
-                return element;
-            }
+        static XElement CreateBindingRedirect(AssemblyName assemblyName)
+        {
+            var element = new XElement(Elements.BindingRedirect);
+            UpdateBindingRedirect(assemblyName, element);
+            return element;
         }
     }
 }
