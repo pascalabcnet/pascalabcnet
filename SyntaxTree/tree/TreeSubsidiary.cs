@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTree
@@ -176,7 +176,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 	public enum for_cycle_type {to,downto};
 	
-	public enum proc_attribute {attr_override, attr_forward, attr_virtual, attr_overload, attr_reintroduce, attr_abstract, attr_static, attr_extension, attr_none }; // attr_none нужно для свойств когда virtual И override не указывается
+	public enum proc_attribute {attr_override, attr_forward, attr_virtual, attr_overload, attr_reintroduce, attr_abstract, attr_static, attr_extension, attr_none }; // attr_none РЅСѓР¶РЅРѕ РґР»СЏ СЃРІРѕР№СЃС‚РІ РєРѕРіРґР° virtual Р override РЅРµ СѓРєР°Р·С‹РІР°РµС‚СЃСЏ
 
     public enum definition_attribute {None, Static, Const};
 
@@ -252,7 +252,7 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         /// <summary>
-        /// дефолтный конструктор (присваивает всем позициям единицы, что соответствует позиции начала файла)
+        /// РґРµС„РѕР»С‚РЅС‹Р№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ (РїСЂРёСЃРІР°РёРІР°РµС‚ РІСЃРµРј РїРѕР·РёС†РёСЏРј РµРґРёРЅРёС†С‹, С‡С‚Рѕ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ РїРѕР·РёС†РёРё РЅР°С‡Р°Р»Р° С„Р°Р№Р»Р°)
         /// </summary>
         public SourceContext() : this(1, 1, 1, 1, 1, 1) { }
 
