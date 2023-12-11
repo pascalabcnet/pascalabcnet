@@ -796,7 +796,9 @@ namespace PascalABCCompiler
 			{
 				if (RevisionClass.Build == "0")
 					return RevisionClass.MainVersion;
-				else return RevisionClass.MainVersion + "." + RevisionClass.Build;
+				else 
+					// TODO: Недостижимый код  | EVA
+					return RevisionClass.MainVersion + "." + RevisionClass.Build;
 			}
 		}
 		public static DateTime VersionDateTime
@@ -1901,7 +1903,6 @@ namespace PascalABCCompiler
 
 					}
 
-					//TODO: Избавиться от преобразования типа.
 					AddNamespacesToUsingList(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.possibleNamespaces, true, null);
 
 					// Console.WriteLine("Compiling implementation delayed " + unitFileName);
@@ -2347,10 +2348,10 @@ namespace PascalABCCompiler
 				// TODO: посмотреть инициализирующий код .dll  EVA
 				mainSemanticTree.create_main_function_as_in_module();
 			}
-			/**
+
 			if (CompilerOptions.GenerateCode) // семантические преобразования с оптимизацией кода
 				mainSemanticTree = semanticTreeConvertersController.Convert(mainSemanticTree) as program_node;
-			/**/
+
 			semanticTree = mainSemanticTree;
 			return mainSemanticTree;
 		}
