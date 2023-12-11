@@ -1,7 +1,6 @@
 ﻿name: Build & Run all tests (release)
 
 on:
-  push:
   pull_request:
   workflow_dispatch:
 
