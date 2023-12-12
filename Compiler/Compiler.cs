@@ -161,7 +161,7 @@ using System.Reflection;
 
 namespace PascalABCCompiler
 {
-    public class CompilerCompilationError : LocatedError
+	public class CompilerCompilationError : LocatedError
 	{
 		public CompilerCompilationError(string message)
 			: base(message)
@@ -3291,7 +3291,7 @@ namespace PascalABCCompiler
 		{
 			string sourceText = GetSourceFileText(fileName);
 			List<string> definesList = new List<string> { "PASCALABC" }; // SSM 11/07/20
-            
+			
 			if (!CompilerOptions.Debug && !CompilerOptions.ForDebugging)
 				definesList.Add("RELEASE");
 			else
@@ -3490,10 +3490,10 @@ namespace PascalABCCompiler
 			return null;
 		}
 
-        /// <summary>
-        /// получение списка using - legacy code !!!
-        /// </summary>
-        private SyntaxTree.using_list GetImplementationSyntaxUsingList(SyntaxTree.compilation_unit cu)
+		/// <summary>
+		/// получение списка using - legacy code !!!
+		/// </summary>
+		private SyntaxTree.using_list GetImplementationSyntaxUsingList(SyntaxTree.compilation_unit cu)
 		{
 			if (cu is SyntaxTree.unit_module)
 				if ((cu as SyntaxTree.unit_module).implementation_part != null)
@@ -3501,6 +3501,9 @@ namespace PascalABCCompiler
 			return null;
 		}
 
+		/// <summary>
+		/// получение списка using - legacy code !!!
+		/// </summary>
 		public string GetSourceFileText(string FileName)
 		{
 			return (string)SourceFilesProvider(FileName, SourceFileOperation.GetText);
@@ -3537,10 +3540,10 @@ namespace PascalABCCompiler
 			return unitSyntaxTree;
 		}
 
-        /// <summary>
-        /// Проверяет, является ли модуль dll по соответствующей директиве
-        /// </summary>
-        public static bool IsDll(SyntaxTree.compilation_unit unitSyntaxTree)
+		/// <summary>
+		/// Проверяет, является ли модуль dll по соответствующей директиве
+		/// </summary>
+		public static bool IsDll(SyntaxTree.compilation_unit unitSyntaxTree)
 		{
 			foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
 			{
@@ -3553,10 +3556,10 @@ namespace PascalABCCompiler
 			return false;
 		}
 
-        /// <summary>
-        /// Проверяет, является ли модуль dll по соответствующей директиве и возвращает эту директиву выходным параметром
-        /// </summary>
-        public static bool IsDll(SyntaxTree.compilation_unit unitSyntaxTree, out SyntaxTree.compiler_directive dllDirective)
+		/// <summary>
+		/// Проверяет, является ли модуль dll по соответствующей директиве и возвращает эту директиву выходным параметром
+		/// </summary>
+		public static bool IsDll(SyntaxTree.compilation_unit unitSyntaxTree, out SyntaxTree.compiler_directive dllDirective)
 		{
 			foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
 			{
@@ -3644,16 +3647,16 @@ namespace PascalABCCompiler
 			// Добавление пространств имен из uses list (могут быть разных видов)
 			AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
 
-            #region USING LIST LEGACY CODE
-            // Добавление пространств имен NET из using list - устаревшее ключевое слово using
-            AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, GetInterfaceUsingList(currentUnit.SyntaxTree));
+			#region USING LIST LEGACY CODE
+			// Добавление пространств имен NET из using list - устаревшее ключевое слово using
+			AddNamespacesToUsingList(currentUnit.InterfaceUsingNamespaceList, GetInterfaceUsingList(currentUnit.SyntaxTree));
 
-            #endregion
+			#endregion
 
-            //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
+			//Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
-            // компилируем интерфейс текущего модуля EVA
-            CompileCurrentUnitInterface(unitFileName, currentUnit, docs);
+			// компилируем интерфейс текущего модуля EVA
+			CompileCurrentUnitInterface(unitFileName, currentUnit, docs);
 
 			// интерфейс скомпилирован - переходим к секции реализации 
 			currentUnit.State = UnitState.InterfaceCompiled;
@@ -3831,11 +3834,11 @@ namespace PascalABCCompiler
 
 			AddNamespacesToUsingList(currentUnit.ImplementationUsingNamespaceList, currentUnit.possibleNamespaces, true, namespaces);
 
-            #region USING LIST LEGACY CODE
-            AddNamespacesToUsingList(currentUnit.ImplementationUsingNamespaceList, GetImplementationSyntaxUsingList(currentUnit.SyntaxTree));
-            #endregion
+			#region USING LIST LEGACY CODE
+			AddNamespacesToUsingList(currentUnit.ImplementationUsingNamespaceList, GetImplementationSyntaxUsingList(currentUnit.SyntaxTree));
+			#endregion
 
-            if (shouldReturnCurrentUnit)
+			if (shouldReturnCurrentUnit)
 			{
 				// помещаем текущий модуль в список отложенной компиляции
 				UnitsToCompileDelayedList.Add(currentUnit);
@@ -4213,12 +4216,12 @@ namespace PascalABCCompiler
 			
 			foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
 			{
-                if (string.Equals(directive.Name.text, "gendoc", StringComparison.CurrentCultureIgnoreCase)
-                    && string.Equals(directive.Directive.text, "true", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return true;
-                }
-            }
+				if (string.Equals(directive.Name.text, "gendoc", StringComparison.CurrentCultureIgnoreCase)
+					&& string.Equals(directive.Directive.text, "true", StringComparison.CurrentCultureIgnoreCase))
+				{
+					return true;
+				}
+			}
 
 			return false;
 		}
