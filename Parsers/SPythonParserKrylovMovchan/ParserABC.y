@@ -7,6 +7,7 @@
     public List<compiler_directive> CompilerDirectives;
    	public VeryBasicGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 	private SortedSet<string> symbolTable = new SortedSet<string>();
+	private declarations decl = new declarations();
 %}
 
 %using PascalABCCompiler.SyntaxTree;
@@ -46,11 +47,12 @@
 
 %type <id> ident
 %type <ex> expr var_reference variable proc_func_call
-%type <stn> expr_lst optional_expr_lst
+%type <stn> expr_lst optional_expr_lst proc_func_decl
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> compound_stmt compound_stmt_lst
 %type <stn> stmt_lst block
-%type <stn> progr
+%type <stn> progr declaration
+%type <td> proc_func_header
 
 %start progr
 
@@ -58,28 +60,33 @@
 progr   : compound_stmt_lst
 		{
 			var stl = $1 as statement_list;
-
 			// добавляем ноды инициализации глобальных переменных
 			// foreach (string elem in symbolTable) {
 			// 	var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
 			// 	stl.AddFirst((new var_statement(vds, @$)) as statement);
 			// }
-
-			var decl = new declarations();
 			root = $$ = NewProgramModule(null, null, null, new block(decl, stl, @$), new token_info(""), @$);
+			$$.source_context = @$;
 		}
 		;
 
-compound_stmt	: DEF	{ $$ = null; }
-				| stmt	{ $$ = $1; }
+compound_stmt	: stmt	{ $$ = $1; }
+				| declaration { $$ = null; }
 				;
+
+declaration	: proc_func_decl 
+			{
+				$$ = null; 
+				decl.Add($1 as procedure_definition, @$);
+			}
+			;
 
 compound_stmt_lst	: compound_stmt
 					{ $$ = new statement_list($1 as statement, @1); }
 					| compound_stmt_lst SEMICOLON compound_stmt
-					{ 
-						if ($3 is statement s) 
-							$$ = ($1 as statement_list).Add(s, @$);
+					{
+						if ($3 is statement st) 
+							$$ = ($1 as statement_list).Add(st, @$);
 						else $$ = ($1 as statement_list);
 					}
 					;
@@ -180,8 +187,26 @@ variable	: ident				{ $$ = $1; }
 			;
 
 block	: INDENT stmt_lst SEMICOLON UNINDENT
-		{ $$ = $2 as statement_list; }
+		{ 
+			$$ = $2 as statement_list; 
+			($$ as statement_list).left_logical_bracket = $1;
+			($$ as statement_list).right_logical_bracket = $4;
+			$$.source_context = @$;
+		}
 		;
+
+proc_func_decl	: proc_func_header block 
+				{ 
+					procedure_definition pd = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
+					pd.AssignAttrList(null);
+					$$ = pd;
+				} 
+				;
+
+proc_func_header: DEF ident LPAR RPAR COLON
+				{ $$ = new procedure_header(null, null, new method_name(null,null, $2, null, @$), null, @$); }
+//$$ = new procedure_header($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $5 as where_definition_list, @$); 
+				;
 
 proc_func_call	: ident LPAR optional_expr_lst RPAR
 				{ $$ = new method_call($1 as addressed_value, $3 as expression_list, @$); }

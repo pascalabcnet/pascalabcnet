@@ -35,7 +35,7 @@ namespace IndentArranger
         }
 
         // возможные типы первого токена в строке
-        private enum FirstTokenType { Id, If, Elif, Else, For, While, Bad };
+        private enum FirstTokenType { Id, If, Elif, Else, For, Def, While, Bad };
 
         // считывает первый токен в строке (с первого символа латиницы или _)
         // возвращает тип этого токена
@@ -69,6 +69,9 @@ namespace IndentArranger
                 case "while":
                     //Console.Write(FirstTokenType.While);
                     return FirstTokenType.While;
+                case "def":
+                    //Console.Write(FirstTokenType.Def);
+                    return FirstTokenType.Def;
                 default:
                     //Console.Write(FirstTokenType.Id);
                     return FirstTokenType.Id;
@@ -167,8 +170,8 @@ namespace IndentArranger
                     }
                     FirstTokenType previousFirstTokenType = firstTokensTypesStack.Pop();
 
-                    // если был if и сейчас на том же отступе else, то это не конец команды
-                    // поэтому ставить ; в конце не надо (она будет после блока else)
+                    // если сейчас ветка elif/else, то это не конец команды
+                    // поэтому ставить ; в конце не надо (она будет после блока elif/else)
                     bool isEndOfStatement = !(currentFirstTokenType == FirstTokenType.Elif || currentFirstTokenType == FirstTokenType.Else);
 
                     firstTokensTypesStack.Push(currentFirstTokenType);
