@@ -37,7 +37,7 @@
 **/CompilerController.dll
 **/CompilerTools.dll
 **/Errors.dll
-**/GPPG.dll
+**/ShiftReduceParser.dll
 **/HelpBuilder.dll
 **/InternalErrorReport.dll
 **/LambdaAnySynToSemConverter.dll
