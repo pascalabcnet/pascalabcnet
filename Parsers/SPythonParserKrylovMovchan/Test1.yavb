@@ -1,4 +1,6 @@
-﻿a = ReadInteger()
+﻿def f():
+    print(1)
+a = ReadInteger()
 b = 3
 if a < 5:
     print(a)

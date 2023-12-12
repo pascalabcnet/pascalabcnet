@@ -82,12 +82,18 @@ declaration	: proc_func_decl
 			;
 
 compound_stmt_lst	: compound_stmt
-					{ $$ = new statement_list($1 as statement, @1); }
+					{
+						if ($1 is statement st)
+							$$ = new statement_list($1 as statement, @1);
+						else
+							$$ =  new statement_list(); 
+					}
 					| compound_stmt_lst SEMICOLON compound_stmt
 					{
 						if ($3 is statement st) 
 							$$ = ($1 as statement_list).Add(st, @$);
-						else $$ = ($1 as statement_list);
+						else 
+							$$ = ($1 as statement_list);
 					}
 					;
 

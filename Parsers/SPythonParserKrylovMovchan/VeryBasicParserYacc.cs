@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 12.12.2023 9:29:40
+// DateTime: 12.12.2023 9:41:57
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -252,13 +252,19 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
 			}
         break;
       case 6: // compound_stmt_lst -> compound_stmt
-{ CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-1].stn as statement, LocationStack[LocationStack.Depth-1]); }
+{
+						if (ValueStack[ValueStack.Depth-1].stn is statement st)
+							CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-1].stn as statement, LocationStack[LocationStack.Depth-1]);
+						else
+							CurrentSemanticValue.stn =  new statement_list(); 
+					}
         break;
       case 7: // compound_stmt_lst -> compound_stmt_lst, SEMICOLON, compound_stmt
 {
 						if (ValueStack[ValueStack.Depth-1].stn is statement st) 
 							CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as statement_list).Add(st, CurrentLocationSpan);
-						else CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as statement_list);
+						else 
+							CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as statement_list);
 					}
         break;
       case 8: // stmt_lst -> stmt
