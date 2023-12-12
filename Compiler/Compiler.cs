@@ -2211,7 +2211,7 @@ namespace PascalABCCompiler
 				if (ErrorsList.Count == 0)
 				{
 
-					//TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Вопрос о коде в programs.cs  EVA
+					//TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Думать позже  EVA
 					// получние полного семантического дерева, включающего все зависимости
 					program_node semanticTree = ConstructMainSemanticTree(compilerOptions); 
 
