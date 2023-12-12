@@ -32,7 +32,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR, IN, WHILE, IF, ELSE, ELIF, LOCAL
+%token <ti> FOR, IN, WHILE, IF, ELSE, ELIF, LOCAL, DEF
 %token <ex> INTNUM, REALNUM
 %token <ti> LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET, DOT, COMMA, COLON, SEMICOLON, INDENT, UNINDENT
 %token <op> ASSIGN
@@ -48,13 +48,14 @@
 %type <ex> expr var_reference variable proc_func_call
 %type <stn> expr_lst optional_expr_lst
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
+%type <stn> compound_stmt compound_stmt_lst
 %type <stn> stmt_lst block
 %type <stn> progr
 
 %start progr
 
 %%
-progr   : stmt_lst
+progr   : compound_stmt_lst
 		{
 			var stl = $1 as statement_list;
 
@@ -68,6 +69,20 @@ progr   : stmt_lst
 			root = $$ = NewProgramModule(null, null, null, new block(decl, stl, @$), new token_info(""), @$);
 		}
 		;
+
+compound_stmt	: DEF	{ $$ = null; }
+				| stmt	{ $$ = $1; }
+				;
+
+compound_stmt_lst	: compound_stmt
+					{ $$ = new statement_list($1 as statement, @1); }
+					| compound_stmt_lst SEMICOLON compound_stmt
+					{ 
+						if ($3 is statement s) 
+							$$ = ($1 as statement_list).Add(s, @$);
+						else $$ = ($1 as statement_list);
+					}
+					;
 
 stmt_lst	: stmt
 			{ $$ = new statement_list($1 as statement, @1); }
@@ -115,7 +130,7 @@ expr 	: expr PLUS 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
 		| expr MINUS 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
   		| expr LOWER 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
 		| expr GREATER 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
-		| variable				{ $$ = $1;}
+		| variable				{ $$ = $1; }
 		| INTNUM				{ $$ = $1; }
 		| REALNUM				{ $$ = $1; }
 		| LPAR expr RPAR		{ $$ = $2; }
