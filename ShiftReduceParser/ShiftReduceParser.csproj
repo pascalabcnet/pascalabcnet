@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{AD4E1292-2537-467A-934D-E9FDA3F18D87}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ShiftReduceParser</RootNamespace>
+    <RootNamespace>GPPG</RootNamespace>
     <AssemblyName>ShiftReduceParser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
