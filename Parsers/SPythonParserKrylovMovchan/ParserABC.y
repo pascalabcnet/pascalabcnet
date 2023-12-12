@@ -7,6 +7,7 @@
     public List<compiler_directive> CompilerDirectives;
    	public VeryBasicGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 	private SortedSet<string> symbolTable = new SortedSet<string>();
+	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
 %}
 
@@ -60,6 +61,7 @@
 progr   : compound_stmt_lst
 		{
 			var stl = $1 as statement_list;
+			decl.AddFirst(decl_forward.defs);
 			// добавляем ноды инициализации глобальных переменных
 			// foreach (string elem in symbolTable) {
 			// 	var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
@@ -203,14 +205,21 @@ block	: INDENT stmt_lst SEMICOLON UNINDENT
 
 proc_func_decl	: proc_func_header block 
 				{ 
-					procedure_definition pd = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
-					pd.AssignAttrList(null);
-					$$ = pd;
+					//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
+					//pd1.AssignAttrList(null);
+					//$$ = pd1;
+					$$ = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
+
+					var pd = new procedure_definition($1 as procedure_header, null, @1);
+            		pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
+					decl_forward.Add(pd, @1);
 				} 
 				;
 
 proc_func_header: DEF ident LPAR RPAR COLON
-				{ $$ = new procedure_header(null, null, new method_name(null,null, $2, null, @$), null, @$); }
+				{ 
+					$$ = new procedure_header(null, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
+				}
 //$$ = new procedure_header($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $5 as where_definition_list, @$); 
 				;
 

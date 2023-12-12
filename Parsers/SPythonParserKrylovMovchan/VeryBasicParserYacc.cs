@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 12.12.2023 21:08:25
+// DateTime: 12.12.2023 23:08:53
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -60,6 +60,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
     public List<compiler_directive> CompilerDirectives;
    	public VeryBasicGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 	private SortedSet<string> symbolTable = new SortedSet<string>();
+	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
   // End verbatim content from ParserABC.y
 
@@ -230,6 +231,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
       case 2: // progr -> compound_stmt_lst
 {
 			var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
+			decl.AddFirst(decl_forward.defs);
 			// добавляем нод�? ини�?иализа�?ии глобал�?н�?�? пе�?еменн�?�?
 			// foreach (string elem in symbolTable) {
 			// 	var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
@@ -402,13 +404,20 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 45: // proc_func_decl -> proc_func_header, block
 { 
-					procedure_definition pd = new procedure_definition(ValueStack[ValueStack.Depth-2].td as procedure_header, new block(null, ValueStack[ValueStack.Depth-1].stn as statement_list, LocationStack[LocationStack.Depth-1]), CurrentLocationSpan);
-					pd.AssignAttrList(null);
-					CurrentSemanticValue.stn = pd;
+					//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
+					//pd1.AssignAttrList(null);
+					//$$ = pd1;
+					CurrentSemanticValue.stn = new procedure_definition(ValueStack[ValueStack.Depth-2].td as procedure_header, new block(null, ValueStack[ValueStack.Depth-1].stn as statement_list, LocationStack[LocationStack.Depth-1]), CurrentLocationSpan);
+
+					var pd = new procedure_definition(ValueStack[ValueStack.Depth-2].td as procedure_header, null, LocationStack[LocationStack.Depth-2]);
+            		pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
+					decl_forward.Add(pd, LocationStack[LocationStack.Depth-2]);
 				}
         break;
       case 46: // proc_func_header -> DEF, ident, LPAR, RPAR, COLON
-{ CurrentSemanticValue.td = new procedure_header(null, null, new method_name(null,null, ValueStack[ValueStack.Depth-4].id, null, CurrentLocationSpan), null, CurrentLocationSpan); }
+{ 
+					CurrentSemanticValue.td = new procedure_header(null, new procedure_attributes_list(new List<procedure_attribute>(), CurrentLocationSpan), new method_name(null,null, ValueStack[ValueStack.Depth-4].id, null, CurrentLocationSpan), null, CurrentLocationSpan); 
+				}
         break;
       case 47: // proc_func_call -> ident, LPAR, optional_expr_lst, RPAR
 { CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].id as addressed_value, ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan); }
