@@ -203,7 +203,7 @@ block	: INDENT stmt_lst SEMICOLON UNINDENT
 
 proc_func_decl	: proc_func_header block 
 				{ 
-					procedure_definition pd = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
+					procedure_definition pd = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 					pd.AssignAttrList(null);
 					$$ = pd;
 				} 

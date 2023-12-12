@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 12.12.2023 9:41:57
+// DateTime: 12.12.2023 21:08:25
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -402,7 +402,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 45: // proc_func_decl -> proc_func_header, block
 { 
-					procedure_definition pd = new procedure_definition(ValueStack[ValueStack.Depth-2].td as procedure_header, ValueStack[ValueStack.Depth-1].stn as proc_block, CurrentLocationSpan);
+					procedure_definition pd = new procedure_definition(ValueStack[ValueStack.Depth-2].td as procedure_header, new block(null, ValueStack[ValueStack.Depth-1].stn as statement_list, LocationStack[LocationStack.Depth-1]), CurrentLocationSpan);
 					pd.AssignAttrList(null);
 					CurrentSemanticValue.stn = pd;
 				}
