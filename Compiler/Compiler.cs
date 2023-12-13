@@ -3423,14 +3423,14 @@ namespace PascalABCCompiler
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
 
             // оставить только PT4 и протестировать
-            string[] standardFiles = new string[] { "PT4", "CRT", "Arrays", "MPI", "Collections", "Core"};
+            string[] standardFilesExcludedFromRTL = new string[] { "PT4", "CRT", "Arrays", "MPI", "Collections", "Core"};
 
-            bool isStandardFile = standardFiles.Any(standardFile => standardFile.Equals(fileNameWithoutExtension, StringComparison.CurrentCultureIgnoreCase));
+            bool includeInRTL = standardFilesExcludedFromRTL.All(file => !file.Equals(fileNameWithoutExtension, StringComparison.CurrentCultureIgnoreCase));
 
             // если это исходный файл из папки Lib (стандартные паскалевские библиотеки)
             if (CompilerOptions.UseDllForSystemUnits
                 && Path.GetDirectoryName(fileName).Equals(Path.Combine(CompilerOptions.SystemDirectory, "Lib"), StringComparison.CurrentCultureIgnoreCase)
-                && isStandardFile)
+                && includeInRTL)
             {
                 string s = Path.GetFileNameWithoutExtension(fileName).ToLower();
                 if (addToStandardModules && !StandardModules.Contains(s))
