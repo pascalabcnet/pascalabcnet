@@ -1,9 +1,4 @@
-﻿def f(a: real):
+﻿def f(a: int):
     print(a)
 
-def f(a: real, b: real):
-    f(a)
-    f(b)
-
-f(100, 10)
-f(2)
+f(4)

@@ -54,6 +54,7 @@ namespace VeryBasicParser
             keywords.Add(Convert("in"), (int)Tokens.IN);
             keywords.Add(Convert("local"), (int)Tokens.LOCAL);
             keywords.Add(Convert("def"), (int)Tokens.DEF);
+            keywords.Add(Convert("int"), (int)Tokens.INT);
         }
 
         static Keywords()

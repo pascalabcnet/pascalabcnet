@@ -34,26 +34,26 @@
     public type_definition td;
 }
 
-%token <ti> FOR, IN, WHILE, IF, ELSE, ELIF, LOCAL, DEF
-%token <ex> INTNUM, REALNUM
-%token <ti> LPAR, RPAR, LBRACE, RBRACE, LBRACKET, RBRACKET, DOT, COMMA, COLON, SEMICOLON, INDENT, UNINDENT
+%token <ti> FOR IN WHILE IF ELSE ELIF LOCAL DEF
+%token <ex> INTNUM REALNUM
+%token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT
 %token <op> ASSIGN
-%token <op> PLUS, MINUS, MULTIPLY, DIVIDE
-%token <id> ID
-%token <op> LOWER, GREATER, LOWEREQUAL, GREATEREQUAL, EQUAL, NOTEQUAL
+%token <op> PLUS MINUS MULTIPLY DIVIDE
+%token <id> ID INT
+%token <op> LOWER GREATER LOWEREQUAL GREATEREQUAL EQUAL NOTEQUAL
 
-%left LOWER, GREATER, LOWEREQUAL, GREATEREQUAL, EQUAL, NOTEQUAL
+%left LOWER GREATER LOWEREQUAL GREATEREQUAL EQUAL NOTEQUAL
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
 
 %type <id> identifier
-%type <ex> expr var_reference variable proc_func_call range_expr
+%type <ex> expr var_reference variable proc_func_call //range_expr
 %type <stn> expr_lst optional_expr_lst proc_func_decl
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> compound_stmt compound_stmt_lst
 %type <stn> stmt_lst block
 %type <stn> progr declaration param_name simple_fp_sect fp_sect fp_sect_list fp_list
-%type <td> proc_func_header simple_type_identifier fp_type
+%type <td> proc_func_header fp_type //simple_type_identifier
 
 %start progr
 
@@ -232,31 +232,32 @@ proc_func_call
 		}
 	;
 
-simple_type_identifier	
-	: identifier
-		{
-			$$ = new named_type_reference($1, @$);
-		}
-	;
+//simple_type_identifier	
+//	: identifier
+//		{
+//			$$ = new named_type_reference($1, @$);
+//		}
+//	;
 
-range_expr	
-	: simple_type_identifier
-		{
-			$$ = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent($1 as named_type_reference);
-		}
-	;
+//range_expr	
+//	: simple_type_identifier
+//		{
+//			$$ = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent($1 as named_type_reference);
+//		}
+//	;
 
 fp_type	
-	: range_expr
+	: INT
 		{
-			$$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference($1); 
+			$$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference(parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent(new named_type_reference("integer")));
 		}
+	//| range_expr { $$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference($1); }
 	;
 
 param_name	
 	: identifier
-		{ 
-			$$ = new ident_list($1, @$);  
+		{
+			$$ = new ident_list($1, @$);
 		}
     ;
 
