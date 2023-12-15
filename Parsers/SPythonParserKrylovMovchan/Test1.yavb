@@ -1,11 +1,13 @@
-﻿a = 7
+﻿a = 10
+c = 10
 
 def f(a: int):
-    if a > 0:
-        print(a)
-        f(a - 1)
+    a = 13
+    b = 10
+    if a < b:
+        mn = a
     else:
-        println()
+        mn = b
+    print(a, b)
 
-f(6)
-println(a)
+f(a)

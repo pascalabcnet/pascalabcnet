@@ -23,6 +23,34 @@ namespace VeryBasicParser
                 return ret;
         }
     }
+
+    public class SymbolTable 
+    {
+        private SymbolTable outerScope;
+        private SortedSet<string> symbols = new SortedSet<string>();
+        public SymbolTable(SymbolTable outerScope = null) {
+            this.outerScope = outerScope;
+        }
+
+        public bool Contains(string ident) {
+            SymbolTable curr = this;
+
+            while (curr != null) {
+                if (curr.symbols.Contains(ident))
+                    return true;
+                curr = curr.outerScope;
+            }
+
+            return false;
+        }
+
+        public void Add(string ident) {
+            symbols.Add(ident);
+        }
+
+        public SymbolTable OuterScope { get { return outerScope; } }
+    }
+
     public class VeryBasicParserTools: UniversalParserHelper.UniversalParserHelper
     {
         public void AddErrorFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)

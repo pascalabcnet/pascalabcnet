@@ -7,10 +7,9 @@
     public List<compiler_directive> CompilerDirectives;
    	public VeryBasicGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 
-	private SortedSet<string> symbolTable = new SortedSet<string>();
+	private SymbolTable symbolTable = new SymbolTable();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
-	private bool isInFunction = false;
 %}
 
 %using PascalABCCompiler.SyntaxTree;
@@ -36,7 +35,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF LOCAL DEF
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT
 %token <op> ASSIGN
@@ -57,10 +56,13 @@
 %type <stn> progr declaration param_name simple_fp_sect fp_sect fp_sect_list fp_list
 %type <td> proc_func_header fp_type simple_type_identifier
 
+%type <stn> block_begin
+
 %start progr
 
 %%
-progr   : compound_stmt_lst
+progr   
+	: compound_stmt_lst
 		{
 			var stl = $1 as statement_list;
 			decl.AddFirst(decl_forward.defs);
@@ -72,55 +74,75 @@ progr   : compound_stmt_lst
 			root = $$ = NewProgramModule(null, null, null, new block(decl, stl, @$), new token_info(""), @$);
 			$$.source_context = @$;
 		}
-		;
+	;
 
-compound_stmt	: stmt	{ $$ = $1; }
-				| declaration { $$ = null; }
-				;
+compound_stmt	
+	: stmt	
+		{ $$ = $1; }
+	| declaration 
+		{ $$ = null; }
+	;
 
-declaration	: proc_func_decl 
-			{
-				$$ = null; 
-				decl.Add($1 as procedure_definition, @$);
-			}
-			;
-
-compound_stmt_lst	: compound_stmt
-					{
-						if ($1 is statement st)
-							$$ = new statement_list($1 as statement, @1);
-						else
-							$$ =  new statement_list(); 
-					}
-					| compound_stmt_lst SEMICOLON compound_stmt
-					{
-						if ($3 is statement st) 
-							$$ = ($1 as statement_list).Add(st, @$);
-						else 
-							$$ = ($1 as statement_list);
-					}
-					;
-
-stmt_lst	: stmt
-			{ $$ = new statement_list($1 as statement, @1); }
-			| stmt_lst SEMICOLON stmt
-			{ $$ = ($1 as statement_list).Add($3 as statement, @$); }
-			;
-
-stmt	: assign		{ $$ = $1; }
-		| block			{ $$ = $1; }
-		| if_stmt		{ $$ = $1; }
-		| proccall		{ $$ = $1; }
-		| while_stmt	{ $$ = $1; }
-		| for_stmt		{ $$ = $1; }
-		;
-
-identifier	: ID	{ $$ = $1; }
-			;
-
-assign 	: identifier ASSIGN expr
+declaration	
+	: proc_func_decl 
 		{
-			if (!symbolTable.Contains($1.name) && !isInFunction) {
+			$$ = null; 
+			decl.Add($1 as procedure_definition, @$);
+		}
+	;
+
+compound_stmt_lst	
+	: compound_stmt
+		{
+			if ($1 is statement st)
+				$$ = new statement_list($1 as statement, @1);
+			else
+				$$ =  new statement_list(); 
+		}
+	| compound_stmt_lst SEMICOLON compound_stmt
+		{
+			if ($3 is statement st) 
+				$$ = ($1 as statement_list).Add(st, @$);
+			else 
+				$$ = ($1 as statement_list);
+		}
+	;
+
+stmt_lst	
+	: stmt
+		{ 
+			$$ = new statement_list($1 as statement, @1); 
+		}
+	| stmt_lst SEMICOLON stmt
+		{ 
+			$$ = ($1 as statement_list).Add($3 as statement, @$); 
+		}
+	;
+
+stmt	
+	: assign		
+		{ $$ = $1; }
+	| block			
+		{ $$ = $1; }
+	| if_stmt		
+		{ $$ = $1; }
+	| proccall		
+		{ $$ = $1; }
+	| while_stmt	
+		{ $$ = $1; }
+	| for_stmt		
+		{ $$ = $1; }
+	;
+
+identifier	
+	: ID	
+		{ $$ = $1; }
+	;
+
+assign
+	: identifier ASSIGN expr
+		{
+			if (!symbolTable.Contains($1.name)) {
 				symbolTable.Add($1.name);
 				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
 				$$ = new var_statement(vds, @$);
@@ -131,37 +153,48 @@ assign 	: identifier ASSIGN expr
 			// symbolTable.Add($1.name);
 			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
-		| LOCAL identifier ASSIGN expr
-		{
-			symbolTable.Add($2.name);
-			var vds = new var_def_statement(new ident_list($2, @2), null, $4, definition_attribute.None, false, @$);
-			$$ = new var_statement(vds, @$);
-			// symbolTable.Add($1.name);
-			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
+		;
+
+expr 	
+	: expr PLUS 	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr MULTIPLY expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr DIVIDE 	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr MINUS 	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+  	| expr LOWER 	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr GREATER 	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| variable				
+		{ $$ = $1; }
+	| INTNUM				
+		{ $$ = $1; }
+	| REALNUM				
+		{ $$ = $1; }
+	| LPAR expr RPAR		
+		{ $$ = $2; }
+	;
+
+optional_expr_lst	
+	: expr_lst	
+		{ $$ = $1; }
+	|
+		{ $$ = null; }
+	;
+
+expr_lst	
+	: expr
+		{ 
+			$$ = new expression_list($1, @$); 
 		}
-		;
-
-expr 	: expr PLUS 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
-		| expr MULTIPLY expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
-		| expr DIVIDE 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
-		| expr MINUS 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
-  		| expr LOWER 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
-		| expr GREATER 	expr	{ $$ = new bin_expr($1, $3, $2.type, @$); }
-		| variable				{ $$ = $1; }
-		| INTNUM				{ $$ = $1; }
-		| REALNUM				{ $$ = $1; }
-		| LPAR expr RPAR		{ $$ = $2; }
-		;
-
-optional_expr_lst	: expr_lst	{ $$ = $1; }
-					| 			{ $$ = null; }
-					;
-
-expr_lst	: expr
-			{ $$ = new expression_list($1, @$); }
-			| expr_lst COMMA expr
-			{ $$ = ($1 as expression_list).Add($3, @$); }
-			;
+	| expr_lst COMMA expr
+		{ 
+			$$ = ($1 as expression_list).Add($3, @$); 
+		}
+	;
 
 if_stmt	: IF expr COLON block optional_elif
 		{ $$ = new if_node($2, $4 as statement, $5 as statement, @$); }
@@ -196,19 +229,29 @@ variable	: identifier		{ $$ = $1; }
 			| proc_func_call	{ $$ = $1; }
 			;
 
-block	: INDENT stmt_lst SEMICOLON UNINDENT
+block	
+	: block_begin INDENT stmt_lst SEMICOLON UNINDENT
 		{ 
-			$$ = $2 as statement_list; 
-			($$ as statement_list).left_logical_bracket = $1;
-			($$ as statement_list).right_logical_bracket = $4;
+			symbolTable = symbolTable.OuterScope;
+
+			$$ = $3 as statement_list; 
+			($$ as statement_list).left_logical_bracket = $2;
+			($$ as statement_list).right_logical_bracket = $5;
 			$$.source_context = @$;
 		}
-		;
+	;
+
+block_begin	
+	:
+		{ 
+			symbolTable = new SymbolTable(symbolTable); 
+		}
+	;
 
 proc_func_decl	
 	: proc_func_header block 
 		{ 
-			isInFunction = false;
+			symbolTable = symbolTable.OuterScope;
 
 			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 			//pd1.AssignAttrList(null);
@@ -223,8 +266,7 @@ proc_func_decl
 
 proc_func_header
 	: DEF identifier fp_list COLON
-		{ 
-			isInFunction = true;
+		{
 			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
 		}
 //$$ = new procedure_header($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $5 as where_definition_list, @$); 
