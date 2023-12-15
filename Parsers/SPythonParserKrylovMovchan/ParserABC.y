@@ -6,6 +6,7 @@
 	public VeryBasicParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
    	public VeryBasicGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
+
 	private SortedSet<string> symbolTable = new SortedSet<string>();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
@@ -47,13 +48,13 @@
 %left MULTIPLY DIVIDE
 
 %type <id> identifier
-%type <ex> expr var_reference variable proc_func_call //range_expr
+%type <ex> expr var_reference variable proc_func_call range_expr
 %type <stn> expr_lst optional_expr_lst proc_func_decl
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> compound_stmt compound_stmt_lst
 %type <stn> stmt_lst block
 %type <stn> progr declaration param_name simple_fp_sect fp_sect fp_sect_list fp_list
-%type <td> proc_func_header fp_type //simple_type_identifier
+%type <td> proc_func_header fp_type simple_type_identifier
 
 %start progr
 
@@ -232,26 +233,41 @@ proc_func_call
 		}
 	;
 
-//simple_type_identifier	
-//	: identifier
-//		{
-//			$$ = new named_type_reference($1, @$);
-//		}
-//	;
+simple_type_identifier
+	: identifier
+		{
+			switch ($1.name) {
+				case "int":
+					$$ = new named_type_reference("integer", @$);
+					break;
+				case "float":
+					$$ = new named_type_reference("real", @$);
+					break;
+				
+				case "integer":
+				case "real":
+					$$ = new named_type_reference("error", @$);
+					break;
+				
+				default:
+					$$ = new named_type_reference($1, @$);
+					break;
+			}
+		}
+	;
 
-//range_expr	
-//	: simple_type_identifier
-//		{
-//			$$ = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent($1 as named_type_reference);
-//		}
-//	;
+range_expr	
+	: simple_type_identifier
+		{
+			$$ = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent($1 as named_type_reference);
+		}
+	;
 
 fp_type	
-	: INT
-		{
-			$$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference(parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent(new named_type_reference("integer")));
+	: range_expr 
+		{ 
+			$$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference($1); 
 		}
-	//| range_expr { $$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference($1); }
 	;
 
 param_name	
