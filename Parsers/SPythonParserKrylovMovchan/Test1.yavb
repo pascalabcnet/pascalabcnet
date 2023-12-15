@@ -9,9 +9,7 @@ def f(a: int) -> int:
     else:
         mn = b
     return 2
-    result = 10
-    print(result)
-    return 56
+    print(1)
+    return 10
 
 print(f(a))
-print(result)

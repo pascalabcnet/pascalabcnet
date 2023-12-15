@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 15.12.2023 19:40:28
+// DateTime: 15.12.2023 20:12:26
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -433,7 +433,9 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
       case 40: // return_stmt -> RETURN, expr
 {
 			statement res_assign = new assign(new ident("result"), ValueStack[ValueStack.Depth-1].ex, Operators.Assignment, CurrentLocationSpan);
+			statement exit_call = new procedure_call(new ident("exit"), true, CurrentLocationSpan);
 			CurrentSemanticValue.stn = new statement_list(res_assign, CurrentLocationSpan);
+			(CurrentSemanticValue.stn  as statement_list).Add(exit_call, CurrentLocationSpan);
 		}
         break;
       case 41: // proccall -> var_reference
