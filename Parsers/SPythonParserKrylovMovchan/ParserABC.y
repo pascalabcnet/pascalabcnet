@@ -51,18 +51,18 @@
 %type <ex> expr var_reference variable proc_func_call range_expr
 %type <stn> expr_lst optional_expr_lst proc_func_decl
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
-%type <stn> compound_stmt compound_stmt_lst
-%type <stn> stmt_lst block
-%type <stn> progr declaration param_name simple_fp_sect fp_sect fp_sect_list fp_list
+%type <stn> decl_or_stmt decl_or_stmt_list
+%type <stn> stmt_lst compound_stmt
+%type <stn> progr decl param_name simple_fp_sect fp_sect fp_sect_list fp_list
 %type <td> proc_func_header fp_type simple_type_identifier
 
-%type <stn> block_begin
+%type <stn> compound_stmt_begin
 
 %start progr
 
 %%
 progr   
-	: compound_stmt_lst
+	: decl_or_stmt_list
 		{
 			var stl = $1 as statement_list;
 			decl.AddFirst(decl_forward.defs);
@@ -76,14 +76,14 @@ progr
 		}
 	;
 
-compound_stmt	
+decl_or_stmt	
 	: stmt	
 		{ $$ = $1; }
-	| declaration 
+	| decl 
 		{ $$ = null; }
 	;
 
-declaration	
+decl	
 	: proc_func_decl 
 		{
 			$$ = null; 
@@ -91,15 +91,15 @@ declaration
 		}
 	;
 
-compound_stmt_lst	
-	: compound_stmt
+decl_or_stmt_list	
+	: decl_or_stmt
 		{
 			if ($1 is statement st)
 				$$ = new statement_list($1 as statement, @1);
 			else
 				$$ =  new statement_list(); 
 		}
-	| compound_stmt_lst SEMICOLON compound_stmt
+	| decl_or_stmt_list SEMICOLON decl_or_stmt
 		{
 			if ($3 is statement st) 
 				$$ = ($1 as statement_list).Add(st, @$);
@@ -122,7 +122,7 @@ stmt_lst
 stmt	
 	: assign		
 		{ $$ = $1; }
-	| block			
+	| compound_stmt			
 		{ $$ = $1; }
 	| if_stmt		
 		{ $$ = $1; }
@@ -153,7 +153,7 @@ assign
 			// symbolTable.Add($1.name);
 			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
-		;
+	;
 
 expr 	
 	: expr PLUS 	expr	
@@ -196,41 +196,64 @@ expr_lst
 		}
 	;
 
-if_stmt	: IF expr COLON block optional_elif
-		{ $$ = new if_node($2, $4 as statement, $5 as statement, @$); }
-		;
+if_stmt	
+	: IF expr COLON compound_stmt optional_elif
+		{ 
+			$$ = new if_node($2, $4 as statement, $5 as statement, @$); 
+		}
+	;
 
-optional_elif	: ELIF expr COLON block optional_elif
-				{ $$ = new if_node($2, $4 as statement, $5 as statement, @$); }
-				| optional_else
-				{ $$ = $1; }
-				;
+optional_elif	
+	: ELIF expr COLON compound_stmt optional_elif
+		{ 
+			$$ = new if_node($2, $4 as statement, $5 as statement, @$); 
+		}
+	| optional_else
+		{ $$ = $1; }
+	;
 
-optional_else	: ELSE COLON block	{ $$ = $3; }
-				|					{ $$ = null; }
-				;
+optional_else	
+	: ELSE COLON compound_stmt	
+		{ $$ = $3; }
+	|
+		{ $$ = null; }
+	;
 
-while_stmt	: WHILE expr COLON block
-			{ $$ = new while_node($2, $4 as statement, WhileCycleType.While, @$); }
-			;
+while_stmt	
+	: WHILE expr COLON compound_stmt
+		{ 
+			$$ = new while_node($2, $4 as statement, WhileCycleType.While, @$); 
+		}
+	;
 
-for_stmt	: FOR identifier IN expr COLON block
-			{ $$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$); }
-			;
+for_stmt	
+	: FOR identifier IN expr COLON compound_stmt
+		{ 
+			$$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$); 
+		}
+	;
 
-proccall	:  var_reference
-        	{ $$ = new procedure_call($1 as addressed_value, $1 is ident, @$); }
-			;
+proccall	
+	:  var_reference
+        { 
+			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$);
+		}
+	;
 
-var_reference	: variable { $$ = $1; }
-				;
+var_reference	
+	: variable 
+		{ $$ = $1; }
+	;
 
-variable	: identifier		{ $$ = $1; }
-			| proc_func_call	{ $$ = $1; }
-			;
+variable	
+	: identifier		
+		{ $$ = $1; }
+	| proc_func_call
+		{ $$ = $1; }
+	;
 
-block	
-	: block_begin INDENT stmt_lst SEMICOLON UNINDENT
+compound_stmt	
+	: compound_stmt_begin INDENT stmt_lst SEMICOLON UNINDENT
 		{ 
 			symbolTable = symbolTable.OuterScope;
 
@@ -241,7 +264,7 @@ block
 		}
 	;
 
-block_begin	
+compound_stmt_begin	
 	:
 		{ 
 			symbolTable = new SymbolTable(symbolTable); 
@@ -249,7 +272,7 @@ block_begin
 	;
 
 proc_func_decl	
-	: proc_func_header block 
+	: proc_func_header compound_stmt 
 		{ 
 			symbolTable = symbolTable.OuterScope;
 
@@ -269,7 +292,6 @@ proc_func_header
 		{
 			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
 		}
-//$$ = new procedure_header($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $5 as where_definition_list, @$); 
 	;
 
 proc_func_call	
