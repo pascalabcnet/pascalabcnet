@@ -1,14 +1,9 @@
-﻿def f():
-    print(1)
-a = ReadInteger()
-b = 3
-if a < 5:
+﻿def f(a: real):
     print(a)
-elif b < 5:
-    print(cos(b))
-while a > 0:
-    a = a - 1
-    
-for i in range(1, 10):
-    print(i * 2)
-    a = 3
+
+def f(a: real, b: real):
+    f(a)
+    f(b)
+
+f(100, 10)
+f(2)

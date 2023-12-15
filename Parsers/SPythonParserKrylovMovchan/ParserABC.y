@@ -46,14 +46,14 @@
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
 
-%type <id> ident
-%type <ex> expr var_reference variable proc_func_call
+%type <id> identifier
+%type <ex> expr var_reference variable proc_func_call range_expr
 %type <stn> expr_lst optional_expr_lst proc_func_decl
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> compound_stmt compound_stmt_lst
 %type <stn> stmt_lst block
-%type <stn> progr declaration
-%type <td> proc_func_header
+%type <stn> progr declaration param_name simple_fp_sect fp_sect fp_sect_list fp_list
+%type <td> proc_func_header simple_type_identifier fp_type
 
 %start progr
 
@@ -113,10 +113,10 @@ stmt	: assign		{ $$ = $1; }
 		| for_stmt		{ $$ = $1; }
 		;
 
-ident 	: ID	{ $$ = $1; }
-		;
+identifier	: ID	{ $$ = $1; }
+			;
 
-assign 	: ident ASSIGN expr
+assign 	: identifier ASSIGN expr
 		{
 			if (!symbolTable.Contains($1.name)) {
 				symbolTable.Add($1.name);
@@ -129,7 +129,7 @@ assign 	: ident ASSIGN expr
 			// symbolTable.Add($1.name);
 			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
-		| LOCAL ident ASSIGN expr
+		| LOCAL identifier ASSIGN expr
 		{
 			symbolTable.Add($2.name);
 			var vds = new var_def_statement(new ident_list($2, @2), null, $4, definition_attribute.None, false, @$);
@@ -179,7 +179,7 @@ while_stmt	: WHILE expr COLON block
 			{ $$ = new while_node($2, $4 as statement, WhileCycleType.While, @$); }
 			;
 
-for_stmt	: FOR ident IN expr COLON block
+for_stmt	: FOR identifier IN expr COLON block
 			{ $$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$); }
 			;
 
@@ -190,7 +190,7 @@ proccall	:  var_reference
 var_reference	: variable { $$ = $1; }
 				;
 
-variable	: ident				{ $$ = $1; }
+variable	: identifier		{ $$ = $1; }
 			| proc_func_call	{ $$ = $1; }
 			;
 
@@ -203,29 +203,96 @@ block	: INDENT stmt_lst SEMICOLON UNINDENT
 		}
 		;
 
-proc_func_decl	: proc_func_header block 
-				{ 
-					//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
-					//pd1.AssignAttrList(null);
-					//$$ = pd1;
-					$$ = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
+proc_func_decl	
+	: proc_func_header block 
+		{ 
+			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
+			//pd1.AssignAttrList(null);
+			//$$ = pd1;
+			$$ = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 
-					var pd = new procedure_definition($1 as procedure_header, null, @1);
-            		pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
-					decl_forward.Add(pd, @1);
-				} 
-				;
+			var pd = new procedure_definition($1 as procedure_header, null, @1);
+            pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
+			decl_forward.Add(pd, @1);
+		} 
+	;
 
-proc_func_header: DEF ident LPAR RPAR COLON
-				{ 
-					$$ = new procedure_header(null, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
-				}
+proc_func_header
+	: DEF identifier fp_list COLON
+		{ 
+			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
+		}
 //$$ = new procedure_header($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $5 as where_definition_list, @$); 
-				;
+	;
 
-proc_func_call	: ident LPAR optional_expr_lst RPAR
-				{ $$ = new method_call($1 as addressed_value, $3 as expression_list, @$); }
-				;
+proc_func_call	
+	: identifier LPAR optional_expr_lst RPAR
+		{ 
+			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$); 
+		}
+	;
+
+simple_type_identifier	
+	: identifier
+		{
+			$$ = new named_type_reference($1, @$);
+		}
+	;
+
+range_expr	
+	: simple_type_identifier
+		{
+			$$ = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent($1 as named_type_reference);
+		}
+	;
+
+fp_type	
+	: range_expr
+		{
+			$$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference($1); 
+		}
+	;
+
+param_name	
+	: identifier
+		{ 
+			$$ = new ident_list($1, @$);  
+		}
+    ;
+
+simple_fp_sect	
+	: param_name COLON fp_type
+		{
+			$$ = new typed_parameters($1 as ident_list, $3, parametr_kind.none, null, @$); 
+		}
+	;
+
+fp_sect	
+	: simple_fp_sect
+		{ $$ = $1; }
+	;
+
+fp_sect_list
+    : fp_sect                                          
+        { 
+			$$ = new formal_parameters($1 as typed_parameters, @$);
+        }
+    | fp_sect_list COMMA fp_sect               
+        { 
+			$$ = ($1 as formal_parameters).Add($3 as typed_parameters, @$);   
+        } 
+    ;
+
+fp_list
+    : LPAR RPAR        
+        { $$ = null; }
+    | LPAR fp_sect_list RPAR         
+        { 
+			$$ = $2;
+			if ($$ != null)
+				$$.source_context = @$;
+		}
+    ;
 
 %%
 
