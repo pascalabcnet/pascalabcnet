@@ -35,7 +35,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <op> ASSIGN
@@ -49,7 +49,7 @@
 
 %type <id> identifier
 %type <ex> expr var_reference variable proc_func_call range_expr
-%type <stn> expr_lst optional_expr_lst proc_func_decl
+%type <stn> expr_lst optional_expr_lst proc_func_decl return_stmt
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_or_stmt_list
 %type <stn> stmt_lst compound_stmt
@@ -132,19 +132,24 @@ stmt
 		{ $$ = $1; }
 	| for_stmt		
 		{ $$ = $1; }
+	| return_stmt
+		{ $$ = $1; }
 	;
 
 identifier	
 	: ID	
-		{ $$ = $1; }
+		{
+			if ($1.name == "result")
+				$1.name = "%result";
+			$$ = $1; 
+		}
 	;
 
 assign
 	: identifier ASSIGN expr
 		{
-			string name = $1.name;
-			if (!symbolTable.Contains(name) && name != "result") {
-				symbolTable.Add(name);
+			if (!symbolTable.Contains($1.name)) {
+				symbolTable.Add($1.name);
 				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
 				$$ = new var_statement(vds, @$);
 			}
@@ -231,6 +236,16 @@ for_stmt
 	: FOR identifier IN expr COLON compound_stmt
 		{ 
 			$$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$); 
+		}
+	;
+
+// return `expr` ~ result := `expr`; exit;
+return_stmt
+	: RETURN expr
+		{
+			statement res_assign = new assign(new ident("result"), $2, Operators.Assignment, @$);
+			$$ = new statement_list(res_assign, @$);
+			//($$  as statement_list).Add(`exit stmt`, @$);
 		}
 	;
 

@@ -1,13 +1,17 @@
 ﻿a = 10
 c = 10
 
-def f(a: int):
+def f(a: int) -> int:
     a = 13
     b = 10
     if a < b:
         mn = a
     else:
         mn = b
-    print(a, b)
+    return 2
+    result = 10
+    print(result)
+    return 56
 
-f(a)
+print(f(a))
+print(result)
