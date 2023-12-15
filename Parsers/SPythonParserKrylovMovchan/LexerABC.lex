@@ -59,6 +59,8 @@ ID {Alpha}{AlphaDigit}*
 "["  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACKET; }
 "]"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACKET; }
 
+"->"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.ARROW; }
+
 "."  { currentLexLocation = CurrentLexLocation; return (int)Tokens.DOT; }
 ","  { currentLexLocation = CurrentLexLocation; return (int)Tokens.COMMA; }
 ":"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.COLON; }

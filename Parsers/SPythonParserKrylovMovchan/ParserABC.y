@@ -37,7 +37,7 @@
 
 %token <ti> FOR IN WHILE IF ELSE ELIF DEF
 %token <ex> INTNUM REALNUM
-%token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT
+%token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <op> ASSIGN
 %token <op> PLUS MINUS MULTIPLY DIVIDE
 %token <id> ID INT
@@ -142,8 +142,9 @@ identifier
 assign
 	: identifier ASSIGN expr
 		{
-			if (!symbolTable.Contains($1.name)) {
-				symbolTable.Add($1.name);
+			string name = $1.name;
+			if (!symbolTable.Contains(name) && name != "result") {
+				symbolTable.Add(name);
 				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
 				$$ = new var_statement(vds, @$);
 			}
@@ -291,6 +292,10 @@ proc_func_header
 	: DEF identifier fp_list COLON
 		{
 			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
+		}
+	| DEF identifier fp_list ARROW fp_type COLON
+		{
+			$$ = new function_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $5 as type_definition, @$);
 		}
 	;
 
