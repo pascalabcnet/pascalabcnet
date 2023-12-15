@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 15.12.2023 13:05:59
+// DateTime: 15.12.2023 16:51:35
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -64,6 +64,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
 	private SortedSet<string> symbolTable = new SortedSet<string>();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
+	private bool isInFunction = false;
   // End verbatim content from ParserABC.y
 
 #pragma warning disable 649
@@ -325,7 +326,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 17: // assign -> identifier, ASSIGN, expr
 {
-			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name)) {
+			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name) && !isInFunction) {
 				symbolTable.Add(ValueStack[ValueStack.Depth-3].id.name);
 				var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), null, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
 				CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
@@ -431,6 +432,8 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 45: // proc_func_decl -> proc_func_header, block
 { 
+			isInFunction = false;
+
 			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 			//pd1.AssignAttrList(null);
 			//$$ = pd1;
@@ -443,6 +446,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 46: // proc_func_header -> DEF, identifier, fp_list, COLON
 { 
+			isInFunction = true;
 			CurrentSemanticValue.td = new procedure_header(ValueStack[ValueStack.Depth-2].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), CurrentLocationSpan), new method_name(null,null, ValueStack[ValueStack.Depth-3].id, null, CurrentLocationSpan), null, CurrentLocationSpan); 
 		}
         break;
@@ -493,7 +497,9 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
 		}
         break;
       case 53: // fp_sect -> simple_fp_sect
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 54: // fp_sect_list -> fp_sect
 { 
@@ -506,7 +512,9 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         }
         break;
       case 56: // fp_list -> LPAR, RPAR
-{ CurrentSemanticValue.stn = null; }
+{
+			CurrentSemanticValue.stn = null; 
+		}
         break;
       case 57: // fp_list -> LPAR, fp_sect_list, RPAR
 { 

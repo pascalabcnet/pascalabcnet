@@ -1,4 +1,11 @@
-﻿def f(a: int):
-    print(a)
+﻿a = 7
 
-f(4)
+def f(a: int):
+    if a > 0:
+        print(a)
+        f(a - 1)
+    else:
+        println()
+
+f(6)
+println(a)

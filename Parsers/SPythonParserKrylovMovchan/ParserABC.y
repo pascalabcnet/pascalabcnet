@@ -10,6 +10,7 @@
 	private SortedSet<string> symbolTable = new SortedSet<string>();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
+	private bool isInFunction = false;
 %}
 
 %using PascalABCCompiler.SyntaxTree;
@@ -119,7 +120,7 @@ identifier	: ID	{ $$ = $1; }
 
 assign 	: identifier ASSIGN expr
 		{
-			if (!symbolTable.Contains($1.name)) {
+			if (!symbolTable.Contains($1.name) && !isInFunction) {
 				symbolTable.Add($1.name);
 				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
 				$$ = new var_statement(vds, @$);
@@ -207,6 +208,8 @@ block	: INDENT stmt_lst SEMICOLON UNINDENT
 proc_func_decl	
 	: proc_func_header block 
 		{ 
+			isInFunction = false;
+
 			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 			//pd1.AssignAttrList(null);
 			//$$ = pd1;
@@ -221,6 +224,7 @@ proc_func_decl
 proc_func_header
 	: DEF identifier fp_list COLON
 		{ 
+			isInFunction = true;
 			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
 		}
 //$$ = new procedure_header($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $5 as where_definition_list, @$); 
@@ -286,7 +290,9 @@ simple_fp_sect
 
 fp_sect	
 	: simple_fp_sect
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	;
 
 fp_sect_list
@@ -302,7 +308,9 @@ fp_sect_list
 
 fp_list
     : LPAR RPAR        
-        { $$ = null; }
+        {
+			$$ = null; 
+		}
     | LPAR fp_sect_list RPAR         
         { 
 			$$ = $2;
