@@ -10,6 +10,7 @@ using PascalABCCompiler.Errors;
 using PascalABCCompiler.TreeRealization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Data;
 
 namespace PascalABCCompiler
 {
@@ -388,10 +389,16 @@ namespace PascalABCCompiler
             sendCommand(ConsoleCompilerConstants.CompilerOptionsClearStandartModules);
             if (compilerOptions.Locale != null)
                 sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
-            foreach (PascalABCCompiler.CompilerOptions.StandardModule sm in compilerOptions.StandardModules)
-                sendCommand(
-                    ConsoleCompilerConstants.CompilerOptionsStandartModule,
-                    sm.Name,(int)sm.AddMethod,(int)sm.AddToLanguages);
+            
+            foreach (var kv in compilerOptions.standardModules)
+            {
+                foreach (CompilerOptions.StandardModule module in kv.Value)
+                {
+					sendCommand(ConsoleCompilerConstants.CompilerOptionsStandartModule,
+					    module.name, (int)module.addMethod, module.languageToAdd);
+				}
+            }
+
         }
 
         public delegate void EnvorimentIdleDelegate();
