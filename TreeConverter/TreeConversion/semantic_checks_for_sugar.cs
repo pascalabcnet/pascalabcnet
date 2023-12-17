@@ -96,7 +96,7 @@ namespace PascalABCCompiler.TreeConverter
             var semex = convert_strong(ex);
             var b = convertion_data_and_alghoritms.can_convert_type(semex, SystemLibrary.SystemLibrary.integer_type);
             var toIsIndex = (semex is common_constructor_call toCall) &&
-                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals(compiler_string_consts.system_unit_file_name) &&
                 toCall.common_type.PrintableName.Equals("SystemIndex");
 
             var toIsIndex1 = (semex is compiled_constructor_call toCall1) &&
@@ -252,7 +252,7 @@ namespace PascalABCCompiler.TreeConverter
 
             var semfrom = convert_strong(from);
             var fromIsIndex = (semfrom is common_constructor_call fromCall) &&
-                fromCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                fromCall.common_type.comprehensive_namespace.namespace_full_name.Equals(compiler_string_consts.system_unit_file_name) &&
                 fromCall.common_type.PrintableName.Equals("SystemIndex");
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
             if (!b && !fromIsIndex)
@@ -260,7 +260,7 @@ namespace PascalABCCompiler.TreeConverter
 
             var semto = convert_strong(to);
             var toIsIndex = (semto is common_constructor_call toCall) &&
-                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals(compiler_string_consts.system_unit_file_name) &&
                 toCall.common_type.PrintableName.Equals("SystemIndex");
             b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
             if (!b && !toIsIndex)

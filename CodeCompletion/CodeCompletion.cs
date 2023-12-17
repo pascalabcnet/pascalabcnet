@@ -8,6 +8,7 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
+using PascalABCCompiler;
 //using ICSharpCode.SharpDevelop.Dom;
 
 namespace CodeCompletion
@@ -46,7 +47,7 @@ namespace CodeCompletion
         public static string currentLanguageISO;
         static string doctagsParserExtension = ".pasdt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
 		//public static PascalABCCompiler.Parsers.IParser currentParser;
-		static string cur_ext = ".pas";
+		static string cur_ext = StringConstants.pascalSourceFileExtension;
         private static IParser currentParser;
 
 		public static void SetParser(string ext)

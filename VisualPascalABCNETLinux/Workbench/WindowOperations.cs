@@ -9,6 +9,7 @@ using System.Windows.Forms;
 //using ICSharpCode.FormsDesigner;
 //using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
+using PascalABCCompiler;
 using VisualPascalABC.OptionsContent;
 using VisualPascalABCPlugins;
 using WeifenLuo.WinFormsUI.Docking;
@@ -464,7 +465,7 @@ namespace VisualPascalABC
 
         public void OpenTabWithText(string tabName, string Text)
         {
-            CodeFileDocumentControl edit = FindTab(tabName + ".pas");
+            CodeFileDocumentControl edit = FindTab(tabName + StringConstants.pascalSourceFileExtension);
             if (edit != null)
             {
                 CurrentCodeFileDocument = edit;
@@ -472,9 +473,9 @@ namespace VisualPascalABC
             }
             edit = AddNewTab(MainDockPanel);
             edit.FromMetadata = true;
-            OpenDocuments.Add(Tools.FileNameToLower(tabName + ".pas"), edit);
+            OpenDocuments.Add(Tools.FileNameToLower(tabName + StringConstants.pascalSourceFileExtension), edit);
             CloseButtonsEnabled = OpenDocuments.Count > 1;
-            edit.FileName = tabName + ".pas";
+            edit.FileName = tabName + StringConstants.pascalSourceFileExtension;
             edit.Text = tabName;
             edit.SetHighlightingStrategyForFile("prog.pas");
             edit.TextEditor.Document.Insert(0, Text);
@@ -482,7 +483,7 @@ namespace VisualPascalABC
             {
                 AddEditorHandlers(edit);
             }
-            WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + ".pas");
+            WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + StringConstants.pascalSourceFileExtension);
             //edit.file_name = file_name;
             //SetTabPageText(edit);
         }

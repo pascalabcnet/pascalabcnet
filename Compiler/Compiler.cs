@@ -422,7 +422,7 @@ namespace PascalABCCompiler
 
         //private SemanticTree.compilation_unitArrayList _interfaceUsedUnits=new SemanticTree.compilation_unitArrayList();
 
-        public string languageName = "PascalABCNET";
+        public string languageName = StringConstants.pascalLanguageName;
 
 		/// <summary>
 		/// Только "реальные" юниты (не dll и namespace)
@@ -519,7 +519,7 @@ namespace PascalABCCompiler
         public bool Optimise = false;
         public bool SavePCUInThreadPull = false;
         public bool RunWithEnvironment = false;
-        public string CompiledUnitExtension = ".pcu";
+        public string CompiledUnitExtension = StringConstants.pascalCompiledUnitExtension;
         public bool ProjectCompiled = false;
         public IProjectInfo CurrentProject = null;
         public OutputType OutputFileType = OutputType.ConsoleApplicaton;
@@ -609,7 +609,7 @@ namespace PascalABCCompiler
         {
             public string name = null;
             public StandardModuleAddMethod addMethod = StandardModuleAddMethod.LeftToAll;
-            public string languageToAdd = "PascalABCNET";
+            public string languageToAdd = StringConstants.pascalLanguageName;
             
             public StandardModule(string Name, StandardModuleAddMethod addMethod)
             {
@@ -641,10 +641,21 @@ namespace PascalABCCompiler
         /// </summary>
         public Dictionary<string, List<StandardModule>> standardModules = new Dictionary<string, List<StandardModule>>()
         {
-            int moduleIndex = StandardModules.FindIndex(module => module.Name == name);
+            [StringConstants.pascalLanguageName] = new List<StandardModule>
+            (
+                StringConstants.pascalDefaultStandardModules.Select(moduleName => new StandardModule(moduleName))
+            ),
+
+            // ...
+        };
+
+
+		public void RemoveStandardModule(string language, string name)
+		{
+            int moduleIndex = standardModules[language].FindIndex(module => module.name == name);
             
             if (moduleIndex != -1)
-                StandardModules.RemoveAt(moduleIndex);
+                standardModules[language].RemoveAt(moduleIndex);
         }
 
         public void RemoveStandardModuleAtIndex(string language, int index)
@@ -675,13 +686,6 @@ namespace PascalABCCompiler
 
         public Hashtable StandardDirectories;
 
-        /*private void SetStandardModules()
-        {
-            standardModules = new List<StandardModule>();
-            standardModules.Add(new StandardModule("PABCSystem", SyntaxTree.LanguageId.PascalABCNET));
-            standardModules.Add(new StandardModule("PABCExtensions", SyntaxTree.LanguageId.PascalABCNET));
-        }*/
-
         private void SetDirectories()
         {
             SystemDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
@@ -697,13 +701,11 @@ namespace PascalABCCompiler
         public CompilerOptions()
         {
             SetDirectories();
-            // SetStandardModules();
         }
 
         public CompilerOptions(string SourceFileName, OutputType OutputFileType)
         {
             SetDirectories();
-            // SetStandardModules();
             this.SourceFileName = SourceFileName;
             this.OutputFileType = OutputFileType;
         }
@@ -4141,8 +4143,8 @@ namespace PascalABCCompiler
 		{
 			switch (extension)
             {
-                case ".pas":
-                    return "PascalABCNET";
+                case StringConstants.pascalSourceFileExtension:
+                    return StringConstants.pascalLanguageName;
 
                 /*case ".yavb":
                     return "";*/

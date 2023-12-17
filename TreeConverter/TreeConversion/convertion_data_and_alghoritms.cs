@@ -2162,7 +2162,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (function.sym_info is compiled_function_node cfn0 &&
                     cfn0.comperehensive_type is compiled_type_node ctn0 &&
-                    (ctn0.compiled_type.Name == "PABCSystem" + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == "PABCExtensions" + compiler_string_consts.ImplementationSectionNamespaceName)
+                    (ctn0.compiled_type.Name == compiler_string_consts.system_unit_file_name + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == compiler_string_consts.extensions_unit_file_name + compiler_string_consts.ImplementationSectionNamespaceName)
                     && !ctn0.compiled_type.Assembly.FullName.StartsWith("PABCRtl")) // пропустить функции (методы расширения), определенные в сборке в ПИ PABCSystem, но не в PABCRtl.dll
                     continue;
                 // В режиме only_from_not_extensions пропускать все extensions

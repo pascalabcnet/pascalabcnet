@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using PascalABCCompiler;
 
 namespace VisualPascalABC
 {
@@ -56,7 +57,7 @@ namespace VisualPascalABC
         {
             string sf = PascalABCCompiler.FormatTools.ExtensionsToString(Extensions, "*", ";");
             sf = string.Format(VECStringResources.Get("DIALOGS_FILTER_PART_{0}{1}|{1}|"), Name, sf);
-            if (sf.IndexOf(".pas") >= 0)
+            if (sf.IndexOf(StringConstants.pascalSourceFileExtension) >= 0)
                 return sf + Filter;
             else
                 return Filter + sf;

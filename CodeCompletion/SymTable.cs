@@ -10,6 +10,7 @@ using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using System.Linq;
+using PascalABCCompiler;
 
 namespace CodeCompletion
 {
@@ -493,7 +494,7 @@ namespace CodeCompletion
         
         private bool hasUsesCycle(SymScope unit, int deep=0)
         {
-            if (unit.Name == "PABCSystem")
+            if (unit.Name == StringConstants.PABCSystemName)
                 return true;
             if (deep > 100)
                 return true;
@@ -523,7 +524,7 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            if (this.si.name != "PABCSystem" || unit is NamespaceScope)
+            if (this.si.name != StringConstants.PABCSystemName || unit is NamespaceScope)
                 used_units.Add(unit);
         }
 

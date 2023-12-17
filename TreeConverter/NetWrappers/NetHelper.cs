@@ -649,7 +649,7 @@ namespace PascalABCCompiler.NetHelper
                             {
                                 if (_assembly.ManifestModule.ScopeName == compiler_string_consts.pabc_rtl_dll_name)
                                 {
-                                    if (t.Name == "PABCSystem")
+                                    if (t.Name == compiler_string_consts.system_unit_file_name)
                                         PABCSystemType = t;
                                     else if (t.Name == "PT4")
                                         PT4Type = t;

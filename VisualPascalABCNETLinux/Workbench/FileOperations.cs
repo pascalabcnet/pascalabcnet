@@ -10,6 +10,7 @@ using System.Drawing;
 //using ICSharpCode.FormsDesigner;
 using VisualPascalABCPlugins;
 using WeifenLuo.WinFormsUI.Docking;
+using PascalABCCompiler;
 
 namespace VisualPascalABC
 {
@@ -118,7 +119,7 @@ namespace VisualPascalABC
             //ssyy
             if (!IsNewFile)
             {
-                if (Path.GetExtension(FileName) == ".pas")
+                if (Path.GetExtension(FileName) == StringConstants.pascalSourceFileExtension)
                 {
                     /*string XMLFile = Path.ChangeExtension(file_name, string_consts.xml_form_extention);
                     if (File.Exists(XMLFile))
