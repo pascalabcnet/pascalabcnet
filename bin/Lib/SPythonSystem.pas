@@ -1,5 +1,4 @@
-﻿
-unit SPythonSystem;
+﻿unit SPythonSystem;
 
 interface
 
@@ -31,9 +30,9 @@ function range(e: integer): sequence of integer;
 
 function range(s: integer; e: integer): sequence of integer;
 
-function all<T>(seq: sequence of T): boolean;
+//function all<T>(seq: sequence of T): boolean;
 
-function any<T>(seq: sequence of T): boolean;
+//function any<T>(seq: sequence of T): boolean;
 
 // Standard Math functions
 
@@ -87,6 +86,6 @@ end;
 
 function abs(x: integer): integer := if x >= 0 then x else -x;
 
-function abs(x: single): single := Math.Abs(x);
+function abs(x: single): single := PABCSystem.Abs(x);
 
 end.
