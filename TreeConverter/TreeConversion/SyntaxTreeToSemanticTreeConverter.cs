@@ -153,8 +153,8 @@ namespace PascalABCCompiler.TreeConverter
 			{
                 throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Program has not implementation part");
 			}
-            //TODO: Переделать, чтобы Сашин код работал с common_unit_node.
-			stv.compiled_unit=(PascalABCCompiler.TreeRealization.common_unit_node)SemanticUnit;
+
+			stv.compiled_unit = SemanticUnit;
             stv.current_document = new TreeRealization.document(SyntaxUnit.file_name);
 
             foreach (SyntaxTree.compiler_directive cd in umod.compiler_directives)

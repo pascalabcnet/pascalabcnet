@@ -612,7 +612,7 @@ namespace VisualPascalABC
                 case VisualEnvironmentCompilerAction.OpenFile:
                     return WorkbenchServiceFactory.FileService.OpenFile((string)obj, null);
                 case VisualEnvironmentCompilerAction.GetDirectory:
-                    string s=VisualEnvironmentCompiler.Compiler.CompilerOptions.StandartDirectories[(string)obj] as string;
+                    string s=VisualEnvironmentCompiler.Compiler.CompilerOptions.StandardDirectories[(string)obj] as string;
                     if (s != null) 
                         return s;
                     return WorkbenchStorage.StandartDirectories[(string)obj] as string;

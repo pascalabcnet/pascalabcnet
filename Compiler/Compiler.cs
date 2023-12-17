@@ -554,8 +554,9 @@ namespace PascalABCCompiler
         }
 
         private string outputFileName = null;
-        //имя выходного файла без расширения
-        //ели имя указано без пути то в качестве пути используетя OutputDirectory
+        
+        // имя выходного файла без расширения
+        // если имя указано без пути то в качестве пути используетя OutputDirectory
         public string OutputFileName
         {
             get
@@ -577,7 +578,6 @@ namespace PascalABCCompiler
             }
         }
 
-        //
         public string SystemDirectory;
 
         public List<string> ForceDefines = new List<string>();
@@ -595,25 +595,25 @@ namespace PascalABCCompiler
             set
             {
                 useDllForSystemUnits = value;
-                PascalABCCompiler.NetHelper.NetHelper.UsePABCRtl = value;
+                NetHelper.NetHelper.UsePABCRtl = value;
             }
         }
 
-        public string[] ParserSearchPatchs;
+        public string[] ParserSearchPaths;
 
-        public enum StandartModuleAddMethod { LeftToAll, RightToMain };
+        public enum StandardModuleAddMethod { LeftToAll, RightToMain };
         [Serializable()]
         public class StandardModule : MarshalByRefObject
         {
             public string Name = null;
-            public StandartModuleAddMethod AddMethod = StandartModuleAddMethod.LeftToAll;
+            public StandardModuleAddMethod AddMethod = StandardModuleAddMethod.LeftToAll;
             public SyntaxTree.LanguageId AddToLanguages = SyntaxTree.LanguageId.PascalABCNET;
-            public StandardModule(string Name, StandartModuleAddMethod AddMethod)
+            public StandardModule(string Name, StandardModuleAddMethod AddMethod)
             {
                 this.Name = Name;
                 this.AddMethod = AddMethod;
             }
-            public StandardModule(string Name, StandartModuleAddMethod AddMethod, SyntaxTree.LanguageId AddToLanguages)
+            public StandardModule(string Name, StandardModuleAddMethod AddMethod, SyntaxTree.LanguageId AddToLanguages)
             {
                 this.Name = Name;
                 this.AddToLanguages = AddToLanguages;
@@ -629,23 +629,21 @@ namespace PascalABCCompiler
                 this.Name = Name;
             }
         }
+
         /// <summary>
         /// module at index 0 is System module
         /// </summary>
         public List<StandardModule> StandardModules;
-        public void RemoveStandartModule(string Name)
+        
+        public void RemoveStandardModule(string name)
         {
-            StandardModule module_to_del = null;
-            foreach (StandardModule module in StandardModules)
-                if (module.Name == Name)
-                {
-                    module_to_del = module;
-                    break;
-                }
-            if (module_to_del != null)
-                StandardModules.Remove(module_to_del);
+            StandardModule module_to_delete = StandardModules.Find(module => module.Name == name);
+            
+            if (module_to_delete != null)
+                StandardModules.Remove(module_to_delete);
         }
-        public void RemoveStandartModuleAtIndex(int index)
+
+        public void RemoveStandardModuleAtIndex(int index)
         {
             if (index < StandardModules.Count)
                 StandardModules.RemoveAt(index);
@@ -654,6 +652,7 @@ namespace PascalABCCompiler
 
         internal string outputDirectory = null;
         internal bool useOutputDirectory = false;
+
         //для поиска pcu во вторую очередь
         //для сохранения сюда .exe, .dll и .pdb файлов
         public string OutputDirectory
@@ -670,37 +669,37 @@ namespace PascalABCCompiler
         }
         //для поиска pcu в третью очередь исп. путь к pas файлу
 
-        public Hashtable StandartDirectories;
+        public Hashtable StandardDirectories;
 
-        private void SetStandartModules()
+        private void SetStandardModules()
         {
             StandardModules = new List<StandardModule>();
-            StandardModules.Add(new StandardModule("PABCSystem", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
-            StandardModules.Add(new StandardModule("PABCExtensions", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
+            StandardModules.Add(new StandardModule("PABCSystem", SyntaxTree.LanguageId.PascalABCNET));
+            StandardModules.Add(new StandardModule("PABCExtensions", SyntaxTree.LanguageId.PascalABCNET));
         }
 
         private void SetDirectories()
         {
             SystemDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
 
-            StandartDirectories = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-            StandartDirectories.Add("%PABCSYSTEM%", SystemDirectory);
+            StandardDirectories = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+            StandardDirectories.Add("%PABCSYSTEM%", SystemDirectory);
 
-            ParserSearchPatchs = new string[] { Path.Combine(SystemDirectory, "Lib") };
-            SearchDirectory = ParserSearchPatchs.ToList();
+            ParserSearchPaths = new string[] { Path.Combine(SystemDirectory, "Lib") };
+            SearchDirectory = ParserSearchPaths.ToList();
         }
 
 
         public CompilerOptions()
         {
             SetDirectories();
-            SetStandartModules();
+            SetStandardModules();
         }
 
         public CompilerOptions(string SourceFileName, OutputType OutputFileType)
         {
             SetDirectories();
-            SetStandartModules();
+            SetStandardModules();
             this.SourceFileName = SourceFileName;
             this.OutputFileType = OutputFileType;
         }
@@ -2482,7 +2481,7 @@ namespace PascalABCCompiler
 
                     // трансляция в IL-код | В semanticTree находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
                     CodeGeneratorsController.GenerateILCodeAndSaveAssembly(programNode, CompilerOptions.OutputFileName,
-                        CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandartDirectories,
+                        CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandardDirectories,
                         resourceFiles?.ToArray());
 
                     CodeGeneratorsController.EmitAssemblyRedirects(
@@ -3018,7 +3017,7 @@ namespace PascalABCCompiler
                     && (module.AddToLanguages & currentCompilationUnit.SyntaxTree.Language) != currentCompilationUnit.SyntaxTree.Language)
                     continue;
 
-                if (module.AddMethod == CompilerOptions.StandartModuleAddMethod.RightToMain && currentCompilationUnit != firstCompilationUnit)
+                if (module.AddMethod == CompilerOptions.StandardModuleAddMethod.RightToMain && currentCompilationUnit != firstCompilationUnit)
                     continue;
 
                 string moduleName = Path.GetFileNameWithoutExtension(module.Name);
@@ -3053,11 +3052,11 @@ namespace PascalABCCompiler
                 }
 
                 // добавление
-                if (module.AddMethod == CompilerOptions.StandartModuleAddMethod.RightToMain)
+                if (module.AddMethod == CompilerOptions.StandardModuleAddMethod.RightToMain)
                 {
                     usesList.Add(unitToAdd);
                 }
-                else if (module.AddMethod == CompilerOptions.StandartModuleAddMethod.LeftToAll)
+                else if (module.AddMethod == CompilerOptions.StandardModuleAddMethod.LeftToAll)
                 {
                     usesList.Insert(0, unitToAdd);
                 }
@@ -3942,6 +3941,9 @@ namespace PascalABCCompiler
             }
         }
 
+        /// <summary>
+        /// Если в программе в секции uses есть не про-во имен и не стандартный модуль, то использование PABCRtl.dll отменяется
+        /// </summary>
         private void SetUseDLLForSystemUnits(string currentDirectory, List<SyntaxTree.unit_or_namespace> usesList, int lastUnitIndex)
         {
             if (usesList != null && CompilerOptions.UseDllForSystemUnits)

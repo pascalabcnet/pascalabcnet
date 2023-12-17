@@ -71,13 +71,13 @@ namespace VisualPascalABC
             if (Path.GetDirectoryName(CompilerOptions1.SourceFileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
                 Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
             if (RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
             string ofn = Workbench.VisualEnvironmentCompiler.Compile(CompilerOptions1);
             Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = savePCU;
 
             if (RuntimeServicesModule != null)
-                CompilerOptions1.RemoveStandartModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
+                CompilerOptions1.RemoveStandardModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
 
             if (Workbench.VisualEnvironmentCompiler.Compiler.ErrorsList.Count != 0 || Workbench.VisualEnvironmentCompiler.Compiler.Warnings.Count != 0)
             {
@@ -113,7 +113,7 @@ namespace VisualPascalABC
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
             //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
             if (RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
             ErrorsList.Clear();
 
@@ -127,7 +127,7 @@ namespace VisualPascalABC
             Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = savePCU;
 
             if (RuntimeServicesModule != null)
-                CompilerOptions1.RemoveStandartModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
+                CompilerOptions1.RemoveStandardModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
 
             if (Workbench.VisualEnvironmentCompiler.Compiler.ErrorsList.Count != 0 || Workbench.VisualEnvironmentCompiler.Compiler.Warnings.Count != 0)
             {
@@ -161,7 +161,7 @@ namespace VisualPascalABC
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
             //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
             if (__RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
 
             ErrorsList.Clear();
@@ -197,7 +197,7 @@ namespace VisualPascalABC
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
             //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
             if (__RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
 
             ErrorsList.Clear();
@@ -267,7 +267,7 @@ namespace VisualPascalABC
                     Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = __savePCU;
 
                     if (__RuntimeServicesModule != null)
-                        CompilerOptions1.RemoveStandartModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
+                        CompilerOptions1.RemoveStandardModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
 
                     if (Workbench.VisualEnvironmentCompiler.Compiler.ErrorsList.Count != 0 || Workbench.VisualEnvironmentCompiler.Compiler.Warnings.Count != 0)
                     {

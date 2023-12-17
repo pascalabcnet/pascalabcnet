@@ -249,7 +249,7 @@ namespace PascalABCCompiler
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsStandartModule:
                     CompilerOptions.StandardModule sm = new CompilerOptions.StandardModule(args[0],
-                        (CompilerOptions.StandartModuleAddMethod)Convert.ToInt32(args[1]),
+                        (CompilerOptions.StandardModuleAddMethod)Convert.ToInt32(args[1]),
                         (PascalABCCompiler.SyntaxTree.LanguageId)Convert.ToInt32(args[2]));
                     compiler.CompilerOptions.StandardModules.Add(sm);
                     break;
