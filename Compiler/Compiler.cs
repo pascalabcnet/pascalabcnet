@@ -504,6 +504,16 @@ namespace PascalABCCompiler
         }
     }
 
+    public static class LanguagesData
+    {
+        public static Dictionary<string, string> languagesByExtensions = new Dictionary<string, string>()
+        {
+            [StringConstants.pascalSourceFileExtension] = StringConstants.pascalLanguageName,
+
+            // ...
+        };
+    }
+
     /// <summary>
     /// Опции компиляции
     /// </summary>
@@ -3996,7 +4006,7 @@ namespace PascalABCCompiler
                 firstCompilationUnit = currentUnit;
 
 			// TODO: Обсудить   EVA
-			currentUnit.languageName = GetLanguageNameByExtension(Path.GetExtension(unitFileName).ToLower());
+			currentUnit.languageName = LanguagesData.languagesByExtensions[Path.GetExtension(unitFileName)];
 
 			OnChangeCompilerState(this, CompilerState.BeginCompileFile, unitFileName); // начало компиляции модуля
 
@@ -4138,21 +4148,6 @@ namespace PascalABCCompiler
 
             return syntaxTree;
         }
-
-		private string GetLanguageNameByExtension(string extension)
-		{
-			switch (extension)
-            {
-                case StringConstants.pascalSourceFileExtension:
-                    return StringConstants.pascalLanguageName;
-
-                /*case ".yavb":
-                    return "";*/
-
-                default:
-                    throw new NotImplementedException($"Расширение файла {extension} не поддерживается в методе GetLanguageNameByExtension");
-			}
-		}
 
 		private string GetSourceCode(SyntaxTree.unit_or_namespace currentUnitNode, string UnitFileName, CompilationUnit currentUnit)
         {
