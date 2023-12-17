@@ -681,6 +681,7 @@ namespace PascalABCCompiler
             StandardModules = new List<StandardModule>();
             StandardModules.Add(new StandardModule("PABCSystem", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
             StandardModules.Add(new StandardModule("PABCExtensions", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
+            StandardModules.Add(new StandardModule("SPythonSystem", SyntaxTree.LanguageId.SPython));
         }
 
         private void SetDirectories()
