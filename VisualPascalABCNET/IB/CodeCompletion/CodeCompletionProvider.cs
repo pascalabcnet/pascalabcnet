@@ -520,7 +520,7 @@ namespace VisualPascalABC
 
                     foreach (SymInfo mi in mis)
                     {
-                        if (mi.not_include) continue;
+                        if (mi == null || mi.not_include) continue;
                         if (cache.Contains(mi.name + mi.kind))
                             continue;
 

@@ -637,10 +637,10 @@ namespace PascalABCCompiler
         
         public void RemoveStandardModule(string name)
         {
-            StandardModule module_to_delete = StandardModules.Find(module => module.Name == name);
+            int moduleIndex = StandardModules.FindIndex(module => module.Name == name);
             
-            if (module_to_delete != null)
-                StandardModules.Remove(module_to_delete);
+            if (moduleIndex != -1)
+                StandardModules.RemoveAt(moduleIndex);
         }
 
         public void RemoveStandardModuleAtIndex(int index)
