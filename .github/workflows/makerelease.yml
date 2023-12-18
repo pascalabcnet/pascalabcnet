@@ -1,4 +1,4 @@
-name: Build & Run all tests (release) & Make an unstable release
+﻿name: Build & Run all tests (release) & Make an unstable release
 
 on:
   push:
