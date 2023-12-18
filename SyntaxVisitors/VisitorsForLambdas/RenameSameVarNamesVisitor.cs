@@ -33,7 +33,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         }
 
-        public override void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
+        public override void AddSymbol(ident name, SymKind kind, type_definition td = null, SymbolAttributes attr = 0)
         {
             if (name == null || name.name == null)
             {

@@ -54,7 +54,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override void visit(var_def_statement vd)
         {
-            var attr = vd.var_attr == definition_attribute.Static ? Attributes.class_attr : 0;
+            var attr = vd.var_attr == definition_attribute.Static ? SymbolAttributes.class_attr : 0;
             if (vd == null || vd.vars == null || vd.vars.list == null)
                 return;
             AddSymbols(vd.vars.list, SymKind.var, vd.vars_type, attr);
@@ -65,7 +65,7 @@ namespace PascalABCCompiler.SyntaxTree
             foreach (var pg in fp.params_list)
             {
                  if (pg.param_kind == parametr_kind.var_parametr)                 
-                    AddSymbols(pg.idents.idents, SymKind.param, null, Attributes.varparam_attr);             
+                    AddSymbols(pg.idents.idents, SymKind.param, null, SymbolAttributes.varparam_attr);             
                  else 
                     AddSymbols(pg.idents.idents, SymKind.param);
             }
@@ -124,7 +124,7 @@ namespace PascalABCCompiler.SyntaxTree
         public override void visit(procedure_definition node)
         {
             var name = node.proc_header?.name?.meth_name;
-            var attr = node.proc_header.class_keyword ? Attributes.class_attr : 0;
+            var attr = node.proc_header.class_keyword ? SymbolAttributes.class_attr : 0;
 
             if (name != null)
                 if (node.proc_header?.name?.class_name != null)
@@ -179,13 +179,13 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
 
-        public virtual void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
+        public virtual void AddSymbol(ident name, SymKind kind, type_definition td = null, SymbolAttributes attr = 0)
         {
             if (inPrivate)
-                attr &= Attributes.private_attr;
+                attr &= SymbolAttributes.private_attr;
             Current.AddSymbol(name, kind, td, attr);
         }
-        public void AddSymbols(List<ident> names, SymKind kind, type_definition td = null, Attributes attr = 0)
+        public void AddSymbols(List<ident> names, SymKind kind, type_definition td = null, SymbolAttributes attr = 0)
         {
             foreach (var n in names)
             {

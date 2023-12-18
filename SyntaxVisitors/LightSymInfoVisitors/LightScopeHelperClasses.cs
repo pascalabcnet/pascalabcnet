@@ -22,7 +22,7 @@ namespace PascalABCCompiler.SyntaxTree
         recordname, interfacename, template_param, type_alias, const_var, property };
 
     [Flags]
-    public enum Attributes { class_attr = 1, varparam_attr = 2, private_attr = 4};
+    public enum SymbolAttributes { class_attr = 1, varparam_attr = 2, private_attr = 4};
 
     public class SymInfoSyntax
     {
@@ -39,15 +39,15 @@ namespace PascalABCCompiler.SyntaxTree
         public ident Id { get; set; }
         public type_definition Td { get; set; }
         public SymKind SK { get; set; }
-        public Attributes Attr { get; set; }
-        public SymInfoSyntax(ident Id, SymKind SK, type_definition Td = null, Attributes Attr = 0)
+        public SymbolAttributes Attr { get; set; }
+        public SymInfoSyntax(ident Id, SymKind SK, type_definition Td = null, SymbolAttributes Attr = 0)
         {
             this.Id = Id;
             this.Td = Td;
             this.SK = SK;
             this.Attr = Attr;
         }
-        public void AddAttribute(Attributes attr)
+        public void AddAttribute(SymbolAttributes attr)
         {
             Attr |= attr;
         }
@@ -77,7 +77,7 @@ namespace PascalABCCompiler.SyntaxTree
             return null;
         }
 
-        public void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
+        public void AddSymbol(ident name, SymKind kind, type_definition td = null, SymbolAttributes attr = 0)
         {
             Symbols.Add(new SymInfoSyntax(name, kind, td, attr));
         }
@@ -121,7 +121,7 @@ namespace PascalABCCompiler.SyntaxTree
             if (classParent == null) return null;
             foreach (var symbol in classParent.Symbols)
             {
-                if (symbol.Id.name == id.name && !symbol.Attr.HasFlag(Attributes.private_attr))
+                if (symbol.Id.name == id.name && !symbol.Attr.HasFlag(SymbolAttributes.private_attr))
                 {
                     return symbol;
                 }

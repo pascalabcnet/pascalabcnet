@@ -39,7 +39,7 @@ namespace PascalABCCompiler.SyntaxTree
         public override void visit(procedure_definition node)
         {
             var name = node.proc_header?.name?.meth_name;
-            var attr = node.proc_header.class_keyword ? Attributes.class_attr : 0;
+            var attr = node.proc_header.class_keyword ? SymbolAttributes.class_attr : 0;
             if (name != null)
                 if (node.proc_header is function_header)
                     Current.Parent.AddSymbol(name, SymKind.funcname, null, attr);

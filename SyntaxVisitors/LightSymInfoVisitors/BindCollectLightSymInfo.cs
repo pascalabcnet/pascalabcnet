@@ -53,7 +53,7 @@ namespace PascalABCCompiler.SyntaxTree
             {
                 if (st is procedure_definition pd)
                 {
-                    var attr = pd.proc_header.class_keyword ? Attributes.class_attr : 0;
+                    var attr = pd.proc_header.class_keyword ? SymbolAttributes.class_attr : 0;
                     var name = pd.proc_header?.name?.meth_name;
                     if (name != null)
                     if (pd.proc_header is function_header)
