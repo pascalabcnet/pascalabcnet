@@ -3030,6 +3030,7 @@ namespace PascalABCCompiler
                 bool isModuleAlreadyInUsesSection = false;
                 foreach (SyntaxTree.unit_or_namespace currentUnitNode in usesList)
                 {
+                    if (currentUnitNode is SyntaxTree.uses_unit_in) continue;
                     if (currentUnitNode.name.idents.Count == 1 && currentUnitNode.name.idents[0].name.ToLower() == moduleName.ToLower())
                     {
                         isModuleAlreadyInUsesSection = true;
@@ -3894,7 +3895,7 @@ namespace PascalABCCompiler
             shouldReturnCurrentUnit = false;
             for (int i = interfaceUsesList.Count - 1 - currentUnit.InterfaceUsedUnits.Count; i >= 0; i--) // здесь откидываются модули с уже откомпилированными интерфейсами из секции uses (см. комментарий, обозначенный #1710)
             {
-                if (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || namespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name))
+                if (!(interfaceUsesList[i] is SyntaxTree.uses_unit_in) && (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || namespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name)))
                 {
                     currentUnit.InterfaceUsedUnits.AddElement(new namespace_unit_node(GetNamespace(interfaceUsesList[i])), null);
                     currentUnit.possibleNamespaces.Add(interfaceUsesList[i]);
