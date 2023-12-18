@@ -10,29 +10,50 @@ using PascalABCCompiler.SyntaxTree;
 namespace AssignTupleOptimizer
 {
     class Program
-    { 
+    {
+        static  Dictionary<string, ScopeSyntax> scopes = new Dictionary<string, ScopeSyntax>();
+
+        static ScopeSyntax getScopeForUnit(string name) => scopes[name];
+
+        static void addScope(string name, ScopeSyntax scope)
+        {
+            scopes.Add(name, scope);
+        }
+
         public static void Main()
         {
-            string name = "../../test5.pas";
+            string unitName = "../../Test.pas";
+            string name = "../../test_units.pas";
             var parser = new PascalABCNewLanguageParser();
             
-            StreamReader sr = new StreamReader(name);
-            string text = sr.ReadToEnd();
+            StreamReader sr = new StreamReader(unitName);
+            string unitText = sr.ReadToEnd();
+
+            var sr2 = new StreamReader(name);
+            string text = sr2.ReadToEnd();
+
+
+            var unitRoot = parser.BuildTree(unitName, unitText, ParseMode.Normal);
+            unitRoot.FillParentsInAllChilds();
+
             var root = parser.BuildTree(name, text, ParseMode.Normal);
-
-            var binder = new BindCollectLightSymInfo(root as program_module);
-
             root.FillParentsInAllChilds();
+            
+            var unitBinder = new BindCollectLightSymInfo(unitRoot as compilation_unit, getScopeForUnit, addScope);
+            var binder = new BindCollectLightSymInfo(root as compilation_unit, getScopeForUnit, addScope);
 
-            var varVisitor = new PascalABCCompiler.SyntaxTreeConverters.VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as program_module);
-            varVisitor.ProcessNode(root);
+
+
+            var unitVisitor = new BindTestVisitor(unitBinder);
+            unitVisitor.ProcessNode(unitRoot);
 
             var visitor = new BindTestVisitor(binder);
             visitor.ProcessNode(root);
+
             Console.WriteLine();
             
-            var pp = new SyntaxVisitors.SimplePrettyPrinterVisitor();
-            pp.visit(root);
+            //var pp = new SyntaxVisitors.SimplePrettyPrinterVisitor();
+            //pp.visit(unitRoot);
             Console.ReadKey();
         }
     }

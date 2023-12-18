@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 
 namespace PascalABCCompiler.SyntaxTree
 {
@@ -12,7 +8,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         private CachingScopeCreator _scopeCreator = new CachingScopeCreator();
 
-        public BindCollectLightSymInfo(compilation_unit root) : base(root)
+        public BindCollectLightSymInfo(compilation_unit root, UnitScopeProvider provider, OnUnitScopeCreated onScopeCreated) : base(root, provider, onScopeCreated)
         {
             visit(root);
             Current = null;

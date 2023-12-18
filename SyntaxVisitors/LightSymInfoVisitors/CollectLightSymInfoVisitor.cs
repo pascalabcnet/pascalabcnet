@@ -7,18 +7,42 @@ namespace PascalABCCompiler.SyntaxTree
     public abstract class CollectLightSymInfoVisitor : BaseEnterExitVisitor
     {
 
-        public ScopeSyntax Root;
-        public ScopeSyntax Current;
-        protected Dictionary<string, ClassScopeSyntax> classes = new Dictionary<string, ClassScopeSyntax>();
+        public delegate ScopeSyntax UnitScopeProvider(string unitName);
+        public delegate void OnUnitScopeCreated(string unitName, ScopeSyntax scope);
 
+        public GlobalScopeSyntax Root;
+        public ScopeSyntax Current;
+        protected Dictionary<string, NamedScopeSyntax> classes = new Dictionary<string, NamedScopeSyntax>();
+        protected UnitScopeProvider unitScopeProvider;
+        protected OnUnitScopeCreated onUnitScopeCreated;
 
         protected bool inPrivate = false; 
 
-        public CollectLightSymInfoVisitor(compilation_unit root)
+        public CollectLightSymInfoVisitor(compilation_unit root, UnitScopeProvider provider, OnUnitScopeCreated onScopeCreated)
         {
-            Root = scopeCreator.GetScope(root);
+
+            unitScopeProvider = provider;
+            onUnitScopeCreated = onScopeCreated;
+            Root = scopeCreator.GetScope(root) as GlobalScopeSyntax;
+            
+            if (root is program_module pm)
+            {   
+                if (unitScopeProvider != null && pm.used_units != null)
+                    foreach( var unit in pm.used_units.units)
+                    {
+                        Root.usedUnits.Insert(0, unitScopeProvider(unit.name.ToString()) as GlobalScopeSyntax);
+                    }
+            }
+            else if (root is unit_module um )
+            {
+                if (onUnitScopeCreated != null)
+                onUnitScopeCreated(um.unit_name.idunit_name.name, Root);
+            }
+            
             Current = Root;
         }
+        
+
 
         abstract protected AbstractScopeCreator scopeCreator
         { get; }
@@ -67,7 +91,7 @@ namespace PascalABCCompiler.SyntaxTree
 
                 if (!classes.ContainsKey(td.type_name.name))
                 {
-                    classes.Add(td.type_name.name, scopeCreator.GetScope(td.type_def) as ClassScopeSyntax);
+                    classes.Add(td.type_name.name, scopeCreator.GetScope(td.type_def) as NamedScopeSyntax);
                     //Console.WriteLine("Added" + td.type_name.name + " " + (scopeCreator.GetScope(td.type_def) as ClassScopeSyntax));
                 }
             }
@@ -101,12 +125,17 @@ namespace PascalABCCompiler.SyntaxTree
         {
             var name = node.proc_header?.name?.meth_name;
             var attr = node.proc_header.class_keyword ? Attributes.class_attr : 0;
-            
-            if(name != null)
-            if (node.proc_header?.name?.class_name != null) {
-                (Current as ProcScopeSyntax).classParent = classes[node.proc_header.name.class_name.name];
-                (Current as ProcScopeSyntax).classParent.AddSymbol(name, SymKind.funcname, null, attr);
-            }
+
+            if (name != null)
+                if (node.proc_header?.name?.class_name != null)
+                {
+                    var class_name = node.proc_header.name.class_name.name;
+                    if (classes.ContainsKey(class_name))
+                    {
+                        (Current as ProcScopeSyntax).classParent = classes[class_name];
+                        (Current as ProcScopeSyntax).classParent.AddSymbol(name, SymKind.funcname, null, attr);
+                    }
+                }
             
             
             base.visit(node);
@@ -114,7 +143,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override void visit(class_definition cd)
         {
-            var classScope = Current as ClassScopeSyntax;
+            var classScope = Current as NamedScopeSyntax;
             if (cd.class_parents != null )
                 foreach (var parent in cd.class_parents.types)
                     if (parent.names.Count == 1)

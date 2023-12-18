@@ -11,7 +11,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         private CachingScopeCreator _scopeCreator = new CachingScopeCreator();
 
-        public CollectFullLightSymInfoVisitor(compilation_unit root) : base(root)
+        public CollectFullLightSymInfoVisitor(compilation_unit root, UnitScopeProvider provider, OnUnitScopeCreated onScopeCreated) : base(root, provider, onScopeCreated)
         {
             
         }

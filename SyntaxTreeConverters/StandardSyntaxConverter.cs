@@ -15,13 +15,27 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     public class StandardSyntaxTreeConverter: ISyntaxTreeConverter
     {
         public string Name { get; } = "Standard";
+        //? почему оно живет 
+        // потому что reload не вызывается
+        Dictionary<string, ScopeSyntax> scopes = new Dictionary<string, ScopeSyntax>();
+
+        ScopeSyntax getScopeForUnit(string name) => scopes[name];
+        
+        void addScope(string name, ScopeSyntax scope)
+        {
+            if (!scopes.ContainsKey(name))
+                scopes.Add(name, scope);
+        }
+
+
+
         public syntax_tree_node Convert(syntax_tree_node root)
         {
             // Прошивание ссылками на Parent nodes. Должно идти первым
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
             root.FillParentsInAllChilds();
-
+            
 #if DEBUG
             //            var stat = new ABCStatisticsVisitor();
             //            stat.ProcessNode(root);
@@ -37,7 +51,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
             StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
-            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as program_module).ProcessNode(root); // SSM bug fix #1147
+            //new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as program_module, getScopeForUnit, addScope).ProcessNode(root); // SSM bug fix #1147
             FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
 
             // loop
@@ -109,6 +123,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
 
 #endif
+            var c = new CollectFullLightSymInfoVisitor(root as compilation_unit, getScopeForUnit, addScope);
+            c.ProcessNode(root);
             return root;
         }
     }

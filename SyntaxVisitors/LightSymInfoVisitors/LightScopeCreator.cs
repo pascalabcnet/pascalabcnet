@@ -63,6 +63,8 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         protected override ScopeSyntax CreateScope(compilation_unit node) => new GlobalScopeSyntax();
+       
+
         protected override ScopeSyntax CreateScope(procedure_definition node) 
         {
 
@@ -72,7 +74,7 @@ namespace PascalABCCompiler.SyntaxTree
             var res = new ProcScopeSyntax(name);
             if (node.proc_header is function_header fh)
             {
-                res.AddSymbol(new ident("Result"), SymKind.var, fh.return_type);
+                res.AddSymbol(new ident("Result", node.source_context), SymKind.var, fh.return_type);
             }
             return res; 
         }

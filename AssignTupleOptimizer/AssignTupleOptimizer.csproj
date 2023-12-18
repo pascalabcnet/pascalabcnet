@@ -37,9 +37,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssignTupleFilterVisitor.cs" />
     <Compile Include="AssignTupleOptimizerVisitor.cs" />
-    <Compile Include="SymInfoFilterVisitor.cs" />
     <Compile Include="graph\Assign.cs" />
     <Compile Include="graph\AssignGraph.cs" />
     <Compile Include="graph\Cycle.cs" />
@@ -68,12 +66,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="PABCSystem.pas" />
     <None Include="simple_test.pas" />
     <None Include="symInfo.pas" />
+    <None Include="test.pas" />
     <None Include="test2.pas" />
     <None Include="test3.pas" />
     <None Include="test4.pas" />
     <None Include="test5.pas" />
+    <None Include="test_units.pas" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

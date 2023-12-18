@@ -11,62 +11,14 @@ namespace AssignTupleOptimizer
     public class AssignTupleOptimizerVisitor : AssignTuplesDesugarVisitor
     {
 
-        SymInfoFilterVisitor symInfoVisitor;
+        BindCollectLightSymInfo binder;
 
-        ScopeSyntax Current;
-        ScopeSyntax Root;
-
-        public override void Enter(syntax_tree_node st)
+        public AssignTupleOptimizerVisitor(BindCollectLightSymInfo binder)
         {
-            base.Enter(st);
-            if (AbstractScopeCreator.IsScopeCreator(st))
-            {
-                Current = symInfoVisitor.GetScope(st);
-            }
+            this.binder = binder; 
         }
 
-        public override void Exit(syntax_tree_node st)
-        {
-           
-            if (AbstractScopeCreator.IsScopeCreator(st))
-            {
-                Current = Current?.Parent;
-            }
-            base.Exit(st);
-        }
 
-        public override void visit(program_module pm)
-        {
-          /*  visit(pm.program_block.defs);
-            var assign_count = new AssignTupleFilterVisitor();
-
-            var code = pm.program_block.program_code;
-
-            var root = new GlobalScopeSyntax();
-            Root = root;
-
-            assign_count.visit(code);
-            if (assign_count.count >  0)
-            {
-                symInfoVisitor = new SymInfoFilterVisitor(pm, assign_count.targets);
-                symInfoVisitor.map.Add(pm, Root);
-                symInfoVisitor.ProcessNode(code);
-                visit(code);
-            }*/
-
-        }
-
-        public override void visit(procedure_definition def)
-        {
-            var infoVisitor = new AssignTupleFilterVisitor();
-            infoVisitor.visit(def);
-            if (infoVisitor.count > 0)
-            {
-                symInfoVisitor = new SymInfoFilterVisitor(null ,infoVisitor.targets);
-                symInfoVisitor.visit(def);
-                base.visit(def);
-            }
-        }
 
         public override void visit(assign_tuple node)
         {
@@ -78,7 +30,7 @@ namespace AssignTupleOptimizer
                 {
                     if (sym is ident id)
                     {
-                        var s = Current.bind(id);
+                        var s = binder.bind(id);
                         if (s != null)
                         {
                             System.Console.WriteLine(id.name + " -> " + s);
@@ -100,7 +52,7 @@ namespace AssignTupleOptimizer
                 {
                     if (sym is ident id)
                     {
-                        var s = Current.bind(id);
+                        var s = binder.bind(id);
                         if (s != null)
                         {
                             System.Console.WriteLine(id.name + " -> " + s);
@@ -136,32 +88,5 @@ namespace AssignTupleOptimizer
                 ReplaceStatementUsingParent(node, assigns);
             }
         }
-
-       /* public SymInfoSyntax FindSymbol(ident id)
-        {
-            SymInfoSyntax res = null;
-            var cur = Current;
-
-            while (cur != null && res == null)
-            {
-                Console.WriteLine("Search in " + cur.ToString());
-                foreach (var symbol in cur.Symbols)
-                {
-                    Console.WriteLine("checking symbol:" + symbol.ToString() + "names?: " + (symbol.Id.name == id.name).ToString()
-                         + " source context?: " + id.source_context.Less(symbol.Id.source_context).ToString());
-                    if (symbol.Id.name == id.name && symbol.Id.source_context.Less(id.source_context))
-                    {
-                        Console.WriteLine("Found!!");
-                        res = symbol;
-                        break;
-                    }
-                }
-                cur = cur.Parent;
-            }
-
-            return res;
-            
-        }*/
-
     }
 }

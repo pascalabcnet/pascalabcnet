@@ -28,7 +28,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         // При выходе из пространства имен мы проверяем, есть ли в словаре такое значение, и если да, очищаем его, присваивая null
         // Переименовывать будем все имена name если ключ name есть в словаре и d[name] != null
        
-        public VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(program_module pm) : base(pm)
+        public VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(compilation_unit pm, UnitScopeProvider provider, OnUnitScopeCreated onScopeCreated) : base(pm, provider, onScopeCreated)
         {
 
         }
@@ -165,7 +165,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // это точно надо захватывать
         }
 
-        public override void visit(var_def_statement vds)
+        public override void visit(var_def_statement vds) 
         {
             // имена обойти отдельно, инициализатор - отдельно
             foreach (var id in vds.vars.idents)

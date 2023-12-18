@@ -53,7 +53,7 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
-    public class ScopeSyntax
+    public abstract class ScopeSyntax
     {
         public syntax_tree_node node;
 
@@ -62,69 +62,59 @@ namespace PascalABCCompiler.SyntaxTree
         public HashSet<SymInfoSyntax> Symbols = new HashSet<SymInfoSyntax>();
         public override string ToString() => GetType().Name.Replace("Syntax", "");
 
+        protected virtual SymInfoSyntax searchSymbol(ident id)
+        {
+            foreach (var s in Symbols)
+            {
+           
+                   if (s.Id.name == id.name && (id.source_context == null ||
+                        s.Id.source_context == null ||
+                        s.Id.source_context.Less(id.source_context)))
+                   {
+                    return s;
+                   }
+            }
+            return null;
+        }
+
         public void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
         {
             Symbols.Add(new SymInfoSyntax(name, kind, td, attr));
         }
         public virtual SymInfoSyntax bind(ident id)
         {
-            foreach (var s in Symbols)
-            {
-                if (s.Id.name == id.name && s.Id.source_context.Less(id.source_context))
-                {
-                    return s;
-                }
-            }
-            return null;
+            return searchSymbol(id);
         }
 
     }
     public class ScopeWithDefsSyntax : ScopeSyntax { } // 
-    public class GlobalScopeSyntax : ScopeWithDefsSyntax { } // program_module unit_module
+    public class GlobalScopeSyntax : ScopeWithDefsSyntax {
 
-    public class NamedScopeSyntax : ScopeWithDefsSyntax
-    {
-        public ident Name { get; set; }
-        public NamedScopeSyntax(ident Name) => this.Name = Name;
-        public override string ToString() => base.ToString() + "(" + Name + ")";
-    }
-
-    public class ProcScopeSyntax : NamedScopeSyntax // procedure_definition
-    {
-        public ClassScopeSyntax classParent;
-
-        public ProcScopeSyntax(ident Name) : base(Name) { }
+        public List<GlobalScopeSyntax> usedUnits = new List<GlobalScopeSyntax>();
 
         public override SymInfoSyntax bind(ident id)
         {
-
-            var res = classParent?.bind(id);
-            if (res != null) return res;
-            return base.bind(id);
-        }
-    }
-    public class ParamsScopeSyntax : ScopeSyntax { } // formal_parameters
-    public class ClassScopeSyntax 
-        : NamedScopeSyntax
-    {
-
-        public ClassScopeSyntax classParent;
-
-        public ClassScopeSyntax(ident Name) : base(Name) { }
-
-        protected  SymInfoSyntax searchSymbol(ident id)
-        {
-            //Console.WriteLine("searching " + id.ToString() + " in " + Name);
-            foreach (var s in Symbols)
+            var res =  base.bind(id);
+            if (res == null)
             {
-              //  Console.WriteLine("Checking " + s.Id);
-                if (s.Id.name == id.name)
+                foreach (var scope in usedUnits)
                 {
-                    return s;
+                    res = scope.bind(id);
+                    if (res != null)
+                        return res;
                 }
             }
-            return null;
+            return res;
         }
+
+    } // program_module unit_module
+
+    public abstract class NamedScopeSyntax : ScopeWithDefsSyntax
+    {
+        public NamedScopeSyntax classParent;
+        public ident Name { get; set; }
+        public NamedScopeSyntax(ident Name) => this.Name = Name;
+        public override string ToString() => base.ToString() + "(" + Name + ")";
 
         protected SymInfoSyntax searchInParentClass(ident id)
         {
@@ -144,7 +134,7 @@ namespace PascalABCCompiler.SyntaxTree
             SymInfoSyntax res = searchSymbol(id);
             if (res != null) return res;
             var cur = this;
-            while(cur != null)
+            while (cur != null)
             {
                 res = cur.searchInParentClass(id);
                 if (res != null) return res;
@@ -152,6 +142,42 @@ namespace PascalABCCompiler.SyntaxTree
             }
             return res;
         }
+    }
+
+    public class ProcScopeSyntax : NamedScopeSyntax // procedure_definition
+    { 
+        
+        public ProcScopeSyntax(ident Name) : base(Name) { }
+
+        public override SymInfoSyntax bind(ident id)
+        {
+
+            var res = classParent?.bind(id);
+            if (res != null) return res;
+            return base.bind(id);
+        }
+    }
+    public class ParamsScopeSyntax : ScopeSyntax { } // formal_parameters
+    public class ClassScopeSyntax 
+        : NamedScopeSyntax
+    {
+        public ClassScopeSyntax(ident Name) : base(Name) { }
+
+        protected  SymInfoSyntax searchSymbol(ident id)
+        {
+            //Console.WriteLine("searching " + id.ToString() + " in " + Name);
+            foreach (var s in Symbols)
+            {
+              //  Console.WriteLine("Checking " + s.Id);
+                if (s.Id.name == id.name)
+                {
+                    return s;
+                }
+            }
+            return null;
+        }
+
+      
     } // 
     public class RecordScopeSyntax : NamedScopeSyntax
     {
