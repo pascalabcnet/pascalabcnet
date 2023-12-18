@@ -79,7 +79,7 @@ jobs:
                     const release = await github.rest.repos.createRelease({
                         owner, repo,
                         tag_name: tag,
-                        name: "Custom refactoring build",
+                        name: release_name,
                         draft: true,
                         prerelease: mark_pre_release,
                         target_commitish: sha
