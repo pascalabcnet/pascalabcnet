@@ -1,13 +1,14 @@
-﻿using System;
+﻿using AssignTupleDesugar;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 
-namespace AssignTupleDesugar
+namespace AssignTupleDesugarAlgorithm
 {
     internal static class GraphUtils
-    {        
+    {
         static private void dfs(this AssignGraph graph,
             Action<AssignGraph> OnEnterGraph,
             Func<AssignGraph, SymbolNode, bool> OnProcessVertex,
@@ -56,17 +57,17 @@ namespace AssignTupleDesugar
 
             List<SymbolNode> v_left = new List<SymbolNode>();
             List<SymbolNode> v_right = new List<SymbolNode>();
-            HashSet<Symbol> left_visited = new HashSet<Symbol>();   
+            HashSet<Symbol> left_visited = new HashSet<Symbol>();
 
             //delete loops and repeated assigns
             for (int i = left.Count - 1; i > -1; i--)
             {
-                if (left_visited.Contains(left[i]) || left[i].Equals(right[i]) )
+                if (left_visited.Contains(left[i]) || left[i].Equals(right[i]))
                 {
                     left.RemoveAt(i);
                     right.RemoveAt(i);
                 }
-                else left_visited.Add(left[i]); 
+                else left_visited.Add(left[i]);
             }
 
             List<Edge> assign_first = new List<Edge>();
@@ -75,16 +76,16 @@ namespace AssignTupleDesugar
             int leftFromOuterCount = left.Count(symbol => symbol.fromOuterScope);
             int rightFromOuterCount = right.Count(symbol => symbol.fromOuterScope);
 
-            
+
             //handle expressions
             for (int i = 0; i < left.Count(); i++)
             {
-               if (right[i].isExpr)
-               {
+                if (right[i].isExpr)
+                {
                     var temp_symbol = new TempSymbol("");
                     assign_first.Add(new Edge(new SymbolNode(right[i]), new TempSymbolNode(temp_symbol)));
                     right[i] = temp_symbol;
-               }
+                }
             }
 
             //handle non-local symbols
@@ -98,7 +99,7 @@ namespace AssignTupleDesugar
                         {
                             if (left.Contains(right[i]) || right[i].fromOuterScope)
                             {
-                      
+
                                 var temp_symbol = new TempSymbol(left[i].name);
                                 assign_last.Add(new Edge(new TempSymbolNode(temp_symbol), new SymbolNode(left[i])));
                                 left[i] = temp_symbol;
@@ -106,44 +107,44 @@ namespace AssignTupleDesugar
                             else
                             {
                                 var to = new SymbolNode(left[i]);
-                                var from =new SymbolNode( right[i]);
+                                var from = new SymbolNode(right[i]);
                                 left.RemoveAt(i);
                                 right.RemoveAt(i);
                                 i--;
-                                
-                                var  unnecessaryAssign = assign_last.Find(assign => assign.to.Equals(to));
+
+                                var unnecessaryAssign = assign_last.Find(assign => assign.to.Equals(to));
                                 if (unnecessaryAssign != null) assign_last.Remove(unnecessaryAssign);
-                         
-                                assign_last.Add(new Edge(from,to));
+
+                                assign_last.Add(new Edge(from, to));
                             }
                         }
                     }
                 }
                 else
                 {
-           
+
                     for (int i = 0; i < left.Count; i++)
                     {
                         if (right[i].fromOuterScope)
                         {
                             if (right.Contains(left[i]) || left[i].fromOuterScope)
                             {
-                                var temp_symbol = new TempSymbol( right[i].name );
+                                var temp_symbol = new TempSymbol(right[i].name);
                                 assign_first.Add(new Edge(new SymbolNode(right[i]), new TempSymbolNode(temp_symbol)));
                                 right[i] = temp_symbol;
                             }
                             else
                             {
                                 var to = new SymbolNode(left[i]);
-                                var from =new SymbolNode( right[i]);
+                                var from = new SymbolNode(right[i]);
                                 left.RemoveAt(i);
                                 right.RemoveAt(i);
                                 i--;
-                                
-                                var  unnecessaryAssign = assign_first.Find(assign => assign.to.Equals(to));
+
+                                var unnecessaryAssign = assign_first.Find(assign => assign.to.Equals(to));
                                 if (unnecessaryAssign != null) assign_first.Remove(unnecessaryAssign);
-                                
-                                assign_first.Add(new Edge(from,to));
+
+                                assign_first.Add(new Edge(from, to));
                             }
                         }
                     }
@@ -151,11 +152,11 @@ namespace AssignTupleDesugar
             }
 
 
-            
+
             var symbols = new Dictionary<string, SymbolNode>();
 
             foreach (Symbol sym in left)
-            {  
+            {
                 if (!symbols.ContainsKey(sym.name)) symbols[sym.name] = new SymbolNode(sym);
                 v_left.Add(symbols[sym.name]);
             }
@@ -169,14 +170,14 @@ namespace AssignTupleDesugar
             List<Edge> assigns = new List<Edge>();
 
             for (int i = 0; i < v_left.Count; i++) assigns.Add(new Edge(v_right[i], v_left[i], i));
-            
+
 
             var graph = new AssignGraph(assigns);
             graph.assignFirst = assign_first;
             graph.assignLast = assign_last;
             return graph;
         }
-       
+
 
 
         private static AssignGraph createReversedGraph(this AssignGraph g)
@@ -296,7 +297,7 @@ namespace AssignTupleDesugar
 
             Func<AssignGraph, SymbolNode, bool> ProcessNode = (graph, node) => node.color != SymbolNode.Color.GREY;
 
-            Action < AssignGraph, SymbolNode > EnterNode = (graph, vert) => { vert.color = SymbolNode.Color.GREY; };
+            Action<AssignGraph, SymbolNode> EnterNode = (graph, vert) => { vert.color = SymbolNode.Color.GREY; };
 
             Func<AssignGraph, SymbolNode, SymbolNode, bool> ProcessNodeChild = (graph, parent, child) =>
             {
@@ -305,7 +306,7 @@ namespace AssignTupleDesugar
             };
 
             g.dfs(OnEnterGraph: enterGraph, OnEnterNode: EnterNode, OnProcessNodeChild: ProcessNodeChild,
-                OnProcessVertex: ProcessNode, OnLeaveGraph: (graph) => {graph.resetVertexesColor(); }, OnLeaveNode: (graph, vertex) => { });
+                OnProcessVertex: ProcessNode, OnLeaveGraph: (graph) => { graph.resetVertexesColor(); }, OnLeaveNode: (graph, vertex) => { });
             writer.WriteLine("}");
             writer.Close();
         }

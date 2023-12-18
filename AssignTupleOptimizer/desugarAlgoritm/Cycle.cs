@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AssignTupleDesugar
+namespace AssignTupleDesugarAlgorithm
 {
     internal class Cycle
     {
@@ -14,8 +14,8 @@ namespace AssignTupleDesugar
             cycle = c;
         }
 
-        public SymbolNode this[int i] => cycle[i % Len]; 
-        
+        public SymbolNode this[int i] => cycle[i % Len];
+
 
         public override string ToString()
         {

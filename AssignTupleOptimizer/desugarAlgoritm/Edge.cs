@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AssignTupleDesugar
+namespace AssignTupleDesugarAlgorithm
 {
     internal class Edge : IEquatable<Edge>, IComparable<Edge>
     {

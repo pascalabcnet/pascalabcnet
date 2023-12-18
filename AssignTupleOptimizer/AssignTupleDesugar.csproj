@@ -38,13 +38,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssignTupleDesugarVisitor.cs" />
-    <Compile Include="graph\Assign.cs" />
-    <Compile Include="graph\AssignGraph.cs" />
-    <Compile Include="graph\Cycle.cs" />
-    <Compile Include="graph\Edge.cs" />
-    <Compile Include="graph\GraphUtils.cs" />
-    <Compile Include="graph\Symbol.cs" />
-    <Compile Include="graph\SymbolNode.cs" />
+    <Compile Include="desugarAlgoritm\Assign.cs" />
+    <Compile Include="desugarAlgoritm\AssignGraph.cs" />
+    <Compile Include="desugarAlgoritm\Cycle.cs" />
+    <Compile Include="desugarAlgoritm\Edge.cs" />
+    <Compile Include="desugarAlgoritm\GraphUtils.cs" />
+    <Compile Include="desugarAlgoritm\Symbol.cs" />
+    <Compile Include="desugarAlgoritm\SymbolNode.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

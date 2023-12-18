@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace AssignTupleDesugar
+namespace AssignTupleDesugarAlgorithm
 {
     public class Symbol
     {
@@ -21,7 +21,7 @@ namespace AssignTupleDesugar
         {
             if (obj is null) return false;
             if (obj.GetType() != GetType()) return false;
-            return this.name == (obj as Symbol).name;
+            return name == (obj as Symbol).name;
         }
 
         public override int GetHashCode()
@@ -31,19 +31,19 @@ namespace AssignTupleDesugar
 
 
     }
-    public class TempSymbol : Symbol {
+
+    public class TempSymbol : Symbol
+    {
 
         private static int counter = 0;
 
         private static string getTempPrefix => "$temp_" + counter++;
-        public TempSymbol(string name) : base(getTempPrefix + name) 
+        public TempSymbol(string name) : base(getTempPrefix + name)
         {
             fromOuterScope = false;
             isExpr = false;
         }
-    
+
     }
-
-
 
 }

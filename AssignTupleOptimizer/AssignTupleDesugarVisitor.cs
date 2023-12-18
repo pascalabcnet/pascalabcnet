@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using AssignTupleDesugarAlgorithm;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors.SugarVisitors;
 
@@ -18,8 +15,6 @@ namespace AssignTupleDesugar
             this.binder = binder; 
         }
 
-
-
         public override void visit(assign_tuple node)
         {
             if (node.expr is tuple_node tn)
@@ -34,11 +29,11 @@ namespace AssignTupleDesugar
                         if (s != null)
                         {
                             System.Console.WriteLine(id.name + " -> " + s);
-                            left.Add(new Symbol(s.Id.name));
+                            left.Add(new Symbol(s.Id.name) { fromOuterScope = isFromOuterScope(s)});
                         }
                         else
                         {
-                            System.Console.WriteLine(id.name +" -> from outer scope");
+                            System.Console.WriteLine(id.name +" -> not found");
                             left.Add(new Symbol(id.name) { fromOuterScope = true });
                         }
                     } 
@@ -56,11 +51,11 @@ namespace AssignTupleDesugar
                         if (s != null)
                         {
                             System.Console.WriteLine(id.name + " -> " + s);
-                            right.Add(new Symbol(s.Id.name));
+                            right.Add(new Symbol(s.Id.name) { fromOuterScope = isFromOuterScope(s) });
                         }
                         else
                         {
-                            System.Console.WriteLine(id.name + " -> from outer scope");
+                            System.Console.WriteLine(id.name + " -> not found");
                             right.Add(new Symbol(id.name) { fromOuterScope = true });
                         }
                     }
@@ -70,7 +65,7 @@ namespace AssignTupleDesugar
                     }
                 }
 
-                var order =Assign.getAssignOrder(left: left, right: right);
+                var order = Assign.getAssignOrder(left: left, right: right);
                 var assigns = new List<statement>();
                 foreach(var a in order)
                 {
@@ -91,6 +86,9 @@ namespace AssignTupleDesugar
 
         static bool isFromOuterScope(SymInfoSyntax symbol)
         {
+            if (symbol == null)
+                return false;
+
             if (symbol.SK == SymKind.var && symbol.Attr.HasFlag(SymbolAttributes.varparam_attr))
                 return false;
             return true;

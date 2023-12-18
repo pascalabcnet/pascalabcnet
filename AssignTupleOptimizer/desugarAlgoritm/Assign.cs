@@ -1,9 +1,8 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 
-namespace AssignTupleDesugar
+namespace AssignTupleDesugarAlgorithm
 {
     public class Assign
     {
@@ -15,8 +14,9 @@ namespace AssignTupleDesugar
             this.from = from;
         }
 
-        public static  List<Assign> getAssignOrder(List<Symbol> left, List<Symbol> right) {
-            
+        public static List<Assign> getAssignOrder(List<Symbol> left, List<Symbol> right)
+        {
+
             var graph = GraphUtils.createAssignGraph(left, right);
             var order = graph.GetAssignOrder();
             return order.Select(elem => new Assign(to: elem.to.symbol, from: elem.from.symbol)).ToList();

@@ -1,7 +1,8 @@
 ﻿using System;
 
-namespace AssignTupleDesugar
+namespace AssignTupleDesugarAlgorithm
 {
+
     internal class SymbolNode : IEquatable<SymbolNode>
     {
         public readonly string label;
@@ -62,4 +63,5 @@ namespace AssignTupleDesugar
 
         }
     }
+
 }

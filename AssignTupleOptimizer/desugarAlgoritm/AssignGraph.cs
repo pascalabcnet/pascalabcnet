@@ -1,9 +1,10 @@
-﻿using System;
+﻿using AssignTupleDesugar;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AssignTupleDesugar
+namespace AssignTupleDesugarAlgorithm
 {
     internal class AssignGraph : IEnumerable<SymbolNode>
     {
@@ -13,7 +14,7 @@ namespace AssignTupleDesugar
         private bool AdjStructuresNeedSync = false;
 
         public List<Edge> assignOrder = new List<Edge>();
-        public List<Edge> assignLast  = new List<Edge>();
+        public List<Edge> assignLast = new List<Edge>();
         public List<Edge> assignFirst = new List<Edge>();
 
         private Dictionary<SymbolNode, List<SymbolNode>> outAdjStructure = null;
@@ -89,9 +90,9 @@ namespace AssignTupleDesugar
             List<Edge> assignOrder = new List<Edge>();
             assignOrder.AddRange(assignFirst);
             var s = vertexes.First();
-            
+
             if (!EnsureThatEveryVertexHasOneOrZeroInEdge()) throw new Exception("Invalid assign graph!");
-            
+
             var cycles = this.findAllUniqueElementaryCycles();
 
             foreach (var cycle in cycles)
@@ -104,7 +105,7 @@ namespace AssignTupleDesugar
 
                 assignOrder.Add(new Edge(temp_assign_from, temp_vertex));
                 assignLast.Add(new Edge(temp_vertex, cut_place));
-                
+
                 edges.Remove(edge_to_cut);
                 AdjStructuresNeedSync = true;
             }
