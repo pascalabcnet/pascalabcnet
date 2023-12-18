@@ -7,7 +7,7 @@ using PascalABCCompiler.PascalABCNewParser;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
 
-namespace AssignTupleOptimizer
+namespace AssignTupleDesugar
 {
     class Program
     {

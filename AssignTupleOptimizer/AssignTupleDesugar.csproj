@@ -37,7 +37,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssignTupleOptimizerVisitor.cs" />
+    <Compile Include="AssignTupleDesugarVisitor.cs" />
     <Compile Include="graph\Assign.cs" />
     <Compile Include="graph\AssignGraph.cs" />
     <Compile Include="graph\Cycle.cs" />

@@ -107,9 +107,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeacherControlPlugin", "Vis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssignOptimizer", "AssignOptimizer", "{DBC58508-7EF1-49E5-8645-C6AF7A99CBEC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TupleAssignDesugar", "TupleAssignDesugar", "{DBC58508-7EF1-49E5-8645-C6AF7A99CBEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignTupleOptimizer", "AssignTupleOptimizer\AssignTupleOptimizer.csproj", "{ADD567B7-8157-45E8-9673-FC6BCF5930D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignTupleDesugar", "AssignTupleOptimizer\AssignTupleDesugar.csproj", "{ADD567B7-8157-45E8-9673-FC6BCF5930D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

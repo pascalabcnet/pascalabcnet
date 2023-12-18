@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace AssignTupleOptimizer
+namespace AssignTupleDesugar
 {
     public class Assign
     {

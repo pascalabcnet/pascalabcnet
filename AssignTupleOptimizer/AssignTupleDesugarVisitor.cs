@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors.SugarVisitors;
 
-namespace AssignTupleOptimizer
+namespace AssignTupleDesugar
 {
-    public class AssignTupleOptimizerVisitor : AssignTuplesDesugarVisitor
+    public class AssignTupleDesugarVisitor : AssignTuplesDesugarVisitor
     {
 
         BindCollectLightSymInfo binder;
 
-        public AssignTupleOptimizerVisitor(BindCollectLightSymInfo binder)
+        public AssignTupleDesugarVisitor(BindCollectLightSymInfo binder)
         {
             this.binder = binder; 
         }
@@ -87,6 +87,13 @@ namespace AssignTupleOptimizer
                 }
                 ReplaceStatementUsingParent(node, assigns);
             }
+        }
+
+        static bool isFromOuterScope(SymInfoSyntax symbol)
+        {
+            if (symbol.SK == SymKind.var && symbol.Attr.HasFlag(SymbolAttributes.varparam_attr))
+                return false;
+            return true;
         }
     }
 }

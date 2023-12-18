@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AssignTupleOptimizer
+namespace AssignTupleDesugar
 {
     internal class Edge : IEquatable<Edge>, IComparable<Edge>
     {

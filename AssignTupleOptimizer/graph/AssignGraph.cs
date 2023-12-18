@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AssignTupleOptimizer
+namespace AssignTupleDesugar
 {
     internal class AssignGraph : IEnumerable<SymbolNode>
     {

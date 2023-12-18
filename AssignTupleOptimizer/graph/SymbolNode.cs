@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AssignTupleOptimizer
+namespace AssignTupleDesugar
 {
     internal class SymbolNode : IEquatable<SymbolNode>
     {

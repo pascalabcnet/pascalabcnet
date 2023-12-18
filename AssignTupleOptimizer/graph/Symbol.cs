@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace AssignTupleOptimizer
+namespace AssignTupleDesugar
 {
     public class Symbol
     {

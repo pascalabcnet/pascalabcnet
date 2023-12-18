@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 
 
-namespace AssignTupleOptimizer
+namespace AssignTupleDesugar
 {
     internal static class GraphUtils
     {        
