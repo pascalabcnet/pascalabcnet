@@ -4754,7 +4754,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(new_cp);
             }
             expression_node meth_call;
-            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
+            if (accessor.polymorphic_state == SemanticTree.polymorphic_state.ps_common || accessor.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
             {
                 meth_call = new common_method_call(accessor, new this_node(cpn.common_comprehensive_type, loc), loc);
                 foreach (common_parameter cp in cmn.parameters)
@@ -4795,7 +4795,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(new_cp);
             }
             expression_node meth_call;
-            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
+            if (accessor.polymorphic_state == SemanticTree.polymorphic_state.ps_common || accessor.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
             {
                 meth_call = new common_method_call(accessor, new this_node(cpn.common_comprehensive_type, loc), loc);
                 foreach (common_parameter cp in cmn.parameters)

@@ -236,7 +236,12 @@ namespace VisualPascalABC
 		
 		public void AddReferenceNode(PascalABCCompiler.IReferenceInfo ri)
 		{
-			TreeNode tn = ReferencesNode.Nodes.Add(ri.AssemblyName);
+            foreach (TreeNode ttt in ReferencesNode.Nodes)
+            {
+                if (ttt.Text == ri.AssemblyName)
+                    return;
+            }
+            TreeNode tn = ReferencesNode.Nodes.Add(ri.AssemblyName);
 			tn.ImageIndex = ReferenceImageIndex;
 			tn.SelectedImageIndex = ReferenceImageIndex;
 			reference_item_nodes.Add(tn);

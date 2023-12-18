@@ -34,7 +34,7 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkUnderscore tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
-%token <ti> tkBackSlashRoundOpen
+%token <ti> tkBackSlashRoundOpen tkAsync tkAwait
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -57,7 +57,7 @@
 %token <id> tkUnknown
 %token <ti> tkStep 
 
-%type <ti> unit_key_word class_or_static
+%type <ti> unit_key_word class_or_static 
 %type <stn> assignment 
 %type <stn> optional_array_initializer  
 %type <stn> attribute_declarations  
@@ -1984,7 +1984,20 @@ method_header
 			$$ = $2;
 		}
     | method_procfunc_header
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
+    | tkAsync class_or_static method_procfunc_header
+        { 
+			($3 as procedure_header).class_keyword = true;
+			($3 as procedure_header).IsAsync = true;
+			$$ = $3;
+		}
+    | tkAsync method_procfunc_header
+		{ 
+			($2 as procedure_header).IsAsync = true;
+			$$ = $2; 
+		}
     | constr_destr_header
 		{ $$ = $1; }
     ;
@@ -2383,6 +2396,23 @@ proc_func_decl
 			($2 as procedure_definition).proc_header.class_keyword = true;
 			$$ = $2;
 		}
+	| tkAsync proc_func_decl_noclass
+		{
+			($2 as procedure_definition).proc_header.IsAsync = true;		
+			$$ = $2; 
+		}
+    | tkAsync class_or_static proc_func_decl_noclass             
+        { 
+        	($3 as procedure_definition).proc_header.IsAsync = true;
+			($3 as procedure_definition).proc_header.class_keyword = true;
+			$$ = $3;
+		}	
+    | class_or_static tkAsync proc_func_decl_noclass             
+        { 
+        	($3 as procedure_definition).proc_header.IsAsync = true;
+			($3 as procedure_definition).proc_header.class_keyword = true;
+			$$ = $3;
+		}	
     ;
 
 proc_func_decl_noclass
@@ -2431,11 +2461,36 @@ inclass_proc_func_decl
 		{ 
             $$ = $1; 
         }
+    | tkAsync inclass_proc_func_decl_noclass
+		{ 
+			($2 as procedure_definition).proc_header.IsAsync = true;
+            $$ = $2; 
+        }
     | class_or_static inclass_proc_func_decl_noclass         
         { 
 		    if (($2 as procedure_definition).proc_header != null)
+		    {
 				($2 as procedure_definition).proc_header.class_keyword = true;
+			}
 			$$ = $2;
+		}
+    | tkAsync class_or_static inclass_proc_func_decl_noclass         
+        { 
+		    if (($3 as procedure_definition).proc_header != null)
+		    {
+				($3 as procedure_definition).proc_header.IsAsync = true;
+				($3 as procedure_definition).proc_header.class_keyword = true;
+			}
+			$$ = $3;
+		}
+    | class_or_static tkAsync inclass_proc_func_decl_noclass         
+        { 
+		    if (($3 as procedure_definition).proc_header != null)
+		    {
+				($3 as procedure_definition).proc_header.IsAsync = true;
+				($3 as procedure_definition).proc_header.class_keyword = true;
+			}
+			$$ = $3;
 		}
     ;
 
@@ -3328,6 +3383,8 @@ expr_l1_for_lambda
 expr_dq
 	: relop_expr
 		{ $$ = $1; }
+	| tkAwait relop_expr
+		{ $$ = $2; }
 	| expr_dq tkDoubleQuestion relop_expr
 		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
 	;

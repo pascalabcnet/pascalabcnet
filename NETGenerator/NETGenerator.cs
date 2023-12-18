@@ -549,18 +549,25 @@ namespace PascalABCCompiler.NETGenerator
                 File.Copy(file, Path.Combine(orig_dir, Path.GetFileName(file)), true);
         }
 
-        private void BuildDotnetNative(string orig_dir, string dir, string publish_dir, string SourceFileName)
+        private void BuildDotnetNative(SemanticTree.IProgramNode pn, string orig_dir, string dir, string publish_dir, string SourceFileName)
         {
             if (Directory.Exists(publish_dir))
                 Directory.Delete(publish_dir, true);
             Directory.CreateDirectory(publish_dir);
             StringBuilder sb = new StringBuilder();
-            string framework = "net7.0";
+            string framework = "net8.0";
             if (comp_opt.target == TargetType.WinExe)
             {
-                framework = "net7.0-windows";
+                framework = "net8.0-windows";
                 sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk.WindowsDesktop\">");
-                sb.AppendLine("<PropertyGroup><PublishAot>true</PublishAot><PublishTrimmed>false</PublishTrimmed><OutputType>WinExe</OutputType><TargetFramework>" + framework + "</TargetFramework><UseWindowsForms>true</UseWindowsForms></PropertyGroup>");
+                sb.AppendLine("<PropertyGroup><PublishAot>true</PublishAot><PublishTrimmed>true</PublishTrimmed><OutputType>WinExe</OutputType><TargetFramework>" + framework + "</TargetFramework><UseWindowsForms>true</UseWindowsForms></PropertyGroup>");
+                sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
+                sb.AppendLine("</Project>");
+            }
+            else if (comp_opt.target == TargetType.Dll)
+            {
+                sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
+                sb.AppendLine("<PropertyGroup><PublishAot>true</PublishAot><PublishTrimmed>true</PublishTrimmed><OutputType>Library</OutputType><TargetFramework>" + framework + "</TargetFramework></PropertyGroup>");
                 sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
                 sb.AppendLine("</Project>");
             }
@@ -576,14 +583,66 @@ namespace PascalABCCompiler.NETGenerator
             File.WriteAllText(csproj, sb.ToString());
             sb = new StringBuilder();
             sb.AppendLine("using System;");
+            sb.AppendLine("using System.Runtime.InteropServices;");
             sb.AppendLine("namespace StartApp");
             sb.AppendLine("{");
             sb.AppendLine("class StartProgram");
             sb.AppendLine("{");
-            sb.AppendLine("static void Main(string[] args)");
-            sb.AppendLine("{");
-            sb.AppendLine(entry_meth.DeclaringType.FullName + "." + entry_meth.Name + "();");
-            sb.AppendLine("}");
+            if (comp_opt.target == TargetType.Dll)
+            {
+                List<ICommonNamespaceFunctionNode> dll_export_methods = new List<ICommonNamespaceFunctionNode>();
+                foreach (ICommonNamespaceFunctionNode cnfn in pn.namespaces[pn.namespaces.Length-2].functions)
+                {
+                    if (cnfn.Attributes != null)
+                        foreach (IAttributeNode attr in cnfn.Attributes)
+                        {
+                            if (attr.AttributeType.name == "DllExportAttribute")
+                            {
+                                dll_export_methods.Add(cnfn);
+                                break;
+                            }
+                        }
+                }
+                foreach (ICommonNamespaceFunctionNode cnfn in dll_export_methods)
+                {
+                    sb.AppendLine("[UnmanagedCallersOnly(EntryPoint = \""+cnfn.name+"\")]");
+                    sb.Append("public static ");
+                    sb.Append(helper.GetTypeReference(cnfn.return_value_type).tp);
+                    sb.Append(" ");
+                    sb.Append(cnfn.name);
+                    sb.Append("(");
+                    for (int i=0; i<cnfn.parameters.Length; i++)
+                    {
+                        if (i > 0)
+                            sb.Append(",");
+                        var tp = helper.GetTypeReference(cnfn.parameters[i].type).tp;
+                        sb.Append(tp.FullName);
+                        sb.Append(" ");
+                        sb.Append(cnfn.parameters[i].name);
+                    }
+                    sb.AppendLine(")");
+                    sb.AppendLine("{");
+                    sb.AppendLine("return "+cnfn.comprehensive_namespace.namespace_name + "." + cnfn.comprehensive_namespace.namespace_name + "." + cnfn.name);
+                    sb.Append("(");
+                    for (int i = 0; i < cnfn.parameters.Length; i++)
+                    {
+                        if (i > 0)
+                            sb.Append(",");
+                        sb.Append(cnfn.parameters[i].name);
+                    }
+                    sb.AppendLine(");");
+                    sb.AppendLine("}");
+                }
+                
+            }
+            else
+            {
+                sb.AppendLine("static void Main(string[] args)");
+                sb.AppendLine("{");
+                sb.AppendLine(entry_meth.DeclaringType.FullName + "." + entry_meth.Name + "();");
+                sb.AppendLine("}");
+            }
+                
             sb.AppendLine("}");
             sb.AppendLine("}");
             File.WriteAllText(Path.Combine(dir, "Program.cs"), sb.ToString());
@@ -600,7 +659,10 @@ namespace PascalABCCompiler.NETGenerator
                 conf = "Release";
             p.StartInfo.CreateNoWindow = false;
             p.StartInfo.UseShellExecute = true;
-            p.StartInfo.Arguments = "publish -f " + framework + " --runtime " + runtime + " -c " + conf + " --self-contained true " + csproj;
+            if (comp_opt.target == TargetType.Dll)
+                p.StartInfo.Arguments = "publish -f " + framework + " --runtime " + runtime + " -c " + conf + " /p:NativeLib=Shared --self-contained true " + csproj;
+            else
+                p.StartInfo.Arguments = "publish -f " + framework + " --runtime " + runtime + " -c " + conf + " --self-contained true " + csproj;
             p.Start();
             p.WaitForExit();
             try
@@ -1201,7 +1263,7 @@ namespace PascalABCCompiler.NETGenerator
                             if (IsDotnet5())
                                 BuildDotnet5(orig_dir, dir, dotnet_publish_dir);
                             else if (IsDotnetNative())
-                                BuildDotnetNative(orig_dir, dir, dotnet_publish_dir, SourceFileName);
+                                BuildDotnetNative(p, orig_dir, dir, dotnet_publish_dir, SourceFileName);
                         }
                         else
                         {
@@ -1210,6 +1272,8 @@ namespace PascalABCCompiler.NETGenerator
                             //else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x64)
                             //    ab.Save(an.Name + ".dll", PortableExecutableKinds.PE32Plus, ImageFileMachine.IA64);
                             else ab.Save(an.Name + ".dll");
+                            if (IsDotnetNative())
+                                BuildDotnetNative(p, orig_dir, dir, dotnet_publish_dir, SourceFileName);
                         }
                         not_done = false;
                     }

@@ -741,6 +741,7 @@ namespace PascalABCCompiler.SyntaxTree
         // frninja 20/05/16 - для методов хелперов yield
         public bool is_yield_helper = false;
         // end frninja
+        public bool IsAsync { get; set; } = false;
 
         public procedure_header(formal_parameters _parameters, procedure_attributes_list _proc_attributes, method_name _name, where_definition_list _where_defs, SourceContext sc)
         {
@@ -2088,6 +2089,19 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class class_definition
     {
         public bool IsDataClass { get ; set; }
+    }
+
+    public partial class procedure_definition
+    {
+        /*public procedure_definition(procedure_header _proc_header, proc_block _proc_body, 
+            bool _is_short_definition)
+        {
+            this._proc_header = _proc_header;
+            this._proc_body = _proc_body;
+            this._is_short_definition = _is_short_definition;
+            FillParentsInDirectChilds();
+        }*/
+
     }
 
     public class semantic_check_delegates_pointers_in_cached_function // класс - маркер семантической проверки
