@@ -2,6 +2,8 @@
 
 uses LightPT;
 
+function Chr(i: integer) := PABCSystem.Chr(i);
+
 var AllTaskNames: array of string;
 
 procedure CheckTaskT(name: string);

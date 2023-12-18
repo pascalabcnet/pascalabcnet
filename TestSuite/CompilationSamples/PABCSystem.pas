@@ -618,8 +618,9 @@ type
   end;
   
 type 
+  //TODO #2983
   /// Тип диапазона целых
-  IntRange = record(ICollection<integer>, IReadOnlyCollection<integer>, IEquatable<IntRange>)
+  IntRange = record(ICollection<integer>{, IReadOnlyCollection<integer>}, IEquatable<IntRange>)
   private
     l,h: integer;
   public
@@ -690,8 +691,9 @@ type
     
   end;
   
+  //TODO #2983
   /// Тип диапазона символов
-  CharRange = record(ICollection<char>, IReadOnlyCollection<char>, IEquatable<CharRange>)
+  CharRange = record(ICollection<char>{, IReadOnlyCollection<char>}, IEquatable<CharRange>)
   private
     l,h: char;
   public
@@ -769,7 +771,7 @@ type
     
     property Low: real read l;
     property High: real read h;
-    property Size: real read h-l;
+    property Size: real read System.Math.Max(0, h-l);
     
     static function operator in(x: real; r: RealRange): boolean := (x >= r.l) and (x <= r.h);
     
@@ -5188,17 +5190,17 @@ function HSet<T>(a: sequence of T): HashSet<T> := new HashSet<T>(a);
 
 function SSet<T>(a: sequence of T): SortedSet<T> := new SortedSet<T>(a);
 
-function HSetInt(params a: array of integer): HashSet<integer> := a.ToHashSet;
+function HSetInt(params a: array of integer): HashSet<integer> := new HashSet<integer>(a);
 
-function HSetStr(params a: array of string): HashSet<string> := a.ToHashSet;
+function HSetStr(params a: array of string): HashSet<string> := new HashSet<string>(a);
 
 function SSetInt(params a: array of integer): SortedSet<integer> := new SortedSet<integer>(a);
 
 function SSetStr(params a: array of string): SortedSet<string> := new SortedSet<string>(a);
 
-function HSet(a: IntRange): HashSet<integer> := a.ToHashSet;
+function HSet(a: IntRange): HashSet<integer> := new HashSet<integer>(a);
 
-function HSet(a: CharRange): HashSet<char> := a.ToHashSet;
+function HSet(a: CharRange): HashSet<char> := new HashSet<char>(a);
 
 
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
