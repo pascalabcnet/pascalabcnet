@@ -193,7 +193,7 @@ namespace VisualPascalABC
             // SSM 03.06.22 - это надо убрать здесь - почему-то не работает активация - надо туда
             //_currentCodeFileDocument = tp; // должно по DockStateChanged - но мб неверно
             //tp.BorderStyle=BorderStyle.Fixed3D;
-            //tp.Font = new Font("MS Sans Serif", tp.Font.Size);
+            //tp.Font = new System.Drawing.Font("MS Sans Serif", tp.Font.Size);
             RichTextBox tb = OutputWindow.outputTextBox;
             if (OpenDocuments.Count > 0)
                 tb = CopyTextBox(OutputWindow.outputTextBox);
@@ -257,7 +257,7 @@ namespace VisualPascalABC
             SetTabPageText(edit);
             edit.SetHighlightingStrategyForFile(FileName);
             OpenDocuments.Add(Tools.FileNameToLower(FileName), edit);
-            //this.codeCompletionParserController.SetAsChanged(FileName);
+            //this.codeCompletionParserController.SetAsChanged(file_name);
             //ivan
             AddBreakPointHandler(edit, FileName);
             var RunService = WorkbenchServiceFactory.RunService;
@@ -343,9 +343,11 @@ namespace VisualPascalABC
             HideContent(DisassemblyWindow);
             AddDebugVariablesListWindow();
             HideContent(DebugVariablesListWindow);
+            AddDebugWatchListWindow();
+            HideContent(DebugWatchListWindow);
             /*AddImmediateWindow();
             
-            //AddDebugWatchListWindow();
+           
             if (!Tools.IsUnix())
             {
                 AddProjectExplorerWindow();
@@ -481,7 +483,7 @@ namespace VisualPascalABC
                 AddEditorHandlers(edit);
             }
             WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + ".pas");
-            //edit.FileName = FileName;
+            //edit.file_name = file_name;
             //SetTabPageText(edit);
         }
 
@@ -571,7 +573,7 @@ namespace VisualPascalABC
 
         public void AddTextToOutputWindowSync(string fileName, string text)
         {
-            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
+            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), file_name, text);
             Invoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
         }
 
@@ -698,7 +700,9 @@ namespace VisualPascalABC
             }
             catch (System.Exception ex)
             {
+#if (DEBUG)
                 Console.WriteLine(ex.Message + " " + ex.StackTrace);
+#endif
             }
         }
 

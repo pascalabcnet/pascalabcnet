@@ -807,6 +807,11 @@ namespace Mono.Debugger.Soft
 			return ObjectMirror.InvokeMethod (vm, thread, method, null, arguments, InvokeOptions.None);
 		}
 
+		public Value InvokeMethod(ThreadMirror thread, MethodMirror method, Value this_obj, IList<Value> arguments)
+		{
+			return ObjectMirror.InvokeMethod(vm, thread, method, this_obj, arguments, InvokeOptions.None);
+		}
+
 		public Value InvokeMethod (ThreadMirror thread, MethodMirror method, IList<Value> arguments, InvokeOptions options) {
 			return ObjectMirror.InvokeMethod (vm, thread, method, null, arguments, options);
 		}

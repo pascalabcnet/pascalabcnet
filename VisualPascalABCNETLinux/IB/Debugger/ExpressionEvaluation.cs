@@ -33,6 +33,7 @@ namespace VisualPascalABC
         public Value obj_val;
         public Mono.Debugging.Client.ObjectValue monoValue;
         public DebugType type;
+        public Mono.Debugging.Evaluation.TypeValueReference monoType;
         public Type managed_type;
         public bool syn_err;
         public string err_mes;
@@ -279,27 +280,20 @@ namespace VisualPascalABC
             else
                 e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, Warnings);
             RetValue res = new RetValue(); res.syn_err = false;
+           
             try
             {
+
                 if (e != null && Errors.Count == 0)
                 {
                     e.visit(this);
                     if (eval_stack.Count > 0)
                     {
                         res = eval_stack.Pop();
-                        if (res.prim_val == null && res.obj_val != null)
-                            if (res.obj_val.IsObject && res.obj_val.Type.IsValueType)
-                            {
-                                Value tmp = res.obj_val;
-                                res.obj_val = DebugUtils.unbox(res.obj_val);
-                                if (res.obj_val != null && res.obj_val.IsPrimitive)
-                                {
-                                    res.prim_val = res.obj_val.PrimitiveValue;
-                                    res.obj_val = null;
-                                }
-                                else
-                                    res.obj_val = tmp;
-                            }
+                        if (res.prim_val == null && res.monoValue != null && res.monoValue.IsPrimitive)
+                        {
+                            res.prim_val = res.monoValue.GetRawValue();
+                        }
                     }
                 }
                 else if (Errors.Count > 0)
@@ -313,6 +307,9 @@ namespace VisualPascalABC
             }
             catch (System.Exception ex)
             {
+#if DEBUG
+                Console.WriteLine(ex.Message + " " + ex.StackTrace);
+#endif
                 //throw new System.Exception(ex.Message);
             }
             finally
@@ -325,7 +322,7 @@ namespace VisualPascalABC
 
         private bool need_declaring_type;
 
-        public DebugType declaringType;
+        public Mono.Debugger.Soft.TypeMirror declaringType;
 
         private List<string> names = new List<string>();
         [HandleProcessCorruptedStateExceptionsAttribute]
@@ -443,15 +440,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -711,9 +708,9 @@ namespace VisualPascalABC
                         break;
                     case TypeCode.Object:
                         {
-                            if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                            if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                             {
-                                res.obj_val = (left.obj_val.Type.GetMember("UnionSet", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                                res.monoValue = InvokeMethod(left.monoValue.Type, "UnionSet", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                             }
                         }
                         break;
@@ -723,37 +720,79 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                 {
-                    res.obj_val = (left.obj_val.Type.GetMember("UnionSet", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "UnionSet", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                 }
                 else
                 {
-                    res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name), "+");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name), "+");
                 }
             }
             eval_stack.Push(res);
         }
 
-        private Value EvalCommonOperation(Value left, Value right, string op, string sn)
+        private Mono.Debugging.Client.ObjectValue InvokeMethod(object type, string method, Mono.Debugging.Client.ObjectValue obj, Mono.Debugging.Client.ObjectValue[] args)
+        {
+            var tm = type as Mono.Debugger.Soft.TypeMirror;
+            var mi = tm.GetMethod(method);
+            if (mi == null)
+                return null;
+            return InvokeMethod(type, mi, obj, args);
+        }
+
+        private Mono.Debugging.Client.ObjectValue InvokeMethod(object type, Mono.Debugger.Soft.MethodMirror mi, Mono.Debugging.Client.ObjectValue obj, Mono.Debugging.Client.ObjectValue[] args)
+        {
+            var tm = type as Mono.Debugger.Soft.TypeMirror;
+            List<Mono.Debugger.Soft.Value> vals = new List<Mono.Debugger.Soft.Value>();
+            foreach (var arg in args)
+            {
+                if (arg.GetRawValue() is Mono.Debugger.Soft.Value)
+                    vals.Add(arg.GetRawValue() as Mono.Debugger.Soft.Value);
+                else
+                    vals.Add(new Mono.Debugger.Soft.PrimitiveValue(mi.VirtualMachine, arg.GetRawValue()));
+            }
+            Mono.Debugger.Soft.Value this_obj = null;
+            if (obj != null)
+            {
+                if (obj.parentFrame == null)
+                    obj.parentFrame = stackFrame;
+                this_obj = obj.GetRawValue() as Mono.Debugger.Soft.Value;
+                if (this_obj == null && obj.GetRawValue() is Mono.Debugging.Client.RawValue)
+                {
+                    this_obj = (((obj.GetRawValue() as Mono.Debugging.Client.RawValue).Source as Mono.Debugging.Evaluation.RemoteRawValue).Source as Mono.Debugging.Evaluation.ValueReference).ObjectValue as Mono.Debugger.Soft.Value;
+                }
+            }
+           
+            var val = tm.InvokeMethod(mi.VirtualMachine.GetThread(monoDebuggerSession.ActiveThread.Id), mi, obj != null ? this_obj : null, vals);
+            var valref = new Mono.Debugging.Evaluation.UserVariableReference(obj.Context, "");
+            valref.Value = val;
+            var objval = valref.CreateObjectValue(false);
+            objval.parentFrame = stackFrame;
+            return objval;
+        }
+
+        private Mono.Debugging.Client.ObjectValue EvalCommonOperation(Mono.Debugging.Client.ObjectValue left, Mono.Debugging.Client.ObjectValue right, string op, string sn)
         {
             if (left.Type != right.Type)
             {
-                Type left_type = AssemblyHelper.GetType(left.Type.FullName);
-                Type right_type = AssemblyHelper.GetType(right.Type.FullName);
+                Type left_type = AssemblyHelper.GetType(left.TypeName);
+                Type right_type = AssemblyHelper.GetType(right.TypeName);
                 System.Reflection.MethodInfo conv_meth = left_type.GetMethod("op_Implicit", new Type[1] { right_type });
-                IList<MethodInfo> meths = null;
+                Mono.Debugger.Soft.MethodMirror[] meths = null;
                 if (conv_meth != null)
                 {
-                    meths = left.Type.GetMethods(BindingFlags.All);
-                    foreach (MethodInfo mi in meths)
+                    var tm = left.Type as Mono.Debugger.Soft.TypeMirror;
+                    meths = tm.GetMethods();
+                    
+                    foreach (var mi in meths)
                         if (mi.MetadataToken == conv_meth.MetadataToken)
                         {
-                            right = mi.Invoke(null, new Value[1] { right });
+                            right = InvokeMethod(left.Type, mi, left, new Mono.Debugging.Client.ObjectValue[] { right });
                             break;
                         }
                 }
@@ -762,11 +801,12 @@ namespace VisualPascalABC
                     conv_meth = right_type.GetMethod("op_Implicit", new Type[1] { left_type });
                     if (conv_meth != null)
                     {
-                        meths = right.Type.GetMethods(BindingFlags.All);
-                        foreach (MethodInfo mi in meths)
+                        var tm = right.Type as Mono.Debugger.Soft.TypeMirror;
+                        meths = tm.GetMethods();
+                        foreach (var mi in meths)
                             if (mi.MetadataToken == conv_meth.MetadataToken)
                             {
-                                left = mi.Invoke(null, new Value[1] { left });
+                                left = InvokeMethod(right.Type, mi, right, new Mono.Debugging.Client.ObjectValue[] { left });
                                 break;
                             }
                     }
@@ -774,11 +814,11 @@ namespace VisualPascalABC
             }
             if (left.Type == right.Type)
             {
-                IList<MemberInfo> mems = left.Type.GetMember(op, Debugger.BindingFlags.All);
-                if (mems != null && mems.Count == 1 && mems[0] is MethodInfo)
+                var tm = left.Type as Mono.Debugger.Soft.TypeMirror;
+                var mi = tm.GetMethod(op);
+                if (mi != null)
                 {
-                    MethodInfo mi = mems[0] as MethodInfo;
-                    return mi.Invoke(null, new Value[2] { left, right });
+                    return InvokeMethod(left.Type, mi, null, new Mono.Debugging.Client.ObjectValue[] { left, right});
                 }
                 else
                     throw new NoOperatorForThisType(sn);
@@ -792,15 +832,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -1021,9 +1061,9 @@ namespace VisualPascalABC
                         break;
                     case TypeCode.Object:
                         {
-                            if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                            if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                             {
-                                res.obj_val = (left.obj_val.Type.GetMember("SubtractSet", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                                res.monoValue = InvokeMethod(left.monoValue.Type, "SubstractSet", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                             }
                         }
                         break;
@@ -1033,17 +1073,17 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                 {
-                    res.obj_val = (left.obj_val.Type.GetMember("SubtractSet", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "SubstractSet", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                 }
                 else
                 {
-                    res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name), "-");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name), "-");
                 }
             }
             eval_stack.Push(res);
@@ -1054,15 +1094,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
             if (right.prim_val == null && right.obj_val != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -1283,9 +1323,9 @@ namespace VisualPascalABC
                         break;
                     case TypeCode.Object:
                         {
-                            if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                            if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                             {
-                                res.obj_val = (left.obj_val.Type.GetMember("IntersectSet", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                                res.monoValue = InvokeMethod(left.monoValue.Type, "IntersectSet", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                             }
                         }
                         break;
@@ -1299,13 +1339,13 @@ namespace VisualPascalABC
                     left.obj_val = DebugUtils.MakeValue(left.prim_val);
                 if (right.obj_val == null && right.prim_val != null)
                     right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                 {
-                    res.obj_val = (left.obj_val.Type.GetMember("IntersectSet", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "IntersectSet", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                 }
                 else
                 {
-                    res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name), "*");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name), "*");
                 }
             }
             eval_stack.Push(res);
@@ -1316,15 +1356,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -1550,11 +1590,11 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name), "/");
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name), "/");
             }
             eval_stack.Push(res);
         }
@@ -1564,15 +1604,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -1738,11 +1778,11 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name), "div");
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name), "div");
             }
             eval_stack.Push(res);
         }
@@ -1752,15 +1792,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -1936,11 +1976,11 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name), "and");
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name), "and");
             }
         }
 
@@ -1949,15 +1989,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -2132,11 +2172,11 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name), "-");
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name), "-");
             }
         }
 
@@ -2145,15 +2185,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -2327,15 +2367,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -2509,15 +2549,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -2690,19 +2730,19 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
                 else
-                    left.prim_val = DebugUtils.GetEnumValue(left.obj_val);
+                    left.prim_val = DebugUtils.GetEnumValue(left.monoValue);
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
                 else
-                    right.prim_val = DebugUtils.GetEnumValue(right.obj_val);
+                    right.prim_val = DebugUtils.GetEnumValue(right.monoValue);
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -2965,10 +3005,10 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
                 if (left.is_null)
                 {
                     if (right.is_null)
@@ -2981,11 +3021,11 @@ namespace VisualPascalABC
                     res.prim_val = left.obj_val.IsNull;
                 }
                 else
-                    if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
-                    {
-                        res.obj_val = (left.obj_val.Type.GetMember("CompareEquals", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
-                    }
-                    else
+                    if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
+                {
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "CompareEquals", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
+                }
+                else
                     {
                         string op = PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name);
                         if (left.obj_val.Type != right.obj_val.Type)
@@ -3042,19 +3082,19 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
                 else
-                    left.prim_val = DebugUtils.GetEnumValue(left.obj_val);
+                    left.prim_val = DebugUtils.GetEnumValue(left.monoValue);
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
                 else
-                    right.prim_val = DebugUtils.GetEnumValue(right.obj_val);
+                    right.prim_val = DebugUtils.GetEnumValue(right.monoValue);
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -3317,10 +3357,10 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
                 if (left.is_null)
                 {
                     if (right.is_null)
@@ -3333,58 +3373,58 @@ namespace VisualPascalABC
                     res.prim_val = !left.obj_val.IsNull;
                 }
                 else
-                    if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                    if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
+                {
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "CompareInEquals", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
+                }
+                else
+                {
+                    string op = PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name);
+                    if (left.obj_val.Type != right.obj_val.Type)
                     {
-                        res.obj_val = (left.obj_val.Type.GetMember("CompareInEquals", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
-                    }
-                    else
-                    {
-                        string op = PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name);
-                        if (left.obj_val.Type != right.obj_val.Type)
+                        Type left_type = AssemblyHelper.GetType(left.obj_val.Type.FullName);
+                        Type right_type = AssemblyHelper.GetType(right.obj_val.Type.FullName);
+                        System.Reflection.MethodInfo conv_meth = left_type.GetMethod("op_Implicit", new Type[1] { right_type });
+                        IList<MethodInfo> meths = null;
+                        if (conv_meth != null)
                         {
-                            Type left_type = AssemblyHelper.GetType(left.obj_val.Type.FullName);
-                            Type right_type = AssemblyHelper.GetType(right.obj_val.Type.FullName);
-                            System.Reflection.MethodInfo conv_meth = left_type.GetMethod("op_Implicit", new Type[1] { right_type });
-                            IList<MethodInfo> meths = null;
+                            meths = left.obj_val.Type.GetMethods(BindingFlags.All);
+                            foreach (MethodInfo mi in meths)
+                                if (mi.MetadataToken == conv_meth.MetadataToken)
+                                {
+                                    right.obj_val = mi.Invoke(null, new Value[1] { right.obj_val });
+                                    break;
+                                }
+                        }
+                        else
+                        {
+                            conv_meth = right_type.GetMethod("op_Implicit", new Type[1] { left_type });
                             if (conv_meth != null)
                             {
-                                meths = left.obj_val.Type.GetMethods(BindingFlags.All);
+                                meths = right.obj_val.Type.GetMethods(BindingFlags.All);
                                 foreach (MethodInfo mi in meths)
                                     if (mi.MetadataToken == conv_meth.MetadataToken)
                                     {
-                                        right.obj_val = mi.Invoke(null, new Value[1] { right.obj_val });
+                                        left.obj_val = mi.Invoke(null, new Value[1] { left.obj_val });
                                         break;
                                     }
                             }
-                            else
-                            {
-                                conv_meth = right_type.GetMethod("op_Implicit", new Type[1] { left_type });
-                                if (conv_meth != null)
-                                {
-                                    meths = right.obj_val.Type.GetMethods(BindingFlags.All);
-                                    foreach (MethodInfo mi in meths)
-                                        if (mi.MetadataToken == conv_meth.MetadataToken)
-                                        {
-                                            left.obj_val = mi.Invoke(null, new Value[1] { left.obj_val });
-                                            break;
-                                        }
-                                }
-                            }
                         }
-                        if (left.obj_val.Type == right.obj_val.Type)
+                    }
+                    if (left.obj_val.Type == right.obj_val.Type)
+                    {
+                        IList<MemberInfo> mems = left.obj_val.Type.GetMember(op, Debugger.BindingFlags.All);
+                        if (mems != null && mems.Count == 1 && mems[0] is MethodInfo)
                         {
-                            IList<MemberInfo> mems = left.obj_val.Type.GetMember(op, Debugger.BindingFlags.All);
-                            if (mems != null && mems.Count == 1 && mems[0] is MethodInfo)
-                            {
-                                MethodInfo mi = mems[0] as MethodInfo;
-                                res.obj_val = mi.Invoke(null, new Value[2] { left.obj_val, right.obj_val });
-                            }
-                            else
-                                res.prim_val = !left.obj_val.IsReferenceEqual(right.obj_val);
+                            MethodInfo mi = mems[0] as MethodInfo;
+                            res.obj_val = mi.Invoke(null, new Value[2] { left.obj_val, right.obj_val });
                         }
                         else
                             res.prim_val = !left.obj_val.IsReferenceEqual(right.obj_val);
                     }
+                    else
+                        res.prim_val = !left.obj_val.IsReferenceEqual(right.obj_val);
+                }
             }
             eval_stack.Push(res);
         }
@@ -3394,19 +3434,19 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
                 else
-                    left.prim_val = DebugUtils.GetEnumValue(left.obj_val);
+                    left.prim_val = DebugUtils.GetEnumValue(left.monoValue);
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
                 else
-                    right.prim_val = DebugUtils.GetEnumValue(right.obj_val);
+                    right.prim_val = DebugUtils.GetEnumValue(right.monoValue);
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -3656,17 +3696,17 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                 {
-                    res.obj_val = (left.obj_val.Type.GetMember("CompareLess", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "CompareLess", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                 }
                 else
                 {
-                    res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name), "<");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name), "<");
                 }
             }
             eval_stack.Push(res);
@@ -3677,19 +3717,19 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
                 else
-                    left.prim_val = DebugUtils.GetEnumValue(left.obj_val);
+                    left.prim_val = DebugUtils.GetEnumValue(left.monoValue);
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
                 else
-                    right.prim_val = DebugUtils.GetEnumValue(right.obj_val);
+                    right.prim_val = DebugUtils.GetEnumValue(right.monoValue);
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -3938,17 +3978,17 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                 {
-                    res.obj_val = (left.obj_val.Type.GetMember("CompareLessEqual", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "CompareLessEqual", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                 }
                 else
                 {
-                    res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name), "<=");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name), "<=");
                 }
             }
             eval_stack.Push(res);
@@ -3959,19 +3999,19 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
                 else
-                    left.prim_val = DebugUtils.GetEnumValue(left.obj_val);
+                    left.prim_val = DebugUtils.GetEnumValue(left.monoValue);
             }
             if (right.prim_val == null && right.obj_val != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
                 else
-                    right.prim_val = DebugUtils.GetEnumValue(right.obj_val);
+                    right.prim_val = DebugUtils.GetEnumValue(right.monoValue);
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -4221,17 +4261,17 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                 {
-                    res.obj_val = (left.obj_val.Type.GetMember("CompareGreater", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "CompareGreater", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                 }
                 else
                 {
-                    res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name), ">");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name), ">");
                 }
             }
             eval_stack.Push(res);
@@ -4242,19 +4282,19 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
                 else
-                    left.prim_val = DebugUtils.GetEnumValue(left.obj_val);
+                    left.prim_val = DebugUtils.GetEnumValue(left.monoValue);
             }
-            if (right.prim_val == null && right.obj_val != null)
+            if (right.prim_val == null && right.monoValue != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
                 else
-                    right.prim_val = DebugUtils.GetEnumValue(right.obj_val);
+                    right.prim_val = DebugUtils.GetEnumValue(right.monoValue);
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -4504,17 +4544,17 @@ namespace VisualPascalABC
             }
             else
             {
-                if (left.obj_val == null && left.prim_val != null)
-                    left.obj_val = DebugUtils.MakeValue(left.prim_val);
-                if (right.obj_val == null && right.prim_val != null)
-                    right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                if (left.obj_val.Type.FullName == "PABCSystem.TypedSet" && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+                if (left.monoValue == null && left.prim_val != null)
+                    left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
+                if (right.monoValue == null && right.prim_val != null)
+                    right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
+                if (left.monoValue.TypeName == "PABCSystem.TypedSet" && right.monoValue.TypeName == "PABCSystem.TypedSet")
                 {
-                    res.obj_val = (left.obj_val.Type.GetMember("CompareGreaterEqual", BindingFlags.All)[0] as MethodInfo).Invoke(left.obj_val, new Value[1] { right.obj_val });
+                    res.monoValue = InvokeMethod(left.monoValue.Type, "CompareGreaterEqual", left.monoValue, new Mono.Debugging.Client.ObjectValue[] { right.monoValue });
                 }
                 else
                 {
-                    res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name), ">=");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name), ">=");
                 }
             }
             eval_stack.Push(res);
@@ -4525,15 +4565,15 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
             if (right.prim_val == null && right.obj_val != null)
             {
-                if (right.obj_val.IsPrimitive)
-                    right.prim_val = right.obj_val.PrimitiveValue;
+                if (right.monoValue.IsPrimitive)
+                    right.prim_val = right.monoValue.GetRawValue();
             }
             if (left.prim_val != null && right.prim_val != null)
             {
@@ -4704,7 +4744,7 @@ namespace VisualPascalABC
                     left.obj_val = DebugUtils.MakeValue(left.prim_val);
                 if (right.obj_val == null && right.prim_val != null)
                     right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                res.obj_val = EvalCommonOperation(left.obj_val, right.obj_val, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name), "mod");
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name), "mod");
             }
         }
 
@@ -4740,10 +4780,16 @@ namespace VisualPascalABC
             throw new NotImplementedException();
         }
 
-        public Value MakeValue(RetValue val)
+        public Mono.Debugging.Client.ObjectValue MakeValue(RetValue val)
         {
-            if (val.obj_val != null) return val.obj_val;
-            return DebugUtils.MakeValue(val.prim_val);
+            if (val.monoValue != null) return val.monoValue;
+            return DebugUtils.MakeMonoValue(val.prim_val);
+        }
+
+        public Mono.Debugging.Client.ObjectValue MakeMonoValue(RetValue val)
+        {
+            if (val.monoValue != null) return val.monoValue;
+            return DebugUtils.MakeMonoValue(val.prim_val);
         }
 
         private Value box(Value v)
@@ -4760,12 +4806,10 @@ namespace VisualPascalABC
             RetValue right = eval_stack.Pop();
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (right.obj_val != null && right.obj_val.Type.FullName == "PABCSystem.TypedSet")
+            if (right.monoValue != null && right.monoValue.TypeName == "PABCSystem.TypedSet")
             {
-                MethodInfo mi = right.obj_val.Type.GetMember("Contains", BindingFlags.All)[0] as MethodInfo;
-                Value tmp = box(MakeValue(left));
-                Value v = mi.Invoke(right.obj_val, new Value[1] { tmp });
-                res.prim_val = v.PrimitiveValue;
+                var v = InvokeMethod(right.monoValue.Type, "Contains", right.monoValue, new Mono.Debugging.Client.ObjectValue[] { MakeMonoValue(left) });
+                res.prim_val = v.GetRawValue();
                 //res.prim_val = MakeValue(left).PrimitiveValue;//v.PrimitiveValue;
                 //Value v = mi.Invoke(right.obj_val,new Value[1]{right.obj_val});
                 //res.prim_val = MakeValue(left).PrimitiveValue;
@@ -4879,10 +4923,10 @@ namespace VisualPascalABC
         {
             RetValue left = eval_stack.Pop();
             RetValue res = new RetValue();
-            if (left.prim_val == null && left.obj_val != null)
+            if (left.prim_val == null && left.monoValue != null)
             {
-                if (left.obj_val.IsPrimitive)
-                    left.prim_val = left.obj_val.PrimitiveValue;
+                if (left.monoValue.IsPrimitive)
+                    left.prim_val = left.monoValue.GetRawValue();
             }
             if (left.prim_val != null)
             {
@@ -4985,10 +5029,14 @@ namespace VisualPascalABC
                     if (lv.Name == var)
                         return lv;
                 }
-
+#if (DEBUG)
+                Console.WriteLine("find var " + var+", "+ stackFrame.SourceLocation.Line);
+#endif
                 foreach (var lv in lvc)
                 {
+#if (DEBUG)
                     Console.WriteLine("local var " + lv.Name);
+#endif
                     if (lv.Name.IndexOf("<>local_variables") != -1)
                     {
                         foreach (var fi in lv.GetAllChildren())
@@ -5004,8 +5052,14 @@ namespace VisualPascalABC
                             int num_line = stackFrame.SourceLocation.Line;
                             int start_line = Convert.ToInt32(lv.Name.Substring(pos + 1, lv.Name.LastIndexOf(':') - pos - 1));
                             int end_line = Convert.ToInt32(lv.Name.Substring(lv.Name.LastIndexOf(':') + 1));
-                            if (num_line >= start_line - 1 && num_line <= end_line - 1)
+                            if (num_line >= start_line && num_line <= end_line)
+                            {
+#if (DEBUG)
+                                Console.WriteLine("found var " + lv.Name);
+#endif
                                 return lv;
+                            }
+                            
                         }
                     }
                     if (string.Compare(lv.Name, var, true) == 0)
@@ -5035,6 +5089,8 @@ namespace VisualPascalABC
                     if (lv.Name == "$obj$")
                         self_lv = lv;
                 }
+                if (var.ToLower() == "result" && ret_lv != null) 
+                    return ret_lv;
                 if (var.ToLower() == "self")
                 {
                     try
@@ -5081,7 +5137,9 @@ namespace VisualPascalABC
                 }
                 if (self_lv != null)
                 {
+#if (DEBUG)
                     Console.WriteLine("search in this");
+#endif
                     var fields = self_lv.GetAllChildren();
                     foreach (var fi in fields)
                     {
@@ -5092,13 +5150,20 @@ namespace VisualPascalABC
                 }
                 if (global_lv != null)
                 {
+#if (DEBUG)
                     Console.WriteLine(global_lv.TypeName);
+#endif
                     var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), monoDebuggerSession.GetType(global_lv.TypeName));
                     var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
                     foreach (var fi in fields)
                     {
                         if (string.Compare(fi.Name, var, true) == 0)
-                            return fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                        {
+                            var val = fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                            val.parentFrame = stackFrame;
+                            return val;
+                        }
+                            
                     }
 
 
@@ -5111,7 +5176,33 @@ namespace VisualPascalABC
                     }*/
                 }
 
-                
+                List<Mono.Debugger.Soft.TypeMirror> types = AssemblyHelper.GetUsesMonoTypes(monoDebuggerSession);
+                foreach (var tm in types)
+                {
+                    var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+                    var fields = tr.GetChildReferences(Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                    foreach (var fi in fields)
+                    {
+                        if (string.Compare(fi.Name, var, true) == 0)
+                        {
+                            Console.WriteLine("fount unit var " + var);
+                            var val = fi.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                            val.parentFrame = stackFrame;
+                            return val;
+                        }
+
+                    }
+
+                    Type unit_type = AssemblyHelper.GetType(tm.FullName);
+                    if (unit_type != null)
+                    {
+                        System.Reflection.FieldInfo fi = unit_type.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                        if (fi != null && fi.IsLiteral)
+                            return DebugUtils.MakeMonoValue(fi.GetRawConstantValue());
+                    }
+                }
+
+
                 /*List<NamedValue> unit_vars = new List<NamedValue>();
                 NamedValueCollection nvc = null;
                 NamedValue ret_nv = null;
@@ -5248,7 +5339,9 @@ namespace VisualPascalABC
             catch (System.Exception e)
             {
                 //System.Windows.Forms.MessageBox.Show(e.ToString());
-
+#if (DEBUG)
+                Console.WriteLine(e.Message + " "+ e.StackTrace);
+#endif
             }
             return null;
             //throw new UnknownName(var);
@@ -5351,7 +5444,8 @@ namespace VisualPascalABC
                     Type t = AssemblyHelper.GetType(_ident.name);
                     if (t != null)
                     {
-                        val.type = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(name),(uint)t.MetadataToken);
+                        var tm = monoDebuggerSession.GetType(t.FullName);
+                        val.monoType = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
                         val.managed_type = t;
                     }
                 }
@@ -6245,62 +6339,56 @@ namespace VisualPascalABC
             names.Add("]");
             if (rv.monoValue != null)
             {
-                if (rv.obj_val is MemberValue && (rv.obj_val as MemberValue).MemberInfo is PropertyInfo)
-                {
-                    PropertyInfo pi = (rv.obj_val as MemberValue).MemberInfo as PropertyInfo;
-                    Type t = AssemblyHelper.GetType(last_obj.Type.FullName);
-                    System.Reflection.PropertyInfo rpi = t.GetProperty(pi.Name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance);
-                    /*System.Reflection.MemberInfo[] props = t.GetMembers(System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.CreateInstance);
-                    System.Reflection.PropertyInfo rpi = null;
-                    foreach (System.Reflection.MemberInfo p in props)
-                    if (p is System.Reflection.PropertyInfo && p.Name == pi.Name)
-                    {
-                        rpi = p as System.Reflection.PropertyInfo;
-                        break;
-                    }*/
-                    RetValue res = new RetValue();
-                    res.obj_val = ((rv.obj_val as MemberValue).MemberInfo as PropertyInfo).GetValue(last_obj,
-                                                                                                    get_val_arr(indices, false, rpi.GetGetMethod(true)));
-                    eval_stack.Push(res);
-                    return;
-                }
-                if (rv.monoValue.IsArray)
-                {
-                    
-                    RetValue res = new RetValue();
-                    res.monoValue = rv.monoValue.GetArrayItem(conv_to_int_arr(indices)[0]);
-                    //check_for_out_of_range(res.monoValue);
-                    eval_stack.Push(res);
 
-                }
-                else
+                RetValue res = new RetValue();
+                Type type = AssemblyHelper.GetType(rv.monoValue.TypeName);
+                if (type != null && type.GetField("NullBasedArray") != null)
                 {
-                    IList<MemberInfo> mis = rv.obj_val.Type.GetMember("get_val", BindingFlags.All);
-                    if (mis.Count > 0)
+                    int low_bound = 0;
+                    System.Reflection.FieldInfo fi = type.GetField("LowerIndex");
+                   // low_bound = Convert.ToInt32(fi.GetRawConstantValue());
+                    int[] tmp_indices = new int[1];
+                    int j = 0;
+                    try
                     {
-                        MethodInfo cur_mi = null;
-                        int low_bound = 0;
-                        foreach (MemberInfo mi in mis)
-                        {
-                            if (mi is MethodInfo)
-                            {
-                                cur_mi = mi as MethodInfo;
-                                //FieldInfo fi = rv.obj_val.Type.GetMember("LowerIndex",BindingFlags.All)[0] as FieldInfo;
-                                System.Reflection.FieldInfo fi = AssemblyHelper.GetType(rv.obj_val.Type.FullName).GetField("LowerIndex");
-                                low_bound = Convert.ToInt32(fi.GetRawConstantValue());
-                            }
-                        }
-                        RetValue res = new RetValue();
-                        uint[] tmp_indices = new uint[1];
-                        int j = 0;
+                        object obj = indices[j++];
+                        int v = 0;
+                        if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
+                            tmp_indices[0] = v - low_bound;
+                        else
+                            tmp_indices[0] = Convert.ToInt32(obj) - low_bound;
+                    }
+                    catch (System.FormatException)
+                    {
+                        throw new WrongTypeInIndexer();
+                    }
+                    catch (System.InvalidCastException)
+                    {
+                        throw new WrongTypeInIndexer();
+                    }
+                    //res.obj_val = cur_mi.Invoke(rv.obj_val,indices.ToArray()) as NamedValue;
+                    var tm = rv.monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                    var mi = tm.GetMethod("get_val");
+                    if (mi != null)
+                    {
+                        List<Mono.Debugging.Client.ObjectValue> ind_list = new List<Mono.Debugging.Client.ObjectValue>();
+                        ind_list.Add(DebugUtils.MakeMonoValue(tmp_indices[0]));
+                        res.monoValue = InvokeMethod(tm, mi, rv.monoValue, ind_list.ToArray());
+                    }
+                    check_for_out_of_range(res.obj_val);
+                    var nv = res.monoValue.GetChild("NullBasedArray");
+                    while (nv != null && j < indices.Count)
+                    {
+                        System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(res.monoValue.TypeName).GetField("LowerIndex");
+                        low_bound = 0;// Convert.ToInt32(tmp_fi.GetRawConstantValue());
                         try
                         {
                             object obj = indices[j++];
                             int v = 0;
                             if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
-                                tmp_indices[0] = (uint)(v - low_bound);
+                                tmp_indices[0] = v - low_bound;
                             else
-                                tmp_indices[0] = (uint)(Convert.ToInt32(obj) - low_bound);
+                                tmp_indices[0] = Convert.ToInt32(obj) - low_bound;
                         }
                         catch (System.FormatException)
                         {
@@ -6310,84 +6398,42 @@ namespace VisualPascalABC
                         {
                             throw new WrongTypeInIndexer();
                         }
-                        //res.obj_val = cur_mi.Invoke(rv.obj_val,indices.ToArray()) as NamedValue;
-                        Value nv = rv.obj_val.GetMember("NullBasedArray");
-                        res.obj_val = nv.GetArrayElement(tmp_indices);
-                        check_for_out_of_range(res.obj_val);
-                        nv = res.obj_val.GetMember("NullBasedArray");
-                        while (nv != null && j < indices.Count)
+                        tm = res.monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                        mi = tm.GetMethod("get_val");
+                        if (mi != null)
                         {
-                            System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(res.obj_val.Type.FullName).GetField("LowerIndex");
-                            low_bound = Convert.ToInt32(tmp_fi.GetRawConstantValue());
-                            try
-                            {
-                                object obj = indices[j++];
-                                int v = 0;
-                                if (obj is Value && DebugUtils.IsEnum(obj as Value, out v))
-                                    tmp_indices[0] = (uint)(v - low_bound);
-                                else
-                                    tmp_indices[0] = (uint)(Convert.ToInt32(obj) - low_bound);
-                            }
-                            catch (System.FormatException)
-                            {
-                                throw new WrongTypeInIndexer();
-                            }
-                            catch (System.InvalidCastException)
-                            {
-                                throw new WrongTypeInIndexer();
-                            }
-                            res.obj_val = nv.GetArrayElement(tmp_indices);
-                            check_for_out_of_range(res.obj_val);
-                            nv = res.obj_val.GetMember("NullBasedArray");
-
+                            
+                            List<Mono.Debugging.Client.ObjectValue> ind_list = new List<Mono.Debugging.Client.ObjectValue>();
+                            ind_list.Add(DebugUtils.MakeMonoValue(tmp_indices[0]));
+                            res.monoValue = InvokeMethod(tm, mi, res.monoValue, ind_list.ToArray());
                         }
-                        if (j < indices.Count)
-                            throw new WrongIndexersNumber();
-                        eval_stack.Push(res);
+                        nv = res.monoValue.GetChild("NullBasedArray");
+                    }
+                    if (j < indices.Count)
+                        throw new WrongIndexersNumber();
+                    eval_stack.Push(res);
+                }
+                else
+                {
+                    var tm = rv.monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                    var mi = tm.GetMethod("get_Item");
+                    if (mi != null)
+                    {
+                        List<Mono.Debugging.Client.ObjectValue> ind_list = new List<Mono.Debugging.Client.ObjectValue>();
+                        foreach (var ind in indices)
+                        {
+                            ind_list.Add(DebugUtils.MakeMonoValue(ind));
+                        }
+                        res.monoValue = InvokeMethod(tm, mi, rv.monoValue, ind_list.ToArray());
                     }
                     else
-                    {
-                        string name = get_type_name(rv.obj_val.Type);
-                        Type t = AssemblyHelper.GetType(name);
-                        if (t == null && declaringType != null)
-                            t = AssemblyHelper.GetType(declaringType.FullName + "+" + name);
-                        DebugType[] gen_args = rv.obj_val.Type.GetGenericArguments();
-                        if (gen_args.Length > 0)
-                        {
-                            List<Type> gens = new List<Type>();
-                            for (int i = 0; i < gen_args.Length; i++)
-                                gens.Add(AssemblyHelper.GetType(get_type_name(gen_args[i])));
-                            t = t.MakeGenericType(gens.ToArray());
-                        }
-                        System.Reflection.MemberInfo[] def_members = t.GetDefaultMembers();
-                        System.Reflection.PropertyInfo _default_property = null;
-                        if (def_members != null && def_members.Length > 0)
-                        {
-                            foreach (System.Reflection.MemberInfo mi in def_members)
-                            {
-                                System.Reflection.PropertyInfo pi = mi as System.Reflection.PropertyInfo;
-                                if (pi != null)
-                                {
-                                    _default_property = pi;
-                                    break;
-                                }
-                            }
-                        }
-                        if (_default_property != null)
-                        {
-                            if (_default_property.GetGetMethod().GetParameters().Length != indices.Count)
-                                throw new WrongIndexersNumber();
-                            MethodInfo mi2 = rv.obj_val.Type.GetMember(_default_property.GetGetMethod().Name, Debugger.BindingFlags.All)[0] as MethodInfo;
-                            RetValue res = new RetValue();
-                            res.obj_val = mi2.Invoke(rv.obj_val, get_val_arr(indices, _default_property.DeclaringType == typeof(string), _default_property.GetGetMethod()));
-                            check_for_out_of_range(res.obj_val);
-                            eval_stack.Push(res);
-                        }
-                        else
-                            throw new NoIndexerProperty();
-
-                    }
+                        res.monoValue = rv.monoValue.GetRangeOfChildren(conv_to_int_arr(indices)[0], 1)[0];
                 }
+
+                //check_for_out_of_range(res.monoValue);
+                eval_stack.Push(res);
+
+
             }
         }
 
@@ -6692,7 +6738,11 @@ namespace VisualPascalABC
                     ident id = _dot_node.right as ident;
                     names.Add("." + id.name);
                     //IList<Debugger.MemberInfo> members = rv.obj_val.Type.GetMember(id.name, BindingFlags.All);
-                    if (rv.monoValue.IsArray)
+                    if (string.Compare(id.name, "Count", true) == 0)
+                        res.monoValue = InvokeMethod(rv.monoValue.Type, "get_Count", rv.monoValue, new Mono.Debugging.Client.ObjectValue[0]);
+                    else if (string.Compare(id.name, "Length", true) == 0)
+                        res.monoValue = InvokeMethod(rv.monoValue.Type, "get_Length", rv.monoValue, new Mono.Debugging.Client.ObjectValue[0]);
+                    else if (rv.monoValue.IsArray)
                     {
                         if (string.Compare(id.name, "Length", true) == 0)
                             res.prim_val = rv.monoValue.ArrayCount;
@@ -6720,56 +6770,21 @@ namespace VisualPascalABC
                     if (t != null)
                     {
                         //DebugType dt = DebugType.Create(this.debuggedProcess.GetModule(name),(uint)t.MetadataToken);
-                        DebugType dt = DebugUtils.GetDebugType(t);
+                        var tm = monoDebuggerSession.GetType(t.FullName);
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
                         IList<MemberInfo> mis = new List<MemberInfo>();//dt.GetMember(id.name,BindingFlags.All);
-                        declaringType = dt;
-                        DebugType tmp = dt;
-                        while (tmp != null && mis.Count == 0)
-                        {
-                            try
-                            {
-                                mis = tmp.GetMember(id.name, BindingFlags.All);
-                                tmp = tmp.BaseType;
-                            }
-                            catch
-                            {
-
-                            }
-                        }
-                        if (mis.Count > 0)
-                        {
-                            if (mis[0] is FieldInfo)
-                            {
-                                FieldInfo fi = mis[0] as FieldInfo;
-                                res.obj_val = fi.GetValue(null);
-                                if (res.obj_val == null)
-                                    throw new UnknownName(id.name);
-                                check_for_static(res.obj_val, id.name);
-                            }
-                            else if (mis[0] is PropertyInfo)
-                            {
-                                PropertyInfo pi = mis[0] as PropertyInfo;
-                                res.obj_val = pi.GetValue(null);
-                                if (res.obj_val == null)
-                                    throw new UnknownName(id.name);
-                                check_for_static(res.obj_val, id.name);
-                            }
-                        }
-                        else
-                        {
-                            System.Reflection.FieldInfo fi = t.GetField(id.name);
-                            if (fi != null)
-                                res.prim_val = fi.GetRawConstantValue();
-                            else
-                                throw new UnknownName(id.name);
-                        }
+                        declaringType = tm;
+                        var vr = tr.GetChild(id.name, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                        res.monoValue = vr.CreateObjectValue(false, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                        res.monoValue.parentFrame = stackFrame;
                     }
                     else
                     {
                         t = AssemblyHelper.GetType(name + "." + id.name);
                         if (t != null)
                         {
-                            res.type = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(name),(uint)t.MetadataToken);
+                            var tm = monoDebuggerSession.GetType(t.FullName);
+                            res.monoType = new Mono.Debugging.Evaluation.TypeValueReference(stackFrame.SourceBacktrace.GetEvaluationContext(stackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
                             res.managed_type = t;
                         }
                         //						else 
@@ -6817,8 +6832,8 @@ namespace VisualPascalABC
         public object GetSimpleValue(RetValue rv)
         {
             if (rv.prim_val != null) return rv.prim_val;
-            else if (rv.obj_val != null && rv.obj_val.IsPrimitive) return rv.obj_val.PrimitiveValue;
-            else if (rv.obj_val != null) return rv.obj_val;
+            else if (rv.monoValue != null && rv.monoValue.IsPrimitive) return rv.monoValue.GetRawValue();
+            else if (rv.monoValue != null) return rv.monoValue;
             return null;
         }
 
@@ -6840,9 +6855,9 @@ namespace VisualPascalABC
                             args.Add(GetSimpleValue(rv));
                         }
                     res.prim_val = EvalStandFuncWithParam(id.name, args.ToArray());
-                    if (res.prim_val is Value)
+                    if (res.prim_val is Mono.Debugging.Client.ObjectValue)
                     {
-                        res.obj_val = res.prim_val as Value;
+                        res.monoValue = res.prim_val as Mono.Debugging.Client.ObjectValue;
                         res.prim_val = null;
                     }
                 }
@@ -7294,8 +7309,6 @@ namespace VisualPascalABC
 
         public override void visit(format_expr _format_expr)
         {
-            if (_format_expr.format2 == null)
-                throw new NotImplementedException();
             RetValue res = new RetValue();
             _format_expr.expr.visit(this);
             RetValue expr = eval_stack.Pop();
@@ -7307,15 +7320,11 @@ namespace VisualPascalABC
                 _format_expr.format2.visit(this);
                 format2 = eval_stack.Pop();
             }
-            Type t = AssemblyHelper.GetType("PABCSystem.PABCSystem");
-            string name = t.Assembly.ManifestModule.ScopeName;
-            DebugType dt = DebugType.Create(this.debuggedProcess.GetModule(name), (uint)AssemblyHelper.GetType("PABCSystem.PABCSystem").MetadataToken);
-            IList<MemberInfo> meths = dt.GetMember("FormatValue", BindingFlags.All);
-            MethodInfo mi = selectFormatMethod(meths, _format_expr.format2 == null ? 2 : 3);
+            var tm = monoDebuggerSession.GetType("PABCSystem.PABCSystem");
             if (_format_expr.format2 == null)
-                res.obj_val = mi.Invoke(null, new Value[2] { MakeValue(expr), MakeValue(format1) });
+                res.monoValue = InvokeMethod(tm, "FormatValue", null, new Mono.Debugging.Client.ObjectValue[2] { MakeValue(expr), MakeValue(format1) });
             else
-                res.obj_val = mi.Invoke(null, new Value[3] { MakeValue(expr), MakeValue(format1), MakeValue(format2) });
+                res.monoValue = InvokeMethod(tm, "FormatValue", null, new Mono.Debugging.Client.ObjectValue[3] { MakeValue(expr), MakeValue(format1), MakeValue(format2) });
             eval_stack.Push(res);
         }
 

@@ -684,6 +684,15 @@ namespace PascalABCCompiler.TreeRealization
 
             }
         }
+
+        public override string PrintableName
+        {
+            get
+            {
+                return "λ_anytype";
+            }
+        }
+
         public override string ToString() => "λ_anytype";
     }
 	
@@ -4775,8 +4784,9 @@ namespace PascalABCCompiler.TreeRealization
                     var a3 = bfn.simple_function_node.parameters[i].is_params != dii.parameters[i].is_params;*/
                     //lroman// Добавил все, что связано с lambda_any_type_node. Считаем, что этот тип равен всем типам. Это используется при выводе параметров лямбды
                     if ((!typesEqual && !(bfn.simple_function_node.parameters[i].type is lambda_any_type_node)) ||
-                        (bfn.simple_function_node.parameters[i].parameter_type != dii.parameters[i].parameter_type && !(bfn.simple_function_node.parameters[i].parameter_type is lambda_any_type_node)) 
-                	    || bfn.simple_function_node.parameters[i].is_params != dii.parameters[i].is_params)
+                        (bfn.simple_function_node.parameters[i].parameter_type != dii.parameters[i].parameter_type && !(bfn.simple_function_node.parameters[i].type is lambda_any_type_node)) 
+                	    || bfn.simple_function_node.parameters[i].is_params != dii.parameters[i].is_params && !(bfn.simple_function_node.parameters[i].type is lambda_any_type_node) 
+                            && !bfn.simple_function_node.name.StartsWith("<>lambda"))
                     {
                         find_eq = false;
                     }

@@ -334,6 +334,9 @@ namespace PascalABCSavParser
             {
                 System.Globalization.NumberFormatInfo sgnfi = new System.Globalization.NumberFormatInfo();
                 sgnfi.NumberDecimalSeparator = ".";
+
+                text = RemoveThousandsDelimiter(text, sc);
+
                 double val = double.Parse(text, sgnfi);
                 cn = new double_const(val);
                 cn.source_context = sc;
@@ -357,11 +360,13 @@ namespace PascalABCSavParser
 
         public const_node create_bigint_const(string text, SourceContext sc)
         {
+            text = RemoveThousandsDelimiter(text, sc);
+
             var txt = text.Substring(0, text.Length - 2);
-            const_node cn = new bigint_const();
+            var cn = new bigint_const();
             try
             {
-                (cn as bigint_const).val = System.UInt64.Parse(txt);
+                cn.val = System.UInt64.Parse(txt);
             }
             catch (Exception)
             {
@@ -371,12 +376,24 @@ namespace PascalABCSavParser
             return cn;
         }
 
+        public string RemoveThousandsDelimiter(string s, SourceContext sc)
+        {
+            if (s.EndsWith("_") || s.Contains("__"))
+            {
+                var errstr = ParserErrorsStringResources.Get("BAD_FORMED_NUM_CONST");
+                errors.Add(new SyntaxError(errstr, CurrentFileName, sc, null));
+            }
+
+            return s.Replace("_", "");
+        }
+
         public const_node create_int_const(string text, SourceContext sc, System.Globalization.NumberStyles NumberStyles)
         {
             //таблица целых констант на уровне синтаксиса
             //      не может быть - 0 +
             // 32--------16----8----|----8----16--------32----------------64(bits)
             // [  int64  )[       int32       ](  int64 ](      uint64     ]
+            text = RemoveThousandsDelimiter(text, sc);
             if (NumberStyles == System.Globalization.NumberStyles.HexNumber)
                 text = text.Substring(1);
             const_node cn = new int32_const();

@@ -24,7 +24,7 @@ namespace PascalABCCompiler
             try
             {
                 this.cu = cu;
-                is_assembly = cu.SyntaxTree is SyntaxTree.program_module || Compiler.is_dll(cu.SyntaxTree);
+                is_assembly = cu.SyntaxTree is SyntaxTree.program_module || Compiler.IsDll(cu.SyntaxTree);
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.Encoding = Encoding.UTF8;
                 settings.Indent = true;

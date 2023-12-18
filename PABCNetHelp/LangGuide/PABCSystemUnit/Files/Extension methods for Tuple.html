@@ -1,0 +1,55 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Add">
+<param name="Keyword" value="Print">
+<param name="Keyword" value="Println">
+<param name="Keyword" value="ToArray"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Методы расширения типа Tuple</H1>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Add&lt;T1, T2, T3&gt;(Self: (T1, T2); v: T3): (T1, T2, T3);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет поле к кортежу</td></tr>
+<tr><td><code><b>function</b> Add&lt;T1, T2, T3, T4&gt;(Self: (T1, T2, T3); v: T4): (T1, T2, T3, T4);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет поле к кортежу</td></tr>
+<tr><td><code><b>function</b> Add&lt;T1, T2, T3, T4, T5&gt;(Self: (T1, T2, T3, T4); v: T5): (T1, T2, T3, T4, T5);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет поле к кортежу</td></tr>
+<tr><td><code><b>function</b> Add&lt;T1, T2, T3, T4, T5, T6&gt;(Self: (T1, T2, T3, T4, T5); v: T6): (T1, T2, T3, T4, T5, T6);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет поле к кортежу</td></tr>
+<tr><td><code><b>function</b> Add&lt;T1, T2, T3, T4, T5, T6, T7&gt;(Self: (T1, T2, T3, T4, T5, T6); v: T7): (T1, T2, T3, T4, T5, T6, T7);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет поле к кортежу</td></tr>
+<tr><td><code><b>procedure</b> Print&lt;T1, T2&gt;(Self: (T1, T2));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж</td></tr>
+<tr><td><code><b>procedure</b> Print&lt;T1, T2, T3&gt;(Self: (T1, T2, T3));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж</td></tr>
+<tr><td><code><b>procedure</b> Print&lt;T1, T2, T3, T4&gt;(Self: (T1, T2, T3, T4));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж</td></tr>
+<tr><td><code><b>procedure</b> Print&lt;T1, T2, T3, T4, T5&gt;(Self: (T1, T2, T3, T4, T5));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж</td></tr>
+<tr><td><code><b>procedure</b> Print&lt;T1, T2, T3, T4, T5, T6&gt;(Self: (T1, T2, T3, T4, T5, T6));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж</td></tr>
+<tr><td><code><b>procedure</b> Print&lt;T1, T2, T3, T4, T5, T6, T7&gt;(Self: (T1, T2, T3, T4, T5, T6, T7));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж</td></tr>
+<tr><td><code><b>procedure</b> Println&lt;T1, T2&gt;(Self: (T1, T2));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж и переходит на новую строку</td></tr>
+<tr><td><code><b>procedure</b> Println&lt;T1, T2, T3&gt;(Self: (T1, T2, T3));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж и переходит на новую строку</td></tr>
+<tr><td><code><b>procedure</b> Println&lt;T1, T2, T3, T4&gt;(Self: (T1, T2, T3, T4));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж и переходит на новую строку</td></tr>
+<tr><td><code><b>procedure</b> Println&lt;T1, T2, T3, T4, T5&gt;(Self: (T1, T2, T3, T4, T5));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж и переходит на новую строку</td></tr>
+<tr><td><code><b>procedure</b> Println&lt;T1, T2, T3, T4, T5, T6&gt;(Self: (T1, T2, T3, T4, T5, T6));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж и переходит на новую строку</td></tr>
+<tr><td><code><b>procedure</b> Println&lt;T1, T2, T3, T4, T5, T6, T7&gt;(Self: (T1, T2, T3, T4, T5, T6, T7));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит кортеж и переходит на новую строку</td></tr>
+<tr><td><code><b>function</b> ToArray&lt;T&gt;(Self: (T,T)): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует кортеж элементов одного типа в массив</td></tr>
+<tr><td><code><b>function</b> ToArray&lt;T&gt;(Self: (T,T,T)): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует кортеж элементов одного типа в массив</td></tr>
+<tr><td><code><b>function</b> ToArray&lt;T&gt;(Self: (T,T,T,T)): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует кортеж элементов одного типа в массив</td></tr>
+<tr><td><code><b>function</b> ToArray&lt;T&gt;(Self: (T,T,T,T,T)): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует кортеж элементов одного типа в массив</td></tr>
+<tr><td><code><b>function</b> ToArray&lt;T&gt;(Self: (T,T,T,T,T,T)): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует кортеж элементов одного типа в массив</td></tr>
+<tr><td><code><b>function</b> ToArray&lt;T&gt;(Self: (T,T,T,T,T,T,T)): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует кортеж элементов одного типа в массив</td></tr>
+</table>
+</body></HTML>

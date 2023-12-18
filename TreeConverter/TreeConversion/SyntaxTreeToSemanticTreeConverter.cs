@@ -8,7 +8,7 @@
  *
  ***************************************************************************/
 
-using System;
+using PascalABCCompiler.TreeRealization;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.TreeConverter
@@ -82,8 +82,8 @@ namespace PascalABCCompiler.TreeConverter
 			//stv.comp_units=UsedUnits;
 			//stv.visit(SyntaxUnit
             //stv.interface_using_list = namespaces;
-            stv.using_list.clear();
-            stv.interface_using_list.clear();
+            stv.using_list.Clear();
+            stv.interface_using_list.Clear();
             stv.using_list.AddRange(namespaces);
             stv.current_document = new TreeRealization.document(SyntaxUnit.file_name);
             stv.ErrorsList = ErrorsList;
@@ -133,7 +133,7 @@ namespace PascalABCCompiler.TreeConverter
             stv.bad_nodes_in_syntax_tree = bad_nodes;
             stv.referenced_units = UsedUnits;
 
-            stv.using_list.clear();
+            stv.using_list.Clear();
             stv.using_list.AddRange(interface_namespaces);
             stv.interface_using_list.AddRange(interface_namespaces);
             stv.using_list.AddRange(imlementation_namespaces);
@@ -153,8 +153,8 @@ namespace PascalABCCompiler.TreeConverter
 			{
                 throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Program has not implementation part");
 			}
-            //TODO: Переделать, чтобы Сашин код работал с common_unit_node.
-			stv.compiled_unit=(PascalABCCompiler.TreeRealization.common_unit_node)SemanticUnit;
+
+			stv.compiled_unit = SemanticUnit;
             stv.current_document = new TreeRealization.document(SyntaxUnit.file_name);
 
             foreach (SyntaxTree.compiler_directive cd in umod.compiler_directives)
@@ -165,6 +165,7 @@ namespace PascalABCCompiler.TreeConverter
 			//stv.visit(SyntaxUnit);
 			//return stv.compiled_unit;
 		}
+
 		public void Reset()
 		{
 			stv.reset();

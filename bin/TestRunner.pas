@@ -108,6 +108,7 @@ begin
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir + PathSeparator + 'exe';
+    Directory.CreateDirectory(co.OutputDirectory);
     co.UseDllForSystemUnits := withdll;
     co.RunWithEnvironment := false;
     co.IgnoreRtlErrors := false;
@@ -336,6 +337,7 @@ end;
 
 procedure ClearDirByPattern(dir, pattern: string);
 begin
+  if not Directory.Exists(dir) then exit;
   var files := Directory.GetFiles(dir, pattern);
   for var i := 0 to files.Length - 1 do
   begin

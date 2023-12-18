@@ -188,7 +188,7 @@ namespace VisualPascalABC
         {
             CodeFileDocumentControl tp = new CodeFileDocumentControl(this);
             //tp.BorderStyle=BorderStyle.Fixed3D;
-            //tp.Font = new Font("MS Sans Serif", tp.Font.Size);
+            //tp.Font = new System.Drawing.Font("MS Sans Serif", tp.Font.Size);
             RichTextBox tb = OutputWindow.outputTextBox;
             if (OpenDocuments.Count > 0)
                 tb = CopyTextBox(OutputWindow.outputTextBox);
@@ -252,7 +252,7 @@ namespace VisualPascalABC
             SetTabPageText(edit);
             edit.SetHighlightingStrategyForFile(FileName);
             OpenDocuments.Add(Tools.FileNameToLower(FileName), edit);
-            //this.codeCompletionParserController.SetAsChanged(FileName);
+            //this.codeCompletionParserController.SetAsChanged(file_name);
             //ivan
             AddBreakPointHandler(edit, FileName);
             var RunService = WorkbenchServiceFactory.RunService;
@@ -313,6 +313,8 @@ namespace VisualPascalABC
             res.BackColor = orig.BackColor;
             res.Parent = orig.Parent;
             res.ContextMenuStrip = orig.ContextMenuStrip;
+            res.DetectUrls = true;
+            res.LinkClicked += OutputWindow.outputTextBox_LinkClicked;
             return res;
         }
 
@@ -471,7 +473,7 @@ namespace VisualPascalABC
                 AddEditorHandlers(edit);
             }
             WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + ".pas");
-            //edit.FileName = FileName;
+            //edit.file_name = file_name;
             //SetTabPageText(edit);
         }
 
@@ -596,7 +598,7 @@ namespace VisualPascalABC
 
         public void AddTextToOutputWindowSync(string fileName, string text)
         {
-            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
+            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), file_name, text);
             Invoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
         }
 

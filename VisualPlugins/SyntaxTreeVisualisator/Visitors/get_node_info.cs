@@ -300,7 +300,8 @@ namespace VisualPascalABCPlugins
 		{
 			if (_procedure_header.of_object) text+="of object";
 			if (_procedure_header.class_keyword) text+="class proc";
-		}
+            if (_procedure_header.IsAsync) text += "isAsync";
+        }
 
 
 		public override void visit(function_header _function_header)

@@ -2895,7 +2895,8 @@ namespace PascalABCCompiler.TreeConverter
                     commn.field_access_level != SemanticTree.field_access_level.fal_public ||
                     commn.is_constructor)
                 {
-                    bad = true;
+                    if (!(commn.name.IndexOf(".") != -1 && commn.field_access_level != SemanticTree.field_access_level.fal_public))
+                        bad = true;
                 }
             }
             else

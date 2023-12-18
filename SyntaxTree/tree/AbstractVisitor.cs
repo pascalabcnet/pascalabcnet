@@ -1307,6 +1307,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_lambda_any_type_node_syntax);
 		}
+
+		public virtual void visit(ref_var_def_statement _ref_var_def_statement)
+		{
+			DefaultVisit(_ref_var_def_statement);
+		}
 	}
 
 

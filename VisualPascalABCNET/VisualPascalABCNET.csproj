@@ -425,6 +425,7 @@
     <Compile Include="Workbench\WorkbenchServiceFactory.cs" />
     <EmbeddedResource Include="ABCHealth.resx">
       <DependentUpon>ABCHealth.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="AboutBox.resx">
       <SubType>Designer</SubType>

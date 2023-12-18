@@ -23,6 +23,7 @@ copy bin\ICSharpCode.TextEditorLinux.dll Release\PascalABCNETLinux\ICSharpCode.T
 copy bin\Localization.dll Release\PascalABCNETLinux\Localization.dll
 copy bin\Microsoft.Scripting.dll Release\PascalABCNETLinux\Microsoft.Scripting.dll
 copy bin\Mono.Cecil.dll Release\PascalABCNETLinux\Mono.Cecil.dll
+copy bin\Mono.Debugger.Soft.dll Release\PascalABCNETLinux\Mono.Debugger.Soft.dll
 copy bin\mono_pabcIDE.bat Release\PascalABCNETLinux\mono_pabcIDE.bat
 copy bin\mono_pabcnetc.bat Release\PascalABCNETLinux\mono_pabcnetc.bat
 copy bin\NETGenerator.dll Release\PascalABCNETLinux\NETGenerator.dll
@@ -50,6 +51,7 @@ copy bin\WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll Release\PascalABCNETL
 copy bin\WeifenLuo.WinFormsUI.DockingLinux.dll Release\PascalABCNETLinux\WeifenLuo.WinFormsUI.DockingLinux.dll
 copy bin\YieldHelpers.dll Release\PascalABCNETLinux\YieldHelpers.dll
 copy bin\LambdaAnySynToSemConverter.dll Release\PascalABCNETLinux\LambdaAnySynToSemConverter.dll
+copy bin\TeacherControlPlugin.dll Release\PascalABCNETLinux\TeacherControlPlugin.dll
 copy bin\Highlighting\PascalABCNET.xshd Release\PascalABCNETLinux\Highlighting\PascalABCNET.xshd
 
 copy bin\Lib\nunit.framework.dll Release\PascalABCNETLinux\Lib\nunit.framework.dll

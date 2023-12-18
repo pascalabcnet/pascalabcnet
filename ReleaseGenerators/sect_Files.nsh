@@ -3,5 +3,6 @@
 
   SetOutPath "$INSTDIR\Files\Databases"
   File "Files\Databases\*.csv"  
+  File "Files\Databases\*.txt"  
   File "Files\Words\*.txt"  
 SectionEnd

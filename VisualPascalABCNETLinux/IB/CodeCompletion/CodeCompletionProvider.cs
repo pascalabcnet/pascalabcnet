@@ -236,7 +236,7 @@ namespace VisualPascalABC
             if (dconv == null) return new List<SymbolsViewerSymbol>();
             List<SymbolsViewerSymbol> lst = InternalFindReferences(fileName, e, line, column, for_refact);
             //if (lst != null && expr != null && for_refact)
-            //lst.Insert(0,new SymbolsViewerSymbol(new PascalABCCompiler.SourceLocation(fileName,line+1,column,line+1,column+expr.Length),ImagesProvider.IconNumberGotoText));
+            //lst.Insert(0,new SymbolsViewerSymbol(new PascalABCCompiler.SourceLocation(file_name,line+1,column,line+1,column+expr.Length),ImagesProvider.IconNumberGotoText));
             return lst;
         }
 
@@ -572,7 +572,7 @@ namespace VisualPascalABC
             controller = new CodeCompletion.CodeCompletionController();
             int off = textArea.Caret.Offset;
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
-            //controller.Compile(fileName, text /*+ ")))));end."*/);
+            //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
             ICompletionData[] data = GetCompletionData(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();
@@ -626,7 +626,7 @@ namespace VisualPascalABC
             controller = new CodeCompletion.CodeCompletionController();
             int off = textArea.Caret.Offset;
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
-            //controller.Compile(fileName, text /*+ ")))));end."*/);
+            //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
             ICompletionData[] data = GetCompletionDataByFirst(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();

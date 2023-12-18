@@ -1,9 +1,10 @@
-﻿/// Конструктор учебных заданий для задачника Programming Taskbook.
-/// Версия 1.7 от 28.10.2020 (С) М. Э. Абрамян, 2016-2020.
+﻿
+/// Конструктор учебных заданий для задачника Programming Taskbook.
+/// Версия 1.9 от 26.03.2023 (С) М. Э. Абрамян, 2016-2023.
 /// Все компоненты конструктора могут вызываться либо как классовые методы класса pt, 
 /// либо как обычные константы и процедуры.
 unit PT4MakerNetX;
-   
+
 interface
 
 const
@@ -20,11 +21,13 @@ const
 /// формулировки должны разделяться символами #13, #10 или #13#10.
 procedure NewTask(topic, tasktext: string);
 
+
 /// Процедура, с которой должно начинаться определение нового задания.
 /// Должна вызываться в процедуре с именем, начинающемся с текста Task.
 /// Параметр tasktext содержит формулировку задания; отдельные строки
 /// формулировки должны разделяться символами #13, #10 или #13#10.
 procedure NewTask(tasktext: string);
+
 
 /// Добавляет комментарий в новой строке раздела исходных даннных.
 procedure DataComm(comm: string);
@@ -124,13 +127,25 @@ procedure SetRequiredDataCount(n: integer);
 /// (запуски нумеруются от 1).
 function CurrentTest: integer;
 
-/// Генерирует случайное целов в диапазоне от M до N включительно.
+/// Генерирует случайное целое число в диапазоне от M до N включительно.
 /// Если M >= N, то возвращает M.
 function Random(M, N: integer): integer;
 
-/// Генерирует случайное вещественное на промежутке [A, B).
+/// Генерирует случайное вещественное число на промежутке [A, B).
 /// Если промежуток [A, B) пуст, то возвращает A.
 function Random(A, B: real): real;
+
+/// Генерирует случайное вещественное число на промежутке [A, B)
+/// с одним дробным знаком и случайной добавкой порядка 1e-7.
+/// Если промежуток [A, B) пуст, то возвращает A, округленное
+/// до одного дробного знака и снабженное добавкой порядка 1e-7.
+function Random1(A, B: real): real;
+
+/// Генерирует случайное вещественное число на промежутке [A, B)
+/// с двумя дробными знаками и случайной добавкой порядка 1e-7.
+/// Если промежуток [A, B) пуст, то возвращает A, округленное
+/// до двух дробных знаков и снабженное добавкой порядка 1e-7.
+function Random2(A, B: real): real;
 
 /// Генерирует случайную строку длины len, состоящую
 /// из цифр и строчных (т.е. маленьких) латинских букв.
@@ -138,11 +153,21 @@ function RandomName(len: integer): string;
 
 /// Создает новую группу с кратким описанием GroupDescription,
 /// информацией об авторе GroupAuthor и набором необязательных опций, объединяемых операцией or.
-/// Имя группы определяется по имени библиотеки (путем отбрасывания префикса PT4). 
+/// Имя группы определяется по имени библиотеки (путем отбрасывания префикса PT4
+/// и возможных суффиксов _ru или _en). 
 /// В группу включаются задания, определенные в процедурах, имена которых начинаются с текста Task.
 /// Процедура NewGroup должна быть вызвана в процедуре inittaskgroup без параметров, которую
 /// необходимо описать в библиотеке с группой заданий (все буквы в имени inittaskgroup - строчные).
 procedure NewGroup(GroupDescription, GroupAuthor: string; Options: integer := 0);
+
+/// Создает новую группу с кратким описанием GroupDescription, английским описанием GroupEnDescription,
+/// информацией об авторе GroupAuthor и набором необязательных опций, объединяемых операцией or.
+/// Имя группы определяется по имени библиотеки (путем отбрасывания префикса PT4
+/// и возможных суффиксов _ru или _en). 
+/// В группу включаются задания, определенные в процедурах, имена которых начинаются с текста Task.
+/// Процедура NewGroup должна быть вызвана в процедуре inittaskgroup без параметров, которую
+/// необходимо описать в библиотеке с группой заданий (все буквы в имени inittaskgroup - строчные).
+procedure NewGroup(GroupDescription, GroupEnDescription, GroupAuthor: string; Options: integer := 0);
 
 /// Обеспечивает регистрацию созданной группы в электронном задачнике.
 /// Процедура ActivateNET(S) должна быть вызвана в процедуре activate(S: string),
@@ -154,6 +179,11 @@ procedure ActivateNET(S: string);
 /// в процедуре с именем, начинающемся с текста Task.
 procedure UseTask(GroupName: string; TaskNumber: integer);
 
+/// Импортирует в создаваемую группу существующее задание
+/// из группы GroupName с номером TaskNumber. Должна вызываться
+/// в процедуре с именем, начинающемся с текста Task.
+procedure UseTask(GroupName: string; TaskNumber: integer; TopicDescription: string);
+
 /// Возвращает массив из 116 русских слов.
 function GetWords: array of string;
 /// Возвращает массив из 116 английских слов.
@@ -163,10 +193,12 @@ function GetSentences: array of string;
 /// Возвращает массив из 61 английского предложения.
 function GetEnSentences: array of string;
 /// Возвращает массив из 85 русских многострочных текстов.
-/// Каждая строка текста оканчивается символами #13#10.
+/// Строки текста разделяются символами #13#10.
+/// В конце текста символы #13#10 отсутствуют.
 function GetTexts: array of string;
 /// Возвращает массив из 85 английских многострочных текстов.
-/// Каждая строка текста оканчивается символами #13#10.
+/// Строки текста разделяются символами #13#10.
+/// В конце текста символы #13#10 отсутствуют.
 function GetEnTexts: array of string;
 
 /// Возвращает случайное русское слово из массива, 
@@ -183,11 +215,13 @@ function RandomSentence: string;
 function RandomEnSentence: string;
 /// Возвращает случайный русский многострочный текст из массива, 
 /// входящего в конструктор учебных заданий.
-/// Каждая строка текста оканчивается символами #13#10.
+/// Строки текста разделяются символами #13#10.
+/// В конце текста символы #13#10 отсутствуют.
 function RandomText: string;
 /// Возвращает случайный английский многострочный текст из массива, 
 /// входящего в конструктор учебных заданий.
-/// Каждая строка текста оканчивается символами #13#10.
+/// Строки текста разделяются символами #13#10.
+/// В конце текста символы #13#10 отсутствуют.
 function RandomEnText: string;
 
 
@@ -284,6 +318,7 @@ class procedure NewTask(topic, tasktext: string);
 begin
   PT4MakerNetX.NewTask(topic, tasktext);
 end;
+
 /// Процедура, с которой должно начинаться определение нового задания.
 /// Должна вызываться в процедуре с именем, начинающемся с текста Task.
 /// Параметр tasktext содержит формулировку задания; отдельные строки
@@ -292,6 +327,7 @@ class procedure NewTask(tasktext: string);
 begin
   PT4MakerNetX.NewTask(tasktext);
 end;
+
 /// Добавляет комментарий в новой строке раздела исходных даннных.
 class procedure DataComm(comm: string);
 begin
@@ -447,17 +483,33 @@ begin
   result := PT4MakerNetX.CurrentTest;
 end;
 
-/// Генерирует случайное целов в диапазоне от M до N включительно.
+/// Генерирует случайное целое число в диапазоне от M до N включительно.
 /// Если M >= N, то возвращает M.
 class function Random(M, N: integer): integer;
 begin
   result := PT4MakerNetX.Random(M, N);
 end;
-/// Генерирует случайное вещественное на промежутке [A, B).
+/// Генерирует случайное вещественное число на промежутке [A, B).
 /// Если промежуток [A, B) пуст, то возвращает A.
 class function Random(A, B: real): real;
 begin
   result := PT4MakerNetX.Random(A, B);
+end;
+/// Генерирует случайное вещественное число на промежутке [A, B)
+/// с одним дробным знаком и случайной добавкой порядка 1e-7.
+/// Если промежуток [A, B) пуст, то возвращает A, округленное
+/// до одного дробного знака и снабженное добавкой порядка 1e-7.
+class function Random1(A, B: real): real;
+begin
+  result := PT4MakerNetX.Random1(A, B);
+end;
+/// Генерирует случайное вещественное число на промежутке [A, B)
+/// с двумя дробными знаками и случайной добавкой порядка 1e-7.
+/// Если промежуток [A, B) пуст, то возвращает A, округленное
+/// до двух дробных знаков и снабженное добавкой порядка 1e-7.
+class function Random2(A, B: real): real;
+begin
+  result := PT4MakerNetX.Random2(A, B);
 end;
 /// Генерирует случайную строку длины len, состоящую
 /// из цифр и строчных (т.е. маленьких) латинских букв.
@@ -468,13 +520,25 @@ end;
 
 /// Создает новую группу с кратким описанием GroupDescription,
 /// информацией об авторе GroupAuthor и набором необязательных опций, объединяемых операцией or.
-/// Имя группы определяется по имени библиотеки (путем отбрасывания префикса PT4). 
+/// Имя группы определяется по имени библиотеки (путем отбрасывания префикса PT4 
+/// и возможных суффиксов _ru или _en). 
 /// В группу включаются задания, определенные в процедурах, имена которых начинаются с текста Task.
 /// Процедура NewGroup должна быть вызвана в процедуре inittaskgroup без параметров, которую
 /// необходимо описать в библиотеке с группой заданий (все буквы в имени inittaskgroup - строчные).
 class procedure NewGroup(GroupDescription, GroupAuthor: string; Options: integer := 0);
 begin
   PT4MakerNetX.NewGroup(GroupDescription, GroupAuthor, Options);
+end;
+/// Создает новую группу с кратким описанием GroupDescription, английским описанием GroupEnDescription,
+/// информацией об авторе GroupAuthor и набором необязательных опций, объединяемых операцией or.
+/// Имя группы определяется по имени библиотеки (путем отбрасывания префикса PT4
+/// и возможных суффиксов _ru или _en). 
+/// В группу включаются задания, определенные в процедурах, имена которых начинаются с текста Task.
+/// Процедура NewGroup должна быть вызвана в процедуре inittaskgroup без параметров, которую
+/// необходимо описать в библиотеке с группой заданий (все буквы в имени inittaskgroup - строчные).
+class procedure NewGroup(GroupDescription, GroupEnDescription, GroupAuthor: string; Options: integer := 0);
+begin
+  PT4MakerNetX.NewGroup(GroupDescription, GroupEnDescription, GroupAuthor, Options);
 end;
 /// Обеспечивает регистрацию созданной группы в электронном задачнике.
 /// Процедура ActivateNET(S) должна быть вызвана в процедуре activate(S: string),
@@ -489,6 +553,13 @@ end;
 class procedure UseTask(GroupName: string; TaskNumber: integer);
 begin
   PT4MakerNetX.UseTask(GroupName, TaskNumber);
+end;
+/// Импортирует в создаваемую группу существующее задание
+/// из группы GroupName с номером TaskNumber. Должна вызываться
+/// в процедуре с именем, начинающемся с текста Task.
+class procedure UseTask(GroupName: string; TaskNumber: integer; TopicDescription: string);
+begin
+  PT4MakerNetX.UseTask(GroupName, TaskNumber, TopicDescription);
 end;
 /// Возвращает массив из 116 русских слов.
 class function GetWords: array of string;
@@ -511,13 +582,15 @@ begin
   result := PT4MakerNetX.GetEnSentences;
 end;
 /// Возвращает массив из 85 русских многострочных текстов.
-/// Каждая строка текста оканчивается символами #13#10.
+/// Строки текста разделяются символами #13#10.
+/// В конце текста символы #13#10 отсутствуют.
 class function GetTexts: array of string;
 begin
   result := PT4MakerNetX.GetTexts;
 end;
 /// Возвращает массив из 85 английских многострочных текстов.
-/// Каждая строка текста оканчивается символами #13#10.
+/// Строки текста разделяются символами #13#10.
+/// В конце текста символы #13#10 отсутствуют.
 class function GetEnTexts: array of string;
 begin
   result := PT4MakerNetX.GetEnTexts;
@@ -548,14 +621,16 @@ begin
 end;
 /// Возвращает случайный русский многострочный текст из массива, 
 /// входящего в конструктор учебных заданий.
-/// Каждая строка текста оканчивается символами #13#10.
+/// Строки текста разделяются символами #13#10.
+/// В конце текста символы #13#10 отсутствуют.
 class function RandomText: string;
 begin
   result := PT4MakerNetX.RandomText;
 end;
 /// Возвращает случайный английский многострочный текст из массива, 
 /// входящего в конструктор учебных заданий.
-/// Каждая строка текста оканчивается символами #13#10.
+/// Строки текста разделяются символами #13#10.
+/// В конце текста символы #13#10 отсутствуют.
 class function RandomEnText: string;
 begin
   result := PT4MakerNetX.RandomEnText;
@@ -659,7 +734,7 @@ var
   yd, yr, ye, nd, nr, pr, wd: integer;
   nt, ut, fd, fr: boolean;
   fmt: string;
-  tasks := new List<MethodInfo>(200);
+  tasks := new List<MethodInfo>(100);
 
 procedure Show(s: string);
 begin
@@ -1180,13 +1255,14 @@ begin
     ResultS('\B'+Copy(ErrorMessage(ErrMes7),1,76)+'\b', '', 1, 1);
 end;
 
-function GetGroupName(assname: string): string;
+function GetGroupName(assname: string; var libname: string): string;
 begin
-  result := copy(assname, 1, pos(',', assname)-1);
-  var p := pos('_', result);
+  libname := copy(assname, 1, pos(',', assname)-1);
+  result := libname;
+  var p := pos('_', libname);
   if p > 0 then
-    delete(result, p, 100);
-  delete(result, 1, 3);
+    delete(result, p, 100); // удаление суффикса, определяющего язык интерфейса
+  delete(result, 1, 3);     // удаление префикса PT4
 end;
 
 function AcceptedLanguage(opt: integer): boolean;
@@ -1198,23 +1274,26 @@ begin
     or (lang and lgPascal = lgPascal) and (opt and OptionPascalLanguages = OptionPascalLanguages);
 end;
 
-
 procedure NewGroup(GroupDescription, GroupAuthor: string; Options: integer);
-
 begin
-  if not AcceptedLanguage(Options) then exit; // недопустимый текущий язык
+  NewGroup(GroupDescription, '', GroupAuthor, Options);
+end;
+
+procedure NewGroup(GroupDescription, GroupEnDescription, GroupAuthor: string; Options: integer);
+begin
+  if not AcceptedLanguage(Options) then 
+    exit; // недопустимый текущий язык
   var ass := Assembly.GetCallingAssembly;
-  var GroupName := GetGroupName(ass.FullName);
-  var nm := 'PT4' + GroupName;
+  var LibName := '';
+  var GroupName := GetGroupName(ass.FullName, LibName);
   tasks.Clear;
   var GroupKey := 'GK';
-  foreach var e in ass.GetType(nm + '.' + nm).GetMethods do
+  foreach var e in ass.GetType(LibName + '.' + LibName).GetMethods.OrderBy(e -> e.Name.ToUpper) do  //2018.08
     if e.Name.ToUpper.StartsWith('TASK') then
     begin
       tasks.Add(e);
       GroupKey := GroupKey + Copy(e.Name, 5, 100);
     end; 
-  tasks := tasks.OrderBy(e -> e.Name).ToList;  // Сортировка задач! 
   if tasks.Count = 0 then
   begin
     Show('Группа ' + GroupName + ' не содержит заданий'#13#10+
@@ -1225,11 +1304,14 @@ begin
   begin
     Show('Группа ' + GroupName + ' содержит более 999 заданий.');
     exit;
-  end;  
+  end;
+  GroupKey := Copy(GroupKey, 1, 30);
   if Options and OptionUseAddition = OptionUseAddition then
     GroupKey := GroupKey + '#UseAddition#';
   if Options and OptionHideExamples = OptionHideExamples then
     GroupKey := GroupKey + '#HideExamples#';
+  if GroupEnDescription.Trim <> '' then
+    GroupKey := GroupKey + '#EnTopic<' + GroupEnDescription.Trim + '>#';
   CreateGroup(GroupName, GroupDescription, GroupAuthor, 
       GroupKey, tasks.Count, RunTask);
 end;
@@ -1257,6 +1339,18 @@ begin
   result := PT4TaskMakerNET.RandomR(A, B);
 end;
 
+function Random1(A, B: real): real;
+begin
+  result := Random(Round(a*10), Round(b*10)) / 10
+     + Random * 1.0e-7;
+end;
+
+function Random2(A, B: real): real;
+begin
+  result := Random(Round(a*100), Round(b*100)) / 100
+     + Random * 1.0e-7;
+end;
+
 function CurrentTest: integer;
 begin
   if CheckTT then exit;
@@ -1267,6 +1361,13 @@ procedure UseTask(GroupName: string; TaskNumber: integer);
 begin
   if ut then exit;
   PT4TaskMakerNET.UseTask(GroupName, TaskNumber);
+  ut := true;
+end;
+
+procedure UseTask(GroupName: string; TaskNumber: integer; TopicDescription: string);
+begin
+  if ut then exit;
+  PT4TaskMakerNET.UseTask(GroupName, TaskNumber, TopicDescription);
   ut := true;
 end;
 

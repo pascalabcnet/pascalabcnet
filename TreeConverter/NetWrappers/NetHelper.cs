@@ -4,6 +4,7 @@ using System;
 using PascalABCCompiler.SemanticTree;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 
@@ -341,12 +342,15 @@ namespace PascalABCCompiler.NetHelper
 			cur_used_assemblies[typeof(string).Assembly] = typeof(string).Assembly;
 			cur_used_assemblies[typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly] = typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly;
             type_search_cache.Clear();
+
 		}
 		
 		private static Hashtable ass_name_cache;
 		private static Hashtable file_dates;
-		
-		public static bool IsAssemblyChanged(string name)
+        private static Dictionary<Assembly, string> assm_full_paths;
+
+
+        public static bool IsAssemblyChanged(string name)
 		{
 			if (name == null) return false;
 			Assembly a = ass_name_cache[name] as Assembly;
@@ -359,7 +363,7 @@ namespace PascalABCCompiler.NetHelper
 			else 
 			return false;
 		}
-		
+
 		public static Assembly LoadAssembly(string name, bool use_load_from = false)
 		{
             if (name == null) return null;
@@ -408,27 +412,17 @@ namespace PascalABCCompiler.NetHelper
 			    }
 			}
 			//if (!System.IO.Path.GetFileName(name).ToLower().Contains("microsoft.directx"))
-			try
+            try
             {
-				System.IO.FileStream fs = System.IO.File.OpenRead(name);
-				byte[] buf = new byte[fs.Length];
-           		fs.Read(buf, 0, (int)fs.Length);
-            	fs.Close();
-                curr_inited_assm_path = name;
-                if (!System.IO.Path.GetFileName(name).ToLower().Contains("microsoft."))
-                    a = System.Reflection.Assembly.Load(buf);
-                else
-                    a = System.Reflection.Assembly.LoadFrom(name);
-                a.GetTypes();
-            	buf = null;
-            	//Thread th = new Thread(new ThreadStart(collect_internal));
-            	//th.Start();
-			}
+                var bytes = File.ReadAllBytes(name);
+                a = Assembly.Load(bytes);
+            }
             catch (Exception ex)
             {
                 a = System.Reflection.Assembly.LoadFrom(name);
             }
             ass_name_cache[name] = a;
+            assm_full_paths[a] = name;
             file_dates[a] = System.IO.File.GetLastWriteTime(name);
             return a;
 		}
@@ -883,6 +877,7 @@ namespace PascalABCCompiler.NetHelper
             compiled_pascal_types = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
             namespaces = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
             ass_name_cache = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
+            assm_full_paths = new Dictionary<Assembly, string>();
             //ass_name_cache = new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
             file_dates = new Hashtable();
             //methods = new Hashtable();
@@ -932,6 +927,16 @@ namespace PascalABCCompiler.NetHelper
             EnumType = typeof(Enum);
             ArrayType = typeof(Array);
             AddToDictionaryMethod = typeof(Dictionary<string, object>).GetMethod("Add");
+        }
+
+        public static string GetAssemblyDirectory(Assembly assm)
+        {
+            string path;
+            if (assm_full_paths.TryGetValue(assm, out path))
+            {
+                return Path.GetDirectoryName(path);
+            }
+            return null;
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -991,7 +996,7 @@ namespace PascalABCCompiler.NetHelper
                 return true;
             return false;
         }
-		
+
 		public static bool IsNetNamespace(string name,PascalABCCompiler.TreeRealization.using_namespace_list _unar, out string full_ns)
 		{
 			Type t = namespaces[name] as Type;

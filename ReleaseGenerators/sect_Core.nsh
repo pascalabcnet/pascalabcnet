@@ -1,10 +1,11 @@
-﻿	Section $(DESC_Core) Core
+﻿    Section $(DESC_Core) Core
     SectionIn 1 2 RO
     SetOutPath "$INSTDIR"
     File ExecHide.exe
     File "..\bin\Compiler.dll"
     File "..\bin\CompilerTools.dll"
     File "..\bin\Errors.dll"
+    File "..\bin\ShiftReduceParser.dll"
     File "..\bin\Localization.dll"
     File "..\bin\NETGenerator.dll"
     File "..\bin\ParserTools.dll"
@@ -28,7 +29,8 @@
     File "..\bin\Mono.Cecil.dll"
     File "..\bin\TeacherControlPlugin.dll"
     File "..\bin\LambdaAnySynToSemConverter.dll"
-	;File "libs\System.Core.dll"
+    File "..\bin\UniversalParserHelper.dll"
+    ;File "libs\System.Core.dll"
     File "gacutil.exe"
     File "gacutil.exe.config"
     File "gacutlrc.dll"
@@ -40,20 +42,21 @@
 
 
 ; main config - only .NET 4.7.1 and above
-	DotNetChecker::IsDotNet471Installed
-	Pop $0
+    DotNetChecker::IsDotNet471Installed
+    Pop $0
 
-	${If} $0 == "false"
-	${OrIf} $0 == "f"  ; if script is compiled in ANSI mode then we get only an "f"  https://github.com/ReVolly/NsisDotNetChecker/issues/4
-	${Else}
-	    File "..\bin\PascalABCNET.exe.config"
-	    ${AddFile} "PascalABCNET.exe.config"
-	${EndIf}
-	
-	
-	;dobavljaem fajly v uninst.log
-	${AddFile} "Compiler.dll"
+    ${If} $0 == "false"
+    ${OrIf} $0 == "f"  ; if script is compiled in ANSI mode then we get only an "f"  https://github.com/ReVolly/NsisDotNetChecker/issues/4
+    ${Else}
+        File "..\bin\PascalABCNET.exe.config"
+        ${AddFile} "PascalABCNET.exe.config"
+    ${EndIf}
+    
+    
+    ;dobavljaem fajly v uninst.log
+    ${AddFile} "Compiler.dll"
     ${AddFile} "CompilerTools.dll"
+    ${AddFile} "ShiftReduceParser.dll"
     ${AddFile} "Errors.dll"
     ${AddFile} "Localization.dll"
     ${AddFile} "NETGenerator.dll"
@@ -69,6 +72,7 @@
     ${AddFile} "Mono.Cecil.dll"
     ${AddFile} "TeacherControlPlugin.dll"
     ${AddFile} "LambdaAnySynToSemConverter.dll"
+    ${AddFile} "UniversalParserHelper.dll"
     ${AddFile} "License.txt"
     ${AddFile} "copyright.txt"
     ${AddFile} "pabcnetc.exe.config"
@@ -77,7 +81,7 @@
     Delete "$INSTDIR\Lib\*.pas"
     SetOutPath "$INSTDIR\Lib"
     ;File ..\bin\Lib\*.pcu; eto ploho nuzhno kazhdyj pcu raspisyvat
-	
+    
     File ..\bin\Lib\__RedirectIOMode.pcu
     File ..\bin\Lib\__RunMode.pcu
     File ..\bin\Lib\ABCButtons.pcu
@@ -113,6 +117,9 @@
     File ..\bin\Lib\PointerTools.pcu
     File ..\bin\Lib\PointRect.pcu
     File ..\bin\Lib\PT4.pcu
+    File ..\bin\Lib\PT4Exam.pcu
+    File ..\bin\Lib\PT4MakerNetX.pcu
+    File ..\bin\Lib\PT4TaskMakerNET.pcu
     File ..\bin\Lib\Robot.pcu
     File ..\bin\Lib\RobotField.pcu
     File ..\bin\Lib\RobotTaskMaker.pcu
@@ -121,15 +128,12 @@
     File ..\bin\Lib\Timers.pcu
     File ..\bin\Lib\Utils.pcu
     File ..\bin\Lib\VCL.pcu
-    File ..\bin\Lib\PT4Exam.pcu
-    File ..\bin\Lib\PT4TaskMakerNET.pcu
     File ..\bin\Lib\RBDMUtils.pcu
     File ..\bin\Lib\Collections.pcu
     File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
     File ..\bin\Lib\OpenGL.pcu
-    File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\Speech.pcu
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
@@ -148,13 +152,20 @@
     File ..\bin\Lib\PlotWPF.pcu
     File ..\bin\Lib\XLSX.pcu
     File ..\bin\Lib\Мозаика.pcu
+    File ..\bin\Lib\TasksArr.pcu
+    File ..\bin\Lib\TasksMatr.pcu
+    File ..\bin\Lib\TasksStr.pcu
+    File ..\bin\Lib\Tasks1Begin.pcu
+    File ..\bin\Lib\Tasks1BoolIfCase.pcu
+    File ..\bin\Lib\Tasks1Loops.pcu
+    File ..\bin\Lib\Tasks1Arr.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
     File ..\bin\Lib\nunit.framework.dll 
     File ..\bin\Lib\InteractiveDataDisplay.WPF.dll 
-	
+    
     File ..\bin\Lib\turtle.png
 
     ${AddFile} "__RedirectIOMode.pcu"
@@ -194,6 +205,9 @@
     ${AddFile} "PointerTools.pcu"
     ${AddFile} "PointRect.pcu"
     ${AddFile} "PT4.pcu"
+    ${AddFile} "PT4Exam.pcu"
+    ${AddFile} "PT4MakerNetX.pcu"
+    ${AddFile} "PT4TaskMakerNET.pcu"
     ${AddFile} "Robot.pcu"
     ${AddFile} "RobotField.pcu"
     ${AddFile} "RobotTaskMaker.pcu"
@@ -202,15 +216,12 @@
     ${AddFile} "Timers.pcu"
     ${AddFile} "Utils.pcu"
     ${AddFile} "VCL.pcu"
-    ${AddFile} "PT4TaskMakerNET.pcu"
-    ${AddFile} "PT4Exam.pcu"
     ${AddFile} "RBDMUtils.pcu"
     ${AddFile} "Collections.pcu"
     ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
     ${AddFile} "OpenGL.pcu"
-    ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "Speech.pcu"
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
@@ -229,6 +240,14 @@
     ${AddFile} "PlotWPF.pcu"
     ${AddFile} "XLSX.pcu"
     ${AddFile} "Мозаика.pcu"
+    ${AddFile} "TasksArr.pcu"
+    ${AddFile} "TasksMatr.pcu"
+    ${AddFile} "TasksStr.pcu"
+    ${AddFile} "Tasks1Begin.pcu"
+    ${AddFile} "Tasks1BoolIfCase.pcu"
+    ${AddFile} "Tasks1Loops.pcu"
+    ${AddFile} "Tasks1Arr.pcu"
+
 
     ${AddFile} "turtle.png"
 
@@ -256,7 +275,7 @@
     Push "Lib\InteractiveDataDisplay.WPF.dll"
     Call NGEN
     
-	
+    
     SetOutPath "$INSTDIR\LibSource"
     File ..\bin\Lib\__RedirectIOMode.pas
     File ..\bin\Lib\__RunMode.pas
@@ -294,6 +313,10 @@
     File ..\bin\Lib\PointRect.pas
     File ..\bin\Lib\PT4.pas
     File ..\bin\Lib\PT4Exam.pas
+    File ..\bin\Lib\PT4MakerNetX.pas
+    File ..\bin\Lib\xPT4MakerNetX.pas
+    File ..\bin\Lib\PT4TaskMakerNET.pas
+    File ..\bin\Lib\xPT4TaskMakerNET.pas
     File ..\bin\Lib\Robot.pas
     File ..\bin\Lib\RobotField.pas
     File ..\bin\Lib\RobotTaskMaker.pas
@@ -302,14 +325,12 @@
     File ..\bin\Lib\Timers.pas
     File ..\bin\Lib\Utils.pas
     File ..\bin\Lib\VCL.pas
-    File ..\bin\Lib\PT4TaskMakerNET.pas
     File ..\bin\Lib\RBDMUtils.pas
     File ..\bin\Lib\Collections.pas
     File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
     File ..\bin\Lib\OpenGL.pas
-    File ..\bin\Lib\PT4MakerNetX.pas
     File ..\bin\Lib\Speech.pas
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
@@ -329,11 +350,11 @@
     File ..\bin\Lib\XLSX.pas
     File ..\bin\Lib\Мозаика.pas
 
-	File ..\bin\Lib\__RedirectIOMode.vb
-	File ..\bin\Lib\VBSystem.vb
-	
-	;dobavljaem fajly v uninst.log
-	${AddFile} "__RedirectIOMode.pas"
+    File ..\bin\Lib\__RedirectIOMode.vb
+    File ..\bin\Lib\VBSystem.vb
+    
+    ;dobavljaem fajly v uninst.log
+    ${AddFile} "__RedirectIOMode.pas"
     ${AddFile} "__RunMode.pas"
     ${AddFile} "ABCButtons.pas"
     ${AddFile} "ABCHouse.pas"
@@ -369,21 +390,23 @@
     ${AddFile} "PointRect.pas"
     ${AddFile} "PT4.pas"
     ${AddFile} "PT4Exam.pas"
+    ${AddFile} "PT4MakerNetX.pas"
+    ${AddFile} "xPT4MakerNetX.pas"
+    ${AddFile} "PT4TaskMakerNET.pas"
+    ${AddFile} "xPT4TaskMakerNET.pas"
     ${AddFile} "Robot.pas"
     ${AddFile} "RobotField.pas"
     ${AddFile} "RobotTaskMaker.pas"
 ;    File ..\bin\Lib\RobotZadan.pas
     ${AddFile} "Sockets.pas"
-	${AddFile} "Timers.pas"
+    ${AddFile} "Timers.pas"
     ${AddFile} "Utils.pas"
     ${AddFile} "VCL.pas"
-    ${AddFile} "PT4TaskMakerNET.pas"
     ${AddFile} "RBDMUtils.pas"
     ${AddFile} "Collections.pas"
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
-    ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "Speech.pas"
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
@@ -404,13 +427,13 @@
     ${AddFile} "Мозаика.pas"
 
 
-	${AddFile} "__RedirectIOMode.vb"
+    ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
-	
+    
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN
-	Push "SyntaxVisitors.dll"
+    Push "SyntaxVisitors.dll"
     Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"

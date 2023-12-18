@@ -1292,6 +1292,59 @@ namespace PascalABCCompiler.TreeRealization
         }
     }
 
+    public class sizeof_operator_as_constant : constant_node, SemanticTree.ISizeOfOperatorAsConstant
+    {
+        private sizeof_operator _sizeof_operator;
+
+        public sizeof_operator sizeof_operator
+        {
+            get
+            {
+                return _sizeof_operator;
+            }
+            set
+            {
+                _sizeof_operator = value;
+            }
+        }
+
+        public sizeof_operator_as_constant(sizeof_operator sizeof_operator, location loc)
+            :
+            base(sizeof_operator.type, loc)
+        {
+            _sizeof_operator = sizeof_operator;
+        }
+
+        SemanticTree.ISizeOfOperator SemanticTree.ISizeOfOperatorAsConstant.SizeOfOperator
+        {
+            get
+            {
+                return _sizeof_operator;
+            }
+        }
+
+
+        /// <summary>
+        /// Метод для обхода дерева посетителем.
+        /// </summary>
+        /// <param name="visitor">Класс - посетитель дерева.</param>
+        public override void visit(SemanticTree.ISemanticVisitor visitor)
+        {
+            visitor.visit(this);
+        }
+
+        /// <summary>
+        /// Тип узла.
+        /// </summary>
+        public override semantic_node_type semantic_node_type
+        {
+            get
+            {
+                return semantic_node_type.sizeof_operator_as_constant;
+            }
+        }
+    }
+
     public class compiled_constructor_call_as_constant : constant_node, SemanticTree.ICompiledConstructorCallAsConstant
     {
         private compiled_constructor_call _method_call;

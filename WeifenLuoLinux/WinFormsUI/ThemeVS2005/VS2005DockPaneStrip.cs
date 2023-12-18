@@ -119,7 +119,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         private const int _DocumentTabGapTop = 3;
         private const int _DocumentTabGapLeft = 3;
         private const int _DocumentTabGapRight = 3;
-        private const int _DocumentIconGapBottom = 2;
+        private const int _DocumentIconGapBottom = 5;
         private const int _DocumentIconGapLeft = 8;
         private const int _DocumentIconGapRight = 0;
         private const int _DocumentIconHeight = 16;
@@ -307,14 +307,36 @@ namespace WeifenLuo.WinFormsUI.Docking
 
                 if (m_boldFont == null)
                 {
-                    m_font = TextFont;
-                    m_boldFont = new Font(TextFont, FontStyle.Bold);
+                    FontFamily validFontFamily = TextFont.FontFamily; // SSM 12/10/23
+                    foreach (FontFamily ff in FontFamily.Families)
+                    {
+                        if (ff.Name == TextFont.FontFamily.Name)
+                        {
+                            validFontFamily = ff;
+                            break;
+                        }
+                    }
+                    m_font = new Font(validFontFamily, TextFont.Size, FontStyle.Regular);
+
+                    //m_font = TextFont;
+                    m_boldFont = new Font(m_font, FontStyle.Bold);
                 }
                 else if (m_font != TextFont)
                 {
                     m_boldFont.Dispose();
-                    m_font = TextFont;
-                    m_boldFont = new Font(TextFont, FontStyle.Bold);
+
+                    FontFamily validFontFamily = TextFont.FontFamily; // SSM 12/10/23
+                    foreach (FontFamily ff in FontFamily.Families)
+                    {
+                        if (ff.Name == TextFont.FontFamily.Name)
+                        {
+                            validFontFamily = ff;
+                            break;
+                        }
+                    }
+                    m_font = new Font(validFontFamily, TextFont.Size, FontStyle.Regular);
+                    //m_font = TextFont;
+                    m_boldFont = new Font(m_font, FontStyle.Bold);
                 }
 
                 return m_boldFont;
@@ -1364,6 +1386,8 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
             else
                 rectText.Width = rect.Width - DocumentIconGapLeft - DocumentTextGapRight;
+
+            rectText.Height = rectText.Height + 4;
 
             Rectangle rectTab = DrawHelper.RtlTransform(this, rect);
             Rectangle rectBack = DrawHelper.RtlTransform(this, rect);

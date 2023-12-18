@@ -216,9 +216,6 @@ namespace VisualPascalABC.Utils
             RedirectIO=redirectIO;
 			process = new Process();
             string BatFile = null;
-#if (!DEBUG)
-			attachDebugger = false;
-#endif
 			process.StartInfo.ErrorDialog = false;
             if (RunWithPause && (BatFile = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath),"ProgrammRunner.exe")/*GenerateBatFileForRunWithPause(command, arguments)*/) != null)
             {
@@ -283,9 +280,15 @@ namespace VisualPascalABC.Utils
 			if (!attachDebugger || dbgFailed || fictive_attach)
             {
 				process.Start();
+
 				//ssyy
 				process.PriorityClass = ProcessPriorityClass.BelowNormal;
 				//\ssyy
+
+				if (fictive_attach)
+				{
+					WorkbenchServiceFactory.DebuggerManager.Attach((uint)process.Id, command, !fictive_attach, false);
+				}
 			}
 
 			if (redirectIO)

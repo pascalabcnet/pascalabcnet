@@ -224,7 +224,7 @@ namespace VisualPascalABC
                 catch
                 {
                 }
-                this.tbAppIcon.Text = Path.GetFileName(openFileDialog1.FileName);//PascalABCCompiler.Tools.RelativePathTo(ProjectFactory.Instance.CurrentProject.ProjectDirectory, openFileDialog1.FileName);
+                this.tbAppIcon.Text = Path.GetFileName(openFileDialog1.FileName);//PascalABCCompiler.Tools.RelativePathTo(ProjectFactory.Instance.CurrentProject.ProjectDirectory, openFileDialog1.file_name);
             }
         }
 

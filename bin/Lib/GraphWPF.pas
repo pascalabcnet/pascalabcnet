@@ -361,6 +361,10 @@ procedure FillRectangle(x,y,w,h: real; c: Color);
 procedure Arc(x, y, r, angle1, angle2: real);
 /// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
 procedure Arc(x, y, r, angle1, angle2: real; c: Color);
+/// Рисует дугу окружности с центром в точке p и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX
+procedure Arc(p: Point; r, angle1, angle2: real);
+/// Рисует дугу окружности с центром в точке p и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
+ procedure Arc(p: Point; r, angle1, angle2: real; c: Color);
 
 /// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX
 procedure Sector(x, y, r, angle1, angle2: real);
@@ -1528,6 +1532,8 @@ procedure FillRectangle(x,y,w,h: real; c: GColor) := InvokeVisual(FillRectangleP
 /// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
 procedure Arc(x, y, r, angle1, angle2: real) := InvokeVisual(ArcP,x, y, r, angle1, angle2);
 procedure Arc(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(ArcPC,x, y, r, angle1, angle2, c);
+procedure Arc(p: Point; r, angle1, angle2: real) := Arc(p.x, p.y, r, angle1, angle2);
+procedure Arc(p: Point; r, angle1, angle2: real; c: Color) := Arc(p.x, p.y, r, angle1, angle2, c);
 
 /// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
 procedure Sector(x, y, r, angle1, angle2: real) := InvokeVisual(SectorP,x, y, r, angle1, angle2);

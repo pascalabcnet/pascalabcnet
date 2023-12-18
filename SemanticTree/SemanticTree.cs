@@ -1711,6 +1711,16 @@ namespace PascalABCCompiler.SemanticTree
         }
     }
 
+    //Интерфейс для представления BigInteger констант.
+    public interface IBigIntConstantNode : IConstantNode
+    {
+        //Значение константы.
+        System.Numerics.BigInteger constant_value
+        {
+            get;
+        }
+    }
+
     //Интерфейс для представления unsigned int констант.
     public interface IUIntConstantNode : IConstantNode
     {
@@ -1886,6 +1896,14 @@ namespace PascalABCCompiler.SemanticTree
 			get;
 		}
 	}
+
+	public interface ISizeOfOperatorAsConstant : IConstantNode
+    {
+		ISizeOfOperator SizeOfOperator
+        {
+			get;
+        }
+    }
 
 	public interface ICompiledConstructorCallAsConstant : IConstantNode
     {

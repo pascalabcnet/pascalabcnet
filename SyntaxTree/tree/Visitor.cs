@@ -1564,6 +1564,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_lambda_any_type_node_syntax">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax);
+		///<summary>
+		///Method to visit ref_var_def_statement.
+		///</summary>
+		///<param name="_ref_var_def_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(ref_var_def_statement _ref_var_def_statement);
 	}
 
 

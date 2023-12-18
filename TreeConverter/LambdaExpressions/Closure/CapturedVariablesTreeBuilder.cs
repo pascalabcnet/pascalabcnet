@@ -216,7 +216,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.template_type ||
                 si.sym_info.semantic_node_type == semantic_node_type.ref_type_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.generic_indicator ||
-                si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
+                //si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.function_constant_definition || // SSM 03.11.18 bug fix #1449
                 si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && (idName == "exit" || idName == "continue" || idName == "break"))
             {
@@ -235,6 +235,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             // Добавил такое же переименование для статичесских полей класса. Теперь захват работает
             if ((si.sym_info.semantic_node_type == semantic_node_type.class_field || si.sym_info.semantic_node_type == semantic_node_type.common_method_node
                 || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node
+                || si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition
                 || si.sym_info.semantic_node_type == semantic_node_type.basic_property_node) && InLambdaContext)
             {
                 dot_node dn = null;
@@ -252,10 +253,16 @@ namespace TreeConverter.LambdaExpressions.Closure
                         return new ident(classNode.name);
                     }
                 };
+                
                 if (si.sym_info is class_field classField && classField.IsStatic)
                 {
                     dn = new dot_node(getClassIdent(classField.cont_type),
                         new ident(id.name, id.source_context), id.source_context);
+                }
+                else if (si.sym_info is class_constant_definition ccd)
+                {
+                    dn = new dot_node(getClassIdent(ccd.comperehensive_type),
+                       new ident(id.name, id.source_context), id.source_context);
                 }
                 else if (si.sym_info is common_method_node commonMethodNode && commonMethodNode.IsStatic)
                 {

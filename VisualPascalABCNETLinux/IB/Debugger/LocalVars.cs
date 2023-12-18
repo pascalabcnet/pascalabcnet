@@ -305,13 +305,20 @@ namespace VisualPascalABC
                                             (frame.DebuggerSession as Mono.Debugging.Soft.SoftDebuggerSession).GetType(t.FullName));
                         		types.Add(tr);
                         	}
-                            var valtr = new Mono.Debugging.Evaluation.TypeValueReference(frame.SourceBacktrace.GetEvaluationContext(frame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions),
+                            var tp = (frame.DebuggerSession as Mono.Debugging.Soft.SoftDebuggerSession).GetType(val.TypeName);
+                            if (tp != null)
+                            {
+                                var valtr = new Mono.Debugging.Evaluation.TypeValueReference(frame.SourceBacktrace.GetEvaluationContext(frame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions),
                                             (frame.DebuggerSession as Mono.Debugging.Soft.SoftDebuggerSession).GetType(val.TypeName));
-                            types.Add(valtr);
+                                types.Add(valtr);
+                            }
+                            
                         }
                         catch (System.Exception e)
                         {
+#if (DEBUG)
                             Console.WriteLine(e.Message + " " + e.StackTrace);
+#endif
                         }
                         
                         ret.Add(new ModuleItem(types, frame));
@@ -420,8 +427,10 @@ namespace VisualPascalABC
         Mono.Debugging.Client.ObjectValue monoValue;
 
 		public DebugType declaringType;
-		
-		public ValueItem() {}
+        public Mono.Debugger.Soft.TypeMirror monoDeclaringType;
+
+
+        public ValueItem() {}
         
         public override bool IsLiteral
         {
@@ -469,99 +478,27 @@ namespace VisualPascalABC
             [HandleProcessCorruptedStateExceptionsAttribute]
             get
             {
-                return 1;
-            	if (!(val is NamedValue)) return 1;
-            	if (imageIndex != -1) return imageIndex;
-            	if (declaringType == null) return 1;
-            	//Type declType = AssemblyHelper.GetType(declaringType.FullName);
-            	//if (declType == null) return 1;
-            	//System.Reflection.MemberInfo[] mis = declType.GetMembers(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic);//declType.GetMember(val.Name,System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic);
-            	IList<MemberInfo> mis = declaringType.GetMember((val is NamedValue)?(val as NamedValue).Name:name, BindingFlags.All);
-            	if (mis == null || mis.Count == 0)
-            	{
-                    try
+                if (monoValue != null)
+                {
+                    if (monoValue.HasFlag(Mono.Debugging.Client.ObjectValueFlags.Property))
                     {
-                        DebugType tmp = declaringType.BaseType;
-                        while ((mis == null || mis.Count == 0) && tmp != null)
-                        {
-                            mis = tmp.GetMember((val is NamedValue) ? (val as NamedValue).Name : name, BindingFlags.All);
-                            tmp = tmp.BaseType;
-                        }
+                        if (monoValue.HasFlag(Mono.Debugging.Client.ObjectValueFlags.Private))
+                            return CodeCompletionProvider.ImagesProvider.IconNumberPrivateProperty;
+                        if (monoValue.HasFlag(Mono.Debugging.Client.ObjectValueFlags.Protected))
+                            return CodeCompletionProvider.ImagesProvider.IconNumberProtectedProperty;
+                        return CodeCompletionProvider.ImagesProvider.IconNumberProperty;
                     }
-                    catch (System.Exception e)
+                    else if (monoValue.HasFlag(Mono.Debugging.Client.ObjectValueFlags.Field))
                     {
+                        if (monoValue.HasFlag(Mono.Debugging.Client.ObjectValueFlags.Private))
+                            return CodeCompletionProvider.ImagesProvider.IconNumberPrivateField;
+                        if (monoValue.HasFlag(Mono.Debugging.Client.ObjectValueFlags.Protected))
+                            return CodeCompletionProvider.ImagesProvider.IconNumberProtectedField;
+                        return CodeCompletionProvider.ImagesProvider.IconNumberField;
+                    }
+                }
 
-                    }
-            	}
-            	if (mis == null || mis.Count == 0)
-                {
-                	
-            		if (val.IsObject || val.Type.IsByRef() && !val.IsPrimitive)
-                	{
-                    	imageIndex = -1;
-                		return 1; // Class
-                	}
-                	else
-                	{
-                    	imageIndex = 1;
-                		return 1; // Field
-                	}
-                }
-                else
-                {
-                	if (mis[0] is FieldInfo)
-                	{
-                		FieldInfo fi = mis[0] as FieldInfo;
-                		if (fi.IsPrivate)
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberPrivateField;
-                		}
-                		else
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberField;
-                		}
-                		/*else if (fi.IsFamily || fi.IsFamilyAndAssembly)
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberProtectedField;
-                		}
-                		else if (fi.IsAssembly || fi.IsFamilyOrAssembly)
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberInternalField;
-                		}
-                		else if (fi.IsPrivate)
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberPrivateField;
-                		}*/
-                	}
-                	else if (mis[0] is PropertyInfo)
-                	{
-                		MethodInfo fi = (mis[0] as PropertyInfo).GetGetMethod();
-                		if (fi == null) return -1;
-                		if (fi.IsPrivate)
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberPrivateProperty;
-                		}
-                		else
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberProperty;
-                		}
-                		/*else if (fi.IsFamily || fi.IsFamilyAndAssembly)
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberProtectedProperty;
-                		}
-                		else if (fi.IsAssembly || fi.IsFamilyOrAssembly)
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberInternalProperty;
-                		}
-                		else if (fi.IsPrivate)
-                		{
-                			imageIndex = CodeCompletionProvider.ImagesProvider.IconNumberPrivateProperty;
-                		}*/
-                	}
-                	return imageIndex;
-                }
-                
-                //return 1;
+                return 1;
             }
         }
         
@@ -575,12 +512,9 @@ namespace VisualPascalABC
                 {
                     if (monoValue.Name.IndexOf(':') != -1)
                         return monoValue.Name.Substring(0, monoValue.Name.IndexOf(':'));
+                    if (monoValue.Name.StartsWith("$rv_"))
+                        return "Result";
                     return monoValue.Name;
-                    if (!string.IsNullOrEmpty(name))
-                        return name;
-                    if (!((val is NamedValue) ? (val as NamedValue).Name : name).Contains("$rv"))
-                        return (val is NamedValue) ? ((val as NamedValue).Name.IndexOf(':') != -1 ? (val as NamedValue).Name.Substring(0, (val as NamedValue).Name.IndexOf(':')) : (val as NamedValue).Name) : name;
-                    return "Result";
                 }
                 catch
                 {
@@ -736,17 +670,6 @@ namespace VisualPascalABC
             get
             {
                 return false;
-            	try
-            	{
-            		if (!failed)
-            			return val.IsInteger && !ShowValuesInHexadecimal || val.IsPrimitive;
-            		else 
-            			return false;
-            	}
-            	catch
-            	{
-            		return false;
-            	}
             }
         }
 
@@ -805,8 +728,34 @@ namespace VisualPascalABC
 
                 List<IListItem> list = new List<IListItem>();
                
-                if (monoValue.IsObject)
+                if (monoValue != null && monoValue.IsObject)
                 {
+                    if (monoValue.TypeName.IndexOf("System.Collections.Generic.") != -1)
+                    {
+                        var tm = monoValue.Type as Mono.Debugger.Soft.TypeMirror;
+                        if (tm == null)
+                            return list;
+                        var fields = tm.GetFields();
+                        var tr = new Mono.Debugging.Evaluation.TypeValueReference(VisualPascalABC.WorkbenchServiceFactory.DebuggerManager.StackFrame.SourceBacktrace.GetEvaluationContext(VisualPascalABC.WorkbenchServiceFactory.DebuggerManager.StackFrame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), tm);
+                        foreach (var fi in fields)
+                        {
+                            try
+                            {
+                                var valref = tr.GetChild(fi.Name, Mono.Debugging.Client.EvaluationOptions.DefaultOptions);
+                                
+                                list.Add(new ValueItem(valref.CreateObjectValue(false)));
+                            }
+                            catch (System.Exception ex)
+                            {
+#if (DEBUG)
+                                Console.WriteLine(ex.Message+" "+ex.StackTrace);
+#endif
+                            }
+                            
+                        }
+                        return list;
+                    }
+
                     foreach (var element in monoValue.GetAllChildren())
                     {
                         list.Add(new ValueItem(element));
@@ -889,7 +838,15 @@ namespace VisualPascalABC
         	this.name = name;
         	val.Changed += delegate { OnChanged(new ListItemEventArgs(this)); };
         }
-        
+
+        public ValueItem(Mono.Debugging.Client.ObjectValue val, string name, Mono.Debugger.Soft.TypeMirror declaringType)
+        {
+            this.monoValue = val;
+            this.monoDeclaringType = declaringType;
+            this.name = name;
+            val.ValueChanged += delegate { OnChanged(new ListItemEventArgs(this)); };
+        }
+
         public ValueItem(Value val, string name, DebugType declaringType, bool is_in_collect)
         {
         	this.val = val;
@@ -919,6 +876,7 @@ namespace VisualPascalABC
         public ValueItem(Mono.Debugging.Client.ObjectValue val)
         {
             this.monoValue = val;
+            val.ValueChanged += delegate { OnChanged(new ListItemEventArgs(this)); };
         }
 
         [HandleProcessCorruptedStateExceptionsAttribute]
@@ -1049,7 +1007,7 @@ namespace VisualPascalABC
         {
             get
             {
-            	return monoType.Name;
+            	return Mono.Debugging.Client.ObjectValue.GetPascalTypeName(monoType.Name);
             }
         }
 		
@@ -1132,7 +1090,9 @@ namespace VisualPascalABC
                 }
                 catch (System.Exception e)
                 {
-
+#if (DEBUG)
+                    Console.WriteLine(e.Message+" "+e.StackTrace);
+#endif
                 }
             }
             System.Reflection.BindingFlags bf = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static;

@@ -1,13 +1,14 @@
-﻿/// Конструктор для электронного задачника Programming Taskbook 4.14
+/// Конструктор для электронного задачника Programming Taskbook 4.23
+
 unit PT4TaskMakerNET;
 
 //------------------------------------------------------------------------------
-// Конструктор для электронного задачника Programming Taskbook 4.14
+// Конструктор для электронного задачника Programming Taskbook 4.23
 //------------------------------------------------------------------------------
 // Модуль для создания NET-библиотек с группами заданий в системе PascalABC.NET
 //
-// Copyright (c) 2013-2015 М.Э.Абрамян
-// Электронный задачник Programming Taskbook Copyright (c) М.Э.Абрамян,1998-2015
+// Copyright (c) 2013-2023 М.Э.Абрамян
+// Электронный задачник Programming Taskbook Copyright (c) М.Э.Абрамян,1998-2023
 //------------------------------------------------------------------------------
 
 
@@ -38,9 +39,12 @@ const
   lgJava         = $0010000; // добавлено в версии 4.11
   lgRuby         = $0020000; // добавлено в версии 4.12
   lgWithPointers = $000003D;
-  lgWithObjects  = $00FFF80; // добавлено в версии 4.11
+  lgWithObjects  = $0FFFF80; // изменено в версии 4.22
   lgNET          = $000FF00;
   lgAll          = $0FFFFFF; // изменено в версии 4.10
+  lgFS           = $0000800; // добавлено в версии 4.19
+  lgJulia        = $0040000; // добавлено в версии 4.22
+  lgC            = $0000008; // добавлено в версии 4.23
 
 type
 
@@ -67,8 +71,12 @@ procedure CreateGroup(GroupName, GroupDescription, GroupAuthor, GroupKey: string
 /// Добавляет к создаваемой группе задание из другой группы
 procedure UseTask(GroupName: string; TaskNumber: integer);
 
+/// Добавляет к создаваемой группе задание из другой группы
+procedure UseTask(GroupName: string; TaskNumber: integer; TopicDescription: string); // добавлено в версии 4.19
+
 /// Должна указываться первой при определении нового задания
 procedure CreateTask(SubgroupName: string); overload;
+
 
 /// Должна указываться первой при определении нового задания
 procedure CreateTask; overload;
@@ -253,12 +261,12 @@ procedure SetTestCount(N: integer);
 /// надо указывать B пробелов (элементы нумеруются от 1)
 function Center(I, N, W, B: integer): integer;
 
-/// Возвращает псевдослучайное целое число, лежащее
+/// Возвращает случайное целое число, лежащее
 /// в диапазоне от M до N включительно. Если указанный
 /// диапазон пуст, то возвращает M.
 function RandomN(M, N: integer): integer; // добавлено в версии 4.11
 
-/// Возвращает псевдослучайное вещественное число, лежащее
+/// Возвращает случайное вещественное число, лежащее
 /// на полуинтервале [A, B). Если указанный полуинтервал
 /// пуст, то возвращает A.
 function RandomR(A, B: real): real; // добавлено в версии 4.11
@@ -421,7 +429,7 @@ procedure SetProcess(ProcessRank: integer);
 
 implementation
 
-uses System.Runtime.InteropServices;
+uses System.Runtime.InteropServices, System.Text;
 
 function LoadLibrary(FileName: string): integer;
   external 'kernel32.dll' Name 'LoadLibrary';
@@ -444,25 +452,26 @@ type
   TSFunc = function : string;
   TSFuncN = function (N: integer): string;
   TProc = procedure;
-  TProcS = procedure (S: string);
-  TProcSCN2 = procedure (S: string; C: Char; N1, N2: integer);
-  TProcSN = procedure (S: string; N: integer); 
-  TProcSN2 = procedure (S: string; N1, N2: integer);
-  TProcSN3 = procedure (S: string; N1, N2, N3: integer);
-  TProcSN4 = procedure (S: string; N1, N2, N3, N4: integer);
-  TProcSN5 = procedure (S: string; N1, N2, N3, N4, N5: integer);
-  TProcSN6 = procedure (S: string; N1, N2, N3, N4, N5, N6: integer);
-  TProcSRN3 = procedure (S: string; R: real; N1, N2, N3: integer);
-  TProcSR2N3 = procedure (S: string; R1, R2: real; N1, N2, N3: integer);
-  TProcSR3N3 = procedure (S: string; R1, R2, R3: real; N1, N2, N3: integer);
-  TProcS2 = procedure (S1, S2: string);
-  TProcS2N2 = procedure (S1, S2: string; N1, N2: integer);
-  TProcS4NP = procedure (S1, S2, S3, S4: string; N: integer; P: TInitTaskProc);
+  TProcS = procedure (S: array of byte);
+  TProcSCN2 = procedure (S: array of byte; C: Char; N1, N2: integer);
+  TProcSN = procedure (S: array of byte; N: integer); 
+  TProcSN2 = procedure (S: array of byte; N1, N2: integer);
+  TProcSN3 = procedure (S: array of byte; N1, N2, N3: integer);
+  TProcSN4 = procedure (S: array of byte; N1, N2, N3, N4: integer);
+  TProcSN5 = procedure (S: array of byte; N1, N2, N3, N4, N5: integer);
+  TProcSN6 = procedure (S: array of byte; N1, N2, N3, N4, N5, N6: integer);
+  TProcSRN3 = procedure (S: array of byte; R: real; N1, N2, N3: integer);
+  TProcSR2N3 = procedure (S: array of byte; R1, R2: real; N1, N2, N3: integer);
+  TProcSR3N3 = procedure (S: array of byte; R1, R2, R3: real; N1, N2, N3: integer);
+  TProcS2 = procedure (S1, S2: array of byte);
+  TProcS2N2 = procedure (S1, S2: array of byte; N1, N2: integer);
+  TProcS4NP = procedure (S1, S2, S3, S4: array of byte; N: integer; P: TInitTaskProc);
   TProcN = procedure (N: integer);
   TProcNP = procedure (N: integer; P: pointer);
   TProcN3 = procedure (N1, N2, N3: integer);
   TProcN4 = procedure (N1, N2, N3, N4: integer);
-  TProcSvN = procedure (S: string; var N: integer);
+  TProcSvN = procedure (S: array of byte; var N: integer);
+  TProcSNS = procedure (S1: array of byte; N: integer; S2: array of byte);
 
 var
   creategroup_: TProcS4NP;
@@ -502,8 +511,16 @@ var
   setprocess_: TProcN;
   currentversion_: TSFunc; // добавлено в версии 4.10
   currenttest_: TNFunc; // добавлено в версии 4.11
+  usetaskex_: TProcSNS; // добавлено в версии 4.19
 
   FHandle: integer;
+
+function ToBytes(s: string): array of byte;
+begin
+  var utf8 := Encoding.Unicode;
+  var ansi := Encoding.GetEncoding(1251);
+  result := Encoding.Convert(utf8, ansi, utf8.GetBytes(S));
+end;
 
 procedure ActivateNET(S: string);
 begin
@@ -581,6 +598,8 @@ begin
   setprocess_ := TProcN(Marshal.GetDelegateForFunctionPointer(GetProcAddress(FHandle, 'setprocess'), typeof(TProcN)));
   currentversion_ := TSFunc(Marshal.GetDelegateForFunctionPointer(GetProcAddress(FHandle, 'currentversion'), typeof(TSFunc))); // добавлено в версии 4.10
   currenttest_ := TNFunc(Marshal.GetDelegateForFunctionPointer(GetProcAddress(FHandle, 'curt'), typeof(TNFunc))); // добавлено в версии 4.11
+  usetaskex_ := TProcSNS(Marshal.GetDelegateForFunctionPointer(GetProcAddress(FHandle, 'usetaskex'), typeof(TProcSNS))); // добавлено в версии 4.19
+
 end;
 
 //=============================================================================
@@ -591,24 +610,41 @@ procedure CreateGroup(GroupName, GroupDescription, GroupAuthor, GroupKey: string
   TaskCount: integer; InitTaskProc: TInitTaskProc);
 begin
   p := InitTaskProc;
-  creategroup_(GroupName, GroupDescription, GroupAuthor,
-    GroupKey, TaskCount, p);
+  creategroup_(ToBytes(GroupName), ToBytes(GroupDescription), ToBytes(GroupAuthor),
+    ToBytes(GroupKey), TaskCount, p);
 end;
 
 procedure UseTask(GroupName: string; TaskNumber: integer);
 begin
-  usetask_(GroupName, TaskNumber);
+  usetask_(ToBytes(GroupName), TaskNumber);
+end;
+
+procedure UseTask(GroupName: string; TaskNumber: integer; TopicDescription: string);
+begin
+  if usetaskex_ <> nil then
+    usetaskex_(ToBytes(GroupName), TaskNumber, ToBytes(TopicDescription))
+  else  
+    usetask_(ToBytes(GroupName), TaskNumber);
 end;
 
 procedure CreateTask(SubgroupName: string);
 begin
-  createtask_(SubgroupName);
+  createtask_(ToBytes(SubgroupName));
 end;
 
 procedure CreateTask;
 begin
   CreateTask('');
 end;
+
+
+
+
+
+
+
+
+
 
 function CurrentLanguage: integer;
 begin
@@ -622,7 +658,7 @@ end;
 
 procedure TaskText(S: string; X, Y: integer);
 begin
-  tasktext_(S, X, Y);
+  tasktext_(ToBytes(S), X, Y);
 end;
 
 procedure TaskText(S: string);
@@ -666,18 +702,18 @@ begin
   end;
   case n of
   0: ;
-  1: tasktext_(Copy(S, p1[1], p2[1]), 0, 3);
+  1: tasktext(Copy(S, p1[1], p2[1]), 0, 3);
   2: for i := 1 to n do
-       tasktext_(Copy(S, p1[i], p2[i]), 0, 2*i);
+       tasktext(Copy(S, p1[i], p2[i]), 0, 2*i);
   3, 4:
      for i := 1 to n do
-       tasktext_(Copy(S, p1[i], p2[i]), 0, i+1);
+       tasktext(Copy(S, p1[i], p2[i]), 0, i+1);
   else
      begin
        for i := 1 to 5 do
-         tasktext_(Copy(S, p1[i], p2[i]), 0, i);
+         tasktext(Copy(S, p1[i], p2[i]), 0, i);
        for i := 6 to n do
-         tasktext_(Copy(S, p1[i], p2[i]), 0, 0);
+         tasktext(Copy(S, p1[i], p2[i]), 0, 0);
      end;
   end;
 end;
@@ -692,212 +728,212 @@ end;
 
 procedure DataB (Cmt: string; B: boolean; X, Y: integer);
 begin
-  datab_(Cmt, BtoN(B), X, Y);
+  datab_(ToBytes(Cmt), BtoN(B), X, Y);
 end;
 
 procedure DataB (B: boolean; X, Y: integer);
 begin
-  datab_('', BtoN(B), X, Y);
+  datab_(ToBytes(''), BtoN(B), X, Y);
 end;
 
 procedure DataN (Cmt: string; N: integer; X, Y, W: integer);
 begin
-  datan_(Cmt, N, X, Y, W);
+  datan_(ToBytes(Cmt), N, X, Y, W);
 end;
 
 procedure DataN (N: integer; X, Y, W: integer);
 begin
-  datan_('', N, X, Y, W);
+  datan_(ToBytes(''), N, X, Y, W);
 end;
 
 procedure DataN2(Cmt: string; N1, N2: integer; X, Y, W: integer);
 begin
-  datan2_(Cmt, N1, N2,  X, Y, W);
+  datan2_(ToBytes(Cmt), N1, N2,  X, Y, W);
 end;
 
 procedure DataN2(N1, N2: integer; X, Y, W: integer);
 begin
-  datan2_('', N1, N2,  X, Y, W);
+  datan2_(ToBytes(''), N1, N2,  X, Y, W);
 end;
 
 procedure DataN3(Cmt: string; N1, N2, N3: integer; X, Y, W: integer);
 begin
-  datan3_(Cmt, N1, N2, N3, X, Y, W);
+  datan3_(ToBytes(Cmt), N1, N2, N3, X, Y, W);
 end;
 
 procedure DataN3(N1, N2, N3: integer; X, Y, W: integer);
 begin
-  datan3_('', N1, N2, N3, X, Y, W);
+  datan3_(ToBytes(''), N1, N2, N3, X, Y, W);
 end;
 
 procedure DataR(Cmt: string; R: real; X, Y, W: integer);
 begin
-  datar_(Cmt, R, X, Y, W);
+  datar_(ToBytes(Cmt), R, X, Y, W);
 end;
 
 procedure DataR(R: real; X, Y, W: integer);
 begin
-  datar_('', R, X, Y, W);
+  datar_(ToBytes(''), R, X, Y, W);
 end;
 
 procedure DataR2(Cmt: string; R1, R2: real; X, Y, W: integer);
 begin
-  datar2_(Cmt, R1, R2, X, Y, W);
+  datar2_(ToBytes(Cmt), R1, R2, X, Y, W);
 end;
 
 procedure DataR2(R1, R2: real; X, Y, W: integer);
 begin
-  datar2_('', R1, R2, X, Y, W);
+  datar2_(ToBytes(''), R1, R2, X, Y, W);
 end;
 
 procedure DataR3(Cmt: string; R1, R2, R3: real; X, Y, W: integer);
 begin
-  datar3_(Cmt, R1, R2, R3, X, Y, W);
+  datar3_(ToBytes(Cmt), R1, R2, R3, X, Y, W);
 end;
 
 procedure DataR3(R1, R2, R3: real; X, Y, W: integer);
 begin
-  datar3_('', R1, R2, R3, X, Y, W);
+  datar3_(ToBytes(''), R1, R2, R3, X, Y, W);
 end;
 
 procedure DataC(Cmt: string; C: char; X, Y: integer);
 begin
-  datac_(Cmt, C, X, Y);
+  datac_(ToBytes(Cmt), C, X, Y);
 end;
 
 procedure DataC(C: char; X, Y: integer);
 begin
-  datac_('', C, X, Y);
+  datac_(ToBytes(''), C, X, Y);
 end;
 
 procedure DataS(Cmt: string; S: string; X, Y: integer);
 begin
-  datas_(Cmt, S, X, Y);
+  datas_(ToBytes(Cmt), ToBytes(S), X, Y);
 end;
 
 procedure DataS(S: string; X, Y: integer);
 begin
-  datas_('', S, X, Y);
+  datas_(ToBytes(''), ToBytes(S), X, Y);
 end;
 
 procedure DataP(Cmt: string; NP: integer; X, Y: integer);
 begin
-  datap_ (Cmt, NP, X, Y);
+  datap_ (ToBytes(Cmt), NP, X, Y);
 end;
 
 procedure DataP(NP: integer; X, Y: integer);
 begin
-  datap_ ('', NP, X, Y);
+  datap_ (ToBytes(''), NP, X, Y);
 end;
 
 procedure DataComment(Cmt: string; X, Y: integer);
 begin
-  datacomment_(Cmt, X, Y);
+  datacomment_(ToBytes(Cmt), X, Y);
 end;
 
 procedure ResultB(Cmt: string; B: boolean; X, Y: integer);
 begin
-  resultb_(Cmt, BtoN(B), X, Y);
+  resultb_(ToBytes(Cmt), BtoN(B), X, Y);
 end;
 
 procedure ResultB(B: boolean; X, Y: integer);
 begin
-  resultb_('', BtoN(B), X, Y);
+  resultb_(ToBytes(''), BtoN(B), X, Y);
 end;
 
 procedure ResultN(Cmt: string; N: integer; X, Y, W: integer);
 begin
-  resultn_(Cmt, N, X, Y, W);
+  resultn_(ToBytes(Cmt), N, X, Y, W);
 end;
 
 procedure ResultN(N: integer; X, Y, W: integer);
 begin
-  resultn_('', N, X, Y, W);
+  resultn_(ToBytes(''), N, X, Y, W);
 end;
 
 procedure ResultN2(Cmt: string; N1, N2: integer; X, Y, W: integer);
 begin
-  resultn2_(Cmt, N1, N2, X, Y, W);
+  resultn2_(ToBytes(Cmt), N1, N2, X, Y, W);
 end;
 
 procedure ResultN2(N1, N2: integer; X, Y, W: integer);
 begin
-  resultn2_('', N1, N2, X, Y, W);
+  resultn2_(ToBytes(''), N1, N2, X, Y, W);
 end;
 
 procedure ResultN3(Cmt: string; N1, N2, N3: integer; X, Y, W: integer);
 begin
-  resultn3_(Cmt, N1, N2, N3, X, Y, W);
+  resultn3_(ToBytes(Cmt), N1, N2, N3, X, Y, W);
 end;
 
 procedure ResultN3(N1, N2, N3: integer; X, Y, W: integer);
 begin
-  resultn3_('', N1, N2, N3, X, Y, W);
+  resultn3_(ToBytes(''), N1, N2, N3, X, Y, W);
 end;
 
 procedure ResultR(Cmt: string; R: real; X, Y, W: integer);
 begin
-  resultr_(Cmt, R, X, Y, W);
+  resultr_(ToBytes(Cmt), R, X, Y, W);
 end;
 
 procedure ResultR(R: real; X, Y, W: integer);
 begin
-  resultr_('', R, X, Y, W);
+  resultr_(ToBytes(''), R, X, Y, W);
 end;
 
 procedure ResultR2(Cmt: string; R1, R2: real; X, Y, W: integer);
 begin
-  resultr2_(Cmt, R1, R2, X, Y, W);
+  resultr2_(ToBytes(Cmt), R1, R2, X, Y, W);
 end;
 
 procedure ResultR2(R1, R2: real; X, Y, W: integer);
 begin
-  resultr2_('', R1, R2, X, Y, W);
+  resultr2_(ToBytes(''), R1, R2, X, Y, W);
 end;
 
 procedure ResultR3(Cmt: string; R1, R2, R3: real; X, Y, W: integer);
 begin
-  resultr3_(Cmt, R1, R2, R3, X, Y, W);
+  resultr3_(ToBytes(Cmt), R1, R2, R3, X, Y, W);
 end;
 
 procedure ResultR3(R1, R2, R3: real; X, Y, W: integer);
 begin
-  resultr3_('', R1, R2, R3, X, Y, W);
+  resultr3_(ToBytes(''), R1, R2, R3, X, Y, W);
 end;
 
 procedure ResultC(Cmt: string; C: char; X, Y: integer);
 begin
-  resultc_(Cmt, C, X, Y);
+  resultc_(ToBytes(Cmt), C, X, Y);
 end;
 
 procedure ResultC(C: char; X, Y: integer);
 begin
-  resultc_('', C, X, Y);
+  resultc_(ToBytes(''), C, X, Y);
 end;
 
 procedure ResultS(Cmt: string; S: string; X, Y: integer);
 begin
-  results_(Cmt, S, X, Y);
+  results_(ToBytes(Cmt), ToBytes(S), X, Y);
 end;
 
 procedure ResultS(S: string; X, Y: integer);
 begin
-  results_('', S, X, Y);
+  results_(ToBytes(''), ToBytes(S), X, Y);
 end;
 
 procedure ResultP(Cmt: string; NP: integer; X, Y: integer);
 begin
-  resultp_(Cmt, NP, X, Y);
+  resultp_(ToBytes(Cmt), NP, X, Y);
 end;
 
 procedure ResultP(NP: integer; X, Y: integer);
 begin
-  resultp_('', NP, X, Y);
+  resultp_(ToBytes(''), NP, X, Y);
 end;
 
 procedure ResultComment(Cmt: string; X, Y: integer);
 begin
-  resultcomment_(Cmt, X, Y);
+  resultcomment_(ToBytes(Cmt), X, Y);
 end;
 
 procedure SetPrecision(N: integer);
@@ -922,52 +958,52 @@ end;
 
 procedure DataFileN(FileName: string; Y, W: integer);
 begin
-  datafilen_(FileName, Y, W);
+  datafilen_(ToBytes(FileName), Y, W);
 end;
 
 procedure DataFileR(FileName: string; Y, W: integer);
 begin
-  datafiler_(FileName, Y, W);
+  datafiler_(ToBytes(FileName), Y, W);
 end;
 
 procedure DataFileC(FileName: string; Y, W: integer);
 begin
-  datafilec_(FileName, Y, W);
+  datafilec_(ToBytes(FileName), Y, W);
 end;
 
 procedure DataFileS(FileName: string; Y, W: integer);
 begin
-  datafiles_(FileName, Y, W);
+  datafiles_(ToBytes(FileName), Y, W);
 end;
 
 procedure DataFileT(FileName: string; Y1, Y2: integer);
 begin
-  datafilet_(FileName, Y1, Y2);
+  datafilet_(ToBytes(FileName), Y1, Y2);
 end;
 
 procedure ResultFileN(FileName: string; Y, W: integer);
 begin
-  resultfilen_(FileName, Y, W);
+  resultfilen_(ToBytes(FileName), Y, W);
 end;
 
 procedure ResultFileR(FileName: string; Y, W: integer);
 begin
-  resultfiler_(FileName, Y, W);
+  resultfiler_(ToBytes(FileName), Y, W);
 end;
 
 procedure ResultFileC(FileName: string; Y, W: integer);
 begin
-  resultfilec_(FileName, Y, W);
+  resultfilec_(ToBytes(FileName), Y, W);
 end;
 
 procedure ResultFileS(FileName: string; Y, W: integer);
 begin
-  resultfiles_(FileName, Y, W);
+  resultfiles_(ToBytes(FileName), Y, W);
 end;
 
 procedure ResultFileT(FileName: string; Y1, Y2: integer);
 begin
-  resultfilet_(FileName, Y1, Y2);
+  resultfilet_(ToBytes(FileName), Y1, Y2);
 end;
 
 procedure SetPointer(NP: integer; P: PNode);
@@ -1082,12 +1118,12 @@ end;
 
 procedure CommentText(S: string);
 begin
-  commenttext_(S);
+  commenttext_(ToBytes(S));
 end;
 
 procedure UseComment(GroupName, SubgroupName: string);
 begin
-  usecomment_(GroupName, SubgroupName);
+  usecomment_(ToBytes(GroupName), ToBytes(SubgroupName));
 end;
 
 procedure UseComment(GroupName: string);
@@ -1097,7 +1133,7 @@ end;
 
 procedure Subgroup(SubgroupName: string);
 begin
-  subgroup_(SubgroupName);
+  subgroup_(ToBytes(SubgroupName));
 end;
 
 procedure SetObjectStyle;
@@ -1123,7 +1159,7 @@ end;
 procedure CreateTask(SubgroupName: string; var ProcessCount: integer);
 begin
   if createtask2_ <> nil then
-    createtask2_(SubgroupName, ProcessCount)
+    createtask2_(ToBytes(SubgroupName), ProcessCount)
   else
     ShowError('The CreateTask procedure with ProcessCount parameter', '4.9');
 end;
@@ -1166,10 +1202,6 @@ begin
   if A < B then
     result := Random * (B-A) + A;
 end;
-
-
-
-
 
 initialization
 

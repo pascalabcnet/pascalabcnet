@@ -111,6 +111,8 @@
 		<Key word = "where" />
 		<Key word = "match" />
 		<Key word = "when" />
+		<Key word = "async" />
+		<Key word = "await" />
 	 </KeyWords> 
 
 	 

@@ -15,6 +15,8 @@ namespace VisualPascalABC
         public static string GetTextFromClipboard()
         {
             IDataObject dataObject = Clipboard.GetDataObject();
+            if (dataObject == null)
+                return "";
             if (dataObject.GetDataPresent(DataFormats.Text))
             {
                 // Yes it is, so display it in a text box.

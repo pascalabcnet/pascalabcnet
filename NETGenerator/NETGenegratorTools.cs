@@ -50,6 +50,7 @@ namespace PascalABCCompiler.NETGenerator
         public static Type ValueType = typeof(ValueType);
         public static Type IEnumerableType = typeof(System.Collections.IEnumerable);
         public static Type IEnumeratorType = typeof(System.Collections.IEnumerator);
+        public static Type IDisposableType = typeof(IDisposable);
         public static Type IEnumerableGenericType = typeof(System.Collections.Generic.IEnumerable<>);
         public static Type IEnumeratorGenericType = typeof(System.Collections.Generic.IEnumerator<>);
 

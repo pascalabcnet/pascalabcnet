@@ -465,8 +465,8 @@ namespace VisualPascalABC
             clicked_stop_debug_in_menu = false;
             this.mDEBUGENDToolStripMenuItem.Enabled = false;
             //Data fileInfo = debuggedPage.ag as CodeFileDocumentControl;
-            //debuggedPage.Text = Path.GetFileName(fileInfo.FileName);
-            //debuggedPage.ToolTipText = fileInfo.FileName;
+            //debuggedPage.Text = Path.GetFileName(fileInfo.file_name);
+            //debuggedPage.ToolTipText = fileInfo.file_name;
             SetTabPageText(debuggedPage);
             ChangeDebugButtons(false);
             SaveDebugContext();
@@ -643,9 +643,13 @@ namespace VisualPascalABC
                 {
                     if (!BottomTabsVisible)
                         BottomTabsVisible = true;
+                    //BPanel_Resize(null, EventArgs.Empty);
+                    BottomDockPanel.Size = new System.Drawing.Size(1920, 1080);
                     if (DebugWatchListWindow != null)
                         ShowContent(DebugWatchListWindow, false);
                     ShowContent(DebugVariablesListWindow, false);
+                    this.Width = this.Width + 1;
+                    this.Width = this.Width - 1;
                 }
             }
             else

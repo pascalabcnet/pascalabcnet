@@ -1791,7 +1791,7 @@ namespace VisualPascalABC
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("value", "Use string.Empty instead of null!");
+                    value = "";
                 if (text != value)
                 {
                     text = value;

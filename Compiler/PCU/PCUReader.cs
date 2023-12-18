@@ -259,7 +259,7 @@ namespace PascalABCCompiler.PCU
                 PCUReader pr = (PCUReader)units[FileName];
                 if (pr != null) return pr.unit;
                 if (!File.Exists(FileName)) return null;
-                //fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+                //fs = new FileStream(file_name, FileMode.Open, FileAccess.Read);
                 ms = new MemoryStream(File.ReadAllBytes(FileName));
                 br = new BinaryReader(ms);
                 ReadPCUHeader();
@@ -274,7 +274,7 @@ namespace PascalABCCompiler.PCU
                     CloseUnit();
                     this.unit = null;
                     need = true;
-                    return null; // return comp.RecompileUnit(FileName);
+                    return null; // return comp.RecompileUnit(file_name);
                 }
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
                 cun.scope = new WrappedUnitInterfaceScope(this);
@@ -369,7 +369,7 @@ namespace PascalABCCompiler.PCU
                     {
                         var sub_u = pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo);
                         if (sub_u == null) return true;
-                        this.unit.DirectInterfaceCompilationUnits.Add(sub_u.SemanticTree, sub_u);
+                        this.unit.InterfaceUsedDirectUnits.Add(sub_u.SemanticTree, sub_u);
                         this.unit.InterfaceUsedUnits.AddElement(sub_u.SemanticTree, pcu_file.incl_modules[i]);
                     }
                 }
@@ -783,7 +783,7 @@ namespace PascalABCCompiler.PCU
                 t = NetHelper.NetHelper.FindTypeOrCreate(type_name);
             if (t == null || type_name.IndexOf('.') == -1)
             {
-                ts.name = type_name;
+                ts.name = type_name.Remove(0, type_name.LastIndexOf('.') + 1);
                 return ts;
             }
             Type[] template_types = new Type[pcu_file.dotnet_names[off].addit.Length];
@@ -3498,6 +3498,11 @@ namespace PascalABCCompiler.PCU
             return new default_operator_node_as_constant(CreateDefaultOperator(), null);
         }
 
+        private sizeof_operator_as_constant CreateSizeOfOperatorAsConstant()
+        {
+            return new sizeof_operator_as_constant(CreateSizeOfOperator(), null);
+        }
+
         private expression_node CreateExpression(semantic_node_type snt)
 		{
             //location loc = ReadDebugInfo();
@@ -3528,6 +3533,8 @@ namespace PascalABCCompiler.PCU
                     return CreateCompiledConstructorCallAsConstant();
                 case semantic_node_type.default_operator_node_as_constant:
                     return CreateDefaultOperatorAsConstant();
+                case semantic_node_type.sizeof_operator_as_constant:
+                    return CreateSizeOfOperatorAsConstant();
                 case semantic_node_type.array_const:
                     return CreateArrayConst();
                 case semantic_node_type.record_const:

@@ -540,6 +540,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new expression_with_let();
 				case 259:
 					return new lambda_any_type_node_syntax();
+				case 260:
+					return new ref_var_def_statement();
 			}
 			return null;
 		}
@@ -4530,6 +4532,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_lambda_any_type_node_syntax(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
 		{
 			read_expression(_lambda_any_type_node_syntax);
+		}
+
+
+		public void visit(ref_var_def_statement _ref_var_def_statement)
+		{
+			read_ref_var_def_statement(_ref_var_def_statement);
+		}
+
+		public void read_ref_var_def_statement(ref_var_def_statement _ref_var_def_statement)
+		{
+			read_declaration(_ref_var_def_statement);
+			_ref_var_def_statement.var = _read_node() as ident;
+			_ref_var_def_statement.initial_value = _read_node() as addressed_value;
 		}
 
 	}

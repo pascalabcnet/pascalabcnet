@@ -885,7 +885,7 @@ namespace PascalABCCompiler.PCU
                     comp_cnn = (tn as common_generic_instance_type_node).common_original_generic.comprehensive_namespace;
                 if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
                 {
-                    var path = Compiler.GetUnitPath(unit, compiler.UnitsSortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
+                    var path = Compiler.GetUnitPath(unit, compiler.UnitsLogicallySortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
 
                     if (interf)
                         unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit, path);
@@ -896,6 +896,22 @@ namespace PascalABCCompiler.PCU
                 }
                 if (tn.base_type is common_type_node)
                     AddIndirectUsedUnitsForType(tn.base_type, ns_dict, interf);
+            }
+        }
+
+        private void AddIndirectUsedUnitsForFunction(common_namespace_function_node cnfn, Dictionary<common_namespace_node, bool> ns_dict, bool interf)
+        {
+            common_namespace_node comp_cnn = cnfn.namespace_node;
+            if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
+            {
+                var path = Compiler.GetUnitPath(unit, compiler.UnitsLogicallySortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
+
+                if (interf)
+                    unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit, path);
+                else
+                    unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit, path);
+
+                ns_dict[comp_cnn] = true;
             }
         }
 
@@ -922,6 +938,12 @@ namespace PascalABCCompiler.PCU
             {
                 common_method_call cmc = stmt as common_method_call;
                 AddIndirectUsedUnitsForType(cmc.function_node.cont_type, ns_dict, interf);
+            }
+            else if (stmt is common_namespace_function_call)
+            {
+                common_namespace_function_call cnfc = stmt as common_namespace_function_call;
+                if (cnfc.function_node.ConnectedToType != null)
+                    AddIndirectUsedUnitsForFunction(cnfc.function_node, ns_dict, interf);
             }
             else if (stmt is if_node)
             {
@@ -3728,6 +3750,11 @@ namespace PascalABCCompiler.PCU
             VisitCompiledConstructorCall(node.method_call);
         }
 
+        private void VisitSizeOfOperatorAsConstant(sizeof_operator_as_constant node)
+        {
+            VisitSizeOfOperator(node.sizeof_operator);
+        }
+
         private void VisitCommonNamespaceFunctionCallNodeAsConstant(common_namespace_function_call_as_constant node)
         {
             VisitCommonNamespaceFunctionCall(node.method_call);
@@ -3762,7 +3789,9 @@ namespace PascalABCCompiler.PCU
                 case semantic_node_type.common_namespace_function_call_node_as_constant:
                     VisitCommonNamespaceFunctionCallNodeAsConstant((common_namespace_function_call_as_constant)en); break;
                 case semantic_node_type.compiled_constructor_call_as_constant:
-                    VisitCompiledConstructorCallAsConstant((compiled_constructor_call_as_constant)en); break;                
+                    VisitCompiledConstructorCallAsConstant((compiled_constructor_call_as_constant)en); break;
+                case semantic_node_type.sizeof_operator_as_constant:
+                    VisitSizeOfOperatorAsConstant((sizeof_operator_as_constant)en); break;
                 case semantic_node_type.array_const:
                     VisitArrayConst((array_const)en); break;
                 case semantic_node_type.record_const:

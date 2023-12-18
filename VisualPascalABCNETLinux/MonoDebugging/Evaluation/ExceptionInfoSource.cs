@@ -196,8 +196,8 @@ namespace Mono.Debugging.Evaluation
 			if (trace == null)
 				return ObjectValue.CreateUnknown ("StackTrace");
 
-			var regex = new Regex ("at (?<MethodName>.*) in (?<FileName>.*):(?<LineNumber>\\d+)(,(?<Column>\\d+))?");
-			var regexLine = new Regex ("at (?<MethodName>.*) in (?<FileName>.*):line (?<LineNumber>\\d+)(,(?<Column>\\d+))?");
+			var regex = new Regex ("at (?<MethodName>.*) in (?<file_name>.*):(?<LineNumber>\\d+)(,(?<Column>\\d+))?");
+			var regexLine = new Regex ("at (?<MethodName>.*) in (?<file_name>.*):line (?<LineNumber>\\d+)(,(?<Column>\\d+))?");
 			var frames = new List<ObjectValue> ();
 
 			foreach (var sframe in trace.Split ('\n')) {
@@ -215,14 +215,14 @@ namespace Mono.Debugging.Evaluation
 				var match = regex.Match (text);
 				if (match.Success) {
 					text = match.Groups ["MethodName"].ToString ();
-					file = match.Groups ["FileName"].ToString ();
+					file = match.Groups ["file_name"].ToString ();
 					int.TryParse (match.Groups ["LineNumber"].ToString (), out line);
 					int.TryParse (match.Groups ["Column"].ToString (), out column);
 				} else {
 					match = regexLine.Match (text);
 					if (match.Success) {
 						text = match.Groups ["MethodName"].ToString ();
-						file = match.Groups ["FileName"].ToString ();
+						file = match.Groups ["file_name"].ToString ();
 						int.TryParse (match.Groups ["LineNumber"].ToString (), out line);
 						int.TryParse (match.Groups ["Column"].ToString (), out column);
 					}

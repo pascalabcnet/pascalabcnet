@@ -514,7 +514,7 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
-            //    FileName, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
+            //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             PascalABCCompiler.SyntaxTree.compilation_unit sn =
                 CodeCompletion.CodeCompletionController.ParsersController.GetCompilationUnit(
                 VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName,

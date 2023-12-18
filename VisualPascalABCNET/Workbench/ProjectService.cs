@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using VisualPascalABCPlugins;
@@ -80,13 +81,27 @@ namespace VisualPascalABC
                 this.miProjectExplorer.Visible = true;
                 ShowContent(ProjectExplorerWindow, false);
                 UserProjectSettings setts = ProjectUserOptionsManager.LoadOptions(projectFileName);
-                foreach (IReferenceInfo ri in ProjectFactory.Instance.CurrentProject.References)
+
+                using (var resolveScope = new PascalABCCompiler.NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain))
                 {
-                    var path = Compiler.get_assembly_path(Path.Combine(ProjectFactory.Instance.ProjectDirectory, ri.FullAssemblyName), false);
-                    if (path == null)
-                        path = Compiler.get_assembly_path(ri.FullAssemblyName, false);
-                    ICSharpCode.FormsDesigner.ToolboxProvider.AddComponentsFromAssembly(PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path));
+                    var referenceAssemblyPaths = new List<string>();
+                    foreach (IReferenceInfo ri in ProjectFactory.Instance.CurrentProject.References)
+                    {
+                        var path = Compiler.get_assembly_path(Path.Combine(ProjectFactory.Instance.ProjectDirectory, ri.FullAssemblyName), false);
+                        if (path == null)
+                            path = Compiler.get_assembly_path(ri.FullAssemblyName, false);
+
+                        referenceAssemblyPaths.Add(path);
+                        resolveScope.PreloadAssembly(path);
+                    }
+
+                    foreach (var path in referenceAssemblyPaths)
+                    {
+                        ICSharpCode.FormsDesigner.ToolboxProvider.AddComponentsFromAssembly(
+                            PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path));
+                    }
                 }
+
                 if (setts != null)
                 {
                     foreach (OpenedFileInfo fi in setts.OpenDocuments)

@@ -172,7 +172,7 @@ namespace VisualPascalABC
                         open_files[FileName] = false;
                         if (dc.is_compiled)
                         {
-                            //CodeCompletion.CodeCompletionController.comp_modules.Remove(FileName);
+                            //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
                             if (tmp != null && tmp.visitor.entry_scope != null)
                             {
                                 tmp.visitor.entry_scope.Clear();

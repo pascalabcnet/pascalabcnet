@@ -120,7 +120,7 @@ namespace VisualPascalABC
             {
                 if (Path.GetExtension(FileName) == ".pas")
                 {
-                    /*string XMLFile = Path.ChangeExtension(FileName, string_consts.xml_form_extention);
+                    /*string XMLFile = Path.ChangeExtension(file_name, string_consts.xml_form_extention);
                     if (File.Exists(XMLFile))
                     {
                         if (not_open_designer)
@@ -164,7 +164,7 @@ namespace VisualPascalABC
                 visualStates.FileOpened = true;//?????
                 if (!IsNewFile && !File.Exists(FileName))
                 {
-                    //MessageBox.Show(string.Format(PascalABCCompiler.StringResources.Get("!FILE_NOT_FOUND{0}"), FileName), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //MessageBox.Show(string.Format(PascalABCCompiler.StringResources.Get("!FILE_NOT_FOUND{0}"), file_name), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     bool exists = false;
                     foreach (string s in search_debug_paths)
                     {
@@ -205,7 +205,7 @@ namespace VisualPascalABC
                 else
                     if (!IsNewFile)
                     {
-                        //CheckErrorListAndClear((tabControl1.TabPages[TabIndex].ag as CodeFileDocumentControl).FileName);
+                        //CheckErrorListAndClear((tabControl1.TabPages[TabIndex].ag as CodeFileDocumentControl).file_name);
                         CurrentCodeFileDocument.FileName = FileName;
                         if (!ProjectFactory.Instance.ProjectLoaded)
                             SetTabPageText(CurrentCodeFileDocument);
@@ -397,7 +397,7 @@ namespace VisualPascalABC
                 OpenDocuments.Remove(Tools.FileNameToLower(dt.FileName));
                 OpenDocuments.Add(Tools.FileNameToLower(FileName), TbPage);
                 WorkbenchServiceFactory.CodeCompletionParserController.RenameFile(dt.FileName, FileName);
-                //TbPage.SaveFormFile(FileName);
+                //TbPage.SaveFormFile(file_name);
                 dt.DocumentChanged = false;
                 dt.FileName = FileName;
                 dt.DocumentSavedToDisk = true;
@@ -590,7 +590,7 @@ namespace VisualPascalABC
 
         internal bool IsForm(string FileName)
         {
-            //string XMLFile = Path.ChangeExtension(FileName, string_consts.xml_form_extention);
+            //string XMLFile = Path.ChangeExtension(file_name, string_consts.xml_form_extention);
             // return File.Exists(XMLFile);
             return false;
         }

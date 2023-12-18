@@ -33,6 +33,7 @@ using System.Linq;
 
 using Mono.Debugging.Backend;
 using Mono.Debugging.Evaluation;
+using System.Text;
 
 namespace Mono.Debugging.Client
 {
@@ -48,6 +49,7 @@ namespace Mono.Debugging.Client
 		string displayValue;
 		string childSelector;
 		object type;
+		object rawValue;
 		EvaluationContext ctx;
 		ObjectValueFlags flags;
 		IObjectValueSource source;
@@ -65,17 +67,78 @@ namespace Mono.Debugging.Client
 		EventHandler valueChanged;
 		
 		[NonSerialized]
-		StackFrame parentFrame;
-		
-		static ObjectValue Create (IObjectValueSource source, ObjectPath path, string typeName)
+		public StackFrame parentFrame;
+		static Dictionary<string, string> pascalTypes;
+		static ObjectValue()
+        {
+			pascalTypes = new Dictionary<string, string>();
+			pascalTypes.Add("int", "integer");
+			pascalTypes.Add("double", "real");
+			pascalTypes.Add("float", "single");
+			pascalTypes.Add("uint", "longword");
+			pascalTypes.Add("long", "int64");
+			pascalTypes.Add("short", "smallint");
+			pascalTypes.Add("ushort", "word");
+			pascalTypes.Add("sbyte", "shortint");
+			pascalTypes.Add("bool", "boolean");
+		}
+
+		static ObjectValue Create(IObjectValueSource source, ObjectPath path, string typeName)
 		{
-			var val = new ObjectValue ();
-			val.typeName = typeName;
+			var val = new ObjectValue();
+			val.typeName = GetPascalTypeName(typeName);
 			val.source = source;
 			val.path = path;
 			return val;
 		}
-		
+
+		public static string GetPascalTypeName(string typeName)
+        {
+			StringBuilder sb = new StringBuilder();
+			StringBuilder buf = new StringBuilder();
+			int i = 0;
+			while (i < typeName.Length)
+			{
+				char c = typeName[i];
+				if (char.IsLetterOrDigit(c))
+					buf.Append(c);
+				else if (c != ']')
+				{
+					string type = buf.ToString();
+					string pascalType = "";
+					if (c == '*')
+						sb.Append("^");
+					else if (c == '[')
+						sb.Append("array of ");
+					if (pascalTypes.TryGetValue(type, out pascalType))
+						sb.Append(pascalType);
+					else
+						sb.Append(type);
+					if (c != '*' && c != ']' && c != '[')
+						sb.Append(c);
+					buf.Clear();
+				}
+				i++;
+			}
+			if (buf.Length > 0)
+			{
+				string type = buf.ToString();
+				string pascalType = "";
+				if (pascalTypes.TryGetValue(type, out pascalType))
+					sb.Append(pascalType);
+				else
+					sb.Append(type);
+			}
+			return sb.ToString();
+		}
+
+		public static ObjectValue CreateString(IObjectValueSource source, ObjectPath path, string typeName, string value)
+		{
+			var obj = CreateObject(source, path, typeName, new EvaluationResult(value), ObjectValueFlags.Object, new ObjectValue[0]);
+			obj.rawValue = value;
+			return obj;
+		}
+
 		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValueFlags flags, ObjectValue[] children)
 		{
 			return CreateObject (source, path, typeName, new EvaluationResult (value), flags, children);
@@ -87,6 +150,46 @@ namespace Mono.Debugging.Client
 			val.flags = flags | ObjectValueFlags.Object;
 			val.displayValue = value.DisplayValue;
 			val.value = value.Value;
+			if (val.value != null && val.value.IndexOf("[") != -1 && val.typeName != null && val.typeName.IndexOf("array of") != -1)
+            {
+				string t = val.value.Substring(0, val.value.IndexOf("["));
+				StringBuilder sb = new StringBuilder();
+				StringBuilder buf = new StringBuilder();
+				int i = 0;
+				while (i < t.Length)
+				{
+					char c = t[i];
+					if (char.IsLetterOrDigit(c))
+						buf.Append(c);
+					else if (c != ']')
+					{
+						string tt = buf.ToString();
+						string pascalType = "";
+						if (c == '*')
+							sb.Append("^");
+						else if (c == '[')
+							sb.Append("array of ");
+						if (pascalTypes.TryGetValue(tt, out pascalType))
+							sb.Append(pascalType);
+						else
+							sb.Append(tt);
+						if (c != '*' && c != ']' && c != '[')
+							sb.Append(c);
+						buf.Clear();
+					}
+					i++;
+				}
+				if (buf.Length > 0)
+				{
+					string tt = buf.ToString();
+					string pascalType = "";
+					if (pascalTypes.TryGetValue(tt, out pascalType))
+						sb.Append(pascalType);
+					else
+						sb.Append(type);
+				}
+				val.value = sb.ToString() + val.value.Substring(val.value.IndexOf("["));
+			}
 			val.type = type;
 			val.ctx = ctx;
 			if (children != null) {
@@ -106,19 +209,20 @@ namespace Mono.Debugging.Client
 		{
 			var val = Create (source, path, typeName);
 			val.flags = flags | ObjectValueFlags.Object;
-			val.value = "(null)";
+			val.value = "(nil)";
 			val.type = type;
 			val.ctx = ctx;
 			val.isNull = true;
 			return val;
 		}
 		
-		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, EvaluationResult value, ObjectValueFlags flags)
+		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, EvaluationResult value, ObjectValueFlags flags, object rawValue=null)
 		{
 			var val = Create (source, path, typeName);
 			val.flags = flags | ObjectValueFlags.Primitive;
 			val.displayValue = value.DisplayValue;
 			val.value = value.Value;
+			val.rawValue = rawValue;
 			return val;
 		}
 		
@@ -146,6 +250,9 @@ namespace Mono.Debugging.Client
 		
 		public static ObjectValue CreateUnknown (string name)
 		{
+#if (DEBUG)
+			Console.WriteLine("unknown " + name);
+#endif
 			return CreateUnknown (null, new ObjectPath (name), "");
 		}
 		
@@ -176,7 +283,9 @@ namespace Mono.Debugging.Client
 		public static ObjectValue CreateFatalError (string name, string message, ObjectValueFlags flags)
 		{
 			var val = new ObjectValue ();
-			Console.WriteLine("create value " + name);
+#if (DEBUG)
+			Console.WriteLine("create fatal error value " + name);
+#endif
 			val.flags = flags | ObjectValueFlags.Error;
 			val.value = message;
 			val.name = name;
@@ -335,7 +444,10 @@ namespace Mono.Debugging.Client
 		/// </remarks>
 		public object GetRawValue ()
 		{
-			var ops = parentFrame.DebuggerSession.EvaluationOptions.Clone ();
+			if (rawValue != null)
+				return rawValue;
+
+			var ops = parentFrame.DebuggerSession.EvaluationOptions.Clone();
 			ops.EllipsizeStrings = false;
 			
 			return GetRawValue (ops);

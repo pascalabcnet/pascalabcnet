@@ -7113,6 +7113,36 @@ namespace PascalABCCompiler.SyntaxTree
 			write_expression(_lambda_any_type_node_syntax);
 		}
 
+
+		public void visit(ref_var_def_statement _ref_var_def_statement)
+		{
+			bw.Write((Int16)260);
+			write_ref_var_def_statement(_ref_var_def_statement);
+		}
+
+		public void write_ref_var_def_statement(ref_var_def_statement _ref_var_def_statement)
+		{
+			write_declaration(_ref_var_def_statement);
+			if (_ref_var_def_statement.var == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_ref_var_def_statement.var.visit(this);
+			}
+			if (_ref_var_def_statement.initial_value == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_ref_var_def_statement.initial_value.visit(this);
+			}
+		}
+
 	}
 
 

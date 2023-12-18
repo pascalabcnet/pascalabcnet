@@ -20,9 +20,11 @@
 
 Letter [[:IsLetter:]_]
 Digit [0-9]
+Digit_ [0-9_]
 LetterDigit {Letter}|{Digit}
 ID {Letter}{LetterDigit}* 
 HexDigit {Digit}|[abcdefABCDEF]
+HexDigit_ {Digit}|[abcdefABCDEF_]
 DotChr [^\r\n]
 OneLineCmnt  \/\/{DotChr}*
 
@@ -31,13 +33,13 @@ DotChr1 [^\r\n}]
 NOTASCII [^\x00-x7F]
 
 CHARACTERNUM '[^'\n]'
-INTNUM {Digit}+
+INTNUM {Digit}{Digit_}*
 BIGINTNUM {INTNUM}[bB][iI]
 FLOATNUM {INTNUM}\.{INTNUM}
 EXPNUM ({INTNUM}\.)?{INTNUM}[eE][+\-]?{INTNUM}
 STRINGNUM \'([^\'\n]|\'\')*\'
 FORMATSTRINGNUM \$\'([^\'\n]|\'\')*\'
-HEXNUM ${HexDigit}+
+HEXNUM ${HexDigit}{HexDigit_}*
 SHARPCHARNUM #{Digit}+
 OLDDIRECTIVE #{ID}
 IFDEF \{\$ifdef\ {DotChr1}*\} 
@@ -389,6 +391,8 @@ UNICODEARROW \x890
     case (int)Tokens.tkWhen:
     case (int)Tokens.tkStatic:
     case (int)Tokens.tkStep:
+    case (int)Tokens.tkAsync:
+    case (int)Tokens.tkAwait:
 		yylval = new Union();
         yylval.ti = new token_info(cur_yytext,currentLexLocation);
         break;
@@ -580,4 +584,4 @@ UNICODEARROW \x890
             }
     }
 
-// Статический класс, определяющий ключевые слова языка, находится в файле Keywords.cs
+// РЎС‚Р°С‚РёС‡РµСЃРєРёР№ РєР»Р°СЃСЃ, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РєР»СЋС‡РµРІС‹Рµ СЃР»РѕРІР° СЏР·С‹РєР°, РЅР°С…РѕРґРёС‚СЃСЏ РІ С„Р°Р№Р»Рµ Keywords.cs

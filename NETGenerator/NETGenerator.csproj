@@ -129,11 +129,13 @@
       <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
       <Name>TreeConverter</Name>
     </ProjectReference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
       <Link>Config\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AppConfigUtil.cs" />
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="NETGenegratorTools.cs" />
     <Compile Include="CodeGenerator.cs">
