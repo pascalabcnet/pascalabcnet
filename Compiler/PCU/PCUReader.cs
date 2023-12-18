@@ -259,7 +259,7 @@ namespace PascalABCCompiler.PCU
                 PCUReader pr = (PCUReader)units[FileName];
                 if (pr != null) return pr.unit;
                 if (!File.Exists(FileName)) return null;
-                //fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+                //fs = new FileStream(file_name, FileMode.Open, FileAccess.Read);
                 ms = new MemoryStream(File.ReadAllBytes(FileName));
                 br = new BinaryReader(ms);
                 ReadPCUHeader();
@@ -274,7 +274,7 @@ namespace PascalABCCompiler.PCU
                     CloseUnit();
                     this.unit = null;
                     need = true;
-                    return null; // return comp.RecompileUnit(FileName);
+                    return null; // return comp.RecompileUnit(file_name);
                 }
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
                 cun.scope = new WrappedUnitInterfaceScope(this);
@@ -369,7 +369,7 @@ namespace PascalABCCompiler.PCU
                     {
                         var sub_u = pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo);
                         if (sub_u == null) return true;
-                        this.unit.DirectInterfaceCompilationUnits.Add(sub_u.SemanticTree, sub_u);
+                        this.unit.InterfaceUsedDirectUnits.Add(sub_u.SemanticTree, sub_u);
                         this.unit.InterfaceUsedUnits.AddElement(sub_u.SemanticTree, pcu_file.incl_modules[i]);
                     }
                 }

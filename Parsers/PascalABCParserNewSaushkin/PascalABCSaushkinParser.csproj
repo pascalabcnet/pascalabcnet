@@ -111,9 +111,6 @@
     <Compile Include="Preprocessor3Yacc.cs" />
     <Compile Include="PreprocessorTools.cs" />
     <Compile Include="SemanticRules.cs" />
-    <Compile Include="ShiftReduceParserCode.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Errors\Errors.csproj">
@@ -127,6 +124,10 @@
     <ProjectReference Include="..\..\ParserTools\ParserTools.csproj">
       <Project>{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}</Project>
       <Name>ParserTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ShiftReduceParser\ShiftReduceParser.csproj">
+      <Project>{ad4e1292-2537-467a-934d-e9fda3f18d87}</Project>
+      <Name>ShiftReduceParser</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
