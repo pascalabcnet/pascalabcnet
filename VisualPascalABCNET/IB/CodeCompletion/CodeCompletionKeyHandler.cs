@@ -178,8 +178,9 @@ namespace VisualPascalABC
                         CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[editor.FileName];
                         if (dconv != null)
                         {
+                            // TODO: check endl error | added null check    EVA
                             CodeCompletion.SymScope ss = dconv.FindScopeByLocation(editor.ActiveTextAreaControl.TextArea.Caret.Line + 1, editor.ActiveTextAreaControl.TextArea.Caret.Column + 1);
-                            ss.IncreaseEndLine();
+                            ss?.IncreaseEndLine();
                         }
                     }
                     catch

@@ -4829,7 +4829,7 @@ namespace CodeCompletion
         {
             //throw new Exception("The method or operation is not implemented.");
             SymScope tmp = cur_scope;
-            unl.clear();
+            unl.Clear();
             cur_scope = new ImplementationUnitScope(new SymInfo("$implementation", SymbolKind.Namespace, "implementation"), cur_scope);
             tmp.AddName("$implementation", cur_scope);
             (tmp as InterfaceUnitScope).impl_scope = cur_scope as ImplementationUnitScope;
