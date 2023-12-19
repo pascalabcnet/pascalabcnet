@@ -56,7 +56,6 @@
     ;dobavljaem fajly v uninst.log
     ${AddFile} "Compiler.dll"
     ${AddFile} "CompilerTools.dll"
-    ${AddFile} "ShiftReduceParser.dll"
     ${AddFile} "Errors.dll"
     ${AddFile} "Localization.dll"
     ${AddFile} "NETGenerator.dll"
@@ -72,7 +71,6 @@
     ${AddFile} "Mono.Cecil.dll"
     ${AddFile} "TeacherControlPlugin.dll"
     ${AddFile} "LambdaAnySynToSemConverter.dll"
-    ${AddFile} "UniversalParserHelper.dll"
     ${AddFile} "License.txt"
     ${AddFile} "copyright.txt"
     ${AddFile} "pabcnetc.exe.config"

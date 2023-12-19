@@ -8,10 +8,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginsSupport", "PluginsSupport\PluginsSupport.csproj", "{CFC683F8-0165-4A9F-9C3F-BB8C5BAB507F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualPascalABCNET", "VisualPascalABCNET\VisualPascalABCNET.csproj", "{BC35F816-54EE-47E0-89FC-1C66EAC155A9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87} = {AD4E1292-2537-467A-934D-E9FDA3F18D87}
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82} = {E862A9EF-836B-414B-AAC4-9D207CABDC82}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{EC68A3D8-6D63-4A79-ABA6-BF8E9D7756D7}"
 EndProject
@@ -109,11 +105,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeacherControlPlugin", "Vis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftReduceParser", "ShiftReduceParser\ShiftReduceParser.csproj", "{AD4E1292-2537-467A-934D-E9FDA3F18D87}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversalParserHelper", "UniversalParserHelper\UniversalParserHelper.csproj", "{E862A9EF-836B-414B-AAC4-9D207CABDC82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -499,18 +491,6 @@ Global
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.ActiveCfg = Release|Any CPU
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.Build.0 = Release|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Debug|x86.Build.0 = Debug|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Release|x86.ActiveCfg = Release|Any CPU
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87}.Release|x86.Build.0 = Release|Any CPU
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -523,18 +503,6 @@ Global
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Release|x86.ActiveCfg = Release|Any CPU
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Release|x86.Build.0 = Release|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Debug|x86.Build.0 = Debug|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|x86.ActiveCfg = Release|Any CPU
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -579,9 +547,7 @@ Global
 		{E009E776-9280-4061-B5CA-7F0C3E2D3C2A} = {26843C5D-9D7E-4C2C-AC14-2D227FA5592E}
 		{536CC813-7C4E-42BC-AE3A-BA1427F38756} = {EC68A3D8-6D63-4A79-ABA6-BF8E9D7756D7}
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98} = {F8CE2712-826B-450B-A72F-D32D80C99858}
-		{AD4E1292-2537-467A-934D-E9FDA3F18D87} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C} = {BB6973BA-B3A2-4B31-A986-7CB008F22C4F}
-		{E862A9EF-836B-414B-AAC4-9D207CABDC82} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68E993E6-EE86-4DDF-B0A1-4FE884F8AC39}
