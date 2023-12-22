@@ -2261,13 +2261,13 @@ namespace PascalABCCompiler
                 ErrorsList.Add(new CompilerInternalError("Compiler.ClosePCUReadersAndWriters", e));
             }
 
-            OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished state
+			// на случай ошибки в самом .pcu формате | здесь могут быть не только pcu errors   EVA
+			bool recompilationNeeded = CheckForInternalErrors();
+
+			OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished state
 
             if (ClearAfterCompilation)
                 ClearAll();
-
-            // на случай ошибки в самом .pcu формате | теоретически, здесь могут быть не только pcu errors   EVA
-            bool recompilationNeeded = CheckForInternalErrors();
 
             if (!recompilationNeeded)
                 OnChangeCompilerState(this, CompilerState.Ready, null); // компилятор окончательно завершил работу
