@@ -2261,13 +2261,13 @@ namespace PascalABCCompiler
                 ErrorsList.Add(new CompilerInternalError("Compiler.ClosePCUReadersAndWriters", e));
             }
 
-            OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished state
+			// на случай ошибки в самом .pcu формате (имеются в виду ошибки, связанные с невозможностью использования RTL)
+			bool recompilationNeeded = CheckForRTLErrors();
+
+			OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished state
 
             if (ClearAfterCompilation)
                 ClearAll();
-
-            // на случай ошибки в самом .pcu формате | теоретически, здесь могут быть не только pcu errors   EVA
-            bool recompilationNeeded = CheckForInternalErrors();
 
             if (!recompilationNeeded)
                 OnChangeCompilerState(this, CompilerState.Ready, null); // компилятор окончательно завершил работу
@@ -2446,24 +2446,23 @@ namespace PascalABCCompiler
         }
 
 
-        private bool CheckForInternalErrors()
+        private bool CheckForRTLErrors()
         {
-            bool anyExternalErrors = false;
+            bool anyRTLErrors = false;
 
             if (ErrorsList.Count > 0)
             {
-                // rtl - та самая dll со всей паскалевской системой (PABCSystem)
                 if (CompilerOptions.UseDllForSystemUnits && !HasOnlySyntaxErrors(ErrorsList) && CompilerOptions.IgnoreRtlErrors)
                 {
                     CompilerOptions.UseDllForSystemUnits = false;
                     ErrorsList.Clear();
 
-                    anyExternalErrors = true;
+                    anyRTLErrors = true;
 
                 }
             }
 
-            return anyExternalErrors;
+            return anyRTLErrors;
         }
 
         private void GenerateILCode(program_node programNode, NETGenerator.CompilerOptions compilerOptions, List<string> resourceFiles)
