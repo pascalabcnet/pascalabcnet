@@ -3421,7 +3421,7 @@ namespace PascalABCCompiler
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
 
             // оставить только PT4 и протестировать
-            string[] standardFilesExcludedFromRTL = new string[] { "PT4", "CRT", "Arrays", "MPI", "Collections", "Core"};
+            string[] standardFilesExcludedFromRTL = new string[] { "PT4", "School", "CRT", "Arrays", "MPI", "Collections", "Core"};
 
             bool includeInRTL = standardFilesExcludedFromRTL.All(file => !file.Equals(fileNameWithoutExtension, StringComparison.CurrentCultureIgnoreCase));
 
