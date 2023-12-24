@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace IndentArranger
 {   
     public class IndentArranger
     {
-        private string unitPath;
         private int currentLineIndentLevel = 0;
         private int lineCounter = -1;
         private int previousIndentLevel = -1;
@@ -21,15 +17,13 @@ namespace IndentArranger
         private const int indentSpaceNumber = 4;
         private const string indentToken = "{";
         private const string unindentToken = "}";
-        public const string createdFileNameAddition = "_indented";
+        public const string createdFileNameAddition = "_processed";
 
         public IndentArranger(string path)
         {
-            unitPath = path;
-
             CreatedFileName =
                 Path.GetFileNameWithoutExtension(path) + 
-                createdFileNameAddition + Path.GetExtension(path);
+                createdFileNameAddition + ".txt";
 
             CreatedFilePath = Path.GetDirectoryName(path) + "\\" + CreatedFileName;
         }
@@ -55,42 +49,30 @@ namespace IndentArranger
             switch (firstToken)
             {
                 case "if":
-                    //Console.Write(FirstTokenType.If);
                     return FirstTokenType.If;
                 case "elif":
-                    //Console.Write(FirstTokenType.Elif);
                     return FirstTokenType.Elif;
                 case "else":
-                    //Console.Write(FirstTokenType.Else);
                     return FirstTokenType.Else;
                 case "for":
-                    //Console.Write(FirstTokenType.For);
                     return FirstTokenType.For;
                 case "while":
-                    //Console.Write(FirstTokenType.While);
                     return FirstTokenType.While;
                 case "def":
-                    //Console.Write(FirstTokenType.Def);
                     return FirstTokenType.Def;
                 default:
-                    //Console.Write(FirstTokenType.Id);
                     return FirstTokenType.Id;
             }
         }
 
         public void ArrangeIndents(ref string program)
         {
-            //File.Delete(CreatedFilePath);
-            //string[] programLines = File.ReadAllLines(unitPath);
             string[] programLines = program.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             int lastNotEmptyLine = -1;
-            Stack<FirstTokenType> firstTokensTypesStack = new Stack<FirstTokenType>();
 
             foreach (var line in programLines)
             {
                 lineCounter++;
-                // вывод номера текущей строки для дебага (+1 т.к. нумерация с нуля)
-                //Console.Write($"{lineCounter + 1}:\t");
 
                 bool isEmptyLine = true; // строка не содержит символов кроме 'space'\t\n\r
                 bool readFirstToken = false;
@@ -134,7 +116,6 @@ namespace IndentArranger
                 // пропуск строки не содержащей код 
                 if (isEmptyLine)
                 {
-                    //Console.WriteLine("EmptyLine");
                     continue;
                 }
 
@@ -155,9 +136,6 @@ namespace IndentArranger
                 // текущий отступ соответствует увеличению на один отступ 
                 else if (currentLineIndentLevel == previousIndentLevel + 1)
                 {
-                    firstTokensTypesStack.Push(currentFirstTokenType);
-
-                    //Console.Write(indentLiteral);
                     if (lastNotEmptyLine != -1)
                         programLines[lastNotEmptyLine] += indentToken;
                     // закомментировать ветку else если нет блока оборачивающего всю программу
@@ -167,21 +145,10 @@ namespace IndentArranger
                 // текущий отступ соответствует уменьшению на один или несколько отступов
                 else if (currentLineIndentLevel < previousIndentLevel)
                 {
-                    //firstTokensTypesStack.Count - currentLineIndentLevel - 1
-                    while (firstTokensTypesStack.Count > currentLineIndentLevel + 1)
-                    {
-                        firstTokensTypesStack.Pop();
-                    }
-                    FirstTokenType previousFirstTokenType = firstTokensTypesStack.Pop();
-
                     // если сейчас ветка elif/else, то это не конец команды
                     // поэтому ставить ; в конце не надо (она будет после блока elif/else)
                     bool isEndOfStatement = !(currentFirstTokenType == FirstTokenType.Elif || currentFirstTokenType == FirstTokenType.Else);
 
-                    firstTokensTypesStack.Push(currentFirstTokenType);
-
-                    //Console.Write(
-                    //string.Concat(Enumerable.Repeat(unindentLiteral + " ", previousIndentLevel - currentLineIndentCounter)));
                     programLines[lastNotEmptyLine] +=
                         string.Concat(Enumerable.Repeat(";" + unindentToken, previousIndentLevel - currentLineIndentLevel))
                         + (isEndOfStatement ? ";" : "");
@@ -190,66 +157,21 @@ namespace IndentArranger
                 else if (currentLineIndentLevel == previousIndentLevel)
                 {
                     programLines[lastNotEmptyLine] += ";";
-                    
-                    // меняем токен на вершине стека на текущий
-                    firstTokensTypesStack.Pop();
-                    firstTokensTypesStack.Push(currentFirstTokenType);
-
-                    //Console.Write("Nothing");
                 }
 
                 previousIndentLevel = currentLineIndentLevel;
                 lastNotEmptyLine = lineCounter;
-
-                //Console.Write(firstTokensTypesStack.Peek() + " #" + firstTokensTypesStack.Count);
-
-                //Console.WriteLine();
             }
 
             // закрытие всех отступов в конце файла
-            // (заменить "currentLineIndentLevel + 1" на "currentLineIndentLevel" если нет блока оборачивающего всю программу)
+            // (заменить "currentLineIndentLevel + 1" на "currentLineIndentLevel" если есть блок оборачивающий всю программу)
             programLines[lastNotEmptyLine] +=
                 string.Concat(Enumerable.Repeat(";" + unindentToken, currentLineIndentLevel));
 
-            //Console.WriteLine("EOF:\t" + 
-            //    string.Concat(Enumerable.Repeat(unindentLiteral + " ", currentLineIndentCounter + 1)));
-
             program = programLines.JoinIntoString("\n");
-            File.AppendAllText(CreatedFilePath, program);
+
+            // создание файла с полученным текстом для дебага
+            File.WriteAllText(CreatedFilePath, program);
         }
     }
-
-
-    //class Program
-    //{
-    //    static void Main(string[] args)
-    //    {
-    //        string path;
-
-    //        // только для дебага
-    //        if (args.Length == 0)
-    //        {
-    //            path = "../../test.txt";
-    //        }
-    //        else
-    //        {
-    //            path = args[0];
-    //        }
-
-    //        try
-    //        {
-    //            IndentArranger ia = new IndentArranger(path);
-    //            ia.ArrangeIndents();
-    //        }
-    //        catch (IndentArrangerException iae)
-    //        {
-    //            Console.Write("\r");
-    //            Console.WriteLine(iae.Message);
-    //        }
-    //        catch (IOException ioe)
-    //        {
-    //            Console.WriteLine(ioe.Message);
-    //        }
-    //    }
-    //}
 }
