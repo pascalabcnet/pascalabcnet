@@ -78,10 +78,11 @@ namespace IndentArranger
             }
         }
 
-        public void ArrangeIndents()
+        public void ArrangeIndents(ref string program)
         {
-            File.Delete(CreatedFilePath);
-            string[] programLines = File.ReadAllLines(unitPath);
+            //File.Delete(CreatedFilePath);
+            //string[] programLines = File.ReadAllLines(unitPath);
+            string[] programLines = program.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             int lastNotEmptyLine = -1;
             Stack<FirstTokenType> firstTokensTypesStack = new Stack<FirstTokenType>();
 
@@ -113,6 +114,9 @@ namespace IndentArranger
                             }
                             break;
                         default:
+                            if (char.IsWhiteSpace(line[i]))
+                                break;
+
                             isEmptyLine = false;
 
                             // если символ латиницы или _ то это начало первого токена в строке
@@ -210,41 +214,42 @@ namespace IndentArranger
             //Console.WriteLine("EOF:\t" + 
             //    string.Concat(Enumerable.Repeat(unindentLiteral + " ", currentLineIndentCounter + 1)));
 
-            File.AppendAllLines(CreatedFilePath, programLines);
+            program = programLines.JoinIntoString("\n");
+            File.AppendAllText(CreatedFilePath, program);
         }
     }
 
 
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            string path;
+    //class Program
+    //{
+    //    static void Main(string[] args)
+    //    {
+    //        string path;
 
-            // только для дебага
-            if (args.Length == 0)
-            {
-                path = "../../test.txt";
-            }
-            else
-            {
-                path = args[0];
-            }
+    //        // только для дебага
+    //        if (args.Length == 0)
+    //        {
+    //            path = "../../test.txt";
+    //        }
+    //        else
+    //        {
+    //            path = args[0];
+    //        }
 
-            try
-            {
-                IndentArranger ia = new IndentArranger(path);
-                ia.ArrangeIndents();
-            }
-            catch (IndentArrangerException iae)
-            {
-                Console.Write("\r");
-                Console.WriteLine(iae.Message);
-            }
-            catch (IOException ioe)
-            {
-                Console.WriteLine(ioe.Message);
-            }
-        }
-    }
+    //        try
+    //        {
+    //            IndentArranger ia = new IndentArranger(path);
+    //            ia.ArrangeIndents();
+    //        }
+    //        catch (IndentArrangerException iae)
+    //        {
+    //            Console.Write("\r");
+    //            Console.WriteLine(iae.Message);
+    //        }
+    //        catch (IOException ioe)
+    //        {
+    //            Console.WriteLine(ioe.Message);
+    //        }
+    //    }
+    //}
 }

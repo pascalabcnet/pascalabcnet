@@ -3962,14 +3962,6 @@ namespace PascalABCCompiler
                 if (firstCompilationUnit == null)
                     firstCompilationUnit = currentUnit;
 
-                // Если файл .yavb то надо заменить исходный файл на другой с предварительной обработкой
-                if (Path.GetExtension(UnitFileName) == ".yavb")
-                {
-                    IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
-                    ia.ArrangeIndents();
-                    UnitFileName = ia.CreatedFilePath;
-                }
-
                 OnChangeCompilerState(this, CompilerState.BeginCompileFile, UnitFileName); // начало компиляции модуля
 
                 #region SYNTAX TREE CONSTRUCTING
@@ -4152,6 +4144,14 @@ namespace PascalABCCompiler
                         throw new UnitNotFound(currentCompilationUnit.SyntaxTree.file_name, UnitFileName, currentUnitNode.source_context);
                 }
             }
+
+            // Если файл .yavb то надо заменить исходный текст программы на другой с предварительной обработкой
+            if (Path.GetExtension(UnitFileName) == ".yavb")
+            {
+                IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
+                ia.ArrangeIndents(ref SourceText);
+            }
+
             return SourceText;
         }
 
