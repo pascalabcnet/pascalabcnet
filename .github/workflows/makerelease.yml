@@ -34,6 +34,9 @@ jobs:
                 PABCNET_INC_BUILD:  false
                 PABCNET_VERBOSE:    false
             
+            - name: Prepare github script
+              run: npm install @actions/exec
+            
             - name: Create Github Release
               uses: actions/github-script@main
               with:
@@ -46,7 +49,19 @@ jobs:
                     
                     console.log('environment', process.versions);
                     
-                    const { repo: { owner, repo }, sha } = context;
+                    sha = '';
+                    await require('@actions/exec').exec('git', ['rev-parse', 'HEAD'], {
+                        listeners: {
+                            stdout: data => {
+                                sha += data.toString().trim();
+                            },
+                            stderr: data => {
+                                sha += data.toString().trim();
+                            }
+                        }
+                    });
+                    
+                    const { repo: { owner, repo } } = context;
                     console.log({ owner, repo, sha });
                     
                     // Check if the release already exists
@@ -74,8 +89,6 @@ jobs:
                         console.error(`Error deleting tag: ${error}`);
                     }
                     
-                    const fs = require('fs').promises;
-                    
                     const release = await github.rest.repos.createRelease({
                         owner, repo,
                         tag_name: tag,
@@ -87,6 +100,7 @@ jobs:
                     
                     console.log('created release', { release });
                     
+                    const fs = require('fs').promises;
                     for (let file of await fs.readdir('Release')) {
                         console.log('uploading', file);
                         if (file.startsWith('.')) continue;
