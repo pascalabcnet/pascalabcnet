@@ -30,11 +30,52 @@ namespace IndentArranger
 
         public void ProcessSourceText(ref string sourceText)
         {
+            string[] programLines = sourceText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+            // удаляем комментарии в тексте программы
+            EraseComments(ref programLines);
+
             // добавляем токены для начала/конца отступов и ; в конце stmt
-            ArrangeIndents(ref sourceText);
+            ArrangeIndents(ref programLines);
+
+            sourceText = programLines.JoinIntoString("\n");
 
             // создание файла с полученным текстом для дебага
             File.WriteAllText(CreatedFilePath, sourceText);
+        }
+
+        private void EraseComments(ref string[] programLines)
+        {
+            bool isMultiLineComment = false;
+            for (int i = 0; i < programLines.Length; ++i)
+            {
+                // проверка на начало/конец многострочного комментария
+                if (programLines[i].Length >= 3
+                    && programLines[i][0] == '"'
+                    && programLines[i][1] == '"'
+                    && programLines[i][2] == '"')
+                {
+                    // конец многострочного комментария
+                    if (isMultiLineComment)
+                        programLines[i] = "   " + programLines[i].Substring(3);
+                    isMultiLineComment = !isMultiLineComment;
+                }
+
+                if (isMultiLineComment)
+                {
+                    programLines[i] = "";
+                    continue;
+                }
+
+                for (int j = 0; j < programLines[i].Length; ++j)
+                {
+                    if (programLines[i][j] == '#')
+                    {
+                        programLines[i] = programLines[i].Substring(0, j);
+                        break;
+                    }
+                }
+            }
         }
 
         // возможные типы первого токена в строке
@@ -74,9 +115,8 @@ namespace IndentArranger
             }
         }
 
-        private void ArrangeIndents(ref string program)
+        private void ArrangeIndents(ref string[] programLines)
         {
-            string[] programLines = program.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             int lastNotEmptyLine = -1;
 
             foreach (var line in programLines)
@@ -176,8 +216,6 @@ namespace IndentArranger
             // (заменить "currentLineIndentLevel + 1" на "currentLineIndentLevel" если есть блок оборачивающий всю программу)
             programLines[lastNotEmptyLine] +=
                 string.Concat(Enumerable.Repeat(";" + unindentToken, currentLineIndentLevel));
-
-            program = programLines.JoinIntoString("\n");
         }
     }
 }
