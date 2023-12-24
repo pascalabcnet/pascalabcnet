@@ -52,10 +52,10 @@ ID {Alpha}{AlphaDigit}*
 "<"  { yylval.op = new op_type_node(Operators.Less); return (int)Tokens.LOWER; }
 ">"  { yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.GREATER; }
 
-//"{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACE; }
-"{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.INDENT; }
-//"}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACE; }
-"}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.UNINDENT; }
+"#{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.INDENT; }
+"#}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.UNINDENT; }
+"{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACE; }
+"}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACE; }
 "["  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACKET; }
 "]"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACKET; }
 

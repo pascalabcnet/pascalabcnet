@@ -15,8 +15,8 @@ namespace IndentArranger
 
         // количество пробелов соответствующее одному \t (в одном отступе)
         private const int indentSpaceNumber = 4;
-        private const string indentToken = "{";
-        private const string unindentToken = "}";
+        private const string indentToken = "#{";
+        private const string unindentToken = "#}";
         public const string createdFileNameAddition = "_processed";
 
         public IndentArranger(string path)
@@ -26,6 +26,15 @@ namespace IndentArranger
                 createdFileNameAddition + ".txt";
 
             CreatedFilePath = Path.GetDirectoryName(path) + "\\" + CreatedFileName;
+        }
+
+        public void ProcessSourceText(ref string sourceText)
+        {
+            // добавляем токены для начала/конца отступов и ; в конце stmt
+            ArrangeIndents(ref sourceText);
+
+            // создание файла с полученным текстом для дебага
+            File.WriteAllText(CreatedFilePath, sourceText);
         }
 
         // возможные типы первого токена в строке
@@ -65,7 +74,7 @@ namespace IndentArranger
             }
         }
 
-        public void ArrangeIndents(ref string program)
+        private void ArrangeIndents(ref string program)
         {
             string[] programLines = program.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             int lastNotEmptyLine = -1;
@@ -169,9 +178,6 @@ namespace IndentArranger
                 string.Concat(Enumerable.Repeat(";" + unindentToken, currentLineIndentLevel));
 
             program = programLines.JoinIntoString("\n");
-
-            // создание файла с полученным текстом для дебага
-            File.WriteAllText(CreatedFilePath, program);
         }
     }
 }

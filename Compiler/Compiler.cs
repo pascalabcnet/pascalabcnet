@@ -4149,7 +4149,7 @@ namespace PascalABCCompiler
             if (Path.GetExtension(UnitFileName) == ".yavb")
             {
                 IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
-                ia.ArrangeIndents(ref SourceText);
+                ia.ProcessSourceText(ref SourceText);
             }
 
             return SourceText;
