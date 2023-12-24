@@ -1,15 +1,12 @@
-﻿a = 10
-c = 10
+﻿def f(a: int) -> int:
+    if a > 0:
+        println(a)
+        return g(a - 1) + a
+    return 0
 
-def f(a: int) -> int:
-    a = 13
-    b = 10
-    if a < b:
-        mn = a
-    else:
-        mn = b
-    return 2
-    print(1)
-    return 10
+def g(a: int) -> int:
+    if a > 0:
+        print(a)
+        return f(a - 1) + a
 
-print(f(a))
+f(10)

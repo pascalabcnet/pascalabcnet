@@ -307,10 +307,12 @@ proc_func_decl
 proc_func_header
 	: DEF identifier fp_list COLON
 		{
+			symbolTable = new SymbolTable(symbolTable); 
 			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
 		}
 	| DEF identifier fp_list ARROW fp_type COLON
 		{
+			symbolTable = new SymbolTable(symbolTable); 
 			$$ = new function_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $5 as type_definition, @$);
 		}
 	;
