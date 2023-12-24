@@ -685,7 +685,7 @@ type
     // https://referencesource.microsoft.com/#System.Core/System/Linq/Enumerable.cs,783a052330e7d48d,references
     
     public procedure CopyTo(a: array of integer; arrayIndex: integer) :=
-      for var i := 0 to System.Math.Min(self.Count, a.Length-arrayIndex) do
+      for var i := 0 to System.Math.Min(self.Count, a.Length-arrayIndex)-1 do
         a[i+arrayIndex] := l+i;
     
   end;
@@ -751,7 +751,7 @@ type
     end;
     
     public procedure CopyTo(a: array of char; arrayIndex: integer) :=
-      for var i := 0 to System.Math.Min(self.Count, a.Length-arrayIndex) do
+      for var i := 0 to System.Math.Min(self.Count, a.Length-arrayIndex)-1 do
         a[i+arrayIndex] := char(integer(l)+i);
     
   end;

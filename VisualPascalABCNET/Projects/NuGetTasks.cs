@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,6 +44,37 @@ namespace VisualPascalABC
             nugetProcess.WaitForExit();
         }
 
+        static string getDotnetDir(string startDir)
+        {
+            // 481 48 472 471 47 462 461 46 452 451 45 4
+            var s = "481 48 472 471 47 462 461 46 452 451 45 4";
+            var ss = s.Split().Reverse().Select(d => "net" + d).ToList();
+            ss.Add("netstandard2.0");
+            ss.Add("net");
+
+            string Dir = "";
+            foreach (var dd in ss)
+            {
+                Dir = Path.Combine(startDir, dd);
+                if (Directory.Exists(Dir))
+                    break;
+            }
+
+            /*string Dir = Path.Combine(startDir, "net40");
+            if (!Directory.Exists(Dir))
+                Dir = Path.Combine(startDir, "net45");
+            if (!Directory.Exists(Dir))
+                Dir = Path.Combine(startDir, "net46");
+            if (!Directory.Exists(Dir))
+                Dir = Path.Combine(startDir, "netstandard2.0");
+            if (!Directory.Exists(Dir))
+                Dir = Path.Combine(startDir, "net");*/
+
+            if (!Directory.Exists(Dir))
+                Dir = startDir;
+            return Dir;
+        }
+
         static bool getPackage(string workingDir, out string[] dlls, out string[] xmls, out string[] ndlls)
         {
             dlls = null;
@@ -57,7 +89,9 @@ namespace VisualPascalABC
                 string libDir = Path.Combine(dir, "lib");
                 if (Directory.Exists(libDir))
                 {
-                    string dotnetDir = Path.Combine(libDir, "net40");
+                    string dotnetDir = getDotnetDir(libDir);
+
+                    /*string dotnetDir = Path.Combine(libDir, "net40");
                     if (!Directory.Exists(dotnetDir))
                         dotnetDir = Path.Combine(libDir, "net45");
                     if (!Directory.Exists(dotnetDir))
@@ -67,7 +101,8 @@ namespace VisualPascalABC
                     if (!Directory.Exists(dotnetDir))
                         dotnetDir = Path.Combine(libDir, "net");
                     if (!Directory.Exists(dotnetDir))
-                        dotnetDir = libDir;
+                        dotnetDir = libDir;*/
+
                     if (Directory.Exists(dotnetDir))
                     {
                         string[] dllFiles = Directory.GetFiles(dotnetDir, "*.dll");
@@ -88,7 +123,7 @@ namespace VisualPascalABC
                     runtimesDir = Path.Combine(dir, "runtimes", "win-x64", "native");
                 if (Directory.Exists(runtimesDir))
                 {
-                    string dotnetDir = Path.Combine(runtimesDir, "net40");
+                    /*string dotnetDir = Path.Combine(runtimesDir, "net40");
                     if (!Directory.Exists(dotnetDir))
                         dotnetDir = Path.Combine(runtimesDir, "net45");
                     if (!Directory.Exists(dotnetDir))
@@ -99,6 +134,9 @@ namespace VisualPascalABC
                         dotnetDir = Path.Combine(runtimesDir, "net");
                     if (!Directory.Exists(dotnetDir))
                         dotnetDir = runtimesDir;
+                    */
+                    string dotnetDir = getDotnetDir(runtimesDir);
+
                     if (Directory.Exists(dotnetDir))
                     {
                         string[] nativedllFiles = Directory.GetFiles(dotnetDir, "*.dll");
