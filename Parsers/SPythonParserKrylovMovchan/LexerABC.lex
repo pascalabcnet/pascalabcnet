@@ -49,8 +49,13 @@ ID {Alpha}{AlphaDigit}*
 "-"  { yylval.op = new op_type_node(Operators.Minus); return (int)Tokens.MINUS; }
 "*"  { yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.MULTIPLY; }
 "/"  { yylval.op = new op_type_node(Operators.Division); return (int)Tokens.DIVIDE; }
-"<"  { yylval.op = new op_type_node(Operators.Less); return (int)Tokens.LOWER; }
+
+"<="  { yylval.op = new op_type_node(Operators.LessEqual); return (int)Tokens.LESSEQUAL; }
+">="  { yylval.op = new op_type_node(Operators.GreaterEqual); return (int)Tokens.GREATEREQUAL; }
+"<"  { yylval.op = new op_type_node(Operators.Less); return (int)Tokens.LESS; }
 ">"  { yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.GREATER; }
+"=="  { yylval.op = new op_type_node(Operators.Equal); return (int)Tokens.EQUAL; }
+"!="  { yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.NOTEQUAL; }
 
 "#{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.INDENT; }
 "#}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.UNINDENT; }

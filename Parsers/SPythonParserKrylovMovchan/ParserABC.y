@@ -41,9 +41,9 @@
 %token <op> ASSIGN
 %token <op> PLUS MINUS MULTIPLY DIVIDE
 %token <id> ID INT
-%token <op> LOWER GREATER LOWEREQUAL GREATEREQUAL EQUAL NOTEQUAL
+%token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 
-%left LOWER GREATER LOWEREQUAL GREATEREQUAL EQUAL NOTEQUAL
+%left LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
 
@@ -162,17 +162,25 @@ assign
 	;
 
 expr 	
-	: expr PLUS 	expr	
+	: expr PLUS 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-	| expr MULTIPLY expr	
+	| expr MULTIPLY 	expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-	| expr DIVIDE 	expr	
+	| expr DIVIDE 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-	| expr MINUS 	expr	
+	| expr MINUS 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-  	| expr LOWER 	expr	
+  	| expr LESS 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-	| expr GREATER 	expr	
+	| expr GREATER 		expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr LESSEQUAL 	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr GREATEREQUAL expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr EQUAL 		expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr NOTEQUAL 	expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| variable				
 		{ $$ = $1; }
