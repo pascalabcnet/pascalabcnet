@@ -88,26 +88,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     }
     public class ScopeWithDefsSyntax : ScopeSyntax { } // 
-    public class GlobalScopeSyntax : ScopeWithDefsSyntax {
+    public abstract class GlobalScopeSyntax : ScopeWithDefsSyntax { } // program_module unit_module
 
-        public List<GlobalScopeSyntax> usedUnits = new List<GlobalScopeSyntax>();
+    public class ProgramScopeSyntax : GlobalScopeSyntax { }
 
-        public override SymInfoSyntax bind(ident id)
-        {
-            var res =  base.bind(id);
-            if (res == null)
-            {
-                foreach (var scope in usedUnits)
-                {
-                    res = scope.bind(id);
-                    if (res != null)
-                        return res;
-                }
-            }
-            return res;
-        }
-
-    } // program_module unit_module
+    public class UnitScopeSyntax : GlobalScopeSyntax { }
 
     public abstract class NamedScopeSyntax : ScopeWithDefsSyntax
     {

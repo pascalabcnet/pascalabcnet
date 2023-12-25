@@ -11,49 +11,29 @@ namespace AssignTupleDesugar
 {
     class Program
     {
-        static  Dictionary<string, ScopeSyntax> scopes = new Dictionary<string, ScopeSyntax>();
-
-        static ScopeSyntax getScopeForUnit(string name) => scopes[name];
-
-        static void addScope(string name, ScopeSyntax scope)
+        public static void testFile(string filename, PascalABCNewLanguageParser parser)
         {
-            scopes.Add(name, scope);
-        }
-
-        public static void Main()
-        {
-            string unitName = "../../Test.pas";
-            string name = "../../test_units.pas";
-            var parser = new PascalABCNewLanguageParser();
+            var sr = new StreamReader(filename);
+            string text = sr.ReadToEnd();
             
-            StreamReader sr = new StreamReader(unitName);
-            string unitText = sr.ReadToEnd();
-
-            var sr2 = new StreamReader(name);
-            string text = sr2.ReadToEnd();
-
-
-            var unitRoot = parser.BuildTree(unitName, unitText, ParseMode.Normal);
-            unitRoot.FillParentsInAllChilds();
-
-            var root = parser.BuildTree(name, text, ParseMode.Normal);
+            var root = parser.BuildTree(filename, text, ParseMode.Normal);
             root.FillParentsInAllChilds();
-            
-            var unitBinder = new BindCollectLightSymInfo(unitRoot as compilation_unit, getScopeForUnit, addScope);
-            var binder = new BindCollectLightSymInfo(root as compilation_unit, getScopeForUnit, addScope);
-
-
-
-            var unitVisitor = new BindTestVisitor(unitBinder);
-            unitVisitor.ProcessNode(unitRoot);
+           
+            var binder = new BindCollectLightSymInfo(root as compilation_unit);
+            binder.ProcessNode(root);
 
             var visitor = new BindTestVisitor(binder);
             visitor.ProcessNode(root);
-
-            Console.WriteLine();
+        }
+ 
+        public static void Main()
+        {
             
-            //var pp = new SyntaxVisitors.SimplePrettyPrinterVisitor();
-            //pp.visit(unitRoot);
+            string name = "../../test2.pas";
+            var parser = new PascalABCNewLanguageParser();
+
+            testFile(name, parser);
+           
             Console.ReadKey();
         }
     }
@@ -75,6 +55,7 @@ namespace AssignTupleDesugar
         {
 
             var res = binder.bind(id);
+           
             Console.Write(id.name);
             if(res == null)
             {

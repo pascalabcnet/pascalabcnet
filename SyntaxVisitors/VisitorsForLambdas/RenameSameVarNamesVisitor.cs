@@ -28,7 +28,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         // При выходе из пространства имен мы проверяем, есть ли в словаре такое значение, и если да, очищаем его, присваивая null
         // Переименовывать будем все имена name если ключ name есть в словаре и d[name] != null
        
-        public VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(compilation_unit pm, UnitScopeProvider provider, OnUnitScopeCreated onScopeCreated) : base(pm, provider, onScopeCreated)
+        public VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(compilation_unit pm) : base(pm)
         {
 
         }

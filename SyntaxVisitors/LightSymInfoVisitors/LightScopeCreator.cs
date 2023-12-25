@@ -48,7 +48,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     class CachingScopeCreator : AbstractScopeCreator
     {
-        public Dictionary<syntax_tree_node, ScopeSyntax> map = new Dictionary<syntax_tree_node, ScopeSyntax>();
+        Dictionary<syntax_tree_node, ScopeSyntax> map = new Dictionary<syntax_tree_node, ScopeSyntax>();
 
         public override ScopeSyntax GetScope(syntax_tree_node st)
         {
@@ -62,7 +62,15 @@ namespace PascalABCCompiler.SyntaxTree
             return map[st];
         }
 
-        protected override ScopeSyntax CreateScope(compilation_unit node) => new GlobalScopeSyntax();
+        protected override ScopeSyntax CreateScope(compilation_unit node) {
+
+            if (node is unit_module um)
+                return new UnitScopeSyntax();
+            if (node is program_module pm)
+                return new ProgramScopeSyntax();
+
+            throw new ArgumentException("Unkmown global scope type!!!");
+        }
        
 
         protected override ScopeSyntax CreateScope(procedure_definition node) 

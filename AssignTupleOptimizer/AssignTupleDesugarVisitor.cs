@@ -21,26 +21,22 @@ namespace AssignTupleDesugar
             {
                 List<Symbol> left = new List<Symbol>();
                 List<Symbol> right = new List<Symbol>();
+                
                 foreach (var sym in node.vars.variables)
                 {
                     if (sym is ident id)
                     {
                         var s = binder.bind(id);
                         if (s != null)
-                        {
                             System.Console.WriteLine(id.name + " -> " + s);
-                            left.Add(new Symbol(s.Id.name) { fromOuterScope = isFromOuterScope(s)});
-                        }
-                        else
-                        {
+                        else        
                             System.Console.WriteLine(id.name +" -> not found");
-                            left.Add(new Symbol(id.name) { fromOuterScope = true });
-                        }
+
+                        left.Add(new Symbol(id.name) { fromOuterScope = isFromOuterScope(s) });
                     } 
                     else
-                    {
-                            left.Add( new Symbol("$expr") { isExpr = true  });
-                    }
+                        left.Add( new Symbol("$expr") { isExpr = true  });
+                    
                 }
 
                 foreach (var sym in tn.el.expressions)
@@ -48,21 +44,16 @@ namespace AssignTupleDesugar
                     if (sym is ident id)
                     {
                         var s = binder.bind(id);
-                        if (s != null)
-                        {
-                            System.Console.WriteLine(id.name + " -> " + s);
-                            right.Add(new Symbol(s.Id.name) { fromOuterScope = isFromOuterScope(s) });
-                        }
-                        else
-                        {
+                        if (s != null)  
+                            System.Console.WriteLine(id.name + " -> " + s);         
+                        else  
                             System.Console.WriteLine(id.name + " -> not found");
-                            right.Add(new Symbol(id.name) { fromOuterScope = true });
-                        }
+
+                        right.Add(new Symbol(s.Id.name) { fromOuterScope = isFromOuterScope(s) });
                     }
                     else
-                    {
                         right.Add(new Symbol("$expr") { isExpr = true });
-                    }
+                    
                 }
 
                 var order = Assign.getAssignOrder(left: left, right: right);
@@ -87,10 +78,10 @@ namespace AssignTupleDesugar
         static bool isFromOuterScope(SymInfoSyntax symbol)
         {
             if (symbol == null)
-                return false;
+                return true;
 
             if (symbol.SK == SymKind.var && symbol.Attr.HasFlag(SymbolAttributes.varparam_attr))
-                return false;
+                return true;
             return true;
         }
     }

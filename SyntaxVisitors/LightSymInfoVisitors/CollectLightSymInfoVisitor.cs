@@ -7,39 +7,17 @@ namespace PascalABCCompiler.SyntaxTree
     public abstract class CollectLightSymInfoVisitor : BaseEnterExitVisitor
     {
 
-        public delegate ScopeSyntax UnitScopeProvider(string unitName);
-        public delegate void OnUnitScopeCreated(string unitName, ScopeSyntax scope);
 
         public GlobalScopeSyntax Root;
         public ScopeSyntax Current;
         protected Dictionary<string, NamedScopeSyntax> classes = new Dictionary<string, NamedScopeSyntax>();
-        protected UnitScopeProvider unitScopeProvider;
-        protected OnUnitScopeCreated onUnitScopeCreated;
+  
 
         protected bool inPrivate = false; 
 
-        public CollectLightSymInfoVisitor(compilation_unit root, UnitScopeProvider provider, OnUnitScopeCreated onScopeCreated)
+        public CollectLightSymInfoVisitor(compilation_unit root)
         {
-
-            unitScopeProvider = provider;
-            onUnitScopeCreated = onScopeCreated;
             Root = scopeCreator.GetScope(root) as GlobalScopeSyntax;
-            
-            if (root is program_module pm)
-            {   
-                if (unitScopeProvider != null && pm.used_units != null)
-                    foreach( var unit in pm.used_units.units)
-                    {
-                        Root.usedUnits.Insert(0, unitScopeProvider(unit.name.ToString()) as GlobalScopeSyntax);
-                    }
-            }
-            else if (root is unit_module um )
-            {
-                if (onUnitScopeCreated != null)
-                onUnitScopeCreated(um.unit_name.idunit_name.name, Root);
-            }
-            
-            Current = Root;
         }
         
 

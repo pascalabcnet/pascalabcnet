@@ -8,10 +8,10 @@ namespace PascalABCCompiler.SyntaxTree
 
         private CachingScopeCreator _scopeCreator = new CachingScopeCreator();
 
-        public BindCollectLightSymInfo(compilation_unit root, UnitScopeProvider provider, OnUnitScopeCreated onScopeCreated) : base(root, provider, onScopeCreated)
+        public BindCollectLightSymInfo(compilation_unit root) : base(root)
         {
+            Current = Root;
             visit(root);
-            Current = null;
         }
 
         public SymInfoSyntax bind(ident node)

@@ -15,20 +15,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     public class StandardSyntaxTreeConverter: ISyntaxTreeConverter
     {
         public string Name { get; } = "Standard";
-        //? почему оно живет 
-        // потому что reload не вызывается
-        Dictionary<string, ScopeSyntax> scopes = new Dictionary<string, ScopeSyntax>();
-
-        ScopeSyntax getScopeForUnit(string name) => scopes[name];
-        
-        void addScope(string name, ScopeSyntax scope)
-        {
-            if (!scopes.ContainsKey(name))
-                scopes.Add(name, scope);
-        }
-
-
-
         public syntax_tree_node Convert(syntax_tree_node root)
         {
             // Прошивание ссылками на Parent nodes. Должно идти первым
@@ -123,7 +109,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
 
 #endif
-            var c = new CollectFullLightSymInfoVisitor(root as compilation_unit, getScopeForUnit, addScope);
+            var c = new CollectFullLightSymInfoVisitor(root as compilation_unit);
             c.ProcessNode(root);
             return root;
         }

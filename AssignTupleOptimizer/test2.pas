@@ -12,6 +12,7 @@ end;
 
 begin 
   
+  var f: (integer, integer) -> integer := (x, a) -> x*x + a;
   writeln(a);
   p();
   writeln(a);
