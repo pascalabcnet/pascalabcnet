@@ -422,6 +422,7 @@ namespace PascalABCCompiler
 
         //private SemanticTree.compilation_unitArrayList _interfaceUsedUnits=new SemanticTree.compilation_unitArrayList();
 
+        // название языка модуля
         public string languageName = CompilerStringConstants.pascalLanguageName;
 
         /// <summary>
@@ -502,16 +503,6 @@ namespace PascalABCCompiler
                 base[key] = value;
             }
         }
-    }
-
-    public static class LanguagesData
-    {
-        public static Dictionary<string, string> languagesByExtensions = new Dictionary<string, string>()
-        {
-            [CompilerStringConstants.pascalSourceFileExtension] = CompilerStringConstants.pascalLanguageName,
-
-            // ...
-        };
     }
 
     /// <summary>
@@ -647,7 +638,7 @@ namespace PascalABCCompiler
         }
 
         /// <summary>
-        /// module at index 0 is System module
+        /// Списки стандартных модулей для поддерживаемых языков (первым в списке должен быть модуль "System")
         /// </summary>
         public Dictionary<string, List<StandardModule>> standardModules = new Dictionary<string, List<StandardModule>>()
         {
