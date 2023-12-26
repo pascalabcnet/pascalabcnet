@@ -4244,6 +4244,18 @@ function string.operator+(str: string; n: integer) := str + n.ToString;
 
 // Добавляет к строке str строковое представление числа n
 ///--
+function string.operator+(str: string; n: uint64) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
+function string.operator+(str: string; n: int64) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
+function string.operator+(str: string; n: longword) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
 function string.operator+(n: integer; str: string) := n.ToString + str;
 
 // Добавляет к строке str строковое представление числа r
