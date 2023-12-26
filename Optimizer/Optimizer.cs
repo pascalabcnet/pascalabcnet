@@ -1110,7 +1110,7 @@ namespace PascalABCCompiler
         private void VisitCommonNamespaceFunctionCall(common_namespace_function_call en)
         {
             CheckInfiniteRecursion(en);
-            if ((en.function_node.name == "Reset" || en.function_node.name == "Rewrite" || en.function_node.name == "Assign") && en.function_node.comprehensive_namespace.namespace_name == StringConstants.PABCSystemName)
+            if ((en.function_node.name == "Reset" || en.function_node.name == "Rewrite" || en.function_node.name == "Assign") && en.function_node.comprehensive_namespace.namespace_name == CompilerStringConstants.PABCSystemName)
             {
                 expression_node p = en.parameters[0];
                 switch (p.semantic_node_type)

@@ -47,7 +47,7 @@ namespace CodeCompletion
         public static string currentLanguageISO;
         static string doctagsParserExtension = ".pasdt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
 		//public static PascalABCCompiler.Parsers.IParser currentParser;
-		static string cur_ext = StringConstants.pascalSourceFileExtension;
+		static string cur_ext = CompilerStringConstants.pascalSourceFileExtension;
         private static IParser currentParser;
 
 		public static void SetParser(string ext)

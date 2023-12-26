@@ -2041,7 +2041,7 @@ namespace CodeCompletion
 
             method_call mc = new method_call();
             mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right });
-            mc.dereferencing_value = new dot_node(new ident(StringConstants.PABCSystemName), new ident("InternalRange"));
+            mc.dereferencing_value = new dot_node(new ident(CompilerStringConstants.PABCSystemName), new ident("InternalRange"));
             mc.visit(this);
         }
 
@@ -2051,7 +2051,7 @@ namespace CodeCompletion
             var rr = this.returned_scope;
             //var nn = new new_expr((syntax_type, plist, true, new SyntaxTree.array_const(acn.elements, acn.elements.source_context), acn.source_context);
             //var nn = new new_expr($2, el, true, $6 as array_const, @$);
-            var dn = new dot_node(new ident(StringConstants.PABCSystemName), new ident("Arr"), acn.source_context);
+            var dn = new dot_node(new ident(CompilerStringConstants.PABCSystemName), new ident("Arr"), acn.source_context);
             var el = new expression_list(acn.elements.expressions[0], acn.source_context);
             var nn = new method_call(dn, el, acn.source_context);
             visit(nn);

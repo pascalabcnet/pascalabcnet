@@ -5937,7 +5937,7 @@ namespace CodeCompletion
         {
             method_call mc = new method_call();
             mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right });
-            mc.dereferencing_value = new dot_node(new ident(StringConstants.PABCSystemName), new ident("InternalRange"));
+            mc.dereferencing_value = new dot_node(new ident(CompilerStringConstants.PABCSystemName), new ident("InternalRange"));
             mc.visit(this);
         }
 

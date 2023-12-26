@@ -183,7 +183,7 @@
     <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
       <Link>Config\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="StringConstants.cs">
+    <Compile Include="CompilerStringConstants.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs" />

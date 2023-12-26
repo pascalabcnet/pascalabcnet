@@ -422,12 +422,12 @@ namespace PascalABCCompiler
 
         //private SemanticTree.compilation_unitArrayList _interfaceUsedUnits=new SemanticTree.compilation_unitArrayList();
 
-        public string languageName = StringConstants.pascalLanguageName;
+        public string languageName = CompilerStringConstants.pascalLanguageName;
 
-		/// <summary>
-		/// Только "реальные" юниты (не dll и namespace)
-		/// </summary>
-		public Dictionary<unit_node, CompilationUnit> InterfaceUsedDirectUnits { get; } = new Dictionary<unit_node, CompilationUnit>();
+        /// <summary>
+        /// Только "реальные" юниты (не dll и namespace)
+        /// </summary>
+        public Dictionary<unit_node, CompilationUnit> InterfaceUsedDirectUnits { get; } = new Dictionary<unit_node, CompilationUnit>();
 
         public unit_node_list InterfaceUsedUnits { get; } = new unit_node_list();
         /// <summary>
@@ -508,7 +508,7 @@ namespace PascalABCCompiler
     {
         public static Dictionary<string, string> languagesByExtensions = new Dictionary<string, string>()
         {
-            [StringConstants.pascalSourceFileExtension] = StringConstants.pascalLanguageName,
+            [CompilerStringConstants.pascalSourceFileExtension] = CompilerStringConstants.pascalLanguageName,
 
             // ...
         };
@@ -529,7 +529,7 @@ namespace PascalABCCompiler
         public bool Optimise = false;
         public bool SavePCUInThreadPull = false;
         public bool RunWithEnvironment = false;
-        public string CompiledUnitExtension = StringConstants.pascalCompiledUnitExtension;
+        public string CompiledUnitExtension = CompilerStringConstants.pascalCompiledUnitExtension;
         public bool ProjectCompiled = false;
         public IProjectInfo CurrentProject = null;
         public OutputType OutputFileType = OutputType.ConsoleApplicaton;
@@ -619,7 +619,7 @@ namespace PascalABCCompiler
         {
             public string name = null;
             public StandardModuleAddMethod addMethod = StandardModuleAddMethod.LeftToAll;
-            public string languageToAdd = StringConstants.pascalLanguageName;
+            public string languageToAdd = CompilerStringConstants.pascalLanguageName;
             
             public StandardModule(string Name, StandardModuleAddMethod addMethod)
             {
@@ -651,17 +651,17 @@ namespace PascalABCCompiler
         /// </summary>
         public Dictionary<string, List<StandardModule>> standardModules = new Dictionary<string, List<StandardModule>>()
         {
-            [StringConstants.pascalLanguageName] = new List<StandardModule>
+            [CompilerStringConstants.pascalLanguageName] = new List<StandardModule>
             (
-                StringConstants.pascalDefaultStandardModules.Select(moduleName => new StandardModule(moduleName))
+                CompilerStringConstants.pascalDefaultStandardModules.Select(moduleName => new StandardModule(moduleName))
             ),
 
             // ...
         };
 
 
-		public void RemoveStandardModule(string language, string name)
-		{
+        public void RemoveStandardModule(string language, string name)
+        {
             int moduleIndex = standardModules[language].FindIndex(module => module.name == name);
             
             if (moduleIndex != -1)
@@ -1309,11 +1309,11 @@ namespace PascalABCCompiler
                 string unitName = (unit.SemanticTree as common_unit_node).unit_name;
 
                 // Переделал для проверки стандартных модулей всех языков |    Вопрос  EVA
-				if (CompilerOptions.standardModules.Select(kv => kv.Value[0].name).Contains(unitName))
+                if (CompilerOptions.standardModules.Select(kv => kv.Value[0].name).Contains(unitName))
                 {
-					system_unit = unit;
-					break;
-				}
+                    system_unit = unit;
+                    break;
+                }
             }
 
             if (system_unit != null && system_unit != UnitsLogicallySortedList[0])
@@ -2040,43 +2040,43 @@ namespace PascalABCCompiler
         {
             var compilerDirectives = new List<compiler_directive>();
 
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.product_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.product_string, out compilerDirectives))
             {
                 compilerOptions.Product = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.version_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.version_string, out compilerDirectives))
             {
                 compilerOptions.ProductVersion = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.company_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.company_string, out compilerDirectives))
             {
                 compilerOptions.Company = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.trademark_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.trademark_string, out compilerDirectives))
             {
                 compilerOptions.TradeMark = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.copyright_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.copyright_string, out compilerDirectives))
             {
                 compilerOptions.Copyright = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.title_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.title_string, out compilerDirectives))
             {
                 compilerOptions.Title = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.description_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.description_string, out compilerDirectives))
             {
                 compilerOptions.Description = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.main_resource_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.main_resource_string, out compilerDirectives))
             {
-                if (this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.product_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.version_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.company_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.trademark_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.title_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.description_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.copyright_string))
+                if (this.compilerDirectives.ContainsKey(CompilerStringConstants.product_string) ||
+                    this.compilerDirectives.ContainsKey(CompilerStringConstants.version_string) ||
+                    this.compilerDirectives.ContainsKey(CompilerStringConstants.company_string) ||
+                    this.compilerDirectives.ContainsKey(CompilerStringConstants.trademark_string) ||
+                    this.compilerDirectives.ContainsKey(CompilerStringConstants.title_string) ||
+                    this.compilerDirectives.ContainsKey(CompilerStringConstants.description_string) ||
+                    this.compilerDirectives.ContainsKey(CompilerStringConstants.copyright_string))
                 {
                     ErrorsList.Add(new MainResourceNotAllowed(compilerDirectives[0].location));
                 }
@@ -2299,10 +2299,10 @@ namespace PascalABCCompiler
                 ErrorsList.Add(new CompilerInternalError("Compiler.ClosePCUReadersAndWriters", e));
             }
 
-			// на случай ошибки в самом .pcu формате (имеются в виду ошибки, связанные с невозможностью использования RTL)
-			bool recompilationNeeded = CheckForRTLErrors();
+            // на случай ошибки в самом .pcu формате (имеются в виду ошибки, связанные с невозможностью использования RTL)
+            bool recompilationNeeded = CheckForRTLErrors();
 
-			OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished state
+            OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished state
 
             if (ClearAfterCompilation)
                 ClearAll();
@@ -4005,10 +4005,10 @@ namespace PascalABCCompiler
             if (firstCompilationUnit == null)
                 firstCompilationUnit = currentUnit;
 
-			// TODO: Обсудить   EVA
-			currentUnit.languageName = LanguagesData.languagesByExtensions[Path.GetExtension(unitFileName)];
+            // заполнение названия языка согласно его расширению   EVA
+            currentUnit.languageName = LanguagesData.languagesByExtensions[Path.GetExtension(unitFileName)];
 
-			OnChangeCompilerState(this, CompilerState.BeginCompileFile, unitFileName); // начало компиляции модуля
+            OnChangeCompilerState(this, CompilerState.BeginCompileFile, unitFileName); // начало компиляции модуля
 
             #region SYNTAX TREE CONSTRUCTING
             // получение синтаксического дерева
@@ -4059,11 +4059,11 @@ namespace PascalABCCompiler
 
             UnitTable[UnitId] = currentUnit;
 
-			currentCompilationUnit = currentUnit;
+            currentCompilationUnit = currentUnit;
 
-			// здесь добавляем стандартные модули в секцию uses интерфейса
+            // здесь добавляем стандартные модули в секцию uses интерфейса
 #if DEBUG
-			if (InternalDebug.AddStandartUnits)
+            if (InternalDebug.AddStandartUnits)
 #endif
                 AddStandardUnitsToInterfaceUsesSection(currentUnit.SyntaxTree);
 
@@ -4149,7 +4149,7 @@ namespace PascalABCCompiler
             return syntaxTree;
         }
 
-		private string GetSourceCode(SyntaxTree.unit_or_namespace currentUnitNode, string UnitFileName, CompilationUnit currentUnit)
+        private string GetSourceCode(SyntaxTree.unit_or_namespace currentUnitNode, string UnitFileName, CompilationUnit currentUnit)
         {
             string SourceText = null;
             if (CompilerOptions.UnitSyntaxTree == null)

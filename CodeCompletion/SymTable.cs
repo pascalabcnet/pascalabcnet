@@ -494,7 +494,7 @@ namespace CodeCompletion
         
         private bool hasUsesCycle(SymScope unit, int deep=0)
         {
-            if (unit.Name == StringConstants.PABCSystemName)
+            if (unit.Name == CompilerStringConstants.PABCSystemName)
                 return true;
             if (deep > 100)
                 return true;
@@ -524,7 +524,7 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            if (this.si.name != StringConstants.PABCSystemName || unit is NamespaceScope)
+            if (this.si.name != CompilerStringConstants.PABCSystemName || unit is NamespaceScope)
                 used_units.Add(unit);
         }
 

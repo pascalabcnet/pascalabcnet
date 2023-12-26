@@ -346,16 +346,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_include = "include";
         public static string compiler_directive_targetframework = "targetframework";
 
-        // SSM (3.1.2011) Перенес эти константы сюда. 
-        public static string version_string = "version";
-        public static string product_string = "product";
-        public static string company_string = "company";
-        public static string copyright_string = "copyright";
-        public static string trademark_string = "trademark";
-        public static string main_resource_string = "mainresource";
-        public static string title_string = "title";
-        public static string description_string = "description";
-
+        // SSM (3.1.2011) Перенес эти константы сюда.
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
         public static string system_unit_file_name = "PABCSystem";
         public static string extensions_unit_file_name = "PABCExtensions";
