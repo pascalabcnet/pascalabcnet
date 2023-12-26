@@ -2261,8 +2261,8 @@ namespace PascalABCCompiler
                 ErrorsList.Add(new CompilerInternalError("Compiler.ClosePCUReadersAndWriters", e));
             }
 
-            // на случай ошибки в самом .pcu формате (имеются в виду ошибки, связанные с невозможностью использования RTL)
-            bool recompilationNeeded = CheckForRTLErrors();
+            // если есть семантические ошибки в RTL, то очистить ошибки и повторно перекомпилировать без RTL
+            bool recompilationNeeded = CheckForRTLErrorsAndClearAllErrorsIfFound();
 
             OnChangeCompilerState(this, CompilerState.CompilationFinished, CompilerOptions.SourceFileName); // compilation finished state
 
@@ -2446,7 +2446,7 @@ namespace PascalABCCompiler
         }
 
 
-        private bool CheckForRTLErrors()
+        private bool CheckForRTLErrorsAndClearAllErrorsIfFound()
         {
             bool anyRTLErrors = false;
 
