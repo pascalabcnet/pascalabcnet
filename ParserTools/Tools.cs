@@ -21,8 +21,8 @@ namespace PascalABCCompiler
             {
                 case SourceFileOperation.GetText:
                     if (!File.Exists(FileName)) return null;
-                    /*TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
-                    //TextReader tr = new StreamReader(FileName, System.Text.Encoding.);
+                    /*TextReader tr = new StreamReader(file_name, System.Text.Encoding.GetEncoding(1251));
+                    //TextReader tr = new StreamReader(file_name, System.Text.Encoding.);
                     string Text = tr.ReadToEnd();
                     tr.Close();*/
                     string Text = FileReader.ReadFileContent(FileName, null);

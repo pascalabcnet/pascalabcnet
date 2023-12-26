@@ -227,7 +227,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
                                     si.sym_info.semantic_node_type == semantic_node_type.class_field ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.basic_property_node
+                                    si.sym_info.semantic_node_type == semantic_node_type.basic_property_node ||
+                                    si.sym_info.semantic_node_type == semantic_node_type.compiled_class_constant_definition
                                     ;
             //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
             // Использую этот трюк для нестатических полей предков - они не захватываются из-за плохого алгоритма захвата

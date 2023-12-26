@@ -5250,7 +5250,7 @@ namespace CodeCompletion
         {
             this.name = name;
             this.si = new SymInfo(name, SymbolKind.Namespace, name);
-            this.si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            this.si.description = CodeCompletionController.CurrentParser?.LanguageInformation.GetDescription(this);
         }
 
         public override ScopeKind Kind
@@ -5559,7 +5559,7 @@ namespace CodeCompletion
             }
             if (si.name == null)
                 AssemblyDocCache.AddDescribeToComplete(this.si, ctn);
-            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
+            this.si.name = CodeCompletionController.CurrentParser?.LanguageInformation.GetShortName(this);
             this.si.kind = get_kind();
             this.si.description = GetDescription();
             
@@ -6196,7 +6196,7 @@ namespace CodeCompletion
 
         public override string GetDescription()
         {
-            return CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            return CodeCompletionController.CurrentParser?.LanguageInformation.GetDescription(this);
         }
 
         public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)

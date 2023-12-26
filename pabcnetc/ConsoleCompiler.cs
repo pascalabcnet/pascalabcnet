@@ -347,7 +347,7 @@ namespace PascalABCCompiler
                     FileName = string.Format("[{0}]{1} {2}...", Math.Round((DateTime.Now - StartTime).TotalMilliseconds), State, System.IO.Path.GetFileName(FileName));
                     StartTime = DateTime.Now;
                     Console.WriteLine(FileName);
-                    //Console.Title = FileName;
+                    //Console.Title = file_name;
                 }
                 else
                 {
