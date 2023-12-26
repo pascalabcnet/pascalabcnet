@@ -795,8 +795,7 @@ namespace PascalABCCompiler
             {
                 if (RevisionClass.Build == "0")
                     return RevisionClass.MainVersion;
-                else 
-                    // TODO: Недостижимый код  | EVA
+                else
                     return RevisionClass.MainVersion + "." + RevisionClass.Build;
             }
         }
@@ -2210,7 +2209,7 @@ namespace PascalABCCompiler
                 if (ErrorsList.Count == 0)
                 {
 
-                    //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Думать позже  EVA
+                    //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Отложено на потом  EVA
                     // получние полного семантического дерева, включающего все зависимости
                     program_node semanticTree = ConstructMainSemanticTree(compilerOptions); 
 
@@ -3042,7 +3041,7 @@ namespace PascalABCCompiler
                     unitToAdd = new SyntaxTree.uses_unit_in(
                         new SyntaxTree.ident_list(new SyntaxTree.ident(moduleName)),
                         new SyntaxTree.string_const(module.Name));
-                    //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1); Вопрос  EVA
+                    //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
                 }
                 else
                 {
@@ -3734,7 +3733,7 @@ namespace PascalABCCompiler
 
             references = GetReferences(currentUnit);
 
-            // TODO: закончить рефакторинг  | Вопрос, как мы будем подключать про-ва имен из других языков  EVA
+            // Надо подумать, как мы будем подключать про-ва имен из других языков  EVA
             namespaces = PrepareUserNamespacesUsedInTheCurrentUnit(currentUnit);
         }
 
@@ -3935,7 +3934,8 @@ namespace PascalABCCompiler
                 {
                     // если сначала взяли pcu а потом решили его перекомпилировать, поэтому в таблице его нет
                     if (UnitTable[transitivelyUsedUnit] == null)
-                        UnitTable[usedUnitId].currentUsedUnitId = transitivelyUsedUnit; // Вопрос  EVA
+                        UnitTable[usedUnitId].currentUsedUnitId = transitivelyUsedUnit;
+
                     // если "используемый используемого" (транзитивно зависимый) модуль находится в том же состоянии, что и просто используемый, то это означает циклическую зависимость
                     if (UnitTable[usedUnitId].currentUsedUnitId != null && UnitTable[UnitTable[usedUnitId].currentUsedUnitId].State == UnitState.BeginCompilation)
                         throw new CycleUnitReference(unitFileName, usedUnitNode);
@@ -4005,9 +4005,8 @@ namespace PascalABCCompiler
             SemanticCheckNoIncludeDirectivesInPascalUnit(currentUnit);
             #endregion
 
-            // Set output file type for dll
             if (isDll)
-                CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // Вопрос, нужно ли это здесь, если это есть в Compile в конце  EVA
+                CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // есть также в конце Compile
 
             if (ParsersController.LastParser != null)
                 currentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
