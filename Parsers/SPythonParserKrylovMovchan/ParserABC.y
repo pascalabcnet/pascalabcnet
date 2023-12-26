@@ -42,7 +42,10 @@
 %token <op> PLUS MINUS MULTIPLY DIVIDE
 %token <id> ID INT
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
+%token <op> AND OR
 
+%left OR
+%left AND
 %left LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
@@ -181,6 +184,10 @@ expr
 	| expr EQUAL 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| expr NOTEQUAL 	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr AND 			expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr OR 			expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| variable				
 		{ $$ = $1; }

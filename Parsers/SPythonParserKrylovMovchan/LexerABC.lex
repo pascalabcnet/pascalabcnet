@@ -34,6 +34,9 @@ ID {Alpha}{AlphaDigit}*
   return (int)Tokens.REALNUM;
 }
 
+"and" { yylval.op = new op_type_node(Operators.LogicalAND); return (int)Tokens.AND; }
+"or"  { yylval.op = new op_type_node(Operators.LogicalOR); return (int)Tokens.OR; }
+
 {ID}  {
   string cur_yytext = yytext;
   int res = Keywords.KeywordOrIDToken(cur_yytext);
