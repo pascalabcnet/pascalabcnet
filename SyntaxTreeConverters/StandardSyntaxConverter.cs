@@ -109,8 +109,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
 
 #endif
-            var c = new CollectFullLightSymInfoVisitor(root as compilation_unit);
-            c.ProcessNode(root);
             return root;
         }
     }
