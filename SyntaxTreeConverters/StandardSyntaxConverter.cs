@@ -37,7 +37,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
             StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
-            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as program_module).ProcessNode(root); // SSM bug fix #1147
+            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root); 
             FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
 
             // loop
@@ -109,8 +109,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
 
 #endif
-            var c = new CollectFullLightSymInfoVisitor(root as compilation_unit);
-            c.ProcessNode(root);
             return root;
         }
     }
