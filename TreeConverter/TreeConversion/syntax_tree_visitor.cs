@@ -12984,9 +12984,10 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (ctn.base_type != null && ctn.base_type.is_generic_parameter && ctn.base_type.ImplementingInterfaces != null && ctn.base_type.ImplementingInterfaces.Count > 0)
                 {
-                    foreach (type_node tn in ctn.ImplementingInterfaces)
+                    foreach (type_node tn in ctn.base_type.ImplementingInterfaces)
                     {
                         type_table.AddInterface(ctn, tn, null);
+                        InitInterfaceScope(ctn);
                     }
                 }
             }
