@@ -38,6 +38,8 @@ namespace PascalABCCompiler.TreeConverter
             oper_names[mod_name] = "op_Modulus";
             oper_names[not_name] = "op_LogicalNot";
             oper_names[noteq_name] = "op_Inequality";
+            oper_names[shl_name] = "op_LeftShift";
+            oper_names[shr_name] = "op_RightShift";
         }
 
         public static string GetNETOperName(string name)
