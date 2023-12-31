@@ -37,7 +37,6 @@
 **/CompilerController.dll
 **/CompilerTools.dll
 **/Errors.dll
-**/ShiftReduceParser.dll
 **/HelpBuilder.dll
 **/InternalErrorReport.dll
 **/LambdaAnySynToSemConverter.dll
@@ -71,7 +70,6 @@
 **/PascalABCNET.exe.config
 **/PascalABCNETLinux.exe
 **/PascalABCNETLinux.exe.config
-**/UniversalParserHelper.dll
 
 
 

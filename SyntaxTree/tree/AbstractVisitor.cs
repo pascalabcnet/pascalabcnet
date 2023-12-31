@@ -1312,6 +1312,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_ref_var_def_statement);
 		}
+
+		public virtual void visit(let_var_expr _let_var_expr)
+		{
+			DefaultVisit(_let_var_expr);
+		}
 	}
 
 

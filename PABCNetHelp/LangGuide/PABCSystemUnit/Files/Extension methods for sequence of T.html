@@ -4,6 +4,7 @@
 <param name="Keyword" value="Batch">
 <param name="Keyword" value="Cartesian">
 <param name="Keyword" value="CountOf">
+<param name="Keyword" value="Flatten">
 <param name="Keyword" value="ForEach">
 <param name="Keyword" value="function">
 <param name="Keyword" value="Incremental">
@@ -56,6 +57,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую пару на значение</td></tr>
 <tr><td><code><b>function</b> CountOf&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов, равных указанному значению</td></tr>
+<tr><td><code><b>function</b> Flatten&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует последовательность последовательностей в плоскую последовательность</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: T -&gt; ());</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет действие к каждому элементу последовательности</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: (T,integer) -&gt; ());</code>

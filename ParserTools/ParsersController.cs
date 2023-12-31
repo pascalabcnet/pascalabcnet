@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.IO;
@@ -54,6 +54,12 @@ namespace PascalABCCompiler.Parsers
                             }
                         }
                     }
+                }
+                catch (System.Reflection.ReflectionTypeLoadException e)
+                {
+                    Console.Error.WriteLine("Parser {0} reflection error {1}", Path.GetFileName(fi.FullName), e);
+                    foreach (var le in e.LoaderExceptions)
+                        Console.Error.WriteLine(le);
                 }
                 catch (Exception e)
                 {

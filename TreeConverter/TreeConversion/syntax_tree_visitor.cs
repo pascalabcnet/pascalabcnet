@@ -4100,7 +4100,18 @@ namespace PascalABCCompiler.TreeConverter
             (ctn.Scope as SymbolTable.InterfaceScope).TopInterfaceScopeArray =
                 interf_scopes.ToArray();
         }
-		
+
+        private void InitInterfaceScope(common_type_node ctn, List<SemanticTree.ITypeNode> interfaces)
+        {
+            List<SymbolTable.Scope> interf_scopes = new List<SymbolTable.Scope>(interfaces.Count);
+            foreach (type_node tnode in interfaces)
+            {
+                interf_scopes.Add(tnode.Scope);
+            }
+            (ctn.Scope as SymbolTable.InterfaceScope).TopInterfaceScopeArray =
+                interf_scopes.ToArray();
+        }
+
         private void visit_function_realizations(SyntaxTree.declarations _decls)
         {
         	foreach (SyntaxTree.declaration sd in _decls.defs)
@@ -12969,6 +12980,17 @@ namespace PascalABCCompiler.TreeConverter
                     ind++;
                 }
             }
+            foreach (common_type_node ctn in used_types)
+            {
+                if (ctn.base_type != null && ctn.base_type.is_generic_parameter && ctn.base_type.ImplementingInterfaces != null && ctn.base_type.ImplementingInterfaces.Count > 0)
+                {
+                    foreach (type_node tn in ctn.base_type.ImplementingInterfaces)
+                    {
+                        type_table.AddInterface(ctn, tn, null);
+                        InitInterfaceScope(ctn);
+                    }
+                }
+            }
             context.EndSkipGenericInstanceChecking();
         }
 
@@ -13071,6 +13093,14 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 check_cycle_inheritance(param, spec_type);
                                 param.SetBaseType(spec_type);
+                                if (spec_type.is_generic_parameter && spec_type.ImplementingInterfaces.Count > 0)
+                                {
+                                    foreach (type_node tn in spec_type.ImplementingInterfaces)
+                                    {
+                                        used_interfs.Add(tn, tn);
+                                        type_table.AddInterface(param, tn, get_location(specificators[i]));
+                                    }
+                                }
                                 base_is_enum = spec_type == SystemLibrary.SystemLibrary.enum_base_type;
                                 // Чтобы в секции where override метода можно было указать class вместо конкретного типа
                                 // Иначе CLR падает с TypeLoadException
@@ -19768,6 +19798,13 @@ namespace PascalABCCompiler.TreeConverter
         {
             visit(node.var_def);
             ret.reset(); // SSM 19.01.17 не возвращать семантическое значение т.к. ничего не нужно добавлять в текущий список операторов!!
+        }
+
+        public override void visit(SyntaxTree.let_var_expr node)
+        {
+            var vs = new SyntaxTree.var_statement(node.id, node.ex);
+            visit(vs);
+            return_value((statement_node)convert_strong(node.ex));
         }
 
         public override void visit(SyntaxTree.expression_as_statement node)

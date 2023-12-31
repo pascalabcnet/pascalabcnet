@@ -2745,7 +2745,19 @@ namespace PascalABCCompiler.TreeConverter
 		
         private void check_implement_abstract_function(common_type_node cnode, function_node meth, type_node interf)
         {
+            //if (meth.field_access_level == SemanticTree.field_access_level.fal_private)
+            //    return;
         	List<SymbolInfo> sil = cnode.find_in_type(meth.name, cnode.Scope);
+            if (meth.field_access_level == SemanticTree.field_access_level.fal_private)
+            {
+                var base_type = cnode.base_type; 
+                while (base_type != null && base_type.IsAbstract)
+                {
+                    base_type = base_type.base_type;
+                }
+                if (base_type != null && !base_type.IsAbstract && base_type != SystemLibrary.SystemLibrary.object_type)
+                    return;
+            }
             function_node fn = null;
             if (sil != null)
             {
