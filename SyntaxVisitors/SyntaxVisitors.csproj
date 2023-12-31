@@ -45,6 +45,11 @@
     <Compile Include="AllVarsInProcYieldsProba.cs" />
     <Compile Include="BaseVisitors\CollectNamespaces.cs" />
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
+    <Compile Include="LightSymInfoVisitors\BindCollectLightSymInfo.cs" />
+    <Compile Include="LightSymInfoVisitors\CollectFullLightSymInfoVisitor.cs" />
+    <Compile Include="LightSymInfoVisitors\CollectLightSymInfoVisitor.cs" />
+    <Compile Include="LightSymInfoVisitors\LightScopeCreator.cs" />
+    <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
     <Compile Include="SugarVisitors\CacheFunctionVisitor.cs" />
     <Compile Include="SugarVisitors\UnpackLambdaParametersVisitor.cs" />
     <Compile Include="TeacherControl\TeacherControl.cs" />
@@ -52,9 +57,6 @@
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />
     <Compile Include="CheckingVisitors\UnnamedRecordsCheckErrorsVisitor.cs" />
-    <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
-    <Compile Include="LightSymInfoVisitors\SymInfoCollect1.cs" />
-    <Compile Include="LightSymInfoVisitors\SymInfoCollect1Helper.cs" />
     <Compile Include="PatternsVisitors\ExtendedIsDesugaringVisitor.cs" />
     <Compile Include="PatternsVisitors\PatternsDesugaringVisitor.cs" />
     <Compile Include="PatternsVisitors\ReplaceNamesInIsVarVisitor.cs" />
