@@ -19,7 +19,7 @@ jobs:
     name: Prepare and build on Windows Server VM (2019)
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
     - name: Install dependencies into Virtual Environment...
       run: _RegisterHelixNUnit.bat
