@@ -3357,6 +3357,17 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="let_var_expr" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="id" SyntaxType="ident" />
+        <SyntaxField Name="ex" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3424,6 +3435,7 @@
       <HelpData Key=".handlers" Value="" />
       <HelpData Key=".has_deref" Value="" />
       <HelpData Key=".i" Value="" />
+      <HelpData Key=".id" Value="" />
       <HelpData Key=".if_false" Value="" />
       <HelpData Key=".if_true" Value="" />
       <HelpData Key=".il" Value="" />
@@ -4115,6 +4127,9 @@
       <HelpData Key="lambda_inferred_type._realType" Value="" />
       <HelpData Key="lambda_inferred_type.realType" Value="" />
       <HelpData Key="lambda_inferred_type.real_type" Value="" />
+      <HelpData Key="let_var_expr" Value="" />
+      <HelpData Key="let_var_expr.ex" Value="" />
+      <HelpData Key="let_var_expr.id" Value="" />
       <HelpData Key="literal" Value="#12 либо 'abc'" />
       <HelpData Key="literal_const_line" Value="Представляет в синтаксическом дереве строку вида #123'abc'#124#125." />
       <HelpData Key="literal_const_line.literal_const_line Add(literal _literal)" Value="" />

@@ -4244,6 +4244,18 @@ function string.operator+(str: string; n: integer) := str + n.ToString;
 
 // Добавляет к строке str строковое представление числа n
 ///--
+function string.operator+(str: string; n: uint64) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
+function string.operator+(str: string; n: int64) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
+function string.operator+(str: string; n: longword) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
 function string.operator+(n: integer; str: string) := n.ToString + str;
 
 // Добавляет к строке str строковое представление числа r
@@ -13001,8 +13013,9 @@ end;
 /// Заменяет count вхождений подстроки oldStr на подстроку newStr в исходной строке
 function Replace(Self: string; oldStr,newStr: string; count: integer): string; extensionmethod;
 begin
-  var reg := new Regex(Regex.Escape(oldStr));
-  Result := reg.Replace(Self,newStr,count);
+  //var reg := new Regex(Regex.Escape(oldStr));
+  //Result := reg.Replace(Self,newStr,count);
+  Result := Self.Split(|oldStr|, count+1, System.StringSplitOptions.None).JoinToString(newStr);
 end;
 
 /// Возвращает True если значение находится между двумя другими

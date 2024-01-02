@@ -576,7 +576,7 @@ namespace PascalABCCompiler.TreeConverter
             _compiled_unit = null;
             _referenced_units = null;
             current_document = null;
-            using_list.clear();
+            using_list.Clear();
             //_referenced_units.clear();
             ret.reset();
             motivation_keeper.reset();
@@ -1481,7 +1481,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                     	if (cmn.cont_type.IsAbstract)
                                             AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name);
-                                    	ret.clear();
+                                    	ret.Clear();
                                         ret.AddElement(new common_constructor_call(cmn, loc));
                                         return ret;
                                     }
@@ -4100,7 +4100,18 @@ namespace PascalABCCompiler.TreeConverter
             (ctn.Scope as SymbolTable.InterfaceScope).TopInterfaceScopeArray =
                 interf_scopes.ToArray();
         }
-		
+
+        private void InitInterfaceScope(common_type_node ctn, List<SemanticTree.ITypeNode> interfaces)
+        {
+            List<SymbolTable.Scope> interf_scopes = new List<SymbolTable.Scope>(interfaces.Count);
+            foreach (type_node tnode in interfaces)
+            {
+                interf_scopes.Add(tnode.Scope);
+            }
+            (ctn.Scope as SymbolTable.InterfaceScope).TopInterfaceScopeArray =
+                interf_scopes.ToArray();
+        }
+
         private void visit_function_realizations(SyntaxTree.declarations _decls)
         {
         	foreach (SyntaxTree.declaration sd in _decls.defs)
@@ -8869,7 +8880,7 @@ namespace PascalABCCompiler.TreeConverter
                     check_on_loop_variable(en);
                     //if (en.type == null)
                     //throw new CanNotRead(en.location);
-                    exl.clear();
+                    exl.Clear();
                     if (read_from_file)
                         exl.AddElement(file);
                     if (read_from_typed_file)
@@ -8983,7 +8994,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (last_call != null && convertion_data_and_alghoritms.statement_list_stack.size > 0)
                         convertion_data_and_alghoritms.statement_list_stack.top().statements.AddElement(last_call);
-                    exl.clear();
+                    exl.Clear();
 
                     if (read_from_file)
                         exl.AddElement(file);
@@ -11796,7 +11807,7 @@ namespace PascalABCCompiler.TreeConverter
                 parameter_list temp_params = new parameter_list();
                 foreach (SyntaxTree.typed_parameters tpars in syn_parametres.params_list)
                 {
-                    temp_params.clear();
+                    temp_params.Clear();
                     SemanticTree.parameter_type pt = SemanticTree.parameter_type.value;
                     concrete_parameter_type cpt = concrete_parameter_type.cpt_none;
                     switch (tpars.param_kind)
@@ -12969,6 +12980,17 @@ namespace PascalABCCompiler.TreeConverter
                     ind++;
                 }
             }
+            foreach (common_type_node ctn in used_types)
+            {
+                if (ctn.base_type != null && ctn.base_type.is_generic_parameter && ctn.base_type.ImplementingInterfaces != null && ctn.base_type.ImplementingInterfaces.Count > 0)
+                {
+                    foreach (type_node tn in ctn.base_type.ImplementingInterfaces)
+                    {
+                        type_table.AddInterface(ctn, tn, null);
+                        InitInterfaceScope(ctn);
+                    }
+                }
+            }
             context.EndSkipGenericInstanceChecking();
         }
 
@@ -13071,6 +13093,14 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 check_cycle_inheritance(param, spec_type);
                                 param.SetBaseType(spec_type);
+                                if (spec_type.is_generic_parameter && spec_type.ImplementingInterfaces.Count > 0)
+                                {
+                                    foreach (type_node tn in spec_type.ImplementingInterfaces)
+                                    {
+                                        used_interfs.Add(tn, tn);
+                                        type_table.AddInterface(param, tn, get_location(specificators[i]));
+                                    }
+                                }
                                 base_is_enum = spec_type == SystemLibrary.SystemLibrary.enum_base_type;
                                 // Чтобы в секции where override метода можно было указать class вместо конкретного типа
                                 // Иначе CLR падает с TypeLoadException
@@ -19053,7 +19083,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 current_using_list.AddElement(un);
             }
-            using_list.clear();
+            using_list.Clear();
             foreach (using_namespace un in tc.using_list)
             {
                 using_list.AddElement(un);
@@ -19149,7 +19179,7 @@ namespace PascalABCCompiler.TreeConverter
                             context.converted_namespace = pdi.nspace;
                             using_namespace_list ulist =
                                 (pdi.nspace == tc.cnn) ? tc.using_list : tc.using_list2;
-                            using_list.clear();
+                            using_list.Clear();
                             foreach (using_namespace un in ulist)
                             {
                                 using_list.AddElement(un);
@@ -19198,7 +19228,7 @@ namespace PascalABCCompiler.TreeConverter
             type_section_converting = current_type_section_converting;
             context.member_decls = current_member_decls;
             context.var_defs = current_var_defs;
-            using_list.clear();
+            using_list.Clear();
             foreach (using_namespace un in current_using_list)
             {
                 using_list.AddElement(un);
@@ -19768,6 +19798,13 @@ namespace PascalABCCompiler.TreeConverter
         {
             visit(node.var_def);
             ret.reset(); // SSM 19.01.17 не возвращать семантическое значение т.к. ничего не нужно добавлять в текущий список операторов!!
+        }
+
+        public override void visit(SyntaxTree.let_var_expr node)
+        {
+            var vs = new SyntaxTree.var_statement(node.id, node.ex);
+            visit(vs);
+            return_value((statement_node)convert_strong(node.ex));
         }
 
         public override void visit(SyntaxTree.expression_as_statement node)

@@ -67,7 +67,7 @@ namespace PascalABCCompiler
                         return text;
                     if (!File.Exists(FileName))
                         return null;
-                    /*TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
+                    /*TextReader tr = new StreamReader(file_name, System.Text.Encoding.GetEncoding(1251));
                     text = tr.ReadToEnd();
                     tr.Close();*/
                     text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);
@@ -267,13 +267,13 @@ namespace PascalABCCompiler
                     sendWorkingSet();
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsClearStandartModules:
-                    compiler.CompilerOptions.StandartModules.Clear();
+                    compiler.CompilerOptions.StandardModules.Clear();
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsStandartModule:
-                    CompilerOptions.StandartModule sm = new CompilerOptions.StandartModule(args[0],
-                        (CompilerOptions.StandartModuleAddMethod)Convert.ToInt32(args[1]),
+                    CompilerOptions.StandardModule sm = new CompilerOptions.StandardModule(args[0],
+                        (CompilerOptions.StandardModuleAddMethod)Convert.ToInt32(args[1]),
                         (PascalABCCompiler.SyntaxTree.LanguageId)Convert.ToInt32(args[2]));
-                    compiler.CompilerOptions.StandartModules.Add(sm);
+                    compiler.CompilerOptions.StandardModules.Add(sm);
                     break;
                 case ConsoleCompilerConstants.InternalDebug:
                     compiler.InternalDebug = (CompilerInternalDebug)ReadObject();

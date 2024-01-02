@@ -10,7 +10,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
     // Первое предназначение - вынести последовательность из заголовка в foreach до foreach как отдельное присваивание
     // Второе предназначение - переименовать все переменные, совпадающие по имени с типом T обобщенного класса, в котором находится метод, содержащий лямбду
-    public class VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer: CollectLightSymInfoVisitor
+    public class VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer: CollectFullLightSymInfoVisitor
     {
         /// <summary>
         /// Надо приводить к нижнему регистру
@@ -27,11 +27,13 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         // Описание переменной в словарь добавляется только если она описана в методе, но вне лямбды, поскольку в лямбде конфликтов имен нет
         // При выходе из пространства имен мы проверяем, есть ли в словаре такое значение, и если да, очищаем его, присваивая null
         // Переименовывать будем все имена name если ключ name есть в словаре и d[name] != null
-        public static new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer New 
+       
+        public VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(compilation_unit pm) : base(pm)
         {
-            get => new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer();
+
         }
-        public override void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
+
+        public override void AddSymbol(ident name, SymKind kind, type_definition td = null, SymbolAttributes attr = 0)
         {
             if (name == null || name.name == null)
             {
@@ -163,7 +165,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // это точно надо захватывать
         }
 
-        public override void visit(var_def_statement vds)
+        public override void visit(var_def_statement vds) 
         {
             // имена обойти отдельно, инициализатор - отдельно
             foreach (var id in vds.vars.idents)

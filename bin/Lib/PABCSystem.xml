@@ -2746,6 +2746,15 @@
     <member name="M:+(System.String,System.Int32)">
       <summary>--</summary>
     </member>
+    <member name="M:+(System.String,System.UInt64)">
+      <summary>--</summary>
+    </member>
+    <member name="M:+(System.String,System.Int64)">
+      <summary>--</summary>
+    </member>
+    <member name="M:+(System.String,System.UInt32)">
+      <summary>--</summary>
+    </member>
     <member name="M:+(System.Int32,System.String)">
       <summary>--</summary>
     </member>
