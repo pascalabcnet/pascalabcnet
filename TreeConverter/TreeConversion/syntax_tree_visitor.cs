@@ -19800,13 +19800,6 @@ namespace PascalABCCompiler.TreeConverter
             ret.reset(); // SSM 19.01.17 не возвращать семантическое значение т.к. ничего не нужно добавлять в текущий список операторов!!
         }
 
-        public override void visit(SyntaxTree.let_var_expr node)
-        {
-            var vs = new SyntaxTree.var_statement(node.id, node.ex);
-            visit(vs);
-            return_value((statement_node)convert_strong(node.ex));
-        }
-
         public override void visit(SyntaxTree.expression_as_statement node)
         {
             return_value((statement_node)convert_strong(node.expr));
