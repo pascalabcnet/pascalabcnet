@@ -1291,7 +1291,7 @@ namespace PascalABCCompiler
             if (CompilerOptions.standardModules.Count == 0)
                 return;
 
-            CompilationUnit system_unit = null;
+            CompilationUnit systemUnit = null;
             foreach (CompilationUnit unit in UnitsLogicallySortedList)
             {
                 if (unit.SemanticTree == null || !(unit.SemanticTree is common_unit_node))
@@ -1299,18 +1299,18 @@ namespace PascalABCCompiler
 
                 string unitName = (unit.SemanticTree as common_unit_node).unit_name;
 
-                // Переделал для проверки стандартных модулей всех языков |    Вопрос  EVA
+                // Пока что сделана проверка для всех языков   |    Вопрос  EVA
                 if (CompilerOptions.standardModules.Select(kv => kv.Value[0].name).Contains(unitName))
                 {
-                    system_unit = unit;
+                    systemUnit = unit;
                     break;
                 }
             }
 
-            if (system_unit != null && system_unit != UnitsLogicallySortedList[0])
+            if (systemUnit != null && systemUnit != UnitsLogicallySortedList[0])
             {
-                UnitsLogicallySortedList.Remove(system_unit);
-                UnitsLogicallySortedList.Insert(0, system_unit);
+                UnitsLogicallySortedList.Remove(systemUnit);
+                UnitsLogicallySortedList.Insert(0, systemUnit);
             }
 
         }
@@ -2205,7 +2205,7 @@ namespace PascalABCCompiler
                 }
 
                 // вызов события смены состояния компилятора - начало компиляции
-                // событие имеет много потенциальных обработчиков
+                // информация о состояниях выводится в сообщениях компилятора
                 OnChangeCompilerState(this, CompilerState.CompilationStarting, CompilerOptions.SourceFileName);
 
                 // очистка всех переменных и списков, используемых в процессе
@@ -2677,7 +2677,7 @@ namespace PascalABCCompiler
             {
                 if (unitModule.interface_part.uses_modules == null)
                 {
-                    if (CompilerOptions.standardModules.Count > 0)
+                    if (CompilerOptions.standardModules[currentCompilationUnit.languageName].Count > 0)
                     {
                         unitModule.interface_part.uses_modules = new SyntaxTree.uses_list();
                         unitModule.interface_part.uses_modules.source_context = new SyntaxTree.SourceContext();
@@ -2691,7 +2691,7 @@ namespace PascalABCCompiler
             {
                 if (programModule.used_units == null)
                 {
-                    if (CompilerOptions.standardModules.Count > 0)
+                    if (CompilerOptions.standardModules[currentCompilationUnit.languageName].Count > 0)
                     {
                         programModule.used_units = new SyntaxTree.uses_list();
                         programModule.used_units.source_context = new SyntaxTree.SourceContext();
@@ -3025,7 +3025,7 @@ namespace PascalABCCompiler
 
         public void AddStandardUnitsToInterfaceUsesSection(SyntaxTree.compilation_unit unitSyntaxTree)
         {
-            if (CompilerOptions.standardModules.Count == 0)
+            if (CompilerOptions.standardModules[currentCompilationUnit.languageName].Count == 0)
                 return;
 
             List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(unitSyntaxTree);
@@ -3996,6 +3996,8 @@ namespace PascalABCCompiler
             if (firstCompilationUnit == null)
                 firstCompilationUnit = currentUnit;
 
+            
+
             // заполнение названия языка согласно его расширению   EVA
             currentUnit.languageName = LanguagesData.languagesByExtensions[Path.GetExtension(unitFileName)];
 
@@ -4051,6 +4053,8 @@ namespace PascalABCCompiler
             UnitTable[UnitId] = currentUnit;
 
             currentCompilationUnit = currentUnit;
+
+            
 
             // здесь добавляем стандартные модули в секцию uses интерфейса
 #if DEBUG

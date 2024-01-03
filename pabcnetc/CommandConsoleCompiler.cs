@@ -267,7 +267,8 @@ namespace PascalABCCompiler
                     sendWorkingSet();
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsClearStandartModules:
-                    compiler.CompilerOptions.standardModules.Clear();
+                    foreach (var modulesList in compiler.CompilerOptions.standardModules.Values)
+                        modulesList.Clear();
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsStandartModule:
                     CompilerOptions.StandardModule sm = new CompilerOptions.StandardModule(args[0],
