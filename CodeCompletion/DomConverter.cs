@@ -56,7 +56,7 @@ namespace CodeCompletion
                 foreach (string s in files)
                 {
                     string fname = Path.GetFileNameWithoutExtension(s);
-                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == CompilerStringConstants.PABCSystemName)
+                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == CompilerStringConstants.PABCExtensionsName)
                         continue;
                     SymInfo si = new SymInfo(Path.GetFileNameWithoutExtension(s), SymbolKind.Namespace, null);
                     si.IsUnitNamespace = true;
