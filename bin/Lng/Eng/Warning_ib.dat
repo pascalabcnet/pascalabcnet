@@ -9,3 +9,4 @@ UNDEFINED_RETURN_VALUE_{0}=Return value of function '{0}' is not to be set
 DO_NOT_USE_SHORT_STRINGS=Don't use short strings
 DO_NOT_USE_POINTERS_TO_RECORDS=Don't use pointers to records. You classes instead
 INFINITE_RECURSION=Infinite recursion detected
+UNKNOWN_DIRECTIVE=Unknown directive '{0}'

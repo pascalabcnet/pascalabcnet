@@ -2106,4 +2106,9 @@ namespace PascalABCCompiler.SyntaxTree
 
     public class semantic_check_delegates_pointers_in_cached_function // класс - маркер семантической проверки
     { }
+
+    public partial class let_var_expr
+    {
+        public bool visit_var = true;
+    }
 }

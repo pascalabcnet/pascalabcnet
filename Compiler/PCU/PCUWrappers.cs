@@ -189,7 +189,9 @@ namespace PascalABCCompiler.PCU
         {
             if (pcu_tsi == null)
                 return true;
-            if (pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && pcu_tsi.virtual_slot)
+            //if (pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && pcu_tsi.virtual_slot)
+            //    return true;
+            if (pcu_tsi.always_restore)
                 return true;
             if (hasNotRestoreAttribute())
                 return false;

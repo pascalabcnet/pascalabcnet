@@ -4219,8 +4219,6 @@ factor
 		{ $$ = $1; }
 	| tuple 
 		{ $$ = $1; }
-	| tkRoundOpen tkVar identifier tkAssign expr_dq tkRoundClose 
-		{ $$ = new let_var_expr($3,$5,@$); } 
 	;
       
 literal_or_number
@@ -4255,6 +4253,8 @@ var_reference
 		{ $$ = $1; }
     | var_question_point 
 		{ $$ = $1; }
+	| tkRoundOpen tkVar identifier tkAssign expr_dq tkRoundClose 
+		{ $$ = new let_var_expr($3,$5,@$); } 
     ;
  
 var_address

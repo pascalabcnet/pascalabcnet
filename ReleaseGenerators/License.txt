@@ -3,7 +3,7 @@
 
 ВАЖНЕЙШИЕ УСЛОВИЯ РАСПРОСТРАНЕНИЯ ПРОДУКТА PascalABC.NET или любого производного продукта
 
-Copyright (C) 2005-2023 by Ivan Bondarev, Stanislav Mikhalkovich
+Copyright (C) 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich
 Это программное обеспечение является свободным; вы можете распространять и/или 
 модифицировать его на условиях GNU LGPL версии 3 с разъяснениями и исключениями, данными ниже. 
 

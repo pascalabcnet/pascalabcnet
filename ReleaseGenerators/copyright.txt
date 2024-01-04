@@ -1,1 +1,1 @@
-Copyright (C) 2005-2021 by Ivan Bondarev, Stanislav Mikhalkovich
+Copyright (C) 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich

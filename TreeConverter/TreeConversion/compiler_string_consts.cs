@@ -334,6 +334,16 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_resource = "resource";
         public static string compiler_directive_platformtarget = "platformtarget";
         public static string compiler_directive_faststrings = "faststrings";
+        public static string compiler_directive_gendoc = "gendoc";
+        public static string compiler_directive_region = "region";
+        public static string compiler_directive_endregion = "endregion";
+        public static string compiler_directive_ifdef = "ifdef";
+        public static string compiler_directive_endif = "endif";
+        public static string compiler_directive_ifndef = "ifndef";
+        public static string compiler_directive_else = "else";
+        public static string compiler_directive_undef = "undef";
+        public static string compiler_directive_define = "define";
+        public static string compiler_directive_include = "include";
         public static string compiler_directive_targetframework = "targetframework";
 
         // SSM (3.1.2011) Перенес эти константы сюда. 

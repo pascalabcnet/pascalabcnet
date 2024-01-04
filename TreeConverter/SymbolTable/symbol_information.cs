@@ -77,7 +77,7 @@ namespace PascalABCCompiler.TreeConverter
     {
         private semantic_node_type _semantic_node_type;
 
-        private bool _virtual_slot;
+        private bool _always_restore;
 
         private bool _is_static;
 
@@ -93,15 +93,15 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        public bool virtual_slot
+        public bool always_restore
         {
             get
             {
-                return _virtual_slot;
+                return _always_restore;
             }
             set
             {
-                _virtual_slot = value;
+                _always_restore = value;
             }
         }
 

@@ -11599,7 +11599,10 @@ namespace PascalABCCompiler.NETGenerator
             }
             LocalBuilder lb = il.DeclareLocal(return_type);
             if (save_debug_info) lb.SetLocalSymInfo("$enumer$" + uid++);
+
             value.InWhatExpr.visit(this);
+            if (value.InWhatExpr.type.is_value_type)
+                il.Emit(OpCodes.Box, in_what_type);
             il.Emit(OpCodes.Callvirt, enumer_mi);
             il.Emit(OpCodes.Stloc, lb);
             Label exl = il.BeginExceptionBlock();

@@ -663,7 +663,13 @@ namespace PascalABCCompiler.TreeConverter
                     syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref en);
                     return en;
                 }
-                AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
+                if (en is null_const_node && pct.first.convertion_method is basic_function_node)
+                {
+                    en.type = to;
+                    return en;
+                }
+                else
+                    AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
 			}
 
 			if (pct.first==null)

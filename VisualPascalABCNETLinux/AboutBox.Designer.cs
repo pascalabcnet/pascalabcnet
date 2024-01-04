@@ -169,7 +169,7 @@
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(317, 13);
             this.label12.TabIndex = 17;
-            this.label12.Text = "Copyright (c) 2005, 2023   Ivan Bondarev, Stanislav Mikhalkovich";
+            this.label12.Text = "Copyright (c) 2005, 2024   Ivan Bondarev, Stanislav Mikhalkovich";
             this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
             // label9
