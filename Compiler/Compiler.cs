@@ -1154,6 +1154,23 @@ namespace PascalABCCompiler
             }
         }
 
+        private static HashSet<string> knownDirectives = new HashSet<string>(new string[] { PascalABCCompiler.TreeConverter.compiler_string_consts.main_resource_string,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.trademark_string, PascalABCCompiler.TreeConverter.compiler_string_consts.copyright_string,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.company_string, PascalABCCompiler.TreeConverter.compiler_string_consts.product_string,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.version_string, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_apptype,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_reference, PascalABCCompiler.TreeConverter.compiler_string_consts.include_namespace_directive,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_savepcu, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_zerobasedstrings,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_zerobasedstrings_ON, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_zerobasedstrings_OFF,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_nullbasedstrings_ON, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_nullbasedstrings_OFF,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_initstring_as_empty_ON, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_initstring_as_empty_OFF,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_resource, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_platformtarget,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_targetframework, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_faststrings,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_gendoc, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_region, 
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_endregion, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_ifdef,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_endif, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_ifndef,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_define, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_else,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_undef, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_include});
+
         private Dictionary<string, List<compiler_directive>> GetCompilerDirectives(List<CompilationUnit> Units)
         {
             Dictionary<string, List<compiler_directive>> directives = new Dictionary<string, List<compiler_directive>>(StringComparer.CurrentCultureIgnoreCase);
@@ -1170,6 +1187,8 @@ namespace PascalABCCompiler
                         else if (cd.name.Equals("mainresource", StringComparison.CurrentCultureIgnoreCase))
                             throw new DuplicateDirective(cd.location.doc.file_name, "mainresource", cd.location);
                         directives[cd.name].Insert(0, cd);
+                        if (!knownDirectives.Contains(cd.name.ToLower()))
+                            warnings.Add(new Errors.CommonWarning(string.Format(StringResources.Get("WARNING_UNKNOWN_DIRECTIVE"), cd.name), cd.location.doc.file_name, cd.location.begin_line_num, cd.location.begin_column_num));
                     }
                 }
             }
