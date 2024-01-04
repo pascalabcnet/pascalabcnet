@@ -2833,6 +2833,12 @@ type
   PCUNotRestoreAttribute = class(System.Attribute)
   public constructor := exit;
   end;
+
+type 
+  [AttributeUsage(AttributeTargets.Class or AttributeTargets.Method or AttributeTargets.Property or AttributeTargets.Interface or AttributeTargets.Field or AttributeTargets.Struct)]
+  PCUAlwaysRestoreAttribute = class(System.Attribute)
+  public constructor := exit;
+  end;
   
 ///--
 function InternalRange(l,r: integer): IntRange;
