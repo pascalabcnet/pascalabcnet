@@ -313,7 +313,13 @@ namespace PascalABCCompiler.PCU
                 AddTypeSynonyms(pcu_file.interface_synonyms_offset, cun.scope);
                 AddTypeSynonyms(pcu_file.implementation_synonyms_offset, cun.implementation_scope);
                 //\ssyy
-                
+                for (int i = 0; i < pcu_file.names.Length; i++)
+                {
+                    if (pcu_file.names[i].always_restore)
+                    {
+                        cun.scope.Find(pcu_file.names[i].name);
+                    }
+                }
 
                 ChangeState(this, PCUReaderWriterState.EndReadTree, unit);
                 return unit;
@@ -578,6 +584,7 @@ namespace PascalABCCompiler.PCU
 				pcu_file.names[i].offset = br.ReadInt32();
                 pcu_file.names[i].symbol_kind = (symbol_kind)br.ReadByte();
                 pcu_file.names[i].special_scope = br.ReadByte();
+                pcu_file.names[i].always_restore = br.ReadBoolean();
             }
             //ssyy
             num_names = br.ReadInt32();
@@ -588,6 +595,7 @@ namespace PascalABCCompiler.PCU
                 pcu_file.implementation_names[i].offset = br.ReadInt32();
                 pcu_file.implementation_names[i].symbol_kind = (symbol_kind)br.ReadByte();
                 pcu_file.implementation_names[i].special_scope = br.ReadByte();
+                pcu_file.implementation_names[i].always_restore = br.ReadBoolean();
             }
             //\ssyy
 			int num_incl = br.ReadInt32();
@@ -2567,7 +2575,7 @@ namespace PascalABCCompiler.PCU
 
                 si.symbol_kind = (symbol_kind)br.ReadByte();
                 si.semantic_node_type = (semantic_node_type)br.ReadByte();
-                si.virtual_slot = br.ReadBoolean();
+                si.always_restore = br.ReadBoolean();
                 si.is_static = br.ReadBoolean();
                 //Вроде это ненужно
                 //SymbolInfo si2 = scope.FindWithoutCreation(name);
