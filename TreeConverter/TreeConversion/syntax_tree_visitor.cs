@@ -10584,6 +10584,11 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             common_extension_meth = true;
                             common_type_node ctn = def_temp as common_type_node;
+                            if (sil != null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1)//static methods cannot be extension methods
+                            {
+                                if (current_function_header.class_keyword)
+                                    AddError(get_location(_method_name), "CANNOT_IMPLEMENT_METHODS_IN_OTHER_MODULE");
+                            }
                             if (ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_wrapper || 
                                 ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type ||
                                 ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.base_set_type ||
