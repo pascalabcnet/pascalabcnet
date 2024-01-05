@@ -9601,6 +9601,8 @@ namespace PascalABCCompiler.TreeConverter
 
         private void dot_node_as_type_ident(type_node tn, SyntaxTree.ident id_right, motivation mot)
         {
+            if (id_right is SyntaxTree.operator_name_ident)
+                AddError(get_location(id_right), "OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX");
             List<SymbolInfo> si_right = tn.find_in_type(id_right.name, context.CurrentScope);
             if (si_right == null)
             {
