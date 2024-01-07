@@ -230,6 +230,9 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     si.sym_info.semantic_node_type == semantic_node_type.basic_property_node ||
                                     si.sym_info.semantic_node_type == semantic_node_type.compiled_class_constant_definition
                                     ;
+            if (si.sym_info is var_definition_node && (si.sym_info as var_definition_node).type.type_special_kind == type_special_kind.array_wrapper)
+                acceptableVarType = false;
+
             //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
             // Использую этот трюк для нестатических полей предков - они не захватываются из-за плохого алгоритма захвата
             // aab 12.06.19 begin

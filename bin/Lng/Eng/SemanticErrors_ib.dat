@@ -177,6 +177,7 @@ EXPECTED_PROPERTY=Property expected
 NON_PUBLIC_RECORD_CONSTRUCTORS_NOT_ALLOWED=Records can not have non-public default constructor
 EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK=exit, break and continue are not allowed in finally
 ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED=Cannot deduce type of anonymous delegates with generic parameters. Declare the variable type explicitly.
+CANNOT_IMPLEMENT_METHODS_IN_OTHER_MODULE=Can not implement methods in other module
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

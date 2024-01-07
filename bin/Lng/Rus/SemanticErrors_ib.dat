@@ -172,6 +172,7 @@ EXPECTED_PROPERTY=Ожидалось свойство
 NON_PUBLIC_RECORD_CONSTRUCTORS_NOT_ALLOWED=Записи могут иметь только публичный конструктор по умолчанию
 EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK=Использование exit, break и continue в блоке finally недопустимо
 ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED=Нельзя вывести тип анонимного делегата с генерик-параметрами. Укажите тип переменной явно.
+CANNOT_IMPLEMENT_METHODS_IN_OTHER_MODULE=Нельзя реализовывать метод из другого модуля
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'
