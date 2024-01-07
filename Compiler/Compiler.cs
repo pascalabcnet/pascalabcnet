@@ -4181,7 +4181,7 @@ namespace PascalABCCompiler
                             return true;
                         }
                     }
-                    catch (InvalidPCUFule)
+                    catch (InvalidPCUFile)
                     {
                         //Перекомпилируем....
                     }

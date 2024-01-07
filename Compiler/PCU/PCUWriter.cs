@@ -159,9 +159,9 @@ namespace PascalABCCompiler.PCU
         public static char[] Header = new char[3] { 'P', 'C', 'U'};
 
         public static Int16 SupportedVersion = PCUFileFormatVersion.Version;
-        
+        public static int SupportedRevision = Convert.ToInt32(RevisionClass.Revision);
         public Int16 Version;
-
+        public int Revision;
         public static int CRCOffset = 3 + 2;
 
         public Int64 CRC;
@@ -428,6 +428,7 @@ namespace PascalABCCompiler.PCU
 				pcu_file.imp_entitles[i] = imp_entitles[i];
             fbw.Write(PCUFile.Header);
             fbw.Write(PCUFile.SupportedVersion);
+            fbw.Write(Convert.ToInt32(RevisionClass.Revision));
             fbw.Write((Int64)0);//CRC32
             fbw.Write(pcu_file.UseRtlDll);
             fbw.Write(pcu_file.IncludeDebugInfo);
