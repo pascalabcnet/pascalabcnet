@@ -5980,6 +5980,12 @@ namespace CodeCompletion
             var ne = new new_expr(ntr, new expression_list(new uint64_const(bi.val)), bi.source_context);
             ne.visit(this);
         }
+
+        public override void visit(let_var_expr _let_var_expr)
+        {
+            var_def_statement vds = new var_def_statement(_let_var_expr.id, _let_var_expr.ex, _let_var_expr.source_context);
+            vds.visit(this);
+        }
     }
 }
 
