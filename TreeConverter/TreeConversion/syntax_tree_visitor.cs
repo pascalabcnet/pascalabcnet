@@ -18297,6 +18297,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
                 AddError(get_location(_external_directive.modulename), "STRING_CONSTANT_OR_IDENTIFIER_EXPECTED");
+            if (string.IsNullOrEmpty(module_name))
+                AddError(get_location(_external_directive.modulename), "DLLNAME_CANNOT_BE_EMPTY");
             if (_external_directive.name == null)
             {
             	name = context.converted_func_stack.top().name;

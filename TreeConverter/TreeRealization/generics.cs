@@ -589,6 +589,8 @@ namespace PascalABCCompiler.TreeRealization
 
         private static bool CheckIfTypeDependsOnUndeducedGenericParameters(type_node formalType, type_node[] deduced) //lroman
         {
+            if (formalType == null)
+                return false;
             if (formalType.generic_function_container != null)
             {
                 var par_num = formalType.generic_param_index;
