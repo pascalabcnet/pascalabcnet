@@ -1,0 +1,142 @@
+name: Build & Run all tests (release) & Make a nightly release
+
+on:
+    workflow_dispatch:
+    push:
+    schedule:
+        - cron: '0 0 * * *'
+ 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: write
+
+defaults:
+    run:
+        shell: cmd
+
+jobs:
+    build:
+    
+        name: Prepare and build on Windows Server 2019 VM
+        runs-on: windows-2019
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+            
+            - name: Pull changes from original repo
+              run: |
+            
+                git config --global user.name "BH build bot"
+                git config --global user.email "SpectatorBH@outlook.com"
+                
+                git pull https://github.com/pascalabcnet/pascalabcnet.git master
+                git push
+            
+            - name: Install dependencies into Virtual Environment
+              run: _RegisterHelixNUnit.bat
+            
+            - name: Build C# project in Release-mode / compile Pas-units / run tests
+              run: _GenerateAllSetupsForGitHubActions.bat
+              timeout-minutes: 40
+              env:
+                PABCNET_BUILD_MODE: Release
+                PABCNET_RUN_TESTS:  false
+                PABCNET_INC_BUILD:  false
+                PABCNET_VERBOSE:    false
+            
+            - name: Prepare GitHub script
+              run: npm install @actions/exec
+            
+            - name: Create GitHub Release
+              uses: actions/github-script@main
+              with:
+                script: |
+                
+                    const tag = "nightly-release-tag"; // git tag name (preferably different from branch name)
+                    const release_name = "Nightly build"; // Github release display name
+                    const mark_pre_release = true;
+                    
+                    console.log('environment', process.versions);
+                    
+                    sha = '';
+                    await require('@actions/exec').exec('git', ['rev-parse', 'HEAD'], {
+                        listeners: {
+                            stdout: data => {
+                                sha += data.toString().trim();
+                            },
+                            stderr: data => {
+                                sha += data.toString().trim();
+                            }
+                        }
+                    });
+                    
+                    const { repo: { owner, repo } } = context;
+                    console.log({ owner, repo, sha });
+                    
+                    // Check if the release already exists
+                    const existingReleases = await github.rest.repos.listReleases({ owner, repo });
+                    for (const existingRelease of existingReleases.data) {
+                        if (existingRelease.tag_name === tag) {
+                            console.log('deleing old release', { existingRelease });
+                            await github.rest.repos.deleteRelease({
+                                owner,
+                                repo,
+                                release_id: existingRelease.id,
+                            });
+                            break;
+                        }
+                    }
+                    
+                    try {
+                        await github.rest.git.deleteRef({
+                            owner: owner,
+                            repo: repo,
+                            ref: `tags/${tag}`
+                        });
+                        console.log('Tag deleted successfully');
+                    } catch (error) {
+                        console.error(`Error deleting tag: ${error}`);
+                    }
+                    
+                    const release = await github.rest.repos.createRelease({
+                        owner, repo,
+                        tag_name: tag,
+                        name: release_name,
+                        draft: true,
+                        prerelease: mark_pre_release,
+                        target_commitish: sha
+                    });
+                    
+                    console.log('created release', { release });
+                    
+                    const fs = require('fs').promises;
+                    for (let file of await fs.readdir('Release')) {
+                        console.log('uploading', file);
+                        if (file.startsWith('.')) continue;
+                        
+                        try {
+                            await github.rest.repos.uploadReleaseAsset({
+                                owner, repo,
+                                release_id: release.data.id,
+                                name: file,
+                                data: await fs.readFile(`./Release/${file}`)
+                            });
+                        } catch (error) {
+                            console.error(`Error uploading: ${error}`);
+                        }
+                        
+                    }
+                    
+                    if (release.data.draft) {
+                        console.log('finalizing draft release');
+                        await github.rest.repos.updateRelease({
+                            owner,
+                            repo,
+                            release_id: release.data.id,
+                            draft: false,
+                        });
+                    }
