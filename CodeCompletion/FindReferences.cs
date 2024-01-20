@@ -244,6 +244,19 @@ namespace CodeCompletion
                 _var_def_statement.inital_value.visit(this);
         }
 
+        public override void visit(let_var_expr _let_var_expr)
+        {
+            if (for_refactoring)
+            {
+                IBaseScope ss = entry_scope.FindScopeByLocation(_let_var_expr.id.source_context.begin_position.line_num, _let_var_expr.id.source_context.begin_position.column_num);
+                if (ss != null && ss.IsEqual(founded_scope))
+                    pos_list.Add(get_position(_let_var_expr.id));
+            }
+
+            if (_let_var_expr.ex != null)
+                _let_var_expr.ex.visit(this);
+        }
+
         public override void visit(declaration _declaration)
         {
             throw new NotImplementedException();

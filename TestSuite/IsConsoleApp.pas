@@ -1,0 +1,3 @@
+﻿begin
+  assert(IsConsoleApplication);
+end.

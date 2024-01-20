@@ -247,6 +247,10 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        static HashSet<string> graph_modules = new HashSet<string>(new string[] { "GraphABC", "GraphWPF", "Graph3D", "PlotWPF", "Robot", "RobotField", "RobotZadan",
+                                                                                   "RobotTaskMaker", "Drawman", "DrawManField", "ABCObjects", "ABCButtons", "ABCHouse", "ABCSprites",
+                                                                                    "WPFObjects", "TurtleWPF", "Turtle", "Мозаика", "МозаикаABC", "FormsABC", "Чертежник", "Робот"});
+
         public void create_main_function(string[] used_stand_modules, Dictionary<string, object> config)
         {
         	add_needed_cctors();
@@ -312,6 +316,28 @@ namespace PascalABCCompiler.TreeRealization
             if (units[0].IsConsoleApplicationVariableAssignExpr!=null)
             {
                 sl.statements.AddElementFirst(units[0].IsConsoleApplicationVariableAssignExpr);
+            }
+            else if (SystemLibrary.SystemLibInitializer.ConfigVariable.sym_info is compiled_variable_definition && units[0].IsConsoleApplicationVariableValue.constant_value)
+            {
+                bool is_console = true;
+                
+                foreach (var ns in units[0].used_namespaces)
+                {
+                    if (graph_modules.Contains(ns))
+                    {
+                        is_console = false;
+                        break;
+                    }
+                }
+                if (is_console)
+                {
+                    var ccnf = SystemLibrary.SystemLibInitializer.ConfigVariable.sym_info as compiled_variable_definition;
+                    basic_function_call bbfc = new basic_function_call(SystemLibrary.SystemLibrary.bool_assign as basic_function_node, null);
+                    bbfc.parameters.AddElement(new static_compiled_variable_reference(ccnf.cont_type.find_in_type(TreeConverter.compiler_string_consts.IsConsoleApplicationVariableName)[0].sym_info as compiled_variable_definition, ccnf.cont_type, null));
+                    bbfc.parameters.AddElement(new bool_const_node(true, null));
+                    sl.statements.AddElement(bbfc);
+                }
+                
             }
             for (int i = 0; i < units.Count; i++)
             {

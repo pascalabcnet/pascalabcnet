@@ -16,10 +16,10 @@ namespace PascalABCCompiler.PCU
         BeginReadTree, EndReadTree, BeginSaveTree, EndSaveTree, ErrorSaveTree
     }
 
-    public class InvalidPCUFule: PascalABCCompiler.Errors.LocatedError
+    public class InvalidPCUFile: PascalABCCompiler.Errors.LocatedError
     {
         internal string UnitName;
-        public InvalidPCUFule(string UnitName)
+        public InvalidPCUFile(string UnitName)
         {
             this.UnitName = UnitName;
         }
@@ -263,6 +263,7 @@ namespace PascalABCCompiler.PCU
                 ms = new MemoryStream(File.ReadAllBytes(FileName));
                 br = new BinaryReader(ms);
                 ReadPCUHeader();
+
                 units[FileName] = this;
                 unit = new CompilationUnit();
                 unit.UnitFileName = FileName;
@@ -543,9 +544,8 @@ namespace PascalABCCompiler.PCU
 
         private void InvalidUnitDetected()
         {
-            //(ssyy) DarkStar - Почему бы в этом случае просто не перекомпилировать модуль?
             CloseUnit();
-            throw new InvalidPCUFule(unit_name);
+            throw new InvalidPCUFile(unit_name);
         }
         
         private static bool ReadPCUHead(PCUFile pcu_file, BinaryReader br)
@@ -555,6 +555,7 @@ namespace PascalABCCompiler.PCU
                 if (Header[i] != PCUFile.Header[i])
                     return false;
             pcu_file.Version = br.ReadInt16();
+            pcu_file.Revision = br.ReadInt32();
             pcu_file.CRC = br.ReadInt64();
             pcu_file.UseRtlDll = br.ReadBoolean();
             pcu_file.IncludeDebugInfo = br.ReadBoolean();
@@ -564,7 +565,7 @@ namespace PascalABCCompiler.PCU
         //чтение заголовка PCU
 		private void ReadPCUHeader()
 		{
-            if (!ReadPCUHead(pcu_file, br) || PCUFile.SupportedVersion != pcu_file.Version)
+            if (!ReadPCUHead(pcu_file, br) || PCUFile.SupportedVersion != pcu_file.Version || PCUFile.SupportedRevision != pcu_file.Revision)
                 InvalidUnitDetected();
             
             if(pcu_file.IncludeDebugInfo)

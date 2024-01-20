@@ -77,6 +77,7 @@ namespace CodeCompletion
                 if (Header[i] != PCUFile.Header[i])
                     return false;
             pcu_file.Version = br.ReadInt16();
+            pcu_file.Revision = br.ReadInt32();
             pcu_file.CRC = br.ReadInt64();
             pcu_file.IncludeDebugInfo = br.ReadBoolean();
             return true;
@@ -96,7 +97,7 @@ namespace CodeCompletion
         {
             //(ssyy) DarkStar - Ïî÷åìó áû â ýòîì ñëó÷àå ïðîñòî íå ïåðåêîìïèëèðîâàòü ìîäóëü?
             CloseUnit();
-            throw new InvalidPCUFule(unit_name);
+            throw new InvalidPCUFile(unit_name);
         }
 		
 		private void ReadPCUHeader()

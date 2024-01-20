@@ -3504,8 +3504,17 @@ namespace CodeFormatters
             if (need_off)
                 DecOffset();
         }
+        public override void visit(let_var_expr lvex)
+        {
+            sb.Append("(var ");
+
+            visit_node(lvex.id);
+            add_space_after = true;
+            add_space_before = true;
+            visit_node(lvex.ex);
+        }
         #endregion
     }
 
-   
+
 }
