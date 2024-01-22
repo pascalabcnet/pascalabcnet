@@ -63,6 +63,7 @@ EXTENSION_CONSTRUCTOR_NOT_ALLOWED=Определение extensions-констр
 CLASS_MEMBER_{0}_EXPECTED={0} должен быть методом или конструктором
 DESTRUCTOR_MUST_HAVE_NAME=Деструктор должен иметь имя
 STRING_CONSTANT_EXPECTED=Ожидалась строковая константа
+DLLNAME_CANNOT_BE_EMPTY=Имя библиотеки не может быть пустым
 STRING_CONSTANT_OR_IDENTIFIER_EXPECTED=Ожидались строковая константа или идентификатор
 FUNCTION_MUST_HAVE_DLLIMPORT_ATTRIBUTE=Подпрограмма должна иметь атрибут DllImport
 EXPECTED_ATTRIBUTE_INITIALIZER=Ожидался инициализатор атрибута

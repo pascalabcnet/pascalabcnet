@@ -63,6 +63,7 @@ EXTENSION_CONSTRUCTOR_NOT_ALLOWED=Cannot declare extensions-constructors
 CLASS_MEMBER_{0}_EXPECTED='{0}' must be method or constructor
 DESTRUCTOR_MUST_HAVE_NAME=Destructor must have name
 STRING_CONSTANT_EXPECTED=String constant expected
+DLLNAME_CANNOT_BE_EMPTY=Library name cannot be empty
 STRING_CONSTANT_OR_IDENTIFIER_EXPECTED=String constant or identifier expected
 FUNCTION_MUST_HAVE_DLLIMPORT_ATTRIBUTE=DllImport attribute expected
 EXPECTED_ATTRIBUTE_INITIALIZER=Attribute initializer expected

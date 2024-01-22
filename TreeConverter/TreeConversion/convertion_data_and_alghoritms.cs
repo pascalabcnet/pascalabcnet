@@ -2233,7 +2233,13 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             continue;
                         }
-                        set_of_possible_functions.Add(fn);
+                        else if ((func = find_eq_method_in_list(fn, set_of_possible_functions)) != null)
+                        {
+                            if (!(fn is compiled_function_node cfn && func is compiled_function_node cfn2 && (cfn.polymorphic_state == polymorphic_state.ps_static || cfn2.polymorphic_state == polymorphic_state.ps_static)))
+                                set_of_possible_functions.Add(fn);
+                        }
+                        else   
+                            set_of_possible_functions.Add(fn);
                     }
                 }
                 if (parameters.Count > fn.parameters.Count)
