@@ -19807,6 +19807,36 @@ namespace PascalABCCompiler.TreeConverter
             ret.reset(); // SSM 19.01.17 не возвращать семантическое значение т.к. ничего не нужно добавлять в текущий список операторов!!
         }
 
+        // создать словарик чтобы для одного _visitor.context.CurrentScope.ScopeNum и для одного letVarExpr 
+        // мы заходили в этот visit один раз
+        private Dictionary<let_var_expr, List<int>> letDict = new Dictionary<let_var_expr, List<int>>();
+
+        // можно попробовать в одно ПИ не добавлять дважды - хранить словарь (let-переменная, номера ПИ в кот добавлена)
+        public override void visit(SyntaxTree.let_var_expr let_expr)
+        {
+            if (letDict.ContainsKey(let_expr) && letDict[let_expr].Contains(context.CurrentScope.ScopeNum))
+                return;
+
+            if (!letDict.ContainsKey(let_expr))
+                letDict[let_expr] = new List<int>();
+            letDict[let_expr].Add(context.CurrentScope.ScopeNum);
+
+            var exn = (expression_node)convert_strong(let_expr.ex);
+            var sav = new semantic_addr_value(exn);
+            var vds = new var_statement(let_expr.id, sav, let_expr.source_context);
+            if (let_expr.visit_var)
+            {
+                visit(vds.var_def);
+                //let_expr.visit_var = false;
+            }
+            else
+            {
+
+            }
+            return_value(exn);
+        }
+
+
         public override void visit(SyntaxTree.expression_as_statement node)
         {
             return_value((statement_node)convert_strong(node.expr));
