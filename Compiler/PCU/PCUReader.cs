@@ -43,7 +43,7 @@ namespace PascalABCCompiler.PCU
 		private string dir;
         private int start_pos;//смещение относительно начала PCU-файла, по которому находятся описание всех сущностей модуля
 		private int ext_pos;//смещение относительно начала PCU-файла, по которому находится список импорт. сущностей
-        private Dictionary<int, definition_node> members = new Dictionary<int, definition_node>(64);//таблица<int,definition_node> для связывания смещений с сущностями 
+        private Dictionary<int, definition_node> members = new Dictionary<int, definition_node>(64);//таблица<int,definition_node> для связывания смещений с сущностями
         private List<definition_node> impl_members = new List<definition_node>(64);//список, хранящий десериализованные имплементационные сущности
         private List<definition_node> int_members = new List<definition_node>(64);//список, хранящий десериализованные интерфейсные сущности
         private Dictionary<int, definition_node> ext_members = new Dictionary<int, definition_node>(64);//таблица<int,definition_node> для связывания смещений с импортируемыми сущностями
@@ -74,13 +74,13 @@ namespace PascalABCCompiler.PCU
             members[offset] = dn;
             AddReadOrWritedDefinitionNode(dn, offset);
         }
-        
+
         internal void RemoveMember(int offset, definition_node dn)
         {
             members.Remove(offset);
             AllReadOrWritedDefinitionNodesOffsets.Remove(dn);
         }
-        
+
         internal void AddVarToOrderList(var_definition_node vdn, int ind)
         {
             if (!interf_var_list.ContainsKey(ind))
@@ -115,7 +115,7 @@ namespace PascalABCCompiler.PCU
 
         public event ChangeStateDelegate ChangeState;
 
-        
+
         /// <summary>
         /// Читает начало загаловка PCU файла
         /// </summary>
@@ -123,7 +123,7 @@ namespace PascalABCCompiler.PCU
         /// Имя PCU файла
         /// </param>
         /// <returns>
-        /// Возвращает состояние заголовка PCU файла 
+        /// Возвращает состояние заголовка PCU файла
         /// </returns>
         public class PCUFileHeadState
         {
@@ -132,7 +132,7 @@ namespace PascalABCCompiler.PCU
             public bool IncludetDebugInfo = false;
             public PCUFile FileHead=null;
         }
-        
+
         public static PCUFileHeadState GetPCUFileHeadState(string fileName)
         {
             FileStream fs = File.OpenRead(fileName);
@@ -150,7 +150,7 @@ namespace PascalABCCompiler.PCU
             return State;
         }
 
-        public PCUReader(Compiler comp, ChangeStateDelegate changeState) 
+        public PCUReader(Compiler comp, ChangeStateDelegate changeState)
 		{
 			this.comp = comp;
             AllReaders.Add(this);
@@ -170,14 +170,14 @@ namespace PascalABCCompiler.PCU
             if (ms != null)
 			ms.Close();
 		}
-		
+
 		public static void AddUsedMembersInAllUnits()
 		{
 			foreach (PCUReader pr in units.Values)
 			{
                 pr.AddMembersToNamespace();
 			}
-				
+
 		}
 
         public void AddAlreadyCompiledUnit(string name)
@@ -208,7 +208,7 @@ namespace PascalABCCompiler.PCU
                 br.Close();
             if (ms != null)
                 ms.Close();
-            br = null; 
+            br = null;
             ms = null;
         }
 
@@ -279,7 +279,7 @@ namespace PascalABCCompiler.PCU
                 }
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
                 cun.scope = new WrappedUnitInterfaceScope(this);
-                
+
                 //TODO сохранить в PCU
                 cun.scope.CaseSensitive = false;
                 if (string.Compare(unit_name, compiler_string_consts.system_unit_file_name, true)==0)
@@ -306,7 +306,7 @@ namespace PascalABCCompiler.PCU
                 //ssyy
                 AddImplementationNames();
                 //\ssyy
-                
+
                 //AddInitFinalMethods();
                 //ProcessWaitedToRestoreFields();
                 unit.State = UnitState.Compiled;
@@ -354,10 +354,10 @@ namespace PascalABCCompiler.PCU
             {
                 //comp.RecompileList.Add(unit_name,unit_name);
                 comp.RecompileList[FileName] = FileName;
-                need = true; 
+                need = true;
                 return need;
             }
-            
+
             for (int i = 0; i < pcu_file.incl_modules.Length; i++)
             {
                 //if (pcu_file.incl_modules[i].Contains("$"))
@@ -366,7 +366,7 @@ namespace PascalABCCompiler.PCU
                 if (Path.GetExtension(used_unit_fname) != comp.CompilerOptions.CompiledUnitExtension) return true;
 
                 PCUReader pr = (PCUReader)units[used_unit_fname];
-                if (pr == null) 
+                if (pr == null)
                     pr = new PCUReader(this);
                 pr.AddAlreadyCompiledUnit(FileName);
                 if (used_units[used_unit_fname] == null)
@@ -399,7 +399,7 @@ namespace PascalABCCompiler.PCU
 //						cnn.types.AddElement((common_type_node)dn); break;
 					case semantic_node_type.common_namespace_function_node :
                         if (!((dn as common_namespace_function_node).function_code is wrapped_function_body))
-						    cnn.functions.AddElement((common_namespace_function_node)dn); 
+						    cnn.functions.AddElement((common_namespace_function_node)dn);
                         break;
 					case semantic_node_type.namespace_constant_definition :
 						cnn.constants.AddElement((namespace_constant_definition)dn); break;
@@ -440,7 +440,7 @@ namespace PascalABCCompiler.PCU
             foreach (common_type_node ctn in impl_type_list.Values)
                 cun.namespaces[1].types.AddElement(ctn);
 			foreach (namespace_variable nv in impl_var_list.Values)
-                	cun.namespaces[1].variables.AddElement(nv);        
+                	cun.namespaces[1].variables.AddElement(nv);
             if (cun != null)
             cun.used_namespaces.AddRange(pcu_file.used_namespaces);
 		}
@@ -448,10 +448,10 @@ namespace PascalABCCompiler.PCU
         private void AddNamespaces()
 		{
             cun.unit_name=br.ReadString();
-            
+
             common_namespace_node cnn = new common_namespace_node(null, cun, cun.unit_name, cun.scope, ReadDebugInfo());
 			cun.namespaces.AddElement(cnn);
-            
+
             cun.add_unit_name_to_namespace();
 
             cnn = new common_namespace_node(cnn, cun, br.ReadString(), cun.implementation_scope, ReadDebugInfo());
@@ -516,7 +516,7 @@ namespace PascalABCCompiler.PCU
                 }
                 else
                 {
-                    
+
                     type_node tn = GetSpecialTypeReference(names[i].offset);
                     if (tn is compiled_type_node)
                     {
@@ -535,7 +535,7 @@ namespace PascalABCCompiler.PCU
                         if (tn.IsDelegate)
                             SystemLibrary.SystemLibrary.system_delegate_type.Scope.AddSymbol(names[i].name, si);
                     }
-                        
+
                     else
                         throw new NotSupportedException();
                 }
@@ -547,7 +547,7 @@ namespace PascalABCCompiler.PCU
             CloseUnit();
             throw new InvalidPCUFile(unit_name);
         }
-        
+
         private static bool ReadPCUHead(PCUFile pcu_file, BinaryReader br)
         {
             char[] Header = br.ReadChars(PCUFile.Header.Length);
@@ -561,13 +561,13 @@ namespace PascalABCCompiler.PCU
             pcu_file.IncludeDebugInfo = br.ReadBoolean();
             return true;
         }
-        
+
         //чтение заголовка PCU
 		private void ReadPCUHeader()
 		{
             if (!ReadPCUHead(pcu_file, br) || PCUFile.SupportedVersion != pcu_file.Version || PCUFile.SupportedRevision != pcu_file.Revision)
                 InvalidUnitDetected();
-            
+
             if(pcu_file.IncludeDebugInfo)
                 pcu_file.SourceFileName = br.ReadString();
             else
@@ -619,9 +619,9 @@ namespace PascalABCCompiler.PCU
 			for (int i=0; i<num_ref_ass; i++)
 			{
 				pcu_file.ref_assemblies[i] = br.ReadString();
-				
+
 			}
-			
+
             int num_directives = br.ReadInt32();
             pcu_file.compiler_directives = new List<compiler_directive>();
             for (int i = 0; i < num_directives; i++)
@@ -672,7 +672,7 @@ namespace PascalABCCompiler.PCU
             }
 			start_pos = (int)br.BaseStream.Position;
 		}
-		
+
 		private void ReadAllAssemblies()
 		{
             for (int i = 0; i < pcu_file.ref_assemblies.Length; i++)
@@ -696,7 +696,7 @@ namespace PascalABCCompiler.PCU
                 Assembly a = NetHelper.NetHelper.LoadAssembly(name_with_path);
                 NetHelper.NetHelper.init_namespaces(a);
                 //}
-                //else 
+                //else
                 //  a = Assembly.Load(s);
                 if (!assemblies.ContainsKey(s))
                     assemblies[s] = a;
@@ -726,7 +726,7 @@ namespace PascalABCCompiler.PCU
 			br.BaseStream.Seek(tmp,SeekOrigin.Begin);
 			return sn;
 		}
-		
+
         public statement_node GetCodeWithOverridedMethod(common_method_node meth, int offset)
 		{
 			int tmp = (int)br.BaseStream.Position;
@@ -736,13 +736,13 @@ namespace PascalABCCompiler.PCU
 			br.BaseStream.Seek(tmp,SeekOrigin.Begin);
 			return sn;
 		}
-        
+
         //перейти на указанную позицию в списке импорт. сущ-тей
 		private void SeekInExternal(int pos)
 		{
 			br.BaseStream.Seek(ext_pos+pos,SeekOrigin.Begin);
 		}
-		
+
         //получаем имя сущности
 		private string GetString(int index)
 		{
@@ -765,7 +765,7 @@ namespace PascalABCCompiler.PCU
         {
             Type t = null;
             if (!dot_net_type_cache.TryGetValue(off, out t))
-            { 
+            {
                 t = NetHelper.NetHelper.FindTypeOrCreate(pcu_file.dotnet_names[off].name);
                 dot_net_type_cache[off] = t;
             }
@@ -787,7 +787,7 @@ namespace PascalABCCompiler.PCU
             TypeSpec ts = new TypeSpec();
             Type t = null;
             string type_name = pcu_file.dotnet_names[off].name;
-            
+
             //if (!type_name.EndsWith("]"))
                 t = NetHelper.NetHelper.FindTypeOrCreate(type_name);
             if (t == null || type_name.IndexOf('.') == -1)
@@ -892,7 +892,7 @@ namespace PascalABCCompiler.PCU
                             eq = false; break;
                         }
                     }
-                        
+
                 if (eq && mi.DeclaringType == t) res_mi = mi;
             }
             return res_mi;
@@ -909,8 +909,8 @@ namespace PascalABCCompiler.PCU
 				if (!cnstrs.Contains(prot_consttr_arr[i]))
 				cnstrs.Add(prot_consttr_arr[i]);
 			mis = cnstrs.ToArray();
-			
-            ConstructorInfo res_mi = null; 
+
+            ConstructorInfo res_mi = null;
             for (int i = 0; i < mis.Length; i++)
             {
                 ConstructorInfo mi = mis[i] as ConstructorInfo;
@@ -964,7 +964,7 @@ namespace PascalABCCompiler.PCU
                 {
                     List<MemberInfo> mis2 = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
                     mi = ChooseMethod(t, mis2, param_types);
-                    
+
                     //mi = t.GetMethod(pcu_file.dotnet_names[off].name, new Type[1] { param_types[0].t });
                 }
             }
@@ -1061,7 +1061,7 @@ namespace PascalABCCompiler.PCU
             }
             return null;
 		}
-		
+
         //получение импорт. типа
 		private type_node ReadCommonExtType()
         {
@@ -1075,7 +1075,7 @@ namespace PascalABCCompiler.PCU
             var pr = GetPCUReaderForUnitId(br.ReadInt32());
             return pr.GetTemplateClass(br.ReadInt32());
         }
-		
+
         //получение откомпил. типа
 		private compiled_type_node ReadNetExtType()
 		{
@@ -1092,16 +1092,16 @@ namespace PascalABCCompiler.PCU
                     a = NetHelper.NetHelper.LoadAssembly(name_with_path);
                     NetHelper.NetHelper.init_namespaces(a);
                 //}
-                //else 
+                //else
                   //  a = Assembly.Load(s);
                 assemblies[s] = a;
 			}
 			//Type t = NetHelper.NetHelper.FindTypeByHandle(a,br.ReadInt32());//находим его по токену
             Type t = FindTypeByHandle(br.ReadInt32());
             compiled_type_node ctn = compiled_type_node.get_type_node(t);
-            
+
             //Исправление ошибки 0000186
-            if (ctn.scope == null) 
+            if (ctn.scope == null)
             // это условие вроде нужно чтоб не персоздавать стандартные сопы
                 ctn.scope = new NetHelper.NetTypeScope(t, SystemLibrary.SystemLibrary.symtab);
             return ctn;
@@ -1150,14 +1150,14 @@ namespace PascalABCCompiler.PCU
             var pr = GetPCUReaderForUnitId(br.ReadInt32());
             return pr.GetNamespaceFunction(br.ReadInt32());
 		}
-		
+
 		private namespace_variable ReadExtNamespaceVariable()
 		{
 			br.ReadByte();
             var pr = GetPCUReaderForUnitId(br.ReadInt32());
             return pr.GetNamespaceVariable(br.ReadInt32());
 		}
-		
+
 		private namespace_constant_definition ReadExtNamespaceConstant()
 		{
 			br.ReadByte();
@@ -1234,7 +1234,7 @@ namespace PascalABCCompiler.PCU
             //если тип еще не десериализован, то восстанавливаем его
             return GetCommonType(offset);
 		}
-		
+
 		private function_node GetMethodReference()
 		{
 			byte flag = br.ReadByte();
@@ -1252,7 +1252,7 @@ namespace PascalABCCompiler.PCU
 			}
 			return null;
 		}
-		
+
 		private property_node GetPropertyReference()
 		{
 			byte flag = br.ReadByte();
@@ -1266,7 +1266,7 @@ namespace PascalABCCompiler.PCU
 			}
 			return null;
 		}
-		
+
 		private var_definition_node GetFieldReference()
 		{
 			byte flag = br.ReadByte();
@@ -1280,7 +1280,7 @@ namespace PascalABCCompiler.PCU
 			}
 			return null;
 		}
-		
+
         //получение типа
 		private type_node GetTypeReference()
 		{
@@ -1294,7 +1294,7 @@ namespace PascalABCCompiler.PCU
                 	return null;
                 case 1://если тип описан в модуле
                 	int offset = br.ReadInt32();
-                    
+
                     if (members.TryGetValue(offset, out dn))
                         tn = (type_node)dn;
                 	if (tn == null) return GetCommonType(offset);
@@ -1347,7 +1347,7 @@ namespace PascalABCCompiler.PCU
             }
 			return null;
 		}
-		
+
 		private short_string_type_node GetShortStringType()
 		{
 			return compilation_context.instance.create_short_string_type(br.ReadInt32(),null);
@@ -1376,7 +1376,7 @@ namespace PascalABCCompiler.PCU
             List<type_node> parameters = GetTypesList();
             return SystemLibrary.SystemLibrary.syn_visitor.instance(tc, parameters, null);
         }
-		
+
         private generic_instance_type_node GetGenericInstance()
         {
             type_node compn = GetTypeReference();
@@ -1464,12 +1464,12 @@ namespace PascalABCCompiler.PCU
 			br.BaseStream.Seek(ext_pos+offset,SeekOrigin.Begin);
 			br.ReadByte();
 			compiled_type_node ctn = GetNetExtType(br.ReadInt32());
-            int handle = br.ReadInt32(); 
+            int handle = br.ReadInt32();
 			compiled_function_node cfn = PascalABCCompiler.TreeRealization.compiled_function_node.get_compiled_method(FindMethodByHandle(ctn.compiled_type,handle));
 			br.BaseStream.Seek(tmp,SeekOrigin.Begin);
 			return cfn;
 		}
-		
+
 		private compiled_constructor_node GetCompiledConstructor(int offset)
 		{
 			int tmp = (int)br.BaseStream.Position;
@@ -1481,7 +1481,7 @@ namespace PascalABCCompiler.PCU
 			br.BaseStream.Seek(tmp,SeekOrigin.Begin);
 			return ccn;
 		}
-		 
+
 		private compiled_variable_definition GetCompiledVariable(int offset)
 		{
 			int tmp = (int)br.BaseStream.Position;
@@ -1493,7 +1493,7 @@ namespace PascalABCCompiler.PCU
 			br.BaseStream.Seek(tmp,SeekOrigin.Begin);
 			return cvd;
 		}
-		
+
         private compiled_property_node GetCompiledProperty(int offset)
         {
             int tmp = (int)br.BaseStream.Position;
@@ -1505,7 +1505,7 @@ namespace PascalABCCompiler.PCU
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
             return cpn;
         }
-		
+
         private attributes_list GetAttributes()
         {
         	int pos = br.ReadInt32();
@@ -1518,7 +1518,7 @@ namespace PascalABCCompiler.PCU
         	br.BaseStream.Seek(tmp, SeekOrigin.Begin);
         	return attrs;
         }
-        
+
         private attribute_node GetAttribute()
         {
         	type_node tn = GetTypeReference();
@@ -1554,13 +1554,13 @@ namespace PascalABCCompiler.PCU
         	attr.field_initializers.AddRange(field_values);
         	return attr;
         }
-        
+
         //восстановление сущности из модуля
         //вызывается только при поиске имени находится SymbolInfo с заглушкой
         //эта заглушка должна быть заменена настоящей сущностью
 		public override definition_node CreateInterfaceMember(int offset, string name)
 		{
-            definition_node dn = null; 
+            definition_node dn = null;
             if (members.TryGetValue(offset, out dn))
             {
                 //DarkStar Addes 06/03/07
@@ -1593,7 +1593,7 @@ namespace PascalABCCompiler.PCU
             }
 			if (dn == null)
 			{
-				
+
 			}
 			br.BaseStream.Seek(start_pos,SeekOrigin.Begin);
             PCUWriter.AddExternalMember(dn,offset);//сообщаем врайтеру новое смещение сущности
@@ -1645,7 +1645,7 @@ namespace PascalABCCompiler.PCU
         //восстановление сущности- члена класса
         public override definition_node CreateInterfaceInClassMember(int offset, string name)
         {
-            definition_node dn = null; 
+            definition_node dn = null;
             if (members.TryGetValue(offset, out dn))
                 return dn;
             br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
@@ -1699,7 +1699,7 @@ namespace PascalABCCompiler.PCU
             common_method_node cmn = new common_method_node(name,null,null);
             //members[offset] = cmn;
             AddMember(cmn, offset);
-            
+
             int name_ref = br.ReadInt32();
 
             cmn.is_final = br.ReadByte() == 1;
@@ -1733,7 +1733,7 @@ namespace PascalABCCompiler.PCU
             cmn.num_of_default_variables = br.ReadInt32();
             cmn.num_of_for_cycles = br.ReadInt32();
             bool has_overrided_method = br.ReadBoolean();
-            
+
             int num_var = br.ReadInt32();
             GetVariables(cmn, num_var);
             int num_consts = br.ReadInt32();
@@ -1747,7 +1747,7 @@ namespace PascalABCCompiler.PCU
                 cmn.functions_nodes_list.AddElement(GetNestedFunction());
             //br.ReadInt32();//code;
             cmn.loc = ReadDebugInfo();
-            
+
             if (has_overrided_method)
                 cmn.function_code = GetCodeWithOverridedMethod(cmn, br.ReadInt32());
             else if (not_restore_code && cmn.name != "get_val" && cmn.name != "set_val")//ignore pascal array property accessors
@@ -1856,7 +1856,7 @@ namespace PascalABCCompiler.PCU
             AddMember(ce, offset);
             return ce;
         }
-        
+
         public common_event GetEventNode(int offset)
         {
             definition_node dn = null;
@@ -1868,7 +1868,7 @@ namespace PascalABCCompiler.PCU
             br.ReadByte();
 
             ce = (common_event)CreateInterfaceEvent(null, offset);
-            
+
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
             return ce;
         }
@@ -1898,10 +1898,10 @@ namespace PascalABCCompiler.PCU
             int name_ref = br.ReadInt32();
             type_node type = GetTypeReference();
             common_method_node get_meth = null;
-            if (br.ReadByte() == 1) 
+            if (br.ReadByte() == 1)
                 get_meth = GetClassMethod(br.ReadInt32(), !waited_method_restoring);
             common_method_node set_meth = null;
-            if (br.ReadByte() == 1) 
+            if (br.ReadByte() == 1)
                 set_meth = GetClassMethod(br.ReadInt32(), !waited_method_restoring);
             int num = br.ReadInt32();
             parameter_list pl = new parameter_list();
@@ -1912,7 +1912,7 @@ namespace PascalABCCompiler.PCU
             SemanticTree.polymorphic_state ps = (SemanticTree.polymorphic_state)br.ReadByte();
             attributes_list attrs = GetAttributes();
             location loc = ReadDebugInfo();
-            if (name==null) 
+            if (name==null)
                 name = GetStringInClass(cont, name_ref);
             prop = new common_property_node(name, cont, type, get_meth, set_meth, loc, fal, ps);
             prop.attributes.AddRange(attrs);
@@ -1920,7 +1920,7 @@ namespace PascalABCCompiler.PCU
             cont.properties.AddElement(prop);
             //members[offset] = prop;
             AddMember(prop, offset);
-            
+
             return prop;
         }
 
@@ -1935,7 +1935,7 @@ namespace PascalABCCompiler.PCU
             br.ReadByte();
 
             prop = (common_property_node)CreateInterfaceProperty(null, offset);
-            
+
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
             return prop;
         }
@@ -1966,12 +1966,12 @@ namespace PascalABCCompiler.PCU
             field.field_access_level = fal;
             field.polymorphic_state = ps;
             field.loc = loc;
-           
+
             //field = new class_field(name,type,cont,ps,fal,loc);
             field.inital_value = initv;
             cont.fields.AddElement(field);
             //members[offset] = field;
-            AddMember(field, offset);            
+            AddMember(field, offset);
             return field;
         }
 
@@ -1990,7 +1990,7 @@ namespace PascalABCCompiler.PCU
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
             return field;
         }
-		
+
         private void AddEnumOperators(common_type_node tctn)
         {
         	/*basic_function_node enum_gr = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.gr_name,tctn,SemanticTree.basic_function_type.enumgr,SystemLibrary.SystemLibrary.bool_type);
@@ -2137,14 +2137,14 @@ namespace PascalABCCompiler.PCU
             bool is_value_type = br.ReadBoolean();
             ctn.SetBaseType(base_type);
             ctn.internal_is_value = is_value_type;
-            
-            
+
+
             List<SemanticTree.ITypeNode> interf_implemented = ReadImplementingInterfaces();
-            
+
             constant_node low_val = null;
             constant_node upper_val = null;
             SemanticTree.type_access_level tal = (SemanticTree.type_access_level)br.ReadByte();
-            
+
             ctn.SetIsSealed(br.ReadBoolean());
             ctn.SetIsAbstract(br.ReadBoolean(), null); // Причина null, потому что проблема пересечения sealed и abstract не может произойти после загрузки из .pcu
             ctn.SetIsStatic(br.ReadBoolean());
@@ -2166,12 +2166,12 @@ namespace PascalABCCompiler.PCU
                 }
                 iscope.TopInterfaceScopeArray = interf_scopes.ToArray();
             }
-            
+
             ctn.IsInterface = type_is_interface;
             ctn.IsDelegate = type_is_delegate;
             ctn.is_class = type_is_class;
             ctn.ImplementingInterfaces.AddRange(interf_implemented);
-            
+
             if (type_is_generic_definition)
             {
                 foreach (common_type_node par in type_params)
@@ -2184,7 +2184,7 @@ namespace PascalABCCompiler.PCU
             if (CanReadObject())
                 element_type = GetTypeReference();
             ctn.element_type = element_type;
-            
+
             if (ctn.type_special_kind == SemanticTree.type_special_kind.set_type)
             {
                 ctn = compilation_context.AddTypeToSetTypeList(ctn);
@@ -2290,7 +2290,7 @@ namespace PascalABCCompiler.PCU
             enum_const_node upper_value = new enum_const_node(upper_val - 1, ctn, ctn.loc);
             ordinal_type_interface oti_new = new ordinal_type_interface(oti_old.inc_method, oti_old.dec_method,
                 oti_old.inc_value_method, oti_old.dec_value_method,
-                oti_old.lower_eq_method, oti_old.greater_eq_method, 
+                oti_old.lower_eq_method, oti_old.greater_eq_method,
                 oti_old.lower_method, oti_old.greater_method,
                 lower_value, upper_value, oti_old.value_to_int, oti_old.ordinal_type_to_int);
 
@@ -2416,7 +2416,7 @@ namespace PascalABCCompiler.PCU
 
             //members[offset] = tc;
             AddMember(tc, offset);
-            
+
             cun.namespaces[0].scope.AddSymbol(name, new SymbolInfo(tc));
 
             return tc;
@@ -2430,7 +2430,7 @@ namespace PascalABCCompiler.PCU
             type_synonym ts = new type_synonym(name, tn, loc);
             return ts;
         }*/
-		
+
         private wrapped_type_synonym CreateTypeSynonym()
         {
             string name = br.ReadString();
@@ -2439,7 +2439,7 @@ namespace PascalABCCompiler.PCU
             br.BaseStream.Seek(off-4, SeekOrigin.Current);
             return wts;
         }
-        
+
         public override definition_node CreateTypeSynonim(int offset, string name)
         {
         	int tmp = (int)br.BaseStream.Position;
@@ -2448,7 +2448,7 @@ namespace PascalABCCompiler.PCU
         	br.BaseStream.Seek(tmp, SeekOrigin.Begin);
             return tn;
         }
-        
+
         private void AddTypeSynonyms(int offset, SymbolTable.Scope scope)
         {
             int pos = (int)br.BaseStream.Position;
@@ -2517,7 +2517,7 @@ namespace PascalABCCompiler.PCU
 
                     ordinal_type_interface q = (ordinal_type_interface)lower_bound.type.get_internal_interface(internal_interface_kind.ordinal_interface);
                     ordinal_type_interface n = new ordinal_type_interface(q.inc_method, q.dec_method,
-                        q.inc_value_method, q.dec_value_method, q.lower_eq_method, q.greater_eq_method, 
+                        q.inc_value_method, q.dec_value_method, q.lower_eq_method, q.greater_eq_method,
                         q.lower_method, q.greater_method,
                         lower_bound, upper_bound, q.value_to_int, q.ordinal_type_to_int);
 
@@ -2587,7 +2587,7 @@ namespace PascalABCCompiler.PCU
             return names;
         }
 
-		
+
         private compiled_type_node CreateCompiledTypeNode(int offset)
         {
             definition_node dn = null;
@@ -2609,7 +2609,7 @@ namespace PascalABCCompiler.PCU
             ctn.Location = ReadDebugInfo();
             //members[offset] = ctn;
             AddMember(ctn, offset);
-            
+
             //int_members.Add(ctn);
             return ctn;
         }
@@ -2700,7 +2700,7 @@ namespace PascalABCCompiler.PCU
             if (CanReadObject())
                 nv.inital_value = CreateExpressionWithOffset();
             //members[offset] = nv;
-            AddMember(nv, offset);            
+            AddMember(nv, offset);
             int_members.Add(nv);
             return nv;
         }
@@ -2732,7 +2732,7 @@ namespace PascalABCCompiler.PCU
             	AddImplVarToOrderList(nv,ind);
             nv.type = GetTypeReference();
             //members[offset] = nv;
-            AddMember(nv, offset);            
+            AddMember(nv, offset);
             br.ReadInt32();//namespace
 			nv.loc = ReadDebugInfo();
             if (is_interface)
@@ -2869,7 +2869,7 @@ namespace PascalABCCompiler.PCU
             if (members.TryGetValue(offset, out dn))
                 return dn as common_namespace_function_node;
 			common_namespace_function_node cnfn = null;
-            
+
             int pos = (int)br.BaseStream.Position;
 			br.BaseStream.Seek(start_pos+offset,SeekOrigin.Begin);
 			br.ReadByte();
@@ -2877,7 +2877,7 @@ namespace PascalABCCompiler.PCU
             int connected_to_type_pos = (int)br.BaseStream.Position;
             br.BaseStream.Seek(func_pos, SeekOrigin.Begin);
 			string name;
-            type_node ConnectedToType = null; 
+            type_node ConnectedToType = null;
             /*if (CanReadObject())
                 ConnectedToType = GetTypeReference();*/
 			bool is_interface = br.ReadBoolean();
@@ -3003,7 +3003,7 @@ namespace PascalABCCompiler.PCU
             en.type = cnst_type;
             location loc = ReadDebugInfo();
             ncd = new namespace_constant_definition(name, en, loc, cun.namespaces[(is_interface)?0:1]);
-            cun.namespaces[(is_interface) ? 0 : 1].constants.AddElement(ncd);        
+            cun.namespaces[(is_interface) ? 0 : 1].constants.AddElement(ncd);
             br.BaseStream.Seek(pos, SeekOrigin.Begin);
             //???
             AddMember(ncd, offset);
@@ -3031,7 +3031,7 @@ namespace PascalABCCompiler.PCU
 			cffn.num_of_default_variables = br.ReadInt32();
 			cffn.num_of_for_cycles = br.ReadInt32();
             //members[offset] = cffn;
-            AddMember(cffn, offset);            
+            AddMember(cffn, offset);
 			int num_var = br.ReadInt32();
 			if (cffn.return_value_type != null) num_var--;
             GetVariables(cffn, num_var);
@@ -3076,23 +3076,23 @@ namespace PascalABCCompiler.PCU
 			lv.type = GetTypeReference();
             if (br.ReadBoolean()) lv.set_used_as_unlocal();
             //members[offset] = lv;
-            AddMember(lv, offset);            
+            AddMember(lv, offset);
             if (CanReadObject())
                 lv.inital_value = CreateExpressionWithOffset();
             return lv;
 		}
-		
+
         private function_constant_definition GetFunctionConstant(common_function_node func)
         {
         	int offset = (int)br.BaseStream.Position-start_pos;
 			//int tmp=br.ReadByte();
 			function_constant_definition fcd = new function_constant_definition(br.ReadString(),null,func);
 			//members[offset] = lv;
-            AddMember(fcd, offset);            
+            AddMember(fcd, offset);
             fcd.const_value = CreateExpressionWithOffset() as constant_node;
             return fcd;
         }
-        
+
 		private common_parameter GetParameter(common_function_node func)
 		{
 			int offset = (int)br.BaseStream.Position-start_pos;
@@ -3119,7 +3119,7 @@ namespace PascalABCCompiler.PCU
             //members[offset] = p;
             if (members.ContainsKey(offset))
                 return (common_parameter)members[offset];
-            AddMember(p, offset);            
+            AddMember(p, offset);
 			return p;
 		}
 
@@ -3148,7 +3148,7 @@ namespace PascalABCCompiler.PCU
             p.attributes.AddRange(GetAttributes());
             if (members.ContainsKey(offset))
                 return (common_parameter)members[offset];
-            AddMember(p, offset);            
+            AddMember(p, offset);
             return p;
         }
 
@@ -3213,17 +3213,17 @@ namespace PascalABCCompiler.PCU
             }
             throw new Exception("Unknown statement " + snt);
         }
-		
+
 		private statement_node CreatePInvokeStatement()
 		{
 			return new pinvoke_statement(null);
 		}
-		
+
 		private statement_node CreateRethrow()
 		{
 			return new rethrow_statement_node(null);
 		}
-		
+
         private statement_node CreateForeach()
         {
             var_definition_node vdn = GetLocalOrNamespaceVariableByOffset(br.ReadInt32());
@@ -3268,19 +3268,19 @@ namespace PascalABCCompiler.PCU
 			if_node stmt = new if_node(expr,then_body,else_body,null);
 			return stmt;
 		}
-		
+
 		private statement_node CreateWhile()
 		{
 			while_node stmt = new while_node(CreateExpression(),CreateStatement(),null);
 			return stmt;
 		}
-		
+
 		private statement_node CreateRepeat()
 		{
 			repeat_node stmt = new repeat_node(CreateStatement(),CreateExpression(),null);
 			return stmt;
 		}
-		
+
 		private statement_node CreateFor()
 		{
             statement_node init_stmt=null;
@@ -3359,7 +3359,7 @@ namespace PascalABCCompiler.PCU
                 if (CanReadObject())
                     br.ReadInt32();
                 ReadDebugInfo();
-            } 
+            }
             else
             {
                 AddMember(lv, offset);
@@ -3368,11 +3368,11 @@ namespace PascalABCCompiler.PCU
                 lv.loc = ReadDebugInfo();
                 lv.inital_value = initv;
             }
-                
+
             return lv;
-            
+
         }
-		
+
         public expression_node GetExpression(int offset)
         {
             int tmp = (int)br.BaseStream.Position;
@@ -3401,17 +3401,17 @@ namespace PascalABCCompiler.PCU
         {
             return new typeof_operator(GetTypeReference(), null);
         }
-        
+
         private sizeof_operator CreateSizeOfOperator()
         {
             return new sizeof_operator(GetTypeReference(), null);
         }
-        
+
         private exit_procedure CreateExitProcedure()
         {
             return new exit_procedure(null);
         }
-        
+
         private array_const CreateArrayConst()
         {
             List<constant_node> element_values = new List<constant_node>();
@@ -3422,7 +3422,7 @@ namespace PascalABCCompiler.PCU
             arrc.SetType(GetTypeReference());
             return arrc;
         }
-        
+
         private array_initializer CreateArrayInitializer()
         {
         	List<expression_node> element_values = new List<expression_node>();
@@ -3433,7 +3433,7 @@ namespace PascalABCCompiler.PCU
             arrc.type = GetTypeReference();
             return arrc;
         }
-        
+
         private record_initializer CreateRecordInitializer()
         {
         	List<expression_node> element_values = new List<expression_node>();
@@ -3444,7 +3444,7 @@ namespace PascalABCCompiler.PCU
             rec.type = GetTypeReference();
             return rec;
         }
-        
+
         private record_constant CreateRecordConst()
         {
             List<constant_node> field_values = new List<constant_node>();
@@ -3455,7 +3455,7 @@ namespace PascalABCCompiler.PCU
             recc.SetType(GetTypeReference());
             return recc;
         }
-        
+
         private question_colon_expression CreateQuestionColonExpression()
         {
             return new question_colon_expression(CreateExpression(), CreateExpression(), CreateExpression(), null);
@@ -3474,12 +3474,12 @@ namespace PascalABCCompiler.PCU
                 sl.AddElement(CreateStatement());
             return new statements_expression_node(sl, CreateExpression(), null);
         }
-        
+
         private float_const_node CreateFloatConst()
         {
             return new float_const_node(br.ReadSingle(), null);
         }
-        
+
         private compiled_static_method_call_as_constant CreateCompiledStaticMethodCallNodeAsConstant()
         {
             return new compiled_static_method_call_as_constant(CreateCompiledStaticMethodCall(), null);
@@ -3496,12 +3496,12 @@ namespace PascalABCCompiler.PCU
             cnfcc.type = GetTypeReference();
             return cnfcc;
         }
-        
+
         private compiled_constructor_call_as_constant CreateCompiledConstructorCallAsConstant()
         {
             return new compiled_constructor_call_as_constant(CreateCompiledConstructorCall(), null);
         }
-        
+
         private default_operator_node_as_constant CreateDefaultOperatorAsConstant()
         {
             return new default_operator_node_as_constant(CreateDefaultOperator(), null);
@@ -3529,7 +3529,7 @@ namespace PascalABCCompiler.PCU
                 case semantic_node_type.sizeof_operator:
                     return CreateSizeOfOperator();
                 case semantic_node_type.is_node:
-                    return CreateIsNode(); 
+                    return CreateIsNode();
                 case semantic_node_type.as_node:
                     return CreateAsNode();
                 case semantic_node_type.compiled_static_method_call_node_as_constant:
@@ -3638,9 +3638,9 @@ namespace PascalABCCompiler.PCU
                     return CreateNullConstNode();
                 case semantic_node_type.enum_const:
                     return CreateEnumConstNode();
-                case semantic_node_type.foreach_break_node: 
+                case semantic_node_type.foreach_break_node:
                     return CreateForeachBreakNode();
-                case semantic_node_type.foreach_continue_node: 
+                case semantic_node_type.foreach_continue_node:
                     return CreateForeachContinueNode();
                 case semantic_node_type.common_constructor_call_as_constant:
                     return CreateCommonConstructorCallAsConstant();
@@ -3661,17 +3661,17 @@ namespace PascalABCCompiler.PCU
 			}
 			throw new Exception("Unknown expression "+snt);
 		}
-		
+
         private default_operator_node CreateDefaultOperator()
         {
         	return new default_operator_node(GetTypeReference(),null);
         }
-        
+
         private expression_node CreateBasicFunctionCallAsConstant()
         {
         	return new basic_function_call_as_constant(CreateBasicFunctionCall() as basic_function_call,null);
         }
-        
+
         private expression_node CreateCommonConstructorCallAsConstant()
         {
         	return new common_constructor_call_as_constant(CreateCommonConstructorCall() as common_constructor_call,null);
@@ -3686,7 +3686,7 @@ namespace PascalABCCompiler.PCU
 		{
 			return CreateExpression((semantic_node_type)br.ReadByte());
 		}
-		
+
 		private expression_node CreateExpressionWithOffset()
 		{
 			int pos = br.ReadInt32();
@@ -3761,7 +3761,7 @@ namespace PascalABCCompiler.PCU
                 nspr.fact_parametres.AddElement(CreateExpression());
             return nspr;
         }
-		
+
         private common_static_method_call CreateStaticMethodCall()
         {
         	common_method_node meth = GetMethodByOffset();
@@ -3773,7 +3773,7 @@ namespace PascalABCCompiler.PCU
                 cmc.parameters.AddElement(CreateExpression());
             return cmc;
         }
-        
+
         private expression_node CreateMethodCall()
         {
             expression_node obj = CreateExpression();
@@ -3815,7 +3815,7 @@ namespace PascalABCCompiler.PCU
         {
             return new byte_const_node(br.ReadByte(), null);
         }
-        
+
         private expression_node CreateIntConstNode()
 		{
 			return new int_const_node(br.ReadInt32(),null);
@@ -3850,28 +3850,28 @@ namespace PascalABCCompiler.PCU
         {
             return new long_const_node(br.ReadInt64(), null);
         }
-		
+
 		private expression_node CreateDoubleConstNode()
 		{
 			return new double_const_node(br.ReadDouble(),null);
 		}
-		
+
 		private expression_node CreateCharConstNode()
 		{
 			return new char_const_node(br.ReadChar(),null);
 		}
-		
+
 		private expression_node CreateBoolConstNode()
 		{
 			return new bool_const_node(br.ReadBoolean(),null);
 		}
-		
+
 		private expression_node CreateStringConstNode()
 		{
             string s = br.ReadString();
 			return new string_const_node(s,null);
 		}
-		
+
 		private expression_node CreateLocalVariableReference()
 		{
             int off = 0;
@@ -3894,7 +3894,7 @@ namespace PascalABCCompiler.PCU
             local_block_variable_reference lvr = new local_block_variable_reference(lv, null);
             return lvr;
         }
-        
+
         private expression_node CreateNamespaceConstantReference()
         {
         	if (br.ReadByte() == 1)
@@ -3910,14 +3910,14 @@ namespace PascalABCCompiler.PCU
 				return nvr;
 			}
         }
-        
+
         private expression_node CreateFunctionConstantReference()
         {
         	function_constant_definition lv = GetFunctionConstantByOffset(br.ReadInt32());
 			function_constant_reference lvr = new function_constant_reference(lv,null);
 			return lvr;
         }
-        
+
         private expression_node CreateNamespaceVariableReference()
 		{
 			if (br.ReadByte() == 1)
@@ -3933,7 +3933,7 @@ namespace PascalABCCompiler.PCU
 				return nvr;
 			}
 		}
-		
+
 		private expression_node CreateBasicFunctionCall()
 		{
             SemanticTree.basic_function_type bft = (SemanticTree.basic_function_type)br.ReadInt16();
@@ -3951,7 +3951,7 @@ namespace PascalABCCompiler.PCU
                 bfc.parameters.AddElement(CreateExpression());
             return bfc;
 		}
-		
+
 		private expression_node CreateCommonParameterReference()
 		{
 			common_parameter cp = GetParameterByOffset(br.ReadInt32());
@@ -3997,7 +3997,7 @@ namespace PascalABCCompiler.PCU
 				cnfc.parameters.AddElement(CreateExpression());
 			return cnfc;
 		}
-		
+
 		private expression_node CreateCommonInFuncFuncCall()
 		{
 			common_in_function_function_node cff = GetNestedFunctionByOffset(br.ReadInt32());
@@ -4007,7 +4007,7 @@ namespace PascalABCCompiler.PCU
 				cffc.parameters.AddElement(CreateExpression());
 			return cffc;
 		}
-		
+
         private var_definition_node GetLocalOrNamespaceVariableByOffset(int offset)
         {
             var_definition_node vdn = GetLocalOrBlockVariableByOffset(offset);
@@ -4019,12 +4019,12 @@ namespace PascalABCCompiler.PCU
         {
         	return (var_definition_node)members[offset];
         }
-		
+
         private local_variable GetLocalVariableByOffset(int offset)
 		{
 			return (local_variable)members[offset];
 		}
-		
+
         private function_constant_definition GetFunctionConstantByOffset(int offset)
         {
         	return (function_constant_definition)members[offset];
@@ -4041,7 +4041,7 @@ namespace PascalABCCompiler.PCU
             }
             return (local_block_variable)members[offset];
         }
-		
+
 		private common_parameter GetParameterByOffset(int offset)
 		{
             if (!members.ContainsKey(offset))
@@ -4053,7 +4053,7 @@ namespace PascalABCCompiler.PCU
             }
 			return (common_parameter)members[offset];
 		}
-		
+
 		private namespace_variable GetNamespaceVariableByOffset(int offset)
 		{
             definition_node dn = null;
@@ -4062,7 +4062,7 @@ namespace PascalABCCompiler.PCU
 			namespace_variable nv = GetNamespaceVariable(offset);
 			return nv;
 		}
-		
+
 		private namespace_variable GetExtNamespaceVariableByOffset(int offset)
 		{
             definition_node dn = null;
@@ -4077,7 +4077,7 @@ namespace PascalABCCompiler.PCU
 			}
 			return nv;
 		}
-		
+
 		private namespace_constant_definition GetNamespaceConstantByOffset(int offset)
 		{
             definition_node dn = null;
@@ -4086,7 +4086,7 @@ namespace PascalABCCompiler.PCU
 			namespace_constant_definition nv = GetConstantDefinition(offset);
 			return nv;
 		}
-		
+
 		private namespace_constant_definition GetExtNamespaceConstantByOffset(int offset)
 		{
             definition_node dn = null;
@@ -4101,7 +4101,7 @@ namespace PascalABCCompiler.PCU
 			}
 			return nv;
 		}
-		
+
 		private common_namespace_function_node GetNamespaceFunctionByOffset(int offset)
 		{
             definition_node dn = null;
@@ -4110,7 +4110,7 @@ namespace PascalABCCompiler.PCU
 			common_namespace_function_node cnf = GetNamespaceFunction(offset, false);
 			return cnf;
 		}
-		
+
 		private common_namespace_function_node GetExtNamespaceFunctionByOffset(int offset)
 		{
             definition_node dn = null;
@@ -4400,52 +4400,52 @@ namespace PascalABCCompiler.PCU
 		{
 			return (common_in_function_function_node)members[offset];
 		}
-		
+
 		private statement_node CreateReturnNode()
 		{
 			return new return_node(CreateExpression(),null);
 		}
-		
+
 		private expression_node CreateWhileBreakNode()
 		{
 			return new while_break_node(null,null);
 		}
-		
+
 		private expression_node CreateWhileContinueNode()
 		{
 			return new while_continue_node(null,null);
 		}
-		
+
 		private expression_node CreateForBreakNode()
 		{
 			return new for_break_node(null,null);
 		}
-		
+
 		private expression_node CreateForContinueNode()
 		{
 			return new for_continue_node(null,null);
 		}
-		
+
 		private expression_node CreateRepeatBreakNode()
 		{
 			return new repeat_break_node(null,null);
 		}
-		
+
 		private expression_node CreateRepeatContinueNode()
 		{
 			return new repeat_continue_node(null,null);
 		}
-		
+
 		private expression_node CreateForeachBreakNode()
 		{
 			return new foreach_break_node(null,null);
 		}
-		
+
 		private expression_node CreateForeachContinueNode()
 		{
 			return new foreach_continue_node(null,null);
 		}
-		
+
 		private compiled_static_method_call CreateCompiledStaticMethodCall()
 		{
 			compiled_function_node cfn = GetCompiledMethod(br.ReadInt32());
@@ -4458,7 +4458,7 @@ namespace PascalABCCompiler.PCU
 				csmc.parameters.AddElement(CreateExpression());
 			return csmc;
 		}
-		
+
 		private compiled_function_call CreateCompiledFunctionCall()
 		{
 			expression_node obj = CreateExpression();
@@ -4473,7 +4473,7 @@ namespace PascalABCCompiler.PCU
 				cfc.parameters.AddElement(CreateExpression());
 			return cfc;
 		}
-		
+
 		private compiled_constructor_call CreateCompiledConstructorCall()
 		{
 			compiled_constructor_node ccn = GetCompiledConstructor(br.ReadInt32());
@@ -4486,7 +4486,7 @@ namespace PascalABCCompiler.PCU
 				ccc.parameters.AddElement(CreateExpression());
 			return ccc;
 		}
-		
+
 		private compiled_variable_reference CreateCompiledVariableReference()
 		{
 			expression_node obj = CreateExpression();
@@ -4494,7 +4494,7 @@ namespace PascalABCCompiler.PCU
 			compiled_variable_reference cvr = new compiled_variable_reference(cvd,obj,null);
 			return cvr;
 		}
-		
+
 		private static_compiled_variable_reference CreateStaticCompiledVariableReference()
 		{
 			compiled_variable_definition cvd = GetCompiledVariable(br.ReadInt32());
@@ -4514,7 +4514,7 @@ namespace PascalABCCompiler.PCU
             	for (int i=0; i<len; i++)
             		lst.Add(CreateExpression());
             }
-            type_node type = GetTypeReference(); 
+            type_node type = GetTypeReference();
             simple_array_indexing expr = new simple_array_indexing(arr, ind_expr, type, null);
             if (lst != null)
             	expr.expr_indices = lst.ToArray();
@@ -4527,7 +4527,7 @@ namespace PascalABCCompiler.PCU
             if (members.TryGetValue(offset, out dn))
                 return dn as label_node;
             label_node lab = null;
-            
+
             int pos = (int)br.BaseStream.Position;
             br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
 
@@ -4535,7 +4535,7 @@ namespace PascalABCCompiler.PCU
             location loc = ReadDebugInfo();
             lab = new label_node(s, loc);
             //members[offset] = lab;
-            AddMember(lab, offset);            
+            AddMember(lab, offset);
 
             br.BaseStream.Seek(pos, SeekOrigin.Begin);
             return lab;

@@ -15,7 +15,7 @@ namespace PascalABCCompiler
     }
     public class CommandConsoleCompiler
     {
-        
+
 
         private Compiler compiler;
 
@@ -50,7 +50,7 @@ namespace PascalABCCompiler
 
         internal Dictionary<string, SourceFile> SourceFiles = new Dictionary<string, SourceFile>();
 
-        
+
 
         public object SourceFilesProvider(string FileName, SourceFileOperation FileOperation)
         {
@@ -99,7 +99,7 @@ namespace PascalABCCompiler
             SendCommand(ConsoleCompilerConstants.SourceFileText, FileName);
             int command = 0;
             string arg = null;
-            
+
             ReadCommand(out command, out arg);
             if (command == 182) // Error
                 return null;
@@ -125,7 +125,7 @@ namespace PascalABCCompiler
                     (res, c);
                 c += i;
             }
-            return Encoding.GetEncoding(1251).GetString(res);*/             
+            return Encoding.GetEncoding(1251).GetString(res);*/
         }
         bool compilerReloading = false;
         public void LoadCompiler()
@@ -192,7 +192,7 @@ namespace PascalABCCompiler
                 }
 //            command = Convert.ToInt32(line.Substring(0, 3));
         }
-        
+
         Stream standardInput;
 
         object ReadObject()

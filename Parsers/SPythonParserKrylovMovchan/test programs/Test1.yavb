@@ -1,0 +1,12 @@
+﻿def f(a: int) -> int:
+    if a > 0:
+        println(a)
+        return g(a - 1) + a
+    return 0
+
+def g(a: int) -> int:
+    if a > 0:
+        print(a)
+        return f(a - 1) + a
+
+f(10)

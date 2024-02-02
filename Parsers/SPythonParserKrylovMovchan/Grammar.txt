@@ -1,0 +1,89 @@
+program	: stmt_lst
+		;
+
+stmt_lst: stmt
+		| stmt_lst ';' stmt
+		;
+
+stmt	: block
+		| assign
+		| if_stmt
+		| while_stmt
+		| for_stmt
+		| proccall
+		| 'break'
+		| 'continue'
+		;
+
+block	: IDENT stmt_lst ';' UNINDENT
+		;
+
+assign	: ident as_op expr
+		;
+
+if_stmt	: 'if' expr ':' block optional_elif
+		;
+
+optional_elif	: 'elif' expr ':' block optional_elif
+				| optional_else
+				;
+
+optional_else	: 'else' expr ':' block
+				|
+				;
+
+while_stmt	: 'while' expr ':' block optional_else
+			;
+
+proccall	: var_reference
+			;
+
+var_reference	: variable
+				;
+
+variable	: ident
+			| proc_func_call
+			;
+
+proc_func_call	: ident '(' expr_lst ')'
+				;
+
+ident	: ID
+		;
+
+expr	: expr bin_op expr
+		| un_op expr
+		| variable
+		| INTNUM
+		| READLNUM
+		| '(' expr ')'
+		;
+
+expr_lst: expr
+		| expr_lst ',' expr
+		;
+
+as_op	: '=' 
+			| '+=' 
+			| '-=' 
+			| '*=' 
+			| '/=' 
+			| ... 
+			;
+
+bin_op	: '+' 
+		| '-' 
+		| '*' 
+		| '/' 
+		| '**' 
+		| '<' 
+		| '>' 
+		| '<=' 
+		| '>=' 
+		| '==' 
+		| ... 
+		;
+
+un_op	: '-' 
+		: '~' 
+		;

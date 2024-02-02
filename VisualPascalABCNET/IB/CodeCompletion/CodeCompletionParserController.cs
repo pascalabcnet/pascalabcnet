@@ -138,11 +138,14 @@ namespace VisualPascalABC
 
         private void InternalParsing()
         {
+#if DEBUG
+#else
             while (true)
             {
                 ParseInThread();
                 System.Threading.Thread.Sleep(2000);
             }
+#endif
         }
 
         private long mem_delta = 0;

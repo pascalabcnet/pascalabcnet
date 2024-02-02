@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{81FE2BAA-D100-4596-A392-F03BBE30F829}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>VeryBasicParser</RootNamespace>
+    <AssemblyName>VeryBasicLanguageParser</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Errors.cs" />
+    <Compile Include="Keywords.cs" />
+    <Compile Include="LexerABC.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VeryBasicParser.cs" />
+    <Compile Include="VeryBasicParserTools.cs" />
+    <Compile Include="VeryBasicParserYacc.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Errors\Errors.csproj">
+      <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
+      <Name>Errors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GPPG\GPPG.csproj">
+      <Project>{ad4e1292-2537-467a-934d-e9fda3f18d87}</Project>
+      <Name>GPPG</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Localization\Localization.csproj">
+      <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
+      <Name>Localization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ParserTools\ParserTools.csproj">
+      <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
+      <Name>ParserTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
+      <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
+      <Name>SyntaxTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyntaxVisitors\SyntaxVisitors.csproj">
+      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
+      <Name>SyntaxVisitors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UniversalParserHelper\UniversalParserHelper.csproj">
+      <Project>{e862a9ef-836b-414b-aac4-9d207cabdc82}</Project>
+      <Name>UniversalParserHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

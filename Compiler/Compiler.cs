@@ -1,30 +1,32 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 /***************************************************************************
-*   
+*
 *   Управляющий блок компилятора, алгоритм компиляции модулей
 *   Зависит от Errors,SyntaxTree,SemanticTree,Parsers,TreeConvertor,
 *              CodeGenerators
-* 
+*
 ***************************************************************************/
+
+//TODO разобраться с ToLower()!!!
 
 #region algorithm
 /***************************************************************************
  *               Рекурсивный алгоритм компиляции модулей
  *						        версия 1.4
- *   
- *   CompileUnit(ИмяФайла)  
+ *
+ *   CompileUnit(ИмяФайла)
  *   1.CompileUnit(new СписокМодулей,ИмяФайла)
- *   2.Докомпилировать модули из СписокОтложенойКомпиляции; 
- * 
+ *   2.Докомпилировать модули из СписокОтложенойКомпиляции;
+ *
  *   CompileUnit(СписокМодулей,ИмяФайла)
  *   1.ТекущийМодуль=ТаблицаМодулей[ИмяФайла];
- *     Если (ТекущийМодуль!=0) то 
+ *     Если (ТекущийМодуль!=0) то
  *	     Если (ТекущийМодуль.Состояние==BeginCompilation)
  *         СписокМодулей.Добавить(ТекущийМодуль);
- *         Выход;    
+ *         Выход;
  *       иначе перейти к пункту 5
- *   
+ *
  *   2.Если ЭтоФайлDLL(ИмяФайла) то
  *       Если ((ТекущийМодуль=СчитатьDLL(ИмяФайла))!=0) то
  *         СписокМодулей.Добавить(ТекущийМодуль);
@@ -33,7 +35,7 @@
  *       иначе
  *         Ошибка("Не могу подключить сборку");
  *         Выход;
- *   
+ *
  *   3.Если ЭтоФайлPCU(ИмяФайла) то
  *       Если ((ТекущийМодуль=СчитатьPCU(ИмяФайла))!=0) то
  *         СписокМодулей.Добавить(ТекущийМодуль);
@@ -41,17 +43,17 @@
  *         Выход;
  *       иначе
  *         иначе перейти к пункту 4;
- *   
+ *
  *   4.ТекущийМодуль=новыйМодуль();
  *     ТекущийМодуль.СинтаксическоеДерево=Парасеры.Парсить(ИмяФайла,ТекущийМодуль.СписокОшибок);
- *     Если (ТекущийМодуль.СинтаксическоеДерево==0) то 
- *        Если (ТекущийМодуль.СписокОшибок.Количество==0) то 
+ *     Если (ТекущийМодуль.СинтаксическоеДерево==0) то
+ *        Если (ТекущийМодуль.СписокОшибок.Количество==0) то
  *          Ошибка("Модуль не неайден");
  *        иначе
  *          Ошибка(ТекущийМодуль.СписокОшибок[0]);
  *     ТаблицаМодулей[ИмяФайла]=ТекущийМодуль;
  *     ТекущийМодуль.Состояние=BeginCompilation;
- *   
+ *
  *   5.СинтаксическийСписокМодулей=ТекущийМодуль.СинтаксическоеДерево.Interface.usesList;
  *     Для(i=СинтаксическийСписокМодулей.Количество-1-ТекущийМодуль.КомпилированыеВInterface.Количество;i>=0;i--)
  *        ТекушийМодуль.ТекущийUsesМодуль=СинтаксическийСписокМодулей[i].ИмяФайла;
@@ -63,13 +65,13 @@
  *        CompileUnit(ТекущийМодуль.КомпилированыеВInterface,ИмяUsesФайла);
  *        Если (ТекушийМодуль.Состояние==Compiled) то
  *          СписокМодулей.Добавить(ТекушийМодуль);
- *          Выход; 
- * 
+ *          Выход;
+ *
  *   6.ТекущийМодуль.СемантическоеДерево=КонверторДерева.КонвертироватьInterfaceЧасть(
  *                                         ТекущийМодуль.СинтаксическоеДерево,
  *                                         ТекущийМодуль.КомпилированыеВInterface,
  *                                         ТекущийМодуль.СписокОшибок);
- *     СписокМодулей.Добавить(ТекущийМодуль);    
+ *     СписокМодулей.Добавить(ТекущийМодуль);
  *     СинтаксическийСписокМодулей=ТекущийМодуль.СинтаксическоеДерево.Implementation.usesList;
  *     Для(i=СинтаксическийСписокМодулей.Количество-1;i>=0;i--)
  *       Если (ТаблицаМодулей[СинтаксическийСписокМодулей[i].ИмяФайла].Состояние=BeginCompilation)
@@ -83,27 +85,27 @@
  *       КонверторДерева.КонвертироватьImplementationЧасть(
  *                                         ТекущийМодуль.СинтаксическоеДерево,
  *                                         ТекущийМодуль.СемантическоеДерево,
- *                                         ТекущийМодуль.КомпилированыеВImplementation 
+ *                                         ТекущийМодуль.КомпилированыеВImplementation
  *                                         ТекущийМодуль.СписокОшибок);
  *     ТекущийМодуль.Состояние=Compiled;
  *     СохранитьPCU(ТекущийМодуль);
- *     
- * 
- *     
+ *
+ *
+ *
  *     [краткая верcия алгоритма компиляции модулей]
- *     CompileUnit(ИмяФайла)  
+ *     CompileUnit(ИмяФайла)
  *     1.CompileUnit(new СписокМодулей,ИмяФайла)
- *     2.Докомпилировать модули из СписокОтложенойКомпиляции; 
- *     
+ *     2.Докомпилировать модули из СписокОтложенойКомпиляции;
+ *
  *     CompileUnit(СписокМодулей,ИмяФайла);
- *     1.Если у этого модуля откомпилирован хотябы интерфейс то 
+ *     1.Если у этого модуля откомпилирован хотябы интерфейс то
  *         добавить его в СписокМодулей
  *         выход
- *     2.Если это DLL то 
+ *     2.Если это DLL то
  *         считать
  *         добавить его в СписокМодулей
  *         выход
- *     3.Если это PCU то 
+ *     3.Если это PCU то
  *         считать
  *         добавить его в СписокМодулей
  *         выход
@@ -111,11 +113,11 @@
  *       РаспарситьТекст(ИмяФайла)
  *       Состояние компилируемогоМодуля установить на BeginCompilation
  *     5.Для всех модулей из Interface части компилируемогоМодуля справа налево
- *         Если мы уже начаинали компилировать этот модуль  
+ *         Если мы уже начаинали компилировать этот модуль
  *           Если состояние модуля BeginCompilation
  *             Если состояние последнего компилируемого им модуля BeginCompilation
  *               ошибка("Циклическая связь модулей")
- *               выход 
+ *               выход
  *         CompileUnit(Список из Interface части компилируемогоМодуля,модуль.имя)
  *         Если компилируемыйМодуль.Состояние Compiled то
  *           добавить его в СписокМодулей
@@ -133,9 +135,9 @@
  *       Состояние компилируемогоМодуля установить на Compiled
  *       добавить его в СписокМодулей
  *       Сохранить компилируемыйМодуль в виде PCU файла на диск
- * 
- * 
- *     
+ *
+ *
+ *
  ***************************************************************************/
 #endregion
 
@@ -554,7 +556,7 @@ namespace PascalABCCompiler
         }
 
         private string outputFileName = null;
-        
+
         // имя выходного файла без расширения
         // если имя указано без пути то в качестве пути используетя OutputDirectory
         public string OutputFileName
@@ -634,11 +636,11 @@ namespace PascalABCCompiler
         /// module at index 0 is System module
         /// </summary>
         public List<StandardModule> StandardModules;
-        
+
         public void RemoveStandardModule(string name)
         {
             int moduleIndex = StandardModules.FindIndex(module => module.Name == name);
-            
+
             if (moduleIndex != -1)
                 StandardModules.RemoveAt(moduleIndex);
         }
@@ -676,6 +678,7 @@ namespace PascalABCCompiler
             StandardModules = new List<StandardModule>();
             StandardModules.Add(new StandardModule("PABCSystem", SyntaxTree.LanguageId.PascalABCNET));
             StandardModules.Add(new StandardModule("PABCExtensions", SyntaxTree.LanguageId.PascalABCNET));
+            StandardModules.Add(new StandardModule("SPythonSystem", SyntaxTree.LanguageId.SPython));
         }
 
         private void SetDirectories()
@@ -795,7 +798,7 @@ namespace PascalABCCompiler
             {
                 if (RevisionClass.Build == "0")
                     return RevisionClass.MainVersion;
-                else 
+                else
                     // TODO: Недостижимый код  | EVA
                     return RevisionClass.MainVersion + "." + RevisionClass.Build;
             }
@@ -1165,7 +1168,7 @@ namespace PascalABCCompiler
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_initstring_as_empty_ON, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_initstring_as_empty_OFF,
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_resource, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_platformtarget,
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_targetframework, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_faststrings,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_gendoc, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_region, 
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_gendoc, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_region,
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_endregion, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_ifdef,
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_endif, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_ifndef,
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_define, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_else,
@@ -1223,9 +1226,9 @@ namespace PascalABCCompiler
             List<compiler_directive> list = new List<compiler_directive>();
             foreach (SyntaxTree.compiler_directive directive in compilerDirectives)
             {
-                list.Add(new compiler_directive(directive.Name.text, 
+                list.Add(new compiler_directive(directive.Name.text,
                     directive.Directive?.text ?? "",
-                    get_location_from_treenode(directive, unitFileName), 
+                    get_location_from_treenode(directive, unitFileName),
                     unitFileName));
             }
             return list;
@@ -1355,7 +1358,7 @@ namespace PascalABCCompiler
                 {
                     switch (low_s)
                     {
-                            case "graphabc" : 
+                            case "graphabc" :
                             if (!info.modules.Contains("GraphABC") && !info.modules.Contains("ABCObjects") && !info.modules.Contains("ABCButtons") && !info.modules.Contains("ABCHouse")
                                                  && !info.modules.Contains("ABCSprites") && !info.modules.Contains("RobotField"))
                             {
@@ -2099,7 +2102,7 @@ namespace PascalABCCompiler
                 if (project.ProjectType == ProjectType.WindowsApp)
                     compilerOptions.target = NETGenerator.TargetType.WinExe;
 
-                // возможно, требуется переименование   EVA 
+                // возможно, требуется переименование   EVA
                 // CreateRCFile(compilerOptions);
             }
         }
@@ -2231,7 +2234,7 @@ namespace PascalABCCompiler
 
                     //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Думать позже  EVA
                     // получние полного семантического дерева, включающего все зависимости
-                    program_node semanticTree = ConstructMainSemanticTree(compilerOptions); 
+                    program_node semanticTree = ConstructMainSemanticTree(compilerOptions);
 
                     if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && CompilerOptions.OutputFileType != CompilerOptions.OutputType.ClassLibrary)
                     {
@@ -3308,21 +3311,21 @@ namespace PascalABCCompiler
         {
             string sourceText = GetSourceFileText(fileName);
             List<string> definesList = new List<string> { "PASCALABC" }; // SSM 11/07/20
-            
+
             if (!CompilerOptions.Debug && !CompilerOptions.ForDebugging)
                 definesList.Add("RELEASE");
             else
                 definesList.Add("DEBUG");
-            
+
             definesList.AddRange(CompilerOptions.ForceDefines);
-            
+
             SyntaxTree.compilation_unit syntaxTree = InternalParseText(fileName, sourceText, errorsList, warnings, definesList);
-            
+
             if (errorsList.Count > 0)
                 throw errorsList[0];
-            
+
             syntaxTree = syntaxTreeConvertersController.Convert(syntaxTree) as SyntaxTree.compilation_unit;
-            
+
             return syntaxTree;
         }
 
@@ -3454,7 +3457,7 @@ namespace PascalABCCompiler
                     StandardModules.Add(s);
                 return true;
             }
-            
+
             return false;
         }
 
@@ -3594,12 +3597,12 @@ namespace PascalABCCompiler
         /// <summary>
         /// Компилирует основную программу и все используемые ей юниты рекурсивно
         /// </summary>
-        /// <param name="unitsFromUsesSection"> Вспомогательная переменная для заполнения CompilationUnit.interfaceUsedUnits и 
+        /// <param name="unitsFromUsesSection"> Вспомогательная переменная для заполнения CompilationUnit.interfaceUsedUnits и
         /// CompilationUnit.implementationUsedUnits (здесь могут содержаться юниты и dll) </param>
-        /// 
-        /// <param name="directUnitsFromUsesSection">Вспомогательная переменная для заполнения CompilationUnit.interfaceUsedDirectUnits и 
+        ///
+        /// <param name="directUnitsFromUsesSection">Вспомогательная переменная для заполнения CompilationUnit.interfaceUsedDirectUnits и
         /// CompilationUnit.implementationUsedDirectUnits</param>
-        /// 
+        ///
         /// <param name="currentUnitNode">Синтаксический узел текущего модуля (или пространства имен)</param>
         /// <param name="previousPath">Директория родительского модуля</param>
         /// <returns>Скомпилированный юнит</returns>
@@ -3627,7 +3630,7 @@ namespace PascalABCCompiler
                 // если модуль уже скомпилирован - возвращаем (возможно, только интерфейс модуля и тогда он докомпилируется в другом рекурсивном вызове)   EVA
                 if (currentUnit.State != UnitState.BeginCompilation || currentUnit.SemanticTree != null)  //TODO: ИЗБАВИТЬСЯ ОТ ВТОРОГО УСЛОВИЯ
                 {
-                    AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, 
+                    AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection,
                                                               currentUnitNode, currentUnit, GetReferences(currentUnit));
                     return currentUnit;
                 }
@@ -3675,7 +3678,7 @@ namespace PascalABCCompiler
             // компилируем интерфейс текущего модуля EVA
             CompileCurrentUnitInterface(unitFileName, currentUnit, docs);
 
-            // интерфейс скомпилирован - переходим к секции реализации 
+            // интерфейс скомпилирован - переходим к секции реализации
             currentUnit.State = UnitState.InterfaceCompiled;
 
             // заполнение списков uses семантического уровня
@@ -3720,7 +3723,7 @@ namespace PascalABCCompiler
 
 
             /*if(currentUnit.State!=UnitState.Compiled)
-            { 
+            {
                 //Console.WriteLine("Compile Interface "+unitFileName);//DEBUG
                 currentUnit.SemanticTree=SyntaxTreeToSemanticTreeConverter.CompileInterface(currentUnit.SyntaxTree,
                     currentUnit.InterfaceUsedUnits,currentUnit.syntax_error);
@@ -3728,7 +3731,7 @@ namespace PascalABCCompiler
                 implementationUsesList=GetSemanticImplementationUsesList(currentUnit.SyntaxTree);
                 if(implementationUsesList!=null)
                     for(int i=implementationUsesList.Count-1;i>=0;i--)
-                        CompileUnit(currentUnit.ImplementationUsedUnits,implementationUsesList[i]);        
+                        CompileUnit(currentUnit.ImplementationUsedUnits,implementationUsesList[i]);
                 //Console.WriteLine("Compile Implementation "+unitFileName);//DEBUG
                 if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
                 {
@@ -3921,10 +3924,10 @@ namespace PascalABCCompiler
 
                     #endregion
 
-                    // компиляция модулей из интерфейса текущего модуля 
+                    // компиляция модулей из интерфейса текущего модуля
                     CompileUnit(currentUnit.InterfaceUsedUnits, currentUnit.InterfaceUsedDirectUnits, interfaceUsesList[i], currentPath);
 
-                    // если текущий модуль был откомпилирован в другом рекурсивном вызове 
+                    // если текущий модуль был откомпилирован в другом рекурсивном вызове
                     if (currentUnit.State == UnitState.Compiled)
                     {
                         AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, currentUnitNode, currentUnit, references); // #1710 добавление в список модулей из uses происходит только в конце компиляции интерфейса юнита или позже во всех случаях
@@ -4053,7 +4056,7 @@ namespace PascalABCCompiler
 
         private void SemanticCheckNamespacesOnlyInProjects(CompilationUnit currentUnit)
         {
-            // legacy 
+            // legacy
             if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
             {
                 // Проверка на явный namespace (паскалевский)
@@ -4144,6 +4147,14 @@ namespace PascalABCCompiler
                         throw new UnitNotFound(currentCompilationUnit.SyntaxTree.file_name, UnitFileName, currentUnitNode.source_context);
                 }
             }
+
+            // Если файл .yavb то надо заменить исходный текст программы на другой с предварительной обработкой
+            if (Path.GetExtension(UnitFileName) == ".yavb")
+            {
+                IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
+                ia.ProcessSourceText(ref SourceText);
+            }
+
             return SourceText;
         }
 
@@ -4174,7 +4185,7 @@ namespace PascalABCCompiler
                     {
                         if ((currentUnit = ReadPCU(UnitFileName)) != null)
                         {
-                            AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, 
+                            AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection,
                                                                       currentUnitNode, currentUnit, GetReferences(currentUnit));
 
                             UnitTable[Path.ChangeExtension(UnitFileName, null)] = currentUnit;
@@ -4214,12 +4225,12 @@ namespace PascalABCCompiler
             List<Error> errors = new List<Error>();
 
             string doctagsParserExtension = Path.GetExtension(unitSyntaxTree.file_name) + "dt" + Parsers.Controller.HideParserExtensionPostfixChar;
-            
-            SyntaxTree.documentation_comment_list docCommentList = ParsersController.Compile(Path.ChangeExtension(unitSyntaxTree.file_name, doctagsParserExtension), 
+
+            SyntaxTree.documentation_comment_list docCommentList = ParsersController.Compile(Path.ChangeExtension(unitSyntaxTree.file_name, doctagsParserExtension),
                 text, errors, new List<CompilerWarning>(), Parsers.ParseMode.Normal) as SyntaxTree.documentation_comment_list;
-            
+
             if (errors.Count > 0) return null;
-            
+
             return new DocumentationConstructor().Construct(unitSyntaxTree, docCommentList);
         }
 
@@ -4227,13 +4238,13 @@ namespace PascalABCCompiler
         {
             if (project != null && project.generate_xml_doc)
                 return true;
-            
+
             if (unitSyntaxTree == null)
                 return false;
-            
+
             if (unitSyntaxTree.file_name != null && internalDebug.DocumentedUnits.Contains(unitSyntaxTree.file_name.ToLower()))
                 return true;
-            
+
             foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
             {
                 if (string.Equals(directive.Name.text, "gendoc", StringComparison.CurrentCultureIgnoreCase)

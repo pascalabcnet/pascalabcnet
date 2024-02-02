@@ -31,6 +31,8 @@ namespace PascalABCCompiler.Parsers
             {
                 if (Path.GetFileName(fi.FullName) == "VBNETParser.dll" || Path.GetFileName(fi.FullName) == "PascalABCPartParser.dll")
                     continue;
+                //if (Path.GetFileName(fi.FullName) == "VeryBasicLanguageParser.dll")
+                //    Console.WriteLine("VeryBasic is loading!");
             	asssembly = System.Reflection.Assembly.LoadFile(fi.FullName);
                 try
                 {
@@ -142,8 +144,8 @@ namespace PascalABCCompiler.Parsers
         public SyntaxTree.compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
             SyntaxTree.syntax_tree_node cu = null;
-            try // SSM 06.09.18 
-            { 
+            try // SSM 06.09.18
+            {
                 cu = Compile(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
             }
             catch (Errors.ParserBadFileExtension e)
@@ -162,7 +164,7 @@ namespace PascalABCCompiler.Parsers
         public SyntaxTree.expression GetExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
             SyntaxTree.syntax_tree_node cu = null;
-            try // SSM 06.09.18 
+            try // SSM 06.09.18
             {
                 cu = Compile(FileName, Text, Errors, Warnings, ParseMode.Expression);
             }
@@ -203,6 +205,6 @@ namespace PascalABCCompiler.Parsers
         public void Reset()
 		{
 		}
-	
+
 	}
 }

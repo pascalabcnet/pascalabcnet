@@ -168,6 +168,8 @@
     <Compile Include="ConsoleCompilerCommands.cs" />
     <Compile Include="DocXml.cs" />
     <Compile Include="ICompiler.cs" />
+    <Compile Include="IndentArranger.cs" />
+    <Compile Include="IndentArrangerException.cs" />
     <Compile Include="IProjectInfo.cs" />
     <Compile Include="ProjectInfo.cs" />
     <Compile Include="RemoteCompiler.cs" />
