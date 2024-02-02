@@ -619,7 +619,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         public program_module NewProgramModule(program_name progName, Object optHeadCompDirs, uses_list mainUsesClose, syntax_tree_node progBlock, Object optPoint, LexLocation loc)
         {
             var progModule = new program_module(progName, mainUsesClose, progBlock as block, null, loc);
-            progModule.Language = LanguageId.PascalABCNET;
+            progModule.Language = LanguageId.SPython;
             if (optPoint == null && progBlock != null)
             {
                 var fp = progBlock.source_context.end_position;

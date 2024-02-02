@@ -6,7 +6,7 @@ uses PABCSystem;
 
 // Basic IO methods
 
-function input(prompt: string := ''): string;
+function input(): string;
 
 procedure print(params lst: array of object);
 
@@ -42,10 +42,10 @@ function abs(x: single): single;
 
 implementation
 
-function input(prompt: string): string;
+function input(): string;
 begin
-  PABCSystem.Print(prompt);
-  Result := ReadlnString();
+  PABCSystem.Print();
+  Result := PABCSystem.ReadlnString();
 end;
 
 procedure print(params lst: array of object);
