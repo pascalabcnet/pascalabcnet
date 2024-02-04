@@ -8882,17 +8882,15 @@ end;
 
 procedure Shuffle<T>(a: array of T);
 begin
-  var n := a.Length;
-  for var i := 0 to n - 1 do
-    Swap(a[i], a[Random(n)]);
+  for var i := a.Length - 1 downto 1 do
+    Swap(a[i], a[Random(i + 1)]);
 end;
 
 procedure Shuffle<T>(l: List<T>);
 begin
-  var n := l.Count;
-  for var i := 0 to n - 1 do
+  for var i := l.Count - 1 downto 1 do
   begin
-    var ind := Random(n);
+    var ind := Random(i + 1);
     var v := l[i];
     l[i] := l[ind];
     l[ind] := v;
@@ -10756,10 +10754,9 @@ end;
 /// Перемешивает элементы списка случайным образом
 function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
 begin
-  var n := Self.Count;
-  for var i := 0 to n - 1 do
+  for var i := Self.Count - 1 downto 1 do
   begin
-    var r := Random(n);
+    var r := Random(i + 1);
     var v := Self[i];
     Self[i] := Self[r];
     Self[r] := v;
@@ -11814,9 +11811,8 @@ end;
 /// Перемешивает элементы массива случайным образом
 function Shuffle<T>(Self: array of T): array of T; extensionmethod;
 begin
-  var n := Self.Length;
-  for var i := 0 to n - 1 do
-    Swap(Self[i], Self[Random(n)]);
+  for var i := Self.Length - 1 downto 1 do
+    Swap(Self[i], Self[Random(i + 1)]);
   Result := Self;  
 end;
 

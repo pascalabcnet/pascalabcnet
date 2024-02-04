@@ -2005,14 +2005,14 @@ namespace PascalABCCompiler
                 }
                 if (CompilerOptions.Only32Bit)
                     compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
-
-                // целевой framework
-                if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_targetframework, out compilerDirectivesList))
+            }
+            if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_targetframework, out compilerDirectivesList))
+            {
+                compilerOptions.TargetFramework = compilerDirectivesList[0].directive;
+                if (!(new string[] { "net40", "net403", "net45", "net451", "net452", "net46", "net461", "net462", "net47", "net471", "net472", "net48", "net481" })
+                    .Contains(compilerOptions.TargetFramework))
                 {
-                    compilerOptions.TargetFramework = compilerDirectivesList[0].directive;
-                    if (!(new string[] { "net40", "net403", "net45", "net451", "net452", "net46", "net461", "net462", "net47", "net471", "net472", "net48", "net481" })
-                        .Contains(compilerOptions.TargetFramework))
-                        ErrorsList.Add(new UnsupportedTargetFramework(compilerOptions.TargetFramework, compilerDirectivesList[0].location));
+                    ErrorsList.Add(new UnsupportedTargetFramework(compilerOptions.TargetFramework, compilerDirectivesList[0].location));
                 }
             }
         }
@@ -2329,7 +2329,7 @@ namespace PascalABCCompiler
 
             compilerOptions = new NETGenerator.CompilerOptions();
 
-            // выяснение целевой платформы
+            // выяснение TargetFramework и целевой платформы
             SetOutputPlatformOption(compilerOptions);
 
             // остальные директивы
