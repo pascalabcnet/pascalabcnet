@@ -185,9 +185,9 @@ function ReadKey: char;// TODO продумать это
 var
   KeyInfo: ConsoleKeyInfo;
 begin
-  if NextKey <> Chr(0) then 
+  if NextKey <> #0 then 
   begin
-    ReadKey := nextkey;
+    ReadKey := NextKey;
     NextKey := #0;
   end 
   else 
@@ -202,7 +202,7 @@ end;
 
 function KeyPressed: boolean;
 begin
-  KeyPressed := Console.KeyAvailable;
+  KeyPressed := (NextKey <> #0) or Console.KeyAvailable;
 end;
 
 function WindowWidth: integer;
