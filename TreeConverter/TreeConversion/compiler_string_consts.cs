@@ -38,6 +38,8 @@ namespace PascalABCCompiler.TreeConverter
             oper_names[mod_name] = "op_Modulus";
             oper_names[not_name] = "op_LogicalNot";
             oper_names[noteq_name] = "op_Inequality";
+            oper_names[shl_name] = "op_LeftShift";
+            oper_names[shr_name] = "op_RightShift";
         }
 
         public static string GetNETOperName(string name)
@@ -332,6 +334,16 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_resource = "resource";
         public static string compiler_directive_platformtarget = "platformtarget";
         public static string compiler_directive_faststrings = "faststrings";
+        public static string compiler_directive_gendoc = "gendoc";
+        public static string compiler_directive_region = "region";
+        public static string compiler_directive_endregion = "endregion";
+        public static string compiler_directive_ifdef = "ifdef";
+        public static string compiler_directive_endif = "endif";
+        public static string compiler_directive_ifndef = "ifndef";
+        public static string compiler_directive_else = "else";
+        public static string compiler_directive_undef = "undef";
+        public static string compiler_directive_define = "define";
+        public static string compiler_directive_include = "include";
         public static string compiler_directive_targetframework = "targetframework";
 
         // SSM (3.1.2011) Перенес эти константы сюда. 

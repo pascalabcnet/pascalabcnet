@@ -4100,7 +4100,18 @@ namespace PascalABCCompiler.TreeConverter
             (ctn.Scope as SymbolTable.InterfaceScope).TopInterfaceScopeArray =
                 interf_scopes.ToArray();
         }
-		
+
+        private void InitInterfaceScope(common_type_node ctn, List<SemanticTree.ITypeNode> interfaces)
+        {
+            List<SymbolTable.Scope> interf_scopes = new List<SymbolTable.Scope>(interfaces.Count);
+            foreach (type_node tnode in interfaces)
+            {
+                interf_scopes.Add(tnode.Scope);
+            }
+            (ctn.Scope as SymbolTable.InterfaceScope).TopInterfaceScopeArray =
+                interf_scopes.ToArray();
+        }
+
         private void visit_function_realizations(SyntaxTree.declarations _decls)
         {
         	foreach (SyntaxTree.declaration sd in _decls.defs)
@@ -9590,6 +9601,8 @@ namespace PascalABCCompiler.TreeConverter
 
         private void dot_node_as_type_ident(type_node tn, SyntaxTree.ident id_right, motivation mot)
         {
+            if (id_right is SyntaxTree.operator_name_ident)
+                AddError(get_location(id_right), "OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX");
             List<SymbolInfo> si_right = tn.find_in_type(id_right.name, context.CurrentScope);
             if (si_right == null)
             {
@@ -10571,6 +10584,11 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             common_extension_meth = true;
                             common_type_node ctn = def_temp as common_type_node;
+                            if (sil != null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1)//static methods cannot be extension methods
+                            {
+                                if (current_function_header.class_keyword)
+                                    AddError(get_location(_method_name), "CANNOT_IMPLEMENT_METHODS_IN_OTHER_MODULE");
+                            }
                             if (ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_wrapper || 
                                 ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type ||
                                 ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.base_set_type ||
@@ -12969,6 +12987,17 @@ namespace PascalABCCompiler.TreeConverter
                     ind++;
                 }
             }
+            foreach (common_type_node ctn in used_types)
+            {
+                if (ctn.base_type != null && ctn.base_type.is_generic_parameter && ctn.base_type.ImplementingInterfaces != null && ctn.base_type.ImplementingInterfaces.Count > 0)
+                {
+                    foreach (type_node tn in ctn.base_type.ImplementingInterfaces)
+                    {
+                        type_table.AddInterface(ctn, tn, null);
+                        InitInterfaceScope(ctn);
+                    }
+                }
+            }
             context.EndSkipGenericInstanceChecking();
         }
 
@@ -13071,6 +13100,14 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 check_cycle_inheritance(param, spec_type);
                                 param.SetBaseType(spec_type);
+                                if (spec_type.is_generic_parameter && spec_type.ImplementingInterfaces.Count > 0)
+                                {
+                                    foreach (type_node tn in spec_type.ImplementingInterfaces)
+                                    {
+                                        used_interfs.Add(tn, tn);
+                                        type_table.AddInterface(param, tn, get_location(specificators[i]));
+                                    }
+                                }
                                 base_is_enum = spec_type == SystemLibrary.SystemLibrary.enum_base_type;
                                 // Чтобы в секции where override метода можно было указать class вместо конкретного типа
                                 // Иначе CLR падает с TypeLoadException
@@ -18260,6 +18297,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
                 AddError(get_location(_external_directive.modulename), "STRING_CONSTANT_OR_IDENTIFIER_EXPECTED");
+            if (string.IsNullOrEmpty(module_name))
+                AddError(get_location(_external_directive.modulename), "DLLNAME_CANNOT_BE_EMPTY");
             if (_external_directive.name == null)
             {
             	name = context.converted_func_stack.top().name;
@@ -19769,6 +19808,36 @@ namespace PascalABCCompiler.TreeConverter
             visit(node.var_def);
             ret.reset(); // SSM 19.01.17 не возвращать семантическое значение т.к. ничего не нужно добавлять в текущий список операторов!!
         }
+
+        // создать словарик чтобы для одного _visitor.context.CurrentScope.ScopeNum и для одного letVarExpr 
+        // мы заходили в этот visit один раз
+        private Dictionary<let_var_expr, List<int>> letDict = new Dictionary<let_var_expr, List<int>>();
+
+        // можно попробовать в одно ПИ не добавлять дважды - хранить словарь (let-переменная, номера ПИ в кот добавлена)
+        public override void visit(SyntaxTree.let_var_expr let_expr)
+        {
+            if (letDict.ContainsKey(let_expr) && letDict[let_expr].Contains(context.CurrentScope.ScopeNum))
+                return;
+
+            if (!letDict.ContainsKey(let_expr))
+                letDict[let_expr] = new List<int>();
+            letDict[let_expr].Add(context.CurrentScope.ScopeNum);
+
+            var exn = (expression_node)convert_strong(let_expr.ex);
+            var sav = new semantic_addr_value(exn);
+            var vds = new var_statement(let_expr.id, sav, let_expr.source_context);
+            if (let_expr.visit_var)
+            {
+                visit(vds.var_def);
+                //let_expr.visit_var = false;
+            }
+            else
+            {
+
+            }
+            return_value(exn);
+        }
+
 
         public override void visit(SyntaxTree.expression_as_statement node)
         {

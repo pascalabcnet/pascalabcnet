@@ -26,6 +26,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             //            var stat = new ABCStatisticsVisitor();
             //            stat.ProcessNode(root);
 #endif
+            // SSM 02.01.24
+            //LetExprVisitor.New.ProcessNode(root);
+
             // new range - до всего! До выноса выражения с лямбдой из foreach. 11.07 добавил поиск yields и присваивание pd.HasYield
             NewRangeDesugarAndFindHasYieldVisitor.New.ProcessNode(root);
 
@@ -37,7 +40,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
             StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
-            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as program_module).ProcessNode(root); // SSM bug fix #1147
+            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root); 
             FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
 
             // loop

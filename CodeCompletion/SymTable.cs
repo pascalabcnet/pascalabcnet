@@ -1580,7 +1580,7 @@ namespace CodeCompletion
 
         public void MakeDescription()
         {
-            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            si.description = CodeCompletionController.CurrentParser?.LanguageInformation.GetDescription(this);
             if (!string.IsNullOrEmpty(documentation))
                 si.description += Environment.NewLine + documentation;
         }
@@ -1686,7 +1686,7 @@ namespace CodeCompletion
 
         public override string ToString()
         {
-            return CodeCompletionController.CurrentParser.LanguageInformation.GetSimpleDescription(this);
+            return CodeCompletionController.CurrentParser?.LanguageInformation.GetSimpleDescription(this);
         }
     }
 
@@ -2151,7 +2151,7 @@ namespace CodeCompletion
 
         public override string ToString()
         {
-            return CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            return CodeCompletionController.CurrentParser?.LanguageInformation.GetDescription(this);
         }
     }
 
@@ -2486,7 +2486,7 @@ namespace CodeCompletion
         public override void MakeSynonimDescription()
         {
             //aliased = true;
-            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);
+            si.description = CodeCompletionController.CurrentParser?.LanguageInformation.GetSynonimDescription(this);
         }
 
         //zavershenie opisanija, vyzyvaetsja kogda parametry razobrany
@@ -2494,7 +2494,7 @@ namespace CodeCompletion
         {
             if (documentation != null && documentation.Length > 0 && documentation[0] == '-') return;
             this.si.description = this.ToString();
-            this.si.addit_name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
+            this.si.addit_name = CodeCompletionController.CurrentParser?.LanguageInformation.GetShortName(this);
             if (documentation != null) this.si.description += "\n" + this.documentation;
         }
 
@@ -2720,8 +2720,8 @@ namespace CodeCompletion
 
         public override string ToString()
         {
-            simp_descr = CodeCompletionController.CurrentParser.LanguageInformation.GetSimpleDescription(this);
-            return CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            simp_descr = CodeCompletionController.CurrentParser?.LanguageInformation.GetSimpleDescription(this);
+            return CodeCompletionController.CurrentParser?.LanguageInformation.GetDescription(this);
         }
     }
 
@@ -3775,7 +3775,7 @@ namespace CodeCompletion
 
         public override string ToString()
         {
-            return CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            return CodeCompletionController.CurrentParser?.LanguageInformation.GetDescription(this);
         }
     }
 

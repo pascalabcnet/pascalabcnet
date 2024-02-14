@@ -2205,6 +2205,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             MethodBuilder mb = helper.GetMethod(func).mi as MethodBuilder;
             IAttributeNode[] attrs = func.Attributes;
+            List<CustomAttributeBuilder> returnValueAttrs = new List<CustomAttributeBuilder>();
             for (int i = 0; i < attrs.Length; i++)
             {
                 
@@ -2216,6 +2217,7 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     var constr = (attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr;
                     
+                    if (attrs[i].Arguments.Length > 0 && helper.GetTypeReference(attrs[i].AttributeType).tp.FullName == "System.Runtime.InteropServices.MarshalAsAttribute")
                     try
                     {
                         mb.SetMarshal(UnmanagedMarshal.DefineUnmanagedMarshal((UnmanagedType)attrs[i].Arguments[0].value));
@@ -2224,9 +2226,19 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace(", переданный для DefineUnmanagedMarshal,",""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
                     }
+                    else
+                    {
+                        returnValueAttrs.Add(cab);
+                    }
                 }
                 else
                     mb.SetCustomAttribute(cab);
+            }
+            if (returnValueAttrs.Count > 0)
+            {
+                ParameterBuilder pb = mb.DefineParameter(0, ParameterAttributes.Retval, null);
+                foreach (var attr in returnValueAttrs)
+                    pb.SetCustomAttribute(attr);
             }
             foreach (IParameterNode pn in func.parameters)
             {
@@ -11599,7 +11611,10 @@ namespace PascalABCCompiler.NETGenerator
             }
             LocalBuilder lb = il.DeclareLocal(return_type);
             if (save_debug_info) lb.SetLocalSymInfo("$enumer$" + uid++);
+
             value.InWhatExpr.visit(this);
+            if (value.InWhatExpr.type.is_value_type)
+                il.Emit(OpCodes.Box, in_what_type);
             il.Emit(OpCodes.Callvirt, enumer_mi);
             il.Emit(OpCodes.Stloc, lb);
             Label exl = il.BeginExceptionBlock();

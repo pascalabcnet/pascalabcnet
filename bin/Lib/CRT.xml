@@ -43,7 +43,7 @@
       <summary>
  Возвращает высоту экрана
  </summary>
- <returns></returns></member>
+    </member>
     <member name="M:WhereX">
       <summary>
  Возвращает Х-координату курсора
@@ -92,6 +92,54 @@
     </member>
     <member name="M:__InitModule__">
       <summary>--</summary>
+    </member>
+    <member name="C:Black">
+      <summary>Черный цвет</summary>
+    </member>
+    <member name="C:Blue">
+      <summary>Синий цвет</summary>
+    </member>
+    <member name="C:Green">
+      <summary>Зеленый цвет</summary>
+    </member>
+    <member name="C:Cyan">
+      <summary>Бирюзовый цвет</summary>
+    </member>
+    <member name="C:Red">
+      <summary>Красный цвет</summary>
+    </member>
+    <member name="C:Magenta">
+      <summary>Малиновый цвет</summary>
+    </member>
+    <member name="C:Brown">
+      <summary>Коричневый цвет</summary>
+    </member>
+    <member name="C:LightGray">
+      <summary>Светло-серый цвет</summary>
+    </member>
+    <member name="C:DarkGray">
+      <summary>Темно-серый цвет</summary>
+    </member>
+    <member name="C:LightBlue">
+      <summary>Светло-голубой цвет</summary>
+    </member>
+    <member name="C:LightGreen">
+      <summary>Светло-зеленый цвет</summary>
+    </member>
+    <member name="C:LightCyan">
+      <summary>Светло-бирюзовый цвет</summary>
+    </member>
+    <member name="C:LightRed">
+      <summary>цвет</summary>
+    </member>
+    <member name="C:LightMagenta">
+      <summary>Светло-малиновый цвет</summary>
+    </member>
+    <member name="C:Yellow">
+      <summary>Желтый цвет</summary>
+    </member>
+    <member name="C:White">
+      <summary>Белый цвет</summary>
     </member>
   </members>
 </doc>

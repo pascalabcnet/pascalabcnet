@@ -3,7 +3,7 @@ A copy of the GNU GPL is appended to this file.
 
 IMPORTANT PascalABC.NET LICENSE TERMS
 
-Copyright (C) 2005-2022 by Ivan Bondarev, Stanislav Mikhalkovich
+Copyright (C) 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich
 This program is free software; you may redistribute and/or modify it under the terms of the GNU LGPL version 3 with the clarifications and exceptions described below. 
 
 PascalABC.NET can be linked with non-free modules and libraries. This condition is mainly concerned with possibility of adding foreign modules and libraries to PascalABC.NET, aimed at education. In particular, PascalABC.NET includes as a part PROGRAMMING TASKBOOK FOR PASCALABC.NET (in agreement with the author of this product), which is distributed under the terms of proprietary license (see \bin\PT4)
