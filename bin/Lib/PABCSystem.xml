@@ -2211,6 +2211,9 @@
     <member name="M:Range(System.Char,System.Char,System.Int32)">
       <summary>Возвращает последовательность символов от c1 до c2 с шагом step</summary>
     </member>
+    <member name="M:Range(System.Double,System.Double,System.Double)">
+      <summary>Возвращает последовательность вещественных от a до b с шагом step</summary>
+    </member>
     <member name="M:PartitionPoints(System.Double,System.Double,System.Int32)">
       <summary>Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей</summary>
     </member>
@@ -2744,6 +2747,15 @@
       <summary>--</summary>
     </member>
     <member name="M:+(System.String,System.Int32)">
+      <summary>--</summary>
+    </member>
+    <member name="M:+(System.String,System.UInt64)">
+      <summary>--</summary>
+    </member>
+    <member name="M:+(System.String,System.Int64)">
+      <summary>--</summary>
+    </member>
+    <member name="M:+(System.String,System.UInt32)">
       <summary>--</summary>
     </member>
     <member name="M:+(System.Int32,System.String)">

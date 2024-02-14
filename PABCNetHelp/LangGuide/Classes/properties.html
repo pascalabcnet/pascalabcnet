@@ -8,6 +8,7 @@
 <param name="Keyword" value="Свойства">
 <param name="Keyword" value="Расширенные свойства">
 <param name="Keyword" value="value">
+<param name="Keyword" value="auto">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -215,7 +216,24 @@ Button</code>,
 <code><b>if</b></code>: <code>w&lt;&gt;fWidth</code>. 
 Добавление этой проверки позволяет избежать лишней перерисовки кнопки в случае, 
 если ее ширина не меняется.</p>
-<p>&nbsp;</p>
+<H1>Автоматически определяемые свойства</H1>
+<p>В классе можно определить автосвойство, для которого автоматически 
+генерируется поле соответствующего типа. Автосвойство в PascalABC.NET доступны и 
+на чтение и на запись, а также могут иметь значение по умолчанию. Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+	&nbsp; Position =<b> class<br>
+	&nbsp; public<br>
+	&nbsp;&nbsp;&nbsp; auto property </b>Row: integer;<br><b>&nbsp;&nbsp;&nbsp; 
+	auto property</b> Col: integer;<br>&nbsp; <strong>end</strong>;</code></p>
+</blockquote>
+<p>или</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+	&nbsp; Grid =<b> class</b>(CommonElement)<b><br>
+	&nbsp; public<br>
+	&nbsp;&nbsp;&nbsp; auto property </b>Margin: integer := 5;<br>&nbsp; <strong>end</strong>;</code></p>
+</blockquote>
 </body>
 
 </html>

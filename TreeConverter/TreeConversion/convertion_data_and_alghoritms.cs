@@ -663,7 +663,13 @@ namespace PascalABCCompiler.TreeConverter
                     syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref en);
                     return en;
                 }
-                AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
+                if (en is null_const_node && pct.first.convertion_method is basic_function_node)
+                {
+                    en.type = to;
+                    return en;
+                }
+                else
+                    AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
 			}
 
 			if (pct.first==null)
@@ -2227,7 +2233,13 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             continue;
                         }
-                        set_of_possible_functions.Add(fn);
+                        else if ((func = find_eq_method_in_list(fn, set_of_possible_functions)) != null)
+                        {
+                            if (!(fn is compiled_function_node cfn && func is compiled_function_node cfn2 && (cfn.polymorphic_state == polymorphic_state.ps_static || cfn2.polymorphic_state == polymorphic_state.ps_static)))
+                                set_of_possible_functions.Add(fn);
+                        }
+                        else   
+                            set_of_possible_functions.Add(fn);
                     }
                 }
                 if (parameters.Count > fn.parameters.Count)

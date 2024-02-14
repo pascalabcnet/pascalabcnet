@@ -4829,7 +4829,7 @@ namespace CodeCompletion
         {
             //throw new Exception("The method or operation is not implemented.");
             SymScope tmp = cur_scope;
-            unl.clear();
+            unl.Clear();
             cur_scope = new ImplementationUnitScope(new SymInfo("$implementation", SymbolKind.Namespace, "implementation"), cur_scope);
             tmp.AddName("$implementation", cur_scope);
             (tmp as InterfaceUnitScope).impl_scope = cur_scope as ImplementationUnitScope;
@@ -5979,6 +5979,12 @@ namespace CodeCompletion
             var ntr = new named_type_reference(names, bi.source_context);
             var ne = new new_expr(ntr, new expression_list(new uint64_const(bi.val)), bi.source_context);
             ne.visit(this);
+        }
+
+        public override void visit(let_var_expr _let_var_expr)
+        {
+            var_def_statement vds = new var_def_statement(_let_var_expr.id, _let_var_expr.ex, _let_var_expr.source_context);
+            vds.visit(this);
         }
     }
 }

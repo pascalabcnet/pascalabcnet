@@ -16,10 +16,10 @@ namespace PascalABCCompiler.PCU
         BeginReadTree, EndReadTree, BeginSaveTree, EndSaveTree, ErrorSaveTree
     }
 
-    public class InvalidPCUFule: PascalABCCompiler.Errors.LocatedError
+    public class InvalidPCUFile: PascalABCCompiler.Errors.LocatedError
     {
         internal string UnitName;
-        public InvalidPCUFule(string UnitName)
+        public InvalidPCUFile(string UnitName)
         {
             this.UnitName = UnitName;
         }
@@ -259,10 +259,11 @@ namespace PascalABCCompiler.PCU
                 PCUReader pr = (PCUReader)units[FileName];
                 if (pr != null) return pr.unit;
                 if (!File.Exists(FileName)) return null;
-                //fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+                //fs = new FileStream(file_name, FileMode.Open, FileAccess.Read);
                 ms = new MemoryStream(File.ReadAllBytes(FileName));
                 br = new BinaryReader(ms);
                 ReadPCUHeader();
+
                 units[FileName] = this;
                 unit = new CompilationUnit();
                 unit.UnitFileName = FileName;
@@ -274,7 +275,7 @@ namespace PascalABCCompiler.PCU
                     CloseUnit();
                     this.unit = null;
                     need = true;
-                    return null; // return comp.RecompileUnit(FileName);
+                    return null; // return comp.RecompileUnit(file_name);
                 }
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
                 cun.scope = new WrappedUnitInterfaceScope(this);
@@ -313,7 +314,13 @@ namespace PascalABCCompiler.PCU
                 AddTypeSynonyms(pcu_file.interface_synonyms_offset, cun.scope);
                 AddTypeSynonyms(pcu_file.implementation_synonyms_offset, cun.implementation_scope);
                 //\ssyy
-                
+                for (int i = 0; i < pcu_file.names.Length; i++)
+                {
+                    if (pcu_file.names[i].always_restore)
+                    {
+                        cun.scope.Find(pcu_file.names[i].name);
+                    }
+                }
 
                 ChangeState(this, PCUReaderWriterState.EndReadTree, unit);
                 return unit;
@@ -369,7 +376,7 @@ namespace PascalABCCompiler.PCU
                     {
                         var sub_u = pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo);
                         if (sub_u == null) return true;
-                        this.unit.DirectInterfaceCompilationUnits.Add(sub_u.SemanticTree, sub_u);
+                        this.unit.InterfaceUsedDirectUnits.Add(sub_u.SemanticTree, sub_u);
                         this.unit.InterfaceUsedUnits.AddElement(sub_u.SemanticTree, pcu_file.incl_modules[i]);
                     }
                 }
@@ -537,9 +544,8 @@ namespace PascalABCCompiler.PCU
 
         private void InvalidUnitDetected()
         {
-            //(ssyy) DarkStar - Почему бы в этом случае просто не перекомпилировать модуль?
             CloseUnit();
-            throw new InvalidPCUFule(unit_name);
+            throw new InvalidPCUFile(unit_name);
         }
         
         private static bool ReadPCUHead(PCUFile pcu_file, BinaryReader br)
@@ -549,6 +555,7 @@ namespace PascalABCCompiler.PCU
                 if (Header[i] != PCUFile.Header[i])
                     return false;
             pcu_file.Version = br.ReadInt16();
+            pcu_file.Revision = br.ReadInt32();
             pcu_file.CRC = br.ReadInt64();
             pcu_file.UseRtlDll = br.ReadBoolean();
             pcu_file.IncludeDebugInfo = br.ReadBoolean();
@@ -558,7 +565,7 @@ namespace PascalABCCompiler.PCU
         //чтение заголовка PCU
 		private void ReadPCUHeader()
 		{
-            if (!ReadPCUHead(pcu_file, br) || PCUFile.SupportedVersion != pcu_file.Version)
+            if (!ReadPCUHead(pcu_file, br) || PCUFile.SupportedVersion != pcu_file.Version || PCUFile.SupportedRevision != pcu_file.Revision)
                 InvalidUnitDetected();
             
             if(pcu_file.IncludeDebugInfo)
@@ -578,6 +585,7 @@ namespace PascalABCCompiler.PCU
 				pcu_file.names[i].offset = br.ReadInt32();
                 pcu_file.names[i].symbol_kind = (symbol_kind)br.ReadByte();
                 pcu_file.names[i].special_scope = br.ReadByte();
+                pcu_file.names[i].always_restore = br.ReadBoolean();
             }
             //ssyy
             num_names = br.ReadInt32();
@@ -588,6 +596,7 @@ namespace PascalABCCompiler.PCU
                 pcu_file.implementation_names[i].offset = br.ReadInt32();
                 pcu_file.implementation_names[i].symbol_kind = (symbol_kind)br.ReadByte();
                 pcu_file.implementation_names[i].special_scope = br.ReadByte();
+                pcu_file.implementation_names[i].always_restore = br.ReadBoolean();
             }
             //\ssyy
 			int num_incl = br.ReadInt32();
@@ -2567,7 +2576,7 @@ namespace PascalABCCompiler.PCU
 
                 si.symbol_kind = (symbol_kind)br.ReadByte();
                 si.semantic_node_type = (semantic_node_type)br.ReadByte();
-                si.virtual_slot = br.ReadBoolean();
+                si.always_restore = br.ReadBoolean();
                 si.is_static = br.ReadBoolean();
                 //Вроде это ненужно
                 //SymbolInfo si2 = scope.FindWithoutCreation(name);

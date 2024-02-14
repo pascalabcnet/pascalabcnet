@@ -2223,6 +2223,8 @@ function Range(a, b, step: BigInteger): sequence of BigInteger;
 function Range(c1, c2: char): sequence of char;
 /// Возвращает последовательность символов от c1 до c2 с шагом step
 function Range(c1, c2: char; step: integer): sequence of char;
+/// Возвращает последовательность вещественных от a до b с шагом step
+function Range(a, b, step: real): sequence of real;
 /// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
 function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность указанных элементов
@@ -2829,6 +2831,12 @@ type
 type 
   [AttributeUsage(AttributeTargets.Class)]
   PCUNotRestoreAttribute = class(System.Attribute)
+  public constructor := exit;
+  end;
+
+type 
+  [AttributeUsage(AttributeTargets.Class or AttributeTargets.Method or AttributeTargets.Property or AttributeTargets.Interface or AttributeTargets.Field or AttributeTargets.Struct)]
+  PCUAlwaysRestoreAttribute = class(System.Attribute)
   public constructor := exit;
   end;
   
@@ -4244,6 +4252,18 @@ function string.operator+(str: string; n: integer) := str + n.ToString;
 
 // Добавляет к строке str строковое представление числа n
 ///--
+function string.operator+(str: string; n: uint64) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
+function string.operator+(str: string; n: int64) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
+function string.operator+(str: string; n: longword) := str + n.ToString;
+
+// Добавляет к строке str строковое представление числа n
+///--
 function string.operator+(n: integer; str: string) := n.ToString + str;
 
 // Добавляет к строке str строковое представление числа r
@@ -4707,9 +4727,9 @@ end;
 function PartitionPoints(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
-    raise new System.ArgumentException('Range: n=0');
+    raise new System.ArgumentException('Range: n = 0');
   if n < 0 then
-    raise new System.ArgumentException('Range: n<0');
+    raise new System.ArgumentException('Range: n < 0');
   var r := a;
   var h := (b - a) / n;
   for var i := 0 to n do
@@ -4732,7 +4752,7 @@ end;
 function Range(a, b, step: BigInteger): sequence of BigInteger;
 begin
   if step = 0 then
-    raise new System.ArgumentException('step=0');
+    raise new System.ArgumentException('step = 0');
   if step > 0 then
     while a<=b do
     begin
@@ -4761,7 +4781,7 @@ type
 function Range(a, b, step: integer): sequence of integer;
 begin
   if step = 0 then
-    raise new System.ArgumentException('step=0');
+    raise new System.ArgumentException('step = 0');
   if (step > 0) and (b < a) or (step < 0) and (b > a) then
   begin
     Result := System.Linq.Enumerable.Empty&<integer>;
@@ -4773,6 +4793,38 @@ begin
     ar := new ArithmSeq(b,step)
   else} ar := new ArithmSeq(a, step);
   Result := System.Linq.Enumerable.Range(0, n).Select(ar.f);
+end;
+
+function Range(a, b, step: real): sequence of real;
+begin
+  if step = 0 then
+    raise new System.ArgumentException('step = 0');
+  if (step > 0) and (b < a) or (step < 0) and (b > a) then
+    exit;
+  var n := Round(Abs(b - a) / step);
+  var delta := n / Abs(b - a) * 1e-14;
+  var bplus := b + delta;
+  var bminus := b - delta;
+  if step > 0 then
+  begin  
+    while a < bminus do
+    begin
+      yield a;
+      a += step
+    end;
+    if a < bplus then
+      yield b;
+  end
+  else
+  begin  
+    while a > bplus do
+    begin
+      yield a;
+      a += step
+    end;
+    if a > bminus then
+      yield b;
+  end
 end;
 
 function ArrRandom(n: integer; a: integer; b: integer): array of integer;
@@ -8830,17 +8882,15 @@ end;
 
 procedure Shuffle<T>(a: array of T);
 begin
-  var n := a.Length;
-  for var i := 0 to n - 1 do
-    Swap(a[i], a[Random(n)]);
+  for var i := a.Length - 1 downto 1 do
+    Swap(a[i], a[Random(i + 1)]);
 end;
 
 procedure Shuffle<T>(l: List<T>);
 begin
-  var n := l.Count;
-  for var i := 0 to n - 1 do
+  for var i := l.Count - 1 downto 1 do
   begin
-    var ind := Random(n);
+    var ind := Random(i + 1);
     var v := l[i];
     l[i] := l[ind];
     l[ind] := v;
@@ -10704,10 +10754,9 @@ end;
 /// Перемешивает элементы списка случайным образом
 function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
 begin
-  var n := Self.Count;
-  for var i := 0 to n - 1 do
+  for var i := Self.Count - 1 downto 1 do
   begin
-    var r := Random(n);
+    var r := Random(i + 1);
     var v := Self[i];
     Self[i] := Self[r];
     Self[r] := v;
@@ -11762,9 +11811,8 @@ end;
 /// Перемешивает элементы массива случайным образом
 function Shuffle<T>(Self: array of T): array of T; extensionmethod;
 begin
-  var n := Self.Length;
-  for var i := 0 to n - 1 do
-    Swap(Self[i], Self[Random(n)]);
+  for var i := Self.Length - 1 downto 1 do
+    Swap(Self[i], Self[Random(i + 1)]);
   Result := Self;  
 end;
 
@@ -13001,8 +13049,9 @@ end;
 /// Заменяет count вхождений подстроки oldStr на подстроку newStr в исходной строке
 function Replace(Self: string; oldStr,newStr: string; count: integer): string; extensionmethod;
 begin
-  var reg := new Regex(Regex.Escape(oldStr));
-  Result := reg.Replace(Self,newStr,count);
+  //var reg := new Regex(Regex.Escape(oldStr));
+  //Result := reg.Replace(Self,newStr,count);
+  Result := Self.Split(|oldStr|, count+1, System.StringSplitOptions.None).JoinToString(newStr);
 end;
 
 /// Возвращает True если значение находится между двумя другими

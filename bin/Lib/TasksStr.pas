@@ -282,7 +282,7 @@ begin
   end;
   'Insert2': begin 
     CheckData(Input := Empty);
-    CheckOutput('Петр первый был великим русским императором');
+    CheckOutput('Петр Первый был великим русским императором');
   end;
   'StrChange1': begin 
     CheckData(Input := Empty);
@@ -306,7 +306,7 @@ begin
   end;
   'StrSlice2': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('клад зарыт на юго западе', 'клад зарыт на юго западе'));
+    CheckOutputSeq(Arr('клад зарыт на юго западе', 'зашифрованное сообщение'));
   end;
   'StrSlice4': begin 
     CheckData(Input := Empty);

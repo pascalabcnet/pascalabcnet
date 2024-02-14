@@ -111,9 +111,7 @@
     <Compile Include="Preprocessor3Yacc.cs" />
     <Compile Include="PreprocessorTools.cs" />
     <Compile Include="SemanticRules.cs" />
-    <Compile Include="ShiftReduceParserCode.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="ShiftReduceParserCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Errors\Errors.csproj">

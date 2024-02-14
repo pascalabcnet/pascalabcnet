@@ -156,8 +156,8 @@
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_type_expr as_expr power_expr power_constexpr
-%type <td> unsized_array_type simple_type_or_ simple_type simple_type_question/*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
-%type <td> template_param template_empty_param structured_type empty_template_type_reference simple_or_template_type_reference simple_or_template_or_question_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
+%type <td> unsized_array_type simple_type_or_ simple_type simple_type_question/*array_name_for_new_expr*/ optional_type_specification fptype type_ref fptype_noproctype array_type 
+%type <td> template_param template_empty_param structured_type empty_template_type_reference simple_or_template_type_reference simple_or_template_or_question_type_reference type_ref_or_secific type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
 %type <stn> try_handler  
@@ -3087,20 +3087,39 @@ index_or_nothing
 		{ $$ = null; }
 	;
 	
+optional_type_specification
+    : tkColon type_ref                   
+        { $$ = $2; }
+    |
+    	{ $$ = null; }
+    ;
+           
+optional_var
+    : tkVar
+        { $$ = true; }
+    |	
+		{ $$ = false; }
+    ;
+
+for_cycle_type
+    : tkTo                             
+        { $$ = for_cycle_type.to; }
+    | tkDownto                           
+        { $$ = for_cycle_type.downto; }
+    ;
+
 foreach_stmt
-    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
+    : tkForeach identifier optional_type_specification tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
         { 
 			$$ = new foreach_stmt($2, $3, $5, $8 as statement, $6, @$);
             if ($3 == null)
                 parsertools.AddWarningFromResource("USING_UNLOCAL_FOREACH_VARIABLE", $2.source_context);
         }
-    | tkForeach tkVar identifier tkColon type_ref tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
+    | tkForeach tkVar identifier optional_type_specification tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
         { 
-			$$ = new foreach_stmt($3, $5, $7, $10 as statement, $8, @$); 
-        }
-    | tkForeach tkVar identifier tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt
-        { 
-			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$8, $6, @$); 
+        	if ($4 == null)
+				$$ = new foreach_stmt($3, new no_type_foreach(), $6, $9 as statement, $7, @$);
+			else $$ = new foreach_stmt($3, $4, $6, $9 as statement, $7, @$);
         }
     | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt // сахарное правило
         { 
@@ -3126,43 +3145,17 @@ foreach_stmt
         }
     ;
 
-foreach_stmt_ident_dype_opt
-    : tkColon type_ref                   
-        { $$ = $2; }
-    |
-    ;
-           
 for_stmt
-    : tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 optional_tk_do unlabelled_stmt
+    : tkFor optional_var identifier optional_type_specification tkAssign expr_l1 for_cycle_type expr_l1 optional_tk_do unlabelled_stmt
         { 
-			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, null, @$);
+			$$ = NewForStmt((bool)$2, $3, $4, $6, (for_cycle_type)$7, $8, $9, $10 as statement, null, @$);
         }
-    | tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 tkStep expr_l1 tkDo unlabelled_stmt  
+    | tkFor optional_var identifier optional_type_specification tkAssign expr_l1 for_cycle_type expr_l1 tkStep expr_l1 tkDo unlabelled_stmt  
         { 
-			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $11 as statement, $9, @$);
+			$$ = NewForStmt((bool)$2, $3, $4, $6, (for_cycle_type)$7, $8, $9, $12 as statement, $10, @$);
         }
 	;
 	
-optional_var
-    : tkVar
-        { $$ = true; }
-    |	
-		{ $$ = false; }
-    ;
-
-for_stmt_decl_or_assign
-    : tkAssign
-    | tkColon simple_type_identifier tkAssign       
-        { $$ = $2; }
-    ;
-
-for_cycle_type
-    : tkTo                             
-        { $$ = for_cycle_type.to; }
-    | tkDownto                           
-        { $$ = for_cycle_type.downto; }
-    ;
-
 with_stmt
     : tkWith expr_list tkDo unlabelled_stmt               
         { 
@@ -4247,6 +4240,8 @@ var_reference
 		{ $$ = $1; }
     | var_question_point 
 		{ $$ = $1; }
+	| tkRoundOpen tkVar identifier tkAssign expr_dq tkRoundClose 
+		{ $$ = new let_var_expr($3,$5,@$); } 
     ;
  
 var_address

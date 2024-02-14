@@ -95,6 +95,18 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+
+        // SSM 2024.01.09
+        public override void visit(let_var_expr letVarExpr)
+        {
+            ProcessNode(letVarExpr.ex);
+
+            _visitor.ProcessNode(letVarExpr);
+
+            SymbolInfo si = _visitor.context.find_first(letVarExpr.id.name);
+            _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(letVarExpr, si));
+        }
+
         public override void visit(statement_list stmtList)
         {
             if (stmtList.IsInternal) // просто обойти как продолжение объемлющего statement_list
@@ -227,8 +239,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
                                     si.sym_info.semantic_node_type == semantic_node_type.class_field ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.basic_property_node
+                                    si.sym_info.semantic_node_type == semantic_node_type.basic_property_node ||
+                                    si.sym_info.semantic_node_type == semantic_node_type.compiled_class_constant_definition
                                     ;
+            if (si.sym_info is var_definition_node && (si.sym_info as var_definition_node).type.type_special_kind == type_special_kind.array_wrapper)
+                acceptableVarType = false;
+
             //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
             // Использую этот трюк для нестатических полей предков - они не захватываются из-за плохого алгоритма захвата
             // aab 12.06.19 begin

@@ -51,8 +51,8 @@ namespace PascalABCCompiler.Errors
             if (source_context != null)
                 pos = "(" + source_context.begin_position.line_num + "," + source_context.begin_position.column_num + ")";
             string fn = null;
-            if (FileName != null)
-                fn = Path.GetFileName(FileName);
+            if (file_name != null)
+                fn = Path.GetFileName(file_name);
             return string.Format(StringResources.Get("PARSER_ERRORS_COMPILATION_ERROR{0}{1}{2}"), fn, pos, Message);
              */
             return (new CompilerInternalError("Errors.ToString",new Exception(string.Format("Не переопеределена {0}.ToString",this.GetType())))).ToString();

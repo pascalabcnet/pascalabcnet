@@ -620,7 +620,7 @@ namespace PascalABCCompiler.TreeRealization
                             if (interf_original_generic != null && interf_original_generic == base_original_generic)
                             {
                                 // Нам нужно два original_generic as compiled_type_node и два instance_params
-                                
+
                                 //if (ctcgi != null) // по идее это всегда так! потому что cgitn - compiled - поэтому закомментировал SSM 14/02/23
                                 // теперь надо проверить параметры на ковариантность - все
                                 var n = base_instance_params.Count;
@@ -632,7 +632,7 @@ namespace PascalABCCompiler.TreeRealization
                                 if (n != n1)
                                     impl = false;
                                 else
-                                    for (int i=0; i<n; i++)
+                                    for (int i = 0; i < n; i++)
                                     {
                                         // ctcgi.compiled_type - это System.Type
                                         if ((interf_compiled_type.GetGenericArguments()[i].GenericParameterAttributes & System.Reflection.GenericParameterAttributes.Covariant) != 0)
@@ -663,6 +663,17 @@ namespace PascalABCCompiler.TreeRealization
                                 implements = impl;
                                 if (implements)
                                     break;
+                            }
+                        }
+                        else if (interf is common_generic_instance_type_node cictn && base_class is common_generic_instance_type_node cbctn)
+                        {
+                            foreach (type_node impltn in cictn.ImplementingInterfaces)
+                            {
+                                if (is_type_or_original_generics_equal(impltn, cbctn))
+                                {
+                                    implements = true;
+                                    break;
+                                }
                             }
                         }
                         else if (interf is compiled_type_node ictn && base_class is compiled_type_node bctn)

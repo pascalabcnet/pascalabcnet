@@ -39,115 +39,247 @@ const
   defaultWindowHeight = 480;
   
   // Color constants
-  clAquamarine = Color.Aquamarine;             clAzure = Color.Azure;                     
-  clBeige = Color.Beige;                       clBisque = Color.Bisque;                   
-  clBlack = Color.Black;                       clBlanchedAlmond = Color.BlanchedAlmond;   
-  clBlue = Color.Blue;                         clBlueViolet = Color.BlueViolet;           
-  clBrown = Color.Brown;                       clBurlyWood = Color.BurlyWood;             
-  clCadetBlue = Color.CadetBlue;               clChartreuse = Color.Chartreuse;           
-  clChocolate = Color.Chocolate;               clCoral = Color.Coral;                     
-  clCornflowerBlue = Color.CornflowerBlue;     clCornsilk = Color.Cornsilk;               
-  clCrimson = Color.Crimson;                   clCyan = Color.Cyan;                       
-  clDarkBlue = Color.DarkBlue;                 clDarkCyan = Color.DarkCyan;               
-  clDarkGoldenrod = Color.DarkGoldenrod;       clDarkGray = Color.DarkGray;               
-  clDarkGreen = Color.DarkGreen;               clDarkKhaki = Color.DarkKhaki;             
-  clDarkMagenta = Color.DarkMagenta;           clDarkOliveGreen = Color.DarkOliveGreen;   
-  clDarkOrange = Color.DarkOrange;             clDarkOrchid = Color.DarkOrchid;           
-  clDarkRed = Color.DarkRed;                   clDarkTurquoise = Color.DarkTurquoise;     
-  clDarkSeaGreen = Color.DarkSeaGreen;         clDarkSlateBlue = Color.DarkSlateBlue;     
-  clDarkSlateGray = Color.DarkSlateGray;       clDarkViolet = Color.DarkViolet;           
-  clDeepPink = Color.DeepPink;                 clDarkSalmon = Color.DarkSalmon;           
-  clDeepSkyBlue = Color.DeepSkyBlue;           clDimGray = Color.DimGray;                 
-  clDodgerBlue = Color.DodgerBlue;             clFirebrick = Color.Firebrick;             
-  clFloralWhite = Color.FloralWhite;           clForestGreen = Color.ForestGreen;         
-  clFuchsia = Color.Fuchsia;                   clGainsboro = Color.Gainsboro;             
-  clGhostWhite = Color.GhostWhite;             clGold = Color.Gold;                       
-  clGoldenrod = Color.Goldenrod;               clGray = Color.Gray;                       
-  clGreen = Color.Green;                       clGreenYellow = Color.GreenYellow;         
-  clHoneydew = Color.Honeydew;                 clHotPink = Color.HotPink;                 
-  clIndianRed = Color.IndianRed;               clIndigo = Color.Indigo;                   
-  clIvory = Color.Ivory;                       clKhaki = Color.Khaki;                     
-  clLavender = Color.Lavender;                 clLavenderBlush = Color.LavenderBlush;     
-  clLawnGreen = Color.LawnGreen;               clLemonChiffon = Color.LemonChiffon;       
-  clLightBlue = Color.LightBlue;               clLightCoral = Color.LightCoral;           
-  clLightCyan = Color.LightCyan;               clLightGray = Color.LightGray;             
-  clLightGreen = Color.LightGreen;             clLightGoldenrodYellow = Color.LightGoldenrodYellow;
-  clLightPink = Color.LightPink;               clLightSalmon = Color.LightSalmon;         
-  clLightSeaGreen = Color.LightSeaGreen;       clLightSkyBlue = Color.LightSkyBlue;       
-  clLightSlateGray = Color.LightSlateGray;     clLightSteelBlue = Color.LightSteelBlue;   
-  clLightYellow = Color.LightYellow;           clLime = Color.Lime;                       
-  clLimeGreen = Color.LimeGreen;               clLinen = Color.Linen;                     
-  clMagenta = Color.Magenta;                   clMaroon = Color.Maroon;                   
-  clMediumBlue = Color.MediumBlue;             clMediumOrchid = Color.MediumOrchid;       
-  clMediumAquamarine = Color.MediumAquamarine; clMediumPurple = Color.MediumPurple;       
-  clMediumSeaGreen = Color.MediumSeaGreen;     clMediumSlateBlue = Color.MediumSlateBlue; 
-  clPlum = Color.Plum;                         clMistyRose = Color.MistyRose;             
-  clNavy = Color.Navy;                         clMidnightBlue = Color.MidnightBlue;       
-  clMintCream = Color.MintCream;               clMediumSpringGreen = Color.MediumSpringGreen;
-  clMoccasin = Color.Moccasin;                 clNavajoWhite = Color.NavajoWhite;         
-  clMediumTurquoise = Color.MediumTurquoise;   clOldLace = Color.OldLace;                 
-  clOlive = Color.Olive;                       clOliveDrab = Color.OliveDrab;             
-  clOrange = Color.Orange;                     clOrangeRed = Color.OrangeRed;             
-  clOrchid = Color.Orchid;                     clPaleGoldenrod = Color.PaleGoldenrod;     
-  clPaleGreen = Color.PaleGreen;               clPaleTurquoise = Color.PaleTurquoise;     
-  clPaleVioletRed = Color.PaleVioletRed;       clPapayaWhip = Color.PapayaWhip;           
-  clPeachPuff = Color.PeachPuff;               clPeru = Color.Peru;                       
-  clPink = Color.Pink;                         clMediumVioletRed = Color.MediumVioletRed; 
-  clPowderBlue = Color.PowderBlue;             clPurple = Color.Purple;                   
-  clRed = Color.Red;                           clRosyBrown = Color.RosyBrown;             
-  clRoyalBlue = Color.RoyalBlue;               clSaddleBrown = Color.SaddleBrown;         
-  clSalmon = Color.Salmon;                     clSandyBrown = Color.SandyBrown;           
-  clSeaGreen = Color.SeaGreen;                 clSeaShell = Color.SeaShell;               
-  clSienna = Color.Sienna;                     clSilver = Color.Silver;                   
-  clSkyBlue = Color.SkyBlue;                   clSlateBlue = Color.SlateBlue;             
-  clSlateGray = Color.SlateGray;               clSnow = Color.Snow;                       
-  clSpringGreen = Color.SpringGreen;           clSteelBlue = Color.SteelBlue;             
-  clTan = Color.Tan;                           clTeal = Color.Teal;                       
-  clThistle = Color.Thistle;                   clTomato = Color.Tomato;                   
-  clTransparent = Color.Transparent;           clTurquoise = Color.Turquoise;             
-  clViolet = Color.Violet;                     clWheat = Color.Wheat;                     
-  clWhite = Color.White;                       clWhiteSmoke = Color.WhiteSmoke;           
-  clYellow = Color.Yellow;                     clYellowGreen = Color.YellowGreen;
+  clAquamarine = Color.Aquamarine;
+  clAzure = Color.Azure;                     
+  clBeige = Color.Beige;
+  clBisque = Color.Bisque;                   
+  clBlack = Color.Black;
+  clBlanchedAlmond = Color.BlanchedAlmond;   
+  clBlue = Color.Blue;
+  clBlueViolet = Color.BlueViolet;           
+  clBrown = Color.Brown;
+  clBurlyWood = Color.BurlyWood;             
+  clCadetBlue = Color.CadetBlue;
+  clChartreuse = Color.Chartreuse;           
+  clChocolate = Color.Chocolate;
+  clCoral = Color.Coral;                     
+  clCornflowerBlue = Color.CornflowerBlue;
+  clCornsilk = Color.Cornsilk;               
+  clCrimson = Color.Crimson;
+  clCyan = Color.Cyan;                       
+  clDarkBlue = Color.DarkBlue;
+  clDarkCyan = Color.DarkCyan;               
+  clDarkGoldenrod = Color.DarkGoldenrod;
+  clDarkGray = Color.DarkGray;               
+  clDarkGreen = Color.DarkGreen;
+  clDarkKhaki = Color.DarkKhaki;             
+  clDarkMagenta = Color.DarkMagenta;
+  clDarkOliveGreen = Color.DarkOliveGreen;   
+  clDarkOrange = Color.DarkOrange;
+  clDarkOrchid = Color.DarkOrchid;           
+  clDarkRed = Color.DarkRed;
+  clDarkTurquoise = Color.DarkTurquoise;     
+  clDarkSeaGreen = Color.DarkSeaGreen;
+  clDarkSlateBlue = Color.DarkSlateBlue;     
+  clDarkSlateGray = Color.DarkSlateGray;
+  clDarkViolet = Color.DarkViolet;           
+  clDeepPink = Color.DeepPink;
+  clDarkSalmon = Color.DarkSalmon;           
+  clDeepSkyBlue = Color.DeepSkyBlue;
+  clDimGray = Color.DimGray;                 
+  clDodgerBlue = Color.DodgerBlue;
+  clFirebrick = Color.Firebrick;             
+  clFloralWhite = Color.FloralWhite;
+  clForestGreen = Color.ForestGreen;         
+  clFuchsia = Color.Fuchsia;
+  clGainsboro = Color.Gainsboro;             
+  clGhostWhite = Color.GhostWhite;
+  clGold = Color.Gold;                       
+  clGoldenrod = Color.Goldenrod;
+  clGray = Color.Gray;                       
+  clGreen = Color.Green;
+  clGreenYellow = Color.GreenYellow;         
+  clHoneydew = Color.Honeydew;
+  clHotPink = Color.HotPink;                 
+  clIndianRed = Color.IndianRed;
+  clIndigo = Color.Indigo;                   
+  clIvory = Color.Ivory;
+  clKhaki = Color.Khaki;                     
+  clLavender = Color.Lavender;
+  clLavenderBlush = Color.LavenderBlush;     
+  clLawnGreen = Color.LawnGreen;
+  clLemonChiffon = Color.LemonChiffon;       
+  clLightBlue = Color.LightBlue;
+  clLightCoral = Color.LightCoral;           
+  clLightCyan = Color.LightCyan;
+  clLightGray = Color.LightGray;             
+  clLightGreen = Color.LightGreen;
+  clLightGoldenrodYellow = Color.LightGoldenrodYellow;
+  clLightPink = Color.LightPink;
+  clLightSalmon = Color.LightSalmon;         
+  clLightSeaGreen = Color.LightSeaGreen;
+  clLightSkyBlue = Color.LightSkyBlue;       
+  clLightSlateGray = Color.LightSlateGray;
+  clLightSteelBlue = Color.LightSteelBlue;   
+  clLightYellow = Color.LightYellow;
+  clLime = Color.Lime;                       
+  clLimeGreen = Color.LimeGreen;
+  clLinen = Color.Linen;                     
+  clMagenta = Color.Magenta;
+  clMaroon = Color.Maroon;                   
+  clMediumBlue = Color.MediumBlue;
+  clMediumOrchid = Color.MediumOrchid;       
+  clMediumAquamarine = Color.MediumAquamarine;
+  clMediumPurple = Color.MediumPurple;       
+  clMediumSeaGreen = Color.MediumSeaGreen;
+  clMediumSlateBlue = Color.MediumSlateBlue; 
+  clPlum = Color.Plum;
+  clMistyRose = Color.MistyRose;             
+  clNavy = Color.Navy;
+  clMidnightBlue = Color.MidnightBlue;       
+  clMintCream = Color.MintCream;
+  clMediumSpringGreen = Color.MediumSpringGreen;
+  clMoccasin = Color.Moccasin;
+  clNavajoWhite = Color.NavajoWhite;         
+  clMediumTurquoise = Color.MediumTurquoise;
+  clOldLace = Color.OldLace;                 
+  clOlive = Color.Olive;
+  clOliveDrab = Color.OliveDrab;             
+  clOrange = Color.Orange;
+  clOrangeRed = Color.OrangeRed;             
+  clOrchid = Color.Orchid;
+  clPaleGoldenrod = Color.PaleGoldenrod;     
+  clPaleGreen = Color.PaleGreen;
+  clPaleTurquoise = Color.PaleTurquoise;     
+  clPaleVioletRed = Color.PaleVioletRed;
+  clPapayaWhip = Color.PapayaWhip;           
+  clPeachPuff = Color.PeachPuff;
+  clPeru = Color.Peru;                       
+  clPink = Color.Pink;
+  clMediumVioletRed = Color.MediumVioletRed; 
+  clPowderBlue = Color.PowderBlue;
+  clPurple = Color.Purple;                   
+  clRed = Color.Red;
+  clRosyBrown = Color.RosyBrown;             
+  clRoyalBlue = Color.RoyalBlue;
+  clSaddleBrown = Color.SaddleBrown;         
+  clSalmon = Color.Salmon;
+  clSandyBrown = Color.SandyBrown;           
+  clSeaGreen = Color.SeaGreen;
+  clSeaShell = Color.SeaShell;               
+  clSienna = Color.Sienna;
+  clSilver = Color.Silver;                   
+  clSkyBlue = Color.SkyBlue;
+  clSlateBlue = Color.SlateBlue;             
+  clSlateGray = Color.SlateGray;
+  clSnow = Color.Snow;                       
+  clSpringGreen = Color.SpringGreen;
+  clSteelBlue = Color.SteelBlue;             
+  clTan = Color.Tan;
+  clTeal = Color.Teal;                       
+  clThistle = Color.Thistle;
+  clTomato = Color.Tomato;                   
+  clTransparent = Color.Transparent;
+  clTurquoise = Color.Turquoise;             
+  clViolet = Color.Violet;
+  clWheat = Color.Wheat;                     
+  clWhite = Color.White;
+  clWhiteSmoke = Color.WhiteSmoke;           
+  clYellow = Color.Yellow;
+  clYellowGreen = Color.YellowGreen;
   
   // Virtual Key Codes
-  VK_Back = 8;              VK_Tab = 9;
-  VK_LineFeed = 10;         VK_Enter = 13;
-  VK_Return = 13;           VK_ShiftKey = 16;           VK_ControlKey = 17;
-  VK_Menu = 18;             VK_Pause = 19;              VK_CapsLock = 20;
+  VK_Back = 8;
+  VK_Tab = 9;
+  VK_LineFeed = 10;
+  VK_Enter = 13;
+  VK_Return = 13;
+  VK_ShiftKey = 16;
+  VK_ControlKey = 17;
+  VK_Menu = 18;
+  VK_Pause = 19;
+  VK_CapsLock = 20;
   VK_Capital = 20;
   VK_Escape = 27;
   VK_Space = 32;
-  VK_Prior = 33;            VK_PageUp = 33;             VK_PageDown = 34;
-  VK_Next = 34;             VK_End = 35;                VK_Home = 36;
-  VK_Left = 37;             VK_Up = 38;                 VK_Right = 39;
-  VK_Down = 40;             VK_Select = 41;             VK_Print = 42;
-  VK_Snapshot = 44;         VK_PrintScreen = 44;
-  VK_Insert = 45;           VK_Delete = 46;             VK_Help = 47;
-  VK_A = 65;                VK_B = 66;
-  VK_C = 67;                VK_D = 68;                  VK_E = 69;
-  VK_F = 70;                VK_G = 71;                  VK_H = 72;
-  VK_I = 73;                VK_J = 74;                  VK_K = 75;
-  VK_L = 76;                VK_M = 77;                  VK_N = 78;
-  VK_O = 79;                VK_P = 80;                  VK_Q = 81;
-  VK_R = 82;                VK_S = 83;                  VK_T = 84;
-  VK_U = 85;                VK_V = 86;                  VK_W = 87;
-  VK_X = 88;                VK_Y = 89;                  VK_Z = 90;
-  VK_LWin = 91;             VK_RWin = 92;               VK_Apps = 93;
-  VK_Sleep = 95;            VK_NumPad0 = 96;            VK_NumPad1 = 97;
-  VK_NumPad2 = 98;          VK_NumPad3 = 99;            VK_NumPad4 = 100;
-  VK_NumPad5 = 101;         VK_NumPad6 = 102;           VK_NumPad7 = 103;
-  VK_NumPad8 = 104;         VK_NumPad9 = 105;           VK_Multiply = 106;
-  VK_Add = 107;             VK_Separator = 108;         VK_Subtract = 109;
-  VK_Decimal = 110;         VK_Divide = 111;            VK_F1 = 112;
-  VK_F2 = 113;              VK_F3 = 114;                VK_F4 = 115;
-  VK_F5 = 116;              VK_F6 = 117;                VK_F7 = 118;
-  VK_F8 = 119;              VK_F9 = 120;                VK_F10 = 121;
-  VK_F11 = 122;             VK_F12 = 123;               VK_NumLock = 144;
-  VK_Scroll = 145;          VK_LShiftKey = 160;         VK_RShiftKey = 161;
-  VK_LControlKey = 162;     VK_RControlKey = 163;       VK_LMenu = 164;
+  VK_Prior = 33;
+  VK_PageUp = 33;
+  VK_PageDown = 34;
+  VK_Next = 34;
+  VK_End = 35;
+  VK_Home = 36;
+  VK_Left = 37;
+  VK_Up = 38;
+  VK_Right = 39;
+  VK_Down = 40;
+  VK_Select = 41;
+  VK_Print = 42;
+  VK_Snapshot = 44;
+  VK_PrintScreen = 44;
+  VK_Insert = 45;
+  VK_Delete = 46;
+  VK_Help = 47;
+  VK_A = 65;
+  VK_B = 66;
+  VK_C = 67;
+  VK_D = 68;
+  VK_E = 69;
+  VK_F = 70;
+  VK_G = 71;
+  VK_H = 72;
+  VK_I = 73;
+  VK_J = 74;
+  VK_K = 75;
+  VK_L = 76;
+  VK_M = 77;
+  VK_N = 78;
+  VK_O = 79;
+  VK_P = 80;
+  VK_Q = 81;
+  VK_R = 82;
+  VK_S = 83;
+  VK_T = 84;
+  VK_U = 85;
+  VK_V = 86;
+  VK_W = 87;
+  VK_X = 88;
+  VK_Y = 89;
+  VK_Z = 90;
+  VK_LWin = 91;
+  VK_RWin = 92;
+  VK_Apps = 93;
+  VK_Sleep = 95;
+  VK_NumPad0 = 96;
+  VK_NumPad1 = 97;
+  VK_NumPad2 = 98;
+  VK_NumPad3 = 99;
+  VK_NumPad4 = 100;
+  VK_NumPad5 = 101;
+  VK_NumPad6 = 102;
+  VK_NumPad7 = 103;
+  VK_NumPad8 = 104;
+  VK_NumPad9 = 105;
+  VK_Multiply = 106;
+  VK_Add = 107;
+  VK_Separator = 108;
+  VK_Subtract = 109;
+  VK_Decimal = 110;
+  VK_Divide = 111;
+  VK_F1 = 112;
+  VK_F2 = 113;
+  VK_F3 = 114;
+  VK_F4 = 115;
+  VK_F5 = 116;
+  VK_F6 = 117;
+  VK_F7 = 118;
+  VK_F8 = 119;
+  VK_F9 = 120;
+  VK_F10 = 121;
+  VK_F11 = 122;
+  VK_F12 = 123;
+  VK_NumLock = 144;
+  VK_Scroll = 145;
+  VK_LShiftKey = 160;
+  VK_RShiftKey = 161;
+  VK_LControlKey = 162;
+  VK_RControlKey = 163;
+  VK_LMenu = 164;
   VK_RMenu = 165;           
-  VK_KeyCode = 65535;       VK_Shift = 65536;           VK_Control = 131072;
-  VK_Alt = 262144;          VK_Modifiers = -65536;
+  VK_KeyCode = 65535;
+  VK_Shift = 65536;
+  VK_Control = 131072;
+  VK_Alt = 262144;
+  VK_Modifiers = -65536;
   
   // Pen style constants
   psSolid = DashStyle.Solid;
@@ -651,7 +783,7 @@ procedure InitGraphABC;
 type
   /// Тип пера GraphABC
   GraphABCPen = class
-  private 
+  private
     _NETPen: System.Drawing.Pen;
     procedure SetColor(c: GraphABC.Color);
     function GetColor: GraphABC.Color;
@@ -691,7 +823,7 @@ type
   
   /// Тип кисти GraphABC
   GraphABCBrush = class
-  private 
+  private
     _NETBrush: System.Drawing.Brush;
     procedure SetNETBrush(b: System.Drawing.Brush);
     procedure SetColor(c: GraphABC.Color);
@@ -721,7 +853,7 @@ type
   
   /// Тип шрифта GraphABC
   GraphABCFont = class
-  private 
+  private
     _NETFont: System.Drawing.Font;
     procedure SetNETFont(f: System.Drawing.Font);
     procedure SetColor(c: GraphABC.Color);
@@ -746,7 +878,7 @@ type
   end;
   
   GraphABCCoordinate = class
-  private 
+  private
     coef: integer;
     procedure SetOriginX(x: integer);
     procedure SetOriginY(y: integer);
@@ -761,7 +893,7 @@ type
     function GetScaleX: real;
     function GetScaleY: real;
     function GetMatrix: System.Drawing.Drawing2D.Matrix;
-  public 
+  public
     constructor;
     /// Устанавливает параметры системы координат
     procedure SetTransform(x0, y0, angle, sx, sy: real);
@@ -803,7 +935,7 @@ type
   end;
   
   GraphABCWindow = class
-  private 
+  private
     procedure SetLeft(l: integer);
     function GetLeft: integer;
     procedure SetTop(t: integer);
@@ -862,33 +994,33 @@ type
   end;
   
   GraphABCStatusPanel = class
-  private 
+  private
     p: System.Windows.Forms.ToolStripStatusLabel;
     procedure SetText(s: string);
     function GetText: string;
-  public 
+  public
     constructor(pp: System.Windows.Forms.ToolStripStatusLabel);
     property Text: string read GetText write SetText;
   end;
   
   GraphABCStatus = class
-  private 
+  private
     procedure SetText(s: string);
     function GetText: string;
     procedure SetPanelsCount(n: integer);
     function GetPanelsCount: integer;
     function GetItem(i: integer): GraphABCStatusPanel;
-  public 
+  public
     procedure Show;
     procedure Hide;
     property Text: string read GetText write SetText;
-    property Items[i: integer]: GraphABCStatusPanel read GetItem; default;
+    property Items[i: integer]: GraphABCStatusPanel read GetItem;default;
     property PanelsCount: integer read GetPanelsCount write SetPanelsCount;
   end;
   
   /// Тип рисунка GraphABC
   Picture = class
-  public 
+  public
     bmp, savedbmp: Bitmap;
     gb: Graphics;
     istransp: boolean;
@@ -1025,7 +1157,7 @@ type
 
 type
   ABCControl = class(Control)
-  private 
+  private
     procedure OnPaint(sender: Object; e: PaintEventArgs);
     procedure OnClosing(sender: Object; e: FormClosingEventArgs);
     procedure OnMouseDown(sender: Object; e: MouseEventArgs);
@@ -1036,11 +1168,11 @@ type
     procedure OnKeyPress(sender: Object; e: KeyPressEventArgs);
     procedure OnResize(sender: Object; e: EventArgs);
     procedure Init;
-  protected 
+  protected
     function IsInputKey(keyData: Keys): boolean; override;
     procedure OnPaintBackground(e: PaintEventArgs); override;begin end;// сами все перерисовываем!
   
-  public 
+  public
     constructor(w, h: integer); 
   end;
 
@@ -1116,27 +1248,28 @@ type
   Proc1BorderStyle = procedure(st: FormBorderStyle);
   
   IOGraphABCSystem = class(IOStandardSystem)
-  public 
+  public
     constructor Create;
     //    procedure write(p: pointer);     override;
-    procedure write(obj: object);    override;
-    procedure writeln;               override;
-    function read_symbol: char;      override;
-    function peek: integer;          override;
+    procedure write(obj: object); override;
+    procedure writeln; override;
+    function read_symbol: char; override;
+    function peek: integer; override;
   end;
 
-var IsRunningOnMono := System.Type.GetType('Mono.Runtime') <> nil;
+var
+  IsRunningOnMono := System.Type.GetType('Mono.Runtime') <> nil;
 
 function SetProcessDPIAware(): boolean; external 'user32.dll';
 
 function operator*(s: Size; r: real): Size; extensionmethod;
 begin
-  Result := new Size(Round(s.Width*r),Round(s.Height*r))
+  Result := new Size(Round(s.Width * r), Round(s.Height * r))
 end;
 
 function operator*(p: Point; r: real): Point; extensionmethod;
 begin
-  Result := new Point(Round(p.X*r),Round(p.Y*r))
+  Result := new Point(Round(p.X * r), Round(p.Y * r))
 end;
 
 var
@@ -2052,7 +2185,7 @@ procedure Picture.CopyRect(dst: System.Drawing.Rectangle; bmp: Bitmap; src: Syst
 begin
   // Copy src portion of bmp on dst rectangle of this picture  
   //var tempbmp := GetView(bmp, src); // SSM 17/09/22 заменил это сложное - не работает под Linux
-  var tempbmp := bmp.Clone(src,bmp.PixelFormat);
+  var tempbmp := bmp.Clone(src, bmp.PixelFormat);
   //  gb.DrawImage(bmp,dst,src,GraphicsUnit.Pixel);
   gb.DrawImage(tempbmp, dst);
   tempbmp.Dispose;
@@ -2302,7 +2435,7 @@ begin
   Pen.NETPen := new System.Drawing.Pen(System.Drawing.Color.Black);
   GraphABC.Font.NETFont := new System.Drawing.Font('Arial', 10);
   
-  PixelBrush := new SolidBrush(System.Drawing.Color.Black);
+  PixelBrush := new System.Drawing.SolidBrush(System.Drawing.Color.Black);
   CurrentSolidBrush := new SolidBrush(System.Drawing.Color.White);
   CurrentHatchBrush := new HatchBrush(HatchStyle.Cross, System.Drawing.Color.Black, System.Drawing.Color.White);
   CurrentGradientBrush := new LinearGradientBrush(new Point(0, 0), new Point(600, 600), System.Drawing.Color.Black, System.Drawing.Color.White);
@@ -2440,18 +2573,18 @@ end;
 // Primitives
 procedure SetPixel(x, y: integer; c: Color);
 begin
-  PutPixel(x,y,c);
+  PutPixel(x, y, c);
   {lock f do 
   begin
-    if NotLockDrawing then begin
-      var b := SmoothingIsOn;
-      SetSmoothingOff;
-      PixelBrush.Color := c;  
-      gr.FillRectangle(PixelBrush, x, y, 1, 1);
-      SetSmoothing(b);  
-    end;
-    if DrawInBuffer then   
-      bmp.SetPixel(x, y, c);
+  if NotLockDrawing then begin
+  var b := SmoothingIsOn;
+  SetSmoothingOff;
+  PixelBrush.Color := c;  
+  gr.FillRectangle(PixelBrush, x, y, 1, 1);
+  SetSmoothing(b);  
+  end;
+  if DrawInBuffer then   
+  bmp.SetPixel(x, y, c);
   end;}
 end;
 
@@ -2892,7 +3025,7 @@ begin
 end;
 
 // Fills
-procedure FloodFill(x, y: integer; c: Color);
+{procedure FloodFill(x, y: integer; c: Color);
 var
   hdc, hBrush, hOldBrush: IntPtr;
 begin
@@ -2935,6 +3068,29 @@ begin
   DeleteObject(hdc);
   
   Monitor.Exit(f);
+end;}
+
+procedure FloodFill(x, y: integer; c: Color);
+begin
+  LockDrawing;
+  var st := new Stack<Point>();
+  var targetColor := GetPixel(x,y);
+  st.Push(Pnt(x,y));
+  while st.Count > 0 do
+  begin
+    var p := st.Pop;
+    if (p.x < 0) or (p.x >= WindowWidth) or (p.y < 0) or (p.y >= WindowHeight) then
+      continue;
+    if GetPixel(p.x,p.y) = targetColor then
+    begin
+      PutPixel(p.x,p.y,c);
+      st.Push(Pnt(p.x,p.y-1));
+      st.Push(Pnt(p.x,p.y+1));
+      st.Push(Pnt(p.x-1,p.y));
+      st.Push(Pnt(p.x+1,p.y));
+    end;
+  end;
+  UnLockDrawing;
 end;
 
 procedure FillRect(x1, y1, x2, y2: integer);
@@ -3036,10 +3192,10 @@ begin
   LockGraphics; 
   //  try
   case style of
-    psSolid:		  Pen.NETPen.DashStyle := DashStyle.Solid;
+    psSolid:		Pen.NETPen.DashStyle := DashStyle.Solid;
     psClear:    	Pen.NETPen.DashStyle := DashStyle.Custom;
-    psDash:  		  Pen.NETPen.DashStyle := DashStyle.Dash;
-    psDot: 			  Pen.NETPen.DashStyle := DashStyle.Dot;
+    psDash:  		Pen.NETPen.DashStyle := DashStyle.Dash;
+    psDot: 			Pen.NETPen.DashStyle := DashStyle.Dot;
     psDashDot:		Pen.NETPen.DashStyle := DashStyle.DashDot;
     psDashDotDot:	Pen.NETPen.DashStyle := DashStyle.DashDotDot;
   end;  
@@ -3053,12 +3209,12 @@ end;
 function PenStyle: DashStyle;
 begin
   case Pen.NETPen.DashStyle of
-    DashStyle.Solid:      Result := psSolid;
-    DashStyle.Dash:       Result := psDash;
-    DashStyle.Dot:        Result := psDot;
-    DashStyle.DashDot:    Result := psDashDot;
+    DashStyle.Solid: Result := psSolid;
+    DashStyle.Dash: Result := psDash;
+    DashStyle.Dot: Result := psDot;
+    DashStyle.DashDot: Result := psDashDot;
     DashStyle.DashDotDot: Result := psDashDotDot;
-    DashStyle.Custom:     Result := psClear;
+    DashStyle.Custom: Result := psClear;
   end;  
 end;
 
@@ -3489,7 +3645,8 @@ begin
   Halt;
 end;
 
-var scale: real := -1;
+var
+  scale: real := -1;
 
 function ScreenScale: real;
 begin
@@ -3513,7 +3670,7 @@ begin
   //var (w,h) := (ScreenWidth,ScreenHeight);
   //var (w,h) := (System.Windows.SystemParameters.PrimaryScreenWidth,System.Windows.SystemParameters.PrimaryScreenHeight);
   //Result := new System.Drawing.Size(Round(w*ScreenScale),Round(h*ScreenScale))
-  Result := new Size(ScreenWidth,ScreenHeight)
+  Result := new Size(ScreenWidth, ScreenHeight)
 end;
 
 function ScreenWidth: integer;
@@ -3890,7 +4047,8 @@ end;
 
 procedure Draw(f: real-> real; a, b, min, max: real; r: System.Drawing.Rectangle);
 var
-  x1 := r.X; y1 := r.Y;
+  x1 := r.X;
+  y1 := r.Y;
   x2 := r.X + r.Width - 1;
   y2 := r.Y + r.Height - 1;
 begin
@@ -3910,7 +4068,8 @@ end;
 
 procedure Draw(f: real-> real; a, b: real; r: System.Drawing.Rectangle);
 var
-  x1 := r.X; y1 := r.Y;
+  x1 := r.X;
+  y1 := r.Y;
   x2 := r.X + r.Width - 1;
   y2 := r.Y + r.Height - 1;
 begin
@@ -3924,7 +4083,8 @@ end;
 
 procedure Draw(f: real-> real; a, b: real);
 var
-  x1 := 0; y1 := 0;
+  x1 := 0;
+  y1 := 0;
   x2 := Window.Width - 1;
   y2 := Window.Height - 1;
 begin

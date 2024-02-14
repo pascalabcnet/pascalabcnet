@@ -1148,6 +1148,8 @@ namespace CodeCompletion
                 if (Text.Replace("\r\n","\n") != Text2.Replace("\r\n","\n"))
                 {
                     int line = 1;
+                    Text = Text.Replace("\r\n", "\n");
+                    Text2 = Text2.Replace("\r\n", "\n");
                     for (int i = 0; i < Math.Min(Text.Length, Text2.Length); i++)
                     {
                         if (Text[i] != Text2[i])

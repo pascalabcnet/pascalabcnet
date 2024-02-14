@@ -30,7 +30,7 @@
         {
             this.nudTabIndent = new System.Windows.Forms.NumericUpDown();
             this.cbConvertTabsToSpaces = new System.Windows.Forms.CheckBox();
-            this.cbShowMathBracket = new System.Windows.Forms.CheckBox();
+            this.cbShowMatchBracket = new System.Windows.Forms.CheckBox();
             this.cbEditorFontSize = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.cbShowLinesNum = new System.Windows.Forms.CheckBox();
@@ -77,15 +77,15 @@
             this.cbConvertTabsToSpaces.Text = "CONVERT_TABS_TO_SPACES";
             this.cbConvertTabsToSpaces.UseVisualStyleBackColor = true;
             // 
-            // cbShowMathBracket
+            // cbShowMatchBracket
             // 
-            this.cbShowMathBracket.AutoSize = true;
-            this.cbShowMathBracket.Location = new System.Drawing.Point(5, 83);
-            this.cbShowMathBracket.Name = "cbShowMathBracket";
-            this.cbShowMathBracket.Size = new System.Drawing.Size(153, 17);
-            this.cbShowMathBracket.TabIndex = 25;
-            this.cbShowMathBracket.Text = "SHOW_MATH_BRACKET";
-            this.cbShowMathBracket.UseVisualStyleBackColor = true;
+            this.cbShowMatchBracket.AutoSize = true;
+            this.cbShowMatchBracket.Location = new System.Drawing.Point(5, 83);
+            this.cbShowMatchBracket.Name = "cbShowMatchBracket";
+            this.cbShowMatchBracket.Size = new System.Drawing.Size(153, 17);
+            this.cbShowMatchBracket.TabIndex = 25;
+            this.cbShowMatchBracket.Text = "SHOW_MATCH_BRACKET";
+            this.cbShowMatchBracket.UseVisualStyleBackColor = true;
             // 
             // cbEditorFontSize
             // 
@@ -178,7 +178,7 @@
             this.Controls.Add(this.cbEnableFolding);
             this.Controls.Add(this.nudTabIndent);
             this.Controls.Add(this.cbConvertTabsToSpaces);
-            this.Controls.Add(this.cbShowMathBracket);
+            this.Controls.Add(this.cbShowMatchBracket);
             this.Controls.Add(this.cbEditorFontSize);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.cbShowLinesNum);
@@ -199,7 +199,7 @@
 
         private System.Windows.Forms.NumericUpDown nudTabIndent;
         private System.Windows.Forms.CheckBox cbConvertTabsToSpaces;
-        private System.Windows.Forms.CheckBox cbShowMathBracket;
+        private System.Windows.Forms.CheckBox cbShowMatchBracket;
         private System.Windows.Forms.ComboBox cbEditorFontSize;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox cbShowLinesNum;

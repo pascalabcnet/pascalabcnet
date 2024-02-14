@@ -36,7 +36,7 @@ namespace VisualPascalABC
             this.cbUseRegex = new System.Windows.Forms.CheckBox();
             this.cbSearchUp = new System.Windows.Forms.CheckBox();
             this.cbMathWord = new System.Windows.Forms.CheckBox();
-            this.cbMathCase = new System.Windows.Forms.CheckBox();
+            this.cbMatchCase = new System.Windows.Forms.CheckBox();
             this.btReplace = new System.Windows.Forms.Button();
             this.btReplaceAll = new System.Windows.Forms.Button();
             this.tbTextToFind = new System.Windows.Forms.ComboBox();
@@ -92,7 +92,7 @@ namespace VisualPascalABC
             this.groupBox1.Controls.Add(this.cbUseRegex);
             this.groupBox1.Controls.Add(this.cbSearchUp);
             this.groupBox1.Controls.Add(this.cbMathWord);
-            this.groupBox1.Controls.Add(this.cbMathCase);
+            this.groupBox1.Controls.Add(this.cbMatchCase);
             this.groupBox1.Location = new System.Drawing.Point(16, 64);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox1.Name = "groupBox1";
@@ -132,19 +132,19 @@ namespace VisualPascalABC
             this.cbMathWord.Name = "cbMathWord";
             this.cbMathWord.Size = new System.Drawing.Size(177, 21);
             this.cbMathWord.TabIndex = 1;
-            this.cbMathWord.Text = "MATH_WHOLE_WORD";
+            this.cbMathWord.Text = "MATCH_WHOLE_WORD";
             this.cbMathWord.UseVisualStyleBackColor = true;
             // 
-            // cbMathCase
+            // cbMatchCase
             // 
-            this.cbMathCase.AutoSize = true;
-            this.cbMathCase.Location = new System.Drawing.Point(8, 23);
-            this.cbMathCase.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.cbMathCase.Name = "cbMathCase";
-            this.cbMathCase.Size = new System.Drawing.Size(110, 21);
-            this.cbMathCase.TabIndex = 0;
-            this.cbMathCase.Text = "MATH_CASE";
-            this.cbMathCase.UseVisualStyleBackColor = true;
+            this.cbMatchCase.AutoSize = true;
+            this.cbMatchCase.Location = new System.Drawing.Point(8, 23);
+            this.cbMatchCase.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cbMatchCase.Name = "cbMatchCase";
+            this.cbMatchCase.Size = new System.Drawing.Size(110, 21);
+            this.cbMatchCase.TabIndex = 0;
+            this.cbMatchCase.Text = "MATCH_CASE";
+            this.cbMatchCase.UseVisualStyleBackColor = true;
             // 
             // btReplace
             // 
@@ -230,7 +230,7 @@ namespace VisualPascalABC
         private System.Windows.Forms.Button btCancel;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox cbMathWord;
-        private System.Windows.Forms.CheckBox cbMathCase;
+        private System.Windows.Forms.CheckBox cbMatchCase;
         private System.Windows.Forms.CheckBox cbSearchUp;
         private System.Windows.Forms.CheckBox cbUseRegex;
         private System.Windows.Forms.Button btReplace;

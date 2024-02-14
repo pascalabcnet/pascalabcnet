@@ -589,6 +589,8 @@ namespace PascalABCCompiler.TreeRealization
 
         private static bool CheckIfTypeDependsOnUndeducedGenericParameters(type_node formalType, type_node[] deduced) //lroman
         {
+            if (formalType == null)
+                return false;
             if (formalType.generic_function_container != null)
             {
                 var par_num = formalType.generic_param_index;
@@ -1824,6 +1826,13 @@ namespace PascalABCCompiler.TreeRealization
                 cmn.return_variable = (orig_fn as common_function_node)?.return_variable;
             }
             cmn.IsOperator = orig_fn.IsOperator;
+            if (orig_fn is compiled_function_node)
+            {
+                compiled_function_node fn_orig = orig_fn as compiled_function_node;
+                if (fn_orig.method_info.GetBaseDefinition() != null)
+                    cmn.overrided_method = compiled_function_node.get_compiled_method(fn_orig.method_info.GetBaseDefinition());
+            }
+            
             return cmn;
         }
 

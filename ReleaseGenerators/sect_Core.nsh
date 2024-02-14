@@ -1,4 +1,4 @@
-﻿	Section $(DESC_Core) Core
+﻿    Section $(DESC_Core) Core
     SectionIn 1 2 RO
     SetOutPath "$INSTDIR"
     File ExecHide.exe
@@ -28,7 +28,7 @@
     File "..\bin\Mono.Cecil.dll"
     File "..\bin\TeacherControlPlugin.dll"
     File "..\bin\LambdaAnySynToSemConverter.dll"
-	;File "libs\System.Core.dll"
+    ;File "libs\System.Core.dll"
     File "gacutil.exe"
     File "gacutil.exe.config"
     File "gacutlrc.dll"
@@ -40,19 +40,19 @@
 
 
 ; main config - only .NET 4.7.1 and above
-	DotNetChecker::IsDotNet471Installed
-	Pop $0
+    DotNetChecker::IsDotNet471Installed
+    Pop $0
 
-	${If} $0 == "false"
-	${OrIf} $0 == "f"  ; if script is compiled in ANSI mode then we get only an "f"  https://github.com/ReVolly/NsisDotNetChecker/issues/4
-	${Else}
-	    File "..\bin\PascalABCNET.exe.config"
-	    ${AddFile} "PascalABCNET.exe.config"
-	${EndIf}
-	
-	
-	;dobavljaem fajly v uninst.log
-	${AddFile} "Compiler.dll"
+    ${If} $0 == "false"
+    ${OrIf} $0 == "f"  ; if script is compiled in ANSI mode then we get only an "f"  https://github.com/ReVolly/NsisDotNetChecker/issues/4
+    ${Else}
+        File "..\bin\PascalABCNET.exe.config"
+        ${AddFile} "PascalABCNET.exe.config"
+    ${EndIf}
+    
+    
+    ;dobavljaem fajly v uninst.log
+    ${AddFile} "Compiler.dll"
     ${AddFile} "CompilerTools.dll"
     ${AddFile} "Errors.dll"
     ${AddFile} "Localization.dll"
@@ -77,7 +77,7 @@
     Delete "$INSTDIR\Lib\*.pas"
     SetOutPath "$INSTDIR\Lib"
     ;File ..\bin\Lib\*.pcu; eto ploho nuzhno kazhdyj pcu raspisyvat
-	
+    
     File ..\bin\Lib\__RedirectIOMode.pcu
     File ..\bin\Lib\__RunMode.pcu
     File ..\bin\Lib\ABCButtons.pcu
@@ -161,7 +161,7 @@
     File ..\bin\Lib\HelixToolkit.dll
     File ..\bin\Lib\nunit.framework.dll 
     File ..\bin\Lib\InteractiveDataDisplay.WPF.dll 
-	
+    
     File ..\bin\Lib\turtle.png
 
     ${AddFile} "__RedirectIOMode.pcu"
@@ -271,7 +271,7 @@
     Push "Lib\InteractiveDataDisplay.WPF.dll"
     Call NGEN
     
-	
+    
     SetOutPath "$INSTDIR\LibSource"
     File ..\bin\Lib\__RedirectIOMode.pas
     File ..\bin\Lib\__RunMode.pas
@@ -346,11 +346,11 @@
     File ..\bin\Lib\XLSX.pas
     File ..\bin\Lib\Мозаика.pas
 
-	File ..\bin\Lib\__RedirectIOMode.vb
-	File ..\bin\Lib\VBSystem.vb
-	
-	;dobavljaem fajly v uninst.log
-	${AddFile} "__RedirectIOMode.pas"
+    File ..\bin\Lib\__RedirectIOMode.vb
+    File ..\bin\Lib\VBSystem.vb
+    
+    ;dobavljaem fajly v uninst.log
+    ${AddFile} "__RedirectIOMode.pas"
     ${AddFile} "__RunMode.pas"
     ${AddFile} "ABCButtons.pas"
     ${AddFile} "ABCHouse.pas"
@@ -395,7 +395,7 @@
     ${AddFile} "RobotTaskMaker.pas"
 ;    File ..\bin\Lib\RobotZadan.pas
     ${AddFile} "Sockets.pas"
-	${AddFile} "Timers.pas"
+    ${AddFile} "Timers.pas"
     ${AddFile} "Utils.pas"
     ${AddFile} "VCL.pas"
     ${AddFile} "RBDMUtils.pas"
@@ -423,13 +423,13 @@
     ${AddFile} "Мозаика.pas"
 
 
-	${AddFile} "__RedirectIOMode.vb"
+    ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
-	
+    
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN
-	Push "SyntaxVisitors.dll"
+    Push "SyntaxVisitors.dll"
     Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"
