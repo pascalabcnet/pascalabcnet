@@ -42,7 +42,6 @@ jobs:
               with:
                 script: |
                 
-                    throw 'please configure custom auto-release and remove this line';
                     const tag = "_____"; // git tag name (preferably different from branch name)
                     const release_name = "Custom _____ build"; // Github release display name
                     const mark_pre_release = true;
