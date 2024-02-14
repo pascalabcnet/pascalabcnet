@@ -137,7 +137,7 @@ begin
   pixelFormatSize := Image.GetPixelFormatSize(b.PixelFormat) div 8;
   
   r := System.Drawing.Rectangle.Intersect(r,rect);
-  start := (System.IntPtr)(integer(ptr) + w * pixelFormatSize * r.Y + r.X * pixelFormatSize);
+  start := ptr + w * pixelFormatSize * r.Y + r.X * pixelFormatSize;
 
   stride := w * pixelFormatSize;
   padding := stride mod 4;
