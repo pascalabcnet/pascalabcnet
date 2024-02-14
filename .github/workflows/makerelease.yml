@@ -42,8 +42,8 @@ jobs:
               with:
                 script: |
                 
-                    const tag = "_____"; // git tag name (preferably different from branch name)
-                    const release_name = "Custom _____ build"; // Github release display name
+                    const tag = "dearpixel-build-tag"; // git tag name (preferably different from branch name)
+                    const release_name = "Custom dearpixel build"; // Github release display name
                     const mark_pre_release = true;
                     
                     console.log('environment', process.versions);
