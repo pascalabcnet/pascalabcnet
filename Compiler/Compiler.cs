@@ -931,7 +931,7 @@ namespace PascalABCCompiler
 
         private CompilationUnitHashTable unitTable = new CompilationUnitHashTable();
         public CompilationUnitHashTable UnitTable { get { return unitTable; } }
-        public List<CompilationUnit> UnitsLogicallySortedList = new List<CompilationUnit>();
+        public List<CompilationUnit> UnitsTopologicallySortedList = new List<CompilationUnit>();
 
         private List<string> StandardModules = new List<string>();
         public CompilerOptions CompilerOptions { get; set; } = new CompilerOptions();
@@ -1285,7 +1285,7 @@ namespace PascalABCCompiler
                 return;
 
             CompilationUnit system_unit = null;
-            foreach (CompilationUnit unit in UnitsLogicallySortedList)
+            foreach (CompilationUnit unit in UnitsTopologicallySortedList)
             {
                 if (unit.SemanticTree != null && unit.SemanticTree is common_unit_node)
                 {
@@ -1297,10 +1297,10 @@ namespace PascalABCCompiler
                 }
             }
 
-            if (system_unit != null && system_unit != UnitsLogicallySortedList[0])
+            if (system_unit != null && system_unit != UnitsTopologicallySortedList[0])
             {
-                UnitsLogicallySortedList.Remove(system_unit);
-                UnitsLogicallySortedList.Insert(0, system_unit);
+                UnitsTopologicallySortedList.Remove(system_unit);
+                UnitsTopologicallySortedList.Insert(0, system_unit);
             }
 
         }
@@ -2311,7 +2311,7 @@ namespace PascalABCCompiler
                 SaveDocumentationsForUnits();
             }
 
-            compilerDirectives = GetCompilerDirectives(UnitsLogicallySortedList);
+            compilerDirectives = GetCompilerDirectives(UnitsTopologicallySortedList);
 
             // выяснение типа выходного файла по соотв. директиве компилятора
             SetOutputFileTypeOption();
@@ -2320,10 +2320,10 @@ namespace PascalABCCompiler
             MoveSystemUnitForwardInUnitLogicallySortedList();
 
             // передача информации о типе выходного файла системному юниту
-            if (UnitsLogicallySortedList.Count > 0)
+            if (UnitsTopologicallySortedList.Count > 0)
             {
                 bool isConsoleApplication = CompilerOptions.OutputFileType == CompilerOptions.OutputType.ConsoleApplicaton;
-                common_unit_node systemUnit = UnitsLogicallySortedList[0].SemanticTree as common_unit_node;
+                common_unit_node systemUnit = UnitsTopologicallySortedList[0].SemanticTree as common_unit_node;
                 systemUnit.IsConsoleApplicationVariable = isConsoleApplication;
             }
 
@@ -2348,15 +2348,15 @@ namespace PascalABCCompiler
         {
             program_node mainSemanticTree = new program_node(null, null);
 
-            for (int i = 0; i < UnitsLogicallySortedList.Count; i++)
-                mainSemanticTree.units.AddElement(UnitsLogicallySortedList[i].SemanticTree as common_unit_node);
+            for (int i = 0; i < UnitsTopologicallySortedList.Count; i++)
+                mainSemanticTree.units.AddElement(UnitsTopologicallySortedList[i].SemanticTree as common_unit_node);
 
             bool targetTypeIsExe = compilerOptions.target == NETGenerator.TargetType.Exe || compilerOptions.target == NETGenerator.TargetType.WinExe;
 
             // если компилируем exe или WinExe (первый модуль - основная программа)
-            if (firstCompilationUnit.SyntaxTree is SyntaxTree.program_module && targetTypeIsExe && UnitsLogicallySortedList.Count > 0)
+            if (firstCompilationUnit.SyntaxTree is SyntaxTree.program_module && targetTypeIsExe && UnitsTopologicallySortedList.Count > 0)
             {
-                mainSemanticTree.main_function = ((common_unit_node)UnitsLogicallySortedList.Last().SemanticTree).main_function;
+                mainSemanticTree.main_function = ((common_unit_node)UnitsTopologicallySortedList.Last().SemanticTree).main_function;
 
                 PrepareFinalMainFunctionForExe(mainSemanticTree);
             }
@@ -2572,7 +2572,7 @@ namespace PascalABCCompiler
         private void SaveDocumentationsForUnits()
         {
             DocXmlManager dxm = new DocXmlManager();
-            foreach (CompilationUnit cu in UnitsLogicallySortedList)
+            foreach (CompilationUnit cu in UnitsTopologicallySortedList)
             {
                 if (cu.Documented)
                     dxm.SaveXml(cu);
@@ -2625,7 +2625,7 @@ namespace PascalABCCompiler
 
         private void ClosePCUWriters()
         {
-            foreach (CompilationUnit cu in UnitsLogicallySortedList)
+            foreach (CompilationUnit cu in UnitsTopologicallySortedList)
             {
                 SavePCU(cu);
             }
@@ -3707,8 +3707,8 @@ namespace PascalABCCompiler
 
             if (semanticTreeAsCommonNode != null)
             {
-                if (!UnitsLogicallySortedList.Contains(currentUnit))//vnimanie zdes inogda pri silnoj zavisimosti modulej moduli popadajut neskolko raz
-                    UnitsLogicallySortedList.Add(currentUnit);
+                if (!UnitsTopologicallySortedList.Contains(currentUnit))//vnimanie zdes inogda pri silnoj zavisimosti modulej moduli popadajut neskolko raz
+                    UnitsTopologicallySortedList.Add(currentUnit);
             }
 
             OnChangeCompilerState(this, CompilerState.EndCompileFile, unitFileName);
@@ -3862,8 +3862,8 @@ namespace PascalABCCompiler
 
                 if (commonUnitNode != null)
                 {
-                    if (!UnitsLogicallySortedList.Contains(currentUnit))//vnimanie zdes inogda pri silnoj zavisimosti modulej moduli popadajut neskolko raz
-                        UnitsLogicallySortedList.Add(currentUnit);
+                    if (!UnitsTopologicallySortedList.Contains(currentUnit))//vnimanie zdes inogda pri silnoj zavisimosti modulej moduli popadajut neskolko raz
+                        UnitsTopologicallySortedList.Add(currentUnit);
                 }
                 //Console.WriteLine("Send compile to end "+unitFileName);//DEBUG
             }
@@ -4345,7 +4345,7 @@ namespace PascalABCCompiler
                     CompilationUnit cu = obj as CompilationUnit;
                     cu.State = UnitState.Compiled;
                     unitTable[(Sender as PCUReader).FileName] = cu;
-                    UnitsLogicallySortedList.Add(cu);
+                    UnitsTopologicallySortedList.Add(cu);
                     GetReferences(cu);
                     break;
                 case PCUReaderWriterState.EndSaveTree:
@@ -4598,7 +4598,7 @@ namespace PascalABCCompiler
             RecompileList.Clear();
             CycleUnits.Clear();
             UnitTable.Clear();
-            UnitsLogicallySortedList.Clear();
+            UnitsTopologicallySortedList.Clear();
             //TreeRealization.PCUReturner.Clear();
             BadNodesInSyntaxTree.Clear();
             if (close_pcu)
