@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Build.BuildEngine;
 using PascalABCCompiler;
+using PascalABCCompiler.TreeConverter;
 
 namespace VisualPascalABC
 {
@@ -383,7 +384,7 @@ namespace VisualPascalABC
                 MessageBox.Show(Form1StringResources.Get("INVALID_SOURCE_FILE_NAME"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (string.Compare(Path.GetExtension(e.Label), CompilerStringConstants.pascalSourceFileExtension, true) != 0)
+            if (string.Compare(Path.GetExtension(e.Label), compiler_string_consts.pascalSourceFileExtension, true) != 0)
             {
                 e.CancelEdit = true;
                 MessageBox.Show(Form1StringResources.Get("INVALID_SOURCE_FILE_EXTENSION"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);

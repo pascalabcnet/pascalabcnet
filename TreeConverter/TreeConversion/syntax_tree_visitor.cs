@@ -14962,7 +14962,7 @@ namespace PascalABCCompiler.TreeConverter
             var cnf = exp as common_namespace_function_call;
             if (cnf != null)
             {
-                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.system_unit_file_name) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
             return convert_strong_to_constant_node(exp, exp.type, is_const_section && is_userdefined, is_const_section);
         }
@@ -15086,7 +15086,7 @@ namespace PascalABCCompiler.TreeConverter
             var cnf = exp as common_namespace_function_call;
             if (cnf != null)
             {
-                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.system_unit_file_name) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
 
             return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
@@ -21568,7 +21568,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public method_call ToNullable(expression e)
         {
-            var dn = new dot_node(new ident(compiler_string_consts.system_unit_file_name), new ident("DQNToNullable"));
+            var dn = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("DQNToNullable"));
             return new method_call(dn, new expression_list(e), e.source_context);
         }
 
@@ -21591,7 +21591,7 @@ namespace PascalABCCompiler.TreeConverter
                 try_convert_typed_expression_to_function_call(ref av_cs);
                 if (!type_table.is_with_nil_allowed(av_cs.type))
                 {
-                    var dn = new dot_node(new ident(compiler_string_consts.system_unit_file_name), new ident("DQNToNullable"));
+                    var dn = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("DQNToNullable"));
                     (av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false
                      = new method_call(dn, new expression_list((av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false), av.source_context);
 

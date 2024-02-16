@@ -423,7 +423,7 @@ namespace PascalABCCompiler
         //private SemanticTree.compilation_unitArrayList _interfaceUsedUnits=new SemanticTree.compilation_unitArrayList();
 
         // название языка модуля
-        public string languageName = CompilerStringConstants.pascalLanguageName;
+        public string languageName = TreeConverter.compiler_string_consts.pascalLanguageName;
 
         /// <summary>
         /// Только "реальные" юниты (не dll и namespace)
@@ -520,7 +520,7 @@ namespace PascalABCCompiler
         public bool Optimise = false;
         public bool SavePCUInThreadPull = false;
         public bool RunWithEnvironment = false;
-        public string CompiledUnitExtension = CompilerStringConstants.pascalCompiledUnitExtension;
+        public string CompiledUnitExtension = TreeConverter.compiler_string_consts.pascalCompiledUnitExtension;
         public bool ProjectCompiled = false;
         public IProjectInfo CurrentProject = null;
         public OutputType OutputFileType = OutputType.ConsoleApplicaton;
@@ -610,7 +610,7 @@ namespace PascalABCCompiler
         {
             public string name = null;
             public StandardModuleAddMethod addMethod = StandardModuleAddMethod.LeftToAll;
-            public string languageToAdd = CompilerStringConstants.pascalLanguageName;
+            public string languageToAdd = TreeConverter.compiler_string_consts.pascalLanguageName;
             
             public StandardModule(string Name, StandardModuleAddMethod addMethod)
             {
@@ -642,9 +642,9 @@ namespace PascalABCCompiler
         /// </summary>
         public Dictionary<string, List<StandardModule>> standardModules = new Dictionary<string, List<StandardModule>>()
         {
-            [CompilerStringConstants.pascalLanguageName] = new List<StandardModule>
+            [TreeConverter.compiler_string_consts.pascalLanguageName] = new List<StandardModule>
             (
-                CompilerStringConstants.pascalDefaultStandardModules.Select(moduleName => new StandardModule(moduleName))
+                TreeConverter.compiler_string_consts.pascalDefaultStandardModules.Select(moduleName => new StandardModule(moduleName))
             ),
 
             // ...
@@ -2031,43 +2031,43 @@ namespace PascalABCCompiler
         {
             var compilerDirectives = new List<compiler_directive>();
 
-            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.product_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.product_string, out compilerDirectives))
             {
                 compilerOptions.Product = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.version_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.version_string, out compilerDirectives))
             {
                 compilerOptions.ProductVersion = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.company_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.company_string, out compilerDirectives))
             {
                 compilerOptions.Company = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.trademark_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.trademark_string, out compilerDirectives))
             {
                 compilerOptions.TradeMark = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.copyright_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.copyright_string, out compilerDirectives))
             {
                 compilerOptions.Copyright = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.title_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.title_string, out compilerDirectives))
             {
                 compilerOptions.Title = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.description_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.description_string, out compilerDirectives))
             {
                 compilerOptions.Description = compilerDirectives[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(CompilerStringConstants.main_resource_string, out compilerDirectives))
+            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.main_resource_string, out compilerDirectives))
             {
-                if (this.compilerDirectives.ContainsKey(CompilerStringConstants.product_string) ||
-                    this.compilerDirectives.ContainsKey(CompilerStringConstants.version_string) ||
-                    this.compilerDirectives.ContainsKey(CompilerStringConstants.company_string) ||
-                    this.compilerDirectives.ContainsKey(CompilerStringConstants.trademark_string) ||
-                    this.compilerDirectives.ContainsKey(CompilerStringConstants.title_string) ||
-                    this.compilerDirectives.ContainsKey(CompilerStringConstants.description_string) ||
-                    this.compilerDirectives.ContainsKey(CompilerStringConstants.copyright_string))
+                if (this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.product_string) ||
+                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.version_string) ||
+                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.company_string) ||
+                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.trademark_string) ||
+                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.title_string) ||
+                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.description_string) ||
+                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.copyright_string))
                 {
                     ErrorsList.Add(new MainResourceNotAllowed(compilerDirectives[0].location));
                 }
@@ -4319,7 +4319,7 @@ namespace PascalABCCompiler
                 OnChangeCompilerState(this, CompilerState.PCUWritingError, Unit.UnitFileName);
 #if DEBUG
                 if (!InternalDebug.SkipPCUErrors)
-                    throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err);
+                    throw new CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.currentCompilationUnit.SyntaxTree.file_name)), err);
                 writer.RemoveSelf();
 #endif
             }

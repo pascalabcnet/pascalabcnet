@@ -112,7 +112,7 @@ namespace VisualPascalABC
             //ssyy
             if (!IsNewFile)
             {
-                if (Path.GetExtension(FileName) == CompilerStringConstants.pascalSourceFileExtension)
+                if (Path.GetExtension(FileName) == ".pas")
                 { 
                     string XMLFile = Path.ChangeExtension(FileName, string_consts.xml_form_extention);
                     if (File.Exists(XMLFile))

@@ -463,7 +463,7 @@ namespace PascalABCCompiler.NETGenerator
         bool IsDllAndSystemNamespace(string name, string DllFileName)
         {
             return comp_opt.target == TargetType.Dll && DllFileName != "PABCRtl.dll" &&
-                (name == compiler_string_consts.system_unit_file_name || name == compiler_string_consts.extensions_unit_file_name ||
+                (name == compiler_string_consts.pascalSystemUnitName || name == compiler_string_consts.pascalExtensionsUnitName ||
                  name.EndsWith(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
         }
 

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Text;
 using PascalABCCompiler;
+using PascalABCCompiler.TreeConverter;
 
 namespace VisualPascalABC
 {
@@ -64,7 +65,7 @@ namespace VisualPascalABC
             currentProject.include_debug_info = true;
 
             currentProject.project_type = projectType;
-            currentProject.source_files.Add(new PascalABCCompiler.SourceCodeFileInfo(projectName + CompilerStringConstants.pascalSourceFileExtension, Path.Combine(dir, projectName + CompilerStringConstants.pascalSourceFileExtension)));
+            currentProject.source_files.Add(new PascalABCCompiler.SourceCodeFileInfo(projectName + compiler_string_consts.pascalSourceFileExtension, Path.Combine(dir, projectName + compiler_string_consts.pascalSourceFileExtension)));
             currentProject.references.Add(new PascalABCCompiler.ReferenceInfo("System", "System.dll"));
             if (projectType == PascalABCCompiler.ProjectType.WindowsApp)
             {
@@ -78,7 +79,7 @@ namespace VisualPascalABC
                 currentProject.references.Add(new PascalABCCompiler.ReferenceInfo("System.Xml.Linq", "System.Xml.Linq.dll"));
                 //roman//
             }
-            currentProject.main_file = Path.Combine(dir, projectName + CompilerStringConstants.pascalSourceFileExtension);
+            currentProject.main_file = Path.Combine(dir, projectName + compiler_string_consts.pascalSourceFileExtension);
             currentProject.generate_xml_doc = false;
             currentProject.delete_exe = true;
             currentProject.delete_pdb = true;
@@ -87,7 +88,7 @@ namespace VisualPascalABC
             currentProject.build_version = 0;
             currentProject.revision_version = 0;
             currentProject.output_directory = dir;
-            StreamWriter sw = File.CreateText(Path.Combine(dir, projectName + CompilerStringConstants.pascalSourceFileExtension));
+            StreamWriter sw = File.CreateText(Path.Combine(dir, projectName + compiler_string_consts.pascalSourceFileExtension));
             currentProject.output_file_name = projectName + ".exe";
             if (projectType == PascalABCCompiler.ProjectType.ConsoleApp)
             {
@@ -230,7 +231,7 @@ namespace VisualPascalABC
 		
 		public string GetUnitFileName()
 		{
-			return "Unit"+uid++ + CompilerStringConstants.pascalSourceFileExtension;
+			return "Unit"+uid++ + compiler_string_consts.pascalSourceFileExtension;
 		}
 
         public string GetFullUnitFileName()

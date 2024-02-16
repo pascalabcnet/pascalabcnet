@@ -465,7 +465,7 @@ namespace VisualPascalABC
 
         public void OpenTabWithText(string tabName, string Text)
         {
-            CodeFileDocumentControl edit = FindTab(tabName + CompilerStringConstants.pascalSourceFileExtension);
+            CodeFileDocumentControl edit = FindTab(tabName + ".pas");
             if (edit != null)
             {
                 CurrentCodeFileDocument = edit;
@@ -473,9 +473,9 @@ namespace VisualPascalABC
             }
             edit = AddNewTab(MainDockPanel);
             edit.FromMetadata = true;
-            OpenDocuments.Add(Tools.FileNameToLower(tabName + CompilerStringConstants.pascalSourceFileExtension), edit);
+            OpenDocuments.Add(Tools.FileNameToLower(tabName + ".pas"), edit);
             CloseButtonsEnabled = OpenDocuments.Count > 1;
-            edit.FileName = tabName + CompilerStringConstants.pascalSourceFileExtension;
+            edit.FileName = tabName + ".pas";
             edit.Text = tabName;
             edit.SetHighlightingStrategyForFile("prog.pas");
             edit.TextEditor.Document.Insert(0, Text);
@@ -483,7 +483,7 @@ namespace VisualPascalABC
             {
                 AddEditorHandlers(edit);
             }
-            WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + CompilerStringConstants.pascalSourceFileExtension);
+            WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + ".pas");
             //edit.file_name = file_name;
             //SetTabPageText(edit);
         }

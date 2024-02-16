@@ -8,7 +8,6 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
-using PascalABCCompiler;
 //using ICSharpCode.SharpDevelop.Dom;
 
 namespace CodeCompletion
@@ -47,7 +46,7 @@ namespace CodeCompletion
         public static string currentLanguageISO;
         static string doctagsParserExtension = ".pasdt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
 		//public static PascalABCCompiler.Parsers.IParser currentParser;
-		static string cur_ext = CompilerStringConstants.pascalSourceFileExtension;
+		static string cur_ext = ".pas";
         private static IParser currentParser;
 
 		public static void SetParser(string ext)
@@ -336,7 +335,7 @@ namespace CodeCompletion
 
     public class CodeCompletionNameHelper
     {
-        public static readonly string system_unit_file_name = PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name;
+        public static readonly string system_unit_file_name = PascalABCCompiler.TreeConverter.compiler_string_consts.pascalSystemUnitName;
         public static string system_unit_file_full_name;
         private static CodeCompletionNameHelper helper;
 

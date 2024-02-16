@@ -14,7 +14,7 @@ namespace PascalABCCompiler
         // соответствие языков их расширениям
         public static Dictionary<string, string> languagesByExtensions = new Dictionary<string, string>()
         {
-            [CompilerStringConstants.pascalSourceFileExtension] = CompilerStringConstants.pascalLanguageName,
+            [TreeConverter.compiler_string_consts.pascalSourceFileExtension] = TreeConverter.compiler_string_consts.pascalLanguageName,
 
             // ...
         };
