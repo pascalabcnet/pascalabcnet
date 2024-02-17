@@ -1290,7 +1290,7 @@ namespace PascalABCCompiler
             if (CompilerOptions.standardModules.Count == 0)
                 return;
 
-            CompilationUnit system_unit = null;
+            CompilationUnit systemUnit = null;
             foreach (CompilationUnit unit in UnitsTopologicallySortedList)
             {
                 if (unit.SemanticTree == null || !(unit.SemanticTree is common_unit_node))
@@ -1306,10 +1306,10 @@ namespace PascalABCCompiler
                 }
             }
 
-            if (system_unit != null && system_unit != UnitsTopologicallySortedList[0])
+            if (systemUnit != null && systemUnit != UnitsTopologicallySortedList[0])
             {
-                UnitsTopologicallySortedList.Remove(system_unit);
-                UnitsTopologicallySortedList.Insert(0, system_unit);
+                UnitsTopologicallySortedList.Remove(systemUnit);
+                UnitsTopologicallySortedList.Insert(0, systemUnit);
             }
 
         }
