@@ -11,7 +11,7 @@ namespace VisualPascalABC
         public bool RedirectConsoleIO = false;
         public bool ShowLineNums = false;
         public bool EnableFolding = false; // SSM 4.09.08
-        public bool ShowMatchBraket = false;
+        public bool ShowMatchBracket = false;
         public bool ConverTabsToSpaces = true;
         public bool deleteEXEAfterExecute = false;
         public bool deletePDBAfterExecute = true;
@@ -226,10 +226,10 @@ namespace VisualPascalABC
             set { ShowLineNums = value; }
         }
 
-        bool VisualPascalABCPlugins.IUserOptions.ShowMatchBraket
+        bool VisualPascalABCPlugins.IUserOptions.ShowMatchBracket
         {
-            get { return ShowMatchBraket; }
-            set { ShowMatchBraket = value; }
+            get { return ShowMatchBracket; }
+            set { ShowMatchBracket = value; }
         }
 
         bool VisualPascalABCPlugins.IUserOptions.ShowQuickClassBrowserPanel

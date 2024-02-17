@@ -223,7 +223,7 @@ namespace VisualPascalABCPlugins
         bool RedirectConsoleIO { get; set; }
         bool ShowLineNums { get; set; }
         bool EnableFolding { get; set; }
-        bool ShowMatchBraket { get; set; }
+        bool ShowMatchBracket { get; set; }
         bool ConverTabsToSpaces { get; set; }
         bool DeleteEXEAfterExecute { get; set; }
         bool DeletePDBAfterExecute { get; set; }
