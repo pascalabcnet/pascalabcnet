@@ -13,11 +13,13 @@ namespace PascalABCCompiler.SyntaxTree
         {
             Current = Root;
             visit(root);
+            Current = null;
         }
 
         public BindResult bind(ident node)
         {
             ///Console.WriteLine("searching " + node.ToString());
+            Current = null;
             syntax_tree_node cur_node = node;
             var path = new Queue<ScopeSyntax>();
             while (cur_node != null)
