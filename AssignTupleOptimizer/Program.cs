@@ -63,7 +63,15 @@ namespace AssignTupleDesugar
             }
             else
             {
-                Console.WriteLine("(" + id.source_context.ToString() + ")" + " found: " +  res.ToString() + ", kind: " + res.SK.ToString() + ", (" + res.Id.source_context.ToString() + ")"); ;
+                var info = res.symInfo;
+                var p = res.path;
+                Console.WriteLine("(" + id.source_context.ToString() + ")" + " found: " +  info.ToString() + ", kind: " + info.SK.ToString() + ", (" + info.Id.source_context.ToString() + ")");
+                Console.WriteLine("Path:");
+                foreach (var s in p)
+                {
+                    Console.Write(s.ToString() +"->");
+                }
+                
             }
             Console.WriteLine();
 

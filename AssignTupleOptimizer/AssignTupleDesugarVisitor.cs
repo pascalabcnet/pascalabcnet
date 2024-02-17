@@ -32,7 +32,7 @@ namespace AssignTupleDesugar
                         else        
                             System.Console.WriteLine(id.name +" -> not found");
 
-                        left.Add(new Symbol(id.name) { fromOuterScope = isFromOuterScope(s) });
+                        left.Add(new Symbol(id.name) { fromOuterScope = isFromOuterScope(s.symInfo) });
                     } 
                     else
                         left.Add( new Symbol("$expr") { isExpr = true  });
@@ -49,7 +49,7 @@ namespace AssignTupleDesugar
                         else  
                             System.Console.WriteLine(id.name + " -> not found");
 
-                        right.Add(new Symbol(s.Id.name) { fromOuterScope = isFromOuterScope(s) });
+                        right.Add(new Symbol(s.symInfo.Id.name) { fromOuterScope = isFromOuterScope(s.symInfo) });
                     }
                     else
                         right.Add(new Symbol("$expr") { isExpr = true });
