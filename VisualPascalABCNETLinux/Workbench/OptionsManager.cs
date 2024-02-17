@@ -171,7 +171,7 @@ namespace VisualPascalABC
                 if ((value = (string)Options[OptionsItemNameDeletePDBAfterExecute]) != null)
                     UserOptions.DeletePDBAfterExecute = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameShowMatchBracket]) != null)
-                    UserOptions.ShowMatchBraket = Convert.ToBoolean(value);
+                    UserOptions.ShowMatchBracket = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameShowMatchOperatorBracket]) != null)
                     UserOptions.HighlightOperatorBrackets = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameEditorFontFamily]) != null)
@@ -301,7 +301,7 @@ namespace VisualPascalABC
             Options.Add(OptionsItemNameTabIdent, UserOptions.TabIndent);
             Options.Add(OptionsItemNameShowLinesNum, UserOptions.ShowLineNums);
             Options.Add(OptionsItemNameEnableFolding, UserOptions.EnableFolding); // SSM 4.09.08
-            Options.Add(OptionsItemNameShowMatchBracket, UserOptions.ShowMatchBraket);
+            Options.Add(OptionsItemNameShowMatchBracket, UserOptions.ShowMatchBracket);
             Options.Add(OptionsItemNameShowMatchOperatorBracket, UserOptions.HighlightOperatorBrackets);
             Options.Add(OptionsItemNameEditorFontFamily, UserOptions.CurrentFontFamily);
             Options.Add(OptionsItemNameEditorFontSize, UserOptions.EditorFontSize);
@@ -339,8 +339,8 @@ namespace VisualPascalABC
                     si.TextEditor.EnableFolding = UserOptions.EnableFolding;
                     si.TextEditor.UpdateFolding();
                 }
-                if (si.TextEditor.ShowMatchingBracket != UserOptions.ShowMatchBraket)
-                    si.TextEditor.ShowMatchingBracket = UserOptions.ShowMatchBraket;
+                if (si.TextEditor.ShowMatchingBracket != UserOptions.ShowMatchBracket)
+                    si.TextEditor.ShowMatchingBracket = UserOptions.ShowMatchBracket;
                 if (si.FontSize != UserOptions.EditorFontSize)
                     si.FontSize = UserOptions.EditorFontSize;
                 if (si.TextEditor.ConvertTabsToSpaces != UserOptions.ConverTabsToSpaces)
