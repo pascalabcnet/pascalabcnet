@@ -56,9 +56,9 @@ namespace PascalABCCompiler.SyntaxTree
     public class BindResult {
 
         public SymInfoSyntax symInfo;
-        public Stack<ScopeSyntax> path;
+        public List<ScopeSyntax> path;
 
-        public BindResult(SymInfoSyntax s, Stack<ScopeSyntax> p)
+        public BindResult(SymInfoSyntax s, List<ScopeSyntax> p)
         {
             symInfo = s;
             path = p;
