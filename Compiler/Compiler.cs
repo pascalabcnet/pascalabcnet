@@ -1285,7 +1285,7 @@ namespace PascalABCCompiler
                 throw ErrorsList[0];
         }
 
-        private void MoveSystemUnitForwardInUnitsLogicallySortedList()
+        private void MoveSystemUnitForwardInUnitsTopologicallySortedList()
         {
             if (CompilerOptions.standardModules.Count == 0)
                 return;
@@ -2326,7 +2326,7 @@ namespace PascalABCCompiler
             SetOutputFileTypeOption();
 
             // перемещаем PABCSystem в начало списка
-            MoveSystemUnitForwardInUnitsLogicallySortedList();
+            MoveSystemUnitForwardInUnitsTopologicallySortedList();
 
             // передача информации о типе выходного файла системному юниту
             if (UnitsTopologicallySortedList.Count > 0)
@@ -3066,7 +3066,7 @@ namespace PascalABCCompiler
                 {
                     unitToAdd = new SyntaxTree.uses_unit_in(
                         new SyntaxTree.ident_list(new SyntaxTree.ident(moduleName)),
-                        new SyntaxTree.string_const(module.Name));
+                        new SyntaxTree.string_const(module.name));
                     //uses_unit_in.source_context = uses_unit_in.in_file.source_context = uses_unit_in.name.source_context = new SyntaxTree.SourceContext(1, 1, 1, 1);
                 }
                 else
@@ -3950,7 +3950,7 @@ namespace PascalABCCompiler
             var usedUnitFileName = GetUnitFileName(usedUnitNode, currentPath);
             var usedUnitId = Path.ChangeExtension(usedUnitFileName, null);
 
-            // когда образуется цикл здесь сохранится инцидентная вершина графа (используемый юнит), которая тоже принадлежит циклу
+            // когда образуется цикл здесь сохранится смежная вершина графа (используемый юнит), которая тоже принадлежит циклу
             currentUnit.currentUsedUnitId = usedUnitId;
 
             // если используемый юнит имеет не скомпилированный интерфейс, но был инициализирован
