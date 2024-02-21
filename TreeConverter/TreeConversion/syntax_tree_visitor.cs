@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
+using PascalABCCompiler.TreeConverter.TreeConversion;
 
 using SyntaxTreeBuilder = PascalABCCompiler.SyntaxTree.SyntaxTreeBuilder;
 using SymTable = SymbolTable;
@@ -29,20 +30,30 @@ namespace PascalABCCompiler.TreeConverter
 {
     // Сахарный узел синтаксического дерева. Не генерируется автоматически, поскольку содержит ссылку на узел семантического дерева
     // Нужен только при генерации синтаксических узлов на семантическом уровне, т.е. для синтаксического сахара
-/*    public class semantic_type_node : SyntaxTree.type_definition
-    {
-        public type_node type { get; set; }
-        public semantic_type_node(type_node t)
+    /*    public class semantic_type_node : SyntaxTree.type_definition
         {
-            type = t;
-        }
-    }*/
+            public type_node type { get; set; }
+            public semantic_type_node(type_node t)
+            {
+                type = t;
+            }
+        }*/
 
-    public partial class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
+    public partial class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew, ISyntaxTreeVisitor  // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
     // Порядок обхода не важен поскольку все узлы visit переопределяются
     // SSM 02.01.17 Использование ReplaceStatement из BaseChangeVisitor плохо изучено - что-то не работает
     // Поэтому используется явный Parent и ReplaceStatement из узла statement_list
     {
+        private string[] filesExtensions = { ".pas", ".yavb" };
+
+        public virtual string[] FilesExtensions
+        {
+            get
+            {
+                return filesExtensions;
+            }
+        }
+
         public SymbolTable.PrimaryScope MainScope
         {
             get
@@ -920,27 +931,27 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Возвращение конвертированного поддерева.
-        private void return_value(statement_node stat)
+        protected void return_value(statement_node stat)
         {
             ret.return_value(stat);
         }
 
-        private void return_value(expression_node expr)
+        protected void return_value(expression_node expr)
         {
             ret.return_value(expr);
         }
 
-        private void return_value(type_node tn)
+        protected void return_value(type_node tn)
         {
             ret.return_value(tn);
         }
 
-        private void return_addressed_value(addressed_expression ae)
+        protected void return_addressed_value(addressed_expression ae)
         {
             ret.return_value(ae);
         }
 
-        private void return_semantic_value(semantic_node se)
+        protected void return_semantic_value(semantic_node se)
         {
             ret.return_value(se);
         }
@@ -1060,7 +1071,7 @@ namespace PascalABCCompiler.TreeConverter
             return exp_node;
         }
 
-        private expression_node find_operator(SyntaxTree.Operators ot, expression_node left, expression_node right, location loc)
+        protected expression_node find_operator(SyntaxTree.Operators ot, expression_node left, expression_node right, location loc)
         {
             string name = name_reflector.get_name(ot);
             return find_operator(name, left, right, loc);
