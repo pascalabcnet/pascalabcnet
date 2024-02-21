@@ -3945,20 +3945,21 @@ namespace PascalABCCompiler
             // когда образуется цикл здесь сохранится инцидентная вершина графа (используемый юнит), которая тоже принадлежит циклу
             currentUnit.currentUsedUnitId = usedUnitId;
 
-            // если используемый юнит имеет не скомпилированный интерфейс, но был инициализирован
-            if (UnitTable[usedUnitId] != null && UnitTable[usedUnitId].State == UnitState.BeginCompilation)
-            {
-                string transitivelyUsedUnit = UnitTable[usedUnitId].currentUsedUnitId;
-                if (transitivelyUsedUnit != null)
-                {
-                    // если сначала взяли pcu а потом решили его перекомпилировать, поэтому в таблице его нет
-                    if (UnitTable[transitivelyUsedUnit] == null)
-                        UnitTable[usedUnitId].currentUsedUnitId = transitivelyUsedUnit;
+            CompilationUnit usedUnit = UnitTable[usedUnitId];
 
-                    // если "используемый используемого" (транзитивно зависимый) модуль находится в том же состоянии, что и просто используемый, то это означает циклическую зависимость
-                    if (UnitTable[usedUnitId].currentUsedUnitId != null && UnitTable[UnitTable[usedUnitId].currentUsedUnitId].State == UnitState.BeginCompilation)
-                        throw new CycleUnitReference(unitFileName, usedUnitNode);
+            // если используемый юнит имеет не скомпилированный интерфейс, но был инициализирован (то есть мы попали в цикл)
+            if (usedUnit != null && usedUnit.State == UnitState.BeginCompilation)
+            {
+                // если в цикле где-то присутствует дуга из implementation (тогда интерфейс этого модуля будет откомпилирован), то такой цикл допускается
+                while (usedUnit != currentUnit)
+                {
+                    string nextUnitId = usedUnit.currentUsedUnitId;
+                    usedUnit = UnitTable[nextUnitId];
+                    if (usedUnit.State != UnitState.BeginCompilation)
+                        return;
                 }
+
+                throw new CycleUnitReference(unitFileName, usedUnitNode);
             }
         }
 
