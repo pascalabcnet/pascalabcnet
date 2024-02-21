@@ -109,6 +109,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VeryBasicParser", "Parsers\SPythonParserKrylovMovchan\VeryBasicParser.csproj", "{81FE2BAA-D100-4596-A392-F03BBE30F829}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YATLParser", "Parsers\YATLParser\YATLParser.csproj", "{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -517,6 +519,18 @@ Global
 		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|x86.ActiveCfg = Release|Any CPU
 		{81FE2BAA-D100-4596-A392-F03BBE30F829}.Release|x86.Build.0 = Release|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Debug|x86.Build.0 = Debug|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Release|x86.ActiveCfg = Release|Any CPU
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -563,6 +577,7 @@ Global
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C} = {BB6973BA-B3A2-4B31-A986-7CB008F22C4F}
 		{81FE2BAA-D100-4596-A392-F03BBE30F829} = {BB6973BA-B3A2-4B31-A986-7CB008F22C4F}
+		{38DAAA26-0231-4BA2-99D5-4430AC20DF8C} = {BB6973BA-B3A2-4B31-A986-7CB008F22C4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68E993E6-EE86-4DDF-B0A1-4FE884F8AC39}
