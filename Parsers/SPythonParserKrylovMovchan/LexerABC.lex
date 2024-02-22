@@ -7,11 +7,13 @@
 
 %namespace VeryBasicParser
 
-Alpha 	[a-zA-Z_]
-Digit   [0-9]
+Alpha         [a-zA-Z_]
+NonZeroDigit  [1-9]
+Digit         0|{NonZeroDigit}
 AlphaDigit {Alpha}|{Digit}
-INTNUM  {Digit}+
-REALNUM {INTNUM}\.{INTNUM}
+UInt ({NonZeroDigit}{Digit}*)|0
+INTNUM  -?{UInt}
+REALNUM -?(({UInt}?\.{UInt})|({UInt}\.))
 ID {Alpha}{AlphaDigit}*
 
 %{
