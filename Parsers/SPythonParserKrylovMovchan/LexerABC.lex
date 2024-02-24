@@ -14,6 +14,7 @@ AlphaDigit {Alpha}|{Digit}
 UInt ({NonZeroDigit}{Digit}*)|0
 INTNUM  -?{UInt}
 REALNUM -?(({UInt}?\.{UInt})|({UInt}\.))
+STRINGNUM (\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
 ID {Alpha}{AlphaDigit}*
 
 %{
@@ -34,6 +35,12 @@ ID {Alpha}{AlphaDigit}*
   currentLexLocation = CurrentLexLocation;
   yylval.ex = parsertools.create_double_const(yytext,currentLexLocation);
   return (int)Tokens.REALNUM;
+}
+
+{STRINGNUM} {
+  currentLexLocation = CurrentLexLocation;
+  yylval.stn = parsertools.create_string_const(yytext,currentLexLocation); 
+  return (int)Tokens.STRINGNUM;
 }
 
 "and" { yylval.op = new op_type_node(Operators.LogicalAND); return (int)Tokens.AND; }

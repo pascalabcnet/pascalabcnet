@@ -38,6 +38,7 @@
 %token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
+%token <stn> STRINGNUM
 %token <op> ASSIGN
 %token <op> PLUS MINUS MULTIPLY DIVIDE
 %token <id> ID INT
@@ -195,6 +196,8 @@ expr
 		{ $$ = $1; }
 	| REALNUM				
 		{ $$ = $1; }
+	| STRINGNUM				
+		{ $$ = $1 as literal; }
 	| LPAR expr RPAR		
 		{ $$ = $2; }
 	;
@@ -426,7 +429,7 @@ fp_list
         public program_module NewProgramModule(program_name progName, Object optHeadCompDirs, uses_list mainUsesClose, syntax_tree_node progBlock, Object optPoint, LexLocation loc)
         {
             var progModule = new program_module(progName, mainUsesClose, progBlock as block, null, loc);
-            progModule.Language = LanguageId.PascalABCNET;
+            progModule.Language = LanguageId.SPython;
             if (optPoint == null && progBlock != null)
             {
                 var fp = progBlock.source_context.end_position;

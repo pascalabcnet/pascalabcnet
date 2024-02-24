@@ -233,7 +233,9 @@ namespace VeryBasicParser
 
         public string ReplaceSpecialSymbols(string text)
         {
-            text = text.Replace("''", "'");
+            text = text.Replace("\\\"", "\"");
+            text = text.Replace("\\\'", "\'");
+            text = text.Replace("\\\\", "\\");
             return text;
         }
 
@@ -277,12 +279,6 @@ namespace VeryBasicParser
         public literal create_string_const(string text, SourceContext sc)
         {
             literal lt;
-            if (text.Length == 3 && text[0] == '\'' && text[2] == '\'')
-            {
-                lt = new char_const(text[1]);
-                lt.source_context = sc;
-                return lt;
-            }
             text = ReplaceSpecialSymbols(text.Substring(1, text.Length - 2));
             lt = new string_const(text);
             lt.source_context = sc;
