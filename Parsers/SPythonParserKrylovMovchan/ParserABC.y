@@ -56,7 +56,7 @@
 %type <stn> expr_lst optional_expr_lst proc_func_decl return_stmt
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_or_stmt_list
-%type <stn> stmt_lst compound_stmt
+%type <stn> stmt_lst compound_stmt proc_func_body
 %type <stn> progr decl param_name simple_fp_sect fp_sect fp_sect_list fp_list
 %type <td> proc_func_header fp_type simple_type_identifier
 
@@ -306,8 +306,19 @@ compound_stmt_begin
 		}
 	;
 
+// аналог compound_stmt для тела функции не создающий пространства имён (оно создаётся вместе с заголовком)
+proc_func_body
+	: INDENT stmt_lst SEMICOLON UNINDENT
+		{	
+			$$ = $2 as statement_list; 
+			($$ as statement_list).left_logical_bracket = $1;
+			($$ as statement_list).right_logical_bracket = $4;
+			$$.source_context = @$;
+		}
+	;
+
 proc_func_decl	
-	: proc_func_header compound_stmt 
+	: proc_func_header proc_func_body 
 		{ 
 			symbolTable = symbolTable.OuterScope;
 
@@ -325,11 +336,13 @@ proc_func_decl
 proc_func_header
 	: DEF identifier fp_list COLON
 		{
+			// надо добавить все имена (из fp_list) переменных в symbolTable
 			symbolTable = new SymbolTable(symbolTable); 
 			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
 		}
 	| DEF identifier fp_list ARROW fp_type COLON
 		{
+			// надо добавить все имена (из fp_list) переменных в symbolTable
 			symbolTable = new SymbolTable(symbolTable); 
 			$$ = new function_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $5 as type_definition, @$);
 		}
