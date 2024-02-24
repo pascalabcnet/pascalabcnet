@@ -6,6 +6,6 @@
     return s
 
 
-s = '__init__'
-f_with_str(s)
+s = '1\t2'
+#f_with_str(s)
 print(s)

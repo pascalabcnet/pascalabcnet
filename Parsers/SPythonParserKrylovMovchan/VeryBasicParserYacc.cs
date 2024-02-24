@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 24.02.2024 19:05:48
+// DateTime: 24.02.2024 22:15:05
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -514,7 +514,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
 		}
         break;
       case 54: // proc_func_body -> INDENT, stmt_lst, SEMICOLON, UNINDENT
-{
+{	
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-3].stn as statement_list; 
 			(CurrentSemanticValue.stn as statement_list).left_logical_bracket = ValueStack[ValueStack.Depth-4].ti;
 			(CurrentSemanticValue.stn as statement_list).right_logical_bracket = ValueStack[ValueStack.Depth-1].ti;
@@ -537,12 +537,14 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
         break;
       case 56: // proc_func_header -> DEF, identifier, fp_list, COLON
 {
+			// надо добави�?�? все имена (из fp_list) пе�?еменн�?�? в symbolTable
 			symbolTable = new SymbolTable(symbolTable); 
 			CurrentSemanticValue.td = new procedure_header(ValueStack[ValueStack.Depth-2].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), CurrentLocationSpan), new method_name(null,null, ValueStack[ValueStack.Depth-3].id, null, CurrentLocationSpan), null, CurrentLocationSpan); 
 		}
         break;
       case 57: // proc_func_header -> DEF, identifier, fp_list, ARROW, fp_type, COLON
 {
+			// надо добави�?�? все имена (из fp_list) пе�?еменн�?�? в symbolTable
 			symbolTable = new SymbolTable(symbolTable); 
 			CurrentSemanticValue.td = new function_header(ValueStack[ValueStack.Depth-4].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), CurrentLocationSpan), new method_name(null,null, ValueStack[ValueStack.Depth-5].id, null, CurrentLocationSpan), null, ValueStack[ValueStack.Depth-2].td as type_definition, CurrentLocationSpan);
 		}
