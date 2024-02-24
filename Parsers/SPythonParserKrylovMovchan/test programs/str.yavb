@@ -1,0 +1,11 @@
+﻿def f_with_str(s: str) -> str:
+    print(s)
+    print(s + "123")
+    print(s + 2)
+    print('a' + s)
+    return s
+
+
+s = '__init__'
+f_with_str(s)
+print(s)

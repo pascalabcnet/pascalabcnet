@@ -352,9 +352,13 @@ simple_type_identifier
 				case "float":
 					$$ = new named_type_reference("real", @$);
 					break;
+				case "str":
+					$$ = new named_type_reference("string", @$);
+					break;
 				
 				case "integer":
 				case "real":
+				case "string":
 					$$ = new named_type_reference("error", @$);
 					break;
 				

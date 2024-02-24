@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 24.02.2024 18:45:30
+// DateTime: 24.02.2024 18:55:54
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -548,9 +548,13 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
 				case "float":
 					CurrentSemanticValue.td = new named_type_reference("real", CurrentLocationSpan);
 					break;
+				case "str":
+					CurrentSemanticValue.td = new named_type_reference("string", CurrentLocationSpan);
+					break;
 				
 				case "integer":
 				case "real":
+				case "string":
 					CurrentSemanticValue.td = new named_type_reference("error", CurrentLocationSpan);
 					break;
 				
