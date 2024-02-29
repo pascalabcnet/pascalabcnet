@@ -270,7 +270,7 @@ return_stmt
 
 proccall	
 	:  var_reference
-        { 
+        {
 			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$);
 		}
 	;
@@ -285,6 +285,8 @@ variable
 		{ $$ = $1; }
 	| proc_func_call
 		{ $$ = $1; }
+	| variable DOT identifier
+		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	;
 
 compound_stmt	
@@ -348,8 +350,8 @@ proc_func_header
 		}
 	;
 
-proc_func_call	
-	: identifier LPAR optional_expr_lst RPAR
+proc_func_call
+	: variable LPAR optional_expr_lst RPAR
 		{ 
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$); 
 		}
