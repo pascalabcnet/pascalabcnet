@@ -38,13 +38,12 @@ namespace PascalABCCompiler.TreeConverter
                 type = t;
             }
         }*/
-
     public partial class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew, ISyntaxTreeVisitor  // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
     // Порядок обхода не важен поскольку все узлы visit переопределяются
     // SSM 02.01.17 Использование ReplaceStatement из BaseChangeVisitor плохо изучено - что-то не работает
     // Поэтому используется явный Parent и ReplaceStatement из узла statement_list
     {
-        private string[] filesExtensions = { ".pas", ".yavb" };
+        private string[] filesExtensions = { ".pas" };
 
         public virtual string[] FilesExtensions
         {
@@ -136,7 +135,7 @@ namespace PascalABCCompiler.TreeConverter
             ErrorsList.RemoveAt(ErrorsList.Count - 1);
         }
 
-        internal void AddError(Errors.Error err, bool shouldReturn=false)
+        public void AddError(Errors.Error err, bool shouldReturn=false)
         {
             if (!for_intellisense && (ThrowCompilationError || !shouldReturn) /*|| err.MustThrow && !shouldReturn*/)
             {
@@ -148,7 +147,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        internal void AddError(location loc, string ErrResourceString, params object[] values)
+        public void AddError(location loc, string ErrResourceString, params object[] values)
         {
             Errors.Error err = new SimpleSemanticError(loc, ErrResourceString, values);
             if ((ThrowCompilationError && !for_intellisense) || ErrResourceString == "FORWARD_DECLARATION_{0}_AS_BASE_TYPE")
@@ -161,7 +160,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        internal void AddWarning(Errors.CompilerWarning err)
+        public void AddWarning(Errors.CompilerWarning err)
         {
             WarningsList.Add(err);
         }
@@ -725,7 +724,7 @@ namespace PascalABCCompiler.TreeConverter
         //Методы returner-а.
         //Запрос на построение и получение конвертированного поддерева.
         //Нежесткая проверка существования узла.
-        private statement_node convert_weak(SyntaxTree.statement st)
+        public statement_node convert_weak(SyntaxTree.statement st)
         {
             if (st == null)
             {
@@ -741,7 +740,7 @@ namespace PascalABCCompiler.TreeConverter
             return sn;
         }
 
-        private expression_node convert_weak(SyntaxTree.expression expr)
+        public expression_node convert_weak(SyntaxTree.expression expr)
         {
             if (expr == null)
             {
@@ -9450,7 +9449,7 @@ namespace PascalABCCompiler.TreeConverter
             bfc.parameters.AddRange(parametrs);
             return bfc;
         }
-        private base_function_call create_static_method_call(function_node fn, location loc, type_node tn, bool procedure_allowed, bool inherited_call = false)
+        protected base_function_call create_static_method_call(function_node fn, location loc, type_node tn, bool procedure_allowed, bool inherited_call = false)
         {
             if ((!procedure_allowed) && (fn.return_value_type == null))
             {
@@ -9902,7 +9901,7 @@ namespace PascalABCCompiler.TreeConverter
             return null;
         }
 
-        private base_function_call create_not_static_method_call(function_node fn, expression_node en, location loc, bool procedure_allowed)
+        protected base_function_call create_not_static_method_call(function_node fn, expression_node en, location loc, bool procedure_allowed)
         {
             try_convert_typed_expression_to_function_call(ref en);
             if ((!procedure_allowed) && (fn.return_value_type == null))

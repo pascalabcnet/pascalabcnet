@@ -56,7 +56,7 @@ UNINDENT "@Unindent"
 
 "+"  { yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.PLUS; }
 //"-"  { yylval.sVal = yytext; return (int)Tokens.MINUS; }
-//"*"  { yylval.sVal = yytext; return (int)Tokens.MULTIPLY; }
+"*"  { yylval.sVal = yytext; return (int)Tokens.MULTIPLY; }
 //"/"  { yylval.sVal = yytext; return (int)Tokens.DIVIDE; }
 //"<"  { yylval.sVal = yytext; return (int)Tokens.LOWER; }
 ">"  { yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.GREATER; }

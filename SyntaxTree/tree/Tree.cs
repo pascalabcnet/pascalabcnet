@@ -4375,7 +4375,8 @@ namespace PascalABCCompiler.SyntaxTree
 		protected List<compilation_unit> _compilation_units=new List<compilation_unit>();
 
 		///<summary>
-		///Список подключенных модулей
+		///Список 
+		///ных модулей
 		///</summary>
 		public List<compilation_unit> compilation_units
 		{

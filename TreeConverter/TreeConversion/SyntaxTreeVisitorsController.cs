@@ -5,11 +5,12 @@ using System.Text;
 
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeConverter;
-using YATLTreeConversion;
+using System.IO;
 
 
 namespace PascalABCCompiler.TreeConverter.TreeConversion
 {
+    // TODO Добавить чтение dll с синтакс визиторами
     class SyntaxTreeVisitorsController
     {
         private List<syntax_tree_visitor> syntaxTreeVisitors = new List<syntax_tree_visitor>();
@@ -22,14 +23,47 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
         }
         public SyntaxTreeVisitorsController()
         {
-            AddConverters();
+            ReloadConverters();
         }
-        public void AddConverters()
+        public void ReloadConverters()
         {
-            var passv = new syntax_tree_visitor();
-            var yatlsv = new yatl_syntax_tree_visitor();
-            syntaxTreeVisitors.Add(passv);
-            syntaxTreeVisitors.Add(yatlsv);
+            syntaxTreeVisitors.Clear();
+            string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+            DirectoryInfo di = new DirectoryInfo(dir);
+            FileInfo[] dllfiles = di.GetFiles("*SyntaxTreeVisitor.dll");
+            System.Reflection.Assembly asssembly = null;
+            foreach (FileInfo fi in dllfiles)
+            {
+                asssembly = System.Reflection.Assembly.LoadFile(fi.FullName);
+                try
+                {
+                    Type[] types = asssembly.GetTypes();
+                    if (asssembly != null)
+                    {
+                        foreach (Type type in types)
+                        {
+                            if (type.Name.IndexOf("syntax_tree_visitor") >= 0)
+                            {
+                                Object obj = Activator.CreateInstance(type);
+                                if (obj is syntax_tree_visitor)
+                                {
+                                    syntaxTreeVisitors.Add((syntax_tree_visitor)obj);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (System.Reflection.ReflectionTypeLoadException e)
+                {
+                    Console.Error.WriteLine("SyntaxTreeVisitor {0} reflection error {1}", Path.GetFileName(fi.FullName), e);
+                    foreach (var le in e.LoaderExceptions)
+                        Console.Error.WriteLine(le);
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine("SyntaxTreeVisitor {0} loading error {1}", Path.GetFileName(fi.FullName), e);
+                }
+            }
         }
         public syntax_tree_visitor SelectVisitor(string ext)
         {
