@@ -1,0 +1,11 @@
+﻿def f_with_str(s: str) -> str:
+    print(s)
+    print(s + "123")
+    print(s + 2)
+    print('a' + s)
+    return s
+
+
+s = '1\t2'
+#f_with_str(s)
+print(s)

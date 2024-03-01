@@ -233,8 +233,28 @@ namespace VeryBasicParser
 
         public string ReplaceSpecialSymbols(string text)
         {
-            text = text.Replace("''", "'");
-            return text;
+            StringBuilder new_text = new StringBuilder(text);
+            int curr = 0;
+            for (int i = 0; i < text.Length; ++i) {
+                if (text[i] != '\\') new_text[curr++] = text[i];
+                else switch (text[i + 1]) {
+                    case 'a' : new_text[curr++] = '\a'; ++i; break;
+                    case '0' : new_text[curr++] = '\0'; ++i; break;
+                    case 'b' : new_text[curr++] = '\b'; ++i; break;
+                    case 't' : new_text[curr++] = '\t'; ++i; break;
+                    case 'n' : new_text[curr++] = '\n'; ++i; break;
+                    case 'v' : new_text[curr++] = '\v'; ++i; break;
+                    case 'f' : new_text[curr++] = '\f'; ++i; break;
+                    case 'r' : new_text[curr++] = '\r'; ++i; break;
+
+                    case '\'': new_text[curr++] = '\''; ++i; break;
+                    case '"' : new_text[curr++] = '"' ; ++i; break;
+                    case '\\': new_text[curr++] = '\\'; ++i; break;
+
+                    default: new_text[curr++] = '\\'; break;
+                }
+            }
+            return new_text.ToString().Substring(0, curr);
         }
 
         public char_const create_char_const(string text, SourceContext sc)
@@ -277,12 +297,6 @@ namespace VeryBasicParser
         public literal create_string_const(string text, SourceContext sc)
         {
             literal lt;
-            if (text.Length == 3 && text[0] == '\'' && text[2] == '\'')
-            {
-                lt = new char_const(text[1]);
-                lt.source_context = sc;
-                return lt;
-            }
             text = ReplaceSpecialSymbols(text.Substring(1, text.Length - 2));
             lt = new string_const(text);
             lt.source_context = sc;
