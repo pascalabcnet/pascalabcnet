@@ -52,7 +52,7 @@
 %left MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
 
 %type <id> identifier
-%type <ex> expr var_reference variable proc_func_call range_expr
+%type <ex> expr var_reference variable proc_func_call range_expr constant_value
 %type <stn> expr_lst optional_expr_lst proc_func_decl return_stmt break_stmt continue_stmt
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_or_stmt_list
@@ -126,7 +126,7 @@ stmt_lst
 stmt	
 	: assign		
 		{ $$ = $1; }
-	| compound_stmt			
+	| compound_stmt	
 		{ $$ = $1; }
 	| if_stmt		
 		{ $$ = $1; }
@@ -200,14 +200,19 @@ expr
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| variable				
 		{ $$ = $1; }
-	| INTNUM				
+	| constant_value
+		{ $$ = $1; }
+	| LPAR expr RPAR		
+		{ $$ = $2; }
+	;
+
+constant_value
+	: INTNUM
 		{ $$ = $1; }
 	| REALNUM				
 		{ $$ = $1; }
 	| STRINGNUM				
 		{ $$ = $1 as literal; }
-	| LPAR expr RPAR		
-		{ $$ = $2; }
 	;
 
 optional_expr_lst	
@@ -312,6 +317,8 @@ variable
 	| proc_func_call
 		{ $$ = $1; }
 	| variable DOT identifier
+		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
+	| constant_value DOT identifier
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	;
 
