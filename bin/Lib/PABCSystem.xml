@@ -3098,6 +3098,12 @@
     <member name="M:OrderDescending``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>Возвращает отсортированную по убыванию последовательность</summary>
     </member>
+    <member name="M:Order(System.Collections.Generic.IEnumerable{System.String})">
+      <summary>Возвращает отсортированную по возрастанию последовательность</summary>
+    </member>
+    <member name="M:OrderDescending(System.Collections.Generic.IEnumerable{System.String})">
+      <summary>Возвращает отсортированную по убыванию последовательность</summary>
+    </member>
     <member name="M:ToHashSet``1(System.Collections.Generic.IEnumerable{``0})">
       <summary>Возвращает множество HashSet по данной последовательности</summary>
     </member>

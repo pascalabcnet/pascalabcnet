@@ -10192,6 +10192,18 @@ begin
   Result := Self.OrderByDescending(x -> x);
 end;
 
+/// Возвращает отсортированную по возрастанию последовательность
+function Order(Self: sequence of string): sequence of string; extensionmethod;
+begin
+  Result := Self.OrderBy(x -> x, System.StringComparer.Ordinal);
+end;
+
+/// Возвращает отсортированную по убыванию последовательность
+function OrderDescending(Self: sequence of string): sequence of string; extensionmethod;
+begin
+  Result := Self.OrderByDescending(x -> x, System.StringComparer.Ordinal);
+end;
+
 /// Возвращает множество HashSet по данной последовательности
 function ToHashSet<T>(Self: sequence of T): HashSet<T>; extensionmethod;
 begin
