@@ -40,7 +40,7 @@
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
 %token <op> ASSIGN
-%token <op> PLUS MINUS MULTIPLY DIVIDE
+%token <op> PLUS MINUS MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
 %token <id> ID INT
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %token <op> AND OR
@@ -189,6 +189,10 @@ expr
 	| expr AND 			expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| expr OR 			expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr SLASHSLASH	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr PERCENTAGE	expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| variable				
 		{ $$ = $1; }
