@@ -49,7 +49,7 @@
 %left AND
 %left LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %left PLUS MINUS
-%left MULTIPLY DIVIDE
+%left MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
 
 %type <id> identifier
 %type <ex> expr var_reference variable proc_func_call range_expr
