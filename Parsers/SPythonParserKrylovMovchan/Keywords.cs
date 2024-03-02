@@ -54,6 +54,8 @@ namespace VeryBasicParser
             keywords.Add(Convert("in"), (int)Tokens.IN);
             keywords.Add(Convert("def"), (int)Tokens.DEF);
             keywords.Add(Convert("return"), (int)Tokens.RETURN);
+            keywords.Add(Convert("break"), (int)Tokens.BREAK);
+            keywords.Add(Convert("continue"), (int)Tokens.CONTINUE);
         }
 
         static Keywords()

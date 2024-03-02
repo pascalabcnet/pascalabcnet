@@ -35,7 +35,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
@@ -53,7 +53,7 @@
 
 %type <id> identifier
 %type <ex> expr var_reference variable proc_func_call range_expr
-%type <stn> expr_lst optional_expr_lst proc_func_decl return_stmt
+%type <stn> expr_lst optional_expr_lst proc_func_decl return_stmt break_stmt continue_stmt
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_or_stmt_list
 %type <stn> stmt_lst compound_stmt proc_func_body
@@ -137,6 +137,10 @@ stmt
 	| for_stmt		
 		{ $$ = $1; }
 	| return_stmt
+		{ $$ = $1; }
+	| break_stmt
+		{ $$ = $1; }
+	| continue_stmt
 		{ $$ = $1; }
 	;
 
@@ -269,6 +273,24 @@ return_stmt
 			statement exit_call = new procedure_call(new ident("exit"), true, @$);
 			$$ = new statement_list(res_assign, @$);
 			($$  as statement_list).Add(exit_call, @$);
+		}
+	| RETURN
+		{
+			$$ = new procedure_call(new ident("exit"), true, @$);
+		}
+	;
+
+break_stmt
+	: BREAK
+		{
+			$$ = new procedure_call(new ident("break"), true, @$);
+		}
+	;
+
+continue_stmt
+	: CONTINUE
+		{
+			$$ = new procedure_call(new ident("continue"), true, @$);
 		}
 	;
 
