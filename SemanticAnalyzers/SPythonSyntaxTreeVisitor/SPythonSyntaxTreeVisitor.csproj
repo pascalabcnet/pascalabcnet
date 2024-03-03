@@ -44,6 +44,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CompilerTools\CompilerTools.csproj">
+      <Project>{a25d26fb-3043-4bcf-833e-e3f4c3be795e}</Project>
+      <Name>CompilerTools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Errors\Errors.csproj">
       <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
       <Name>Errors</Name>

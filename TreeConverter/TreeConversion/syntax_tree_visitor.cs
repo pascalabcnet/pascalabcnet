@@ -135,18 +135,18 @@ namespace PascalABCCompiler.TreeConverter
             ErrorsList.RemoveAt(ErrorsList.Count - 1);
         }
 
-        public void RunAdditionalChecks() { }
+        public virtual void RunAdditionalChecks<T>(T node) { }
 
         public void TryFixThrown(System.Exception err)
         {
             throw err;
         }
 
-        public void TryFixError(Errors.Error err, bool shouldReturn = false)
+        public virtual void TryFixError(Errors.Error err, bool shouldReturn = false)
         {
             AddError(err, shouldReturn);
         }
-        public void TryFixError(location loc, string ErrResourceString, params object[] values)
+        public virtual void TryFixError(location loc, string ErrResourceString, params object[] values)
         {
             AddError(loc, ErrResourceString, values);
         }
@@ -17933,62 +17933,67 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.bin_expr _bin_expr)
         {
-            expression_node left = convert_strong(_bin_expr.left);
-            expression_node right = convert_strong(_bin_expr.right);
-            if (_bin_expr.operation_type == Operators.In)
-                try_convert_typed_expression_to_function_call(ref left);
-            expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
+            try
+            {
+                expression_node left = convert_strong(_bin_expr.left);
+                expression_node right = convert_strong(_bin_expr.right);
+                if (_bin_expr.operation_type == Operators.In)
+                    try_convert_typed_expression_to_function_call(ref left);
+                expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
 
-            if (res.type is undefined_type)
-                TryFixError(get_location(_bin_expr), "OPERATOR_RETURN_TYPE_UNDEFINED_{0}", name_reflector.get_name(_bin_expr.operation_type));
-            if (res.type.type_special_kind == SemanticTree.type_special_kind.base_set_type)
-            {
-                if (left.type.element_type == right.type.element_type)
-                    res.type = left.type;
-                else if (type_table.compare_types(left.type, right.type) == type_compare.greater_type)
-                    res.type = left.type;
-                else if (type_table.compare_types(left.type, right.type) == type_compare.less_type)
-                    res.type = right.type;
-                else if (type_table.compare_types(left.type, right.type) == type_compare.non_comparable_type)
-                    res.type = context.create_set_type(SystemLibrary.SystemLibrary.object_type, get_location(_bin_expr));
-            }
-            //ssyy, 15.05.2009
-            switch (_bin_expr.operation_type)
-            {
-                case PascalABCCompiler.SyntaxTree.Operators.Equal:
-                case PascalABCCompiler.SyntaxTree.Operators.NotEqual:
-                    if (left.type.is_generic_parameter && right.type.is_generic_parameter)
-                    {
-                        compiled_static_method_call cfc = new compiled_static_method_call(
-                            SystemLibrary.SystemLibrary.object_equals_method, get_location(_bin_expr));
-                        cfc.parameters.AddElement(left);
-                        cfc.parameters.AddElement(right);
-                        if (_bin_expr.operation_type == PascalABCCompiler.SyntaxTree.Operators.NotEqual)
+                if (res.type is undefined_type)
+                    TryFixError(get_location(_bin_expr), "OPERATOR_RETURN_TYPE_UNDEFINED_{0}", name_reflector.get_name(_bin_expr.operation_type));
+                if (res.type.type_special_kind == SemanticTree.type_special_kind.base_set_type)
+                {
+                    if (left.type.element_type == right.type.element_type)
+                        res.type = left.type;
+                    else if (type_table.compare_types(left.type, right.type) == type_compare.greater_type)
+                        res.type = left.type;
+                    else if (type_table.compare_types(left.type, right.type) == type_compare.less_type)
+                        res.type = right.type;
+                    else if (type_table.compare_types(left.type, right.type) == type_compare.non_comparable_type)
+                        res.type = context.create_set_type(SystemLibrary.SystemLibrary.object_type, get_location(_bin_expr));
+                }
+                //ssyy, 15.05.2009
+                switch (_bin_expr.operation_type)
+                {
+                    case PascalABCCompiler.SyntaxTree.Operators.Equal:
+                    case PascalABCCompiler.SyntaxTree.Operators.NotEqual:
+                        if (left.type.is_generic_parameter && right.type.is_generic_parameter)
                         {
-                            res = new basic_function_call(SystemLibrary.SystemLibrary.bool_not as basic_function_node, get_location(_bin_expr), cfc);
+                            compiled_static_method_call cfc = new compiled_static_method_call(
+                                SystemLibrary.SystemLibrary.object_equals_method, get_location(_bin_expr));
+                            cfc.parameters.AddElement(left);
+                            cfc.parameters.AddElement(right);
+                            if (_bin_expr.operation_type == PascalABCCompiler.SyntaxTree.Operators.NotEqual)
+                            {
+                                res = new basic_function_call(SystemLibrary.SystemLibrary.bool_not as basic_function_node, get_location(_bin_expr), cfc);
+                            }
+                            else
+                            {
+                                res = cfc;
+                            }
                         }
-                        else
+                        else if (left is static_event_reference)
                         {
-                            res = cfc;
+                            if ((left as static_event_reference).en is compiled_event)
+                                TryFixError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
+                            if (context.converted_type != null && context.converted_type != ((left as static_event_reference).en as common_event).cont_type && !context.converted_type.name.Contains("<>local_variables_class"))
+                                TryFixError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
                         }
-                    }
-                    else if (left is static_event_reference)
-                    {
-                        if ((left as static_event_reference).en is compiled_event)
-                            TryFixError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
-                        if (context.converted_type != null && context.converted_type != ((left as static_event_reference).en as common_event).cont_type && !context.converted_type.name.Contains("<>local_variables_class"))
-                            TryFixError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
-                    }
-                    else if (right is static_event_reference)
-                    {
-                        if ((right as static_event_reference).en is compiled_event)
-                            TryFixError(right.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (right as static_event_reference).en.name);
-                        if (context.converted_type != null && context.converted_type != ((right as static_event_reference).en as common_event).cont_type)
-                            TryFixError(right.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (right as static_event_reference).en.name);
-                    }
-                    break;
+                        else if (right is static_event_reference)
+                        {
+                            if ((right as static_event_reference).en is compiled_event)
+                                TryFixError(right.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (right as static_event_reference).en.name);
+                            if (context.converted_type != null && context.converted_type != ((right as static_event_reference).en as common_event).cont_type)
+                                TryFixError(right.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (right as static_event_reference).en.name);
+                        }
+                        break;
+                }
+                RunAdditionalChecks(_bin_expr);
+                return_value(res);
             }
-            return_value(res);
+            catch (Errors.SemanticErrorFixed) { }
         }
 
         private void check_property_no_params(property_node pn, location loc)
@@ -18200,6 +18205,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     context.allow_inherited_ctor_call = false;
                 }
+                catch (Errors.SemanticErrorFixed) { }
                 catch (Errors.Error ex)
                 {
                     if (ex is CompilationErrorWithLocation && (ex as CompilationErrorWithLocation).loc == null)

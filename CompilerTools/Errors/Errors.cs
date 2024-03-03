@@ -63,6 +63,8 @@ namespace PascalABCCompiler.Errors
 
     }
     
+    public class SemanticErrorFixed : SemanticError { }
+    
     
 	
    

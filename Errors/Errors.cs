@@ -228,6 +228,4 @@ namespace PascalABCCompiler.Errors
         }
     }
 
-
-
 }

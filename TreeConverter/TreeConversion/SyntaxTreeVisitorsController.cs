@@ -28,6 +28,7 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
         public void ReloadConverters()
         {
             syntaxTreeVisitors.Clear();
+            syntaxTreeVisitors.Add(new syntax_tree_visitor());
             string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
             DirectoryInfo di = new DirectoryInfo(dir);
             FileInfo[] dllfiles = di.GetFiles("*SyntaxTreeVisitor.dll");
