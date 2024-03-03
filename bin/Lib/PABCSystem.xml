@@ -2136,7 +2136,16 @@
     <member name="M:Sort``2(``0[],System.Func{``0,``1})">
       <summary>Сортирует динамический массив по ключу</summary>
     </member>
+    <member name="M:Sort(System.String[])">
+      <summary>Сортирует динамический массив по возрастанию</summary>
+    </member>
+    <member name="M:Sort``1(``0[],System.Func{``0,System.String})">
+      <summary>Сортирует динамический массив по ключу</summary>
+    </member>
     <member name="M:Sort``1(System.Collections.Generic.List{``0})">
+      <summary>Сортирует список по возрастанию</summary>
+    </member>
+    <member name="M:Sort(System.Collections.Generic.List{System.String}@)">
       <summary>Сортирует список по возрастанию</summary>
     </member>
     <member name="M:Sort``1(System.Collections.Generic.List{``0},System.Func{``0,``0,System.Int32})">
@@ -2148,6 +2157,9 @@
     <member name="M:Sort``2(System.Collections.Generic.List{``0}@,System.Func{``0,``1})">
       <summary>Сортирует список по возрастанию по ключу</summary>
     </member>
+    <member name="M:Sort``1(System.Collections.Generic.List{``0}@,System.Func{``0,System.String})">
+      <summary>Сортирует список по возрастанию по ключу</summary>
+    </member>
     <member name="M:SortDescending``1(``0[])">
       <summary>Сортирует динамический массив по убыванию</summary>
     </member>
@@ -2157,7 +2169,13 @@
     <member name="M:SortDescending``1(System.Collections.Generic.List{``0})">
       <summary>Сортирует список по убыванию</summary>
     </member>
+    <member name="M:SortDescending(System.Collections.Generic.List{System.String}@)">
+      <summary>Сортирует список по убыванию</summary>
+    </member>
     <member name="M:SortDescending``2(System.Collections.Generic.List{``0}@,System.Func{``0,``1})">
+      <summary>Сортирует список по убыванию по ключу</summary>
+    </member>
+    <member name="M:SortDescending``1(System.Collections.Generic.List{``0}@,System.Func{``0,System.String})">
       <summary>Сортирует список по убыванию по ключу</summary>
     </member>
     <member name="M:Reverse``1(``0[])">
@@ -3648,7 +3666,13 @@
     <member name="M:Sort``1(``0[])">
       <summary>Сортирует массив по возрастанию</summary>
     </member>
+    <member name="M:Sort(System.String[])">
+      <summary>Сортирует массив по возрастанию</summary>
+    </member>
     <member name="M:SortDescending``1(``0[])">
+      <summary>Сортирует массив по убыванию</summary>
+    </member>
+    <member name="M:SortDescending(System.String[])">
       <summary>Сортирует массив по убыванию</summary>
     </member>
     <member name="M:Sort``1(``0[],System.Func{``0,``0,System.Int32})">
@@ -3657,7 +3681,13 @@
     <member name="M:Sort``2(``0[],System.Func{``0,``1})">
       <summary>Сортирует массив по возрастанию по ключу</summary>
     </member>
+    <member name="M:Sort``1(``0[],System.Func{``0,System.String})">
+      <summary>Сортирует массив по возрастанию по ключу</summary>
+    </member>
     <member name="M:SortDescending``2(``0[],System.Func{``0,``1})">
+      <summary>Сортирует массив по убыванию по ключу</summary>
+    </member>
+    <member name="M:SortDescending``1(``0[],System.Func{``0,System.String})">
       <summary>Сортирует массив по убыванию по ключу</summary>
     </member>
     <member name="M:High(System.Array)">
