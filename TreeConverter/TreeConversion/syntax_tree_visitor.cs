@@ -891,7 +891,6 @@ namespace PascalABCCompiler.TreeConverter
             //    expr.semantic_ex = en; // SSM 3.1.17 кешируем для последующего обращения
 
             if (en == null)
-                AddError(get_location(expr), "EXPRESSION_EXPECTED");
                 TryFixError(get_location(expr), "EXPRESSION_EXPECTED");
             //en.loc=get_location(expr);
 
