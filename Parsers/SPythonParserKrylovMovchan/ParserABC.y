@@ -35,12 +35,12 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
 %token <op> ASSIGN
-%token <op> PLUS MINUS MULTIPLY DIVIDE
+%token <op> PLUS MINUS MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
 %token <id> ID INT
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %token <op> AND OR
@@ -49,11 +49,11 @@
 %left AND
 %left LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %left PLUS MINUS
-%left MULTIPLY DIVIDE
+%left MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
 
 %type <id> identifier
-%type <ex> expr var_reference variable proc_func_call range_expr
-%type <stn> expr_lst optional_expr_lst proc_func_decl return_stmt
+%type <ex> expr var_reference variable proc_func_call range_expr constant_value
+%type <stn> expr_lst optional_expr_lst proc_func_decl return_stmt break_stmt continue_stmt
 %type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_or_stmt_list
 %type <stn> stmt_lst compound_stmt proc_func_body
@@ -126,7 +126,7 @@ stmt_lst
 stmt	
 	: assign		
 		{ $$ = $1; }
-	| compound_stmt			
+	| compound_stmt	
 		{ $$ = $1; }
 	| if_stmt		
 		{ $$ = $1; }
@@ -137,6 +137,10 @@ stmt
 	| for_stmt		
 		{ $$ = $1; }
 	| return_stmt
+		{ $$ = $1; }
+	| break_stmt
+		{ $$ = $1; }
+	| continue_stmt
 		{ $$ = $1; }
 	;
 
@@ -190,16 +194,25 @@ expr
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| expr OR 			expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr SLASHSLASH	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr PERCENTAGE	expr	
+		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| variable				
 		{ $$ = $1; }
-	| INTNUM				
+	| constant_value
+		{ $$ = $1; }
+	| LPAR expr RPAR		
+		{ $$ = $2; }
+	;
+
+constant_value
+	: INTNUM
 		{ $$ = $1; }
 	| REALNUM				
 		{ $$ = $1; }
 	| STRINGNUM				
 		{ $$ = $1 as literal; }
-	| LPAR expr RPAR		
-		{ $$ = $2; }
 	;
 
 optional_expr_lst	
@@ -266,11 +279,29 @@ return_stmt
 			$$ = new statement_list(res_assign, @$);
 			($$  as statement_list).Add(exit_call, @$);
 		}
+	| RETURN
+		{
+			$$ = new procedure_call(new ident("exit"), true, @$);
+		}
+	;
+
+break_stmt
+	: BREAK
+		{
+			$$ = new procedure_call(new ident("break"), true, @$);
+		}
+	;
+
+continue_stmt
+	: CONTINUE
+		{
+			$$ = new procedure_call(new ident("continue"), true, @$);
+		}
 	;
 
 proccall	
 	:  var_reference
-        { 
+        {
 			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$);
 		}
 	;
@@ -285,6 +316,10 @@ variable
 		{ $$ = $1; }
 	| proc_func_call
 		{ $$ = $1; }
+	| variable DOT identifier
+		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
+	| constant_value DOT identifier
+		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	;
 
 compound_stmt	
@@ -348,8 +383,8 @@ proc_func_header
 		}
 	;
 
-proc_func_call	
-	: identifier LPAR optional_expr_lst RPAR
+proc_func_call
+	: variable LPAR optional_expr_lst RPAR
 		{ 
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$); 
 		}
