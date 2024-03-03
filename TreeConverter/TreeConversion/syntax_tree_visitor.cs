@@ -135,6 +135,22 @@ namespace PascalABCCompiler.TreeConverter
             ErrorsList.RemoveAt(ErrorsList.Count - 1);
         }
 
+        public void RunAdditionalChecks() { }
+
+        public void TryFixThrown(System.Exception err)
+        {
+            throw err;
+        }
+
+        public void TryFixError(Errors.Error err, bool shouldReturn = false)
+        {
+            AddError(err, shouldReturn);
+        }
+        public void TryFixError(location loc, string ErrResourceString, params object[] values)
+        {
+            AddError(loc, ErrResourceString, values);
+        }
+
         public void AddError(Errors.Error err, bool shouldReturn=false)
         {
             if (!for_intellisense && (ThrowCompilationError || !shouldReturn) /*|| err.MustThrow && !shouldReturn*/)
@@ -876,6 +892,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (en == null)
                 AddError(get_location(expr), "EXPRESSION_EXPECTED");
+                TryFixError(get_location(expr), "EXPRESSION_EXPECTED");
             //en.loc=get_location(expr);
 
             return en;
@@ -1005,11 +1022,11 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> sil = context.find(name);
             if (sil == null)
             {
-                AddError(new NoFunctionWithThisName(loc));
+                TryFixError(new NoFunctionWithThisName(loc));
             }
             if (sil.FirstOrDefault().sym_info.general_node_type != general_node_type.function_node)
             {
-                AddError(new ThisIsNotFunctionName(loc));
+                TryFixError(new ThisIsNotFunctionName(loc));
             }
             function_node fn = convertion_data_and_alghoritms.select_function(parameters, sil, loc);
             return fn;
@@ -1033,7 +1050,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (expr.is_addressed == false)
                     {
-                        AddError(expr.location, "CAN_NOT_GET_ADDRESS_FROM_EXPRESSION");
+                        TryFixError(expr.location, "CAN_NOT_GET_ADDRESS_FROM_EXPRESSION");
                     }
                     expression_node res = new get_addr_node(expr, loc);
                     return res;
@@ -1047,7 +1064,7 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> sil = expr.type.find(name, context.CurrentScope);
             if (sil == null || sil.FirstOrDefault().sym_info is wrapped_definition_node)
             {
-            	AddError(new OperatorCanNotBeAppliedToThisType(name, expr));
+            	TryFixError(new OperatorCanNotBeAppliedToThisType(name, expr));
             }
 
             expressions_list pars = new expressions_list();
@@ -1060,7 +1077,7 @@ namespace PascalABCCompiler.TreeConverter
             if (fn == null)
             {
             	RemoveLastError();
-            	AddError(new OperatorCanNotBeAppliedToThisType(name, expr));
+            	TryFixError(new OperatorCanNotBeAppliedToThisType(name, expr));
             }
             expr = pars[0];
 #if (DEBUG)
@@ -1080,7 +1097,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (expr.type == null)
             {
-                AddError(expr.location, "TYPE_NOT_DEFINED");
+                TryFixError(expr.location, "TYPE_NOT_DEFINED");
                 return false;
             }
             return true;
@@ -1108,7 +1125,7 @@ namespace PascalABCCompiler.TreeConverter
             if (right.semantic_node_type == semantic_node_type.null_const_node)
             {
             	if ( !type_table.is_with_nil_allowed(left.type) && !left.type.IsPointer)
-                    AddError(right.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
+                    TryFixError(right.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
                 if (right.conversion_type == null)
                     right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
             }
@@ -1116,7 +1133,7 @@ namespace PascalABCCompiler.TreeConverter
             /*if (left.semantic_node_type == semantic_node_type.null_const_node)
             {
                 if (!type_table.is_with_nil_allowed(right.type) && !right.type.IsPointer)
-                    AddError(left.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
+                    TryFixError(left.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
                 left = null_const_node.get_const_node_with_type(right.type, (null_const_node)left);
             }*/
 
@@ -1230,7 +1247,7 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     if (bbfn1.basic_function_type != bbfn2.basic_function_type)
                                     {
-                                        AddError(new TwoOperatorsCanBeCalled(eq_func, fnode, left, right));
+                                        TryFixError(new TwoOperatorsCanBeCalled(eq_func, fnode, left, right));
                                     }
                                     //sic = sic.Next;
                                     continue;
@@ -1249,7 +1266,7 @@ namespace PascalABCCompiler.TreeConverter
                                 		//if (left.type.find_in_type(name) !=null)
                                 	}
                                 	else
-                                	AddError(new TwoOperatorsCanBeCalled(eq_func, fnode, left, right));
+                                	TryFixError(new TwoOperatorsCanBeCalled(eq_func, fnode, left, right));
                                 }
                             }
                         }
@@ -1279,7 +1296,7 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         if (!(left is typed_expression) && !(left.type is delegated_methods))
-                            AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                            TryFixError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
                         if (left is typed_expression)
                             bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
                         else
@@ -1311,7 +1328,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (saved_sil == null)
                     {
                         if (!no_search_in_extension_methods)
-                            AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                            TryFixError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
                         else
                             return find_operator(name, left, right, loc, false);
                     }
@@ -1333,9 +1350,9 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         if (right.type is undefined_type)
-                            AddError(right.location, "CAN_NOT_DEDUCE_TYPE_{0}", "");
+                            TryFixError(right.location, "CAN_NOT_DEDUCE_TYPE_{0}", "");
                         else
-                            AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                            TryFixError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
                     }
                         
                 }
@@ -1376,7 +1393,7 @@ namespace PascalABCCompiler.TreeConverter
             right = pars[1];
             if (fnsel == null)
             {
-                AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                TryFixError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
             }
             if (added_symbols != -1 && sil != null && added_symbols < sil.Count())
                 sil.RemoveRange(added_symbols + 1, sil.Count() - 1 - added_symbols);
@@ -1490,7 +1507,7 @@ namespace PascalABCCompiler.TreeConverter
                                     if (cmn.parameters.Count == 0)
                                     {
                                     	if (cmn.cont_type.IsAbstract)
-                                            AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name);
+                                            TryFixError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name);
                                     	ret.Clear();
                                         ret.AddElement(new common_constructor_call(cmn, loc));
                                         return ret;
@@ -1638,7 +1655,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (is_static)
                 {
-                    AddError(loc, "EXPECTED_STATIC_METHOD");
+                    TryFixError(loc, "EXPECTED_STATIC_METHOD");
                 }
                 else
                 {
@@ -1646,12 +1663,12 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         basic_function_node bfn = sil.First().sym_info as basic_function_node;
                         if (bfn.return_value_type != null)
-                            AddError(loc, "USING_{0}_NOT_ALLOWED_IN_THIS_CONTEXT", bfn.name);
+                            TryFixError(loc, "USING_{0}_NOT_ALLOWED_IN_THIS_CONTEXT", bfn.name);
                         else
-                            AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", bfn.name);
+                            TryFixError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", bfn.name);
                     }
                     else
-                        AddError(loc, "EXPECTED_NON_STATIC_METHOD");
+                        TryFixError(loc, "EXPECTED_NON_STATIC_METHOD");
                 }
             }
             delegated_methods dm = new delegated_methods();
@@ -1667,11 +1684,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (is_static)
                 {
-                    AddError(loc, "EXPECTED_STATIC_METHOD");
+                    TryFixError(loc, "EXPECTED_STATIC_METHOD");
                 }
                 else
                 {
-                    AddError(loc, "EXPECTED_NON_STATIC_METHOD");
+                    TryFixError(loc, "EXPECTED_NON_STATIC_METHOD");
                 }
             }
             delegated_methods dm = new delegated_methods();
@@ -1717,7 +1734,7 @@ namespace PascalABCCompiler.TreeConverter
                 type_node tn = di as type_node;
                 if (tn == null)
                 {
-                    AddError(loc, "TYPE_REFERENCE_EXPECTED");
+                    TryFixError(loc, "TYPE_REFERENCE_EXPECTED");
                 }
                 return tn;
             }
@@ -1731,7 +1748,7 @@ namespace PascalABCCompiler.TreeConverter
             if (sil != null && sil.FirstOrDefault().sym_info != null && sil.FirstOrDefault().sym_info.general_node_type == general_node_type.generic_indicator)
             {
                 generic_indicator gi = sil.FirstOrDefault().sym_info as generic_indicator;
-                AddError(loc, "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", names.names[names.names.Count - 1].name, gi.generic.generic_params.Count);
+                TryFixError(loc, "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", names.names[names.names.Count - 1].name, gi.generic.generic_params.Count);
             }
             if (sil == null || sil.FirstOrDefault().sym_info == null)
             {
@@ -1766,7 +1783,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (sinfo != null)
                     {
                         names.names[names.names.Count - 1].name = tmp;
-                        AddError(loc, "GENERIC_TYPE_{0}_NEEDS_{1}_GENERIC_PARAMETERS", generic_name, k);
+                        TryFixError(loc, "GENERIC_TYPE_{0}_NEEDS_{1}_GENERIC_PARAMETERS", generic_name, k);
                         break;
                     }
                 }
@@ -1783,11 +1800,11 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (context.cycle_stack.Empty)
             {
-                AddError(new BreakStatementWithoutComprehensiveCycle(call_location));
+                TryFixError(new BreakStatementWithoutComprehensiveCycle(call_location));
             }
             if (context.in_finally_block())
             {
-                AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
+                TryFixError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
             }
             statement_node sn = context.cycle_stack.top();
             switch (sn.semantic_node_type)
@@ -1824,11 +1841,11 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (context.cycle_stack.Empty)
             {
-                AddError(new ContinueStatementWithoutComprehensiveCycle(call_location));
+                TryFixError(new ContinueStatementWithoutComprehensiveCycle(call_location));
             }
             if (context.in_finally_block())
             {
-                AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
+                TryFixError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
             }
             statement_node sn = context.cycle_stack.top();
             switch (sn.semantic_node_type)
@@ -1865,10 +1882,10 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (context.in_finally_block(true))
             {
-                AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
+                TryFixError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
             }
             if (!TreeConverter.SemanticRules.EnableExitProcedure)
-                AddError(new TreeConverter.UndefinedNameReference(TreeConverter.compiler_string_consts.exit_procedure_name, call_location));
+                TryFixError(new TreeConverter.UndefinedNameReference(TreeConverter.compiler_string_consts.exit_procedure_name, call_location));
             return new exit_procedure(call_location);
         }
 
@@ -1883,7 +1900,7 @@ namespace PascalABCCompiler.TreeConverter
                 case motivation.expression_evaluation: return_value(inherited_message_value_reciving(_inherited_message)); break;
                 //case motivation.symbol_info_reciving: return_symbol_value(blocks.find(_ident.name));break;
                	case motivation.address_receiving:
-                case motivation.semantic_node_reciving: AddError(get_location(_inherited_message), "CAN_NOT_ASSIGN_TO_LEFT_PART"); break;
+                case motivation.semantic_node_reciving: TryFixError(get_location(_inherited_message), "CAN_NOT_ASSIGN_TO_LEFT_PART"); break;
             }
         }
 		
@@ -1911,7 +1928,7 @@ namespace PascalABCCompiler.TreeConverter
                             filter_type == SystemLibrary.SystemLibrary.exception_base_type ||
                             type_table.is_derived(SystemLibrary.SystemLibrary.exception_base_type, filter_type)))
                         {
-                            AddError(get_location(eh.type_name), "EXCEPTION_TYPE_MUST_BE_SYSTEM_EXCEPTION_OR_DERIVED_FROM_EXCEPTION");
+                            TryFixError(get_location(eh.type_name), "EXCEPTION_TYPE_MUST_BE_SYSTEM_EXCEPTION_OR_DERIVED_FROM_EXCEPTION");
                         }
                         current_catch_excep = new int_const_node(2,null);//create_constructor_call(filter_type, new expressions_list(), null);
                         local_block_variable_reference lvr = null;
@@ -2076,16 +2093,16 @@ namespace PascalABCCompiler.TreeConverter
                     return;
                 }*/
                 if (SystemLibrary.SystemLibInitializer.TypedFileType == null || SystemLibrary.SystemLibInitializer.TypedFileInitProcedure == null)
-                    AddError(new NotSupportedError(get_location(_file_type)));
+                    TryFixError(new NotSupportedError(get_location(_file_type)));
                 if (!CanUseThisTypeForTypedFiles(el_type))
-                    AddError(get_location(_file_type.file_of_type), "INVALID_ELEMENT_TYPE_FOR_TYPED_FILE", el_type);
+                    TryFixError(get_location(_file_type.file_of_type), "INVALID_ELEMENT_TYPE_FOR_TYPED_FILE", el_type);
                 return_value(context.create_typed_file_type(el_type, get_location(_file_type)));
             }
             else
             {
                 //Бинарнай файл
                 if (SystemLibrary.SystemLibInitializer.BinaryFileType == null)
-                    AddError(new NotSupportedError(get_location(_file_type)));
+                    TryFixError(new NotSupportedError(get_location(_file_type)));
                 ((type_node)SystemLibrary.SystemLibInitializer.BinaryFileType.sym_info).type_special_kind = SemanticTree.type_special_kind.binary_file;
                 return_value((type_node)SystemLibrary.SystemLibInitializer.BinaryFileType.sym_info);
             }
@@ -2247,7 +2264,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             location loc = (vdn.type as common_type_node).loc;
             if (!SystemUnitAssigned)
-                AddError(new NotSupportedError(loc));
+                TryFixError(new NotSupportedError(loc));
             //Когда заработает наследование конструкторов надо вставить это
             /*
             expression_node var_ref = create_variable_reference(vdn, loc);
@@ -2288,7 +2305,7 @@ namespace PascalABCCompiler.TreeConverter
             if (vdn.type is common_type_node)
                 loc = (vdn.type as common_type_node).loc;
             if (!SystemUnitAssigned)
-                AddError(new NotSupportedError(loc));
+                TryFixError(new NotSupportedError(loc));
             expression_node var_ref = create_variable_reference(vdn, loc);
             expressions_list exl = new expressions_list();
             exl.AddElement(var_ref);
@@ -2303,7 +2320,7 @@ namespace PascalABCCompiler.TreeConverter
             if (vdn.type is common_type_node)
                 loc = (vdn.type as common_type_node).loc;
             if (!SystemUnitAssigned)
-                AddError(new NotSupportedError(loc));
+                TryFixError(new NotSupportedError(loc));
             type_node tn = vdn.type;
             vdn.type = SystemLibrary.SystemLibInitializer.BinaryFileType.sym_info as type_node;
 
@@ -2323,7 +2340,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             location loc = (vdn.type as common_type_node).loc;
             if (!SystemUnitAssigned)
-                AddError(new NotSupportedError(loc));
+                TryFixError(new NotSupportedError(loc));
             //Когда заработает наследование конструкторов надо вставить это
             /*
             expression_node var_ref = create_variable_reference(vdn, loc);
@@ -2391,7 +2408,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             location loc = (vdn.type as common_type_node).loc;
             if (!SystemUnitAssigned)
-                AddError(new NotSupportedError(loc));
+                TryFixError(new NotSupportedError(loc));
             //Когда заработает наследование конструкторов надо вставить это
             /*
             expression_node var_ref = create_variable_reference(vdn, loc);
@@ -2491,7 +2508,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 //if (current_catch_excep == null)
                 if (st == null)
-                    AddError(loc, "RAISE_WITHOUT_PARAMETERS_MUST_BE_IN_CATCH_BLOCK");
+                    TryFixError(loc, "RAISE_WITHOUT_PARAMETERS_MUST_BE_IN_CATCH_BLOCK");
         		return_value(new rethrow_statement_node(loc));
         		return;
         	}
@@ -2500,11 +2517,11 @@ namespace PascalABCCompiler.TreeConverter
             if (!SemanticRules.GenerateNativeCode && (!(type_table.is_derived(SystemLibrary.SystemLibrary.exception_base_type, en.type))) &&
                 (en.type != SystemLibrary.SystemLibrary.exception_base_type))
             {
-                AddError(loc, "EXCEPTION_TYPE_MUST_BE_SYSTEM_EXCEPTION_OR_DERIVED_FROM_EXCEPTION");
+                TryFixError(loc, "EXCEPTION_TYPE_MUST_BE_SYSTEM_EXCEPTION_OR_DERIVED_FROM_EXCEPTION");
             }
             if (_raise_stmt.address != null)
             {
-                AddError(new NotSupportedError(get_location(_raise_stmt.address)));
+                TryFixError(new NotSupportedError(get_location(_raise_stmt.address)));
             }
             return_value(new throw_statement_node(en, loc));
         }
@@ -2523,10 +2540,10 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.format_expr _format_expr)
         {
             if (_format_expr.expr == null || _format_expr.format1 == null)
-                AddError(get_location(_format_expr), "BAD_CONSTRUCTED_FORMAT_EXPRESSION");
+                TryFixError(get_location(_format_expr), "BAD_CONSTRUCTED_FORMAT_EXPRESSION");
             //TODO: Добавить проверки.
             if (!SemanticRules.AllowUseFormatExprAnywhere && !is_format_allowed)
-                AddError(get_location(_format_expr.expr), "FORMAT_EXPRESSION_CAN_USE_ONLY_IN_THESE_PROCEDURES");
+                TryFixError(get_location(_format_expr.expr), "FORMAT_EXPRESSION_CAN_USE_ONLY_IN_THESE_PROCEDURES");
             expression_node expr = convert_strong(_format_expr.expr);
             if (expr is typed_expression)
                 expr = convert_typed_expression_to_function_call(expr as typed_expression);
@@ -2537,7 +2554,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (expr.type != SystemLibrary.SystemLibrary.double_type && expr.type != SystemLibrary.SystemLibrary.float_type)
                 {
-                    AddError(expr.location, "REAL_TYPE_IN_DOUBLE_COLON_EXPRESSION_EXPECTED");
+                    TryFixError(expr.location, "REAL_TYPE_IN_DOUBLE_COLON_EXPRESSION_EXPECTED");
                 }
                 par2 = convertion_data_and_alghoritms.convert_type(par2, SystemLibrary.SystemLibrary.integer_type);
             }
@@ -2550,7 +2567,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             location loc = get_location(_format_expr);
             if (!SystemUnitAssigned)
-                AddError( new NotSupportedError(loc));
+                TryFixError( new NotSupportedError(loc));
             function_node fn = convertion_data_and_alghoritms.select_function(exl, SystemLibrary.SystemLibInitializer.format_function.SymbolInfo,
                 loc);
             expression_node ret = convertion_data_and_alghoritms.create_simple_function_call(fn, loc, exl.ToArray());
@@ -2684,7 +2701,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (lambdaSearcher.CheckIfContainsLambdas())
                     {
                         if (context.converting_block() != block_type.namespace_block || !(def is variable_definitions))
-                            AddError(new LambdasNotAllowedInDeclarationsSection(get_location(lambdaSearcher.FoundLambda)));     // SSM 6.06.15 - Хочется убрать это. В разделе описаний лямбды нужны - пусть и без замыканий. Если внутри подпрограммы - не нужны, но Вы же запретили везде!
+                            TryFixError(new LambdasNotAllowedInDeclarationsSection(get_location(lambdaSearcher.FoundLambda)));     // SSM 6.06.15 - Хочется убрать это. В разделе описаний лямбды нужны - пусть и без замыканий. Если внутри подпрограммы - не нужны, но Вы же запретили везде!
                         else
                             declarations_with_lambdas.Add(def as variable_definitions);
                     }
@@ -2804,10 +2821,10 @@ namespace PascalABCCompiler.TreeConverter
                                 var l = get_location(_block.program_code);
                                 if (l == null)
                                 {
-                                    AddError(cmn.return_value_type.location, "IN_AUTOGENERATED_DEFAULT_CONSTRUCTOR_THE_DEFAULT_CONSTRUCTOR_OF_BASE_CLASS_CANNOT_BE_CALLED_BECAUSE_IS_ABSENT_OR_PRIVATE");
+                                    TryFixError(cmn.return_value_type.location, "IN_AUTOGENERATED_DEFAULT_CONSTRUCTOR_THE_DEFAULT_CONSTRUCTOR_OF_BASE_CLASS_CANNOT_BE_CALLED_BECAUSE_IS_ABSENT_OR_PRIVATE");
                                 }
                                 //У предка нет конструктора по умолчанию
-                                AddError(l, "INHERITED_CONSTRUCTOR_CALL_EXPECTED");
+                                TryFixError(l, "INHERITED_CONSTRUCTOR_CALL_EXPECTED");
                             }
                             else
                             {
@@ -2843,7 +2860,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (context.func_stack.top().functions_nodes_list.Count > 0)
                         {
-                            AddError(new LambdasNotAllowedWhenNestedSubprogrammesAreUsed(get_location(lambdaSearcher.FoundLambda)));
+                            TryFixError(new LambdasNotAllowedWhenNestedSubprogrammesAreUsed(get_location(lambdaSearcher.FoundLambda)));
                         }
                     }
 
@@ -3032,7 +3049,7 @@ namespace PascalABCCompiler.TreeConverter
                 var lambdaSearcher = new LambdaSearcher(_unit_module.initialization_part);
                 if (lambdaSearcher.CheckIfContainsLambdas())
                 {
-                    AddError(new LambdasNotAllowedInInitializationPartOfModule(get_location(lambdaSearcher.FoundLambda)));
+                    TryFixError(new LambdasNotAllowedInInitializationPartOfModule(get_location(lambdaSearcher.FoundLambda)));
                 }
             }
 
@@ -3041,7 +3058,7 @@ namespace PascalABCCompiler.TreeConverter
                 var lambdaSearcher = new LambdaSearcher(_unit_module.finalization_part);
                 if (lambdaSearcher.CheckIfContainsLambdas())
                 {
-                    AddError(new LambdasNotAllowedInFinalizationPartOfModule(get_location(lambdaSearcher.FoundLambda)));
+                    TryFixError(new LambdasNotAllowedInFinalizationPartOfModule(get_location(lambdaSearcher.FoundLambda)));
                 }
             }
 
@@ -3122,7 +3139,7 @@ namespace PascalABCCompiler.TreeConverter
                     var lambdaSearcher = new LambdaSearcher(def);
                     if (lambdaSearcher.CheckIfContainsLambdas())
                     {
-                        AddError(new LambdasNotAllowedInImplementationOfModuleInInit(get_location(lambdaSearcher.FoundLambda)));
+                        TryFixError(new LambdasNotAllowedInImplementationOfModuleInInit(get_location(lambdaSearcher.FoundLambda)));
                     }
                 }
             }
@@ -3143,7 +3160,7 @@ namespace PascalABCCompiler.TreeConverter
                     var lambdaSearcher = new LambdaSearcher(def);
                     if (lambdaSearcher.CheckIfContainsLambdas())
                     {
-                        AddError(new LambdasNotAllowedInInterfacePartOfModuleInInit(get_location(lambdaSearcher.FoundLambda)));
+                        TryFixError(new LambdasNotAllowedInInterfacePartOfModuleInInit(get_location(lambdaSearcher.FoundLambda)));
                     }
                 }
             }
@@ -3167,9 +3184,9 @@ namespace PascalABCCompiler.TreeConverter
             if (!SemanticRules.IsAsForPointers && (tp.IsPointer || en.type.IsPointer))
             {
                 if (node.cast_op == PascalABCCompiler.SyntaxTree.op_typecast.is_op)
-                    AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.is_name);
+                    TryFixError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.is_name);
                 else
-                    AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.as_name);
+                    TryFixError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.as_name);
             }
             else
             	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) 
@@ -3177,13 +3194,13 @@ namespace PascalABCCompiler.TreeConverter
             	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter || en.type.is_generic_parameter)
                    )
                 {
-                    AddError(loc, "EXPECTED_DERIVED_CLASSES");
+                    TryFixError(loc, "EXPECTED_DERIVED_CLASSES");
                 }
             if (en.type.IsSealed && tp.IsInterface && /*!en.type.ImplementingInterfaces.Contains(tp)*/
                 !convertion_data_and_alghoritms.type_or_base_type_implements_interface(en.type,tp)
                 )
             {
-                AddError(loc, "CAN_NOT_CONVERT_TYPE_{0}_TO_INTERFACE_{1}", en.type.PrintableName, tp.PrintableName);
+                TryFixError(loc, "CAN_NOT_CONVERT_TYPE_{0}_TO_INTERFACE_{1}", en.type.PrintableName, tp.PrintableName);
             }
             if (node.cast_op == PascalABCCompiler.SyntaxTree.op_typecast.is_op)
             {
@@ -3193,9 +3210,9 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
                 if (tp.is_generic_parameter && !tp.is_class && !(tp.base_type != null && tp.base_type.is_class && tp.base_type != SystemLibrary.SystemLibrary.object_type) && !(tp.base_type != null && tp.base_type.original_generic != null && tp.base_type.original_generic.is_class))
-                    AddError(get_location(node.type_def), "OPERATOR_AS_CAN_NOT_BE_USED_WITH_GENERIC_PARAMETER_{0}_WITHOUT_CLASS_CONSTRAINT", tp.name);
+                    TryFixError(get_location(node.type_def), "OPERATOR_AS_CAN_NOT_BE_USED_WITH_GENERIC_PARAMETER_{0}_WITHOUT_CLASS_CONSTRAINT", tp.name);
                 if (tp.is_value_type)
-                    AddError(get_location(node.type_def), "OPERATOR_AS_MUST_BE_USED_WITCH_A_REFERENCE_TYPE_VALUETYPE{0}", tp.PrintableName);
+                    TryFixError(get_location(node.type_def), "OPERATOR_AS_MUST_BE_USED_WITCH_A_REFERENCE_TYPE_VALUETYPE{0}", tp.PrintableName);
                 as_node asn = new as_node(en, tp, loc);
                 return_value(asn);
             }
@@ -3210,26 +3227,26 @@ namespace PascalABCCompiler.TreeConverter
         {
         	if (_destructor.name == null)
         	{
-                AddError(get_location(_destructor), "DESTRUCTOR_MUST_HAVE_NAME");
+                TryFixError(get_location(_destructor), "DESTRUCTOR_MUST_HAVE_NAME");
         	}
         	if (context.converting_block() == block_type.type_block)
             {
                 if (context.converted_type.IsInterface)
                 {
-                    AddError(get_location(_destructor), "DESTRUCTOR_IN_INTERFACE");
+                    TryFixError(get_location(_destructor), "DESTRUCTOR_IN_INTERFACE");
                 }
                 if (!context.converted_type.is_class)
                 {
-                    AddError(get_location(_destructor), "DESTRUCTOR_NOT_IN_CLASS");
+                    TryFixError(get_location(_destructor), "DESTRUCTOR_NOT_IN_CLASS");
                 }
             }
             else if (!(context.converting_block() == block_type.namespace_block && _destructor.name.class_name != null))
             {
-                AddError(get_location(_destructor), "DESTRUCTOR_NOT_IN_CLASS");
+                TryFixError(get_location(_destructor), "DESTRUCTOR_NOT_IN_CLASS");
             }
             if (_destructor.parameters != null && _destructor.parameters.params_list.Count > 0)
             {
-                AddError(get_location(_destructor), "DESTRUCTOR_CANNOT_HAVE_PARAMETERS");
+                TryFixError(get_location(_destructor), "DESTRUCTOR_CANNOT_HAVE_PARAMETERS");
             }
             visit_procedure_header(_destructor);
         }
@@ -3241,7 +3258,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (context.converted_type.IsInterface)
                 {
-                    AddError(new ConstructorInInterface(get_location(_constructor)));
+                    TryFixError(new ConstructorInInterface(get_location(_constructor)));
                 }
                 /*if (!context.converted_type.is_class)
                 {
@@ -3250,7 +3267,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (!(context.converting_block() == block_type.namespace_block && _constructor.name != null && _constructor.name.class_name != null))
             {
-                AddError(get_location(_constructor), "CONSTRUCTOR_NOT_IN_CLASS");
+                TryFixError(get_location(_constructor), "CONSTRUCTOR_NOT_IN_CLASS");
             }
 
             convertion_data_and_alghoritms.check_node_parser_error(_constructor.name);
@@ -3263,25 +3280,25 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             if (_constructor.name.meth_name.name.ToLower() != compiler_string_consts.default_constructor_name)
-                AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", compiler_string_consts.default_constructor_name);
+                TryFixError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", compiler_string_consts.default_constructor_name);
             if ((_constructor.name.class_name == null) && (context.converting_block() != block_type.type_block))
             {
-                AddError(get_location(_constructor.name), "ONLY_CONSTRUCTOR_OF_TYPE_ALLOWED");
+                TryFixError(get_location(_constructor.name), "ONLY_CONSTRUCTOR_OF_TYPE_ALLOWED");
             }
 
             foreach (SyntaxTree.procedure_attribute att in _constructor.proc_attributes.proc_attributes)
             {
                 if (att.attribute_type == SyntaxTree.proc_attribute.attr_virtual)
                 {
-                    AddError(get_location(att), "CONSTRUCTOR_CAN_NOT_BE_VIRTUAL");
+                    TryFixError(get_location(att), "CONSTRUCTOR_CAN_NOT_BE_VIRTUAL");
                 }
                 else if (att.attribute_type == SyntaxTree.proc_attribute.attr_override)
                 {
-                    AddError(get_location(att), "CONSTRUCTOR_CAN_NOT_BE_OVERRIDE");
+                    TryFixError(get_location(att), "CONSTRUCTOR_CAN_NOT_BE_OVERRIDE");
                 }
                 else if (att.attribute_type == SyntaxTree.proc_attribute.attr_abstract)
                 {
-                    AddError(get_location(att), "CONSTRUCTOR_CANNOT_BE_ABSTRACT");
+                    TryFixError(get_location(att), "CONSTRUCTOR_CANNOT_BE_ABSTRACT");
                 }
             }
             if (_constructor.class_keyword)
@@ -3297,7 +3314,7 @@ namespace PascalABCCompiler.TreeConverter
                     //Это статический конструктор
                     if (_constructor.parameters != null)
                     {
-                        AddError(get_location(_constructor.name), "STATIC_CONSTRUCTOR_MUST_BE_PARAMETERLESS");
+                        TryFixError(get_location(_constructor.name), "STATIC_CONSTRUCTOR_MUST_BE_PARAMETERLESS");
                     }
                     _constructor.name.meth_name.name = compiler_string_consts.static_ctor_prefix + _constructor.name.meth_name.name;
                     visit_procedure_header(_constructor);
@@ -3341,7 +3358,7 @@ namespace PascalABCCompiler.TreeConverter
             context.allow_inherited_ctor_call = true;
             cmn.is_constructor = true;
             if (cmn.cont_type.is_value_type && cmn.parameters.Count == 0 && (cmn.field_access_level == SemanticTree.field_access_level.fal_private || cmn.field_access_level == SemanticTree.field_access_level.fal_protected))
-                AddError(cmn.loc, "NON_PUBLIC_RECORD_CONSTRUCTORS_NOT_ALLOWED");
+                TryFixError(cmn.loc, "NON_PUBLIC_RECORD_CONSTRUCTORS_NOT_ALLOWED");
             cmn.return_value_type = context.converted_type;
         }
 
@@ -3394,7 +3411,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        AddError(get_location(_procedure_call), "EXPECTED_DELEGATE");
+                        TryFixError(get_location(_procedure_call), "EXPECTED_DELEGATE");
                     }
                 }
             }
@@ -3413,9 +3430,9 @@ namespace PascalABCCompiler.TreeConverter
                 && !(sn is repeat_break_node) && !(sn is repeat_continue_node) && !(sn is for_break_node) && !(sn is for_continue_node)
                 && !(sn is foreach_break_node) && !(sn is foreach_continue_node)
               )
-                AddError(get_location(_procedure_call), "STATEMENT_EXPECTED");
+                TryFixError(get_location(_procedure_call), "STATEMENT_EXPECTED");
             if (sn is base_function_call bfc && bfc.IsExplicitConversion)
-                AddError(get_location(_procedure_call), "STATEMENT_EXPECTED");
+                TryFixError(get_location(_procedure_call), "STATEMENT_EXPECTED");
 
             return_value(sn);
             //_procedure_call.func_name.visit(this);
@@ -3453,11 +3470,11 @@ namespace PascalABCCompiler.TreeConverter
             //    throw new NotSupportedError(loc);
             type_node tn = find_type(node.name.name, loc);
             if (!(tn == SystemLibrary.SystemLibrary.string_type))
-                AddError(new ExpectedType(SystemLibrary.SystemLibrary.string_type.name, loc));
+                TryFixError(new ExpectedType(SystemLibrary.SystemLibrary.string_type.name, loc));
             constant_node cn = convert_strong_to_constant_node(node.num_of_symbols, SystemLibrary.SystemLibrary.integer_type);
             int length = (cn as int_const_node).constant_value;
             if (length < 1 || length > 255)
-                AddError(loc, "TYPE_CAN_NOT_HAVE_THIS_SIZE_{0}", SystemLibrary.SystemLibrary.string_type.name);
+                TryFixError(loc, "TYPE_CAN_NOT_HAVE_THIS_SIZE_{0}", SystemLibrary.SystemLibrary.string_type.name);
             return_value(context.create_short_string_type(length, loc));
         }
 
@@ -3514,7 +3531,7 @@ namespace PascalABCCompiler.TreeConverter
         		}
         		else
         		if (has_val)
-                    AddError(get_location(en), "ALL_ENUM_CONSTANTS_NEEDED");
+                    TryFixError(get_location(en), "ALL_ENUM_CONSTANTS_NEEDED");
         	}
         	return has_val;
         }
@@ -3565,12 +3582,12 @@ namespace PascalABCCompiler.TreeConverter
                     var en = _enum_type_definition.enumerators.enumerators[iii];
                     var name = en.name;
                     if (en.value != null)
-                        AddError(get_location(en.value), "TUPLE_TYPE_ERROR");
+                        TryFixError(get_location(en.value), "TUPLE_TYPE_ERROR");
                     lt.Add(name);
                 }
 
                 if (lt.Count > 7)
-                    AddError(get_location(_enum_type_definition), "TUPLE_TYPE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
+                    TryFixError(get_location(_enum_type_definition), "TUPLE_TYPE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
 
 
                 var l = new List<ident>();
@@ -3672,12 +3689,12 @@ namespace PascalABCCompiler.TreeConverter
         {
             // throw new NotSupportedError(get_location(_set_type_definition));
             if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
-                AddError(new NotSupportedError(get_location(_set_type_definition)));
+                TryFixError(new NotSupportedError(get_location(_set_type_definition)));
             type_node el_type = convert_strong(_set_type_definition.of_type);
             if (el_type.IsPointer)
-                AddError(get_location(_set_type_definition.of_type), "POINTERS_IN_SETS_NOT_ALLOWED");
+                TryFixError(get_location(_set_type_definition.of_type), "POINTERS_IN_SETS_NOT_ALLOWED");
             //if (el_type == SystemLibrary.SystemLibrary.void_type)
-            //	AddError(new VoidNotValid(get_location(_set_type_definition.of_type)));
+            //	TryFixError(new VoidNotValid(get_location(_set_type_definition.of_type)));
             check_for_type_allowed(el_type, get_location(_set_type_definition.of_type));
             check_using_static_class(el_type, get_location(_set_type_definition.of_type));
             return_value(context.create_set_type(el_type, get_location(_set_type_definition)));
@@ -3699,25 +3716,25 @@ namespace PascalABCCompiler.TreeConverter
             {
                 // SSM 27.02.12 - всё это перенес в синтаксический визитор UnnamedRecordsCheckVisitor
                 /*if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
-                    AddError(new SimpleSemanticError(get_location(_class_definition), "UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE"));
+                    TryFixError(new SimpleSemanticError(get_location(_class_definition), "UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE"));
                 var pds = _class_definition.DescendantNodes().OfType<procedure_definition>();
                 if (pds.Count() > 0)
-                    AddError(new SimpleSemanticError(get_location(pds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_METHODS"));
+                    TryFixError(new SimpleSemanticError(get_location(pds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_METHODS"));
 
                 var sps = _class_definition.DescendantNodes().OfType<simple_property>();
                 if (sps.Count() > 0)
-                    AddError(new SimpleSemanticError(get_location(sps.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_PROPERTIES"));
+                    TryFixError(new SimpleSemanticError(get_location(sps.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_PROPERTIES"));
 
                 var cds = _class_definition.DescendantNodes().OfType<constructor>();
                 if (cds.Count() > 0)
-                    AddError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));
+                    TryFixError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));
                 if (_class_definition.body.class_def_blocks.First().access_mod.access_level != access_modifer.public_modifer)
                 {
                     var f = _class_definition.body.class_def_blocks.First();
                     var loc = get_location(f);
                     if (loc == null)
                         loc = get_location(_class_definition);
-                    AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION"));
+                    TryFixError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION"));
                 }
                     
                 if (_class_definition.body.class_def_blocks.Count > 1)
@@ -3726,45 +3743,45 @@ namespace PascalABCCompiler.TreeConverter
                     var loc = get_location(el1.access_mod);
                     if (loc == null)
                         loc = get_location(_class_definition);
-                    AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS"));
+                    TryFixError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS"));
                 }*/
 
             }
 
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
-                AddError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
+                TryFixError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
             {
                 context.converted_type.SetIsSealed(true);
                 if (_class_definition.keyword == SyntaxTree.class_keyword.Interface || _class_definition.keyword == SyntaxTree.class_keyword.TemplateInterface)
-                    AddError(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_SEALED"));
+                    TryFixError(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_SEALED"));
             }
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == SyntaxTree.class_attribute.Auto)
             {
                 if (_class_definition.keyword == SyntaxTree.class_keyword.Interface || _class_definition.keyword == SyntaxTree.class_keyword.TemplateInterface)
-                    AddError(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_AUTO"));
+                    TryFixError(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_AUTO"));
             }
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract &&
                 (_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
-                AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
+                TryFixError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract)
             {
                 if (_class_definition.keyword != SyntaxTree.class_keyword.Class)
-                    AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
+                    TryFixError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
                 context.converted_type.SetIsAbstract(true, null); // Причина null, в ошибке и так будет видно что abstract и sealed стоят рядом
             }
             if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
             {
                 if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract)
-                    AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
+                    TryFixError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
                 if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
-                    AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "sealed");
+                    TryFixError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "sealed");
                 if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == SyntaxTree.class_attribute.Auto)
-                    AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "auto");
+                    TryFixError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "auto");
                 if (_class_definition.keyword != SyntaxTree.class_keyword.Class)
-                    AddError(get_location(_class_definition), "ONLY_CLASS_CAN_BE_STATIC");
+                    TryFixError(get_location(_class_definition), "ONLY_CLASS_CAN_BE_STATIC");
                 if (context.converted_type.is_generic_type_definition)
-                    AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_BE_GENERIC");
+                    TryFixError(get_location(_class_definition), "STATIC_CLASS_CANNOT_BE_GENERIC");
                 context.converted_type.SetIsStatic(true);
                 context.converted_type.SetIsSealed(true);
                 context.converted_type.SetIsAbstract(true, null); // Причина null, потому что причины нет, класс статический а не абстрактный
@@ -3791,7 +3808,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (_class_definition.template_args != null && _class_definition.template_args.idents != null)
                         {
-                            AddError(get_location(_class_definition.template_args), "GENERIC_TYPE_NOT_ALLOWED_HERE");
+                            TryFixError(get_location(_class_definition.template_args), "GENERIC_TYPE_NOT_ALLOWED_HERE");
                         }
                     }
                     visit_where_list(_class_definition.where_section);
@@ -3824,30 +3841,30 @@ namespace PascalABCCompiler.TreeConverter
                     if (tn.is_generic_type_definition || tn.is_generic_type_instance) need_recheck_where.Add(syntax_tn);
 
                     if ((tn.original_generic??tn).ForwardDeclarationOnly)
-                        AddError(loc, "FORWARD_DECLARATION_{0}_AS_BASE_TYPE", tn.PrintableName);
+                        TryFixError(loc, "FORWARD_DECLARATION_{0}_AS_BASE_TYPE", tn.PrintableName);
                     if (tn.is_generic_parameter)
-                        AddError(loc, "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
+                        TryFixError(loc, "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
 
                     for (var curr = tn; curr!=null; curr=curr.base_type)
                     {
                         curr = curr.original_generic ?? curr;
                         if (curr == converted_type)
-                            AddError(loc, "TYPE_{0}_INHERITS_SELF", converted_type.PrintableName);
+                            TryFixError(loc, "TYPE_{0}_INHERITS_SELF", converted_type.PrintableName);
                     }
 
                     // Если первый тип в списке - класс-предок
                     if (i==0 && !tn.IsInterface && _class_definition.keyword==PascalABCCompiler.SyntaxTree.class_keyword.Class)
                     {
                         if (tn.IsSealed)
-                            AddError(loc, "PARENT_TYPE_IS_SEALED{0}", tn.PrintableName);
+                            TryFixError(loc, "PARENT_TYPE_IS_SEALED{0}", tn.PrintableName);
                         if (tn == SystemLibrary.SystemLibrary.value_type)
-                            AddError(loc, "CAN_NOT_INHERIT_FROM_VALUE_TYPE");
+                            TryFixError(loc, "CAN_NOT_INHERIT_FROM_VALUE_TYPE");
                         if (tn.IsPointer)
-                            AddError(loc, "CAN_NOT_INHERIT_FROM_POINTER");
+                            TryFixError(loc, "CAN_NOT_INHERIT_FROM_POINTER");
                         if (tn.IsDelegate)
-                            AddError(loc, "CAN_NOT_INHERIT_FROM_FUNCTION_TYPE");
+                            TryFixError(loc, "CAN_NOT_INHERIT_FROM_FUNCTION_TYPE");
                         if (tn == SystemLibrary.SystemLibrary.delegate_base_type || tn == SystemLibrary.SystemLibrary.system_delegate_type)
-                            AddError(loc, "CAN_NOT_INHERIT_FROM_DELEGATE_TYPE");
+                            TryFixError(loc, "CAN_NOT_INHERIT_FROM_DELEGATE_TYPE");
 
                         converted_type.SetBaseType(tn);
                         need_set_base = false;
@@ -3861,7 +3878,7 @@ namespace PascalABCCompiler.TreeConverter
                     // type_table.AddInterface проверяет что tn это интерфейс
                     type_table.AddInterface(converted_type, tn, loc);
                     if (curr_def_interfaces.Contains(tn))
-                        AddError(loc, "INTERFACE_{0}_ALREADY_ADDED_TO_IMPLEMENTING_LIST", tn.PrintableName);
+                        TryFixError(loc, "INTERFACE_{0}_ALREADY_ADDED_TO_IMPLEMENTING_LIST", tn.PrintableName);
                     else
                         curr_def_interfaces.Add(tn);
 
@@ -3908,14 +3925,14 @@ namespace PascalABCCompiler.TreeConverter
                     //    generic_convertions.remove_type_instances(converted_type);
 
                     if (converted_type.is_value || converted_type.IsInterface)
-                        AddError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", converted_type.name);
+                        TryFixError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", converted_type.name);
                     converted_type.is_class = true;
 
                     if (_class_definition.body == null &&
                         (_class_definition.class_parents == null || _class_definition.class_parents.types.Count == 0))
                     {
                         if (converted_type.ForwardDeclarationOnly)
-                            AddError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
+                            TryFixError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
                         converted_type.ForwardDeclarationOnly = true;
 
                         context.types_predefined.Add(converted_type);
@@ -3936,7 +3953,7 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             // Если снова возникнет ошибка с предками в автоклассах, то не раскомментировать эти строки, а подумать, как разрешить
                             //if (_class_definition.class_parents!=null)
-                            //    AddError(new AutoClassMustNotHaveParents(get_location(_class_definition)));
+                            //    TryFixError(new AutoClassMustNotHaveParents(get_location(_class_definition)));
                             // добавление членов автоклассов. Не забыть сделать, что от автоклассов нельзя наследовать
                             // Это спорный вопрос. С другой стороны от автоклассов хочется наследовать
 
@@ -3946,7 +3963,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 var ff = convert_strong(c);
                                 if (!ff.IsInterface)
-                                    AddError(new AutoClassMustNotHaveParents(get_location(_class_definition)));
+                                    TryFixError(new AutoClassMustNotHaveParents(get_location(_class_definition)));
 
                             }
 
@@ -3963,7 +3980,7 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     var mm = m as var_def_statement;
                                     if (mm != null && mm.is_event)
-                                        AddError(get_location(mm), "AUTO_CLASS_MUST_NOT_HAVE_EVENTS");
+                                        TryFixError(get_location(mm), "AUTO_CLASS_MUST_NOT_HAVE_EVENTS");
                                 }
                             }
 
@@ -3971,9 +3988,9 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 type_node tn = convert_strong(types[i]);
                                 if (tn.IsEnum && types[i] is enum_type_definition)
-                                    AddError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS");
+                                    TryFixError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS");
                                 if (tn.IsPointer)
-                                    AddError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_POINTERS");
+                                    TryFixError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_POINTERS");
                             }
                             if (_class_definition.body != null)
                             foreach (class_members cl_mem in _class_definition.body.class_def_blocks)
@@ -3986,7 +4003,7 @@ namespace PascalABCCompiler.TreeConverter
                                         SyntaxTree.array_type arr = type as SyntaxTree.array_type;
                                         if (type is SyntaxTree.class_definition || (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
                                         {
-                                            AddError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_AUTO_CLASS");
+                                            TryFixError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_AUTO_CLASS");
                                         }
                                     }
                                 }
@@ -4002,16 +4019,16 @@ namespace PascalABCCompiler.TreeConverter
                     if (converted_type.IsSealed && converted_type.IsAbstract && !converted_type.IsStatic)
                     {
                         if (converted_type.AbstractReason == null)
-                            AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
+                            TryFixError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
                         else
-                            AddError(get_location(_class_definition), converted_type.AbstractReason.Explanation, converted_type.name, converted_type.AbstractReason.ObjName);
+                            TryFixError(get_location(_class_definition), converted_type.AbstractReason.Explanation, converted_type.name, converted_type.AbstractReason.ObjName);
                     }
                     break;
                 case PascalABCCompiler.SyntaxTree.class_keyword.Record:
 
                     if (context.CurrentScope is SymbolTable.BlockScope)
                     {
-                        AddError(get_location(_class_definition), "RECORD_CANNOT_BE_DECLARED_IN_BLOCK");
+                        TryFixError(get_location(_class_definition), "RECORD_CANNOT_BE_DECLARED_IN_BLOCK");
                         converted_type.internal_is_value = true;
                         context.leave_record();
                         return_value(converted_type);
@@ -4029,7 +4046,7 @@ namespace PascalABCCompiler.TreeConverter
                         (_class_definition.class_parents == null || _class_definition.class_parents.types.Count == 0))
                     {
                         if (converted_type.ForwardDeclarationOnly)
-                            AddError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
+                            TryFixError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
                         context.types_predefined.Add(converted_type);
 
                         converted_type.ForwardDeclarationOnly = true;
@@ -4060,7 +4077,7 @@ namespace PascalABCCompiler.TreeConverter
                 case PascalABCCompiler.SyntaxTree.class_keyword.Interface:
                     if (converted_type.is_value || !converted_type.IsInterface)
                     {
-                        AddError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", converted_type.name);
+                        TryFixError(get_location(_class_definition), "FORWARD_DECLARATION_OF_{0}_MISMATCH_DECLARATION", converted_type.name);
                     }
                     if (SemanticRules.GenerateNativeCode)
                         converted_type.SetBaseType(SemanticRules.ClassBaseType);
@@ -4081,7 +4098,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (converted_type.ForwardDeclarationOnly)
                         {
-                            AddError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
+                            TryFixError(new NameRedefinition(converted_type.name, converted_type.Location, get_location(_class_definition)));
                         }
                         context.types_predefined.Add(converted_type);
                         converted_type.ForwardDeclarationOnly = true;
@@ -4244,7 +4261,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     //У предка нет конструктора по умолчанию,
                     //невозможно сгенерировать конструктор по умолчанию.
-                    AddError(context.converted_type.loc, "NO_DEFAULT_CONSTRUCTOR_INT_TYPE_{0}", context.converted_type.base_type.name);
+                    TryFixError(context.converted_type.loc, "NO_DEFAULT_CONSTRUCTOR_INT_TYPE_{0}", context.converted_type.base_type.name);
                     return;
                 }
             }
@@ -4285,7 +4302,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
-                    AddError(get_location(_access_modifer_node), "ACCESS_MODIFER_IN_INTERFACE");
+                    TryFixError(get_location(_access_modifer_node), "ACCESS_MODIFER_IN_INTERFACE");
                 }
                 return;
             }
@@ -4325,7 +4342,7 @@ namespace PascalABCCompiler.TreeConverter
                 var lambdaSearcher = new LambdaSearcher(def);
                 if (lambdaSearcher.CheckIfContainsLambdas())
                 {
-                    AddError(new LambdasNotAllowedInFieldsInitialization(get_location(lambdaSearcher.FoundLambda)));
+                    TryFixError(new LambdasNotAllowedInFieldsInitialization(get_location(lambdaSearcher.FoundLambda)));
                 }
             }
 
@@ -4344,16 +4361,16 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.simple_property _simple_property)
         {
             if (_simple_property.accessors == null)
-                AddError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", compiler_string_consts.PascalReadAccessorName, compiler_string_consts.PascalWriteAccessorName);
+                TryFixError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", compiler_string_consts.PascalReadAccessorName, compiler_string_consts.PascalWriteAccessorName);
             if (_simple_property.property_type == null)
-                AddError(get_location(_simple_property.property_name), "TYPE_NAME_EXPECTED");
+                TryFixError(get_location(_simple_property.property_name), "TYPE_NAME_EXPECTED");
             string name = _simple_property.property_name.name;
             type_node expl_interface = null;
             if (_simple_property.property_name.ln != null)
             {
                 for (var i = 0; i < _simple_property.property_name.ln.Count - 1; i++)
                     if (_simple_property.property_name.ln[i] is SyntaxTree.template_type_name)
-                        AddError(new NameCannotHaveGenericParameters(_simple_property.property_name.ln[i].name, get_location(_simple_property.property_name.ln[i])));
+                        TryFixError(new NameCannotHaveGenericParameters(_simple_property.property_name.ln[i].name, get_location(_simple_property.property_name.ln[i])));
 
                 var ntr = new SyntaxTree.named_type_reference();
                 if (_simple_property.property_name.ln[_simple_property.property_name.ln.Count - 1] is template_type_name)
@@ -4380,25 +4397,25 @@ namespace PascalABCCompiler.TreeConverter
                 type_node tn = find_type(ntr, get_location(_simple_property.property_name));
 
                 if (!tn.IsInterface)
-                    AddError(get_location(_simple_property.property_name), "EXPECTED_INTERFACE");
+                    TryFixError(get_location(_simple_property.property_name), "EXPECTED_INTERFACE");
                 name = tn.BaseFullName + "." + name;
                 expl_interface = tn;
                 List<SymbolInfo> sil = expl_interface.find_in_type(_simple_property.property_name.name);
                 if (sil == null)
-                    AddError(new MemberIsNotDeclaredInType(_simple_property.property_name, get_location(_simple_property.property_name), expl_interface));
+                    TryFixError(new MemberIsNotDeclaredInType(_simple_property.property_name, get_location(_simple_property.property_name), expl_interface));
                 if (!(sil[0].sym_info is property_node))
-                    AddError(get_location(_simple_property.property_name), "EXPECTED_PROPERTY");
+                    TryFixError(get_location(_simple_property.property_name), "EXPECTED_PROPERTY");
             }
             common_property_node pn = context.add_property(name, get_location(_simple_property.property_name));
             assign_doc_info(pn, _simple_property);
             //pn.polymorphic_state=SemanticTree.polymorphic_state.ps_common;
             //pn.loc=get_location(_simple_property.property_name);
             if (context.converted_type.IsStatic && _simple_property.attr != SyntaxTree.definition_attribute.Static)
-                AddError(get_location(_simple_property), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
+                TryFixError(get_location(_simple_property), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (_simple_property.attr == SyntaxTree.definition_attribute.Static)
             {
                 if (context.converted_type.IsInterface)
-                    AddError(get_location(_simple_property), "INTERFACE_PROPERTIES_CANNOT_BE_STATIC");
+                    TryFixError(get_location(_simple_property), "INTERFACE_PROPERTIES_CANNOT_BE_STATIC");
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
             }
             	
@@ -4407,20 +4424,20 @@ namespace PascalABCCompiler.TreeConverter
             else if (_simple_property.virt_over_none_attr == proc_attribute.attr_abstract)
             {
                 if (context.converted_type.IsInterface)
-                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
+                    TryFixError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
                 context.converted_type.SetIsAbstract(true, new CARAbstractPropertie(_simple_property));
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
             }
             if (context.converted_type.is_value_type)
             {
                 if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual)
-                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "virtual");
+                    TryFixError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "virtual");
                 else if (_simple_property.virt_over_none_attr == proc_attribute.attr_override)
-                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "override");
+                    TryFixError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "override");
                 else if (_simple_property.virt_over_none_attr == proc_attribute.attr_reintroduce)
-                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "reintroduce");
+                    TryFixError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "reintroduce");
                 else if (_simple_property.virt_over_none_attr == proc_attribute.attr_abstract)
-                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
+                    TryFixError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
             }
             parameter_list pal_big = new parameter_list();
             //TODO: Спросить у Саши как получить тип параметра - var,const и т.д.
@@ -4461,14 +4478,14 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (!context.converted_type.IsInterface && _simple_property.virt_over_none_attr != proc_attribute.attr_abstract)
                         {
-                            AddError(get_location(_simple_property.accessors.read_accessor), "ACCESSOR_NAME_EXPECTED");
+                            TryFixError(get_location(_simple_property.accessors.read_accessor), "ACCESSOR_NAME_EXPECTED");
                         }
                         pn.internal_get_function = GenerateGetSetMethodForInterfaceProperty(pn, get_location(_simple_property.accessors.read_accessor), true);
                     }
                     else
                     {
                         if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                            AddError(get_location(_simple_property.accessors.read_accessor), "ABSTRACT_PROPERTIES_CANNOT_HAVE_IMPLEMENTATION");
+                            TryFixError(get_location(_simple_property.accessors.read_accessor), "ABSTRACT_PROPERTIES_CANNOT_HAVE_IMPLEMENTATION");
                         convertion_data_and_alghoritms.check_node_parser_error(_simple_property.accessors.read_accessor.accessor_name);
                         sil = context.converted_type.find_in_type(_simple_property.accessors.read_accessor.accessor_name.name, context.CurrentScope);
 
@@ -4476,13 +4493,13 @@ namespace PascalABCCompiler.TreeConverter
 
                         if (sil == null)
                         {
-                            //AddError(new UndefinedNameReference(_simple_property.accessors.read_accessor.accessor_name.name, loc1));
-                            AddError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
+                            //TryFixError(new UndefinedNameReference(_simple_property.accessors.read_accessor.accessor_name.name, loc1));
+                            TryFixError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }
 
                         /*if (sil.FirstOrDefault().scope != context.CurrentScope) // SSM 22/05/20
                         {
-                            AddError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
+                            TryFixError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }*/
 
                         //dn = check_name_node_type(_simple_property.accessors.read_accessor.accessor_name.name,
@@ -4493,7 +4510,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (read_accessor != null)
                         {
                             if (!(read_accessor as common_method_node).IsStatic && _simple_property.attr == definition_attribute.Static)
-                                AddError(loc1,"STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR");
+                                TryFixError(loc1,"STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR");
 
                             bool good_func = true;
                             bool one_func = sil.Count() == 1;
@@ -4506,7 +4523,7 @@ namespace PascalABCCompiler.TreeConverter
                                     good_func = false;
                                     if (one_func)
                                     {
-                                        AddError(new PropertyAndReadAccessorParamsCountConvergence(read_accessor, pn, loc1));
+                                        TryFixError(new PropertyAndReadAccessorParamsCountConvergence(read_accessor, pn, loc1));
                                     }
                                 }
                                 //TODO: Сверять типы параметров - var, const и т.д.
@@ -4520,7 +4537,7 @@ namespace PascalABCCompiler.TreeConverter
                                             good_func = false;
                                             if (one_func)
                                             {
-                                                AddError(loc1, "PROPERTY_{0}_AND_READ_ACCESSOR_{1}_PARAMS_TYPE_CONVERGENCE", pn.name, read_accessor.name);
+                                                TryFixError(loc1, "PROPERTY_{0}_AND_READ_ACCESSOR_{1}_PARAMS_TYPE_CONVERGENCE", pn.name, read_accessor.name);
                                             }
                                         }
                                     }
@@ -4529,7 +4546,7 @@ namespace PascalABCCompiler.TreeConverter
                                         good_func = false;
                                         if (one_func)
                                         {
-                                            AddError(loc1, "PROPERTY_READ_ACCESSOR_CAN_NOT_BE_PROCEDURE");
+                                            TryFixError(loc1, "PROPERTY_READ_ACCESSOR_CAN_NOT_BE_PROCEDURE");
                                         }
                                     }
                                     if (read_accessor.return_value_type != pn.property_type)
@@ -4537,12 +4554,12 @@ namespace PascalABCCompiler.TreeConverter
                                         good_func = false;
                                         if (one_func)
                                         {
-                                            AddError(loc1, "PROPERTY_{0}_AND_READ_ACCESSOR_{1}_RETURN_VALUE_TYPE_CONVERGENCE", pn.name, read_accessor.name);
+                                            TryFixError(loc1, "PROPERTY_{0}_AND_READ_ACCESSOR_{1}_RETURN_VALUE_TYPE_CONVERGENCE", pn.name, read_accessor.name);
                                         }
                                     }
                                     if (read_accessor is common_method_node && (read_accessor as common_method_node).is_constructor)
                                     {
-                                        AddError(loc1, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
+                                        TryFixError(loc1, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
                                     }
                                 }
                                 if (good_func)
@@ -4557,7 +4574,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             if (!good_func)
                             {
-                                AddError(loc1, "NO_OVERLOAD_FUNCTION_{0}_USEFUL_FOR_ACCESSOR", read_accessor.name);
+                                TryFixError(loc1, "NO_OVERLOAD_FUNCTION_{0}_USEFUL_FOR_ACCESSOR", read_accessor.name);
                             }
                             read_accessor = GenerateGetMethod(pn, read_accessor as common_method_node, pn.loc);
                            
@@ -4567,20 +4584,20 @@ namespace PascalABCCompiler.TreeConverter
                             class_field cfield = sil.FirstOrDefault().sym_info as class_field;
                             if (cfield == null)
                             {
-                                AddError(loc1, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
+                                TryFixError(loc1, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
                             }
                             if (_simple_property.parameter_list != null)
                             {
-                                AddError(loc1, "INDEX_PROPERTY_ACCESSOR_CAN_NOT_BE_VARIABLE");
+                                TryFixError(loc1, "INDEX_PROPERTY_ACCESSOR_CAN_NOT_BE_VARIABLE");
                             }
                             if (cfield.type != pn.internal_property_type)
                             {
-                                AddError(loc1, "PROPERTY_TYPE_MISMATCH_ACCESSOR_FIELD_TYPE");
+                                TryFixError(loc1, "PROPERTY_TYPE_MISMATCH_ACCESSOR_FIELD_TYPE");
                             }
                             if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
-                        		AddError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
+                        		TryFixError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
                     		if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
-                                AddError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
+                                TryFixError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
                             read_accessor = GenerateGetMethodForField(pn, compiler_string_consts.GetGetAccessorName(pn.name), cfield, loc1);
                         }
                        
@@ -4588,9 +4605,9 @@ namespace PascalABCCompiler.TreeConverter
                         pn.internal_get_function = read_accessor;
                     }
                     if (pn.internal_get_function != null && pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && pn.internal_get_function.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
-                        AddError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", pn.internal_get_function.name);
+                        TryFixError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", pn.internal_get_function.name);
                     if (pn.internal_get_function != null && pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && pn.internal_get_function.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
-                        AddError(get_location(_simple_property.accessors.read_accessor.accessor_name),  "ACCESSOR_{0}_CANNOT_BE_STATIC", pn.internal_get_function.name);
+                        TryFixError(get_location(_simple_property.accessors.read_accessor.accessor_name),  "ACCESSOR_{0}_CANNOT_BE_STATIC", pn.internal_get_function.name);
                 }
 
                 if (_simple_property.accessors.write_accessor != null)
@@ -4600,14 +4617,14 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (!context.converted_type.IsInterface && _simple_property.virt_over_none_attr != proc_attribute.attr_abstract)
                         {
-                            AddError(get_location(_simple_property.accessors.write_accessor), "ACCESSOR_NAME_EXPECTED");
+                            TryFixError(get_location(_simple_property.accessors.write_accessor), "ACCESSOR_NAME_EXPECTED");
                         }
                         pn.internal_set_function = GenerateGetSetMethodForInterfaceProperty(pn, get_location(_simple_property.accessors.write_accessor), false);
                     }
                     else
                     {
                         if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                            AddError(get_location(_simple_property.accessors.write_accessor), "ABSTRACT_PROPERTIES_CANNOT_HAVE_IMPLEMENTATION");
+                            TryFixError(get_location(_simple_property.accessors.write_accessor), "ABSTRACT_PROPERTIES_CANNOT_HAVE_IMPLEMENTATION");
                         convertion_data_and_alghoritms.check_node_parser_error(_simple_property.accessors.write_accessor.accessor_name);
                         sil = context.converted_type.find_in_type(_simple_property.accessors.write_accessor.accessor_name.name, context.CurrentScope);
 
@@ -4615,13 +4632,13 @@ namespace PascalABCCompiler.TreeConverter
 
                         if (sil == null)
                         {
-                            //AddError( new UndefinedNameReference(_simple_property.accessors.write_accessor.accessor_name.name, loc2));
-                            AddError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
+                            //TryFixError( new UndefinedNameReference(_simple_property.accessors.write_accessor.accessor_name.name, loc2));
+                            TryFixError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }
 
                         /*if (sil.FirstOrDefault().scope != context.CurrentScope) // SSM 22/05/20
                         {
-                            AddError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
+                            TryFixError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }*/
 
                         //dn = check_name_node_type(_simple_property.accessors.write_accessor.accessor_name.name,
@@ -4632,7 +4649,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (write_accessor != null)
                         {
                             if (!(write_accessor as common_method_node).IsStatic && _simple_property.attr == definition_attribute.Static)
-                                AddError(loc2, "STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR");
+                                TryFixError(loc2, "STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR");
 
                             bool good_func = true;
                             bool one_func = sil.Count() == 1;
@@ -4645,7 +4662,7 @@ namespace PascalABCCompiler.TreeConverter
                                     good_func = false;
                                     if (one_func)
                                     {
-                                        AddError( new PropertyAndWriteAccessorParamsCountConvergence(write_accessor, pn, loc2));
+                                        TryFixError( new PropertyAndWriteAccessorParamsCountConvergence(write_accessor, pn, loc2));
                                     }
                                 }
                                 else
@@ -4659,7 +4676,7 @@ namespace PascalABCCompiler.TreeConverter
                                             good_func = false;
                                             if (one_func)
                                             {
-                                                AddError(loc2, "PROPERTY_{0}_AND_WRITE_ACCESSOR_{1}_PARAMS_TYPE_CONVERGENCE", pn.name ,write_accessor.name);
+                                                TryFixError(loc2, "PROPERTY_{0}_AND_WRITE_ACCESSOR_{1}_PARAMS_TYPE_CONVERGENCE", pn.name ,write_accessor.name);
                                             }
                                         }
                                     }
@@ -4669,7 +4686,7 @@ namespace PascalABCCompiler.TreeConverter
                                         good_func = false;
                                         if (one_func)
                                         {
-                                            AddError(loc2, "PROPERTY_{0}_AND_WRITE_ACCESSOR_LAST_PARAMETER_TYPE_CONVERGENCE", pn.name);
+                                            TryFixError(loc2, "PROPERTY_{0}_AND_WRITE_ACCESSOR_LAST_PARAMETER_TYPE_CONVERGENCE", pn.name);
                                         }
                                     }
                                     if (write_accessor.return_value_type != null)
@@ -4677,7 +4694,7 @@ namespace PascalABCCompiler.TreeConverter
                                         good_func = false;
                                         if (one_func)
                                         {
-                                            AddError(loc2, "PROPERTY_WRITE_ACCESSOR_CAN_NOT_BE_FUNCTION");
+                                            TryFixError(loc2, "PROPERTY_WRITE_ACCESSOR_CAN_NOT_BE_FUNCTION");
                                         }
                                     }
                                 }
@@ -4693,11 +4710,11 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             if (!good_func)
                             {
-                                AddError(loc2, "NO_OVERLOAD_FUNCTION_{0}_USEFUL_FOR_ACCESSOR", write_accessor.name);
+                                TryFixError(loc2, "NO_OVERLOAD_FUNCTION_{0}_USEFUL_FOR_ACCESSOR", write_accessor.name);
                             }
                             if (write_accessor is common_method_node && (write_accessor as common_method_node).is_constructor)
                             {
-                                AddError(loc2, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
+                                TryFixError(loc2, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
                             }
                             write_accessor = GenerateSetMethod(pn, write_accessor as common_method_node, pn.loc);
                         }
@@ -4706,30 +4723,30 @@ namespace PascalABCCompiler.TreeConverter
                             class_field cfield = sil.FirstOrDefault().sym_info as class_field;
                             if (cfield == null)
                             {
-                                AddError(loc2, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
+                                TryFixError(loc2, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
                             }
 
                             if (_simple_property.parameter_list != null)
                             {
-                                AddError(loc2, "INDEX_PROPERTY_ACCESSOR_CAN_NOT_BE_VARIABLE");
+                                TryFixError(loc2, "INDEX_PROPERTY_ACCESSOR_CAN_NOT_BE_VARIABLE");
                             }
                             if (cfield.type != pn.internal_property_type)
                             {
-                                AddError(loc2, "PROPERTY_TYPE_MISMATCH_ACCESSOR_FIELD_TYPE");
+                                TryFixError(loc2, "PROPERTY_TYPE_MISMATCH_ACCESSOR_FIELD_TYPE");
                             }
                             if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
-                        		AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
+                        		TryFixError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
                     		if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
-                        		AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
+                        		TryFixError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
                             write_accessor = GenerateSetMethodForField(pn, compiler_string_consts.GetSetAccessorName(pn.name), cfield, loc2);
                         }
                         //Вот здесь уже можем добавить акцессор для чтения.
                         pn.internal_set_function = write_accessor;
                     }
                     if (pn.internal_set_function != null && pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && pn.internal_set_function.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
-                        AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", pn.internal_set_function.name);
+                        TryFixError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", pn.internal_set_function.name);
                     if (pn.internal_set_function != null && pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && pn.internal_set_function.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
-                        AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", pn.internal_set_function.name);
+                        TryFixError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", pn.internal_set_function.name);
                 }
             }
             make_attributes_for_declaration(_simple_property,pn);
@@ -4745,11 +4762,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (pn.parameters.Count == 0)
                 {
-                    AddError(pn.loc, "DEFAULT_PROPERTY_MUST_BE_INDEXED");
+                    TryFixError(pn.loc, "DEFAULT_PROPERTY_MUST_BE_INDEXED");
                 }
                 if (context.converted_type.default_property_node != null)
                 {
-                    AddError(pn.loc, "DUPLICATE_DEFAULT_PROPERTY_IN_CLASS");
+                    TryFixError(pn.loc, "DUPLICATE_DEFAULT_PROPERTY_IN_CLASS");
                 }
                 context.converted_type.default_property = pn;
             }
@@ -4842,7 +4859,7 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> exist_sil = context.find_only_in_namespace(AcessorName);
             if (exist_sil != null && exist_sil.FirstOrDefault().sym_info.general_node_type != general_node_type.function_node)
             {
-                AddError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
+                TryFixError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
             }
             if (exist_sil != null)
             {
@@ -4851,7 +4868,7 @@ namespace PascalABCCompiler.TreeConverter
                     function_node ff = (function_node)(exist_si.sym_info);
                     if (ff.parameters.Count == 1 && ff.parameters[0].type == cf.type)
                     {
-                        AddError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
+                        TryFixError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
                     }
                 }
             }
@@ -4889,7 +4906,7 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> exist_sil = context.find_only_in_namespace(AcessorName);
             if (exist_sil != null && exist_sil.FirstOrDefault().sym_info.general_node_type != general_node_type.function_node)
             {
-                AddError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
+                TryFixError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
             }
             if (exist_sil != null)
             {
@@ -4897,7 +4914,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (((function_node)(exist_si.sym_info)).parameters.Count == 0)
                     {
-                        AddError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
+                        TryFixError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
                     }
                 }
             }
@@ -4930,7 +4947,7 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> exist_sil = context.find_only_in_namespace(AcessorName);
             if (exist_sil != null && exist_sil.FirstOrDefault().sym_info.general_node_type != general_node_type.function_node)
             {
-                AddError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
+                TryFixError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", AcessorName);
             }
             common_method_node cmn = new common_method_node(
                 AcessorName, loc, pn.common_comprehensive_type,
@@ -4966,7 +4983,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (convertion_data_and_alghoritms.function_eq_params(cmn, (function_node)(exist_si.sym_info)))
                     {
-                        AddError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", cmn.name);
+                        TryFixError(loc, "CAN_NOT_GENERATE_ACCESSOR_{0}", cmn.name);
                     }
                 }
             }
@@ -5044,19 +5061,19 @@ namespace PascalABCCompiler.TreeConverter
             internal_interface ii = left.type.get_internal_interface(internal_interface_kind.ordinal_interface);
             if (ii == null)
             {
-                AddError(new OrdinalTypeExpected(left.location));
+                TryFixError(new OrdinalTypeExpected(left.location));
             }
             internal_interface iir = right.type.get_internal_interface(internal_interface_kind.ordinal_interface);
             if (iir == null)
             {
-                AddError(new OrdinalTypeExpected(right.location));
+                TryFixError(new OrdinalTypeExpected(right.location));
             }
             type_node_list tnl = new type_node_list();
             tnl.AddElement(left.type);
             tnl.AddElement(right.type);
             elem_type = convertion_data_and_alghoritms.select_base_type(tnl,true);
             if (elem_type == SystemLibrary.SystemLibrary.object_type)
-                AddError(new SimpleSemanticError(get_location(_diapason_expr), "BAD_DIAPASON_IN_SET_TYPE"));
+                TryFixError(new SimpleSemanticError(get_location(_diapason_expr), "BAD_DIAPASON_IN_SET_TYPE"));
             expression_node l = convertion_data_and_alghoritms.explicit_convert_type(left, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             expression_node r = convertion_data_and_alghoritms.explicit_convert_type(right, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             if (PascalABCCompiler.SystemLibrary.SystemLibInitializer.CreateDiapason.sym_info is common_namespace_function_node)
@@ -5102,7 +5119,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             //throw new NotSupportedError(get_location(_pascal_set_constant));
             if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
-            	AddError(new NotSupportedError(get_location(_pascal_set_constant)));
+            	TryFixError(new NotSupportedError(get_location(_pascal_set_constant)));
             expressions_list consts = new expressions_list();
             type_node el_type = null;
             type_node_list types = new type_node_list();
@@ -5135,7 +5152,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 el_type = convertion_data_and_alghoritms.select_base_type(types, true);
                 if (el_type == null)
-                    AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+                    TryFixError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
 
                 ctn = context.create_set_type(el_type, get_location(_pascal_set_constant));
 
@@ -5202,7 +5219,7 @@ namespace PascalABCCompiler.TreeConverter
                 CompilationErrorWithLocation err = generic_parameter_eliminations.check_type_generic_useful(tparams[i], loc);
                 if (err != null)
                 {
-                    AddError(err);
+                    TryFixError(err);
                 }
             }
             List<SymbolInfo> start = null;
@@ -5231,7 +5248,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (start == null)
             {
-                AddError(loc, "NO_FUNCTIONS_{0}_CAN_BE_USED_WITH_THIS_SPECIFICATION", name);
+                TryFixError(loc, "NO_FUNCTIONS_{0}_CAN_BE_USED_WITH_THIS_SPECIFICATION", name);
             }
             return start;
         }
@@ -5278,7 +5295,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (stop_on_none)
                 {
-                    AddError(loc, "TRIANGLE_BRACKETS_NOT_ALLOWED_WITH_COMMON_FUNCTIONS");
+                    TryFixError(loc, "TRIANGLE_BRACKETS_NOT_ALLOWED_WITH_COMMON_FUNCTIONS");
                 }
                 return null;
             }
@@ -5318,7 +5335,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 default:
                     {
-                        AddError(loc, msg);
+                        TryFixError(loc, msg);
                         return;
                     }
             }
@@ -5359,7 +5376,7 @@ namespace PascalABCCompiler.TreeConverter
 
            if (_method_call.dereferencing_value is dot_node dn && dn.right is operator_name_ident)
             {
-                AddError(get_location(dn.right), "OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX");
+                TryFixError(get_location(dn.right), "OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX");
             }
 
             bool proc_wait = procedure_wait;
@@ -5381,11 +5398,11 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     foundnamedargs = true;
                     if (lst1.Contains(aa.name.name, StringComparer.OrdinalIgnoreCase))
-                        AddError(get_location(aa.name), "NAMED_ARG_{0}_HAS_BEEN_USED_BEFORE", aa.name);
+                        TryFixError(get_location(aa.name), "NAMED_ARG_{0}_HAS_BEEN_USED_BEFORE", aa.name);
                     else lst1.Add(aa.name.name);
                 }
                 else if (foundnamedargs)
-                    AddError(get_location(param), "UNNAMED_ARGS_CANNOT_FOLLOW_NAMED");
+                    TryFixError(get_location(param), "UNNAMED_ARGS_CANNOT_FOLLOW_NAMED");
             }
             lst1 = null;
 
@@ -5427,13 +5444,13 @@ namespace PascalABCCompiler.TreeConverter
                     if (sil.FirstOrDefault().sym_info is common_method_node)
                     {
                         if ((sil.FirstOrDefault().sym_info as common_method_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                            AddError(get_location(inh_id), "CANNOT_CALL_ABSTRACT_METHOD");
+                            TryFixError(get_location(inh_id), "CANNOT_CALL_ABSTRACT_METHOD");
                     }
                     else
                     if (sil.FirstOrDefault().sym_info is compiled_function_node)
                     {
                         if ((sil.FirstOrDefault().sym_info as compiled_function_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                            AddError(get_location(inh_id), "CANNOT_CALL_ABSTRACT_METHOD");
+                            TryFixError(get_location(inh_id), "CANNOT_CALL_ABSTRACT_METHOD");
                     }
                 id = inh_id;
             }
@@ -5538,7 +5555,7 @@ namespace PascalABCCompiler.TreeConverter
                                         try_convert_typed_expression_to_function_call(ref exp);
                                     location subloc = get_location(id_right);
                                     if (exp is typed_expression)
-                                        AddError(new UndefinedNameReference(id_right.name, subloc));
+                                        TryFixError(new UndefinedNameReference(id_right.name, subloc));
                                     SyntaxTree.operator_name_ident oni_right = id_right as SyntaxTree.operator_name_ident;
                                     if (oni_right != null)
                                     {
@@ -5560,7 +5577,7 @@ namespace PascalABCCompiler.TreeConverter
 
                                     if (sil == null)
                                     {
-                                        AddError(new UndefinedNameReference(id_right.name, subloc));
+                                        TryFixError(new UndefinedNameReference(id_right.name, subloc));
                                     }
 
                                     if (sil.FirstOrDefault().sym_info.general_node_type != general_node_type.function_node)
@@ -5576,7 +5593,7 @@ namespace PascalABCCompiler.TreeConverter
                                             internal_interface ii = exp.type.get_internal_interface(internal_interface_kind.delegate_interface);
                                             if (ii == null)
                                             {
-                                                AddError(subloc, "EXPECTED_DELEGATE");
+                                                TryFixError(subloc, "EXPECTED_DELEGATE");
                                             }
                                             delegate_internal_interface dii = ii as delegate_internal_interface;
                                             sil = new List<SymbolInfo> { new SymbolInfo(dii.invoke_method) };
@@ -5587,7 +5604,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                         if ((_method_call.parameters == null) || (_method_call.parameters.expressions.Count != 1))
                                         {
-                                            AddError(get_location(_method_call), "ONLY_ONE_PARAMETER_OF_TYPE_CONVERSION_ALLOWED");
+                                            TryFixError(get_location(_method_call), "ONLY_ONE_PARAMETER_OF_TYPE_CONVERSION_ALLOWED");
                                         }
                                     }
                                     List<SymbolInfo> tmp_sil = sil;
@@ -6038,7 +6055,7 @@ namespace PascalABCCompiler.TreeConverter
                                             }
                                         default:
                                             {
-                                                AddError(subexpr1.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                                TryFixError(subexpr1.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                                 return;
                                             }
                                     }*/
@@ -6127,7 +6144,7 @@ namespace PascalABCCompiler.TreeConverter
 
                                     if (sil == null)
                                     {
-                                        AddError(new UndefinedNameReference(id_right.name, subloc));
+                                        TryFixError(new UndefinedNameReference(id_right.name, subloc));
                                     }
 
                                     if (sil.FirstOrDefault().sym_info.general_node_type != general_node_type.function_node)
@@ -6143,7 +6160,7 @@ namespace PascalABCCompiler.TreeConverter
                                             internal_interface ii = exp.type.get_internal_interface(internal_interface_kind.delegate_interface);
                                             if (ii == null)
                                             {
-                                                AddError(subloc, "EXPECTED_DELEGATE");
+                                                TryFixError(subloc, "EXPECTED_DELEGATE");
                                             }
                                             delegate_internal_interface dii = ii as delegate_internal_interface;
                                             sil = new List<SymbolInfo> { new SymbolInfo(dii.invoke_method) };
@@ -6154,7 +6171,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                         if ((_method_call.parameters == null) || (_method_call.parameters.expressions.Count != 1))
                                         {
-                                            AddError(get_location(_method_call), "ONLY_ONE_PARAMETER_OF_TYPE_CONVERSION_ALLOWED");
+                                            TryFixError(get_location(_method_call), "ONLY_ONE_PARAMETER_OF_TYPE_CONVERSION_ALLOWED");
                                         }
                                     }
 
@@ -6445,7 +6462,7 @@ namespace PascalABCCompiler.TreeConverter
                                             }
                                         default:
                                             {
-                                                AddError(subexpr2.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                                TryFixError(subexpr2.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                                 return;
                                             }
                                     } */
@@ -6462,7 +6479,7 @@ namespace PascalABCCompiler.TreeConverter
                             internal_interface ii = exp_int.type.get_internal_interface(internal_interface_kind.delegate_interface);
                             if (ii == null)
                             {
-                                AddError(sloc, "EXPECTED_DELEGATE");
+                                TryFixError(sloc, "EXPECTED_DELEGATE");
                             }
                             delegate_internal_interface dii = (delegate_internal_interface)ii;
                             sil = new List<SymbolInfo> { new SymbolInfo(dii.invoke_method) };
@@ -6695,7 +6712,7 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                 default:
                                     {
-                                        AddError(bbfc.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                        TryFixError(bbfc.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                         return;
                                     }
                             }  */
@@ -6719,7 +6736,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (sil == null)
             {
-                AddError(new UndefinedNameReference(id.name, subloc2));
+                TryFixError(new UndefinedNameReference(id.name, subloc2));
             }
 
             is_format_allowed = false;
@@ -6730,7 +6747,7 @@ namespace PascalABCCompiler.TreeConverter
 
                     expression_node bfcint = make_read_call(sil, _method_call.parameters, subloc2);
                     if (!proc_wait)
-                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
+                        TryFixError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
 
                     visit_mc_helper(mot, bfcint, get_location(_method_call), exprs, "EXPRESSION_IS_NOT_ADDRESSED");
                     return;
@@ -6749,7 +6766,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         default:
                             {
-                                AddError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                TryFixError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                 return;
                             }
                     }*/
@@ -6787,7 +6804,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         expression_node param0 = convert_strong(_method_call.parameters.expressions[0]);
                         if (!param0.is_addressed)
-                            AddError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
+                            TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
                         if (param0.type.type_special_kind == SemanticTree.type_special_kind.short_string)
                         {
                             expression_node param1 = convert_strong(_method_call.parameters.expressions[1]);
@@ -6818,7 +6835,7 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                 default:
                                     {
-                                        AddError(cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                        TryFixError(cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                         return;
                                     }
                             }  */
@@ -6831,7 +6848,7 @@ namespace PascalABCCompiler.TreeConverter
                             else if (param0.type is common_type_node)
                                 rank = (param0.type as common_type_node).rank;
                             if (_method_call.parameters.expressions.Count - 1 != rank)
-                                AddError(get_location(_method_call), "{0}_PARAMETERS_EXPECTED", rank + 1);
+                                TryFixError(get_location(_method_call), "{0}_PARAMETERS_EXPECTED", rank + 1);
                             if (rank > 1)
                             {
                                 type_node tn = param0.type.element_type;
@@ -6844,7 +6861,7 @@ namespace PascalABCCompiler.TreeConverter
                                     expression_node expr = convert_strong(_method_call.parameters.expressions[i]); ;
                                     expr = convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.integer_type);
                                     if (expr is int_const_node && (expr as int_const_node).constant_value < 0)
-                                        AddError(expr.location, "NEGATIVE_ARRAY_LENGTH_({0})_NOT_ALLOWED", (expr as int_const_node).constant_value);
+                                        TryFixError(expr.location, "NEGATIVE_ARRAY_LENGTH_({0})_NOT_ALLOWED", (expr as int_const_node).constant_value);
                                     lst.Add(expr);
                                 }
                                 //это вызов спецфункции
@@ -6903,7 +6920,7 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                 default:
                                     {
-                                        AddError(cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                        TryFixError(cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                         return;
                                     }
                             }*/
@@ -6949,7 +6966,7 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                 default:
                                     {
-                                        AddError(cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                        TryFixError(cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                         return;
                                     }
                             } */
@@ -7005,7 +7022,7 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                             default:
                                 {
-                                    AddError(en_cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                    TryFixError(en_cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                     return;
                                 }
                         } */
@@ -7015,7 +7032,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     expression_node bfcint = make_inc_call(sil?.FirstOrDefault(), _method_call.parameters, subloc2);
                     if (!proc_wait)
-                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
+                        TryFixError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
 
                     visit_mc_helper(mot, bfcint, get_location(_method_call), exprs, "EXPRESSION_IS_NOT_ADDRESSED");
                     return;
@@ -7034,7 +7051,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         default:
                             {
-                                AddError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                TryFixError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                 return;
                             }
                     } */
@@ -7045,7 +7062,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     expression_node bfcint = make_dec_call(sil?.FirstOrDefault(), _method_call.parameters, subloc2);
                     if (!proc_wait)
-                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
+                        TryFixError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
 
                     visit_mc_helper(mot, bfcint, get_location(_method_call), exprs, "EXPRESSION_IS_NOT_ADDRESSED");
                     return;
@@ -7064,7 +7081,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         default:
                             {
-                                AddError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                TryFixError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                 return;
                             }
                     }*/
@@ -7092,7 +7109,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         default:
                             {
-                                AddError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                TryFixError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                 return;
                             }
                     }*/
@@ -7119,7 +7136,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         default:
                             {
-                                AddError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                TryFixError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                 return;
                             }
                     } */
@@ -7146,7 +7163,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         default:
                             {
-                                AddError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                TryFixError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                 return;
                             }
                     }  */
@@ -7180,7 +7197,7 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                 default:
                                     {
-                                        AddError(en.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                        TryFixError(en.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                         return;
                                     }
                             }*/
@@ -7214,7 +7231,7 @@ namespace PascalABCCompiler.TreeConverter
                                     }
                                 default:
                                     {
-                                        AddError(en.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                        TryFixError(en.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                         return;
                                     }
                             }  */
@@ -7225,7 +7242,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     expression_node bfcint = make_new_call(sil.FirstOrDefault(), _method_call.parameters, subloc2);
                     if (!proc_wait)
-                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
+                        TryFixError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
 
                     visit_mc_helper(mot, bfcint, get_location(_method_call), exprs, "EXPRESSION_IS_NOT_ADDRESSED");
                     return;
@@ -7244,7 +7261,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         default:
                             {
-                                AddError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                TryFixError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                 return;
                             }
                     }*/
@@ -7257,7 +7274,7 @@ namespace PascalABCCompiler.TreeConverter
                     //{
                     expression_node bfcint = make_dispose_call(sil.FirstOrDefault(), _method_call.parameters, subloc2);
                     if (!proc_wait)
-                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
+                        TryFixError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (sil.FirstOrDefault().sym_info as function_node).name);
 
                     visit_mc_helper(mot, bfcint, get_location(_method_call), exprs, "EXPRESSION_IS_NOT_ADDRESSED");
                     return;
@@ -7276,7 +7293,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         default:
                             {
-                                AddError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
+                                TryFixError(bfcint.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                 return;
                             }
                     }*/
@@ -7311,7 +7328,7 @@ namespace PascalABCCompiler.TreeConverter
                     internal_interface ii = exp2.type.get_internal_interface(internal_interface_kind.delegate_interface);
                     if (ii == null)
                     {
-                        AddError(subloc2, "EXPECTED_DELEGATE");
+                        TryFixError(subloc2, "EXPECTED_DELEGATE");
                     }
                     if (exp2 is nonstatic_event_reference)
                     {
@@ -7320,7 +7337,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (ce != null)
                             exp2 = new class_field_reference(ce.field, new this_node(ce.cont_type, null), null);
                         else
-                            AddError(get_location(_method_call), "EVENT_{0}_MUST_BE_IN_LEFT_PART", nser.en.name);
+                            TryFixError(get_location(_method_call), "EVENT_{0}_MUST_BE_IN_LEFT_PART", nser.en.name);
                     }
                     else if (exp2 is static_event_reference)
                     {
@@ -7331,7 +7348,7 @@ namespace PascalABCCompiler.TreeConverter
                         else if (nser.en is common_namespace_event && _compiled_unit.namespaces.IndexOf((nser.en as common_namespace_event).namespace_node) != -1)
                             exp2 = new namespace_variable_reference((nser.en as common_namespace_event).field, null);
                         else
-                            AddError(get_location(_method_call), "EVENT_{0}_MUST_BE_IN_LEFT_PART", nser.en.name);
+                            TryFixError(get_location(_method_call), "EVENT_{0}_MUST_BE_IN_LEFT_PART", nser.en.name);
                     }
                     delegate_internal_interface dii = ii as delegate_internal_interface;
                     sil = new List<SymbolInfo> { new SymbolInfo(dii.invoke_method) };
@@ -7342,7 +7359,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if ((_method_call.parameters == null) || (_method_call.parameters.expressions.Count != 1))
                 {
-                    AddError(get_location(_method_call), "ONLY_ONE_PARAMETER_OF_TYPE_CONVERSION_ALLOWED");
+                    TryFixError(get_location(_method_call), "ONLY_ONE_PARAMETER_OF_TYPE_CONVERSION_ALLOWED");
                 }
                 if (proc_wait && to_type.IsDelegate)
                 {
@@ -7511,10 +7528,10 @@ namespace PascalABCCompiler.TreeConverter
                                         {
                                             if (err.ErrorResourceString == "ILLEGAL_LAMBDA_VARIABLE_TYPE" && spf != null)
                                             {
-                                                AddError(new SeveralFunctionsCanBeCalled(sf_error.loc, spf));
+                                                TryFixError(new SeveralFunctionsCanBeCalled(sf_error.loc, spf));
                                             }
                                             else
-                                                AddError(err);
+                                                TryFixError(err);
                                         }
                                         fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //lroman
                                         fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
@@ -7684,7 +7701,7 @@ namespace PascalABCCompiler.TreeConverter
                             del_name = (exp2 as local_variable_reference).var.name;
                         else if (exp2 is namespace_variable_reference)
                             del_name = (exp2 as namespace_variable_reference).var.name;
-                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", del_name);
+                        TryFixError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", del_name);
                     }
                     base_function_call bbffcc = create_not_static_method_call(fn, exp2, subloc2, proc_wait);
                     bbffcc.parameters.AddRange(exprs);
@@ -7715,13 +7732,13 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 case motivation.address_receiving:
                     {
-                        AddError(get_location(_method_call), "LEFT_SIDE_CANNOT_BE_ASSIGNED_TO");
+                        TryFixError(get_location(_method_call), "LEFT_SIDE_CANNOT_BE_ASSIGNED_TO");
                         return;
                     }
                 default:
                     {
                         //throw new CompilerInternalError("Can not recive address from method call");//!
-                        AddError(get_location(_method_call), "EXPECTED_VARIABLE");
+                        TryFixError(get_location(_method_call), "EXPECTED_VARIABLE");
                         return;
                     }
             }*/
@@ -7934,7 +7951,7 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             if (!CanUseThisTypeForBinaryFiles(exprs[i].type))
                             {
-                                AddError(exprs[i].location, "CAN_NOT_WRITE_REFERENCE_DATA_TO_BINARY_FILE");
+                                TryFixError(exprs[i].location, "CAN_NOT_WRITE_REFERENCE_DATA_TO_BINARY_FILE");
                             }
                         }
                     }
@@ -7957,20 +7974,20 @@ namespace PascalABCCompiler.TreeConverter
                 else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
                             || SystemLibrary.SystemLibInitializer.ExcludeProcedure.Equal(sil))
                 {
-                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
+                    if (exprs.Count != 2) TryFixError(new NoFunctionWithSameArguments(FunctionName, loc, true));
                     type_node element_type = exprs[0].type.element_type;
                     if (exprs[0].type.type_special_kind != SemanticTree.type_special_kind.base_set_type && exprs[0].type.type_special_kind != SemanticTree.type_special_kind.set_type)
                     {
-                        AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
+                        TryFixError(new NoFunctionWithSameArguments(FunctionName, loc, true));
                     }
                     if (element_type != null)
                         convertion_data_and_alghoritms.check_convert_type(exprs[1], element_type, exprs[1].location);
                     else convertion_data_and_alghoritms.check_convert_type(exprs[1], exprs[0].type, exprs[0].location);
-                    if (!exprs[0].is_addressed) AddError(new ThisExpressionCanNotBePassedAsVarParameter(exprs[0]));
+                    if (!exprs[0].is_addressed) TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(exprs[0]));
                 }
                 else if (SystemLibrary.SystemLibInitializer.InSetProcedure.Equal(sil))
                 {
-                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
+                    if (exprs.Count != 2) TryFixError(new NoFunctionWithSameArguments(FunctionName, loc, true));
                     type_node element_type = exprs[1].type.element_type;
                     if (element_type != null)
                     {
@@ -7982,26 +7999,26 @@ namespace PascalABCCompiler.TreeConverter
                 else if (SystemLibrary.SystemLibInitializer.SetUnionProcedure.Equal(sil)
                    || SystemLibrary.SystemLibInitializer.SetIntersectProcedure.Equal(sil) || SystemLibrary.SystemLibInitializer.SetSubtractProcedure.Equal(sil))
                 {
-                    if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
+                    if (exprs.Count != 2) TryFixError(new NoFunctionWithSameArguments(FunctionName, loc, true));
                     convertion_data_and_alghoritms.check_convert_type(exprs[1], exprs[0].type, exprs[1].location);
                 }
 
                 if (sil.FirstOrDefault() == SystemLibrary.SystemLibInitializer.NewProcedure || sil.FirstOrDefault() == SystemLibrary.SystemLibInitializer.DisposeProcedure)
                 {
                     if (exprs[0].type == SystemLibrary.SystemLibrary.pointer_type)
-                        AddError(exprs[0].location, "EXPECTED_TYPED_POINTER_IN_PROCEDURE{0}", (sil.FirstOrDefault().sym_info as function_node).name);
+                        TryFixError(exprs[0].location, "EXPECTED_TYPED_POINTER_IN_PROCEDURE{0}", (sil.FirstOrDefault().sym_info as function_node).name);
                 }
             }
         }
 
         private expression_node make_new_call(SymbolInfo si, SyntaxTree.expression_list parameters, location loc)
         {
-            if (parameters == null) AddError( new NoFunctionWithSameParametresNum(loc,false,si.sym_info as function_node));
+            if (parameters == null) TryFixError( new NoFunctionWithSameParametresNum(loc,false,si.sym_info as function_node));
             if (parameters.expressions.Count == 1)
             {
                 expression_node param0 = convert_strong(parameters.expressions[0]);
                 if (!param0.type.IsPointer || param0.type == SystemLibrary.SystemLibrary.pointer_type)
-                    AddError(new NoFunctionWithSameArguments("New", loc, true));
+                    TryFixError(new NoFunctionWithSameArguments("New", loc, true));
                 if (!param0.is_addressed)
                 {
                     bool is_pascal_array_ref = false;
@@ -8027,14 +8044,14 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         if (!is_pascal_array_ref)
                         {
-                            AddError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
+                            TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
                         }
 
                     }
-                    else AddError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
+                    else TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
                 }
                 if (param0.type is ref_type_node && !can_evaluate_size((param0.type as ref_type_node).pointed_type))
-                    AddError(loc, "CANNOT_CALL_NEW_BECAUSE_OF_UNDEFINED_SIZE");
+                    TryFixError(loc, "CANNOT_CALL_NEW_BECAUSE_OF_UNDEFINED_SIZE");
                 function_node fn = si.sym_info as function_node;
                 common_namespace_function_call cnfc = new common_namespace_function_call(fn as common_namespace_function_node, loc);
                 cnfc.parameters.AddElement(param0);
@@ -8043,7 +8060,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                AddError(new NoFunctionWithSameParametresNum(loc, false, si.sym_info as function_node));
+                TryFixError(new NoFunctionWithSameParametresNum(loc, false, si.sym_info as function_node));
                 return null;
             }
         }
@@ -8052,14 +8069,14 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (parameters == null)
             {
-                AddError(new NoFunctionWithSameParametresNum(loc, false, si.sym_info as function_node));
+                TryFixError(new NoFunctionWithSameParametresNum(loc, false, si.sym_info as function_node));
                 return null;
             }
             if (parameters.expressions.Count == 1)
             {
                 expression_node param0 = convert_strong(parameters.expressions[0]);
                 if (!param0.type.IsPointer || param0.type == SystemLibrary.SystemLibrary.pointer_type)
-                    AddError(new NoFunctionWithSameArguments("Dispose", loc, true));
+                    TryFixError(new NoFunctionWithSameArguments("Dispose", loc, true));
                 if (!param0.is_addressed)
                 {
                     bool is_pascal_array_ref = false;
@@ -8085,14 +8102,14 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         if (!is_pascal_array_ref)
                         {
-                            AddError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
+                            TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
                             return null;
                         }
 
                     }
                     else
                     {
-                        AddError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
+                        TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
                         return null;
                     }
                 }
@@ -8104,7 +8121,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                AddError(new NoFunctionWithSameParametresNum(loc, false, si.sym_info as function_node));
+                TryFixError(new NoFunctionWithSameParametresNum(loc, false, si.sym_info as function_node));
                 return null;
             }
         }
@@ -8117,7 +8134,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (parameters == null)
             {
-                AddError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
+                TryFixError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
                 return null;
             }
             if (parameters.expressions.Count == 1)
@@ -8174,13 +8191,13 @@ namespace PascalABCCompiler.TreeConverter
 
                 else
                 {
-                    AddError(new NoFunctionWithSameArguments(FunctionName, loc, false));
+                    TryFixError(new NoFunctionWithSameArguments(FunctionName, loc, false));
                     return null;
                 }
             }
             else
             {
-                AddError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
+                TryFixError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
                 return null;
             }
 		}
@@ -8189,7 +8206,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (parameters == null)
             {
-                AddError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
+                TryFixError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
                 return null;
             }
         	if (parameters.expressions.Count == 1)
@@ -8246,7 +8263,7 @@ namespace PascalABCCompiler.TreeConverter
                         return cnfc;
                     }
         		}
-        		else AddError(new NoFunctionWithSameArguments("Succ", loc,false));
+        		else TryFixError(new NoFunctionWithSameArguments("Succ", loc,false));
         		bfc.parameters.AddElement(param0);
         		if (type_flag == 0 || type_flag == 3)
         		bfc.parameters.AddElement(new int_const_node(1,null));
@@ -8256,7 +8273,7 @@ namespace PascalABCCompiler.TreeConverter
         		bfc.parameters.AddElement(new ulong_const_node(1,null));
         		return bfc;
         	}
-        	AddError(new NoFunctionWithSameParametresNum(loc,false,sil.FirstOrDefault().sym_info as function_node));
+        	TryFixError(new NoFunctionWithSameParametresNum(loc,false,sil.FirstOrDefault().sym_info as function_node));
             return null;
         }
         
@@ -8264,7 +8281,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (parameters == null)
             {
-                AddError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
+                TryFixError(new NoFunctionWithSameParametresNum(loc, false, sil.FirstOrDefault().sym_info as function_node));
                 return null;
             }
         	if (parameters.expressions.Count == 1)
@@ -8321,7 +8338,7 @@ namespace PascalABCCompiler.TreeConverter
                         return cnfc;
                     }
         		}
-        		else AddError(new NoFunctionWithSameArguments("Pred",loc,false));
+        		else TryFixError(new NoFunctionWithSameArguments("Pred",loc,false));
         		bfc.parameters.AddElement(param0);
         		if (type_flag == 0 || type_flag == 3)
         		bfc.parameters.AddElement(new int_const_node(1,null));
@@ -8331,7 +8348,7 @@ namespace PascalABCCompiler.TreeConverter
         		bfc.parameters.AddElement(new ulong_const_node(1,null));
         		return bfc;
         	}
-        	AddError(new NoFunctionWithSameParametresNum(loc,false,sil.FirstOrDefault().sym_info as function_node));
+        	TryFixError(new NoFunctionWithSameParametresNum(loc,false,sil.FirstOrDefault().sym_info as function_node));
             return null;
         }
         
@@ -8339,7 +8356,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (parameters == null)
             {
-                AddError(new NoFunctionWithSameParametresNum(loc, false, si.sym_info as function_node));
+                TryFixError(new NoFunctionWithSameParametresNum(loc, false, si.sym_info as function_node));
                 return null;
             }
         	if (parameters.expressions.Count == 1 || parameters.expressions.Count == 2)
@@ -8370,7 +8387,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         if (!is_pascal_array_ref)
                         {
-							AddError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
+							TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
                     	}
         				
         			}
@@ -8404,10 +8421,10 @@ namespace PascalABCCompiler.TreeConverter
                     	}
                     	else
                     	{
-                            AddError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
+                            TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
                     	}
                     }
-                    else AddError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
+                    else TryFixError(new ThisExpressionCanNotBePassedAsVarParameter(param0));
         		}
         		else 
         			check_on_loop_variable(param0);
@@ -8517,7 +8534,7 @@ namespace PascalABCCompiler.TreeConverter
         			}
         			else if (param0.type.IsEnum) is_enum = true;
         		}
-        		else AddError(new NoFunctionWithSameArguments("Inc",loc,false));
+        		else TryFixError(new NoFunctionWithSameArguments("Inc",loc,false));
                 if (type_flag != 5)
                 {
                     if (param1 != null)
@@ -8568,7 +8585,7 @@ namespace PascalABCCompiler.TreeConverter
         		return ass;
         	}
         	
-        	AddError(new NoFunctionWithSameParametresNum(loc,false,si.sym_info as function_node));
+        	TryFixError(new NoFunctionWithSameParametresNum(loc,false,si.sym_info as function_node));
             return null;
         }
 		
@@ -8797,17 +8814,17 @@ namespace PascalABCCompiler.TreeConverter
         		if (en.semantic_node_type == semantic_node_type.namespace_variable_reference)
         		{
         			if (context.is_loop_variable((en as namespace_variable_reference).var))
-                        AddError(en.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
+                        TryFixError(en.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
         		}
         		else if (en.semantic_node_type == semantic_node_type.local_variable_reference)
         		{
         			if (context.is_loop_variable((en as local_variable_reference).var))
-                        AddError(en.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
+                        TryFixError(en.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
         		}
         		else if (en.semantic_node_type == semantic_node_type.local_block_variable_reference)
         		{
         			if (context.is_loop_variable((en as local_block_variable_reference).var))
-                        AddError(en.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
+                        TryFixError(en.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
         		}
         		
         }
@@ -8896,9 +8913,9 @@ namespace PascalABCCompiler.TreeConverter
                     if (read_from_typed_file)
                     {
                         if (SystemLibrary.SystemLibInitializer.TypedFileReadProcedure == null)
-                            AddError(new NotSupportedError(loc));
+                            TryFixError(new NotSupportedError(loc));
                         if (en.type != file.type.element_type)
-                            AddError(new ExpectedExprHaveTypeTypedFile(file.type.element_type, en.type, true, get_location(ex)));
+                            TryFixError(new ExpectedExprHaveTypeTypedFile(file.type.element_type, en.type, true, get_location(ex)));
                         bool is_char_getter = false;
                         if (!en.is_addressed)
                         {
@@ -8928,10 +8945,10 @@ namespace PascalABCCompiler.TreeConverter
                     else if (read_from_binary_file)
                     {
                         if (SystemLibrary.SystemLibInitializer.BinaryFileReadProcedure == null)
-                            AddError(new NotSupportedError(loc));
+                            TryFixError(new NotSupportedError(loc));
                         if (!CanUseThisTypeForBinaryFiles(en.type))
                         {
-                            AddError(en.location, "CAN_NOT_READ_REFERENCE_DATA_FROM_BINARY_FILE");
+                            TryFixError(en.location, "CAN_NOT_READ_REFERENCE_DATA_FROM_BINARY_FILE");
                         }
                         exl.AddElement(new typeof_operator(en.type, loc));
                         function_node fn = convertion_data_and_alghoritms.select_function(exl,SystemLibrary.SystemLibInitializer.BinaryFileReadProcedure.SymbolInfo, loc);
@@ -8978,7 +8995,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         catch (NoFunctionWithSameArguments)
                         {
-                            AddError(en.location, "CAN_NOT_READ");
+                            TryFixError(en.location, "CAN_NOT_READ");
                         }
                     }
                     first_iteration = false;
@@ -9031,22 +9048,22 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         switch (dn.semantic_node_type)
                         {
-                            case semantic_node_type.class_field: if (!(dn as class_field).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field, loc, null)); break;
-                            case semantic_node_type.compiled_variable_definition: if (!(dn as compiled_variable_definition).IsStatic) AddError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field, loc, null)); break;
+                            case semantic_node_type.class_field: if (!(dn as class_field).IsStatic) TryFixError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field, loc, null)); break;
+                            case semantic_node_type.compiled_variable_definition: if (!(dn as compiled_variable_definition).IsStatic) TryFixError(new CanNotReferenceToNonStaticFieldWithType(dn as class_field, loc, null)); break;
                             case semantic_node_type.compiled_property_node:
-                            case semantic_node_type.common_property_node: if ((dn as property_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticPropertyWithType(dn as property_node, loc, null)); break;
+                            case semantic_node_type.common_property_node: if ((dn as property_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) TryFixError(new CanNotReferenceToNonStaticPropertyWithType(dn as property_node, loc, null)); break;
                             case semantic_node_type.compiled_function_node:
-                            case semantic_node_type.common_method_node: if ((dn as function_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) AddError(new CanNotReferenceToNonStaticMethodWithType((dn as function_node).name, loc)); break;
+                            case semantic_node_type.common_method_node: if ((dn as function_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static) TryFixError(new CanNotReferenceToNonStaticMethodWithType((dn as function_node).name, loc)); break;
                         }
                     }
             if (context.static_variable_converted)
             {
-                AddError(new CanNotReferenceToNonStaticFromStaticInitializer(dn, loc));
+                TryFixError(new CanNotReferenceToNonStaticFromStaticInitializer(dn, loc));
                 return null;
             }
             else if (context.inStaticArea())
             {
-                AddError(new CanNotReferenceToNonStaticFromStatic(dn, loc));
+                TryFixError(new CanNotReferenceToNonStaticFromStatic(dn, loc));
                 return null;
             }
             else
@@ -9108,18 +9125,18 @@ namespace PascalABCCompiler.TreeConverter
             	motivation_keeper.reset();
             	expression_node expr = sn as expression_node;
             	if (expr is null_const_node)
-                    AddError(expr.location, "NIL_IN_THIS_CONTEXT_NOT_ALLOWED");
+                    TryFixError(expr.location, "NIL_IN_THIS_CONTEXT_NOT_ALLOWED");
                 if (expr is typed_expression)
                     expr = convert_typed_expression_to_function_call(expr as typed_expression);
                 if (expr != null)
                 {
                     if (expr.type is generic_instance_type_node)
-                        AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
+                        TryFixError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
                 	variable_reference vr = expr as variable_reference;
                 	if (expr.type == null)
-                        AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
+                        TryFixError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
                 	if (expr.type is ref_type_node)
-                        AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
+                        TryFixError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
                 	if (vr == null)
                 	{
                     	location sl = get_location(s_expr);
@@ -9156,7 +9173,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                 	type_node tn = sn as type_node;
                     if (tn.IsInterface)
-                        AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
+                        TryFixError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
                     Withs.Add(tn.Scope);
                 	while (tn != null)
                 	{
@@ -9275,22 +9292,22 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> sil = context.CurrentScope.FindOnlyInScopeAndBlocks(_labeled_statement.label_name.name);
             /*if (_labeled_statement.to_statement is SyntaxTree.var_statement || _labeled_statement.to_statement is SyntaxTree.assign_var_tuple)
             {
-                AddError(get_location(_labeled_statement.label_name), "LABELED_DECLARATION_NOT_ALLOWED");
+                TryFixError(get_location(_labeled_statement.label_name), "LABELED_DECLARATION_NOT_ALLOWED");
             }*/
             if (sil == null)
             {
-                AddError(new UndefinedNameReference(_labeled_statement.label_name.name, get_location(_labeled_statement.label_name)));
+                TryFixError(new UndefinedNameReference(_labeled_statement.label_name.name, get_location(_labeled_statement.label_name)));
             }
             label_node lab = sil.FirstOrDefault().sym_info as label_node;
             if (lab == null)
             {
-                AddError(get_location(_labeled_statement.label_name), "IDENT_{0}_IS_NOT_LABEL", _labeled_statement.label_name.name);
+                TryFixError(get_location(_labeled_statement.label_name), "IDENT_{0}_IS_NOT_LABEL", _labeled_statement.label_name.name);
             }
             // SSM - Patch повторного определения меток в подпрограммах при наличии лямбд
             if (lambdaProcessingState != LambdaProcessingState.FinishPhase)
                 if (lab.is_defined)
                 {
-                    AddError(get_location(_labeled_statement.label_name), "LABEL_{0}_REDEFINED", _labeled_statement.label_name.name);
+                    TryFixError(get_location(_labeled_statement.label_name), "LABEL_{0}_REDEFINED", _labeled_statement.label_name.name);
                 }
             lab.is_defined = true;
             lab.comprehensive_code_block = context.block_stack.Peek();
@@ -9298,7 +9315,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block) && gs.location != null)
                 {
-                    AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
+                    TryFixError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
             }
             convertion_data_and_alghoritms.check_node_parser_error(_labeled_statement.to_statement);
@@ -9312,12 +9329,12 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> sil = context.CurrentScope.FindOnlyInScopeAndBlocks(_goto_statement.label.name);
             if (sil == null)
             {
-                AddError(new UndefinedNameReference(_goto_statement.label.name, get_location(_goto_statement.label)));
+                TryFixError(new UndefinedNameReference(_goto_statement.label.name, get_location(_goto_statement.label)));
             }
             label_node lab = sil.FirstOrDefault().sym_info as label_node;
             if (lab == null)
             {
-                AddError(get_location(_goto_statement.label), "IDENT_{0}_IS_NOT_LABEL", _goto_statement.label.name);
+                TryFixError(get_location(_goto_statement.label), "IDENT_{0}_IS_NOT_LABEL", _goto_statement.label.name);
             }
             //if (lab.goto_blocked)
             //{
@@ -9331,7 +9348,7 @@ namespace PascalABCCompiler.TreeConverter
                 // последнее условие - для goto, которые генерируются в автомате yield, не рассматривать эту ошибку 
                 if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block) && _goto_statement.source_context != null) 
                 {
-                    AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
+                    TryFixError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
             }
             ret.return_value((statement_node)gs);
@@ -9352,7 +9369,7 @@ namespace PascalABCCompiler.TreeConverter
                         class_field cf = (class_field)dn;
                         if (cf.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                         {
-                            AddError(new CanNotReferenceToNonStaticFieldWithType(cf, get_location(id_right), tn));
+                            TryFixError(new CanNotReferenceToNonStaticFieldWithType(cf, get_location(id_right), tn));
                         }
                         static_class_field_reference scfr = new static_class_field_reference(cf, get_location(id_right));
                         return scfr;
@@ -9362,7 +9379,7 @@ namespace PascalABCCompiler.TreeConverter
                         compiled_variable_definition cvd = (compiled_variable_definition)dn;
                         if (cvd.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                         {
-                            AddError(new CanNotReferenceToNonStaticFieldWithType(cvd, get_location(id_right), tn));
+                            TryFixError(new CanNotReferenceToNonStaticFieldWithType(cvd, get_location(id_right), tn));
                         }
                         static_compiled_variable_reference scvr = new static_compiled_variable_reference(cvd, get_location(id_right));
                         return scvr;
@@ -9382,7 +9399,7 @@ namespace PascalABCCompiler.TreeConverter
                 dn = context.check_name_node_type(id_right.name, si_right, get_location(id_right),
                 general_node_type.variable_node, general_node_type.property_node, general_node_type.event_node,general_node_type.constant_definition);
             if (dn.general_node_type == general_node_type.constant_definition)
-                AddError(get_location(id_right), "CAN_NOT_ASSIGN_TO_CONSTANT_OBJECT");
+                TryFixError(get_location(id_right), "CAN_NOT_ASSIGN_TO_CONSTANT_OBJECT");
             switch (dn.general_node_type)
             {
                 case general_node_type.variable_node:
@@ -9394,7 +9411,7 @@ namespace PascalABCCompiler.TreeConverter
                         property_node pn = (property_node)dn;
                         if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                         {
-                            AddError(new CanNotReferenceToNonStaticPropertyWithType(pn, get_location(id_right), tn));
+                            TryFixError(new CanNotReferenceToNonStaticPropertyWithType(pn, get_location(id_right), tn));
                         }
                         static_property_reference pr = new static_property_reference(pn, get_location(id_right));
                         return pr;
@@ -9453,7 +9470,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if ((!procedure_allowed) && (fn.return_value_type == null))
             {
-                AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
+                TryFixError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
             }
             if (fn.semantic_node_type == semantic_node_type.common_method_node)
             {
@@ -9463,12 +9480,12 @@ namespace PascalABCCompiler.TreeConverter
                     //ssyy изменил
                     if (!cmn.is_constructor)
                     {
-                        AddError(new CanNotCallNonStaticMethodWithClass(tn, loc, fn));
+                        TryFixError(new CanNotCallNonStaticMethodWithClass(tn, loc, fn));
                     }
                     if (cmn.cont_type.IsStatic)
-                        AddError(new SimpleSemanticError(loc, "STATIC_CONSTRUCTOR_CALL"));
+                        TryFixError(new SimpleSemanticError(loc, "STATIC_CONSTRUCTOR_CALL"));
                     if (cmn.cont_type.IsAbstract && !inherited_call)
-                    	AddError(new SimpleSemanticError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name));
+                    	TryFixError(new SimpleSemanticError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name));
                     common_constructor_call csmc2 = new common_constructor_call(cmn, loc);
                     return csmc2;
                     //if (cmn.pascal_associated_constructor==null)
@@ -9487,7 +9504,7 @@ namespace PascalABCCompiler.TreeConverter
                 compiled_function_node cfn = (compiled_function_node)fn;
                 if (cfn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                 {
-                    AddError(new CanNotCallNonStaticMethodWithClass(tn, loc, fn));
+                    TryFixError(new CanNotCallNonStaticMethodWithClass(tn, loc, fn));
                 }
                 compiled_static_method_call csmc2 = new compiled_static_method_call(cfn, loc);
                 return csmc2;
@@ -9558,7 +9575,7 @@ namespace PascalABCCompiler.TreeConverter
                                     return create_static_expression(tn, id_right, temp);
                                 }
                                 else
-                                    AddError(new UndefinedNameReference(id_right.name, get_location(id_right)));
+                                    TryFixError(new UndefinedNameReference(id_right.name, get_location(id_right)));
                             }
                         }
                         else if (dn is common_namespace_function_node)
@@ -9572,7 +9589,7 @@ namespace PascalABCCompiler.TreeConverter
                                     return create_static_expression(tn, id_right, temp);
                                 }
                                 else
-                                    AddError(new UndefinedNameReference(id_right.name, get_location(id_right)));
+                                    TryFixError(new UndefinedNameReference(id_right.name, get_location(id_right)));
                             }
                         }
                         if (dn.semantic_node_type == semantic_node_type.indefinite_definition_node)
@@ -9588,12 +9605,12 @@ namespace PascalABCCompiler.TreeConverter
                         property_node pn = (property_node)dn;
                         if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                         {
-                            AddError(new CanNotReferenceToNonStaticPropertyWithType(pn, get_location(id_right), tn));
+                            TryFixError(new CanNotReferenceToNonStaticPropertyWithType(pn, get_location(id_right), tn));
                         }
                         function_node fn = pn.get_function;
                         if (fn == null)
                         {
-                            AddError(new ThisPropertyCanNotBeReaded(pn, get_location(id_right)));
+                            TryFixError(new ThisPropertyCanNotBeReaded(pn, get_location(id_right)));
                         }
                         location lloc = get_location(id_right);
                         check_property_no_params(pn, lloc);
@@ -9612,11 +9629,11 @@ namespace PascalABCCompiler.TreeConverter
         private void dot_node_as_type_ident(type_node tn, SyntaxTree.ident id_right, motivation mot)
         {
             if (id_right is SyntaxTree.operator_name_ident)
-                AddError(get_location(id_right), "OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX");
+                TryFixError(get_location(id_right), "OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX");
             List<SymbolInfo> si_right = tn.find_in_type(id_right.name, context.CurrentScope);
             if (si_right == null)
             {
-                AddError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), tn));
+                TryFixError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), tn));
             }
             switch (mot)
             {
@@ -9647,10 +9664,10 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> si_right = nn.findOnlyInNamespace(id_right.name);
             if (si_right == null)
             {
-                AddError(new MemberIsNotDeclaredInNamespace(id_right, get_location(id_right), nn));
+                TryFixError(new MemberIsNotDeclaredInNamespace(id_right, get_location(id_right), nn));
             }
             if (si_right.Count > 0 && si_right[0].sym_info == nn)
-                AddError(new MemberIsNotDeclaredInNamespace(id_right, get_location(id_right), nn));
+                TryFixError(new MemberIsNotDeclaredInNamespace(id_right, get_location(id_right), nn));
             switch (mot)
             {
                 case motivation.address_receiving:
@@ -9684,7 +9701,7 @@ namespace PascalABCCompiler.TreeConverter
             SyntaxTree.ident id_right = template_id_right.name as SyntaxTree.ident;
             if (si_left == null)
             {
-                AddError(new UndefinedNameReference(id_left.name, get_location(id_left)));
+                TryFixError(new UndefinedNameReference(id_left.name, get_location(id_left)));
             }
             definition_node dn = context.check_name_node_type(id_left.name, si_left?.FirstOrDefault(), get_location(id_left),
                 general_node_type.constant_definition, general_node_type.function_node,
@@ -9731,7 +9748,7 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> si_left = context.find(id_left.name);
             if (si_left == null)
             {
-                AddError(new UndefinedNameReference(id_left.name, get_location(id_left)));
+                TryFixError(new UndefinedNameReference(id_left.name, get_location(id_left)));
             }
             definition_node dn = context.check_name_node_type(id_left.name, si_left?.FirstOrDefault(), get_location(id_left),
                 general_node_type.constant_definition, general_node_type.function_node,
@@ -9794,7 +9811,7 @@ namespace PascalABCCompiler.TreeConverter
             if (bfc == null)
             {
                 if (force)
-                    AddError(new NoFunctionWithSameParametresNum(dm.proper_methods[0].location, true, dm.proper_methods[0].simple_function_node));
+                    TryFixError(new NoFunctionWithSameParametresNum(dm.proper_methods[0].location, true, dm.proper_methods[0].simple_function_node));
                 return te;
             }
             if (bfc.type == null) 
@@ -9878,7 +9895,7 @@ namespace PascalABCCompiler.TreeConverter
                 class_field cf = (class_field)dn;
                 if (cf.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                 {
-                    AddError(new CanNotReferanceToStaticFieldWithExpression(cf, get_location(id_right), en));
+                    TryFixError(new CanNotReferanceToStaticFieldWithExpression(cf, get_location(id_right), en));
                 }
                 class_field_reference cfr = new class_field_reference(cf, en, get_location(id_right));
                 //return_value(cfr);
@@ -9889,7 +9906,7 @@ namespace PascalABCCompiler.TreeConverter
                 compiled_variable_definition cfd = (compiled_variable_definition)dn;
                 if (cfd.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                 {
-                    AddError(new CanNotReferanceToStaticFieldWithExpression(cfd, get_location(id_right), en));
+                    TryFixError(new CanNotReferanceToStaticFieldWithExpression(cfd, get_location(id_right), en));
                 }
                 compiled_variable_reference cfr2 = new compiled_variable_reference(cfd, en, get_location(id_right));
                 //return_value(cfr2);
@@ -9906,14 +9923,14 @@ namespace PascalABCCompiler.TreeConverter
             try_convert_typed_expression_to_function_call(ref en);
             if ((!procedure_allowed) && (fn.return_value_type == null))
             {
-                AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
+                TryFixError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
             }
             if (fn.semantic_node_type == semantic_node_type.common_method_node)
             {
                 common_method_node cmn = (common_method_node)fn;
                 if (cmn.is_constructor)
                 {
-                    AddError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE");
+                    TryFixError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE");
                 }
                 if (cmn.original_function != null && cmn.original_function is compiled_function_node && (cmn.original_function as compiled_function_node).ConnectedToType != null)
                 {
@@ -9922,7 +9939,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 if (cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                 {
-                    AddError(new CanNotCallStaticMethodWithExpression(en, fn));
+                    TryFixError(new CanNotCallStaticMethodWithExpression(en, fn));
                 }
                 
                 common_method_call cmc = new common_method_call(cmn, en, loc);
@@ -9942,7 +9959,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (cfn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                     {
                         if (!cfn.is_extension_method)
-                            AddError(new CanNotCallStaticMethodWithExpression(en, fn));
+                            TryFixError(new CanNotCallStaticMethodWithExpression(en, fn));
                         else
                             return new compiled_static_method_call(cfn, loc);
                     }
@@ -9953,7 +9970,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (fn.semantic_node_type == semantic_node_type.compiled_constructor_node)
             {
-                AddError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE");
+                TryFixError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE");
             }
             if (fn.semantic_node_type == semantic_node_type.common_namespace_function_node && (fn as common_namespace_function_node).ConnectedToType != null)
             {
@@ -10053,12 +10070,12 @@ namespace PascalABCCompiler.TreeConverter
                         property_node pn = (property_node)dn;
                         if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                         {
-                            AddError(new CanNotReferenceToStaticPropertyWithExpression(pn, get_location(id_right), pn.comprehensive_type));
+                            TryFixError(new CanNotReferenceToStaticPropertyWithExpression(pn, get_location(id_right), pn.comprehensive_type));
                         }
                         function_node fn = pn.get_function;
                         if (fn == null)
                         {
-                            AddError(new ThisPropertyCanNotBeReaded(pn, get_location(id_right)));
+                            TryFixError(new ThisPropertyCanNotBeReaded(pn, get_location(id_right)));
                         }
                         location lloc = get_location(id_right);
                         check_property_no_params(pn, lloc);
@@ -10114,7 +10131,7 @@ namespace PascalABCCompiler.TreeConverter
                 general_node_type.variable_node, general_node_type.property_node, general_node_type.event_node, general_node_type.constant_definition);
             if (dn.general_node_type == general_node_type.constant_definition)
             {
-                AddError(get_location(id_right), "CAN_NOT_ASSIGN_TO_CONSTANT_OBJECT");
+                TryFixError(get_location(id_right), "CAN_NOT_ASSIGN_TO_CONSTANT_OBJECT");
             }
             switch (dn.general_node_type)
             {
@@ -10127,7 +10144,7 @@ namespace PascalABCCompiler.TreeConverter
                         property_node pn = (property_node)dn;
                         if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                         {
-                            AddError(new CanNotReferenceToStaticPropertyWithExpression(pn, get_location(id_right), pn.comprehensive_type));
+                            TryFixError(new CanNotReferenceToStaticPropertyWithExpression(pn, get_location(id_right), pn.comprehensive_type));
                         }
                         try_convert_typed_expression_to_function_call(ref en);
                         non_static_property_reference pr = new non_static_property_reference(pn, en, get_location(id_right));
@@ -10188,7 +10205,7 @@ namespace PascalABCCompiler.TreeConverter
             List<SymbolInfo> sil = en.type.find_in_type(id_right.name, context.CurrentScope);
             if (sil == null)
             {
-                AddError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
+                TryFixError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
             }
 
             try_convert_typed_expression_to_function_call(ref en);
@@ -10230,16 +10247,16 @@ namespace PascalABCCompiler.TreeConverter
                 try_convert_typed_expression_to_function_call(ref en);
             if (en is typed_expression)
             {
-                AddError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
+                TryFixError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
             }
             List<SymbolInfo> sil = en.type.find_in_type(id_right.name, context.CurrentScope);
             if (en.type.IsEnum && sil != null && sil[0].sym_info is class_constant_definition) // l.A
             {
-                AddError(get_location(id_right), "ACCESS_TO_ENUM_CONST_THROUGH_OBJECT");
+                TryFixError(get_location(id_right), "ACCESS_TO_ENUM_CONST_THROUGH_OBJECT");
             }
             if (sil == null)
             {
-                AddError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
+                TryFixError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
             }
 
             try_convert_typed_expression_to_function_call(ref en);
@@ -10467,7 +10484,7 @@ namespace PascalABCCompiler.TreeConverter
             SyntaxTree.template_type_name ttn = null;
             bool is_operator = _method_name.meth_name is SyntaxTree.operator_name_ident;
             if (is_operator && context.converted_type != null && context.converted_type.IsInterface)
-                AddError(get_location(_method_name), "OPERATORS_IN_INTERFACES_NOT_ALLOWED");
+                TryFixError(get_location(_method_name), "OPERATORS_IN_INTERFACES_NOT_ALLOWED");
             SyntaxTree.Operators op = PascalABCCompiler.SyntaxTree.Operators.Undefined;
             if(is_operator)
                 op=(_method_name.meth_name as SyntaxTree.operator_name_ident).operator_type;
@@ -10479,7 +10496,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (is_operator && op==SyntaxTree.Operators.AddressOf &&  SemanticRules.AddressOfOperatorNonOverloaded)
             {
-                AddError(get_location(_method_name.meth_name), "NOT_OVERLOADED_OPERATOR");
+                TryFixError(get_location(_method_name.meth_name), "NOT_OVERLOADED_OPERATOR");
             }
             bool common_extension_meth = false;
             if (_method_name.class_name != null)
@@ -10502,10 +10519,10 @@ namespace PascalABCCompiler.TreeConverter
                         context.converted_explicit_interface_type = def_temp as type_node;
                         List<SymbolInfo> sil = context.converted_explicit_interface_type.find_in_type(_method_name.meth_name.name);
                         if (sil == null)
-                            AddError(new UndefinedNameReference(_method_name.meth_name.name, get_location(_method_name.meth_name)));
+                            TryFixError(new UndefinedNameReference(_method_name.meth_name.name, get_location(_method_name.meth_name)));
                     }
                     else
-                        AddError(get_location(_method_name.class_name), "EXPECTED_INTERFACE");
+                        TryFixError(get_location(_method_name.class_name), "EXPECTED_INTERFACE");
                 }
                 tp = def_temp as common_type_node;
                 template_class tc = def_temp as template_class;
@@ -10519,41 +10536,41 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             if (tc.is_synonym)
                             {
-                                AddError(loc_type_name, "CAN_NOT_DEFINE_METHOD_OF_TEMPLATE_TYPE_SYNONYM");
+                                TryFixError(loc_type_name, "CAN_NOT_DEFINE_METHOD_OF_TEMPLATE_TYPE_SYNONYM");
                             }
                             SyntaxTree.class_definition cl_def = tc.type_dec.type_def as SyntaxTree.class_definition;
                             count = cl_def.template_args.idents.Count;
                             if (count != ttn.template_args.idents.Count)
                             {
-                                AddError(get_location(ttn), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tc.name, count);
+                                TryFixError(get_location(ttn), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tc.name, count);
                             }
                             for (int i = 0; i < count; ++i)
                             {
                                 if (string.Compare(cl_def.template_args.idents[i].name, ttn.template_args.idents[i].name, true) != 0)
                                 {
-                                    AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", i + 1, cl_def.template_args.idents[i].name);
+                                    TryFixError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", i + 1, cl_def.template_args.idents[i].name);
                                 }
                             }
                             _method_name.class_name = new SyntaxTree.ident(ttn.name);
                             _method_name.class_name.source_context = ttn.source_context;
                             return;
                         }
-                        AddError(get_location(ttn), "COULD_NOT_DEFINE_GENERIC_FUNCTION_OF_COMPILED_TYPE");
+                        TryFixError(get_location(ttn), "COULD_NOT_DEFINE_GENERIC_FUNCTION_OF_COMPILED_TYPE");
                     }
                     if (tp.generic_params == null)
                     {
-                        AddError(get_location(ttn), "{0}_IS_NOT_TEMPLATE_CLASS", tp.PrintableName);
+                        TryFixError(get_location(ttn), "{0}_IS_NOT_TEMPLATE_CLASS", tp.PrintableName);
                     }
                     count = tp.generic_params.Count;
                     if (count != ttn.template_args.idents.Count)
                     {
-                        AddError(get_location(ttn), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tp.PrintableName, count);
+                        TryFixError(get_location(ttn), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tp.PrintableName, count);
                     }
                     for (int i = 0; i < count; ++i)
                     {
                         if (string.Compare(tp.generic_params[i].name, ttn.template_args.idents[i].name, true) != 0)
                         {
-                            AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", i + 1, tp.generic_params[i].name);
+                            TryFixError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", i + 1, tp.generic_params[i].name);
                         }
                     }
                 }
@@ -10561,7 +10578,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (tp != null && tp.is_generic_type_definition)
                     {
-                        AddError(get_location(_method_name.class_name), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tp.PrintableName, tp.generic_params.Count);
+                        TryFixError(get_location(_method_name.class_name), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tp.PrintableName, tp.generic_params.Count);
                     }
                     if (tc != null)
                     {
@@ -10572,7 +10589,7 @@ namespace PascalABCCompiler.TreeConverter
                         var td1 = tc.type_dec.type_def as SyntaxTree.template_type_reference;
                         if (td1 != null)
                             cnt = td1.params_list.Count;
-                        AddError(get_location(_method_name.class_name), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tc.name, cnt);
+                        TryFixError(get_location(_method_name.class_name), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tc.name, cnt);
                     }
                 }
                 //(ds)проверяем на компилированный тип
@@ -10584,7 +10601,7 @@ namespace PascalABCCompiler.TreeConverter
                         return;
                     }
                     if (tp is compiled_generic_instance_type_node || tp is common_generic_instance_type_node)
-                        AddError(get_location(_method_name), "EXTENSION_METHOD_FOR_GENERIC_INSTANCES");
+                        TryFixError(get_location(_method_name), "EXTENSION_METHOD_FOR_GENERIC_INSTANCES");
                     List<SymbolInfo> sil = tp.scope.FindOnlyInScope(_method_name.meth_name.name);
 
                     if (tp.original_template == null && ((sil == null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1) || (sil != null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1)) && !explicit_impl)
@@ -10597,7 +10614,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (sil != null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1)//static methods cannot be extension methods
                             {
                                 if (current_function_header.class_keyword)
-                                    AddError(get_location(_method_name), "CANNOT_IMPLEMENT_METHODS_IN_OTHER_MODULE");
+                                    TryFixError(get_location(_method_name), "CANNOT_IMPLEMENT_METHODS_IN_OTHER_MODULE");
                             }
                             if (ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_wrapper || 
                                 ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type ||
@@ -10605,20 +10622,20 @@ namespace PascalABCCompiler.TreeConverter
                                 ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.binary_file ||
                                 ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.text_file ||
                                 ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.typed_file)
-                                AddError(get_location(_method_name), "NO_METHOD_{0}_IN_CLASS_{1}", _method_name.meth_name.name, tp.PrintableName);
+                                TryFixError(get_location(_method_name), "NO_METHOD_{0}_IN_CLASS_{1}", _method_name.meth_name.name, tp.PrintableName);
                         }
                         else
-                            AddError(get_location(_method_name), "NO_METHOD_{0}_IN_CLASS_{1}", _method_name.meth_name.name, tp.PrintableName);
+                            TryFixError(get_location(_method_name), "NO_METHOD_{0}_IN_CLASS_{1}", _method_name.meth_name.name, tp.PrintableName);
                     }
                 }
                 else if (def_temp as compiled_type_node == SystemLibrary.SystemLibrary.void_type)
-                    AddError(get_location(_method_name.class_name), "VOID_NOT_VALID");
+                    TryFixError(get_location(_method_name.class_name), "VOID_NOT_VALID");
             }
             else
             {
                 if (is_operator && context.converted_type == null && context.converted_template_type == null && !(current_function_header != null && current_function_header.proc_attributes != null && has_extensionmethod_attr(current_function_header.proc_attributes.proc_attributes)) /*&& !(current_function_header != null && current_function_header.template_args != null && current_function_header.template_args.idents.Count > 0)*/)
                 {
-                    AddError(get_location(_method_name), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
+                    TryFixError(get_location(_method_name), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                 }
                 
             }
@@ -10664,13 +10681,13 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         SymbolInfo si = context.find_first(id.name);
                         if (si == null)
-                            AddError(new UndefinedNameReference(id.name, get_location(id)));
+                            TryFixError(new UndefinedNameReference(id.name, get_location(id)));
                         if (!(si.sym_info is type_node))
-                            AddError(new ExpectedType(get_location(id)));
+                            TryFixError(new ExpectedType(get_location(id)));
                         instance_params.Add(si.sym_info as type_node);
                     }
                     if (!context.converted_explicit_interface_type.IsInterface)
-                        AddError(get_location(ttn), "INTERFACE_EXPECTED");
+                        TryFixError(get_location(ttn), "INTERFACE_EXPECTED");
                     type_node inst_tn = context.converted_explicit_interface_type.get_instance(instance_params);
                     bool found = false;
                     if (context.converted_type.ImplementingInterfaces.Count > 0)
@@ -10685,7 +10702,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                     if (!found)
-                        AddError(get_location(ttn),"CLASS_NOT_IMPLEMENT_THIS_INTERFACE");
+                        TryFixError(get_location(ttn),"CLASS_NOT_IMPLEMENT_THIS_INTERFACE");
                 }
             }
             //context.top_function.IsOperator = _method_name.meth_name is SyntaxTree.operator_name_ident;
@@ -10705,7 +10722,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (cn.constant_value == defined_const.constant_value)
                     {
-                        AddError(curloc, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
+                        TryFixError(curloc, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
                     }
                 }
                 foreach (case_range_node cr in cv.case_ranges)
@@ -10713,7 +10730,7 @@ namespace PascalABCCompiler.TreeConverter
                     if ((defined_const.constant_value <= cr.high_bound.constant_value) &&
                         (defined_const.constant_value >= cr.lower_bound.constant_value))
                     {
-                        AddError(curloc, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_DIAPASON");
+                        TryFixError(curloc, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_DIAPASON");
                     }
                 }
             }
@@ -10728,7 +10745,7 @@ namespace PascalABCCompiler.TreeConverter
                     if ((icn.constant_value >= defined_range.lower_bound.constant_value) &&
                         (icn.constant_value <= defined_range.high_bound.constant_value))
                     {
-                        AddError(curloc, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_DIAPASON");
+                        TryFixError(curloc, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_DIAPASON");
                     }
                 }
                 foreach (case_range_node cr in cv.case_ranges)
@@ -10736,22 +10753,22 @@ namespace PascalABCCompiler.TreeConverter
                     if ((cr.lower_bound.constant_value <= defined_range.high_bound.constant_value) &&
                         (cr.lower_bound.constant_value >= defined_range.lower_bound.constant_value))
                     {
-                        AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
+                        TryFixError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
                     }
                     if ((cr.high_bound.constant_value <= defined_range.high_bound.constant_value) &&
                         (cr.high_bound.constant_value >= defined_range.lower_bound.constant_value))
                     {
-                        AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
+                        TryFixError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
                     }
                     if ((defined_range.lower_bound.constant_value <= cr.high_bound.constant_value) &&
                         (defined_range.lower_bound.constant_value >= cr.lower_bound.constant_value))
                     {
-                        AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
+                        TryFixError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
                     }
                     if ((defined_range.high_bound.constant_value <= cr.high_bound.constant_value) &&
                         (defined_range.high_bound.constant_value >= cr.lower_bound.constant_value))
                     {
-                        AddError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
+                        TryFixError(curloc, "CASE_DIAPASON_VARIANT_INTERSECTION");
                     }
                 }
             }
@@ -10766,7 +10783,7 @@ namespace PascalABCCompiler.TreeConverter
                 scn = new string_const_node((string)(switch_expr as static_compiled_variable_reference).var.compiled_field.GetRawConstantValue(), loc);
             if (scn == null)
             {
-                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             }
             return scn;
         }
@@ -10802,7 +10819,7 @@ namespace PascalABCCompiler.TreeConverter
             //-DarkStar Add
             if (icn == null)
             {
-                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             }
             return icn;
         }
@@ -10840,7 +10857,7 @@ namespace PascalABCCompiler.TreeConverter
             //-DarkStar Add
             if (icn == null)
             {
-                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             }
             return icn;
         }
@@ -10875,7 +10892,7 @@ namespace PascalABCCompiler.TreeConverter
             //-DarkStar Add
             if (icn == null)
             {
-                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             }
             return icn;
         }
@@ -10902,7 +10919,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (ii == null && en.type != SystemLibrary.SystemLibrary.string_type)
             {
-                AddError(new OrdinalOrStringTypeExpected(en.location));
+                TryFixError(new OrdinalOrStringTypeExpected(en.location));
             }
             if (ii != null && en.type != SystemLibrary.SystemLibrary.int64_type && en.type != SystemLibrary.SystemLibrary.uint64_type)
             {
@@ -10939,7 +10956,7 @@ namespace PascalABCCompiler.TreeConverter
                             //ssyy
                             if (icn_left.constant_value > icn_right.constant_value)
                             {
-                                AddError(get_location(diap.right), "LEFT_RANGE_GREATER_THEN_RIGHT");
+                                TryFixError(get_location(diap.right), "LEFT_RANGE_GREATER_THEN_RIGHT");
                             }
                             //\ssyy
                             case_range_node crn = new case_range_node(icn_left, icn_right, get_location(diap));
@@ -10978,12 +10995,12 @@ namespace PascalABCCompiler.TreeConverter
                         if (cn.type == SystemLibrary.SystemLibrary.char_type)
                             cn = convertion_data_and_alghoritms.convert_type(cn, SystemLibrary.SystemLibrary.string_type);
                         if (cn.type != SystemLibrary.SystemLibrary.string_type)
-                            AddError(new CanNotConvertTypes(cn, cn.type, SystemLibrary.SystemLibrary.string_type, cn.location));
+                            TryFixError(new CanNotConvertTypes(cn, cn.type, SystemLibrary.SystemLibrary.string_type, cn.location));
                         string_const_node scn = convert_string_const_to_switch(cn, cn.location);
                         if (!case_constants.ContainsKey(scn.constant_value))
                             case_constants.Add(scn.constant_value, scn.constant_value);
                         else
-                            AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
+                            TryFixError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
                         compiled_static_method_call eq_call = new compiled_static_method_call(str_eq_meth, cn.location);
                         eq_call.parameters.AddElement(en);
                         eq_call.parameters.AddElement(cn);
@@ -11045,7 +11062,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (!case_constants.ContainsKey(scn.constant_value))
                                 case_constants.Add(scn.constant_value, scn.constant_value);
                             else
-                                AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
+                                TryFixError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
                             basic_function_call eq_call = new basic_function_call(int64_eq_meth, cn.location);
                             eq_call.parameters.AddElement(en);
                             eq_call.parameters.AddElement(scn);
@@ -11059,7 +11076,7 @@ namespace PascalABCCompiler.TreeConverter
                             long_const_node right_scn = convert_long_const_to_switch(right_cn, right_cn.location);
                             if (left_scn.constant_value > right_scn.constant_value)
                             {
-                                AddError(get_location(diap.right), "LEFT_RANGE_GREATER_THEN_RIGHT");
+                                TryFixError(get_location(diap.right), "LEFT_RANGE_GREATER_THEN_RIGHT");
                             }
                             basic_function_node int64_greq_meth = SystemLibrary.SystemLibrary.int64_type.find_first_in_type(">=", true).sym_info as basic_function_node;
                             basic_function_node int64_leq_meth = SystemLibrary.SystemLibrary.int64_type.find_first_in_type("<=", true).sym_info as basic_function_node;
@@ -11131,7 +11148,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (!case_constants.ContainsKey(scn.constant_value))
                                 case_constants.Add(scn.constant_value, scn.constant_value);
                             else
-                                AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
+                                TryFixError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
                             basic_function_call eq_call = new basic_function_call(uint64_eq_meth, cn.location);
                             eq_call.parameters.AddElement(en);
                             eq_call.parameters.AddElement(scn);
@@ -11145,7 +11162,7 @@ namespace PascalABCCompiler.TreeConverter
                             ulong_const_node right_scn = convert_ulong_const_to_switch(right_cn, right_cn.location);
                             if (left_scn.constant_value > right_scn.constant_value)
                             {
-                                AddError(get_location(diap.right), "LEFT_RANGE_GREATER_THEN_RIGHT");
+                                TryFixError(get_location(diap.right), "LEFT_RANGE_GREATER_THEN_RIGHT");
                             }
                             basic_function_node uint64_greq_meth = SystemLibrary.SystemLibrary.uint64_type.find_first_in_type(">=", true).sym_info as basic_function_node;
                             basic_function_node uint64_leq_meth = SystemLibrary.SystemLibrary.uint64_type.find_first_in_type("<=", true).sym_info as basic_function_node;
@@ -11207,7 +11224,7 @@ namespace PascalABCCompiler.TreeConverter
             expression_node exp = convert_strong(_get_address.address_of);
             if (!exp.is_addressed)
             {
-                AddError(exp.location, "CAN_NOT_GET_ADDRESS_FROM_EXPRESSION");
+                TryFixError(exp.location, "CAN_NOT_GET_ADDRESS_FROM_EXPRESSION");
             }
             expression_node res = new get_addr_node(exp, get_location(_get_address));
             return_value(res);
@@ -11329,7 +11346,7 @@ namespace PascalABCCompiler.TreeConverter
                 namespace_name = _unit_module.unit_name.idunit_name.name;
                 loc = get_location(_unit_module.unit_name.idunit_name);
                 if (namespace_name.ToLower() != System.IO.Path.GetFileNameWithoutExtension(_unit_module.file_name).ToLower())
-                    AddError(loc, "UNIT_NAME_MUST_BE_EQUAL_UNIT_FILE_NAME");
+                    TryFixError(loc, "UNIT_NAME_MUST_BE_EQUAL_UNIT_FILE_NAME");
             }
 
 
@@ -11450,7 +11467,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             
                         if (scope == null)
-                            AddError(get_location(_syntax_namespace_node), "NAMESPACE_REDECLARATION");
+                            TryFixError(get_location(_syntax_namespace_node), "NAMESPACE_REDECLARATION");
                     }
                     parent_scope = scope;
                 }
@@ -11479,12 +11496,12 @@ namespace PascalABCCompiler.TreeConverter
                                 if (si_list != null && si_list.FirstOrDefault().sym_info is common_namespace_node)
                                     ns_scope2 = (si_list.FirstOrDefault().sym_info as common_namespace_node).scope;
                                 else
-                                    AddError(new NamespaceNotFound(nun.namespace_name.namespace_name, un.location));
+                                    TryFixError(new NamespaceNotFound(nun.namespace_name.namespace_name, un.location));
                             }
                             scopes.Add(ns_scope2);
                         }
                         else if (si_list == null)
-                            AddError(new NamespaceNotFound(nun.namespace_name.namespace_name, un.location));
+                            TryFixError(new NamespaceNotFound(nun.namespace_name.namespace_name, un.location));
                     }
                 }
                 ns_scope.TopScopeArray = scopes.ToArray();
@@ -11507,7 +11524,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 class_definition cl_def = td.type_def as class_definition;
                                 if (cl_def.body == null)
-                                    AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
+                                    TryFixError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
                                 common_type_node ctn = null;
                                 if (td.type_name is template_type_name)
                                     ctn = context.advanced_create_type(td.type_name.name + "`" + (td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial, cl_def.attribute);
@@ -11528,7 +11545,7 @@ namespace PascalABCCompiler.TreeConverter
                                 hard_node_test_and_visit(td);
                             }
                             else
-                                AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
+                                TryFixError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
                         }
 
                     }
@@ -11537,7 +11554,7 @@ namespace PascalABCCompiler.TreeConverter
                         //yield 
                     }
                     else
-                        AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
+                        TryFixError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
                 }
 
                 context.leave_scope();
@@ -11683,7 +11700,7 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converting_block() == block_type.type_block &&
                 context.converted_type.IsInterface)
             {
-                AddError(get_location(_consts_definitions_list), "INVALID_INTERFACE_MEMBER");
+                TryFixError(get_location(_consts_definitions_list), "INVALID_INTERFACE_MEMBER");
             }
             //\ssyy
             foreach (SyntaxTree.const_definition cnst in _consts_definitions_list.const_defs)
@@ -11718,7 +11735,7 @@ namespace PascalABCCompiler.TreeConverter
             check_using_static_class(tn, get_location(_typed_const_definition.const_type));
             if (context.converted_type != null && context.converted_func_stack.Empty)
             	if (!constant_in_class_valid(tn))//proverka na primitivnost konstanty v klasse
-                    AddError(get_location(_typed_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
+                    TryFixError(get_location(_typed_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
             if (tn is common_type_node)
             {
                 if (!SemanticRules.DefineMethodsInConstantRecord)
@@ -11726,7 +11743,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (!SemanticRules.InheritanceConstantRecord)
                 	//mnozhestvo zdes iskljuchenie
                     if (tn.base_type is common_type_node && tn.base_type.type_special_kind != SemanticTree.type_special_kind.base_set_type/*tn.base_type != SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node*/)
-                        AddError(get_location(_typed_const_definition.const_type), "CONSTANT_RECORD_CAN_NOT_BE_INHERITANCE");
+                        TryFixError(get_location(_typed_const_definition.const_type), "CONSTANT_RECORD_CAN_NOT_BE_INHERITANCE");
             }
             const_def_type = tn.element_type;
             is_typed_const_def = true;
@@ -11735,7 +11752,7 @@ namespace PascalABCCompiler.TreeConverter
             const_def_type = null;
             is_typed_const_def = false;
             if (cdn is class_constant_definition && (cdn.constant_value.value == null && !(cdn.constant_value is array_const)))
-                AddError(new NotSupportedError(cons_loc));
+                TryFixError(new NotSupportedError(cons_loc));
         }
 
         private void CheckConstantRecordNotBeContainsMethods(common_type_node ctn, location loc)
@@ -11746,7 +11763,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                 	for (int i=0; i<ctn.methods.Count; i++)
                 	if (ctn.methods[i].loc != null)
-                        AddError(loc, "CONSTANT_RECORD_CAN_NOT_CONTAINS_METHODS");
+                        TryFixError(loc, "CONSTANT_RECORD_CAN_NOT_CONTAINS_METHODS");
                 }
                 if (ctn.base_type is common_type_node)
                     CheckConstantRecordNotBeContainsMethods(ctn.base_type as common_type_node, loc);
@@ -11775,7 +11792,7 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converting_block() == block_type.type_block &&
                 context.converted_type.IsInterface)
             {
-                AddError(get_location(_simple_const_definition), "INVALID_INTERFACE_MEMBER");
+                TryFixError(get_location(_simple_const_definition), "INVALID_INTERFACE_MEMBER");
             }
             constant_definition_node cdn = context.add_const_definition(_simple_const_definition.const_name.name, get_location(_simple_const_definition.const_name));
             cdn.const_value = convert_strong_to_constant_node(_simple_const_definition.const_value);
@@ -11783,12 +11800,12 @@ namespace PascalABCCompiler.TreeConverter
             assign_doc_info(cdn,_simple_const_definition);
             if (context.converted_type != null && context.converted_func_stack.Empty)
             	if (!constant_in_class_valid(cdn.const_value.type))
-                    AddError(get_location(_simple_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
+                    TryFixError(get_location(_simple_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
 
             if (_simple_const_definition.const_value is SyntaxTree.pascal_set_constant pc)
             {
                 if (pc.values == null || pc.values.Count == 0)
-                    AddError(get_location(_simple_const_definition.const_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
+                    TryFixError(get_location(_simple_const_definition.const_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
             }
         }
 
@@ -11863,7 +11880,7 @@ namespace PascalABCCompiler.TreeConverter
             		{
                 		if (tpars.idents.idents.Count > 1)
                 		{
-                            AddError(get_location(tpars.idents.idents[1]), "ONLY_ONE_PARAMS_PARAMETER_ALLOWED");
+                            TryFixError(get_location(tpars.idents.idents[1]), "ONLY_ONE_PARAMS_PARAMETER_ALLOWED");
                 		}
             		}
 
@@ -11871,7 +11888,7 @@ namespace PascalABCCompiler.TreeConverter
             		if (tpars.vars_type is SyntaxTree.class_definition || /*tpars.vars_type is SyntaxTree.enum_type_definition ||*/
                         (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
             		{
-                        AddError(get_location(tpars.vars_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+                        TryFixError(get_location(tpars.vars_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
             		}
             		
                     type_node tp = convert_strong(tpars.vars_type);
@@ -11881,7 +11898,7 @@ namespace PascalABCCompiler.TreeConverter
                 		internal_interface ii = tp.get_internal_interface(internal_interface_kind.unsized_array_interface);
                 		if (ii == null)
                 		{
-                            AddError(get_location(tpars.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                            TryFixError(get_location(tpars.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
                 		}
             		}
                     foreach (common_parameter ccp in temp_params)
@@ -11892,7 +11909,7 @@ namespace PascalABCCompiler.TreeConverter
                     
                     if (params_met)
                 	{
-                        AddError(get_location(tpars), "ONLY_LAST_PARAMETER_CAN_BE_PARAMS");
+                        TryFixError(get_location(tpars), "ONLY_LAST_PARAMETER_CAN_BE_PARAMS");
                 	}
                 	if (tpars.param_kind == PascalABCCompiler.SyntaxTree.parametr_kind.params_parametr)
                 	{
@@ -11942,7 +11959,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (cl_def.where_section != null && cl_def.where_section.defs != null)
             {
-                AddError(get_location(cl_def.where_section), "WHERE_SECTION_ALLOWED_ONLY_IN_GENERICS");
+                TryFixError(get_location(cl_def.where_section), "WHERE_SECTION_ALLOWED_ONLY_IN_GENERICS");
             }
         }
 
@@ -11954,7 +11971,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (string.Equals(idents[i].name, idents[j].name, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        AddError(get_location(idents[j]), "TEMPLATE_PARAMETER_{0}_REDEFINITION", idents[j].name);
+                        TryFixError(get_location(idents[j]), "TEMPLATE_PARAMETER_{0}_REDEFINITION", idents[j].name);
                     }
                 }
             if (context.top_function != null && context.converted_type != null && context.converted_type.is_generic_type_definition)
@@ -11964,7 +11981,7 @@ namespace PascalABCCompiler.TreeConverter
                     foreach(SemanticTree.ICommonTypeNode ictn in context.converted_type.generic_params)
                         if (string.Equals(id.name, ictn.name, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AddError(get_location(id), "TEMPLATE_PARAMETER_{0}_REDEFINITION", id.name);
+                            TryFixError(get_location(id), "TEMPLATE_PARAMETER_{0}_REDEFINITION", id.name);
                         }
             }
         }
@@ -12028,7 +12045,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (_type_declaration.type_name.name.ToLower() == "program")
             {
-                AddError(get_location(_type_declaration), "PROGRAM_NAME_FOR_TYPE_NAME_IS_PROHIBITED");
+                TryFixError(get_location(_type_declaration), "PROGRAM_NAME_FOR_TYPE_NAME_IS_PROHIBITED");
             }
             //bool is_template_synonym = false;
             //SyntaxTree.array_type at=_type_declaration.type_def as SyntaxTree.array_type;
@@ -12038,7 +12055,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var name = _type_declaration.type_name.name.ToLower();
                 if(context.types_predefined.Select(tn => tn.name.ToLower()).Contains(name))
-                    AddError(get_location(_type_declaration), "STATIC_CLASS_CANNOT_HAVE_PREDEFINITION"); // #2266
+                    TryFixError(get_location(_type_declaration), "STATIC_CLASS_CANNOT_HAVE_PREDEFINITION"); // #2266
             }
 
 
@@ -12049,7 +12066,7 @@ namespace PascalABCCompiler.TreeConverter
             SyntaxTree.procedure_header procedure_header = _type_declaration.type_def as SyntaxTree.procedure_header;
             if (cl_def != null && (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial && cl_def.keyword != SyntaxTree.class_keyword.Class)
             {
-                AddError(get_location(_type_declaration), "ONLY_CLASS_CAN_BE_PARTIAL");
+                TryFixError(get_location(_type_declaration), "ONLY_CLASS_CAN_BE_PARTIAL");
             }
             if (ttn != null && cl_def == null && function_header == null && procedure_header == null)
             {
@@ -12085,7 +12102,7 @@ namespace PascalABCCompiler.TreeConverter
                         if ((si == null) || !(si.FirstOrDefault().sym_info is type_node))
                         {
                             // Это точно enum. Выдавать ошибку - enumы не могут быть обобщёнными
-                            AddError(get_location(ttn), "ENUMS_CANNOT_BE_GENERIC");
+                            TryFixError(get_location(ttn), "ENUMS_CANNOT_BE_GENERIC");
                         }
                     }                 
                 }
@@ -12094,7 +12111,7 @@ namespace PascalABCCompiler.TreeConverter
                 return;
 
                 //is_template_synonym = true;
-                //AddError(new TemplateCanBeClassOnly(get_location(ttn)));
+                //TryFixError(new TemplateCanBeClassOnly(get_location(ttn)));
             }
             if ((function_header != null) || (procedure_header != null))
             {
@@ -12108,7 +12125,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (context.top_function != null)
                     {
-                        AddError(loc, "GENERIC_DELEGATE_INNER_FUNCTION");
+                        TryFixError(loc, "GENERIC_DELEGATE_INNER_FUNCTION");
                     }
                     del_name += compiler_string_consts.generic_params_infix + ttn.template_args.idents.Count;
                 }
@@ -12177,7 +12194,7 @@ namespace PascalABCCompiler.TreeConverter
                 	(tn as common_type_node).add_additional_enum_operations();
                 }
                 else
-                    AddError(get_location(_type_declaration.attributes), "ATTRIBUTES_APPLICABLE_ONLY_TO_THESE_TYPES");
+                    TryFixError(get_location(_type_declaration.attributes), "ATTRIBUTES_APPLICABLE_ONLY_TO_THESE_TYPES");
                 context.add_type(name, tn, loc);
                 return;
             }
@@ -12225,23 +12242,23 @@ namespace PascalABCCompiler.TreeConverter
                         tc = sil.FirstOrDefault().sym_info as template_class;
                         if (tc == null || !tc.ForwardDeclarationOnly)
                         {
-                            AddError(new NameRedefinition(t_name, convertion_data_and_alghoritms.get_location(sil.FirstOrDefault().sym_info), t_loc));
+                            TryFixError(new NameRedefinition(t_name, convertion_data_and_alghoritms.get_location(sil.FirstOrDefault().sym_info), t_loc));
                         }
                         SyntaxTree.class_definition prev_cl_def = tc.type_dec.type_def as SyntaxTree.class_definition;
                         if (prev_cl_def.keyword != cl_def.keyword || prev_cl_def.template_args.idents.Count != cl_def.template_args.idents.Count)
                         {
-                            AddError(t_loc, "FORWARD_TEMPLATE_{0}_DECLARATION_MISMATCH_DECLARATION", t_name);
+                            TryFixError(t_loc, "FORWARD_TEMPLATE_{0}_DECLARATION_MISMATCH_DECLARATION", t_name);
                         }
                         for (int k = 0; k < cl_def.template_args.idents.Count; k++)
                         {
                             if (string.Compare(cl_def.template_args.idents[k].name, prev_cl_def.template_args.idents[k].name, true) != 0)
                             {
-                                AddError(t_loc, "FORWARD_TEMPLATE_{0}_DECLARATION_MISMATCH_DECLARATION", t_name);
+                                TryFixError(t_loc, "FORWARD_TEMPLATE_{0}_DECLARATION_MISMATCH_DECLARATION", t_name);
                             }
                         }
                         if (cl_def.body == null)
                         {
-                            AddError(new NameRedefinition(t_name, convertion_data_and_alghoritms.get_location(sil.FirstOrDefault().sym_info), t_loc));
+                            TryFixError(new NameRedefinition(t_name, convertion_data_and_alghoritms.get_location(sil.FirstOrDefault().sym_info), t_loc));
                         }
                         tc.type_dec = _type_declaration;
                         tc.ForwardDeclarationOnly = false;
@@ -12276,7 +12293,7 @@ namespace PascalABCCompiler.TreeConverter
                 cl_def.keyword == PascalABCCompiler.SyntaxTree.class_keyword.TemplateInterface)
             {
                 //Ошибка, т.к. нет списка шаблонных параметров.
-                AddError(get_location(_type_declaration.type_name), "TEMPLATE_PARAMS_EXPECTED");
+                TryFixError(get_location(_type_declaration.type_name), "TEMPLATE_PARAMS_EXPECTED");
             }
             bool predefined_generic = false;
             if (is_generic)
@@ -12297,7 +12314,7 @@ namespace PascalABCCompiler.TreeConverter
                 string name = record_type_name = _type_declaration.type_name.name;
                 if (context.top_function != null && context.top_function.generic_params != null)
                 {
-                    AddError(get_location(_type_declaration.type_name), "NESTED_RECORDS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED");
+                    TryFixError(get_location(_type_declaration.type_name), "NESTED_RECORDS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED");
                 }
                 record_is_generic = is_generic;
                 location loc = get_location(_type_declaration.type_name);
@@ -12333,14 +12350,14 @@ namespace PascalABCCompiler.TreeConverter
                 if (predefined_generic)
                 {
                     if (ctn.generic_params.Count != cl_def.template_args.idents.Count)
-                        AddError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
+                        TryFixError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
                     foreach (ident id in cl_def.template_args.idents)
                     {
                         SymbolInfo si = ctn.find_first_in_type(id.name);
                         if (si == null)
-                            AddError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
+                            TryFixError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
                         if (!(si.sym_info is common_type_node && (si.sym_info as common_type_node).is_generic_parameter))
-                            AddError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
+                            TryFixError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
                     }
                 }
                 else
@@ -12350,21 +12367,21 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             if (predefined_generic && cl_def.where_section != null && cl_def.where_section.defs.Count > 0)
-                AddError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
+                TryFixError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
             visit_where_list(cl_def.where_section);
 
             if ((cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial && cl_def.class_parents != null)
             {
                 type_node tn = ret.visit(cl_def.class_parents.types[0]);
                 if (!tn.IsInterface && ctn.base_type != SemanticRules.ClassBaseType && ctn.base_type != null && !ctn.base_type.IsInterface && tn != ctn.base_type)
-                    AddError(get_location(cl_def.class_parents), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                    TryFixError(get_location(cl_def.class_parents), "PARTIAL_CLASS_PARENTS_MISMATCH");
                 /*if (ctn.ImplementingInterfaces.Count != cl_def.class_parents.types.Count - 1)
-                    AddError(get_location(cl_def.class_parents), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                    TryFixError(get_location(cl_def.class_parents), "PARTIAL_CLASS_PARENTS_MISMATCH");
                 for (int i=1; i < cl_def.class_parents.types.Count; i++)
                 {
                     tn = ret.visit(cl_def.class_parents.types[i]);
                     if (ctn.ImplementingInterfaces[i-1] != tn)
-                        AddError(get_location(cl_def.class_parents.types[i]), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                        TryFixError(get_location(cl_def.class_parents.types[i]), "PARTIAL_CLASS_PARENTS_MISMATCH");
                 }*/
             }
             
@@ -12429,65 +12446,65 @@ namespace PascalABCCompiler.TreeConverter
         				if (ctn.IsDelegate)
         				{
         					if ((targets & (AttributeTargets.Delegate)) != (AttributeTargets.Delegate))
-        						AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_DELEGATE", name);
+        						TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_DELEGATE", name);
         				}
         				else
         				if (ctn.IsInterface)
         				{
         					if ((targets & AttributeTargets.Interface) != AttributeTargets.Interface)
-        						AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_INTERFACE", name);
+        						TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_INTERFACE", name);
         				}
         				else
         				if (ctn.IsEnum)
         				{
         					if ((targets & (AttributeTargets.Enum)) != (AttributeTargets.Enum))
-        						AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_ENUM", name);
+        						TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_ENUM", name);
         				}
         				else
         				if (ctn.is_value_type)
         				{
         					if ((targets & AttributeTargets.Struct) != AttributeTargets.Struct)
-        						AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_STRUCT", name);
+        						TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_STRUCT", name);
         				}
         				else
         					if ((targets & AttributeTargets.Class) != AttributeTargets.Class)
-        						AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_CLASS", name);
+        						TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_CLASS", name);
         			}
         			break;
         		case semantic_node_type.common_method_node:
         			if ((dn as common_method_node).is_constructor)
         			{
         				if ((targets & AttributeTargets.Constructor) != AttributeTargets.Constructor)
-        					AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_CONSTRUCTOR", name);
+        					TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_CONSTRUCTOR", name);
         			}
         			else
         				if ((targets & AttributeTargets.Method) != AttributeTargets.Method && qualifier != SemanticTree.attribute_qualifier_kind.return_kind)
-        					AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_METHOD", name);
+        					TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_METHOD", name);
         			break;
         		case semantic_node_type.common_namespace_function_node:
         			if ((targets & AttributeTargets.Method) != AttributeTargets.Method && qualifier != SemanticTree.attribute_qualifier_kind.return_kind)
-        				AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_METHOD", name);
+        				TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_METHOD", name);
         			break;
         		case semantic_node_type.class_field:
         			if ((targets & AttributeTargets.Field) != AttributeTargets.Field)
-        				AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_FIELD", name);
+        				TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_FIELD", name);
         			break;
         		case semantic_node_type.common_property_node:
         			if ((targets & AttributeTargets.Property) != AttributeTargets.Property)
-        				AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_PROPERTY", name);
+        				TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_PROPERTY", name);
         			break;
                 case semantic_node_type.common_namespace_event:
         		case semantic_node_type.common_event:
         			if ((targets & AttributeTargets.Event) != AttributeTargets.Event)
-        				AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_EVENT", name);
+        				TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_EVENT", name);
         			break;
         		case semantic_node_type.common_parameter:
         			if ((targets & AttributeTargets.Parameter) != AttributeTargets.Parameter)
-                        AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_FIELD", name);
+                        TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_FIELD", name);
 					break;
                 case semantic_node_type.common_unit_node:
                     if ((targets & AttributeTargets.Assembly) != AttributeTargets.Assembly)
-        				AddError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_ASSEMBLY", name);
+        				TryFixError(loc, "ATTRIBUTE_{0}_NOT_APPLICABLE_TO_ASSEMBLY", name);
         			break;
         	}
         }
@@ -12505,11 +12522,11 @@ namespace PascalABCCompiler.TreeConverter
         private void check_all_fields_have_field_offset_attr(common_type_node ctn)
         {
             if (ctn.is_generic_type_definition)
-                AddError(ctn.loc, "GENERIC_RECORDS_CANNOT_HAVE_EXPLICIT_LAYOUT");
+                TryFixError(ctn.loc, "GENERIC_RECORDS_CANNOT_HAVE_EXPLICIT_LAYOUT");
         	foreach (class_field cf in ctn.fields)
         	{
         		if (!has_field_offset_attribute(cf.attributes) && !cf.IsStatic)
-                    AddError(cf.loc, "FIELD_MUST_HAVE_FIELD_OFFSET_ATTRIBUTE");
+                    TryFixError(cf.loc, "FIELD_MUST_HAVE_FIELD_OFFSET_ATTRIBUTE");
         	}
         }
 
@@ -12532,12 +12549,12 @@ namespace PascalABCCompiler.TreeConverter
                             tmp = tmp.base_type;
                         }
                         if (!is_attr)
-                            AddError(get_location(attr), "CLASS_{0}_NOT_ATTRIBUTE", tn.name);
+                            TryFixError(get_location(attr), "CLASS_{0}_NOT_ATTRIBUTE", tn.name);
                         bool allowMultiple = false;
                         AttributeTargets targets = get_usage_attrs(tn, out allowMultiple);
                         if (ht.Contains(tn) && !allowMultiple)
                         {
-                            AddError(get_location(attr), "DUPLICATE_ATTRIBUTE_{0}_APPLICATION", tn.name);
+                            TryFixError(get_location(attr), "DUPLICATE_ATTRIBUTE_{0}_APPLICATION", tn.name);
                         }
                         else
                             ht[tn] = tn;
@@ -12548,9 +12565,9 @@ namespace PascalABCCompiler.TreeConverter
                                 if (string.Compare(attr.qualifier.name, "return", true) == 0 || string.Compare(attr.qualifier.name, "result", true) == 0)
                                 {
                                     if (context.top_function == null)
-                                        AddError(get_location(attr), "ATTRIBUTE_APPLICABLE_ONLY_TO_METHOD");
+                                        TryFixError(get_location(attr), "ATTRIBUTE_APPLICABLE_ONLY_TO_METHOD");
                                     if (context.top_function.return_value_type == null || context.top_function.return_value_type == SystemLibrary.SystemLibrary.void_type)
-                                        AddError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
+                                        TryFixError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
                                     //throw new NotSupportedError(get_location(attr.qualifier));
                                     qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
                                 }
@@ -12558,9 +12575,9 @@ namespace PascalABCCompiler.TreeConverter
                                     throw new NotSupportedError(get_location(attr.qualifier));
                             }
                             else
-                                AddError(get_location(attr.qualifier), "ATTRIBUTE_QUALIFIER_MUST_BE_FIRST");
+                                TryFixError(get_location(attr.qualifier), "ATTRIBUTE_QUALIFIER_MUST_BE_FIRST");
                         if (tn.is_generic_type_instance || tn.is_generic_type_definition)
-                            AddError(get_location(attr), "ATTRIBUTE_CANNOT_BE_GENERIC");
+                            TryFixError(get_location(attr), "ATTRIBUTE_CANNOT_BE_GENERIC");
                         check_for_usage_attribute(ctn, targets, tn.name, get_location(attr), qualifier);
 
                         attribute_converted = false;
@@ -12631,7 +12648,7 @@ namespace PascalABCCompiler.TreeConverter
                                 if (!(e is SyntaxTree.bin_expr && (e as SyntaxTree.bin_expr).operation_type == SyntaxTree.Operators.Equal
                                       && (e as SyntaxTree.bin_expr).left is SyntaxTree.ident))
                                 {
-                                    AddError(get_location(e), "EXPECTED_ATTRIBUTE_INITIALIZER");
+                                    TryFixError(get_location(e), "EXPECTED_ATTRIBUTE_INITIALIZER");
                                 }
                                 else
                                 {
@@ -12648,9 +12665,9 @@ namespace PascalABCCompiler.TreeConverter
                                         property_node pn = dn as property_node;
                                         attr_node.prop_names.Add(pn);
                                         if (pn.set_function == null)
-                                            AddError(new ThisPropertyCanNotBeWrited(pn, get_location(id)));
+                                            TryFixError(new ThisPropertyCanNotBeWrited(pn, get_location(id)));
                                         if (pn.set_function.parameters.Count != 1)
-                                            AddError(get_location(id), "INDEX_PROPERTY_INITIALIZING_NOT_VALID");
+                                            TryFixError(get_location(id), "INDEX_PROPERTY_INITIALIZING_NOT_VALID");
                                         mem_tn = pn.set_function.parameters[0].type;
                                     }
                                     else if (dn is var_definition_node)
@@ -12699,12 +12716,12 @@ namespace PascalABCCompiler.TreeConverter
                             tmp = tmp.base_type;
                         }
                         if (!is_attr)
-                            AddError(get_location(attr), "CLASS_{0}_NOT_ATTRIBUTE", tn.name);
+                            TryFixError(get_location(attr), "CLASS_{0}_NOT_ATTRIBUTE", tn.name);
                         bool allowMultiple = false;
                         AttributeTargets targets = get_usage_attrs(tn, out allowMultiple);
                         if (ht.Contains(tn) && !allowMultiple)
                         {
-                            AddError(get_location(attr), "DUPLICATE_ATTRIBUTE_{0}_APPLICATION", tn.name);
+                            TryFixError(get_location(attr), "DUPLICATE_ATTRIBUTE_{0}_APPLICATION", tn.name);
                         }
                         else
                             ht[tn] = tn;
@@ -12715,9 +12732,9 @@ namespace PascalABCCompiler.TreeConverter
                                 if (string.Compare(attr.qualifier.name, "return", true) == 0)
                                 {
                                     if (context.top_function == null)
-                                        AddError(get_location(attr), "ATTRIBUTE_APPLICABLE_ONLY_TO_METHOD");
+                                        TryFixError(get_location(attr), "ATTRIBUTE_APPLICABLE_ONLY_TO_METHOD");
                                     if (context.top_function.return_value_type == null || context.top_function.return_value_type == SystemLibrary.SystemLibrary.void_type)
-                                        AddError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
+                                        TryFixError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
                                     throw new NotSupportedError(get_location(attr.qualifier));
                                     qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
                                 }
@@ -12725,7 +12742,7 @@ namespace PascalABCCompiler.TreeConverter
                                     throw new NotSupportedError(get_location(attr.qualifier));
                             }
                             else
-                                AddError(get_location(attr.qualifier), "ATTRIBUTE_QUALIFIER_MUST_BE_FIRST");
+                                TryFixError(get_location(attr.qualifier), "ATTRIBUTE_QUALIFIER_MUST_BE_FIRST");
                         check_for_usage_attribute(cun, targets, tn.name, get_location(attr), qualifier);
 
                         attribute_converted = false;
@@ -12769,7 +12786,7 @@ namespace PascalABCCompiler.TreeConverter
                                 if (!(e is SyntaxTree.bin_expr && (e as SyntaxTree.bin_expr).operation_type == SyntaxTree.Operators.Equal
                                       && (e as SyntaxTree.bin_expr).left is SyntaxTree.ident))
                                 {
-                                    AddError(get_location(e), "EXPECTED_ATTRIBUTE_INITIALIZER");
+                                    TryFixError(get_location(e), "EXPECTED_ATTRIBUTE_INITIALIZER");
                                 }
                                 else
                                 {
@@ -12786,9 +12803,9 @@ namespace PascalABCCompiler.TreeConverter
                                         property_node pn = dn as property_node;
                                         attr_node.prop_names.Add(pn);
                                         if (pn.set_function == null)
-                                            AddError(new ThisPropertyCanNotBeWrited(pn, get_location(id)));
+                                            TryFixError(new ThisPropertyCanNotBeWrited(pn, get_location(id)));
                                         if (pn.set_function.parameters.Count != 1)
-                                            AddError(get_location(id), "INDEX_PROPERTY_INITIALIZING_NOT_VALID");
+                                            TryFixError(get_location(id), "INDEX_PROPERTY_INITIALIZING_NOT_VALID");
                                         mem_tn = pn.set_function.parameters[0].type;
                                     }
                                     else if (dn is var_definition_node)
@@ -12839,7 +12856,7 @@ namespace PascalABCCompiler.TreeConverter
                 case semantic_node_type.typeof_operator_as_constant:
         			return;
         		default:
-                    AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                    TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
         			break;
         	}
         }
@@ -12847,13 +12864,13 @@ namespace PascalABCCompiler.TreeConverter
         internal void check_using_static_class(type_node tn, location loc)
         {
             if (tn.IsStatic)
-                AddError(loc, "USING_STATIC_CLASS_NOT_VALID");
+                TryFixError(loc, "USING_STATIC_CLASS_NOT_VALID");
         }
 
         internal void check_for_type_allowed(type_node tn, location loc)
         {
         	if (tn == SystemLibrary.SystemLibrary.void_type)
-        		AddError(loc, "TYPE_{0}_NOT_VALID", tn.name);
+        		TryFixError(loc, "TYPE_{0}_NOT_VALID", tn.name);
         }
 
         private void check_cycle_inheritance(common_type_node cnode, type_node base_of_cnode)
@@ -12865,7 +12882,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (base_params.Contains(bt))
                 {
-                    AddError(bt.loc, "TYPE_{0}_DERIVED_FROM_ITSELF", bt.name);
+                    TryFixError(bt.loc, "TYPE_{0}_DERIVED_FROM_ITSELF", bt.name);
                 }
                 base_params.Add(bt);
                 bt = bt.base_type as common_type_node;
@@ -12906,11 +12923,11 @@ namespace PascalABCCompiler.TreeConverter
                             //    || thist.methods.Length != t.methods.Length || // это наличие конструктора
                             //    t.base_type != thist.base_type && !type_table.is_derived(t.base_type as type_node, thist.base_type as type_node))
                             if (t.is_class && !thist.is_class)
-                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                                TryFixError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                             if (t.is_value_type && !thist.is_value_type)
-                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                                TryFixError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                             if (t.methods.Length > thist.methods.Length)
-                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                                TryFixError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
 
                             var old_base = t.base_type as type_node;
                             var new_base = thist.base_type as type_node;
@@ -12918,7 +12935,7 @@ namespace PascalABCCompiler.TreeConverter
                             old_base = old_base.original_generic;
                             new_base = new_base.original_generic;
                             if (old_base!=new_base && !type_table.is_derived(old_base, new_base))
-                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                                TryFixError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                                 
                         }
                     }
@@ -12934,7 +12951,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (t.is_value_type || t.base_type != SystemLibrary.SystemLibrary.object_type)
                         {
                             if (thist.is_value_type != t.is_value_type && !(t.is_value_type && thist.base_type.is_value_type) || thist.base_type != t.base_type)
-                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                                TryFixError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                         }
                     }
                 }
@@ -12954,7 +12971,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (!cfn.is_generic_function)
                 {
-                    AddError(get_location(where_list), "WHERE_SECTION_ALLOWED_ONLY_IN_GENERICS");
+                    TryFixError(get_location(where_list), "WHERE_SECTION_ALLOWED_ONLY_IN_GENERICS");
                     return;
                 }
                 gparams = cfn.generic_params;
@@ -12963,7 +12980,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (!context.converted_type.is_generic_type_definition)
                 {
-                    AddError(get_location(where_list), "WHERE_SECTION_ALLOWED_ONLY_IN_GENERICS");
+                    TryFixError(get_location(where_list), "WHERE_SECTION_ALLOWED_ONLY_IN_GENERICS");
                     return;
                 }
                 gparams = context.converted_type.generic_params;
@@ -12982,7 +12999,7 @@ namespace PascalABCCompiler.TreeConverter
                             //Нашли нужный шаблонный параметр
                             if (used_types.Contains(param))
                             {
-                                AddError(get_location(wd.names), "SPECIFICATORS_FOR_{0}_ALREADY_EXIST", wd_id.name);
+                                TryFixError(get_location(wd.names), "SPECIFICATORS_FOR_{0}_ALREADY_EXIST", wd_id.name);
                             }
                             add_generic_eliminations(param, wd.types.defs);
                             used_types.Add(param);
@@ -12992,7 +13009,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if (param_not_found)
                     {
-                        AddError(new UndefinedNameReference(wd.names.idents[ind].name, get_location(wd.names.idents[ind])));
+                        TryFixError(new UndefinedNameReference(wd.names.idents[ind].name, get_location(wd.names.idents[ind])));
                     }
                     ind++;
                 }
@@ -13035,7 +13052,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             else
                             {
-                                AddError(get_location(specificators[i]), "CLASS_OR_RECORD_SPECIFICATOR_MUST_BE_FIRST");
+                                TryFixError(get_location(specificators[i]), "CLASS_OR_RECORD_SPECIFICATOR_MUST_BE_FIRST");
                             }
                             break;
                         case SyntaxTree.DeclarationSpecificator.WhereDefValueType:
@@ -13045,7 +13062,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             else
                             {
-                                AddError(get_location(specificators[i]), "CLASS_OR_RECORD_SPECIFICATOR_MUST_BE_FIRST");
+                                TryFixError(get_location(specificators[i]), "CLASS_OR_RECORD_SPECIFICATOR_MUST_BE_FIRST");
                             }
                             break;
                         case SyntaxTree.DeclarationSpecificator.WhereDefConstructor:
@@ -13055,7 +13072,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             else
                             {
-                                AddError(get_location(specificators[i]), "CONSTRUCTOR_SPECIFICATOR_MUST_BE_LAST");
+                                TryFixError(get_location(specificators[i]), "CONSTRUCTOR_SPECIFICATOR_MUST_BE_LAST");
                             }
                             break;
                     }
@@ -13065,20 +13082,20 @@ namespace PascalABCCompiler.TreeConverter
                     SyntaxTree.named_type_reference ntr = specificators[i] as SyntaxTree.named_type_reference;
                     if (ntr == null)
                     {
-                        AddError(get_location(specificators[i]), "SPECIFICATOR_MUST_BE_TYPE_REFERENCE");
+                        TryFixError(get_location(specificators[i]), "SPECIFICATOR_MUST_BE_TYPE_REFERENCE");
                     }
                     else
                     {
                         type_node spec_type = ret.visit(ntr);
                         if (spec_type is ref_type_node || spec_type == SystemLibrary.SystemLibrary.void_type || spec_type == SystemLibrary.SystemLibrary.pointer_type)
-                            AddError(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
+                            TryFixError(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
                         //if (spec_type.is_class)
                         //    param.is_class = true;
                         if (spec_type.IsInterface)
                         {
                             if (used_interfs[spec_type] != null)
                             {
-                                AddError(get_location(specificators[i]), "INTERFACE_{0}_ALREADY_ADDED_TO_IMPLEMENTING_LIST", spec_type.PrintableName);
+                                TryFixError(get_location(specificators[i]), "INTERFACE_{0}_ALREADY_ADDED_TO_IMPLEMENTING_LIST", spec_type.PrintableName);
                             }
                             else
                             {
@@ -13091,23 +13108,23 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             if (i != 0)
                             {
-                                AddError(get_location(specificators[i]), "PARENT_SPECIFICATOR_MUST_BE_FIRST");
+                                TryFixError(get_location(specificators[i]), "PARENT_SPECIFICATOR_MUST_BE_FIRST");
                             }
                             else
                             {
                                 if (spec_type.is_value)
-                                    AddError(get_location(specificators[i]), "RECORD_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
+                                    TryFixError(get_location(specificators[i]), "RECORD_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 //Тип-предок
                                 if (spec_type == SystemLibrary.SystemLibrary.object_type)
                                 {
-                                    AddError(get_location(specificators[i]), "OBJECT_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
+                                    TryFixError(get_location(specificators[i]), "OBJECT_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 }
                                 /*if (spec_type == SystemLibrary.SystemLibrary.enum_base_type)
                                 {
-                                    AddError(get_location(specificators[i]), "ENUM_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
+                                    TryFixError(get_location(specificators[i]), "ENUM_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 }*/
                                 if (spec_type.IsStatic)
-                                    AddError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
+                                    TryFixError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 check_cycle_inheritance(param, spec_type);
                                 param.SetBaseType(spec_type);
                                 if (spec_type.is_generic_parameter && spec_type.ImplementingInterfaces.Count > 0)
@@ -13174,7 +13191,7 @@ namespace PascalABCCompiler.TreeConverter
             bool unique = context.close_function_params(body_exists);
             if (!unique && _function_header.where_defs != null)
                 // Видимо, ошибка только для глобальных forward продпрограмм
-                AddError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
+                TryFixError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
 
             #region Вывод типа возвращаемого значения лямбды
 
@@ -13191,14 +13208,14 @@ namespace PascalABCCompiler.TreeConverter
             if (_function_header.return_type == null)
             {
             	if (context.top_function.IsOperator)
-                    AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
+                    TryFixError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             }
             if (_function_header.return_type != null)
             {
             	check_parameter_on_complex_type(_function_header.return_type);
             	tn = convert_strong(_function_header.return_type);
 				//if (tn == SystemLibrary.SystemLibrary.void_type)
-            	//    AddError(new VoidNotValid(get_location(_function_header.return_type)));
+            	//    TryFixError(new VoidNotValid(get_location(_function_header.return_type)));
             	check_for_type_allowed(tn,get_location(_function_header.return_type));
                 check_using_static_class(tn, get_location(_function_header.return_type));
             }
@@ -13210,7 +13227,7 @@ namespace PascalABCCompiler.TreeConverter
             	make_attributes_for_declaration(_function_header, context.top_function);
             }
             if (context.converted_type != null && has_dll_import_attribute(context.top_function))
-                AddError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
+                TryFixError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
             if (_function_header.name.class_name != null) 
             	with_class_name = true;
             if (_function_header.class_keyword && !has_static_attr(_function_header.proc_attributes.proc_attributes))
@@ -13229,16 +13246,16 @@ namespace PascalABCCompiler.TreeConverter
                 //}
                 if (cmmn != null && cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                 {
-                    AddError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
+                    TryFixError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                 }
                 if (cmmn != null && (cmmn.name == compiler_string_consts.implicit_operator_name || cmmn.name == compiler_string_consts.explicit_operator_name))
                 if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.comperehensive_type as type_node) && !convertion_data_and_alghoritms.eq_type_nodes(cmmn.comperehensive_type as type_node, cmmn.parameters[0].type))
                 {
-                    AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
+                    TryFixError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
                 }
                 else if (convertion_data_and_alghoritms.eq_type_nodes(tn,cmmn.parameters[0].type))
                 {
-                    AddError(get_location(_function_header), "CIRCURAL_TYPE_CONVERSION_DEFINITION");
+                    TryFixError(get_location(_function_header), "CIRCURAL_TYPE_CONVERSION_DEFINITION");
                 }
             }
 			with_class_name = false;
@@ -13262,7 +13279,7 @@ namespace PascalABCCompiler.TreeConverter
             CheckOverrideOrReintroduceExpectedWarning(get_location(_function_header));
 
             if (context.top_function.return_value_type == null)
-                AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
+                TryFixError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             convertion_data_and_alghoritms.create_function_return_variable(context.top_function, si);
 
             //TODO: Разобрать подробнее.
@@ -13288,19 +13305,19 @@ namespace PascalABCCompiler.TreeConverter
                 if (bl != null && bl.program_code != null)
                 {
                     if (bl.program_code.subnodes.Count != 1)
-                        AddError(get_location(fh.name), "ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED");
+                        TryFixError(get_location(fh.name), "ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED");
 
                     var ass = bl.program_code.subnodes[0] as SyntaxTree.assign;
                     if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower()=="result")
                     {
                         if (ass.from is nil_const)
-                            AddError(get_location(ass.from), "CAN_NOT_DEDUCE_TYPE_{0}","nil");
+                            TryFixError(get_location(ass.from), "CAN_NOT_DEDUCE_TYPE_{0}","nil");
                         
                         // undefined_type означает, что где-то в будущем это надо исправить. Потому что и Result будет этого типа
                         var typ = new semantic_type_node(new undefined_type("#Und",null));//SyntaxTreeBuilder.BuildSameType(ass.from);
                         fh.return_type = typ;
                     }
-                    else AddError(get_location(fh.name), "ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED");
+                    else TryFixError(get_location(fh.name), "ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED");
                 }
             }
             //\ SSM
@@ -13309,11 +13326,11 @@ namespace PascalABCCompiler.TreeConverter
                                 ? _procedure_definition.proc_header.name.meth_name
                                 : null;
             if (_procedure_definition.proc_header.attributes != null && context.converted_func_stack.size >= 1)
-                AddError(get_location(_procedure_definition.proc_header), "ATTRIBUTES_FOR_NESTED_FUNCTIONS_NOT_ALLOWED");
+                TryFixError(get_location(_procedure_definition.proc_header), "ATTRIBUTES_FOR_NESTED_FUNCTIONS_NOT_ALLOWED");
             if (context.top_function != null && context.top_function.generic_params != null && !LambdaHelper.IsLambdaName(proc_name) && !(_procedure_definition.proc_header is SyntaxTree.constructor))
-                AddError(get_location(_procedure_definition.proc_header), "NESTED_FUNCTIONS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED");
+                TryFixError(get_location(_procedure_definition.proc_header), "NESTED_FUNCTIONS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED");
             if (context.top_function != null && _procedure_definition.proc_header.template_args != null && !LambdaHelper.IsLambdaName(proc_name))
-                AddError(get_location(_procedure_definition.proc_header), "GENERIC_NESTED_FUNCTIONS_NOT_ALLOWED");
+                TryFixError(get_location(_procedure_definition.proc_header), "GENERIC_NESTED_FUNCTIONS_NOT_ALLOWED");
         	if (_procedure_definition.proc_header.name != null)
                 current_converted_method_not_in_class_defined = _procedure_definition.proc_header.name.class_name != null;
             else
@@ -13360,7 +13377,7 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converting_block() == block_type.type_block &&
                 context.converted_type.IsInterface)
             {
-                AddError(get_location(_procedure_definition), "INVALID_INTERFACE_MEMBER");
+                TryFixError(get_location(_procedure_definition), "INVALID_INTERFACE_MEMBER");
             }
             //\ssyy
 
@@ -13375,7 +13392,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             //\ssyy
             if (context.converted_type != null && context.converted_type.IsStatic && !_procedure_definition.proc_header.class_keyword && context.func_stack.Empty)
-                AddError(get_location(_procedure_definition), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
+                TryFixError(get_location(_procedure_definition), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (_procedure_definition.proc_body == null)
             {
                 body_exists = false;
@@ -13420,7 +13437,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (deconstructor.is_generic_function &&
                         deconstructor.generic_parameters_count != GenericParameterIndices(GetSelfParameter(deconstructor).type).Count())
-                        AddError(get_location(_procedure_definition), "DECONSTRUCTOR_GENERIC_PARAMETERS_SHOULD_BE_DEFINED_BY_SELF_PARAMETER");
+                        TryFixError(get_location(_procedure_definition), "DECONSTRUCTOR_GENERIC_PARAMETERS_SHOULD_BE_DEFINED_BY_SELF_PARAMETER");
 
                     ExecuteCommonChecks(deconstructor);
                 }
@@ -13433,7 +13450,7 @@ namespace PascalABCCompiler.TreeConverter
                 var deconstructor = methodNode;
 
                 if (deconstructor.is_generic_function)
-                    AddError(get_location(_procedure_definition), "INSTANCE_DECONSTRUCTORS_CANNOT_BE_GENERIC");
+                    TryFixError(get_location(_procedure_definition), "INSTANCE_DECONSTRUCTORS_CANNOT_BE_GENERIC");
 
                 ExecuteCommonChecks(deconstructor);
             }
@@ -13445,7 +13462,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if ((context.converted_template_type.type_dec.type_def as SyntaxTree.class_definition).keyword == PascalABCCompiler.SyntaxTree.class_keyword.Interface)
                 {
-                    AddError(new InterfaceFunctionWithBody(get_location(_procedure_definition)));
+                    TryFixError(new InterfaceFunctionWithBody(get_location(_procedure_definition)));
                 }
                 context.converted_template_type.external_methods.Add(
                     new procedure_definition_info(context.converted_namespace, _procedure_definition));
@@ -13471,7 +13488,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (_procedure_definition.proc_body != null)
                     if (!is_pinvoke(_procedure_definition.proc_body))
-                        AddError(get_location(_procedure_definition.proc_body), "EXPECTED_EXTERNAL_STATEMENT");
+                        TryFixError(get_location(_procedure_definition.proc_body), "EXPECTED_EXTERNAL_STATEMENT");
                 must_visit_body = true;
             }
 
@@ -13492,7 +13509,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (_procedure_definition.proc_body != null)
                     {
-                        AddError(context.top_function.loc, "FORWARD_DEFINITION_WITH_FUNCTION_BODY");
+                        TryFixError(context.top_function.loc, "FORWARD_DEFINITION_WITH_FUNCTION_BODY");
                     }
                 }
                 else
@@ -13531,7 +13548,7 @@ namespace PascalABCCompiler.TreeConverter
 
                             if (cd == null || cd.statements == null || cd.statements.Count == 0)
                             {
-                                AddError(context.top_function.loc, "IMPOSSIBLE!SHORT_FUNC_WITHOUT_BODY");
+                                TryFixError(context.top_function.loc, "IMPOSSIBLE!SHORT_FUNC_WITHOUT_BODY");
                             }
 
                             // Проблема в том, что если в теле короткого определения функции - лямбда
@@ -13747,7 +13764,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (q != null && q.Count() > 0)
                 {
                     var sid = q.First();
-                    AddError(get_location(sid), "SELF_NOT_ALLOWED_IN_METHOD_PARAMS");
+                    TryFixError(get_location(sid), "SELF_NOT_ALLOWED_IN_METHOD_PARAMS");
                 }
             }
             if (_function_header.template_args != null)
@@ -13764,7 +13781,7 @@ namespace PascalABCCompiler.TreeConverter
             if (_function_header.return_type == null)
             {
             	if (context.top_function.IsOperator)
-                    AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
+                    TryFixError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             }
             if (_function_header.return_type != null)
             {
@@ -13785,7 +13802,7 @@ namespace PascalABCCompiler.TreeConverter
             	make_attributes_for_declaration(_function_header, context.top_function);
             }
             //if (context.converted_type != null && has_dll_import_attribute(context.top_function))
-            //    AddError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
+            //    TryFixError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
             if (_function_header.name.class_name != null) 
             	with_class_name = true;
             if (_function_header.class_keyword && !has_static_attr(_function_header.proc_attributes.proc_attributes))
@@ -13803,7 +13820,7 @@ namespace PascalABCCompiler.TreeConverter
                     common_method_node cmmn = context.top_function as common_method_node;
                     if (cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                     {
-                        AddError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
+                        TryFixError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                     }
 
                     if ((cmmn.name == compiler_string_consts.implicit_operator_name || cmmn.name == compiler_string_consts.explicit_operator_name))
@@ -13811,12 +13828,12 @@ namespace PascalABCCompiler.TreeConverter
                         if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.comperehensive_type as type_node) && !convertion_data_and_alghoritms.eq_type_nodes(cmmn.comperehensive_type as type_node, cmmn.parameters[0].type))
                         {
                             if (_function_header.return_type.source_context == null)
-                                AddError(get_location(_function_header), "RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED");
-                            AddError(get_location(_function_header), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
+                                TryFixError(get_location(_function_header), "RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED");
+                            TryFixError(get_location(_function_header), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
                         }
                         else if (convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.parameters[0].type))
                         {
-                            AddError(get_location(_function_header), "CIRCURAL_TYPE_CONVERSION_DEFINITION");
+                            TryFixError(get_location(_function_header), "CIRCURAL_TYPE_CONVERSION_DEFINITION");
                         }
                     }
                     else
@@ -13827,16 +13844,16 @@ namespace PascalABCCompiler.TreeConverter
                         if ((cmmn.name == "+" || cmmn.name == "-"))
                         {
                             if (cmmn.parameters.Count != 2 && cmmn.parameters.Count != 1)
-                                AddError(new SimpleSemanticError(cmmn.loc, "OPERATORS_SHOULD_HAVE_1_OR_2_PARAMETERS"));
+                                TryFixError(new SimpleSemanticError(cmmn.loc, "OPERATORS_SHOULD_HAVE_1_OR_2_PARAMETERS"));
                         }
                         else if (cmmn.parameters.Count != expected_params)
                         {
                             if (expected_params==1)
-                                AddError(new SimpleSemanticError(cmmn.loc, "OPERATOR_SHOULD_HAVE_1_PARAMETER"));
-                            else AddError(new SimpleSemanticError(cmmn.loc, "OPERATOR_SHOULD_HAVE_2_PARAMETERS"));
+                                TryFixError(new SimpleSemanticError(cmmn.loc, "OPERATOR_SHOULD_HAVE_1_PARAMETER"));
+                            else TryFixError(new SimpleSemanticError(cmmn.loc, "OPERATOR_SHOULD_HAVE_2_PARAMETERS"));
                         }
                         if (cmmn.cont_type.IsDelegate && (cmmn.name == "+" || cmmn.name == "-" || cmmn.name == "+=" || cmmn.name == "-="))
-                            AddError(cmmn.loc, "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
+                            TryFixError(cmmn.loc, "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
                         bool has_types = false;
                         foreach (parameter p in cmmn.parameters)
                         {
@@ -13847,7 +13864,7 @@ namespace PascalABCCompiler.TreeConverter
                                 has_types = true;
                         }
                         if (!has_types)
-                            AddError(new SimpleSemanticError(cmmn.loc, "LEAST_ONE_PARAMETER_TYPE_SHOULD_EQ_DECLARING_TYPE_{0}",cmmn.cont_type.name));
+                            TryFixError(new SimpleSemanticError(cmmn.loc, "LEAST_ONE_PARAMETER_TYPE_SHOULD_EQ_DECLARING_TYPE_{0}",cmmn.cont_type.name));
                     }
                 }
                 else if (context.top_function is common_namespace_function_node)
@@ -13857,16 +13874,16 @@ namespace PascalABCCompiler.TreeConverter
                     if ((cnfn.name == compiler_string_consts.implicit_operator_name || cnfn.name == compiler_string_consts.explicit_operator_name))
                     {
                         if (cnfn.parameters.Count != 1)
-                            AddError(new SimpleSemanticError(cnfn.loc,"EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER"));
+                            TryFixError(new SimpleSemanticError(cnfn.loc,"EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER"));
                         if (cnfn.ConnectedToType == null)
-                            AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_BE_EXTENSION_METHOD"));
+                            TryFixError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_BE_EXTENSION_METHOD"));
                         if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cnfn.ConnectedToType) && !convertion_data_and_alghoritms.eq_type_nodes(cnfn.ConnectedToType as type_node, cnfn.parameters[0].type))
                         {
-                            AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cnfn.ConnectedToType as type_node).PrintableName);
+                            TryFixError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cnfn.ConnectedToType as type_node).PrintableName);
                         }
                         else if (convertion_data_and_alghoritms.eq_type_nodes(tn, cnfn.parameters[0].type))
                         {
-                            AddError(get_location(_function_header), "CIRCURAL_TYPE_CONVERSION_DEFINITION");
+                            TryFixError(get_location(_function_header), "CIRCURAL_TYPE_CONVERSION_DEFINITION");
                         }
                     }
                     else
@@ -13877,13 +13894,13 @@ namespace PascalABCCompiler.TreeConverter
                         if (cnfn.name == "+" || cnfn.name == "-")
                         {
                             if (cnfn.parameters.Count != 2 && cnfn.parameters.Count != 1)
-                                AddError(new SimpleSemanticError(cnfn.loc, "OPERATORS_SHOULD_HAVE_1_OR_2_PARAMETERS"));
+                                TryFixError(new SimpleSemanticError(cnfn.loc, "OPERATORS_SHOULD_HAVE_1_OR_2_PARAMETERS"));
                         }
                         else if (cnfn.parameters.Count != expected_params)
                         {
                             if (expected_params == 1)
-                                AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_HAVE_1_PARAMETER"));
-                            else AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_HAVE_2_PARAMETERS"));
+                                TryFixError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_HAVE_1_PARAMETER"));
+                            else TryFixError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_HAVE_2_PARAMETERS"));
                         }
                         bool has_types = false;
                         foreach (parameter p in cnfn.parameters)
@@ -13895,11 +13912,11 @@ namespace PascalABCCompiler.TreeConverter
                                 has_types = true;
                         }
                         if (cnfn.ConnectedToType == null)
-                            AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_BE_EXTENSION_METHOD"));
+                            TryFixError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_BE_EXTENSION_METHOD"));
                         if (!has_types)
-                            AddError(new SimpleSemanticError(cnfn.loc, "LEAST_ONE_PARAMETER_TYPE_SHOULD_EQ_DECLARING_TYPE_{0}",cnfn.ConnectedToType.name));
+                            TryFixError(new SimpleSemanticError(cnfn.loc, "LEAST_ONE_PARAMETER_TYPE_SHOULD_EQ_DECLARING_TYPE_{0}",cnfn.ConnectedToType.name));
                         if (cnfn.ConnectedToType.IsDelegate && (cnfn.name == "+" || cnfn.name == "-" || cnfn.name == "+=" || cnfn.name == "-="))
-                            AddError(cnfn.loc, "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
+                            TryFixError(cnfn.loc, "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
                     }
                 }
             }
@@ -13944,19 +13961,19 @@ namespace PascalABCCompiler.TreeConverter
             context.converted_type = common_converted_type_tmp;
             context.converted_compiled_type = compiled_converted_type_tmp;
             if (context.top_function.return_value_type == null)
-                AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
+                TryFixError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             if (_function_header.where_defs != null)
             {
                 if (!unique && false)
                 {
-                    AddError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
+                    TryFixError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
                 }
             }
             if (context.converted_type != null && context.converted_type.IsInterface)
             {
                 if (body_exists)
                 {
-                    AddError(new InterfaceFunctionWithBody(get_location(_function_header)));
+                    TryFixError(new InterfaceFunctionWithBody(get_location(_function_header)));
                 }
                 common_method_node cmnode = context.top_function as common_method_node;
                 context.set_virtual_abstract(cmnode);
@@ -13966,7 +13983,7 @@ namespace PascalABCCompiler.TreeConverter
                 common_method_node cmnode = context.top_function as common_method_node;
                 if (cmnode != null && cmnode.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract && body_exists)
                 {
-                    AddError(new AbstractMethodWithBody(get_location(_function_header)));
+                    TryFixError(new AbstractMethodWithBody(get_location(_function_header)));
                 }
             }
             convertion_data_and_alghoritms.create_function_return_variable(context.top_function, si);
@@ -13975,7 +13992,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (_function_header.name.class_name != null && context.converted_explicit_interface_type != null)
                 {
-                    AddError(get_location(_function_header), "EXPLICIT_IMPLEMENTATION_EXPECTED");
+                    TryFixError(get_location(_function_header), "EXPLICIT_IMPLEMENTATION_EXPECTED");
                 }
                 if ((context.top_function.semantic_node_type == semantic_node_type.common_method_node)
                     || ((context.func_stack_size_is_one()) && (_is_interface_part)))
@@ -14026,12 +14043,12 @@ namespace PascalABCCompiler.TreeConverter
             if (_procedure_header.name != null && _procedure_header.name.meth_name is SyntaxTree.operator_name_ident &&
                 !SyntaxTree.OperatorServices.IsAssigmentOperator((_procedure_header.name.meth_name as SyntaxTree.operator_name_ident).operator_type))
             {
-                AddError(new OverloadOperatorCanNotBeProcedure(get_location(_procedure_header)));
+                TryFixError(new OverloadOperatorCanNotBeProcedure(get_location(_procedure_header)));
             }
             if (_procedure_header is SyntaxTree.constructor &&
                 (_procedure_header.template_args != null || (_procedure_header.name != null && _procedure_header.name.meth_name != null && _procedure_header.name.meth_name is SyntaxTree.template_type_name)))
             {
-                AddError(get_location(_procedure_header), "CONSTRUCTOR_CAN_NOT_BE_GENERIC");
+                TryFixError(get_location(_procedure_header), "CONSTRUCTOR_CAN_NOT_BE_GENERIC");
             }
             current_function_header = _procedure_header;
             hard_node_test_and_visit(_procedure_header.name);
@@ -14042,7 +14059,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (q != null && q.Count() > 0)
                 {
                     var sid = q.First();
-                    AddError(get_location(sid), "SELF_NOT_ALLOWED_IN_METHOD_PARAMS");
+                    TryFixError(get_location(sid), "SELF_NOT_ALLOWED_IN_METHOD_PARAMS");
                 }
             }
 
@@ -14106,10 +14123,10 @@ namespace PascalABCCompiler.TreeConverter
 
                 }
                 else if (context.top_function is common_namespace_function_node && (context.top_function as common_namespace_function_node).ConnectedToType != null)
-                    AddError(get_location(_procedure_header), "EXTENSION_CONSTRUCTOR_NOT_ALLOWED");
+                    TryFixError(get_location(_procedure_header), "EXTENSION_CONSTRUCTOR_NOT_ALLOWED");
                 else
                 if (context.converted_compiled_type != null)
-                    AddError(get_location(_procedure_header), "EXTENSION_CONSTRUCTOR_NOT_ALLOWED");
+                    TryFixError(get_location(_procedure_header), "EXTENSION_CONSTRUCTOR_NOT_ALLOWED");
             }
 
             if (context.top_function.IsOperator)
@@ -14119,7 +14136,7 @@ namespace PascalABCCompiler.TreeConverter
                     common_method_node cmmn = context.top_function as common_method_node;
                     if (cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                     {
-                        AddError(get_location(_procedure_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
+                        TryFixError(get_location(_procedure_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                     }
                 }
             }
@@ -14129,7 +14146,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (body_exists)
                 {
-                    AddError(new InterfaceFunctionWithBody(get_location(_procedure_header)));
+                    TryFixError(new InterfaceFunctionWithBody(get_location(_procedure_header)));
                 }
                 common_method_node cmnode = context.top_function as common_method_node;
                 context.set_virtual_abstract(cmnode);
@@ -14140,14 +14157,14 @@ namespace PascalABCCompiler.TreeConverter
             	common_method_node cmnode = context.top_function as common_method_node;
             	if (cmnode != null && cmnode.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract && body_exists)
             	{
-            		AddError(new AbstractMethodWithBody(get_location(_procedure_header)));
+            		TryFixError(new AbstractMethodWithBody(get_location(_procedure_header)));
             	}
             }
             if (_procedure_header.where_defs != null)
             {
                 if (!unique && false)
                 {
-                    AddError(get_location(_procedure_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
+                    TryFixError(get_location(_procedure_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
                 }
             }
             assign_doc_info(context.top_function,_procedure_header);
@@ -14156,12 +14173,12 @@ namespace PascalABCCompiler.TreeConverter
             	make_attributes_for_declaration(_procedure_header, context.top_function);
             }
             if (context.converted_type != null && has_dll_import_attribute(context.top_function))
-            	AddError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
+            	TryFixError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
             if (!body_exists)
             {
                 if (_procedure_header.name.class_name != null && context.converted_explicit_interface_type != null)
                 {
-                    AddError(get_location(_procedure_header), "EXPLICIT_IMPLEMENTATION_EXPECTED");
+                    TryFixError(get_location(_procedure_header), "EXPLICIT_IMPLEMENTATION_EXPECTED");
                 }
                 if ((context.top_function.semantic_node_type == semantic_node_type.common_method_node)
                     || ((context.func_stack_size_is_one()) && (_is_interface_part)))
@@ -14231,7 +14248,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (_procedure_attributes_list.proc_attributes[i].attribute_type ==
                         _procedure_attributes_list.proc_attributes[j].attribute_type)
                     {
-                        AddError(new DuplicateAttributeDefinition(get_location(_procedure_attributes_list.proc_attributes[j]),
+                        TryFixError(new DuplicateAttributeDefinition(get_location(_procedure_attributes_list.proc_attributes[j]),
                             get_location(_procedure_attributes_list.proc_attributes[i])));
                     }
                 }
@@ -14245,16 +14262,16 @@ namespace PascalABCCompiler.TreeConverter
                     case SyntaxTree.proc_attribute.attr_forward:
                         {
                             if (with_class_name)
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
                 			//(ssyy) В интерфейсах аттрибуты недопустимы
                             if (context.converted_type != null && context.converted_type.IsInterface)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
                             }
                             common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
                             if (top_function != null && top_function.ConnectedToType != null)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "FORWARD_EXTENSION_METHODS_NOT_ALLOWED");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "FORWARD_EXTENSION_METHODS_NOT_ALLOWED");
                             }
 
                             is_forward = true;
@@ -14264,33 +14281,33 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             
                             if (with_class_name)
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
                 			//(ssyy) В интерфейсах аттрибуты недопустимы
                             if (context.converted_type != null && context.converted_type.IsInterface)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
                             }
 
                             //(ssyy) В записях нет виртуальных функций
                             if (context.converted_type != null && context.converted_type.is_value)
                             {
-                                AddError(new VirtualMethodInRecord(
+                                TryFixError(new VirtualMethodInRecord(
                                     get_location(_procedure_attributes_list.proc_attributes[i])));
                             }
 
                             common_function_node ccfn = context.top_function;
                             if (ccfn.semantic_node_type != semantic_node_type.common_method_node)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "{0}_KEYWORD_ALLOWED_ONLY_WITH_METHOD", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "{0}_KEYWORD_ALLOWED_ONLY_WITH_METHOD", _procedure_attributes_list.proc_attributes[i].name);
                             }
                             common_method_node cmn = ccfn as common_method_node;
                             if (cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "CAN_NOT_BE_VIRTUAL_STATIC_METHOD");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "CAN_NOT_BE_VIRTUAL_STATIC_METHOD");
                             }
                             if (is_override)
                             {
-                            	AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name,override_proc_attr);
+                            	TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name,override_proc_attr);
                             }
                             if (!context.converted_type.IsAbstract || true)
                             {
@@ -14305,25 +14322,25 @@ namespace PascalABCCompiler.TreeConverter
                     case SyntaxTree.proc_attribute.attr_reintroduce:
                         {
                 			if (with_class_name)
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
                 			//(ssyy) В интерфейсах аттрибуты недопустимы
                             if (context.converted_type != null && context.converted_type.IsInterface)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
                             }
                             common_function_node ccfn = context.top_function;
                             if (ccfn.return_value_type is undefined_type)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "OVERRIDE_NOT_ALLOWED_FOR_SHORT_FUNCTIONS");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "OVERRIDE_NOT_ALLOWED_FOR_SHORT_FUNCTIONS");
                             }
                             if (ccfn.semantic_node_type != semantic_node_type.common_method_node)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "{0}_KEYWORD_ALLOWED_ONLY_WITH_METHOD", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "{0}_KEYWORD_ALLOWED_ONLY_WITH_METHOD", _procedure_attributes_list.proc_attributes[i].name);
                             }
                             common_method_node cmn = ccfn as common_method_node;
                             if (cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "CAN_NOT_BE_VIRTUAL_STATIC_METHOD");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "CAN_NOT_BE_VIRTUAL_STATIC_METHOD");
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_reintroduce)
                             {
@@ -14334,11 +14351,11 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_virtual)
                 			{
-                            	AddError(get_location(_procedure_attributes_list.proc_attributes[i]),"USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name,virtual_proc_attr);
+                            	TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]),"USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name,virtual_proc_attr);
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_reintroduce)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name, reintroduce_proc_attr);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name, reintroduce_proc_attr);
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override)
                 			{
@@ -14367,27 +14384,27 @@ namespace PascalABCCompiler.TreeConverter
 
                                     if (gen_par2.base_type != SystemLibrary.SystemLibrary.object_type && !convertion_data_and_alghoritms.eq_type_nodes(gen_par2.base_type, gen_par1.base_type, true))
                                         if (gen_par1.base_type == SystemLibrary.SystemLibrary.object_type)
-                                            AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_TYPE", gen_par2.name, gen_par2.base_type.PrintableName);
+                                            TryFixError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_TYPE", gen_par2.name, gen_par2.base_type.PrintableName);
                                         else
-                                            AddError(where_loc, "OVERRIDE_WHERE_TYPE_MUST_BE_SAME", gen_par2.name, gen_par1.base_type.PrintableName);
+                                            TryFixError(where_loc, "OVERRIDE_WHERE_TYPE_MUST_BE_SAME", gen_par2.name, gen_par1.base_type.PrintableName);
 
                                     foreach (type_node intr2 in gen_par2.ImplementingInterfaces)
                                         if (!gen_par1.ImplementingInterfaces.Any(intr1=> convertion_data_and_alghoritms.eq_type_nodes((type_node)intr1, intr2, true)))
-                                            AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_INTERFACE", gen_par2.name, intr2.PrintableName);
+                                            TryFixError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_INTERFACE", gen_par2.name, intr2.PrintableName);
 
                                     if (gen_par2.has_explicit_default_constructor && !gen_par1.has_explicit_default_constructor)
-                                        AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "constructor");
+                                        TryFixError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "constructor");
                                     if (gen_par2.is_class && !gen_par1.is_class)
-                                        AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "class");
+                                        TryFixError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "class");
                                     if (gen_par2.is_value && !gen_par1.is_value)
-                                        AddError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "record");
+                                        TryFixError(where_loc, "OVERRIDE_WHERE_UNEXPECTED_X", gen_par2.name, "record");
 
                                 }
 
                             }
 
                             if (cmn.field_access_level < cmn.overrided_method.field_access_level)
-                                AddError(cmn.loc, "CAN_NOT_BE_DOWN_ACCESS_LEVEL_FOR_METH");
+                                TryFixError(cmn.loc, "CAN_NOT_BE_DOWN_ACCESS_LEVEL_FOR_METH");
                             break;
                         }
                     case SyntaxTree.proc_attribute.attr_static:
@@ -14399,27 +14416,27 @@ namespace PascalABCCompiler.TreeConverter
                                     context.top_function.polymorphic_state = PascalABCCompiler.SemanticTree.polymorphic_state.ps_static;
                                     break;
                                 }
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
                             }
                 			//(ssyy) В интерфейсах аттрибуты недопустимы
                             if (context.converted_type != null && context.converted_type.IsInterface)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
                             }
 
                             common_function_node ccfn = context.top_function;
                             if (ccfn.semantic_node_type != semantic_node_type.common_method_node)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "STATIC_KEYWORD_ALLOWED_ONLY_WITH_METHOD");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "STATIC_KEYWORD_ALLOWED_ONLY_WITH_METHOD");
                             }
                             common_method_node cmn = ccfn as common_method_node;
                             if (cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "CAN_NOT_BE_VIRTUAL_STATIC_METHOD");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "CAN_NOT_BE_VIRTUAL_STATIC_METHOD");
                             }
                             if (cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "CANNOT_BE_ABSTRACT_STATIC_METHOD");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "CANNOT_BE_ABSTRACT_STATIC_METHOD");
                             }
                             cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
                             break;
@@ -14427,31 +14444,31 @@ namespace PascalABCCompiler.TreeConverter
                 	case SyntaxTree.proc_attribute.attr_abstract:
                 		{
                 			if (with_class_name)
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
                 			if (context.converted_type != null && context.converted_type.IsInterface)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
                             }
                 			common_function_node ccfn = context.top_function;
                 			common_method_node cmn = ccfn as common_method_node;
                 			
                             if (ccfn.semantic_node_type != semantic_node_type.common_method_node)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "{0}_KEYWORD_ALLOWED_ONLY_WITH_METHOD", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "{0}_KEYWORD_ALLOWED_ONLY_WITH_METHOD", _procedure_attributes_list.proc_attributes[i].name);
                             }
                             if (context.converted_type != null && context.converted_type.is_value)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ABSTRACT_METHOD_IN_RECORD");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "ABSTRACT_METHOD_IN_RECORD");
                             }
                 			if (ccfn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "CANNOT_BE_ABSTRACT_STATIC_METHOD");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "CANNOT_BE_ABSTRACT_STATIC_METHOD");
                 			}
                             if (cmn.is_constructor)
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
                             cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
                             if (context.converted_type.IsSealed)
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ABSTRACT_METHOD_IN_SEALED_CLASS");
+                                TryFixError(get_location(_procedure_attributes_list.proc_attributes[i]), "ABSTRACT_METHOD_IN_SEALED_CLASS");
                             context.converted_type.SetIsAbstract(true, null); // Причина null, потому что предыдущая строчка уже даёт ошибку раньше, чем та - для которой понадобится эта причина
                             if (cmn.IsReintroduce)
                                 cmn.newslot_awaited = true;
@@ -14460,20 +14477,20 @@ namespace PascalABCCompiler.TreeConverter
                     case proc_attribute.attr_extension:
                         {
                             if (is_forward)
-                                AddError(get_location(_procedure_attributes_list), "EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED");
+                                TryFixError(get_location(_procedure_attributes_list), "EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED");
                             if (context.converted_compiled_type != null)
-                                AddError(get_location(_procedure_attributes_list), "EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED");
+                                TryFixError(get_location(_procedure_attributes_list), "EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED");
                             if (in_interface_part)
-                                AddError(get_location(_procedure_attributes_list), "EXTENSION_METHODS_IN_INTERFACE_PART_NOT_ALLOWED");
+                                TryFixError(get_location(_procedure_attributes_list), "EXTENSION_METHODS_IN_INTERFACE_PART_NOT_ALLOWED");
                             if (!(context.top_function is common_namespace_function_node))
-                                AddError(get_location(_procedure_attributes_list), "EXTENSION_ATTRIBUTE_ONLY_FOR_NAMESPACE_FUNCTIONS_ALLOWED");
+                                TryFixError(get_location(_procedure_attributes_list), "EXTENSION_ATTRIBUTE_ONLY_FOR_NAMESPACE_FUNCTIONS_ALLOWED");
                             if (context.top_function.parameters.Count == 0)
-                                AddError(context.top_function.loc, "EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER");
+                                TryFixError(context.top_function.loc, "EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER");
                             if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value
                                 && !(context.top_function.parameters[0].type is compiled_type_node ctn && ctn.compiled_type == typeof(string)))
-                                AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
+                                TryFixError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
                             if (!context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
-                                AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
+                                TryFixError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
                             
                             common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
                             top_function.ConnectedToType = context.top_function.parameters[0].type;
@@ -14482,7 +14499,7 @@ namespace PascalABCCompiler.TreeConverter
                                 (top_function.ConnectedToType as compiled_type_node).init_scope();
                             }
                             if (top_function.ConnectedToType.Scope == null)
-                                AddError(context.top_function.loc, "EXTENSION_METHODS_FOR_CONSTRUCTED_TYPES_NOT_ALLOWED");
+                                TryFixError(context.top_function.loc, "EXTENSION_METHODS_FOR_CONSTRUCTED_TYPES_NOT_ALLOWED");
                             SymbolInfo si = new SymbolInfo(context.top_function);
                             si.symbol_kind = symbol_kind.sk_overload_function;
                             top_function.ConnectedToType.Scope.AddSymbol(top_function.name, si);
@@ -14499,11 +14516,11 @@ namespace PascalABCCompiler.TreeConverter
                             else if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && top_function.ConnectedToType.element_type.is_generic_parameter && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
                                 (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             if (top_function.ConnectedToType.IsDelegate && context.top_function.IsOperator && (context.top_function.name == "+" || context.top_function.name == "-" || context.top_function.name == "+=" || context.top_function.name == "-="))
-                                AddError(get_location(_procedure_attributes_list), "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
+                                TryFixError(get_location(_procedure_attributes_list), "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
                             if (context.top_function.IsOperator && (context.top_function.name == compiler_string_consts.implicit_operator_name || context.top_function.name == compiler_string_consts.explicit_operator_name) && context.top_function.parameters.Count == 1 && context.top_function.return_value_type != null)
                             {
                                 if (!(context.top_function.return_value_type is compiled_type_node) && !(context.top_function.return_value_type is compiled_generic_instance_type_node) || !(context.top_function.parameters[0].type is compiled_type_node) && !(context.top_function.parameters[0].type is compiled_generic_instance_type_node))
-                                    ;//AddError(get_location(_procedure_attributes_list), "IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED");
+                                    ;//TryFixError(get_location(_procedure_attributes_list), "IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED");
                             }
                             break;
                         }
@@ -14525,21 +14542,21 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (params_met)
                 {
-                    AddError(get_location(tp), "ONLY_LAST_PARAMETER_CAN_BE_PARAMS");
+                    TryFixError(get_location(tp), "ONLY_LAST_PARAMETER_CAN_BE_PARAMS");
                 }
                 if (tp.param_kind == PascalABCCompiler.SyntaxTree.parametr_kind.params_parametr)
                 {
                     params_met = true;
                     if (default_value_met)
                     {
-                        AddError(get_location(tp), "FUNCTION_WITH_PARAMS_PARAMETER_CAN_NOT_HAVE_DEFAULT_PARAMETERS");
+                        TryFixError(get_location(tp), "FUNCTION_WITH_PARAMS_PARAMETER_CAN_NOT_HAVE_DEFAULT_PARAMETERS");
                     }
                 }
                 hard_node_test_and_visit(tp);
                 first_param = false;
                 if ((default_value_met) && (tp.inital_value == null))
                 {
-                    AddError(new NeedDefaultValueForParameter(get_location(tp)));
+                    TryFixError(new NeedDefaultValueForParameter(get_location(tp)));
                 }
 
                 if (tp.inital_value != null)
@@ -14567,12 +14584,12 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if (all_types_mismatch)
                     {
-                        AddError(cnode.loc, "TYPE_OF_ONE_OR_MORE_OPERATOR_PARAMETERS_MUST_BE_{0}", ((type_node)(cnode.comperehensive_type)).PrintableName);
+                        TryFixError(cnode.loc, "TYPE_OF_ONE_OR_MORE_OPERATOR_PARAMETERS_MUST_BE_{0}", ((type_node)(cnode.comperehensive_type)).PrintableName);
                     }
                 }
                 if (pars.Count > 0 && pars[pars.Count - 1].is_params)
                 {
-                    AddError(convertion_data_and_alghoritms.get_location(pars[pars.Count - 1]), "PARAMS_IN_OPERATOR");
+                    TryFixError(convertion_data_and_alghoritms.get_location(pars[pars.Count - 1]), "PARAMS_IN_OPERATOR");
                 }
                 
             }
@@ -14582,10 +14599,10 @@ namespace PascalABCCompiler.TreeConverter
                 if (pcount != pars.Count)
                 {
                     if (context.top_function.name != compiler_string_consts.minus_name && context.top_function.name != compiler_string_consts.plus_name)
-                        AddError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
+                        TryFixError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
                     else
                     if (pars.Count != 1 && pars.Count != 2)
-                        AddError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
+                        TryFixError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
                 }
             }
         }
@@ -14594,11 +14611,11 @@ namespace PascalABCCompiler.TreeConverter
         {
             SyntaxTree.array_type arr = type as SyntaxTree.array_type;
             if (arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null)
-                AddError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+                TryFixError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
             if (arr.elements_type is SyntaxTree.array_type)
                 check_array_on_complex_type(arr.elements_type as SyntaxTree.array_type);
             else if (arr.elements_type is SyntaxTree.class_definition)
-                AddError(get_location(arr.elements_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+                TryFixError(get_location(arr.elements_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
             else if (arr.elements_type is SyntaxTree.set_type_definition)
                 check_set_on_complex_type(arr.elements_type as set_type_definition);
             else if (arr.elements_type is SyntaxTree.file_type)
@@ -14611,7 +14628,7 @@ namespace PascalABCCompiler.TreeConverter
             if (set.of_type is SyntaxTree.array_type)
                 check_array_on_complex_type(set.of_type as SyntaxTree.array_type);
             else if (set.of_type is SyntaxTree.class_definition)
-                AddError(get_location(set.of_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+                TryFixError(get_location(set.of_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
             else if (set.of_type is SyntaxTree.file_type)
                 check_file_on_complex_type(set.of_type as file_type);
             else if (set.of_type is SyntaxTree.set_type_definition)
@@ -14624,7 +14641,7 @@ namespace PascalABCCompiler.TreeConverter
             if (file.file_of_type is SyntaxTree.array_type)
                 check_array_on_complex_type(file.file_of_type as SyntaxTree.array_type);
             else if (file.file_of_type is SyntaxTree.class_definition)
-                AddError(get_location(file.file_of_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+                TryFixError(get_location(file.file_of_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
             else if (file.file_of_type is SyntaxTree.file_type)
                 check_file_on_complex_type(file.file_of_type as file_type);
             else if (file.file_of_type is SyntaxTree.set_type_definition)
@@ -14637,7 +14654,7 @@ namespace PascalABCCompiler.TreeConverter
             if (type is SyntaxTree.class_definition || /*type is SyntaxTree.enum_type_definition ||*/
                 (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
             {
-                AddError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+                TryFixError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
             }
             if (arr != null)
             {
@@ -14656,7 +14673,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (context.top_function is common_method_node && (context.converted_type.IsInterface || context.top_function.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract ) 
                 && (type is function_header || type is procedure_header))
-                AddError(get_location(type), "ANONYMOUS_DELEGATE_IN_INTERFACE_NOT_ALLOWED");
+                TryFixError(get_location(type), "ANONYMOUS_DELEGATE_IN_INTERFACE_NOT_ALLOWED");
         }
 
         public override void visit(SyntaxTree.typed_parameters _typed_parametres)
@@ -14701,7 +14718,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (_typed_parametres.idents.idents.Count != 1)
                 {
-                    AddError(get_location(_typed_parametres.idents.idents[1]), "ONLY_ONE_PARAMS_PARAMETER_ALLOWED");
+                    TryFixError(get_location(_typed_parametres.idents.idents[1]), "ONLY_ONE_PARAMS_PARAMETER_ALLOWED");
                 }
             }
             
@@ -14712,7 +14729,7 @@ namespace PascalABCCompiler.TreeConverter
             check_parameter_on_complex_type(_typed_parametres.vars_type);
             type_node tn = convert_strong(_typed_parametres.vars_type);
             if (tn.IsStatic)
-                AddError(get_location(_typed_parametres), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
+                TryFixError(get_location(_typed_parametres), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
             if (_typed_parametres.vars_type is function_header || _typed_parametres.vars_type is procedure_header)
             {
                 check_delegate_on_generic_parameters(tn as common_type_node, get_location(_typed_parametres.vars_type));
@@ -14731,7 +14748,7 @@ namespace PascalABCCompiler.TreeConverter
                 internal_interface ii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface);
                 if (ii == null)
                 {
-                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                    TryFixError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
                 }
             }
             com_par.type = tn;
@@ -14751,15 +14768,15 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (_typed_parametres.idents.idents.Count != 1)
                 {
-                    AddError(new OnlyOneParameterNameWithDefaultValueAllowed(get_location(_typed_parametres)));
+                    TryFixError(new OnlyOneParameterNameWithDefaultValueAllowed(get_location(_typed_parametres)));
                 }
                 if (cpt == concrete_parameter_type.cpt_var)
                 {
-                    AddError(new VarParametersCanNotHaveDefaultValue(get_location(_typed_parametres)));
+                    TryFixError(new VarParametersCanNotHaveDefaultValue(get_location(_typed_parametres)));
                 }
                 if (cpt == concrete_parameter_type.cpt_const)
                 {
-                    AddError(get_location(_typed_parametres), "CONST_PARAMETERS_CANNOT_HAVE_DEFAULT_VALUE");
+                    TryFixError(get_location(_typed_parametres), "CONST_PARAMETERS_CANNOT_HAVE_DEFAULT_VALUE");
                 }
                 context.top_function.num_of_default_variables = context.top_function.num_of_default_variables + 1;
                 expression_node def_val_expr = convert_strong_to_constant_node(_typed_parametres.inital_value);
@@ -14780,10 +14797,10 @@ namespace PascalABCCompiler.TreeConverter
                     foreach (common_parameter prm in cmn.parameters)
                     {
                         if (is_instance_of_generic_parameter(prm.type))
-                            AddError(loc, "ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
+                            TryFixError(loc, "ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
                     }
                     if (cmn.return_value_type != null && is_instance_of_generic_parameter(cmn.return_value_type))
-                        AddError(loc, "ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
+                        TryFixError(loc, "ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
                 }
             }
         }
@@ -14863,13 +14880,13 @@ namespace PascalABCCompiler.TreeConverter
         			if (indexes.indexers[0] == null)
         			{
         				if (indexes.indexers.Count == 1)
-                            AddError(get_location(indexes), "INVALID_ARRAY_REPRESENTATION");
+                            TryFixError(get_location(indexes), "INVALID_ARRAY_REPRESENTATION");
         				wait_empty=true;
         			}
         		}
         		else
         		if (indexes.indexers[i] == null && !wait_empty || indexes.indexers[i] != null && wait_empty)
-                    AddError(get_location(indexes), "INVALID_ARRAY_REPRESENTATION");
+                    TryFixError(get_location(indexes), "INVALID_ARRAY_REPRESENTATION");
         		else
         		rank++;
         	}
@@ -14882,11 +14899,11 @@ namespace PascalABCCompiler.TreeConverter
         	if (is_unsized_array(_array_type.indexers, out rank))
             {
                 if (rank > 32)
-                    AddError(get_location(_array_type.indexers), "ARRAY_RANK_CANNOT_BE_GREATER_32");
+                    TryFixError(get_location(_array_type.indexers), "ARRAY_RANK_CANNOT_BE_GREATER_32");
                 type_node ret = null;
                 type_node et = convert_strong(_array_type.elements_type);
                 //if (et == SystemLibrary.SystemLibrary.void_type)
-            	//AddError(new VoidNotValid(get_location(_array_type.elemets_types)));
+            	//TryFixError(new VoidNotValid(get_location(_array_type.elemets_types)));
                 check_for_type_allowed(et,get_location(_array_type.elements_type));
                 check_using_static_class(et, get_location(_array_type.elements_type));
                 ret = convertion_data_and_alghoritms.type_constructor.create_unsized_array(et,
@@ -14901,7 +14918,7 @@ namespace PascalABCCompiler.TreeConverter
                 internal_interface ii = tn.get_internal_interface(internal_interface_kind.ordinal_interface);
                 if (ii == null)
                 {
-                    AddError(new OrdinalTypeExpected(get_location(td)));
+                    TryFixError(new OrdinalTypeExpected(get_location(td)));
                 }
                 if (tn.IsEnum && tn is common_type_node)
                 {
@@ -14914,9 +14931,9 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             int nextc = Convert.ToInt32(ccdn.constant_value.value);
                             if (nextc - c != 1 && i != 0)
-                                AddError(get_location(td), "ENUM_MUST_HAVE_SEQUENCED_VALUES");
+                                TryFixError(get_location(td), "ENUM_MUST_HAVE_SEQUENCED_VALUES");
                             else if (nextc != 0 && i == 0)
-                                AddError(get_location(td), "ENUM_MUST_HAVE_SEQUENCED_VALUES");
+                                TryFixError(get_location(td), "ENUM_MUST_HAVE_SEQUENCED_VALUES");
                             c = nextc;
                         }
                     }
@@ -14926,18 +14943,18 @@ namespace PascalABCCompiler.TreeConverter
                 	if (tn.base_type == SystemLibrary.SystemLibrary.uint_type || tn.base_type == SystemLibrary.SystemLibrary.int64_type || 
                 	   tn.base_type == SystemLibrary.SystemLibrary.uint64_type)
                 	//ordinal_type_interface oti = tn.get_internal_interface(internal_interface_kind.ordinal_interface) as ordinal_type_interface;
-                        AddError(get_location(td), "RANGE_TOO_LARGE");
+                        TryFixError(get_location(td), "RANGE_TOO_LARGE");
                     if (tn.base_type == SystemLibrary.SystemLibrary.integer_type)
                     {
                         Int64 low = ((tn as SemanticTree.ICommonTypeNode).lower_value as int_const_node).constant_value;
                         Int64 high = ((tn as SemanticTree.ICommonTypeNode).upper_value as int_const_node).constant_value;
                         if (high-low >= int.MaxValue)
-                            AddError(get_location(td), "RANGE_TOO_LARGE");
+                            TryFixError(get_location(td), "RANGE_TOO_LARGE");
                     }
                 }
                 else if (tn == SystemLibrary.SystemLibrary.uint_type || tn == SystemLibrary.SystemLibrary.int64_type ||
                         tn == SystemLibrary.SystemLibrary.uint64_type || tn == SystemLibrary.SystemLibrary.integer_type)
-                    AddError(get_location(td), "RANGE_TOO_LARGE");
+                    TryFixError(get_location(td), "RANGE_TOO_LARGE");
                 ind_types.AddElement(tn);
             }
             type_node elem_type = convert_strong(_array_type.elements_type);
@@ -15011,7 +15028,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (!(tn == exp.type) && !type_table.is_derived(tn, exp.type) && !(convertion_data_and_alghoritms.can_convert_type(exp, tn)))
                 {
-                    AddError(new CanNotConvertTypes(exp, exp.type, tn, exp.location));
+                    TryFixError(new CanNotConvertTypes(exp, exp.type, tn, exp.location));
                 }
                 if (tn.element_type != null)
                 {
@@ -15040,7 +15057,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (!(tn == exp.type) && !type_table.is_derived(tn, exp.type) && !(convertion_data_and_alghoritms.can_convert_type(exp, tn)))
                 {
-                    AddError(new CanNotConvertTypes(exp, exp.type, tn, exp.location));
+                    TryFixError(new CanNotConvertTypes(exp, exp.type, tn, exp.location));
                 }
                 if (tn.element_type != null)
                 {
@@ -15119,10 +15136,10 @@ namespace PascalABCCompiler.TreeConverter
                                               || cnfc.function_node == PascalABCCompiler.SystemLibrary.SystemLibInitializer.CreateDiapason.sym_info as common_namespace_function_node
                                               || cnfc.function_node == PascalABCCompiler.SystemLibrary.SystemLibInitializer.CreateObjDiapason.sym_info as common_namespace_function_node)
                         check_set_for_constant(en as common_namespace_function_call);
-                    else AddError(en.location, "CONSTANT_EXPRESSION_EXPECTED");
+                    else TryFixError(en.location, "CONSTANT_EXPRESSION_EXPECTED");
                 }
                 else
-                    if (!(en is constant_node /*|| en is statements_expression_node*/)) AddError(en.location, "CONSTANT_EXPRESSION_EXPECTED");
+                    if (!(en is constant_node /*|| en is statements_expression_node*/)) TryFixError(en.location, "CONSTANT_EXPRESSION_EXPECTED");
         }
 
         private constant_node convert_strong_to_constant_node(expression_node expr, type_node tn, bool is_const_section_and_userfuncall = false, bool is_const_section = false, location parent_loc = null)
@@ -15135,7 +15152,7 @@ namespace PascalABCCompiler.TreeConverter
             if (expr is null_const_node) 
             {
             	if (!(tn is null_type_node) && !type_table.is_with_nil_allowed(tn))
-                    AddError(loc, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
+                    TryFixError(loc, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
             	return null_const_node.get_const_node_with_type(tn, expr as null_const_node);
             }
             if (expr is compiled_static_method_call)
@@ -15158,13 +15175,13 @@ namespace PascalABCCompiler.TreeConverter
                         check_set_for_constant(cnfc2);
                     }
                     else
-                        if (!(en is constant_node)) AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                        if (!(en is constant_node)) TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                 }
                 constant = new common_namespace_function_call_as_constant(cnfc, loc);
             }
             else if (is_const_section_and_userfuncall && (expr is basic_function_call || expr is common_namespace_function_call)) // только в разделе const
             {
-                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             }
             else if (expr is common_namespace_function_call)
             {
@@ -15172,7 +15189,7 @@ namespace PascalABCCompiler.TreeConverter
                 foreach (expression_node el in cnfc.parameters)
                     convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
-                //    AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                //    TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                 //  throw new ConstantExpressionExpected(loc);
                 constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
             }
@@ -15380,11 +15397,11 @@ namespace PascalABCCompiler.TreeConverter
             }
             
             if (constant == null)
-                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                TryFixError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             if (IsBoundedArray(tn) || IsUnsizedArray(tn))
             {
                 if (!(constant is array_const))
-                    AddError(loc, "ARRAY_CONST_EXPECTED");
+                    TryFixError(loc, "ARRAY_CONST_EXPECTED");
                 constant = ConvertArrayConst(tn, constant as array_const);
             }
             else
@@ -15400,25 +15417,25 @@ namespace PascalABCCompiler.TreeConverter
                         		return expr as common_constructor_call_as_constant;
                         	convertion_data_and_alghoritms.check_convert_type(expr,tn,expr.location);
                             return constant;
-                        	//AddError(new CanNotConvertTypes(expr,expr.type,tn,expr.location));
+                        	//TryFixError(new CanNotConvertTypes(expr,expr.type,tn,expr.location));
                         	//throw new NotSupportedError(loc);
                         }
                         if ((tn as common_type_node).IsEnum)
                         {
                             convertion_data_and_alghoritms.check_convert_type(expr,tn,expr.location);
                         	enum_const_node ecn = expr as enum_const_node;
-                            if (ecn == null) AddError(expr.location, "CONSTANT_EXPRESSION_EXPECTED");
+                            if (ecn == null) TryFixError(expr.location, "CONSTANT_EXPRESSION_EXPECTED");
                             return ecn;
                         }
                         if (!(constant is record_constant))
-                            AddError(loc, "RECORD_CONST_EXPECTED");
+                            TryFixError(loc, "RECORD_CONST_EXPECTED");
                         constant = ConvertRecordConst(tn as common_type_node, constant as record_constant);
                     }
                     else if (tn.type_special_kind == SemanticTree.type_special_kind.diap_type)
                     {
                     	constant = expr as constant_node;
                     	if (constant == null)
-                            AddError(expr.location, "CONSTANT_EXPRESSION_EXPECTED");
+                            TryFixError(expr.location, "CONSTANT_EXPRESSION_EXPECTED");
                     	//constant = (expr as namespace_constant_reference).constant.const_value;
             			convertion_data_and_alghoritms.check_convert_type(constant,tn,expr.location);
                         ordinal_type_interface oti = tn.get_internal_interface(internal_interface_kind.ordinal_interface) as ordinal_type_interface;
@@ -15432,7 +15449,7 @@ namespace PascalABCCompiler.TreeConverter
                                 int right = convertion_data_and_alghoritms.convert_type_to_int_constant(oti.upper_value, out success);
                                 if (success)
                                 if (val < left || val > right)
-                                    AddError(loc, "OUT_OF_RANGE");
+                                    TryFixError(loc, "OUT_OF_RANGE");
                             }
                         }
                     }
@@ -15441,7 +15458,7 @@ namespace PascalABCCompiler.TreeConverter
                     	//obrezka konstantnogo mnozhestva
                     	if (!(tn == expr.type) && !type_table.is_derived(tn,expr.type))
                     	{
-                    		AddError(new CanNotConvertTypes(expr,expr.type,tn,expr.location));
+                    		TryFixError(new CanNotConvertTypes(expr,expr.type,tn,expr.location));
                     	}
                     	if (tn.element_type != null)
                     	{
@@ -15536,16 +15553,16 @@ namespace PascalABCCompiler.TreeConverter
         {
         	location loc = constant.location;
             if (!ctn.is_value_type)
-                AddError(loc, "RECORD_CONST_NOT_ALLOWED_{0}", ctn.name);
+                TryFixError(loc, "RECORD_CONST_NOT_ALLOWED_{0}", ctn.name);
             if (ctn.fields.Count != constant.record_const_definition_list.Count)
-                AddError(loc, "INVALID_RECORD_CONST_FIELD_COUNT");
+                TryFixError(loc, "INVALID_RECORD_CONST_FIELD_COUNT");
             constant.type = ctn;
             constant.field_values.Clear();
             for (int i = 0; i < ctn.fields.Count; i++)
             {
                 class_field cf = ctn.fields[i];
                 if (cf.name.ToLower() != constant.record_const_definition_list[i].name.name.ToLower())
-                    AddError(get_location(constant.record_const_definition_list[i].name), "FIELD_NAME_SHOULD_BE_EQUAL_RECORD_FIELD_NAME", cf.name);
+                    TryFixError(get_location(constant.record_const_definition_list[i].name), "FIELD_NAME_SHOULD_BE_EQUAL_RECORD_FIELD_NAME", cf.name);
                 expression_node en = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(constant.record_const_definition_list[i].val),cf.type);
                 en.type = cf.type;
                 constant.field_values.Add(en);
@@ -15564,11 +15581,11 @@ namespace PascalABCCompiler.TreeConverter
         		if (e is array_initializer)
         		{
                     if (size != -1 && size != (e as array_initializer).element_values.Count)
-                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
+                        TryFixError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
                     size = (e as array_initializer).element_values.Count;
         			if (cur_rank >= rank)
         				constant.element_values[i] = ConvertArrayInitializer(tn.element_type, e as array_initializer);
-        				//AddError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
+        				//TryFixError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
         			else
                         constant.element_values[i] = ConvertNDimArrayInitializer(tn,cur_rank + 1, element_type, e as array_initializer);
         		}
@@ -15581,7 +15598,7 @@ namespace PascalABCCompiler.TreeConverter
         		else
             	{
         			if (cur_rank != rank)
-                        AddError(constant.location, "RANK_MISMATCH_IN_INITILIALIZER");
+                        TryFixError(constant.location, "RANK_MISMATCH_IN_INITILIALIZER");
         			constant.element_values[i] = convertion_data_and_alghoritms.convert_type(constant.element_values[i], element_type);
             	}
         	}
@@ -15599,7 +15616,7 @@ namespace PascalABCCompiler.TreeConverter
                 ordinal_type_interface oti_indexer = bai.ordinal_type_interface;
                 int arr_length = oti_indexer.ordinal_type_to_int(oti_indexer.upper_value) - oti_indexer.ordinal_type_to_int(oti_indexer.lower_value) + 1;
                 if (arr_length != constant.element_values.Count)
-                    AddError(constant.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", arr_length);
+                    TryFixError(constant.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", arr_length);
             }
             else
                 if (IsUnsizedArray(tn))
@@ -15622,7 +15639,7 @@ namespace PascalABCCompiler.TreeConverter
                 return cccall_cnst;
             }
             else
-                AddError(new CanNotConvertTypes(constant,constant.type,tn,constant.location));//CompilerInternalError("Unexpected array type");
+                TryFixError(new CanNotConvertTypes(constant,constant.type,tn,constant.location));//CompilerInternalError("Unexpected array type");
             for (int i = 0; i < constant.element_values.Count; i++)
             if (constant.element_values[i] is array_initializer)
             	constant.element_values[i] = ConvertArrayInitializer(element_type, constant.element_values[i] as array_initializer);
@@ -15651,11 +15668,11 @@ namespace PascalABCCompiler.TreeConverter
         		if (e is array_const)
         		{
                     if (size != -1 && size != (e as array_const).element_values.Count)
-                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
+                        TryFixError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
                     size = (e as array_const).element_values.Count;
         			if (cur_rank>=rank)
         				constant.element_values[i] = ConvertArrayConst(tn.element_type,e as array_const);
-        				//AddError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
+        				//TryFixError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
         			else
                         constant.element_values[i] = ConvertNDimArrayConst(tn,cur_rank+1,element_type,e as array_const);
         		}
@@ -15663,12 +15680,12 @@ namespace PascalABCCompiler.TreeConverter
             	{
             		if (element_type is common_type_node)
             			constant.element_values[i] = ConvertRecordConst(element_type as common_type_node, e as record_constant);
-            		else AddError(new NotSupportedError(constant.element_values[i].location));
+            		else TryFixError(new NotSupportedError(constant.element_values[i].location));
             	}
         		else
             	{
         			if (cur_rank != rank)
-                        AddError(constant.location, "RANK_MISMATCH_IN_INITILIALIZER");
+                        TryFixError(constant.location, "RANK_MISMATCH_IN_INITILIALIZER");
         			constant.element_values[i] = convert_strong_to_constant_node(constant.element_values[i], element_type);
             	}
         	}
@@ -15686,7 +15703,7 @@ namespace PascalABCCompiler.TreeConverter
                 ordinal_type_interface oti_indexer = bai.ordinal_type_interface;
                 int arr_length = oti_indexer.ordinal_type_to_int(oti_indexer.upper_value) - oti_indexer.ordinal_type_to_int(oti_indexer.lower_value) + 1;
                 if (arr_length != constant.element_values.Count)
-                    AddError(constant.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", arr_length);
+                    TryFixError(constant.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", arr_length);
             }
             else
                 if (IsUnsizedArray(tn))
@@ -15712,9 +15729,9 @@ namespace PascalABCCompiler.TreeConverter
         {
             location loc = constant.location;
             if (!ctn.is_value_type)
-                AddError(loc, "RECORD_CONST_NOT_ALLOWED_{0}", ctn.name);
+                TryFixError(loc, "RECORD_CONST_NOT_ALLOWED_{0}", ctn.name);
             if (ctn.fields.Count != constant.record_const_definition_list.Count)
-                AddError(loc, "INVALID_RECORD_CONST_FIELD_COUNT");
+                TryFixError(loc, "INVALID_RECORD_CONST_FIELD_COUNT");
             constant.SetType(ctn);
             constant.field_values.Clear();
             bool tmp = this.is_typed_const_def;
@@ -15723,7 +15740,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 class_field cf = ctn.fields[i];
                 if (cf.name.ToLower() != constant.record_const_definition_list[i].name.name.ToLower())
-                    AddError(get_location(constant.record_const_definition_list[i].name), "FIELD_NAME_SHOULD_BE_EQUAL_RECORD_FIELD_NAME", cf.name);
+                    TryFixError(get_location(constant.record_const_definition_list[i].name), "FIELD_NAME_SHOULD_BE_EQUAL_RECORD_FIELD_NAME", cf.name);
                 constant.field_values.Add(convert_strong_to_constant_node(constant.record_const_definition_list[i].val, cf.type));
             }
             this.is_typed_const_def = tmp;
@@ -15747,7 +15764,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 //это указатель на тип который еще не описан
                 if (!is_direct_type_decl)
-                    AddError(new UndefinedNameReference((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name,get_location(_ref_type.pointed_to)));
+                    TryFixError(new UndefinedNameReference((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name,get_location(_ref_type.pointed_to)));
                 return_value(GetWaitedRefType((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name, get_location(_ref_type.pointed_to)));
             }
             else
@@ -15761,7 +15778,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        AddError(get_location(_ref_type), "POINTERS_OF_GENERIC_PARAMETERS_NOT_ALLOWED");
+                        TryFixError(get_location(_ref_type), "POINTERS_OF_GENERIC_PARAMETERS_NOT_ALLOWED");
                     }
                 }
                 else
@@ -15769,7 +15786,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (!tn.is_value /*&& tn.type_special_kind != SemanticTree.type_special_kind.array_kind && tn.type_special_kind != SemanticTree.type_special_kind.set_type && tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper && tn.type_special_kind != SemanticTree.type_special_kind.binary_file
                         && tn.type_special_kind != SemanticTree.type_special_kind.binary_file*/ && !(tn is ref_type_node) && tn != SystemLibrary.SystemLibrary.pointer_type && tn.type_special_kind != SemanticTree.type_special_kind.short_string && tn.type_special_kind != SemanticTree.type_special_kind.diap_type && !tn.IsEnum &&
                         !(tn.semantic_node_type == semantic_node_type.indefinite_type))
-                        AddError(get_location(_ref_type), "POINTERS_OF_REF_TYPES_NOT_ALLOWED");
+                        TryFixError(get_location(_ref_type), "POINTERS_OF_REF_TYPES_NOT_ALLOWED");
                 }
                 ref_type_node rtn = tn.ref_type;
                 if (rtn != null)
@@ -15793,18 +15810,18 @@ namespace PascalABCCompiler.TreeConverter
             __findBadTypeNodeForPointersPreparedTypes.Clear();
             if (ttn != null)
             {
-                AddErrorCheckPointersTypeForDotNetFramework(tn, ttn, loc);
+                TryFixErrorCheckPointersTypeForDotNetFramework(tn, ttn, loc);
                 return false;
             }
             return true;
         }
 
-        public void AddErrorCheckPointersTypeForDotNetFramework(type_node tn, type_node ttn, location loc)
+        public void TryFixErrorCheckPointersTypeForDotNetFramework(type_node tn, type_node ttn, location loc)
         {
             if (tn == ttn)
-                AddError(loc, "CANNOT_DECLARED_POINTER_TO_REFERENCE_TYPE");
+                TryFixError(loc, "CANNOT_DECLARED_POINTER_TO_REFERENCE_TYPE");
             else
-                AddError(loc, "CANNOT_DECLARED_POINTER_TO_RECORD_CONTAINS_REFERENCE_FIELDS");
+                TryFixError(loc, "CANNOT_DECLARED_POINTER_TO_RECORD_CONTAINS_REFERENCE_FIELDS");
         }
         private List<type_node> __findBadTypeNodeForPointersPreparedTypes = new List<type_node>();
         private type_node FindBadTypeNodeForPointersInDotNetFramework(type_node tn)
@@ -15938,7 +15955,7 @@ namespace PascalABCCompiler.TreeConverter
         void CheckToEmbeddedStatementCannotBeADeclaration(SyntaxTree.statement st)
         {
             if (st != null && st is SyntaxTree.var_statement)
-                AddError(get_location(st), "EMBEDDED_SATATEMENT_CANNOT_BE_A_DECLARATION");
+                TryFixError(get_location(st), "EMBEDDED_SATATEMENT_CANNOT_BE_A_DECLARATION");
         }
 
         public override void visit(SyntaxTree.if_node _if_node)
@@ -16090,7 +16107,7 @@ namespace PascalABCCompiler.TreeConverter
                     expression eee = parameters.expressions[0];
 
                     if (parameters.expressions.Count > 1)
-                        AddError(get_location(eee), "TUPLE_CAN_HAVE_ONLY_ONE_INDEX");
+                        TryFixError(get_location(eee), "TUPLE_CAN_HAVE_ONLY_ONE_INDEX");
 
                     var cn = convert_strong_to_constant_node(eee);
 
@@ -16099,12 +16116,12 @@ namespace PascalABCCompiler.TreeConverter
                     if (v != null)
                     {
                         if (v.constant_value<0 || v.constant_value >= t.GetGenericArguments().Count())
-                            AddError(cn.location, "TUPLE_INDEX_OUT_OF_RANGE_{0}", t.GetGenericArguments().Count()-1);
+                            TryFixError(cn.location, "TUPLE_INDEX_OUT_OF_RANGE_{0}", t.GetGenericArguments().Count()-1);
                         var dn = new dot_node(new semantic_addr_value(expr), new ident("Item" + (v.constant_value + 1).ToString(), eee.source_context),new SourceContext(loc.begin_line_num,loc.begin_column_num,loc.end_line_num,loc.end_column_num));
                         visit(dn);
                         return;
                     }
-                    else AddError(cn.location, "TUPLE_INDEX_MUST_BE_INTEGER_CONSTANT");
+                    else TryFixError(cn.location, "TUPLE_INDEX_MUST_BE_INTEGER_CONSTANT");
                 }
             }
             // end SSM 09.01.16 Tuple t[i]
@@ -16126,7 +16143,7 @@ namespace PascalABCCompiler.TreeConverter
                     location lloc = get_location(parameters.expressions[i]);
                     if (ii == null)
                     {
-                        AddError(lloc, "{0}_DIMENSIONAL_ARRAY_CAN_NOT_HAVE_{1}_AND_MORE_INDEXING", i, i+1);
+                        TryFixError(lloc, "{0}_DIMENSIONAL_ARRAY_CAN_NOT_HAVE_{1}_AND_MORE_INDEXING", i, i+1);
                     }
                     aii = (array_internal_interface)ii;
                     ind_expr = convert_strong(parameters.expressions[i]);
@@ -16137,7 +16154,7 @@ namespace PascalABCCompiler.TreeConverter
                 else
                 {
                     if (rank != parameters.expressions.Count)
-                        AddError(get_location(parameters), "{0}_DIMENSIONAL_ARRAY_CAN_NOT_HAVE_{1}_AND_MORE_INDEXING", rank, rank + 1);
+                        TryFixError(get_location(parameters), "{0}_DIMENSIONAL_ARRAY_CAN_NOT_HAVE_{1}_AND_MORE_INDEXING", rank, rank + 1);
                 	List<expression_node> lst = new List<expression_node>();
                 	for (int i = 0; i < parameters.expressions.Count; i++)
                 	{
@@ -16173,7 +16190,7 @@ namespace PascalABCCompiler.TreeConverter
             else if (expr.type.type_special_kind == SemanticTree.type_special_kind.short_string)
             {
             	if (parameters.expressions.Count != 1)
-                    AddError(loc, "INVALID_PARAMETER_COUNT_IN_INDEXER");
+                    TryFixError(loc, "INVALID_PARAMETER_COUNT_IN_INDEXER");
             	expression_node ind_expr = convert_strong(parameters.expressions[0]);
             	ind_expr = additional_indexer_convertion(ind_expr, expr.type);
                 try_convert_typed_expression_to_function_call(ref ind_expr, true);
@@ -16275,11 +16292,11 @@ namespace PascalABCCompiler.TreeConverter
                 
                 if (expr.type.semantic_node_type != semantic_node_type.delegated_method)
                 {
-                    AddError(loc, "NO_DEFAULT_PROPERTY_TO_TYPE_{0}", expr.type.PrintableName);
+                    TryFixError(loc, "NO_DEFAULT_PROPERTY_TO_TYPE_{0}", expr.type.PrintableName);
                 }
                 else
                 {
-                    AddError(loc, "NO_DEFAULT_PROPERTY_TO_FUNCTION_TYPE");
+                    TryFixError(loc, "NO_DEFAULT_PROPERTY_TO_FUNCTION_TYPE");
                 }
                 if (for_intellisense)
                 {
@@ -16291,7 +16308,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (expr.type.default_property_node.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
             {
-                AddError(new CanNotReferenceToStaticPropertyWithExpression(expr.type.default_property_node, loc, expr.type));
+                TryFixError(new CanNotReferenceToStaticPropertyWithExpression(expr.type.default_property_node, loc, expr.type));
             }
             non_static_property_reference nspr = new non_static_property_reference(expr.type.default_property_node, expr, loc);
             indexer_as_property_indexes(nspr, parameters, mot, loc);
@@ -16354,16 +16371,16 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (type.semantic_node_type != semantic_node_type.delegated_method)
                 {
-                    AddError(loc, "NO_DEFAULT_PROPERTY_TO_TYPE_{0}", type.PrintableName);
+                    TryFixError(loc, "NO_DEFAULT_PROPERTY_TO_TYPE_{0}", type.PrintableName);
                 }
                 else
                 {
-                    AddError(loc, "NO_DEFAULT_PROPERTY_TO_FUNCTION_TYPE");
+                    TryFixError(loc, "NO_DEFAULT_PROPERTY_TO_FUNCTION_TYPE");
                 }
             }
             if (type.default_property_node.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
             {
-                AddError(new CanNotReferenceToNonStaticPropertyWithType(type.default_property_node, loc, type));
+                TryFixError(new CanNotReferenceToNonStaticPropertyWithType(type.default_property_node, loc, type));
             }
             static_property_reference spr = new static_property_reference(type.default_property_node, loc);
             indexer_as_property_indexes(spr, parameters, mot, loc);
@@ -16397,7 +16414,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (parameters.expressions.Count != spr.property.parameters.Count)
                 {
-                    AddError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", spr.property.name);
+                    TryFixError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", spr.property.name);
                 }
                 for (int i = 0; i < parameters.expressions.Count; i++)
                 {
@@ -16414,7 +16431,7 @@ namespace PascalABCCompiler.TreeConverter
                         function_node fn = spr.property.get_function;
                         if (fn == null)
                         {
-                            AddError(new ThisPropertyCanNotBeReaded(spr.property, loc));
+                            TryFixError(new ThisPropertyCanNotBeReaded(spr.property, loc));
                         }
                         //expression_node bfc=convertion_data_and_alghoritms.create_simple_function_call(fn,loc,spr.fact_params.ToArray());
                         base_function_call bfc = create_static_method_call(fn, loc, spr.property.comprehensive_type, false);
@@ -16437,7 +16454,7 @@ namespace PascalABCCompiler.TreeConverter
                         function_node fn = spr.property.get_function;
                         if (fn == null)
                         {
-                            AddError(new ThisPropertyCanNotBeReaded(spr.property, loc));
+                            TryFixError(new ThisPropertyCanNotBeReaded(spr.property, loc));
                         }
                         base_function_call bfc = create_static_method_call(fn, loc, spr.property.comprehensive_type, false);
                         bfc.parameters.AddRange(spr.fact_parametres);
@@ -16475,7 +16492,7 @@ namespace PascalABCCompiler.TreeConverter
                             ii = bfc.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                             if (ii == null)
                             {
-                                AddError(lloc, "{0}_DIMENSIONAL_ARRAY_CAN_NOT_HAVE_{1}_AND_MORE_INDEXING", i, i+1);
+                                TryFixError(lloc, "{0}_DIMENSIONAL_ARRAY_CAN_NOT_HAVE_{1}_AND_MORE_INDEXING", i, i+1);
                             }
                             bounded_array_interface bii = (bounded_array_interface)ii;
                             exp = convert_strong(parameters.expressions[i]);
@@ -16486,7 +16503,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        AddError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", nspr.property.name);
+                        TryFixError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", nspr.property.name);
                     }
                 }
                 else
@@ -16520,7 +16537,7 @@ namespace PascalABCCompiler.TreeConverter
                         function_node fn = nspr.property.get_function;
                         if (fn == null)
                         {
-                            AddError(new ThisPropertyCanNotBeReaded(nspr.property, loc));
+                            TryFixError(new ThisPropertyCanNotBeReaded(nspr.property, loc));
                         }
                         base_function_call bfc = create_not_static_method_call(fn, nspr.expression, loc, false);
                         bfc.parameters.AddRange(nspr.fact_parametres);
@@ -16542,7 +16559,7 @@ namespace PascalABCCompiler.TreeConverter
                         function_node fn = nspr.property.get_function;
                         if (fn == null)
                         {
-                            AddError(new ThisPropertyCanNotBeReaded(nspr.property, loc));
+                            TryFixError(new ThisPropertyCanNotBeReaded(nspr.property, loc));
                         }
                         base_function_call bfc = create_not_static_method_call(fn, nspr.expression, loc, false);
                         bfc.parameters.AddRange(nspr.fact_parametres);
@@ -16594,7 +16611,7 @@ namespace PascalABCCompiler.TreeConverter
                 List<SymbolInfo> sil = context.find(idi.name);
                 if (sil == null)
                 {
-                    AddError(new UndefinedNameReference(idi.name, get_location(idi)));
+                    TryFixError(new UndefinedNameReference(idi.name, get_location(idi)));
                 }
                 if (sil.FirstOrDefault().sym_info.general_node_type == general_node_type.type_node)
                 {
@@ -16639,7 +16656,7 @@ namespace PascalABCCompiler.TreeConverter
                                 List<SymbolInfo> sil = ttp.find_in_type(id.name, context.CurrentScope);
                                 if (sil == null)
                                 {
-                                    AddError(new UndefinedNameReference(id.name, get_location(id)));
+                                    TryFixError(new UndefinedNameReference(id.name, get_location(id)));
                                 }
                                 if (sil.FirstOrDefault().sym_info.general_node_type == general_node_type.property_node)
                                 {
@@ -16666,7 +16683,7 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                                 if (sil == null)
                                 {
-                                    AddError(new UndefinedNameReference(id.name, get_location(id)));
+                                    TryFixError(new UndefinedNameReference(id.name, get_location(id)));
                                 }
                                 location lloc = get_location(id);
                                 if (sil.FirstOrDefault().sym_info.general_node_type == general_node_type.type_node)
@@ -16685,14 +16702,14 @@ namespace PascalABCCompiler.TreeConverter
                                 List<SymbolInfo> sil = ex.type.find_in_type(id.name, context.CurrentScope);
                                 if (sil == null)
                                 {
-                                    AddError(new UndefinedNameReference(id.name, get_location(id)));
+                                    TryFixError(new UndefinedNameReference(id.name, get_location(id)));
                                 }
                                 if (sil.FirstOrDefault().sym_info.general_node_type == general_node_type.property_node)
                                 {
                                     property_node pn = (property_node)sil.FirstOrDefault().sym_info;
                                     if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                                     {
-                                        AddError(new CanNotReferenceToStaticPropertyWithExpression(pn, get_location(dotnd), ex.type));
+                                        TryFixError(new CanNotReferenceToStaticPropertyWithExpression(pn, get_location(dotnd), ex.type));
                                     }
                                     location lloc11 = get_location(dotnd);
                                     try_convert_typed_expression_to_function_call(ref ex);
@@ -16728,10 +16745,10 @@ namespace PascalABCCompiler.TreeConverter
             //TODO: Сделать нормальное сообщение об ошибке.
             if (rtn == null)
             {
-                AddError(get_location(_roof_dereference.dereferencing_value), "CANNOT_DEREFER_THIS_EXPR_OF_NON_POINTER_TYPE");
+                TryFixError(get_location(_roof_dereference.dereferencing_value), "CANNOT_DEREFER_THIS_EXPR_OF_NON_POINTER_TYPE");
             }
             if (rtn.pointed_type == null)
-                AddError(get_location(_roof_dereference.dereferencing_value), "TYPE_{0}_IS_NOT_DETERMINED_COMPLETELY", rtn.PointedTypeName);
+                TryFixError(get_location(_roof_dereference.dereferencing_value), "TYPE_{0}_IS_NOT_DETERMINED_COMPLETELY", rtn.PointedTypeName);
             dereference_node res = new dereference_node(exp, get_location(_roof_dereference));
             switch (mot)
             {
@@ -16936,7 +16953,7 @@ namespace PascalABCCompiler.TreeConverter
                     foreach (var x in ph.parameters.params_list)
                     {
                         if (x.inital_value != null)
-                            AddError(get_location(x.inital_value), "DEFAULT_PARAMS_IN_DELEGATE_TYPE");  // SSM bug fix #1463
+                            TryFixError(get_location(x.inital_value), "DEFAULT_PARAMS_IN_DELEGATE_TYPE");  // SSM bug fix #1463
                     }
 
             }
@@ -16944,22 +16961,22 @@ namespace PascalABCCompiler.TreeConverter
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition fld)
             {
                 if (fld.formal_parameters != null && fld.formal_parameters.params_list.Select(x => x.vars_type).Any(x=>x is lambda_inferred_type))
-                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");
+                    TryFixError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");
                 if (fld.return_type is lambda_inferred_type)
-                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");
+                    TryFixError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");
                 if (fld.return_type == null)
                     _var_def_statement.vars_type = new procedure_header(fld.formal_parameters, null, null, false, false, null, null, _var_def_statement.source_context);
                 else
                     _var_def_statement.vars_type = new function_header(fld.formal_parameters, null, null, null, fld.return_type, _var_def_statement.source_context);
                 //else
-                //    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
+                //    TryFixError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
             }
                 
 
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.pascal_set_constant pc)
             {
                 if (pc.values==null || pc.values.Count == 0)
-                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
+                    TryFixError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
             }
                 
 
@@ -16968,11 +16985,11 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converting_block() == block_type.type_block &&
                 context.converted_type.IsInterface && !is_event)
             {
-                AddError(get_location(_var_def_statement), "INVALID_INTERFACE_MEMBER");
+                TryFixError(get_location(_var_def_statement), "INVALID_INTERFACE_MEMBER");
             }
 
             if (is_event && context.converting_block() == block_type.type_block && context.converted_type.IsInterface && (_var_def_statement.vars_type is function_header || _var_def_statement.vars_type is procedure_header))
-                AddError(get_location(_var_def_statement.vars_type), "ANONYMOUS_DELEGATE_IN_INTERFACE_NOT_ALLOWED");
+                TryFixError(get_location(_var_def_statement.vars_type), "ANONYMOUS_DELEGATE_IN_INTERFACE_NOT_ALLOWED");
 
             type_node tn = null;
             expression_node inital_value = null;
@@ -16985,12 +17002,12 @@ namespace PascalABCCompiler.TreeConverter
                     !tn.BaseFullName.StartsWith("System.Tuple") &&
                     _var_def_statement.inital_value is SyntaxTree.array_const ac)
                 {
-                    AddError(get_location(_var_def_statement), "IMPOSSIBLE_TO_CONVERT_ARRAY_CONST_TO_{0}", tn);
+                    TryFixError(get_location(_var_def_statement), "IMPOSSIBLE_TO_CONVERT_ARRAY_CONST_TO_{0}", tn);
                 }
 
                 //LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//
                 if (tn.IsStatic && _var_def_statement.vars.idents[0].name != YieldHelpers.YieldConsts.Self) // SSM 10/07/19 fix #1639 в статическом классе можно только фиктивное поле с именем YieldHelpers.YieldConsts.Self описать - для того чтобы посмотреть на семантике его тип!!! 
-                    AddError(get_location(_var_def_statement), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
+                    TryFixError(get_location(_var_def_statement), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
                 var fld1 = _var_def_statement.inital_value as SyntaxTree.function_lambda_definition;
                 if (fld1 != null)
                 {
@@ -17012,14 +17029,14 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
                 if (is_event && !tn.IsDelegate)
-                    AddError(get_location(_var_def_statement.vars_type), "EVENT_TYPE_MUST_BE_DELEGATE");
+                    TryFixError(get_location(_var_def_statement.vars_type), "EVENT_TYPE_MUST_BE_DELEGATE");
                 check_for_type_allowed(tn,get_location(_var_def_statement.vars_type));
                 if (_var_def_statement.vars_type is function_header || _var_def_statement.vars_type is procedure_header)
                     check_delegate_on_generic_parameters(tn as common_type_node, get_location(_var_def_statement.vars_type));
                 if (context.converting_block() == block_type.type_block && context.converted_type.is_value_type && _var_def_statement.var_attr != SyntaxTree.definition_attribute.Static)
                     CheckForCircuralInRecord(tn, get_location(_var_def_statement.vars_type));
                 if (_var_def_statement.inital_value != null)
-                	if (is_event) AddError(new NotSupportedError(get_location(_var_def_statement.inital_value)));
+                	if (is_event) TryFixError(new NotSupportedError(get_location(_var_def_statement.inital_value)));
                     else
                     {
                 	    _var_def_statement.inital_value = get_possible_array_const(_var_def_statement.inital_value,tn);
@@ -17037,7 +17054,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
             	if (is_event)
-                    AddError(get_location(_var_def_statement), "EVENT_MUST_HAVE_TYPE");
+                    TryFixError(get_location(_var_def_statement), "EVENT_MUST_HAVE_TYPE");
                 var ex = convert_strong(_var_def_statement.inital_value);
                 expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(ex);
                 if (cn is constant_node)
@@ -17045,7 +17062,7 @@ namespace PascalABCCompiler.TreeConverter
                 inital_value = cn;
                 tn = inital_value.type;
                 if (tn is null_type_node)
-                	AddError(cn.location, "CAN_NOT_DEDUCE_TYPE_{0}", tn.name);
+                	TryFixError(cn.location, "CAN_NOT_DEDUCE_TYPE_{0}", tn.name);
                 if (context.converting_block() == block_type.type_block && context.converted_type.is_value_type && _var_def_statement.var_attr != SyntaxTree.definition_attribute.Static)
                     CheckForCircuralInRecord(tn, get_location(_var_def_statement));
             }
@@ -17058,15 +17075,15 @@ namespace PascalABCCompiler.TreeConverter
             		base_function_call bfc = ((inital_value as typed_expression).type as delegated_methods).proper_methods[0];
                     if (bfc.function.is_generic_function && _var_def_statement.vars_type == null)
                     {
-                        AddError(inital_value.location, "CAN_NOT_DEDUCE_TYPE_{0}", null);
+                        TryFixError(inital_value.location, "CAN_NOT_DEDUCE_TYPE_{0}", null);
                     }
                     foreach (parameter p in bfc.simple_function_node.parameters)
                     {
                         if (p.type.is_generic_parameter || is_instance_of_generic_parameter(p.type))
-                            AddError(get_location(_var_def_statement), "ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED");
+                            TryFixError(get_location(_var_def_statement), "ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED");
                     }
                     if (bfc.simple_function_node.return_value_type != null && (bfc.simple_function_node.return_value_type.is_generic_parameter || is_instance_of_generic_parameter(bfc.simple_function_node.return_value_type)))
-                        AddError(get_location(_var_def_statement), "ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED");
+                        TryFixError(get_location(_var_def_statement), "ANONYMOUS_DELEGATES_WITH_GENERIC_PARAMS_NOT_ALLOWED");
                     common_type_node del =
             			convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
             		context.converted_namespace.types.AddElement(del);
@@ -17079,7 +17096,7 @@ namespace PascalABCCompiler.TreeConverter
                     base_function_call bfc = inital_value as base_function_call;
                     if (bfc.function.is_generic_function && _var_def_statement.vars_type == null)
                     {
-                        AddError(inital_value.location, "CAN_NOT_DEDUCE_TYPE_{0}", null);
+                        TryFixError(inital_value.location, "CAN_NOT_DEDUCE_TYPE_{0}", null);
                     }
                 }
             }
@@ -17108,7 +17125,7 @@ namespace PascalABCCompiler.TreeConverter
                     else if (context.top_function == null)
                         ce = context.add_namespace_event(id.name, lid, tn);
                     else
-                        AddError(lid, "EVENT_MUST_BE_IN_CLASS_OR_NAMESPACE");
+                        TryFixError(lid, "EVENT_MUST_BE_IN_CLASS_OR_NAMESPACE");
                     assign_doc_info(ce,_var_def_statement);
 					if (_var_def_statement.attributes != null)
             		{
@@ -17117,7 +17134,7 @@ namespace PascalABCCompiler.TreeConverter
 				}
             }
             if (context.converted_type != null && context.converting_block() == block_type.type_block && context.converted_type.IsStatic && _var_def_statement.var_attr != definition_attribute.Static)
-                AddError(get_location(_var_def_statement), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
+                TryFixError(get_location(_var_def_statement), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             var_def_statement_converting = false;
             context.static_variable_converted = false;
             if (is_event) return;
@@ -17126,7 +17143,7 @@ namespace PascalABCCompiler.TreeConverter
             context.restore_var_definitions();
             context.close_var_definition_list(tn, inital_value);
             if (!SemanticRules.ManyVariablesOneInitializator && _var_def_statement.inital_value != null && _var_def_statement.vars.idents.Count > 1)
-                AddError(get_location(_var_def_statement.inital_value), "ONE_VARIABLE_ONE_INITIALIZATOR");
+                TryFixError(get_location(_var_def_statement.inital_value), "ONE_VARIABLE_ONE_INITIALIZATOR");
 
         }
 		
@@ -17136,8 +17153,8 @@ namespace PascalABCCompiler.TreeConverter
         		return;
         	if (left == right)
 				// #ErrorRefactoringProblem
-				// AddError(loc, "CIRCULARITY_IN_POINTER"); // Если заменить этой строкой следующую, то при запуске bin\TestRunner.exe это приложение зацикливается, что сопровождается утечкой памяти
-        		AddError(new CircuralityInPointer(loc));
+				// TryFixError(loc, "CIRCULARITY_IN_POINTER"); // Если заменить этой строкой следующую, то при запуске bin\TestRunner.exe это приложение зацикливается, что сопровождается утечкой памяти
+        		TryFixError(new CircuralityInPointer(loc));
         	if (right is ref_type_node)
         		CheckForCircularityInPointers(left, (right as ref_type_node).pointed_type, loc);
         	else if (right.type_special_kind == SemanticTree.type_special_kind.array_kind || right.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
@@ -17148,7 +17165,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (tn == context.converted_type || tn.original_generic == context.converted_type)
             {
-                AddError(loc, "CIRCULARITY_IN_RECORD");
+                TryFixError(loc, "CIRCULARITY_IN_RECORD");
             }
             if (tn is common_type_node)
             {
@@ -17175,7 +17192,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (tn is ArrayConstType)
                     return convertion_data_and_alghoritms.type_constructor.create_unsized_array((tn as ArrayConstType).element_type, context.converted_namespace, 1, loc);
-                AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", tn.name);
+                TryFixError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", tn.name);
             }
             return tn;
         }
@@ -17227,7 +17244,7 @@ namespace PascalABCCompiler.TreeConverter
                 dn = context.check_name_node_type(_ident.name, si, lloc,
                 general_node_type.variable_node, general_node_type.property_node, general_node_type.event_node, general_node_type.constant_definition);
             if (dn.general_node_type == general_node_type.constant_definition)
-                AddError(get_location(_ident), "CAN_NOT_ASSIGN_TO_CONSTANT_OBJECT");
+                TryFixError(get_location(_ident), "CAN_NOT_ASSIGN_TO_CONSTANT_OBJECT");
             switch (dn.general_node_type)
             {
                 case general_node_type.variable_node:
@@ -17238,7 +17255,7 @@ namespace PascalABCCompiler.TreeConverter
                             //self variable
                             if ((lv.function as common_method_node).self_variable == lv)
                             {
-                                AddError(lloc, "VARIABLE_{0}_READONLY", lv.name);
+                                TryFixError(lloc, "VARIABLE_{0}_READONLY", lv.name);
                             }
                         }
                         return create_variable_reference(dn, lloc);
@@ -17312,7 +17329,7 @@ namespace PascalABCCompiler.TreeConverter
                         	return create_constant_reference(cdn,lloc);
                         }
                         if (cdn.const_value == null)
-                            AddError(new UndefinedNameReference(cdn.name,get_location(_ident)));
+                            TryFixError(new UndefinedNameReference(cdn.name,get_location(_ident)));
                         constant_node cn = cdn.const_value.get_constant_copy(get_location(_ident));
                         if (cn != null) return cn;
                         return cdn.const_value;
@@ -17340,11 +17357,11 @@ namespace PascalABCCompiler.TreeConverter
                 		}
                         if (sil.FirstOrDefault().sym_info == SystemLibrary.SystemLibInitializer.NewProcedure.sym_info)
                         {
-                            AddError(lloc, "EXPECTED_TYPE_AFTER_NEW");
+                            TryFixError(lloc, "EXPECTED_TYPE_AFTER_NEW");
                         }
                         if (sil.FirstOrDefault().sym_info == SystemLibrary.SystemLibInitializer.DisposeProcedure.sym_info)
                         {
-                            AddError(lloc, "CANNOT_GET_POINTER_TO_DISPOSE");
+                            TryFixError(lloc, "CANNOT_GET_POINTER_TO_DISPOSE");
                         }
                         if (sil.FirstOrDefault().sym_info is common_method_node && (sil.FirstOrDefault().sym_info as common_method_node).is_constructor)
                             return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
@@ -17365,7 +17382,7 @@ namespace PascalABCCompiler.TreeConverter
                         function_node fn = pn.get_function;
                         if (fn == null)
                         {
-                            AddError(new ThisPropertyCanNotBeReaded(pn, lloc));
+                            TryFixError(new ThisPropertyCanNotBeReaded(pn, lloc));
                         }
                         if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                         {
@@ -17412,7 +17429,7 @@ namespace PascalABCCompiler.TreeConverter
                                 return ser;
                             }
                             else
-                                AddError(get_location(_ident), "EVENT_{0}_MUST_BE_IN_LEFT_PART", cne.name);
+                                TryFixError(get_location(_ident), "EVENT_{0}_MUST_BE_IN_LEFT_PART", cne.name);
                         }
                         break;
                     }
@@ -17434,16 +17451,16 @@ namespace PascalABCCompiler.TreeConverter
         {
         	if (context.converted_type == null)
             {
-                AddError(get_location(ident), "INHERITED_EXPECTED_IN_CLASS");
+                TryFixError(get_location(ident), "INHERITED_EXPECTED_IN_CLASS");
             }
             if (context.converted_type.base_type == null)
             {
-                AddError(get_location(ident), "NO_BASE_CLASS_DEFINED_BUT_INHERITED_MEET");
+                TryFixError(get_location(ident), "NO_BASE_CLASS_DEFINED_BUT_INHERITED_MEET");
             }
             common_method_node cmn = context.converted_func_stack.first() as common_method_node;
             if (cmn == null)
             {
-                AddError(get_location(ident), "NAME_IN_BASE_CLASS_MUST_BE_METHOD");
+                TryFixError(get_location(ident), "NAME_IN_BASE_CLASS_MUST_BE_METHOD");
             }
            
             List<SymbolInfo> sil = null;
@@ -17470,9 +17487,9 @@ namespace PascalABCCompiler.TreeConverter
                 sil = null;
             }
             if (cmn.is_constructor)
-                AddError(get_location(ident), "NO_CONSTRUCTOR_IN_BASE_CLASS_WITH_SAME_PARAMETERS");
+                TryFixError(get_location(ident), "NO_CONSTRUCTOR_IN_BASE_CLASS_WITH_SAME_PARAMETERS");
             else
-                AddError(get_location(ident), "NAME_IN_BASE_CLASS_MUST_BE_METHOD");
+                TryFixError(get_location(ident), "NAME_IN_BASE_CLASS_MUST_BE_METHOD");
             return sil;
             /*if (si == null)
             {
@@ -17489,11 +17506,11 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (context.converted_type == null)
             {
-                AddError(get_location(ident), "INHERITED_EXPECTED_IN_CLASS");
+                TryFixError(get_location(ident), "INHERITED_EXPECTED_IN_CLASS");
             }
             if (context.converted_type.base_type == null)
             {
-                AddError(get_location(ident), "NO_BASE_CLASS_DEFINED_BUT_INHERITED_MEET");
+                TryFixError(get_location(ident), "NO_BASE_CLASS_DEFINED_BUT_INHERITED_MEET");
             }
             string name = ident.name;
             if (string.IsNullOrEmpty(name))
@@ -17503,9 +17520,9 @@ namespace PascalABCCompiler.TreeConverter
             {
             	sil = context.converted_namespace.find(name);
             	if (sil != null)
-            	    AddError(get_location(ident), "CLASS_MEMBER_{0}_EXPECTED", name);
+            	    TryFixError(get_location(ident), "CLASS_MEMBER_{0}_EXPECTED", name);
             	else
-            	    AddError(new UndefinedNameReference(name, get_location(ident)));
+            	    TryFixError(new UndefinedNameReference(name, get_location(ident)));
             }
             return sil;
         }
@@ -17581,7 +17598,7 @@ namespace PascalABCCompiler.TreeConverter
                 case semantic_node_type.common_parameter:
                     {
                         if (context.in_parameters_block)
-                            AddError(new ParameterReferenceInDefaultParameterNotAllowed(lloc));
+                            TryFixError(new ParameterReferenceInDefaultParameterNotAllowed(lloc));
                         common_parameter cpar = (common_parameter)dn;
                         return new common_parameter_reference(cpar,
                             convertion_data_and_alghoritms.symbol_table.GetRelativeScopeDepth(cpar.common_function.scope, context.top_function.scope), lloc);
@@ -17617,14 +17634,14 @@ namespace PascalABCCompiler.TreeConverter
             if (sil.FirstOrDefault().sym_info is common_method_node)
             {
             	if ((sil.FirstOrDefault().sym_info as common_method_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                    AddError(get_location(_ident), "CANNOT_CALL_ABSTRACT_METHOD");
+                    TryFixError(get_location(_ident), "CANNOT_CALL_ABSTRACT_METHOD");
             	constr = (sil.FirstOrDefault().sym_info as common_method_node).is_constructor;
             }
             else
             if (sil.FirstOrDefault().sym_info is compiled_function_node)
             {
             	if ((sil.FirstOrDefault().sym_info as compiled_function_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                    AddError(get_location(_ident), "CANNOT_CALL_ABSTRACT_METHOD");
+                    TryFixError(get_location(_ident), "CANNOT_CALL_ABSTRACT_METHOD");
             }
             else if (sil.FirstOrDefault().sym_info is compiled_constructor_node)
             {
@@ -17655,7 +17672,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
             	if (!context.allow_inherited_ctor_call && !context.can_call_inherited_ctor_call(convertion_data_and_alghoritms.statement_list_stack_first()))
-                    AddError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
+                    TryFixError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
             	expressions_list exprs = new expressions_list();
             	foreach (common_parameter cp in cfn.parameters)
             	{
@@ -17691,13 +17708,13 @@ namespace PascalABCCompiler.TreeConverter
             if (sil.FirstOrDefault().sym_info is common_method_node)
             {
             	if ((sil.FirstOrDefault().sym_info as common_method_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                    AddError(get_location(_ident), "CANNOT_CALL_ABSTRACT_METHOD");
+                    TryFixError(get_location(_ident), "CANNOT_CALL_ABSTRACT_METHOD");
             }
             else
             if (sil.FirstOrDefault().sym_info is compiled_function_node)
             {
             	if ((sil.FirstOrDefault().sym_info as compiled_function_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                    AddError(get_location(_ident), "CANNOT_CALL_ABSTRACT_METHOD");
+                    TryFixError(get_location(_ident), "CANNOT_CALL_ABSTRACT_METHOD");
             }
             return ident_value_reciving(sil, _ident);
         }
@@ -17721,7 +17738,7 @@ namespace PascalABCCompiler.TreeConverter
             location lloc = get_location(_ident);
             if (si_left == null)
             {
-                AddError(new UndefinedNameReference(_ident.name, lloc));
+                TryFixError(new UndefinedNameReference(_ident.name, lloc));
             }
             definition_node dn = context.check_name_node_type(_ident.name, si_left?.FirstOrDefault(), get_location(_ident),
                 general_node_type.constant_definition, general_node_type.function_node,
@@ -17924,7 +17941,7 @@ namespace PascalABCCompiler.TreeConverter
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
 
             if (res.type is undefined_type)
-                AddError(get_location(_bin_expr), "OPERATOR_RETURN_TYPE_UNDEFINED_{0}", name_reflector.get_name(_bin_expr.operation_type));
+                TryFixError(get_location(_bin_expr), "OPERATOR_RETURN_TYPE_UNDEFINED_{0}", name_reflector.get_name(_bin_expr.operation_type));
             if (res.type.type_special_kind == SemanticTree.type_special_kind.base_set_type)
             {
                 if (left.type.element_type == right.type.element_type)
@@ -17959,16 +17976,16 @@ namespace PascalABCCompiler.TreeConverter
                     else if (left is static_event_reference)
                     {
                         if ((left as static_event_reference).en is compiled_event)
-                            AddError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
+                            TryFixError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
                         if (context.converted_type != null && context.converted_type != ((left as static_event_reference).en as common_event).cont_type && !context.converted_type.name.Contains("<>local_variables_class"))
-                            AddError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
+                            TryFixError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
                     }
                     else if (right is static_event_reference)
                     {
                         if ((right as static_event_reference).en is compiled_event)
-                            AddError(right.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (right as static_event_reference).en.name);
+                            TryFixError(right.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (right as static_event_reference).en.name);
                         if (context.converted_type != null && context.converted_type != ((right as static_event_reference).en as common_event).cont_type)
-                            AddError(right.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (right as static_event_reference).en.name);
+                            TryFixError(right.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (right as static_event_reference).en.name);
                     }
                     break;
             }
@@ -17979,7 +17996,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (pn.parameters.Count != 0)
             {
-                AddError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", pn.name);
+                TryFixError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", pn.name);
             }
         }
 
@@ -17987,7 +18004,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (pr.property.parameters.Count != pr.fact_parametres.Count)
             {
-                AddError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", pr.property.name);
+                TryFixError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", pr.property.name);
             }
         }
 
@@ -17995,7 +18012,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (pr.property.parameters.Count != pr.fact_parametres.Count)
             {
-                AddError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", pr.property.name);
+                TryFixError(loc, "PROPERTY_{0}_REFERENCE_WITH_INVALID_PARAMS_COUNT", pr.property.name);
             }
         }
 
@@ -18006,7 +18023,7 @@ namespace PascalABCCompiler.TreeConverter
             if (dot != null)
                 event_name = dot.right as SyntaxTree.ident;
             if (event_name == null)
-                AddError(new EventNameExpected(get_location(_assign.to)));
+                TryFixError(new EventNameExpected(get_location(_assign.to)));
             string format;
             if (_assign.operator_type == PascalABCCompiler.SyntaxTree.Operators.AssignmentSubtraction)
                 format = compiler_string_consts.event_remove_method_nameformat;
@@ -18055,7 +18072,7 @@ namespace PascalABCCompiler.TreeConverter
         private void check_field_reference_for_assign(class_field_reference expr, location loc)
         {
         	if (expr.obj is namespace_constant_reference || expr.obj is function_constant_reference)
-                AddError(loc, "LEFT_SIDE_CANNOT_BE_ASSIGNED_TO");
+                TryFixError(loc, "LEFT_SIDE_CANNOT_BE_ASSIGNED_TO");
         	else if (expr.obj is class_field_reference) check_field_reference_for_assign(expr.obj as class_field_reference,loc);
         	else if (expr.obj is simple_array_indexing) check_expression_for_assign((expr.obj as simple_array_indexing).simple_arr_expr,loc);
         }
@@ -18063,7 +18080,7 @@ namespace PascalABCCompiler.TreeConverter
         private void check_expression_for_assign(expression_node expr, location loc)
         {
         	if (expr is namespace_constant_reference || expr is function_constant_reference)
-                AddError(loc, "LEFT_SIDE_CANNOT_BE_ASSIGNED_TO");
+                TryFixError(loc, "LEFT_SIDE_CANNOT_BE_ASSIGNED_TO");
         	else if (expr is class_field_reference) check_field_reference_for_assign(expr as class_field_reference,loc);
         	else if (expr is simple_array_indexing) check_expression_for_assign((expr as simple_array_indexing).simple_arr_expr,loc);
         }
@@ -18130,7 +18147,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         var f = _statement_list.DescendantNodes().OfType<function_lambda_definition>().FirstOrDefault();
                         if (f != null)
-                            AddError(get_location(f), "OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS");
+                            TryFixError(get_location(f), "OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS");
                         //сгенерировать сначала последовательную ветку, затем параллельную
                         //устанавливаем флаг и продолжаем конвертирование, считая, что конвертируем последовательную ветку
                             isGenerateParallel = true;
@@ -18260,19 +18277,19 @@ namespace PascalABCCompiler.TreeConverter
             string module_name = "";
             string name = "";
             if (context.converted_func_stack.size > 1)
-                AddError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_NESTED");
+                TryFixError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_NESTED");
             if (context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static)
-                AddError(context.top_function.loc, "EXTERNAL_METHOD_SHOULD_BE_STATIC");
+                TryFixError(context.top_function.loc, "EXTERNAL_METHOD_SHOULD_BE_STATIC");
             if (context.converted_func_stack.top().is_generic_function)
-                AddError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_GENERIC");
+                TryFixError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_GENERIC");
             if (context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).common_comprehensive_type.is_generic_type_definition)
-                AddError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_DECLARED_IN_GENERIC_TYPE");
+                TryFixError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_DECLARED_IN_GENERIC_TYPE");
 
             if (_external_directive.modulename == null)
             {
             	if (!has_dll_import_attribute(context.top_function))
             	{
-                    AddError(context.top_function.loc, "FUNCTION_MUST_HAVE_DLLIMPORT_ATTRIBUTE");
+                    TryFixError(context.top_function.loc, "FUNCTION_MUST_HAVE_DLLIMPORT_ATTRIBUTE");
             	}
             	else
             	{
@@ -18289,7 +18306,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (has_dll_import_attribute(context.top_function))
             {
-                AddError(get_location(_external_directive.modulename), "FUNCTION_MUST_HAVE_ONLY_EXTERNAL_STATEMENT");
+                TryFixError(get_location(_external_directive.modulename), "FUNCTION_MUST_HAVE_ONLY_EXTERNAL_STATEMENT");
             }
             if (_external_directive.modulename is SyntaxTree.string_const)
             {
@@ -18303,12 +18320,12 @@ namespace PascalABCCompiler.TreeConverter
                 if (en is string_const_node)
                 	module_name = (en as string_const_node).constant_value;
                 else
-                    AddError(get_location(_external_directive.modulename), "STRING_CONSTANT_EXPECTED");
+                    TryFixError(get_location(_external_directive.modulename), "STRING_CONSTANT_EXPECTED");
             }
             else
-                AddError(get_location(_external_directive.modulename), "STRING_CONSTANT_OR_IDENTIFIER_EXPECTED");
+                TryFixError(get_location(_external_directive.modulename), "STRING_CONSTANT_OR_IDENTIFIER_EXPECTED");
             if (string.IsNullOrEmpty(module_name))
-                AddError(get_location(_external_directive.modulename), "DLLNAME_CANNOT_BE_EMPTY");
+                TryFixError(get_location(_external_directive.modulename), "DLLNAME_CANNOT_BE_EMPTY");
             if (_external_directive.name == null)
             {
             	name = context.converted_func_stack.top().name;
@@ -18324,12 +18341,12 @@ namespace PascalABCCompiler.TreeConverter
                 if (en is string_const_node)
                 	name = (en as string_const_node).constant_value;
                 else
-                    AddError(get_location(_external_directive.name), "STRING_CONSTANT_EXPECTED");
+                    TryFixError(get_location(_external_directive.name), "STRING_CONSTANT_EXPECTED");
             }
             else
             {
                 //throw new CompilerInternalError("Unsupported now");
-                AddError(get_location(_external_directive.name), "STRING_CONSTANT_OR_IDENTIFIER_EXPECTED");
+                TryFixError(get_location(_external_directive.name), "STRING_CONSTANT_OR_IDENTIFIER_EXPECTED");
             }
             location loc = get_location(_external_directive);
             external_statement ext_stmt = new external_statement(module_name, name, loc);
@@ -18361,7 +18378,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (context.top_function.return_value_type != null && context.top_function.return_value_type != SystemLibrary.SystemLibrary.void_type)
                 {
-                    AddError(get_location(_return_stmt), "FUNCTION_SHOULD_RETURN_VALUE");
+                    TryFixError(get_location(_return_stmt), "FUNCTION_SHOULD_RETURN_VALUE");
                     ret.return_value(new empty_statement(null));
                     return;
                 }
@@ -18372,7 +18389,7 @@ namespace PascalABCCompiler.TreeConverter
                 type_node rettype = context.top_function.return_value_type;
                 if (rettype == null || rettype == SystemLibrary.SystemLibrary.void_type)
                 {
-                    AddError(get_location(_return_stmt.expr), "FUNCTION_SHOULD_NOT_RETURN_VALUE");
+                    TryFixError(get_location(_return_stmt.expr), "FUNCTION_SHOULD_NOT_RETURN_VALUE");
                     ret.return_value(new empty_statement(null));
                     return;
                 }
@@ -18842,7 +18859,7 @@ namespace PascalABCCompiler.TreeConverter
                 
                 if (tn == null)
                 {
-                    AddError(get_location(id), "TYPE_NAME_EXPECTED");
+                    TryFixError(get_location(id), "TYPE_NAME_EXPECTED");
                 }
                 if ((id is function_header || id is procedure_header) && !delegate_cache.ContainsKey(id) && !type_synonym_instancing)
                 {
@@ -18862,7 +18879,7 @@ namespace PascalABCCompiler.TreeConverter
                 CompilationErrorWithLocation not_useful = generic_parameter_eliminations.check_type_generic_useful(tn, get_location(id));
                 if (not_useful != null)
                 {
-                    AddError(not_useful);
+                    TryFixError(not_useful);
                 }
                 tparams.Add(tn);
             }
@@ -18874,7 +18891,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (err != null)
                 {
                     err.loc = get_location(types[i]);
-                    AddError(err);
+                    TryFixError(err);
                 }
             }
             return tparams;
@@ -18905,7 +18922,7 @@ namespace PascalABCCompiler.TreeConverter
                 generic_indicator gi = si.sym_info as generic_indicator;
                 if (gi != null)
                 {
-                    AddError(loc, "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", gi.generic.name, gi.generic.generic_params.Count);
+                    TryFixError(loc, "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", gi.generic.name, gi.generic.generic_params.Count);
                 }
                 return null;
             }
@@ -18957,7 +18974,7 @@ namespace PascalABCCompiler.TreeConverter
             if (sil == null)
             {
                 check_possible_generic_names(_template_type_reference.name, loc);
-            	AddError(new UndefinedNameReference(typename, loc));
+            	TryFixError(new UndefinedNameReference(typename, loc));
             }
             template_class tclass = sil.FirstOrDefault().sym_info as template_class;
             if (tclass == null)
@@ -18965,9 +18982,9 @@ namespace PascalABCCompiler.TreeConverter
                 generic_indicator gi = sil.FirstOrDefault().sym_info as generic_indicator;
                 if (gi != null)
                 {
-                    AddError(get_location(_template_type_reference), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", typename, gi.generic.generic_params.Count);
+                    TryFixError(get_location(_template_type_reference), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", typename, gi.generic.generic_params.Count);
                 }
-                AddError(get_location(_template_type_reference), "{0}_IS_NOT_TEMPLATE_CLASS", typename);
+                TryFixError(get_location(_template_type_reference), "{0}_IS_NOT_TEMPLATE_CLASS", typename);
             }
             foreach (type_definition td in _template_type_reference.params_list.params_list)
                 if (td is named_type_reference && (td as named_type_reference).names.Count > 0 && (td as named_type_reference).names[0].name == "")
@@ -19036,7 +19053,7 @@ namespace PascalABCCompiler.TreeConverter
                 ttn.template_args.idents : cl_def.template_args.idents;
             if (template_formals.Count != ttn.template_args.idents.Count)
             {
-                AddError(loc, "TEMPLATE_ARGUMENTS_COUNT_MISMATCH");
+                TryFixError(loc, "TEMPLATE_ARGUMENTS_COUNT_MISMATCH");
             }
 
             if (!tc.is_synonym)
@@ -19045,7 +19062,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (depended_from_generic_parameter(tnode))
                     {
-                        AddError(loc, "TEMPLATES_AND_GENERICS_ARE_INCOMPATIBLE");
+                        TryFixError(loc, "TEMPLATES_AND_GENERICS_ARE_INCOMPATIBLE");
                     }
                 }
             }
@@ -19220,8 +19237,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (cmn.function_code == null)
                         {
-                            //AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
-                            AddError(new FunctionPredefinitionWithoutDefinition(cmn, cmn.loc));
+                            //TryFixError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            TryFixError(new FunctionPredefinitionWithoutDefinition(cmn, cmn.loc));
                         }
                     }
                 }
@@ -19268,20 +19285,20 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (tn.IsInterface)
             {
-            	AddError(loc, "INTERFACE_{0}_CONSTRUCTOR_CALL", tn.name);
+            	TryFixError(loc, "INTERFACE_{0}_CONSTRUCTOR_CALL", tn.name);
             }
             if (tn.IsStatic)
             {
-                AddError(loc, "STATIC_CONSTRUCTOR_CALL");
+                TryFixError(loc, "STATIC_CONSTRUCTOR_CALL");
             }
             if (tn.IsAbstract && !inherited_call)
             {
-            	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
+            	TryFixError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
             }
             List<SymbolInfo> sil = tn.find_in_type(TreeConverter.compiler_string_consts.default_constructor_name, context.CurrentScope); //tn.Scope); 
             delete_inherited_constructors(ref sil, tn);
             if (sil == null)
-                AddError(loc, "CONSTRUCTOR_NOT_FOUND");
+                TryFixError(loc, "CONSTRUCTOR_NOT_FOUND");
             function_node fnn = null;
             try
             {
@@ -19546,9 +19563,9 @@ namespace PascalABCCompiler.TreeConverter
                 gitn.SetIsAbstract(gitn.original_generic.IsAbstract, gitn.original_generic.AbstractReason);
             }
             //if (tn == SystemLibrary.SystemLibrary.void_type)
-            //	AddError(new VoidNotValid(get_location(_new_expr.type)));
+            //	TryFixError(new VoidNotValid(get_location(_new_expr.type)));
             if (tn.IsDelegate && !_new_expr.new_array)
-                AddError(get_location(_new_expr), "CONSTRUCTOR_CALL_FOR_DELEGATE_TYPES_IS_FORBIDDEN");
+                TryFixError(get_location(_new_expr), "CONSTRUCTOR_CALL_FOR_DELEGATE_TYPES_IS_FORBIDDEN");
             check_for_type_allowed(tn,get_location(_new_expr.type));
             location loc = get_location(_new_expr);
             expressions_list exprs = null;
@@ -19588,7 +19605,7 @@ namespace PascalABCCompiler.TreeConverter
                     	expression_node expr = exprs[i];
                     	expr = convertion_data_and_alghoritms.convert_type(expr, SystemLibrary.SystemLibrary.integer_type);
                     	if (expr is int_const_node && (expr as int_const_node).constant_value < 0)
-                    		AddError(expr.location, "NEGATIVE_ARRAY_LENGTH_({0})_NOT_ALLOWED", (expr as int_const_node).constant_value);
+                    		TryFixError(expr.location, "NEGATIVE_ARRAY_LENGTH_({0})_NOT_ALLOWED", (expr as int_const_node).constant_value);
                     	lst.Add(expr);
                     }
                     //это вызов спецфункции
@@ -19602,9 +19619,9 @@ namespace PascalABCCompiler.TreeConverter
                     	{
                     		foreach (expression_node expr in lst)
                     		if (!(expr is int_const_node))
-                                AddError(expr.location, "CONSTANT_EXPRESSION_EXPECTED");
+                                TryFixError(expr.location, "CONSTANT_EXPRESSION_EXPECTED");
                     		if (_new_expr.array_init_expr.elements == null)
-                                AddError(get_location(_new_expr.array_init_expr), "ARRAY_CONST_EXPECTED");
+                                TryFixError(get_location(_new_expr.array_init_expr), "ARRAY_CONST_EXPECTED");
                     		_new_expr.array_init_expr = get_possible_array_const(_new_expr.array_init_expr,atn) as SyntaxTree.array_const;
                     		expression_node e = convert_strong(_new_expr.array_init_expr);
                     		if (e is array_initializer)
@@ -19614,7 +19631,7 @@ namespace PascalABCCompiler.TreeConverter
                     			{
                     				int len = (exprs[i] as int_const_node).constant_value;
                     				if (!(e is array_initializer) || (e as array_initializer).element_values.Count != len)
-                                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", len);
+                                        TryFixError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", len);
                     				e = (e as array_initializer).element_values[0];
                     			}
                     			cnfc.parameters.AddElement(ConvertArrayInitializer(atn,tmp));
@@ -19624,15 +19641,15 @@ namespace PascalABCCompiler.TreeConverter
                     	{
                     		expression_node expr = lst[0];
                     		if (!(expr is int_const_node))
-                                AddError(expr.location, "CONSTANT_EXPRESSION_EXPECTED");
+                                TryFixError(expr.location, "CONSTANT_EXPRESSION_EXPECTED");
                     		int len = (expr as int_const_node).constant_value;
                             if (_new_expr.array_init_expr.elements == null)
                             {
                                 if (len != 0)
-                                    AddError(get_location(_new_expr.array_init_expr), "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", len);
+                                    TryFixError(get_location(_new_expr.array_init_expr), "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", len);
                             }
                     		else if (_new_expr.array_init_expr.elements.expressions.Count != len)
-                                AddError(get_location(_new_expr.array_init_expr), "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", len);
+                                TryFixError(get_location(_new_expr.array_init_expr), "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", len);
                     		_new_expr.array_init_expr = get_possible_array_const(_new_expr.array_init_expr,atn) as SyntaxTree.array_const;
                     		if (_new_expr.array_init_expr.elements != null)
                             foreach (SyntaxTree.expression e in _new_expr.array_init_expr.elements.expressions)
@@ -19734,10 +19751,10 @@ namespace PascalABCCompiler.TreeConverter
                 default:
                 	if (tn.is_generic_parameter || tn.is_generic_type_definition || tn.is_generic_type_instance)
                 	{
-                        AddError(get_location(ntr), "OPERATOR_SIZEOF_CAN_NOT_BE_USED_WITH_GENERIC_TYPE");
+                        TryFixError(get_location(ntr), "OPERATOR_SIZEOF_CAN_NOT_BE_USED_WITH_GENERIC_TYPE");
                 	}
                 	if (!can_evaluate_size(tn))
-                		AddError(get_location(ntr), "CANNOT_EVALUATE_SIZE", tn.name);
+                		TryFixError(get_location(ntr), "CANNOT_EVALUATE_SIZE", tn.name);
                 	return_value(make_sizeof_operator(tn, get_location(node)));
                 	break;
                 }
@@ -20103,7 +20120,7 @@ namespace PascalABCCompiler.TreeConverter
             type_section_converting = false;
             if (context.types_predefined.Count > 0 && !context.namespace_converted)
             {
-            	AddError(context.types_predefined[0].loc, "NO_TYPE_{0}_DEFINITION", context.types_predefined[0].name);
+            	TryFixError(context.types_predefined[0].loc, "NO_TYPE_{0}_DEFINITION", context.types_predefined[0].name);
             }
             foreach (string Name in WaitedRefTypes.Keys)
                 WaitedRefTypes[Name].SetPointedType(find_type(Name, WaitedRefTypes[Name].loc));
@@ -20217,7 +20234,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (main_not_found)
             {
-                AddError(get_location(node), "NO_MAIN_FUNCTION");
+                TryFixError(get_location(node), "NO_MAIN_FUNCTION");
             }
 
             context.leave_block();
@@ -20310,7 +20327,7 @@ namespace PascalABCCompiler.TreeConverter
             if (lock_object.type.semantic_node_type == semantic_node_type.delegated_method)
                 try_convert_typed_expression_to_function_call(ref lock_object);
             if (/*lock_object.type == null ||*/ !lock_object.type.is_class)
-                AddError(get_location(node.lock_object), "EXPRESSION_IN_LOCK_STATEMENT_RETURNED_NOT_A_REFERENCE_TYPE", lock_object.type);
+                TryFixError(get_location(node.lock_object), "EXPRESSION_IN_LOCK_STATEMENT_RETURNED_NOT_A_REFERENCE_TYPE", lock_object.type);
             CheckToEmbeddedStatementCannotBeADeclaration(node.stmt);
             statement_node stmt = convert_strong(node.stmt);
             return_value(new lock_statement(lock_object, stmt, get_location(node)));
@@ -20385,7 +20402,7 @@ namespace PascalABCCompiler.TreeConverter
                     case general_node_type.namespace_node: nn = sn as namespace_node; break;
                     case general_node_type.unit_node: un = sn as unit_node; break;
                     default:
-                        AddError(get_location(dn.left), "EXPECTED_ANOTHER_KIND_OF_OBJECT"); break;
+                        TryFixError(get_location(dn.left), "EXPECTED_ANOTHER_KIND_OF_OBJECT"); break;
                 }
                 List<SymbolInfo> type_sil = null;
                 if (tn != null)
@@ -20452,7 +20469,7 @@ namespace PascalABCCompiler.TreeConverter
                     switch (generic_count)
                     {
                         case 0:
-                            AddError(get_location(_ident_with_templateparams), "TRIANGLE_BRACKETS_NOT_ALLOWED_WITH_COMMON_FUNCTIONS"); break;
+                            TryFixError(get_location(_ident_with_templateparams), "TRIANGLE_BRACKETS_NOT_ALLOWED_WITH_COMMON_FUNCTIONS"); break;
                         case 1:
                             one_function = true;
                             break;
@@ -20519,7 +20536,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if (bfcl.Count == 0)
                     {
-                        AddError(get_location(_ident_with_templateparams.template_params), "NO_FUNCTIONS_{0}_CAN_BE_USED_WITH_THIS_SPECIFICATION", dm.proper_methods[0].function.name);
+                        TryFixError(get_location(_ident_with_templateparams.template_params), "NO_FUNCTIONS_{0}_CAN_BE_USED_WITH_THIS_SPECIFICATION", dm.proper_methods[0].function.name);
                     }
                     delegated_methods dm1 = new delegated_methods();
                     dm1.proper_methods.AddRange(bfcl);
@@ -20529,7 +20546,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             if (!(adr is compiled_static_method_call) && !(adr is common_static_method_call) && !(adr is common_namespace_function_call))
-                AddError(get_location(_ident_with_templateparams.name), "TRIANGLE_BRACKETS_NOT_AWAITED");
+                TryFixError(get_location(_ident_with_templateparams.name), "TRIANGLE_BRACKETS_NOT_AWAITED");
          }
 
         public override void visit(SyntaxTree.template_type_name node)
@@ -20551,11 +20568,11 @@ namespace PascalABCCompiler.TreeConverter
             type_node tn = ret.visit(_default_operator.type_name);
             if (tn == null)
             {
-                AddError(get_location(_default_operator), "TYPE_REFERENCE_EXPECTED");
+                TryFixError(get_location(_default_operator), "TYPE_REFERENCE_EXPECTED");
             }
             if (tn == SystemLibrary.SystemLibrary.void_type)
             {
-                AddError(get_location(_default_operator.type_name), "INAVLID_TYPE");
+                TryFixError(get_location(_default_operator.type_name), "INAVLID_TYPE");
             }
             return_value(new default_operator_node(tn, get_location(_default_operator)));
             //throw new NotSupportedError(get_location(_default_operator));
@@ -20899,7 +20916,7 @@ namespace PascalABCCompiler.TreeConverter
             if (_function_header.return_type == null)
             {
                 if (context.top_function.IsOperator)
-                    AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
+                    TryFixError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             }
             if (_function_header.return_type != null)
             {
@@ -20909,7 +20926,7 @@ namespace PascalABCCompiler.TreeConverter
                 else
                     tn = convert_strong(_function_header.return_type);
                 //if (tn == SystemLibrary.SystemLibrary.void_type)
-                //    AddError(new VoidNotValid(get_location(_function_header.return_type)));
+                //    TryFixError(new VoidNotValid(get_location(_function_header.return_type)));
                 check_for_type_allowed(tn, get_location(_function_header.return_type));
             }
             //(ssyy) moved up, так как при проверке аттрибута override надо знать тип возвращаемого значения
@@ -20920,7 +20937,7 @@ namespace PascalABCCompiler.TreeConverter
                 make_attributes_for_declaration(_function_header, context.top_function);
             }
             if (context.converted_type != null && has_dll_import_attribute(context.top_function))
-                AddError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
+                TryFixError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
             if (_function_header.name.class_name != null)
                 with_class_name = true;
             if (_function_header.class_keyword && !has_static_attr(_function_header.proc_attributes.proc_attributes))
@@ -20939,16 +20956,16 @@ namespace PascalABCCompiler.TreeConverter
                 //}
                 if (cmmn != null && cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                 {
-                    AddError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
+                    TryFixError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                 }
                 if (cmmn != null && (cmmn.name == compiler_string_consts.implicit_operator_name || cmmn.name == compiler_string_consts.explicit_operator_name))
                     if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.comperehensive_type as type_node) && !convertion_data_and_alghoritms.eq_type_nodes(cmmn.comperehensive_type as type_node, cmmn.parameters[0].type))
                     {
-                        AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
+                        TryFixError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
                     }
                     else if (convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.parameters[0].type))
                     {
-                        AddError(get_location(_function_header), "CIRCURAL_TYPE_CONVERSION_DEFINITION");
+                        TryFixError(get_location(_function_header), "CIRCURAL_TYPE_CONVERSION_DEFINITION");
                     }
             }
             with_class_name = false;
@@ -20970,7 +20987,7 @@ namespace PascalABCCompiler.TreeConverter
 
             bool unique = context.close_function_params(body_exists);
             if (context.top_function.return_value_type == null)
-                AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
+                TryFixError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             if (_function_header.where_defs != null)
             {
                 if (unique)
@@ -20979,7 +20996,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
-                    AddError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
+                    TryFixError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
                 }
             }
             convertion_data_and_alghoritms.create_function_return_variable(context.top_function, si);
@@ -20987,7 +21004,7 @@ namespace PascalABCCompiler.TreeConverter
             /*if (_function_header.name != null && context.converted_compiled_type != null && context.top_function is common_namespace_function_node)
             {
                 if (context.FindMethodToOverride(context.top_function as common_namespace_function_node) != null)
-                    AddError(new CanNotDeclareExtensionMethodAsOverrided(get_location(_function_header)));
+                    TryFixError(new CanNotDeclareExtensionMethodAsOverrided(get_location(_function_header)));
             }*/
             //TODO: Разобрать подробнее.
             if (!body_exists)
@@ -21018,7 +21035,7 @@ namespace PascalABCCompiler.TreeConverter
                     expression_node en = convert_strong(ex);
                     en.location = get_location(ex);
                     if (en.type != SystemLibrary.SystemLibrary.integer_type)
-                        AddError(get_location(ex), "STRING_CONSTANT_OR_IDENTIFIER_EXPECTED");
+                        TryFixError(get_location(ex), "STRING_CONSTANT_OR_IDENTIFIER_EXPECTED");
                     break;
                 case " ":
                     break;
@@ -21031,7 +21048,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             expression_node en = convert_strong(st.ex);
             if (en == null)
-                AddError(get_location(st.ex),"CANNOT_EVALUATE_FUNCTION_TYPE");
+                TryFixError(get_location(st.ex),"CANNOT_EVALUATE_FUNCTION_TYPE");
             return_value(en.type);
         }
 
@@ -21127,7 +21144,7 @@ namespace PascalABCCompiler.TreeConverter
             var pt = _sequence_type.elements_type.DescendantNodes(TraversalType.PostOrder,null,true).FirstOrDefault(s => s is procedure_header);
             if (pt != null)
             {
-                AddError(get_location(pt), "PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT");
+                TryFixError(get_location(pt), "PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT");
             }
             // SSM 11/05/15 sugared node
             var l = new List<ident>();
@@ -21155,14 +21172,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     var en = _modern_proc_type.el;
                     //if (en.enumerators.Count == 1)
-                    //    AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
+                    //    TryFixError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
                     for (int i = 0; i < en.enumerators.Count; i++)
                     {
                         if (en.enumerators[i].value != null)
-                            AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+                            TryFixError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         //if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
-                        //    AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+                        //    TryFixError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         t.Add(en.enumerators[i].name); // ???????????????
                     }
@@ -21184,15 +21201,15 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     var en = _modern_proc_type.el;
                     //if (en.enumerators.Count == 1)
-                    //    AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
+                    //    TryFixError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
                     for (int i = 0; i < en.enumerators.Count; i++)
                     {
 
                         if (en.enumerators[i].value != null)
-                            AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+                            TryFixError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         //if (!(en.enumerators[i].name is named_type_reference) && !(en.enumerators[i].name is array_type))
-                        //    AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+                        //    TryFixError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
 
                         t.Add(en.enumerators[i].name);
                     }
@@ -21433,7 +21450,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.dot_question_node dqn)
         {
             // a?.b
-            AddError(get_location(dqn), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", dqn.GetType().Name);
+            TryFixError(get_location(dqn), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", dqn.GetType().Name);
             //var q = ConvertToQCE(dqn);
             //visit(q);
         }
@@ -21451,7 +21468,7 @@ namespace PascalABCCompiler.TreeConverter
                 CheckOrdinaryType(expr1);
                 CheckOrdinaryType(expr2);
                 if (!convertion_data_and_alghoritms.can_convert_type(expr2,expr1.type))
-                    AddError(new CanNotConvertTypes(expr2, expr2.type, expr1.type, expr2.location)); ;
+                    TryFixError(new CanNotConvertTypes(expr2, expr2.type, expr1.type, expr2.location)); ;
             }
             else if (st.typ as System.Type == typeof(SyntaxTree.assign_tuple))
             {
@@ -21525,7 +21542,7 @@ namespace PascalABCCompiler.TreeConverter
                     var sem_type = convert_strong(tp);
                     if (sem_type.IsDelegate)
                     {
-                        AddError(sem_type.location, "FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_DELEGATES_AS_PARAMETERS");
+                        TryFixError(sem_type.location, "FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_DELEGATES_AS_PARAMETERS");
                         break;
                     }
                 }
@@ -21533,7 +21550,7 @@ namespace PascalABCCompiler.TreeConverter
             // !Slices
             else
             {
-                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");
+                TryFixError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");
             }
             ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
             ReplaceUsingParent(st, new PascalABCCompiler.SyntaxTree.empty_statement());
@@ -21549,7 +21566,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");
+                TryFixError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");
             }
             ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
         }
@@ -21563,14 +21580,14 @@ namespace PascalABCCompiler.TreeConverter
                     var sem_type = convert_strong(tp);
                     if (sem_type.IsPointer)
                     {
-                        AddError(sem_type.location, "FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_POINTERS_AS_PARAMETERS");
+                        TryFixError(sem_type.location, "FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_POINTERS_AS_PARAMETERS");
                         break;
                     }
                 }
             }
             else
             {
-                AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.sugared_expr.GetType().Name);
+                TryFixError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.sugared_expr.GetType().Name);
             }
 
             ProcessNode(ex.new_expr); // обойти десахарное выражение - обязательно ProcessNode - visit нельзя!
@@ -21618,7 +21635,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", av.sugared_expr.GetType().Name);
+                TryFixError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", av.sugared_expr.GetType().Name);
             }
 
             ProcessNode(av.new_addr_value); // обойти десахарное 
@@ -21640,19 +21657,19 @@ namespace PascalABCCompiler.TreeConverter
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                TryFixError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
             IsTuple = IsTupleType(t);
             IsSequence = !IsTuple && IsSequenceType(t);
 
             if (!IsTuple && !IsSequence)
             {
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                TryFixError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }
             if (IsTuple)
             {
                 if (countvars > t.GetGenericArguments().Count())
-                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    TryFixError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
             }
         }
 
@@ -21673,7 +21690,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
         {
-            AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
+            TryFixError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
             // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
             // Перенесено на синтаксис с генерацией узла semantic_ith_element_of, разворачивающегося на семантике
 
@@ -21703,7 +21720,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.assign_var_tuple assvartup) // сахарный узел
         {
-            AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
+            TryFixError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
             // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
 
             //CheckUnpacking(assvartup.expr, out var sem_ex, out var IsTuple, out var IsSequence, assvartup.idents.idents.Count(), assvartup.idents);
@@ -21712,7 +21729,7 @@ namespace PascalABCCompiler.TreeConverter
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                TryFixError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
             var IsTuple = false;
             var IsSequence = false;
@@ -21725,14 +21742,14 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (!IsTuple && !IsSequence)
             {
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                TryFixError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }           
             
             if (IsTuple)
             {
                 var nn = assvartup.idents.idents.Count();
                 if (nn > t.GetGenericArguments().Count())
-                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    TryFixError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
             }*/
 
 
@@ -21740,7 +21757,7 @@ namespace PascalABCCompiler.TreeConverter
             // Распаковывать можно только для кортежей или последовательностей
             // if IsTuple ...
             // if IsSequence ...
-            // else AddError(либо кортеж либо последовательность)
+            // else TryFixError(либо кортеж либо последовательность)
 
             /*var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
 
@@ -21779,14 +21796,14 @@ namespace PascalABCCompiler.TreeConverter
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                TryFixError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
             var IsTuple = IsTupleType(t);
             var IsSequence = !IsTuple && IsSequenceType(t);
 
             if (!IsTuple && !IsSequence)
             {
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                TryFixError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }
 
             //addressed_value dn = null;
@@ -21810,7 +21827,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(var_tuple_def_statement vtd)
         {
-            AddError(get_location(vtd), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", vtd.GetType().Name);
+            TryFixError(get_location(vtd), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", vtd.GetType().Name);
             // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
 
             // Состоит из var_def_statements. Некоторые являются var_tuple_def_statement
@@ -21856,7 +21873,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.slice_expr sl) // сахарный узел
         {
-            AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
+            TryFixError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
 
             /*
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
@@ -21872,7 +21889,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.slice_expr_question sl) // сахарный узел
         {
-            AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
+            TryFixError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
             /*
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
             // Тип a должен быть array of T, List<T> или string
