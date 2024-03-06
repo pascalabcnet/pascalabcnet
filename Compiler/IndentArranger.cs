@@ -62,12 +62,9 @@ namespace IndentArranger
             }
         }
 
-        // возможные типы первого токена в строке
-        private enum FirstTokenType { Id, If, Elif, Else, For, Def, While, Bad };
-
         // считывает первый токен в строке (с первого символа латиницы или _)
         // возвращает тип этого токена
-        private FirstTokenType ReadFirstToken(string line, int beginIndex)
+        private bool IsFirstTokenElseOrElif(string line, int beginIndex)
         {
             // узнаём длину токена
             int tokenLength = 1;
@@ -80,23 +77,7 @@ namespace IndentArranger
 
             // получаем тип токена по его строковому представлению
             string firstToken = line.Substring(beginIndex, tokenLength);
-            switch (firstToken)
-            {
-                case "if":
-                    return FirstTokenType.If;
-                case "elif":
-                    return FirstTokenType.Elif;
-                case "else":
-                    return FirstTokenType.Else;
-                case "for":
-                    return FirstTokenType.For;
-                case "while":
-                    return FirstTokenType.While;
-                case "def":
-                    return FirstTokenType.Def;
-                default:
-                    return FirstTokenType.Id;
-            }
+            return firstToken == "else" || firstToken == "elif";
         }
 
         private void ArrangeIndents(ref string[] programLines)
@@ -110,7 +91,7 @@ namespace IndentArranger
                 bool isEmptyLine = true; // строка не содержит символов кроме 'space'\t\n\r
                 bool readFirstToken = false;
                 int currentLineSpaceCounter = 0;
-                FirstTokenType currentFirstTokenType = FirstTokenType.Bad;
+                bool isCurrentFirstTokenElseOrElif = false;
 
                 for (int i = 0; i < line.Length; ++i)
                 {
@@ -137,7 +118,7 @@ namespace IndentArranger
                             // если символ латиницы или _ то это начало первого токена в строке
                             if (Char.IsLetter(line[i]) || line[i] == '_')
                             {
-                                currentFirstTokenType = ReadFirstToken(line, i);
+                                isCurrentFirstTokenElseOrElif = IsFirstTokenElseOrElif(line, i);
                                 readFirstToken = true;
                             }
                             break;
@@ -180,7 +161,7 @@ namespace IndentArranger
                 {
                     // если сейчас ветка elif/else, то это не конец команды
                     // поэтому ставить ; в конце не надо (она будет после блока elif/else)
-                    bool isEndOfStatement = !(currentFirstTokenType == FirstTokenType.Elif || currentFirstTokenType == FirstTokenType.Else);
+                    bool isEndOfStatement = !isCurrentFirstTokenElseOrElif;
 
                     programLines[lastNotEmptyLine] +=
                         string.Concat(Enumerable.Repeat(";" + unindentToken, previousIndentLevel - currentLineIndentLevel))
