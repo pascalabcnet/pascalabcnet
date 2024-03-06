@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace IndentArranger
 {   
@@ -18,6 +19,9 @@ namespace IndentArranger
         private const string indentToken = "#{";
         private const string unindentToken = "#}";
         public const string createdFileNameAddition = "_processed";
+
+        // регулярное выражение разбивающее строку программы на группы, последняя из которых - комментарий в конце строки
+        private static readonly Regex programLineRegex = new Regex("^(([^\n\"\'#])+|(\'([^\'\n\\\\]|\\\\.)*\')|(\"([^\"\n\\\\]|\\\\.)*\"))*(#.*)?$");
 
         public IndentArranger(string path)
         {
@@ -46,34 +50,14 @@ namespace IndentArranger
 
         private void EraseComments(ref string[] programLines)
         {
-            bool isMultiLineComment = false;
             for (int i = 0; i < programLines.Length; ++i)
             {
-                // проверка на начало/конец многострочного комментария
-                if (programLines[i].Length >= 3
-                    && programLines[i][0] == '"'
-                    && programLines[i][1] == '"'
-                    && programLines[i][2] == '"')
+                Match programLineMatch = programLineRegex.Match(programLines[i]);
+                if (programLineMatch.Success)
                 {
-                    // конец многострочного комментария
-                    if (isMultiLineComment)
-                        programLines[i] = "   " + programLines[i].Substring(3);
-                    isMultiLineComment = !isMultiLineComment;
-                }
-
-                if (isMultiLineComment)
-                {
-                    programLines[i] = "";
-                    continue;
-                }
-
-                for (int j = 0; j < programLines[i].Length; ++j)
-                {
-                    if (programLines[i][j] == '#')
-                    {
-                        programLines[i] = programLines[i].Substring(0, j);
-                        break;
-                    }
+                    Group programLineComment = programLineMatch.Groups[programLineMatch.Groups.Count - 1];
+                    if (programLineComment.Success)
+                        programLines[i] = programLines[i].Substring(0, programLineComment.Index);
                 }
             }
         }
