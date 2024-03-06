@@ -2,6 +2,7 @@
 using System.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace IndentArranger
 {   
@@ -9,7 +10,6 @@ namespace IndentArranger
     {
         private int currentLineIndentLevel = 0;
         private int lineCounter = -1;
-        private int previousIndentLevel = -1;
 
         public string CreatedFileName { get; private set; }
         public string CreatedFilePath { get; private set; }
@@ -18,6 +18,7 @@ namespace IndentArranger
         private const int indentSpaceNumber = 4;
         private const string indentToken = "#{";
         private const string unindentToken = "#}";
+        private const string badIndentToken = "##";
         public const string createdFileNameAddition = "_processed";
 
         // регулярное выражение разбивающее строку программы на группы, последняя из которых - комментарий в конце строки
@@ -75,7 +76,7 @@ namespace IndentArranger
                 else break;
             }
 
-            // получаем тип токена по его строковому представлению
+            // получаем строковое представление токена
             string firstToken = line.Substring(beginIndex, tokenLength);
             return firstToken == "else" || firstToken == "elif";
         }
@@ -83,6 +84,9 @@ namespace IndentArranger
         private void ArrangeIndents(ref string[] programLines)
         {
             int lastNotEmptyLine = -1;
+
+            Stack<int> indentStack = new Stack<int>();
+            indentStack.Push(0);
 
             foreach (var line in programLines)
             {
@@ -133,54 +137,64 @@ namespace IndentArranger
                     continue;
                 }
 
-                // количество отступов в текущей строке 
-                currentLineIndentLevel = currentLineSpaceCounter / indentSpaceNumber;
-
-                // количество пробелов в строке является некорректным 
-                // (не соответствует количеству пробелов в строке с любым отступом) 
-                if (currentLineSpaceCounter % indentSpaceNumber != 0)
-                {
-                    throw new NotPossibleIndentException();
-                }
-                // текущий отступ соответствует увеличению на больше чем один отступ 
-                else if (currentLineIndentLevel > previousIndentLevel + 1)
-                {
-                    throw new ManyIndentsAdditionException();
-                }
-                // текущий отступ соответствует увеличению на один отступ 
-                else if (currentLineIndentLevel == previousIndentLevel + 1)
+                int previosSpaceCounter = indentStack.Peek();
+                // текущий отступ соответствует предыдущему отступу
+                if (currentLineSpaceCounter == previosSpaceCounter)
                 {
                     if (lastNotEmptyLine != -1)
+                        programLines[lastNotEmptyLine] += ";";
+                }
+                // текущий отступ соответствует увеличению
+                else if (currentLineSpaceCounter > previosSpaceCounter)
+                {
+                    if (lastNotEmptyLine != -1)
+                    {
                         programLines[lastNotEmptyLine] += indentToken;
-                    // закомментировать ветку else если нет блока оборачивающего всю программу
-                    //else
-                        //File.AppendAllText(CreatedFilePath, indentToken + "\n");
+                        indentStack.Push(currentLineSpaceCounter);
+                    }
+                    else
+                    {
+                        //ошибка (отступ в первой строке программы)
+                    }
                 }
-                // текущий отступ соответствует уменьшению на один или несколько отступов
-                else if (currentLineIndentLevel < previousIndentLevel)
+                // оставшиеся случаи: отступ некорректный или уменьшение на один или несколько отступов
+                else
                 {
-                    // если сейчас ветка elif/else, то это не конец команды
-                    // поэтому ставить ; в конце не надо (она будет после блока elif/else)
-                    bool isEndOfStatement = !isCurrentFirstTokenElseOrElif;
+                    int unindentCounter = 0;
+                    while (currentLineSpaceCounter < previosSpaceCounter)
+                    { 
+                        indentStack.Pop();
+                        unindentCounter++;
+                        previosSpaceCounter = indentStack.Peek();
+                    }
 
-                    programLines[lastNotEmptyLine] +=
-                        string.Concat(Enumerable.Repeat(";" + unindentToken, previousIndentLevel - currentLineIndentLevel))
-                        + (isEndOfStatement ? ";" : "");
-                }
-                // текущий отступ  соответствует предыдущему отступу 
-                else if (currentLineIndentLevel == previousIndentLevel)
-                {
-                    programLines[lastNotEmptyLine] += ";";
+                    // текущий отступ соответствует уменьшению на один или несколько отступов
+                    if (currentLineSpaceCounter == previosSpaceCounter)
+                    {
+                        // если сейчас ветка elif/else, то это не конец команды
+                        // поэтому ставить ; в конце не надо (она будет после блока elif/else)
+                        bool isEndOfStatement = !isCurrentFirstTokenElseOrElif;
+
+                        programLines[lastNotEmptyLine] +=
+                            string.Concat(Enumerable.Repeat(";" + unindentToken, unindentCounter))
+                            + (isEndOfStatement ? ";" : "");
+                    }
+                    // количество пробелов в строке является некорректным 
+                    // (не соответствует количеству пробелов в строке с любым отступом) 
+                    else // currentLineSpaceCounter > indentStack.Peek()
+                    {
+                        if (lastNotEmptyLine != -1)
+                            programLines[lastNotEmptyLine] += badIndentToken;
+                    }
                 }
 
-                previousIndentLevel = currentLineIndentLevel;
                 lastNotEmptyLine = lineCounter;
             }
 
             // закрытие всех отступов в конце файла
             // (заменить "currentLineIndentLevel + 1" на "currentLineIndentLevel" если есть блок оборачивающий всю программу)
             programLines[lastNotEmptyLine] +=
-                string.Concat(Enumerable.Repeat(";" + unindentToken, currentLineIndentLevel));
+                string.Concat(Enumerable.Repeat(";" + unindentToken, indentStack.Count() - 1));
         }
     }
 }
