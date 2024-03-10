@@ -40,8 +40,5 @@ def bf(b1: bool, b2: bool):
         print('not (b1 or b2)')
 
 
-a = -1
-b = -2
-c = -3
-d = -a * -b
-print(----d)
+if not True or True:
+    print('True')

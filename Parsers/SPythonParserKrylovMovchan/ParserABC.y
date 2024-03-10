@@ -43,13 +43,14 @@
 %token <op> PLUS MINUS MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
 %token <id> ID INT
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
-%token <op> AND OR
+%token <op> AND OR NOT
 
 %left OR
 %left AND
 %left LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %left PLUS MINUS
 %left MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
+%left NOT
 
 %type <id> identifier
 %type <ex> expr var_reference variable proc_func_call const_value
@@ -207,7 +208,9 @@ expr
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| expr PERCENTAGE	expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-	| MINUS expr	
+	| MINUS	expr	
+		{ $$ = new un_expr($2, $1.type, @$); }
+	| NOT	expr
 		{ $$ = new un_expr($2, $1.type, @$); }
 	| variable
 		{ $$ = $1; }

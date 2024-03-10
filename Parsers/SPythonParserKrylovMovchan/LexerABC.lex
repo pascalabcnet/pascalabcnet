@@ -57,6 +57,9 @@ ID {Alpha}{AlphaDigit}*
     case (int)Tokens.OR:
       yylval.op = new op_type_node(Operators.LogicalOR);
       break;
+    case (int)Tokens.NOT:
+      yylval.op = new op_type_node(Operators.LogicalNOT);
+      break;
   }
   
   return res;
