@@ -24,7 +24,11 @@ namespace SPythonSyntaxTreeVisitor
                 return filesExtensions;
             }
         }
-        public override void RunAdditionalChecks<T>(T node)
+        public spython_syntax_tree_visitor(): base()
+        {
+            OnLeave = RunAdditionalChecks;
+        }
+        public void RunAdditionalChecks(syntax_tree_node node)
         {
             switch (node)
             {
@@ -40,30 +44,60 @@ namespace SPythonSyntaxTreeVisitor
                     break;
             }
         }
-        public override void TryFixError(Error err, bool shouldReturn = false)
+        public override void AddError(Error err, bool shouldReturn = false)
         {
             switch (err)
             {
                 case OperatorCanNotBeAppliedToThisTypes _op_err:
                     expression_node left = _op_err.left;
-                    expression_node right = _op_err.right;                   
+                    expression_node right = _op_err.right;
                     if (_op_err.operator_name == "/")
                     {
                         if (left.type == right.type && left.type.name == "string")
                         {
-                            var mcn = new method_call(new dot_node(new ident((left as IReferenceNode).Variable.name, left.location), new ident("IndexOf")),
-                                new expression_list(new ident((right as IReferenceNode).Variable.name, right.location)), _op_err.SourceContext);
-                            base.visit(mcn);
+                            var mcn = new method_call(new dot_node(new semantic_addr_value(left, left.location), new ident("IndexOf", left.location)),
+                                new expression_list(new semantic_addr_value(right, right.location), right.location), _op_err.SourceContext);
+                            visit(mcn);
                             //return;
+                            throw new SemanticErrorFixed();
+                        }
+                    }
+                    else if (_op_err.operator_name == "div")
+                    {
+                        if (left.type == right.type && left.type.name == "real")
+                        {
+                            var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _op_err.SourceContext);
+                            var floornode = new method_call(new ident("floor"), new expression_list(divnode));
+                            base.visit(floornode);
+                            throw new SemanticErrorFixed();
+                        }
+                    }
+                    else if (_op_err.operator_name == "mod")
+                    {
+                        if (left.type == right.type && left.type.name == "real")
+                        {
+                            var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _op_err.SourceContext);
+                            var floornode = new method_call(new ident("floor"), new expression_list(divnode));
+                            var multnode = new bin_expr(new semantic_addr_value(right, right.location), floornode, Operators.Multiplication);
+                            var modnode = new bin_expr(new semantic_addr_value(left, left.location), multnode, Operators.Minus);
+                            base.visit(modnode);
                             throw new SemanticErrorFixed();
                         }
                     }
                     break;
                 default:
-                    base.TryFixError(err, shouldReturn);
+                    base.AddError(err, shouldReturn);
                     break;
             }
            
+        }
+
+        public override void visit(bin_expr _bin_expr)
+        {
+            try {
+                base.visit(_bin_expr);
+            }
+            catch (SemanticErrorFixed) { }    
         }
         /*public override void visit(bin_expr _bin_expr)
         {

@@ -40,6 +40,8 @@ function abs(x: integer): integer;
 
 function abs(x: single): single;
 
+function floor(x: single): single;
+
 implementation
 
 function input(): string;
@@ -87,5 +89,7 @@ end;
 function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: single): single := PABCSystem.Abs(x);
+
+function floor(x: single): single := single(PABCSystem.Floor(x));
 
 end.

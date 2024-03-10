@@ -36,24 +36,24 @@ namespace PascalABCCompiler.TreeConverter
         
         private void AddError(Errors.Error err)
         {
-            syntax_tree_visitor.TryFixError(err);
+            syntax_tree_visitor.AddError(err);
         }
 
         private T AddError<T>(Errors.Error err)
         {
-            syntax_tree_visitor.TryFixError(err, true);
+            syntax_tree_visitor.AddError(err, true);
             return default(T);
         }
 
         private T AddError<T>(location loc, string ErrString, params string[] values)
         {
-            syntax_tree_visitor.TryFixError(loc, ErrString, values);
+            syntax_tree_visitor.AddError(loc, ErrString, values);
             return default(T);
         }
 
         private void AddError(location loc, string ErrString, params string[] values)
         {
-            syntax_tree_visitor.TryFixError(loc, ErrString, values);
+            syntax_tree_visitor.AddError(loc, ErrString, values);
         }
 
 		public void reset()
