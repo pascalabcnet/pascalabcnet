@@ -26,17 +26,7 @@ def g(b: int) -> int:
         return b
     else:
       return b + f(b - 1)
-        
 
-
-for i in range(0, 10):
-    print(fact(i))
-
-print('\n' + str(f(10)))
-
-s = '123452@#3232' #232132323
-print(s + ' \n')
-bf(True, False)
 
 def bf(b1: bool, b2: bool):
     if b1 and b2:
@@ -48,3 +38,10 @@ def bf(b1: bool, b2: bool):
         print('b1 or b2')
     else:
         print('not (b1 or b2)')
+
+
+a = -1
+b = -2
+c = -3
+d = -a * -b
+print(----d)

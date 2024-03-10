@@ -11,9 +11,8 @@ Alpha         [a-zA-Z_]
 NonZeroDigit  [1-9]
 Digit         0|{NonZeroDigit}
 AlphaDigit {Alpha}|{Digit}
-UInt ({NonZeroDigit}{Digit}*)|0
-INTNUM  -?{UInt}
-REALNUM -?(({UInt}?\.{UInt})|({UInt}\.))
+INTNUM  ({NonZeroDigit}{Digit}*)|0
+REALNUM ({INTNUM}?\.{INTNUM})|({INTNUM}\.)
 STRINGNUM (\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
 ID {Alpha}{AlphaDigit}*
 

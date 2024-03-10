@@ -207,7 +207,9 @@ expr
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| expr PERCENTAGE	expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-	| variable				
+	| MINUS expr	
+		{ $$ = new un_expr($2, $1.type, @$); }
+	| variable
 		{ $$ = $1; }
 	| const_value
 		{ $$ = $1; }
