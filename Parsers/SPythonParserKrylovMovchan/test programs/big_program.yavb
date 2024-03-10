@@ -35,11 +35,16 @@ for i in range(0, 10):
 print('\n' + str(f(10)))
 
 s = '123452@#3232' #232132323
-print(s)
-bf(a > 32)
+print(s + ' \n')
+bf(True, False)
 
-def bf(b: bool):
-    if b:
-        print('True')
+def bf(b1: bool, b2: bool):
+    if b1 and b2:
+        print('b1 and b2,')
     else:
-        print('False')
+        print('not (b1 and b2),')
+    
+    if b1 or b2:
+        print('b1 or b2')
+    else:
+        print('not (b1 or b2)')

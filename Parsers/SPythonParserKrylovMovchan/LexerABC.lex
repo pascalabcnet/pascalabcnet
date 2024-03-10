@@ -43,17 +43,23 @@ ID {Alpha}{AlphaDigit}*
   return (int)Tokens.STRINGNUM;
 }
 
-"and" { yylval.op = new op_type_node(Operators.LogicalAND); return (int)Tokens.AND; }
-"or"  { yylval.op = new op_type_node(Operators.LogicalOR); return (int)Tokens.OR; }
-
 {ID}  {
   string cur_yytext = yytext;
   int res = Keywords.KeywordOrIDToken(cur_yytext);
   currentLexLocation = CurrentLexLocation;
-  if (res == (int)Tokens.ID)
+  switch (res)
   {
-    yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
+    case (int)Tokens.ID:
+      yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
+      break;
+    case (int)Tokens.AND:
+      yylval.op = new op_type_node(Operators.LogicalAND);
+      break;
+    case (int)Tokens.OR:
+      yylval.op = new op_type_node(Operators.LogicalOR);
+      break;
   }
+  
   return res;
 }
 
