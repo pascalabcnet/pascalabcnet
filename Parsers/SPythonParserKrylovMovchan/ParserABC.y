@@ -321,10 +321,8 @@ variable
 	;
 
 compound_stmt	
-	: NestedSymbolTable INDENT stmt_lst SEMICOLON UNINDENT
+	: NestedSymbolTableBegin INDENT stmt_lst SEMICOLON UNINDENT NestedSymbolTableEnd
 		{ 
-			symbolTable = symbolTable.OuterScope;
-
 			$$ = $3 as statement_list; 
 			($$ as statement_list).left_logical_bracket = $2;
 			($$ as statement_list).right_logical_bracket = $5;
@@ -332,10 +330,17 @@ compound_stmt
 		}
 	;
 
-NestedSymbolTable	
+NestedSymbolTableBegin	
 	:
 		{ 
 			symbolTable = new SymbolTable(symbolTable); 
+		}
+	;
+
+NestedSymbolTableEnd	
+	:
+		{ 
+			symbolTable = symbolTable.OuterScope;
 		}
 	;
 
@@ -351,10 +356,8 @@ proc_func_body
 	;
 
 proc_func_decl	
-	: NestedSymbolTable proc_func_header proc_func_body 
-		{ 
-			symbolTable = symbolTable.OuterScope;
-
+	: NestedSymbolTableBegin proc_func_header proc_func_body NestedSymbolTableEnd
+		{
 			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 			//pd1.AssignAttrList(null);
 			//$$ = pd1;
