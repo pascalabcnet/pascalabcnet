@@ -52,19 +52,32 @@
 %left MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
 
 %type <id> identifier
-%type <ex> expr var_reference variable proc_func_call range_expr constant_value
-%type <stn> expr_lst optional_expr_lst proc_func_decl return_stmt break_stmt continue_stmt
-%type <stn> assign if_stmt stmt proccall while_stmt for_stmt optional_else optional_elif
-%type <stn> decl_or_stmt decl_or_stmt_list
-%type <stn> stmt_lst compound_stmt proc_func_body
-%type <stn> progr decl param_name simple_fp_sect fp_sect fp_sect_list fp_list
-%type <td> proc_func_header fp_type simple_type_identifier
+%type <ex> expr var_reference variable proc_func_call const_value
+%type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt
+%type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
+%type <stn> decl_or_stmt decl_and_stmt_list
+%type <stn> stmt_list block
+%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
+%type <td> proc_func_header form_param_type simple_type_identifier
 
-%start progr
+%start program
+
+/*
+expr	= expression
+stmt	= statement
+proc	= procedure
+func	= function
+const	= constant
+decl	= declaration
+param	= parameter
+assign	= assignment
+form	= formal
+sect	= section
+*/
 
 %%
-progr   
-	: decl_or_stmt_list
+program   
+	: decl_and_stmt_list
 		{
 			var stl = $1 as statement_list;
 			decl.AddFirst(decl_forward.defs);
@@ -85,7 +98,7 @@ decl_or_stmt
 		{ $$ = null; }
 	;
 
-decl	
+decl
 	: proc_func_decl 
 		{
 			$$ = null; 
@@ -93,7 +106,7 @@ decl
 		}
 	;
 
-decl_or_stmt_list	
+decl_and_stmt_list	
 	: decl_or_stmt
 		{
 			if ($1 is statement st)
@@ -101,7 +114,7 @@ decl_or_stmt_list
 			else
 				$$ =  new statement_list(); 
 		}
-	| decl_or_stmt_list SEMICOLON decl_or_stmt
+	| decl_and_stmt_list SEMICOLON decl_or_stmt
 		{
 			if ($3 is statement st) 
 				$$ = ($1 as statement_list).Add(st, @$);
@@ -110,25 +123,25 @@ decl_or_stmt_list
 		}
 	;
 
-stmt_lst	
+stmt_list	
 	: stmt
 		{ 
 			$$ = new statement_list($1 as statement, @1); 
 		}
-	| stmt_lst SEMICOLON stmt
+	| stmt_list SEMICOLON stmt
 		{ 
 			$$ = ($1 as statement_list).Add($3 as statement, @$); 
 		}
 	;
 
 stmt	
-	: assign		
+	: assign_stmt		
 		{ $$ = $1; }
-	| compound_stmt	
+	| block	
 		{ $$ = $1; }
 	| if_stmt		
 		{ $$ = $1; }
-	| proccall		
+	| proc_func_call_stmt		
 		{ $$ = $1; }
 	| while_stmt	
 		{ $$ = $1; }
@@ -143,7 +156,7 @@ stmt
 	;
 
 identifier	
-	: ID	
+	: ID
 		{
 			if ($1.name == "result")
 				$1.name = "%result";
@@ -151,7 +164,7 @@ identifier
 		}
 	;
 
-assign
+assign_stmt
 	: identifier ASSIGN expr
 		{
 			if (!symbolTable.Contains($1.name)) {
@@ -162,8 +175,6 @@ assign
 			else {
 				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 			}
-			// symbolTable.Add($1.name);
-			// $$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
 	;
 
@@ -198,48 +209,48 @@ expr
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| variable				
 		{ $$ = $1; }
-	| constant_value
+	| const_value
 		{ $$ = $1; }
 	| LPAR expr RPAR		
 		{ $$ = $2; }
 	;
 
-constant_value
+const_value
 	: INTNUM
 		{ $$ = $1; }
 	| REALNUM				
 		{ $$ = $1; }
-	| STRINGNUM				
+	| STRINGNUM
 		{ $$ = $1 as literal; }
 	;
 
-optional_expr_lst	
-	: expr_lst	
+optional_expr_list	
+	: expr_list	
 		{ $$ = $1; }
 	|
 		{ $$ = null; }
 	;
 
-expr_lst	
+expr_list	
 	: expr
 		{ 
 			$$ = new expression_list($1, @$); 
 		}
-	| expr_lst COMMA expr
+	| expr_list COMMA expr
 		{ 
 			$$ = ($1 as expression_list).Add($3, @$); 
 		}
 	;
 
 if_stmt	
-	: IF expr COLON compound_stmt optional_elif
+	: IF expr COLON block optional_elif
 		{ 
 			$$ = new if_node($2, $4 as statement, $5 as statement, @$); 
 		}
 	;
 
 optional_elif	
-	: ELIF expr COLON compound_stmt optional_elif
+	: ELIF expr COLON block optional_elif
 		{ 
 			$$ = new if_node($2, $4 as statement, $5 as statement, @$); 
 		}
@@ -248,21 +259,21 @@ optional_elif
 	;
 
 optional_else	
-	: ELSE COLON compound_stmt	
+	: ELSE COLON block	
 		{ $$ = $3; }
 	|
 		{ $$ = null; }
 	;
 
 while_stmt	
-	: WHILE expr COLON compound_stmt
+	: WHILE expr COLON block
 		{ 
 			$$ = new while_node($2, $4 as statement, WhileCycleType.While, @$); 
 		}
 	;
 
 for_stmt	
-	: FOR identifier IN expr COLON compound_stmt
+	: FOR identifier IN expr COLON block
 		{ 
 			$$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$); 
 		}
@@ -297,7 +308,7 @@ continue_stmt
 		}
 	;
 
-proccall	
+proc_func_call_stmt	
 	:  var_reference
         {
 			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$);
@@ -316,12 +327,12 @@ variable
 		{ $$ = $1; }
 	| variable DOT identifier
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
-	| constant_value DOT identifier
+	| const_value DOT identifier
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	;
 
-compound_stmt	
-	: NestedSymbolTableBegin INDENT stmt_lst SEMICOLON UNINDENT NestedSymbolTableEnd
+block	
+	: NestedSymbolTableBegin INDENT stmt_list SEMICOLON UNINDENT NestedSymbolTableEnd
 		{ 
 			$$ = $3 as statement_list; 
 			($$ as statement_list).left_logical_bracket = $2;
@@ -344,19 +355,8 @@ NestedSymbolTableEnd
 		}
 	;
 
-// аналог compound_stmt для тела функции не создающий пространства имён (оно создаётся вместе с заголовком)
-proc_func_body
-	: INDENT stmt_lst SEMICOLON UNINDENT
-		{	
-			$$ = $2 as statement_list; 
-			($$ as statement_list).left_logical_bracket = $1;
-			($$ as statement_list).right_logical_bracket = $4;
-			$$.source_context = @$;
-		}
-	;
-
 proc_func_decl	
-	: NestedSymbolTableBegin proc_func_header proc_func_body NestedSymbolTableEnd
+	: NestedSymbolTableBegin proc_func_header block NestedSymbolTableEnd
 		{
 			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 			//pd1.AssignAttrList(null);
@@ -370,22 +370,18 @@ proc_func_decl
 	;
 
 proc_func_header
-	: DEF identifier fp_list COLON 
+	: DEF identifier LPAR optional_form_param_list RPAR COLON 
 		{
-			// надо добавить все имена (из fp_list) переменных в symbolTable
-			// symbolTable = new SymbolTable(symbolTable); 
-			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
+			$$ = new procedure_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
 		}
-	| DEF identifier fp_list ARROW fp_type COLON
+	| DEF identifier LPAR optional_form_param_list RPAR ARROW form_param_type COLON
 		{
-			// надо добавить все имена (из fp_list) переменных в symbolTable
-			// symbolTable = new SymbolTable(symbolTable); 
-			$$ = new function_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $5 as type_definition, @$);
+			$$ = new function_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $7 as type_definition, @$);
 		}
 	;
 
 proc_func_call
-	: variable LPAR optional_expr_lst RPAR
+	: variable LPAR optional_expr_list RPAR
 		{ 
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$); 
 		}
@@ -395,6 +391,9 @@ simple_type_identifier
 	: identifier
 		{
 			switch ($1.name) {
+				case "bool":
+					$$ = new named_type_reference("boolean", @$);
+					break;
 				case "int":
 					$$ = new named_type_reference("integer", @$);
 					break;
@@ -408,6 +407,7 @@ simple_type_identifier
 				case "integer":
 				case "real":
 				case "string":
+				case "boolean":
 					$$ = new named_type_reference("error", @$);
 					break;
 				
@@ -418,17 +418,10 @@ simple_type_identifier
 		}
 	;
 
-range_expr	
-	: simple_type_identifier
-		{
-			$$ = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent($1 as named_type_reference);
-		}
-	;
-
-fp_type	
-	: range_expr 
+form_param_type	
+	: simple_type_identifier 
 		{ 
-			$$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference($1); 
+			$$ = $1 as named_type_reference;
 		}
 	;
 
@@ -440,41 +433,34 @@ param_name
 		}
     ;
 
-simple_fp_sect	
-	: param_name COLON fp_type
+form_param_sect	
+	: param_name COLON form_param_type
 		{
 			$$ = new typed_parameters($1 as ident_list, $3, parametr_kind.none, null, @$); 
 		}
 	;
 
-fp_sect	
-	: simple_fp_sect
-		{ 
-			$$ = $1; 
-		}
-	;
-
-fp_sect_list
-    : fp_sect                                          
+form_param_list
+    : form_param_sect                                          
         { 
 			$$ = new formal_parameters($1 as typed_parameters, @$);
         }
-    | fp_sect_list COMMA fp_sect               
+    | form_param_list COMMA form_param_sect               
         { 
 			$$ = ($1 as formal_parameters).Add($3 as typed_parameters, @$);   
         } 
     ;
 
-fp_list
-    : LPAR RPAR        
-        {
-			$$ = null; 
-		}
-    | LPAR fp_sect_list RPAR         
+optional_form_param_list
+    : form_param_list        
         { 
-			$$ = $2;
+			$$ = $1;
 			if ($$ != null)
 				$$.source_context = @$;
+		}
+	|
+        {
+			$$ = null; 
 		}
     ;
 

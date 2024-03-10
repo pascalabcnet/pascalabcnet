@@ -1,0 +1,45 @@
+﻿a = 10
+
+
+def k(a: int, b: float) -> float:
+    print(a, b)
+    return a + b
+
+
+def fact(n: int) -> int:
+    if n == 0:
+        return 1
+    elif n == 1:
+      return 1
+    else:
+     return n * fact(n - 1)
+
+
+def f(a: int) -> int:
+    if a == 0:
+        return a
+    else:
+        return g(a // 2) + a
+
+def g(b: int) -> int:
+    if b == 0:
+        return b
+    else:
+      return b + f(b - 1)
+        
+
+
+for i in range(0, 10):
+    print(fact(i))
+
+print('\n' + str(f(10)))
+
+s = '123452@#3232' #232132323
+print(s)
+bf(a > 32)
+
+def bf(b: bool):
+    if b:
+        print('True')
+    else:
+        print('False')
