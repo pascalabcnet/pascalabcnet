@@ -88,6 +88,10 @@ ID {Alpha}{AlphaDigit}*
 "("  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LPAR; }
 ")"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RPAR; }
 
+"##" {
+  parsertools.AddError("Wrong indent", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
+	return (int)Tokens.EOF; 
+}
 
 [^ \r\n] {
   parsertools.AddError("Unexpected token!", CurrentLexLocation);
