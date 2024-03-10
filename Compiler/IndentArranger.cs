@@ -8,7 +8,6 @@ namespace IndentArranger
 {   
     public class IndentArranger
     {
-        private int currentLineIndentLevel = 0;
         private int lineCounter = -1;
 
         public string CreatedFileName { get; private set; }
@@ -65,19 +64,16 @@ namespace IndentArranger
 
         // считывает первый токен в строке (с первого символа латиницы или _)
         // возвращает тип этого токена
-        private bool IsFirstTokenElseOrElif(string line, int beginIndex)
+        private bool IsFirstTokenElseOrElif(string line)
         {
-            // узнаём длину токена
-            int tokenLength = 1;
-            for (int i = beginIndex + 1; i < line.Length; ++i)
-            {
-                if (Char.IsLetterOrDigit(line[i]) || line[i] == '_')
-                    tokenLength++;
-                else break;
-            }
+            int beginIndex = 0;
+            for (beginIndex = 0; beginIndex < line.Length; ++beginIndex)
+                if (!Char.IsWhiteSpace(line[beginIndex]))
+                    break;
+            if (line.Length < beginIndex + 3) return false;
 
             // получаем строковое представление токена
-            string firstToken = line.Substring(beginIndex, tokenLength);
+            string firstToken = line.Substring(beginIndex, 4);
             return firstToken == "else" || firstToken == "elif";
         }
 
@@ -93,9 +89,7 @@ namespace IndentArranger
                 lineCounter++;
 
                 bool isEmptyLine = true; // строка не содержит символов кроме 'space'\t\n\r
-                bool readFirstToken = false;
                 int currentLineSpaceCounter = 0;
-                bool isCurrentFirstTokenElseOrElif = false;
 
                 for (int i = 0; i < line.Length; ++i)
                 {
@@ -118,16 +112,9 @@ namespace IndentArranger
                                 break;
 
                             isEmptyLine = false;
-
-                            // если символ латиницы или _ то это начало первого токена в строке
-                            if (Char.IsLetter(line[i]) || line[i] == '_')
-                            {
-                                isCurrentFirstTokenElseOrElif = IsFirstTokenElseOrElif(line, i);
-                                readFirstToken = true;
-                            }
                             break;
                     }
-                    if (readFirstToken)
+                    if (!isEmptyLine)
                         break;
                 }
 
@@ -173,7 +160,7 @@ namespace IndentArranger
                     {
                         // если сейчас ветка elif/else, то это не конец команды
                         // поэтому ставить ; в конце не надо (она будет после блока elif/else)
-                        bool isEndOfStatement = !isCurrentFirstTokenElseOrElif;
+                        bool isEndOfStatement = !IsFirstTokenElseOrElif(line);
 
                         programLines[lastNotEmptyLine] +=
                             string.Concat(Enumerable.Repeat(";" + unindentToken, unindentCounter))
