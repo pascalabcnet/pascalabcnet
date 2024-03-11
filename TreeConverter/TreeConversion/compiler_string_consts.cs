@@ -359,7 +359,7 @@ namespace PascalABCCompiler.TreeConverter
         // SSM (3.1.2011) Перенес эти константы сюда.
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
         #region PASCAL LANGUAGE
-        public const string pascalLanguageName = "PascalABCNET";
+        public const string pascalLanguageName = "PascalABC.NET";
         public const string pascalSourceFileExtension = ".pas";
         public const string pascalCompiledUnitExtension = ".pcu";
         public static string pascalSystemUnitName = "PABCSystem";
