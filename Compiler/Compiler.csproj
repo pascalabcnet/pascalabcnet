@@ -169,7 +169,6 @@
     <Compile Include="DocXml.cs" />
     <Compile Include="ICompiler.cs" />
     <Compile Include="IProjectInfo.cs" />
-    <Compile Include="LanguagesData.cs" />
     <Compile Include="ProjectInfo.cs" />
     <Compile Include="RemoteCompiler.cs" />
     <Compile Include="SemanticTreeConverters\ISemanticTreeConverter.cs" />

@@ -305,7 +305,7 @@ namespace CodeCompletion
     		int line=0;
     		int col=0;
     		PascalABCCompiler.Parsers.KeywordKind keyw;
-    		PascalABCCompiler.Parsers.IParser parser = CodeCompletionController.ParsersController.selectParser(".vb");
+    		PascalABCCompiler.Parsers.IParser parser = CodeCompletionController.ParsersController.SelectParser(".vb");
     		
     		string test_str = "System.Console";
     		off = test_str.Length;
@@ -340,8 +340,8 @@ namespace CodeCompletion
     		int line=0;
     		int col=0;
     		PascalABCCompiler.Parsers.KeywordKind keyw;
-            CodeCompletionController.ParsersController.Reload();
-    		PascalABCCompiler.Parsers.IParser parser = CodeCompletionController.ParsersController.selectParser(compiler_string_consts.pascalSourceFileExtension);
+            LanguageIntegration.LanguageIntegrator.ReloadAllParsers();
+    		IParser parser = CodeCompletionController.ParsersController.SelectParser(compiler_string_consts.pascalSourceFileExtension);
     		
     		string test_str = "System.Console";
     		off = test_str.Length;

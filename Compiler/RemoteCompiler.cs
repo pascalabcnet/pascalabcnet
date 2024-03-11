@@ -390,7 +390,7 @@ namespace PascalABCCompiler
             if (compilerOptions.Locale != null)
                 sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
             
-            foreach (var kv in compilerOptions.standardModules)
+            foreach (var kv in compilerOptions.StandardModules)
             {
                 foreach (CompilerOptions.StandardModule module in kv.Value)
                 {
@@ -573,6 +573,7 @@ namespace PascalABCCompiler
             pabcnetcProcess.StartInfo.CreateNoWindow = true;
             pabcnetcProcess.StartInfo.RedirectStandardOutput = true;
             pabcnetcProcess.StartInfo.RedirectStandardInput = true;
+            pabcnetcProcess.StartInfo.RedirectStandardError = true;
             pabcnetcProcess.EnableRaisingEvents = true;
             pabcnetcProcess.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
             pabcnetcProcess.Exited += pabcnetcProcess_Exited;
@@ -590,6 +591,8 @@ namespace PascalABCCompiler
 
         void pabcnetcProcess_Exited(object sender, EventArgs e)
         {
+            string error = pabcnetcProcess.StandardError.ReadToEnd();
+
             if (!compilerReloading)
             {
                 pabcnetcProcess = null;

@@ -604,7 +604,9 @@ namespace PascalABCCompiler
 
         public string[] ParserSearchPaths;
 
+        // LeftToAll - слева во все модули, RightToMain - справа, только в основную программу
         public enum StandardModuleAddMethod { LeftToAll, RightToMain };
+        
         [Serializable()]
         public class StandardModule : MarshalByRefObject
         {
@@ -637,32 +639,49 @@ namespace PascalABCCompiler
             }
         }
 
+        private Dictionary<string, List<StandardModule>> standardModules = new Dictionary<string, List<StandardModule>>();
+
         /// <summary>
         /// Списки стандартных модулей для поддерживаемых языков (первым в списке должен быть модуль "System")
         /// </summary>
-        public Dictionary<string, List<StandardModule>> standardModules = new Dictionary<string, List<StandardModule>>()
+        public Dictionary<string, List<StandardModule>> StandardModules
         {
-            [TreeConverter.compiler_string_consts.pascalLanguageName] = new List<StandardModule>
-            (
-                TreeConverter.compiler_string_consts.pascalDefaultStandardModules.Select(moduleName => new StandardModule(moduleName))
-            ),
+            get
+            {
+                if (standardModules.Count == 0)
+                    LoadStandardModules();
+                return standardModules;
+            }
+            set
+            {
+                standardModules = value;
+            }
+        }
 
-            // ...
-        };
-
+        /// <summary>
+        /// Заполняет словарь стандартных модулей для всех поддерживаемых языков
+        /// </summary>
+        private void LoadStandardModules()
+        {
+            foreach (Parsers.IParser parser in Parsers.Controller.Instance.Parsers)
+            {
+                if (parser is Parsers.BaseParser baseParser)
+                    standardModules[baseParser.Name] = baseParser.SystemUnitNames.Select(unitName => new StandardModule(unitName, baseParser.Name)).ToList();
+            }
+        }
 
         public void RemoveStandardModule(string language, string name)
         {
-            int moduleIndex = standardModules[language].FindIndex(module => module.name == name);
+            int moduleIndex = StandardModules[language].FindIndex(module => module.name == name);
             
             if (moduleIndex != -1)
-                standardModules[language].RemoveAt(moduleIndex);
+                StandardModules[language].RemoveAt(moduleIndex);
         }
 
         public void RemoveStandardModuleAtIndex(string language, int index)
         {
-            if (index < standardModules[language].Count)
-                standardModules[language].RemoveAt(index);
+            if (index < StandardModules[language].Count)
+                StandardModules[language].RemoveAt(index);
         }
 
 
@@ -944,7 +963,7 @@ namespace PascalABCCompiler
 
         internal Dictionary<string, CompilationUnit> DLLCache = new Dictionary<string, CompilationUnit>();
 
-        private Parsers.Controller parsersController = null;
+        private Parsers.Controller parsersController = Parsers.Controller.Instance;
         public Parsers.Controller ParsersController
         {
             get
@@ -1062,35 +1081,35 @@ namespace PascalABCCompiler
 
         public Compiler()
         {
-            //SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange();
-
             OnChangeCompilerState += ChangeCompilerStateEvent;
             Reload();
         }
 
         public Compiler(ICompiler comp, SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
         {
-            //SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange(); // SSM 01/05/16 - подключение изменяльщика синтаксического дерева
-
-            this.ParsersController = comp.ParsersController;
-            this.internalDebug = comp.InternalDebug;
+            internalDebug = comp.InternalDebug;
             OnChangeCompilerState += ChangeCompilerStateEvent;
+           
             if (SourceFilesProvider != null)
-                this.sourceFilesProvider = SourceFilesProvider;
+                sourceFilesProvider = SourceFilesProvider;
+            
             if (ChangeCompilerState != null)
                 OnChangeCompilerState += ChangeCompilerState;
-            this.supportedSourceFiles = comp.SupportedSourceFiles;
-            this.supportedProjectFiles = comp.SupportedProjectFiles;
+            
+            supportedSourceFiles = comp.SupportedSourceFiles;
+            supportedProjectFiles = comp.SupportedProjectFiles;
         }
 
         public Compiler(SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
         {
-            //SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange(); // SSM 01/05/16 - подключение изменяльщика синтаксического дерева
             OnChangeCompilerState += ChangeCompilerStateEvent;
+            
             if (SourceFilesProvider != null)
-                this.sourceFilesProvider = SourceFilesProvider;
+                sourceFilesProvider = SourceFilesProvider;
+            
             if (ChangeCompilerState != null)
                 OnChangeCompilerState += ChangeCompilerState;
+            
             Reload();
         }
 
@@ -1101,19 +1120,18 @@ namespace PascalABCCompiler
             pABCCodeHealth = 0;
 
             //А это что?
-            TreeRealization.type_node tn = SystemLibrary.SystemLibrary.void_type;
+            type_node tn = SystemLibrary.SystemLibrary.void_type;
 
             ClearAll();
             errorsList.Clear();
             Warnings.Clear();
             InternalDebug = new CompilerInternalDebug();
-            ParsersController = new Parsers.Controller();
-            ParsersController.ParserConnected += new PascalABCCompiler.Parsers.Controller.ParserConnectedDeleagte(ParsersController_ParserConnected);
+
             ParsersController.SourceFilesProvider = sourceFilesProvider;
-            ParsersController.Reload();
+            
             SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
             CodeGeneratorsController = new CodeGenerators.Controller();
-            //PABCToCppCodeGeneratorsController = new PascalToCppConverter.Controller();
+
             SetSupportedSourceFiles();
             SetSupportedProjectFiles();
 
@@ -1126,12 +1144,6 @@ namespace PascalABCCompiler
             semanticTreeConvertersController.AddConverters();
 
             OnChangeCompilerState(this, CompilerState.Ready, null);
-        }
-
-        void ParsersController_ParserConnected(PascalABCCompiler.Parsers.IParser Parser)
-        {
-            if (OnChangeCompilerState != null)
-                OnChangeCompilerState(this, CompilerState.ParserConnected, Parser.GetType().Assembly.ManifestModule.FullyQualifiedName);
         }
 
         void syntaxTreeConvertersController_ChangeState(SyntaxTreeConvertersController.State State, ISyntaxTreeConverter SyntaxTreeConverter)
@@ -1287,7 +1299,7 @@ namespace PascalABCCompiler
 
         private void MoveSystemUnitForwardInUnitsTopologicallySortedList()
         {
-            if (CompilerOptions.standardModules.Count == 0)
+            if (CompilerOptions.StandardModules.Count == 0)
                 return;
 
             CompilationUnit systemUnit = null;
@@ -1299,7 +1311,7 @@ namespace PascalABCCompiler
                 string unitName = (unit.SemanticTree as common_unit_node).unit_name;
 
                 // Пока что сделана проверка для всех языков   |    Вопрос  EVA
-                if (CompilerOptions.standardModules.Select(kv => kv.Value[0].name).Contains(unitName))
+                if (CompilerOptions.StandardModules.Select(kv => kv.Value[0].name).Contains(unitName))
                 {
                     systemUnit = unit;
                     break;
@@ -2676,7 +2688,7 @@ namespace PascalABCCompiler
             {
                 if (unitModule.interface_part.uses_modules == null)
                 {
-                    if (CompilerOptions.standardModules[currentCompilationUnit.languageName].Count > 0)
+                    if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count > 0)
                     {
                         unitModule.interface_part.uses_modules = new SyntaxTree.uses_list();
                         unitModule.interface_part.uses_modules.source_context = new SyntaxTree.SourceContext();
@@ -2690,7 +2702,7 @@ namespace PascalABCCompiler
             {
                 if (programModule.used_units == null)
                 {
-                    if (CompilerOptions.standardModules[currentCompilationUnit.languageName].Count > 0)
+                    if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count > 0)
                     {
                         programModule.used_units = new SyntaxTree.uses_list();
                         programModule.used_units.source_context = new SyntaxTree.SourceContext();
@@ -3024,21 +3036,21 @@ namespace PascalABCCompiler
 
         public void AddStandardUnitsToInterfaceUsesSection(SyntaxTree.compilation_unit unitSyntaxTree)
         {
-            if (CompilerOptions.standardModules[currentCompilationUnit.languageName].Count == 0)
+            if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count == 0)
                 return;
 
             List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(unitSyntaxTree);
 
             string currentModuleName = Path.GetFileNameWithoutExtension(unitSyntaxTree.file_name).ToLower();
 
-            foreach (CompilerOptions.StandardModule module in CompilerOptions.standardModules[currentCompilationUnit.languageName])
+            foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModules[currentCompilationUnit.languageName])
             {
                 string moduleName = Path.GetFileNameWithoutExtension(module.name);
                 if (moduleName.ToLower() == currentModuleName)
                     return;
             }
 
-            foreach (CompilerOptions.StandardModule module in CompilerOptions.standardModules[currentCompilationUnit.languageName])
+            foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModules[currentCompilationUnit.languageName])
             {
                 // если мы компилируем не основную программу, а добавлять нужно в основную программу, то пропускаем
                 if (module.addMethod == CompilerOptions.StandardModuleAddMethod.RightToMain && currentCompilationUnit != firstCompilationUnit)
@@ -3548,7 +3560,7 @@ namespace PascalABCCompiler
         private SyntaxTree.compilation_unit InternalParseText(string fileName, string text, List<Error> errorList, List<CompilerWarning> warnings, List<string> definesList = null)
         {
             OnChangeCompilerState(this, CompilerState.BeginParsingFile, fileName);
-            SyntaxTree.compilation_unit unitSyntaxTree = ParsersController.GetCompilationUnit(fileName, text, ErrorsList, warnings, definesList);
+            SyntaxTree.compilation_unit unitSyntaxTree = ParsersController.GetCompilationUnit(fileName, text, ErrorsList, warnings, Parsers.ParseMode.Normal, definesList);
             OnChangeCompilerState(this, CompilerState.EndParsingFile, fileName);
 
             //Вычисляем сколько строк скомпилировали
@@ -3999,11 +4011,6 @@ namespace PascalABCCompiler
             if (firstCompilationUnit == null)
                 firstCompilationUnit = currentUnit;
 
-            
-
-            // заполнение названия языка согласно его расширению   EVA
-            currentUnit.languageName = LanguagesData.languagesByExtensions[Path.GetExtension(unitFileName)];
-
             OnChangeCompilerState(this, CompilerState.BeginCompileFile, unitFileName); // начало компиляции модуля
 
             #region SYNTAX TREE CONSTRUCTING
@@ -4012,6 +4019,9 @@ namespace PascalABCCompiler
 
             currentUnit.SyntaxTree = ConstructSyntaxTree(unitFileName, currentUnit, sourceText);
             #endregion
+
+            // запоминание названия языка
+            currentUnit.languageName = ParsersController.LastParser.Name;
 
             if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
                 CompilerOptions.UseDllForSystemUnits = false;
@@ -4055,8 +4065,6 @@ namespace PascalABCCompiler
             UnitTable[UnitId] = currentUnit;
 
             currentCompilationUnit = currentUnit;
-
-            
 
             // здесь добавляем стандартные модули в секцию uses интерфейса
 #if DEBUG
@@ -4230,8 +4238,8 @@ namespace PascalABCCompiler
             List<Error> errors = new List<Error>();
 
             string doctagsParserExtension = Path.GetExtension(unitSyntaxTree.file_name) + "dt" + Parsers.Controller.HideParserExtensionPostfixChar;
-            
-            SyntaxTree.documentation_comment_list docCommentList = ParsersController.Compile(Path.ChangeExtension(unitSyntaxTree.file_name, doctagsParserExtension), 
+
+            SyntaxTree.documentation_comment_list docCommentList = ParsersController.SelectParserForUnitAndBuildTree(Path.ChangeExtension(unitSyntaxTree.file_name, doctagsParserExtension),
                 text, errors, new List<CompilerWarning>(), Parsers.ParseMode.Normal) as SyntaxTree.documentation_comment_list;
             
             if (errors.Count > 0) return null;
