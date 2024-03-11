@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 06.01.2024 9:49:56
-// UserName: ?????????
-// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
+// Machine:  DESKTOP-2BJCJ7I
+// DateTime: 21.02.2024 20:44:03
+// UserName: ibond
+// Input file <ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -60,7 +60,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // Verbatim content from ABCPascal.y
 // Э�?и об�?явления добавля�?�?ся в класс GPPGParser, п�?едс�?авля�?�?ий собой па�?се�?, гене�?и�?�?ем�?й сис�?емой gppg
     public syntax_tree_node root; // �?о�?невой �?зел син�?акси�?еского де�?ева 
 
@@ -72,7 +72,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -7710,7 +7710,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 					idList.Add(idd2);
 				}	
 				var parsType = ValueStack[ValueStack.Depth-4].td;
-				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]));
+				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4])), LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]));
 				
 				if (ValueStack[ValueStack.Depth-3].stn != null)
 					for (int i = 0; i < (ValueStack[ValueStack.Depth-3].stn as formal_parameters).Count; i++)
