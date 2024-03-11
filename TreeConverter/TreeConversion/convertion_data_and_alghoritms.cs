@@ -3013,6 +3013,8 @@ namespace PascalABCCompiler.TreeConverter
 
                 // Теперь раз в list осталась одна функция, найти её в functions и только её и оставить
                 // Надо делать копию functions иначе это влияет на следующий код
+                if (list[0].is_generic_function_instance)
+                    list[0] = list[0].original_function;
                 var functions1 = functions.Where(fun => fun.sym_info == list[0]).ToList();
                 if (functions1.Count == 0)
                     return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // это не должно случиться, но вдруг

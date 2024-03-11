@@ -2161,14 +2161,14 @@ function Copy(a: System.Array): System.Array;
 
 /// Сортирует динамический массив по возрастанию
 procedure Sort<T>(a: array of T);
+/// Сортирует динамический массив по возрастанию
+procedure Sort(a: array of string);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp
 procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(a: array of T; less: (T,T)->boolean);
 /// Сортирует динамический массив по ключу
 procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
-/// Сортирует динамический массив по возрастанию
-procedure Sort(a: array of string);
 /// Сортирует динамический массив по ключу
 procedure Sort<T>(a: array of T; keySelector: T->string);
 
@@ -2184,10 +2184,15 @@ procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 procedure Sort<T,T1>(var l: List<T>; keySelector: T->T1);
 /// Сортирует список по возрастанию по ключу
 procedure Sort<T>(var l: List<T>; keySelector: T->string);
+
 /// Сортирует динамический массив по убыванию
 procedure SortDescending<T>(a: array of T);
+/// Сортирует динамический массив по убыванию
+procedure SortDescending(a: array of string);
 /// Сортирует динамический массив по убыванию по ключу
 procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
+/// Сортирует динамический массив по убыванию по ключу
+procedure SortDescending<T>(var a: array of T; keySelector: T->string);
 /// Сортирует список по убыванию
 procedure SortDescending<T>(l: List<T>);
 /// Сортирует список по убыванию
@@ -8865,9 +8870,20 @@ begin
   Reverse(a);
 end;
 
+procedure SortDescending(a: array of string);
+begin
+  Sort(a);
+  Reverse(a);
+end;
+
 procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
 begin
   a := a.OrderByDescending(x->keySelector(x)).ToArray;
+end;
+
+procedure SortDescending<T>(var a: array of T; keySelector: T->string);
+begin
+  a := a.OrderByDescending(x->keySelector(x),System.StringComparer.Ordinal).ToArray;
 end;
 
 procedure SortDescending<T>(l: List<T>);

@@ -2127,6 +2127,9 @@
     <member name="M:Sort``1(``0[])">
       <summary>Сортирует динамический массив по возрастанию</summary>
     </member>
+    <member name="M:Sort(System.String[])">
+      <summary>Сортирует динамический массив по возрастанию</summary>
+    </member>
     <member name="M:Sort``1(``0[],System.Func{``0,``0,System.Int32})">
       <summary>Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp</summary>
     </member>
@@ -2135,9 +2138,6 @@
     </member>
     <member name="M:Sort``2(``0[],System.Func{``0,``1})">
       <summary>Сортирует динамический массив по ключу</summary>
-    </member>
-    <member name="M:Sort(System.String[])">
-      <summary>Сортирует динамический массив по возрастанию</summary>
     </member>
     <member name="M:Sort``1(``0[],System.Func{``0,System.String})">
       <summary>Сортирует динамический массив по ключу</summary>
@@ -2163,7 +2163,13 @@
     <member name="M:SortDescending``1(``0[])">
       <summary>Сортирует динамический массив по убыванию</summary>
     </member>
+    <member name="M:SortDescending(System.String[])">
+      <summary>Сортирует динамический массив по убыванию</summary>
+    </member>
     <member name="M:SortDescending``2(``0[]@,System.Func{``0,``1})">
+      <summary>Сортирует динамический массив по убыванию по ключу</summary>
+    </member>
+    <member name="M:SortDescending``1(``0[]@,System.Func{``0,System.String})">
       <summary>Сортирует динамический массив по убыванию по ключу</summary>
     </member>
     <member name="M:SortDescending``1(System.Collections.Generic.List{``0})">
