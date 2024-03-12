@@ -60,8 +60,6 @@
 %type <stn> progr decl param_name simple_fp_sect fp_sect fp_sect_list fp_list
 %type <td> proc_func_header fp_type simple_type_identifier
 
-%type <stn> compound_stmt_begin
-
 %start progr
 
 %%
@@ -323,10 +321,8 @@ variable
 	;
 
 compound_stmt	
-	: compound_stmt_begin INDENT stmt_lst SEMICOLON UNINDENT
+	: NestedSymbolTableBegin INDENT stmt_lst SEMICOLON UNINDENT NestedSymbolTableEnd
 		{ 
-			symbolTable = symbolTable.OuterScope;
-
 			$$ = $3 as statement_list; 
 			($$ as statement_list).left_logical_bracket = $2;
 			($$ as statement_list).right_logical_bracket = $5;
@@ -334,10 +330,17 @@ compound_stmt
 		}
 	;
 
-compound_stmt_begin	
+NestedSymbolTableBegin	
 	:
 		{ 
 			symbolTable = new SymbolTable(symbolTable); 
+		}
+	;
+
+NestedSymbolTableEnd	
+	:
+		{ 
+			symbolTable = symbolTable.OuterScope;
 		}
 	;
 
@@ -353,32 +356,30 @@ proc_func_body
 	;
 
 proc_func_decl	
-	: proc_func_header proc_func_body 
-		{ 
-			symbolTable = symbolTable.OuterScope;
-
+	: NestedSymbolTableBegin proc_func_header proc_func_body NestedSymbolTableEnd
+		{
 			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 			//pd1.AssignAttrList(null);
 			//$$ = pd1;
-			$$ = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
+			$$ = new procedure_definition($2 as procedure_header, new block(null, $3 as statement_list, @3), @$);
 
-			var pd = new procedure_definition($1 as procedure_header, null, @1);
+			var pd = new procedure_definition($2 as procedure_header, null, @2);
             pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
-			decl_forward.Add(pd, @1);
+			decl_forward.Add(pd, @2);
 		} 
 	;
 
 proc_func_header
-	: DEF identifier fp_list COLON
+	: DEF identifier fp_list COLON 
 		{
 			// надо добавить все имена (из fp_list) переменных в symbolTable
-			symbolTable = new SymbolTable(symbolTable); 
+			// symbolTable = new SymbolTable(symbolTable); 
 			$$ = new procedure_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$); 
 		}
 	| DEF identifier fp_list ARROW fp_type COLON
 		{
 			// надо добавить все имена (из fp_list) переменных в symbolTable
-			symbolTable = new SymbolTable(symbolTable); 
+			// symbolTable = new SymbolTable(symbolTable); 
 			$$ = new function_header($3 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $5 as type_definition, @$);
 		}
 	;
@@ -434,6 +435,7 @@ fp_type
 param_name	
 	: identifier
 		{
+			symbolTable.Add($1.name);
 			$$ = new ident_list($1, @$);
 		}
     ;
