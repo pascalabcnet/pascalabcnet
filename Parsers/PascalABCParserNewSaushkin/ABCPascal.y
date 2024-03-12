@@ -5091,7 +5091,7 @@ func_decl_lambda
 					idList.Add(idd2);
 				}	
 				var parsType = $5;
-				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
+				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, LexLocation.MergeAll(@2,@3,@4,@5)), LexLocation.MergeAll(@2,@3,@4,@5,@6));
 				
 				if ($6 != null)
 					for (int i = 0; i < ($6 as formal_parameters).Count; i++)

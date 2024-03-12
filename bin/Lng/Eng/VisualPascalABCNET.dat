@@ -37,7 +37,7 @@ M_DELETE=Delete
                 
 MR_SERVICE=Tools
 M_OPTIONS=Options...
-M_AUTOINSERT_CODE=Ñode autocomplete mode
+M_AUTOINSERT_CODE=Code autocomplete mode
 
 MR_VIEW=View
 M_BOTTOMPANEL=Bottom Panel
