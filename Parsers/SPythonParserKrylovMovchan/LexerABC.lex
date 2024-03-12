@@ -107,7 +107,7 @@ ID {Alpha}{AlphaDigit}*
 }
 
 %{
-  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol); // ������� ������� (������������� ��� ���������������), ������������ @1 @2 � �.�.
+  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol); 
 %}
 
 %%

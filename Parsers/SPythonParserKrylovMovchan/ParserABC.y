@@ -35,7 +35,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
@@ -60,6 +60,7 @@
 %type <stn> stmt_list block
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
 %type <td> proc_func_header form_param_type simple_type_identifier
+%type <stn> optional_import_clause import_clause
 
 %start program
 
@@ -78,16 +79,33 @@ sect	= section
 
 %%
 program   
-	: decl_and_stmt_list
+	: optional_import_clause decl_and_stmt_list
 		{
-			var stl = $1 as statement_list;
+			var ul = $1 as uses_list;
+			var stl = $2 as statement_list;
 			decl.AddFirst(decl_forward.defs);
-			// добавляем ноды инициализации глобальных переменных
-			// foreach (string elem in symbolTable) {
-			// 	var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
-			// 	stl.AddFirst((new var_statement(vds, @$)) as statement);
-			// }
-			root = $$ = NewProgramModule(null, null, null, new block(decl, stl, @$), new token_info(""), @$);
+			root = $$ = NewProgramModule(null, null, ul, new block(decl, stl, @2), new token_info(""), @$);
+			$$.source_context = @$;
+		}
+	;
+
+optional_import_clause
+	: 
+		{ 
+			$$ = null; 
+		}
+	| import_clause
+		{
+			if (parsertools.build_tree_for_formatter)
+				$$ = new uses_closure($1 as uses_list,@$);
+			$$ = $1;
+		}
+	;
+
+import_clause
+	: IMPORT identifier SEMICOLON
+		{
+			$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
 			$$.source_context = @$;
 		}
 	;
