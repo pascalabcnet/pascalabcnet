@@ -60,6 +60,7 @@ namespace VeryBasicParser
             keywords.Add(Convert("or"), (int)Tokens.OR);
             keywords.Add(Convert("not"), (int)Tokens.NOT);
             keywords.Add(Convert("import"), (int)Tokens.IMPORT);
+            keywords.Add(Convert("from"), (int)Tokens.FROM);
         }
 
         static Keywords()

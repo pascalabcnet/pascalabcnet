@@ -35,12 +35,12 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
 %token <op> ASSIGN
-%token <op> PLUS MINUS MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
+%token <op> PLUS MINUS STAR DIVIDE SLASHSLASH PERCENTAGE
 %token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %token <op> AND OR NOT
@@ -49,7 +49,7 @@
 %left AND
 %left LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %left PLUS MINUS
-%left MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
+%left STAR DIVIDE SLASHSLASH PERCENTAGE
 %left NOT
 
 %type <id> identifier
@@ -125,7 +125,7 @@ import_clause
 	;
 
 import_clause_one
-	: IMPORT identifier SEMICOLON
+	: FROM identifier IMPORT STAR SEMICOLON
 		{
 			$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
 			$$.source_context = @$;
@@ -222,7 +222,7 @@ assign_stmt
 expr 	
 	: expr PLUS 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-	| expr MULTIPLY 	expr	
+	| expr STAR 	expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| expr DIVIDE 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }

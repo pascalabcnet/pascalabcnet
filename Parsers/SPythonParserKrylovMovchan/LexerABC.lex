@@ -67,7 +67,7 @@ ID {Alpha}{AlphaDigit}*
 
 "+"  { yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.PLUS; }
 "-"  { yylval.op = new op_type_node(Operators.Minus); return (int)Tokens.MINUS; }
-"*"  { yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.MULTIPLY; }
+"*"  { yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.STAR; }
 "//" { yylval.op = new op_type_node(Operators.IntegerDivision); return (int)Tokens.SLASHSLASH; }
 "/"  { yylval.op = new op_type_node(Operators.Division); return (int)Tokens.DIVIDE; }
 "%"  { yylval.op = new op_type_node(Operators.ModulusRemainder); return (int)Tokens.PERCENTAGE; }

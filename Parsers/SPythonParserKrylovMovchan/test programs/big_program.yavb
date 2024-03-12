@@ -1,5 +1,5 @@
-﻿import PABCSystem
-import School
+﻿from PABCSystem import *
+from School import *
 
 print(sqrt(10))
 print(bin(10))
