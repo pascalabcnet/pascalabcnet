@@ -1,7 +1,8 @@
 ﻿import PABCSystem
+import School
 
-a = sqrt(10)
-print(a)
+print(sqrt(10))
+print(bin(10))
 
 def k(a: int, b: float) -> float:
     print(a, b)

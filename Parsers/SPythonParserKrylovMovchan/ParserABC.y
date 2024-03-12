@@ -41,7 +41,7 @@
 %token <stn> STRINGNUM
 %token <op> ASSIGN
 %token <op> PLUS MINUS MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
-%token <id> ID INT
+%token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %token <op> AND OR NOT
 
@@ -60,7 +60,7 @@
 %type <stn> stmt_list block
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
 %type <td> proc_func_header form_param_type simple_type_identifier
-%type <stn> optional_import_clause import_clause
+%type <stn> import_clause import_clause_one
 
 %start program
 
@@ -79,7 +79,7 @@ sect	= section
 
 %%
 program   
-	: optional_import_clause decl_and_stmt_list
+	: import_clause decl_and_stmt_list
 		{
 			var ul = $1 as uses_list;
 			var stl = $2 as statement_list;
@@ -89,20 +89,42 @@ program
 		}
 	;
 
-optional_import_clause
+import_clause
 	: 
 		{ 
 			$$ = null; 
 		}
-	| import_clause
-		{
-			if (parsertools.build_tree_for_formatter)
-				$$ = new uses_closure($1 as uses_list,@$);
-			$$ = $1;
+	| import_clause import_clause_one
+		{ 
+   			if (parsertools.build_tree_for_formatter)
+   			{
+	        	if ($1 == null)
+                {
+	        		$$ = new uses_closure($2 as uses_list,@$);
+                }
+	        	else {
+                    ($1 as uses_closure).AddUsesList($2 as uses_list,@$);
+                    $$ = $1;
+                }
+   			}
+   			else 
+   			{
+	        	if ($1 == null)
+                {
+                    $$ = $2;
+                    $$.source_context = @$;
+                }
+	        	else 
+                {
+                    ($1 as uses_list).AddUsesList($2 as uses_list,@$);
+                    $$ = $1;
+                    $$.source_context = @$;
+                }
+			}
 		}
 	;
 
-import_clause
+import_clause_one
 	: IMPORT identifier SEMICOLON
 		{
 			$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
