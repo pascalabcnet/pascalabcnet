@@ -56,6 +56,9 @@ namespace VeryBasicParser
             keywords.Add(Convert("return"), (int)Tokens.RETURN);
             keywords.Add(Convert("break"), (int)Tokens.BREAK);
             keywords.Add(Convert("continue"), (int)Tokens.CONTINUE);
+            keywords.Add(Convert("and"), (int)Tokens.AND);
+            keywords.Add(Convert("or"), (int)Tokens.OR);
+            keywords.Add(Convert("not"), (int)Tokens.NOT);
         }
 
         static Keywords()

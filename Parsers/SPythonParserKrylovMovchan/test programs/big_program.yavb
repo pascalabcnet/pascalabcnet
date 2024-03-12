@@ -1,0 +1,44 @@
+﻿a = 10
+
+
+def k(a: int, b: float) -> float:
+    print(a, b)
+    return a + b
+
+
+def fact(n: int) -> int:
+    if n == 0:
+        return 1
+    elif n == 1:
+      return 1
+    else:
+     return n * fact(n - 1)
+
+
+def f(a: int) -> int:
+    if a == 0:
+        return a
+    else:
+        return g(a // 2) + a
+
+def g(b: int) -> int:
+    if b == 0:
+        return b
+    else:
+      return b + f(b - 1)
+
+
+def bf(b1: bool, b2: bool):
+    if b1 and b2:
+        print('b1 and b2,')
+    else:
+        print('not (b1 and b2),')
+    
+    if b1 or b2:
+        print('b1 or b2')
+    else:
+        print('not (b1 or b2)')
+
+
+if not True or True:
+    print('True')
