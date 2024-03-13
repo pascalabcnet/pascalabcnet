@@ -728,7 +728,7 @@ namespace PascalABCCompiler.TreeConverter
         //Методы returner-а.
         //Запрос на построение и получение конвертированного поддерева.
         //Нежесткая проверка существования узла.
-        public statement_node convert_weak(SyntaxTree.statement st)
+        protected statement_node convert_weak(SyntaxTree.statement st)
         {
             if (st == null)
             {
@@ -744,7 +744,7 @@ namespace PascalABCCompiler.TreeConverter
             return sn;
         }
 
-        public expression_node convert_weak(SyntaxTree.expression expr)
+        protected expression_node convert_weak(SyntaxTree.expression expr)
         {
             if (expr == null)
             {
@@ -763,7 +763,7 @@ namespace PascalABCCompiler.TreeConverter
             return en;
         }
 
-        private type_node convert_weak(SyntaxTree.type_definition type_def)
+        protected type_node convert_weak(SyntaxTree.type_definition type_def)
         {
             if (type_def == null)
             {
@@ -777,7 +777,7 @@ namespace PascalABCCompiler.TreeConverter
 
         //Жесткая проверка существования узла. Проверка будет осуществлятся только в DEBUG версии.
         //Будем верить, что в RELEAS-е все будет работать правильно.
-        private semantic_node convert_semantic_strong(SyntaxTree.syntax_tree_node tn)
+        protected semantic_node convert_semantic_strong(SyntaxTree.syntax_tree_node tn)
         {
 #if (DEBUG)
             if (tn == null)
@@ -791,7 +791,7 @@ namespace PascalABCCompiler.TreeConverter
             return ret.visit(tn);
         }
 
-        internal statement_node convert_strong(SyntaxTree.statement st)
+        public statement_node convert_strong(SyntaxTree.statement st)
         {
 #if (DEBUG)
             if (st == null)
@@ -851,7 +851,7 @@ namespace PascalABCCompiler.TreeConverter
             return sn;
         }
 
-        internal expression_node convert_strong(SyntaxTree.expression expr)
+        public expression_node convert_strong(SyntaxTree.expression expr)
         {
 #if DEBUG
             //var s = expr + "\n";
@@ -885,7 +885,7 @@ namespace PascalABCCompiler.TreeConverter
             return en;
         }
 
-        internal type_node convert_strong(SyntaxTree.type_definition type_def)
+        public type_node convert_strong(SyntaxTree.type_definition type_def)
         {
 #if (DEBUG)
             if (type_def == null)

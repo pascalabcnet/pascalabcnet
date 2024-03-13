@@ -33,8 +33,8 @@ namespace SPythonSyntaxTreeVisitor
             switch (node)
             {
                 case bin_expr _bin_expr:
-                    expression_node left = convert_weak(_bin_expr.left);
-                    expression_node right = convert_weak(_bin_expr.right);
+                    expression_node left = convert_strong(_bin_expr.left);
+                    expression_node right = convert_strong(_bin_expr.right);
                     if (_bin_expr.operation_type == Operators.Plus)
                     {
                         if (type_table.compare_types(left.type, right.type) == type_compare.greater_type)
@@ -46,7 +46,8 @@ namespace SPythonSyntaxTreeVisitor
         }
         public override void AddError(Error err, bool shouldReturn = false)
         {
-            switch (err)
+            // TODO : Add Error Rerouting according to Python semantics
+            /*switch (err)
             {
                 case OperatorCanNotBeAppliedToThisTypes _op_err:
                     expression_node left = _op_err.left;
@@ -88,23 +89,13 @@ namespace SPythonSyntaxTreeVisitor
                 default:
                     base.AddError(err, shouldReturn);
                     break;
-            }
+            }*/
            
         }
-
         public override void visit(bin_expr _bin_expr)
         {
-            try {
-                base.visit(_bin_expr);
-            }
-            catch (SemanticErrorFixed) { }    
-        }
-        /*public override void visit(bin_expr _bin_expr)
-        {
-            // Лишний вызов convert_strong + плохо работает с лямбдами
-            // TODO написать облегченный convert_strong
-            expression_node left = convert_weak(_bin_expr.left);
-            expression_node right = convert_weak(_bin_expr.right);
+            expression_node left = convert_strong(_bin_expr.left);
+            expression_node right = convert_strong(_bin_expr.right);
 
             switch (_bin_expr.operation_type)
             {
@@ -122,8 +113,8 @@ namespace SPythonSyntaxTreeVisitor
                     }
                     break;
             }
-
-            base.visit(_bin_expr);
-        }*/
+            var new_bin_expr = new bin_expr(new semantic_addr_value(left), new semantic_addr_value(right), _bin_expr.operation_type, _bin_expr.source_context);
+            base.visit(new_bin_expr);
+        }
     }
 }
