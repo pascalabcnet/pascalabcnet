@@ -61,6 +61,9 @@ namespace VeryBasicParser
             keywords.Add(Convert("not"), (int)Tokens.NOT);
             keywords.Add(Convert("import"), (int)Tokens.IMPORT);
             keywords.Add(Convert("from"), (int)Tokens.FROM);
+
+            //temp
+            keywords.Add(Convert("unit"), (int)Tokens.UNIT);
         }
 
         static Keywords()

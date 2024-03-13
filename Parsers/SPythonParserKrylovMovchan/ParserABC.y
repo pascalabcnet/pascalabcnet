@@ -44,6 +44,8 @@
 %token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %token <op> AND OR NOT
+//temp
+%token <ti> UNIT
 
 %left OR
 %left AND
@@ -61,6 +63,8 @@
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
 %type <td> proc_func_header form_param_type simple_type_identifier
 %type <stn> import_clause import_clause_one
+//temp
+%type <stn> unit_file unit_header
 
 %start program
 
@@ -86,6 +90,32 @@ program
 			decl.AddFirst(decl_forward.defs);
 			root = $$ = NewProgramModule(null, null, ul, new block(decl, stl, @2), new token_info(""), @$);
 			$$.source_context = @$;
+		}
+	| unit_file
+		{
+			root = $1;
+		}
+	;
+
+unit_file
+	: unit_header import_clause decl_and_stmt_list
+		{
+			decl.AddFirst(decl_forward.defs);
+			var interface_part = new interface_node(decl as declarations, $2 as uses_list, null, null); 
+			var initialization_part = new initfinal_part(null, $3 as statement_list, null, null, null, @$);
+
+			$$ = new unit_module(
+				$1 as unit_name, interface_part, null, 
+				initialization_part.initialization_sect, 
+				initialization_part.finalization_sect, null, @$);
+		}
+	;
+
+unit_header
+	: UNIT identifier SEMICOLON
+		{
+			//$$ = NewUnitHeading(new ident($1.text, @1), $2, @$);
+			$$ = new unit_name($2, UnitHeaderKeyword.Unit, @$);
 		}
 	;
 

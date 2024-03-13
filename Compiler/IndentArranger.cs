@@ -45,7 +45,7 @@ namespace IndentArranger
             sourceText = programLines.JoinIntoString("\n");
 
             // создание файла с полученным текстом для дебага
-            File.WriteAllText(CreatedFilePath, sourceText);
+            // File.WriteAllText(CreatedFilePath, sourceText);
         }
 
         private void EraseComments(ref string[] programLines)
