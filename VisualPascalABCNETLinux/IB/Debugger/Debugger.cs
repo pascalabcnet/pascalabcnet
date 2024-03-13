@@ -488,7 +488,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = CodeCompletion.CodeCompletionController.ParsersController.selectParser(Path.GetExtension(FullFileName).ToLower());
+            this.parser = CodeCompletion.CodeCompletionController.ParsersController.SelectParser(Path.GetExtension(FullFileName).ToLower());
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
             //dbg.ProcessStarted += debugProcessStarted;
@@ -512,7 +512,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = CodeCompletion.CodeCompletionController.ParsersController.selectParser(Path.GetExtension(FullFileName).ToLower());
+            this.parser = CodeCompletion.CodeCompletionController.ParsersController.SelectParser(Path.GetExtension(FullFileName).ToLower());
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
 

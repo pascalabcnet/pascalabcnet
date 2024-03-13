@@ -520,7 +520,7 @@ namespace VisualPascalABC
                 VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName,
                 existing_text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
-                Warnings);
+                Warnings, PascalABCCompiler.Parsers.ParseMode.Normal);
             PascalABCCompiler.SyntaxTree.unit_module um = sn as PascalABCCompiler.SyntaxTree.unit_module;
             bool good_syntax = um != null;
             PascalABCCompiler.SyntaxTree.type_declaration form_decl = null;
