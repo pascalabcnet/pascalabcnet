@@ -18,7 +18,7 @@ function int(val: string): integer;
 
 function str(val: object): string;
 
-function float(val: string): single;
+function float(val: string): real;
 
 // function float(val: object): single;
 
@@ -38,9 +38,9 @@ function range(s: integer; e: integer): sequence of integer;
 
 function abs(x: integer): integer;
 
-function abs(x: single): single;
+function abs(x: real): real;
 
-function floor(x: single): single;
+function floor(x: real): real;
 
 implementation
 
@@ -65,7 +65,7 @@ end;
 }
 function str(val: object): string := val.ToString(); 
 
-function float(val: string): single := single.Parse(val);
+function float(val: string): real := real.Parse(val);
 
 function range(s: integer; e: integer; step: integer): sequence of integer;
 begin
@@ -88,8 +88,8 @@ end;
 
 function abs(x: integer): integer := if x >= 0 then x else -x;
 
-function abs(x: single): single := PABCSystem.Abs(x);
+function abs(x: real): real := PABCSystem.Abs(x);
 
-function floor(x: single): single := single(PABCSystem.Floor(x));
+function floor(x: real): real := PABCSystem.Floor(x);
 
 end.
