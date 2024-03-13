@@ -267,13 +267,14 @@ namespace PascalABCCompiler
                     sendWorkingSet();
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsClearStandartModules:
-                    compiler.CompilerOptions.StandardModules.Clear();
+                    foreach (var modulesList in compiler.CompilerOptions.StandardModules.Values)
+                        modulesList.Clear();
                     break;
                 case ConsoleCompilerConstants.CompilerOptionsStandartModule:
                     CompilerOptions.StandardModule sm = new CompilerOptions.StandardModule(args[0],
                         (CompilerOptions.StandardModuleAddMethod)Convert.ToInt32(args[1]),
-                        (PascalABCCompiler.SyntaxTree.LanguageId)Convert.ToInt32(args[2]));
-                    compiler.CompilerOptions.StandardModules.Add(sm);
+                        args[2]);
+                    compiler.CompilerOptions.StandardModules[sm.languageToAdd].Add(sm);
                     break;
                 case ConsoleCompilerConstants.InternalDebug:
                     compiler.InternalDebug = (CompilerInternalDebug)ReadObject();
@@ -301,7 +302,12 @@ namespace PascalABCCompiler
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.InputEncoding = System.Text.Encoding.UTF8;
+
+            // загрузка всех парсеров и других составляющих языков  EVA
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
+            
             LoadCompiler();
+            
             do
             {
                 string line = Console.ReadLine();
