@@ -10188,6 +10188,37 @@ begin
  end;
 end;
 
+// SSM 14/3/2024 - Scan 
+
+/// Возвращает последовательность, в которой первый элемент равен первому элементу исходной последовательности, а каждый следующий - 
+///результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной
+function Scan<T>(Self: sequence of T; func: (T,T) -> T): sequence of T; extensionmethod;
+begin
+  var e := Self.GetEnumerator;
+  e.MoveNext;
+  var s := e.Current;
+  yield s;
+  while e.MoveNext do
+  begin
+    s := func(s,e.Current);
+    yield s;
+  end;
+end;
+
+/// Возвращает последовательность, в которой первый элемент равен first, а каждый следующий - 
+///результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной
+function Scan<T,T1>(Self: sequence of T; first: T1; func: (T1,T) -> T1): sequence of T1; extensionmethod;
+begin
+  var e := Self.GetEnumerator;
+  var s := first;
+  yield s;
+  while e.MoveNext do
+  begin
+    s := func(s,e.Current);
+    yield s;
+  end;
+end;
+
 /// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
 {function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
