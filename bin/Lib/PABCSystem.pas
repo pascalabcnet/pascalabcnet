@@ -10195,7 +10195,8 @@ end;
 function Scan<T>(Self: sequence of T; func: (T,T) -> T): sequence of T; extensionmethod;
 begin
   var e := Self.GetEnumerator;
-  e.MoveNext;
+  if not e.MoveNext then
+    exit;
   var s := e.Current;
   yield s;
   while e.MoveNext do
