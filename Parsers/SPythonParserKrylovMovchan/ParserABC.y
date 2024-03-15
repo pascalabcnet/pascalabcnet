@@ -10,6 +10,8 @@
 	private SymbolTable symbolTable = new SymbolTable();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
+
+	public bool is_unit_to_be_parsed = false;
 %}
 
 %using PascalABCCompiler.SyntaxTree;
@@ -44,8 +46,6 @@
 %token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %token <op> AND OR NOT
-//temp
-%token <ti> UNIT
 
 %left OR
 %left AND
@@ -63,8 +63,6 @@
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
 %type <td> proc_func_header form_param_type simple_type_identifier
 %type <stn> import_clause import_clause_one
-//temp
-%type <stn> unit_file unit_header
 
 %start program
 
@@ -85,37 +83,26 @@ sect	= section
 program   
 	: import_clause decl_and_stmt_list
 		{
-			var ul = $1 as uses_list;
-			var stl = $2 as statement_list;
-			decl.AddFirst(decl_forward.defs);
-			root = $$ = NewProgramModule(null, null, ul, new block(decl, stl, @2), new token_info(""), @$);
-			$$.source_context = @$;
-		}
-	| unit_file
-		{
-			root = $1;
-		}
-	;
+			// main program
+			if (!is_unit_to_be_parsed) {
+				var ul = $1 as uses_list;
+				var stl = $2 as statement_list;
+				decl.AddFirst(decl_forward.defs);
+				root = $$ = NewProgramModule(null, null, ul, new block(decl, stl, @2), new token_info(""), @$);
+				$$.source_context = @$;
+			}
+			// unit
+			else {
+				decl.AddFirst(decl_forward.defs);
+				var interface_part = new interface_node(decl as declarations, $1 as uses_list, null, null); 
+				var initialization_part = new initfinal_part(null, $2 as statement_list, null, null, null, @$);
 
-unit_file
-	: unit_header import_clause decl_and_stmt_list
-		{
-			decl.AddFirst(decl_forward.defs);
-			var interface_part = new interface_node(decl as declarations, $2 as uses_list, null, null); 
-			var initialization_part = new initfinal_part(null, $3 as statement_list, null, null, null, @$);
-
-			$$ = new unit_module(
-				$1 as unit_name, interface_part, null, 
-				initialization_part.initialization_sect, 
-				initialization_part.finalization_sect, null, @$);
-		}
-	;
-
-unit_header
-	: UNIT identifier SEMICOLON
-		{
-			//$$ = NewUnitHeading(new ident($1.text, @1), $2, @$);
-			$$ = new unit_name($2, UnitHeaderKeyword.Unit, @$);
+				root = $$ = new unit_module(
+					new unit_name(new ident("spython_unit"), UnitHeaderKeyword.Unit, @$), interface_part, null, 
+					initialization_part.initialization_sect, 
+					initialization_part.finalization_sect, null, @$);
+			}
+			
 		}
 	;
 
