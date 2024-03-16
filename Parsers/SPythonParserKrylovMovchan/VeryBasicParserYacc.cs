@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 15.03.2024 12:58:39
+// DateTime: 16.03.2024 10:56:53
 // UserName: ????
 // Input file <ParserABC.y>
 
@@ -20,6 +20,7 @@ using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using VeryBasicParser;
 
 namespace VeryBasicParserYacc
@@ -56,7 +57,7 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
   // Verbatim content from ParserABC.y
    	public syntax_tree_node root;
 	public List<Error> errors;
-    public string current_file_name;
+    // public string current_file_name;
     public int max_errors = 10;
 	public VeryBasicParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
@@ -342,7 +343,8 @@ public partial class VeryBasicGPPGParser: ShiftReduceParser<ValueType, LexLocati
 				var initialization_part = new initfinal_part(null, ValueStack[ValueStack.Depth-1].stn as statement_list, null, null, null, CurrentLocationSpan);
 
 				root = CurrentSemanticValue.stn = new unit_module(
-					new unit_name(new ident("spython_unit"), UnitHeaderKeyword.Unit, CurrentLocationSpan), interface_part, null, 
+					new unit_name(new ident(Path.GetFileNameWithoutExtension(parsertools.CurrentFileName)),
+					UnitHeaderKeyword.Unit, CurrentLocationSpan), interface_part, null, 
 					initialization_part.initialization_sect, 
 					initialization_part.finalization_sect, null, CurrentLocationSpan);
 			}

@@ -1,6 +1,4 @@
-﻿unit spython_unit
-
-from School import *
+﻿from School import *
 
 def d():
     print(123)

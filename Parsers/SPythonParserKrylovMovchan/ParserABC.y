@@ -1,7 +1,7 @@
 %{
    	public syntax_tree_node root;
 	public List<Error> errors;
-    public string current_file_name;
+    // public string current_file_name;
     public int max_errors = 10;
 	public VeryBasicParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
@@ -19,6 +19,7 @@
 %using PascalABCCompiler.Errors;
 %using System.Linq;
 %using System.Collections.Generic;
+%using System.IO;
 %using VeryBasicParser;
 
 %output = VeryBasicParserYacc.cs
@@ -98,7 +99,8 @@ program
 				var initialization_part = new initfinal_part(null, $2 as statement_list, null, null, null, @$);
 
 				root = $$ = new unit_module(
-					new unit_name(new ident("spython_unit"), UnitHeaderKeyword.Unit, @$), interface_part, null, 
+					new unit_name(new ident(Path.GetFileNameWithoutExtension(parsertools.CurrentFileName)),
+					UnitHeaderKeyword.Unit, @$), interface_part, null, 
 					initialization_part.initialization_sect, 
 					initialization_part.finalization_sect, null, @$);
 			}
