@@ -56,11 +56,11 @@ namespace CodeCompletion
                 foreach (string s in files)
                 {
                     string fname = Path.GetFileNameWithoutExtension(s);
-                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == "PABCExtensions")
+                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == compiler_string_consts.pascalExtensionsUnitName)
                         continue;
                     SymInfo si = new SymInfo(Path.GetFileNameWithoutExtension(s), SymbolKind.Namespace, null);
                     si.IsUnitNamespace = true;
-
+                    
                     si.description = GetUnitDescription(s);
                     standard_units[i++] = si;
                 }

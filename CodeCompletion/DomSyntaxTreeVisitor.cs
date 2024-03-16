@@ -2633,7 +2633,7 @@ namespace CodeCompletion
                 is_system_unit = true;
                 add_standart_types(entry_scope);
             }
-            if (_unit_module.unit_name.idunit_name.name == PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name)
+            if (_unit_module.unit_name.idunit_name.name == PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName)
             {
                 is_extensions_unit = true;
             }
@@ -2729,7 +2729,7 @@ namespace CodeCompletion
                  		entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                  		add_standart_types(dc.visitor.entry_scope);
                  		//get_standart_types(dc.stv);
-                 		entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name,dc.visitor.entry_scope);
+                 		entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalSystemUnitName,dc.visitor.entry_scope);
                  	}
                  	CodeCompletionController.comp_modules[unit_name] = dc;
                  	
@@ -2739,14 +2739,14 @@ namespace CodeCompletion
                  	dc.visitor.entry_scope.InitAssemblies();
                  	entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                  	//get_standart_types(dc.stv);
-                 	entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name,dc.visitor.entry_scope);
+                 	entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalSystemUnitName,dc.visitor.entry_scope);
                  }
             }
 		}
 
         private void add_extensions_unit()
         {
-            string unit_name = CodeCompletionNameHelper.FindSourceFileName(PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name, out _);
+            string unit_name = CodeCompletionNameHelper.FindSourceFileName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, out _);
 
             if (unit_name != null)
             {
@@ -2759,7 +2759,7 @@ namespace CodeCompletion
                     {
                         dc.visitor.entry_scope.InitAssemblies();
                         entry_scope.AddUsedUnit(dc.visitor.entry_scope);
-                        entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name, dc.visitor.entry_scope);
+                        entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, dc.visitor.entry_scope);
                     }
                     CodeCompletionController.comp_modules[unit_name] = dc;
                 }
@@ -2767,7 +2767,7 @@ namespace CodeCompletion
                 {
                     dc.visitor.entry_scope.InitAssemblies();
                     entry_scope.AddUsedUnit(dc.visitor.entry_scope);
-                    entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name, dc.visitor.entry_scope);
+                    entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, dc.visitor.entry_scope);
                 }
             }
         }
@@ -2973,7 +2973,7 @@ namespace CodeCompletion
                         }
                         if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_name, true) == 0)
                             has_system_unit = true;
-                        if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name, true) == 0)
+                        if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, true) == 0)
                             has_extensions_unit = true;
                         unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
                     }
@@ -4798,7 +4798,7 @@ namespace CodeCompletion
                     }
                     if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_name, true) == 0)
                         has_system_unit = true;
-                    if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.extensions_unit_file_name, true) == 0)
+                    if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, true) == 0)
                         has_extensions_unit = true;
                     unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
                 }
@@ -5937,7 +5937,7 @@ namespace CodeCompletion
         {
             method_call mc = new method_call();
             mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right });
-            mc.dereferencing_value = new dot_node(new ident("PABCSystem"), new ident("InternalRange"));
+            mc.dereferencing_value = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("InternalRange"));
             mc.visit(this);
         }
 
