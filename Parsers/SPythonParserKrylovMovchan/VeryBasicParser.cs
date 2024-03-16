@@ -45,14 +45,24 @@ namespace VeryBasicParser
             parsertools.compilerDirectives = compilerDirectives;
             parsertools.CurrentFileName = Path.GetFullPath(FileName);
 
+            bool isUnit = false;
+            if (Text.EndsWith("unit"))
+            {
+                Text = Text.Substring(0, Text.Length - 4);
+                isUnit = true;
+            }
 
             var scanner = new Scanner();
             scanner.SetSource(Text, 0);
             scanner.parsertools = parsertools;// передали parsertools в объект сканера
             if (DefinesList != null)
                 scanner.Defines.AddRange(DefinesList);
+
             VeryBasicGPPGParser parser = new VeryBasicGPPGParser(scanner);
             parsertools.build_tree_for_formatter = build_tree_for_formatter;
+
+            parser.is_unit_to_be_parsed = isUnit;
+
             parser.parsertools = parsertools; // передали parsertools в объект парсера
 
             if (!parser.Parse())

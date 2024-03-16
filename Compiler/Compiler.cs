@@ -4177,6 +4177,10 @@ namespace PascalABCCompiler
             {
                 IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
                 ia.ProcessSourceText(ref SourceText);
+
+                // если модуль
+                if (currentUnit != firstCompilationUnit)
+                    SourceText += "unit";
             }
 
             return SourceText;
