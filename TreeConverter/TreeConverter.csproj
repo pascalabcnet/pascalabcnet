@@ -178,7 +178,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TreeConversion\type_constructor.cs" />
-    <Compile Include="TreeConversion\yatl_syntax_tree_visitor.cs" />
     <Compile Include="TreeRealization\attributes.cs" />
     <Compile Include="TreeRealization\events.cs" />
     <Compile Include="TreeRealization\lambda_node.cs" />

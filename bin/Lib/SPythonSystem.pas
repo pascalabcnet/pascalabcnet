@@ -14,6 +14,8 @@ procedure print(params lst: array of object);
 
 function int(val: string): integer;
 
+function int(obj: object): integer;
+
 // function int(val: object): integer;
 
 function str(val: object): string;
@@ -57,6 +59,9 @@ begin
 end;
 
 function int(val: string): integer := integer.Parse(val);
+
+function int(obj: object): integer := Convert.ToInt32(obj);
+
 {
 function int(val: object): integer;
 begin

@@ -42,6 +42,12 @@ namespace SPythonSyntaxTreeVisitor
         }*/
         public override void AddError(Error err, bool shouldReturn = false)
         {
+            switch (err)
+            {
+                case UndefinedNameReference _undef_err:
+                    var name = _undef_err.name;
+                    break;
+            }
             // TODO : Add Error Rerouting according to Python semantics
             /*switch (err)
             {
@@ -61,10 +67,6 @@ namespace SPythonSyntaxTreeVisitor
 
             switch (_bin_expr.operation_type)
             {
-                case Operators.Plus:
-                    if (type_table.compare_types(left.type, right.type) == type_compare.greater_type)
-                        AddError(left.location, "NOT_ALLOWED_SUM_DIFF_TYPES");
-                    break;
                 case Operators.Division:
                     if (left.type == right.type && left.type.name == "string")
                     {
@@ -78,7 +80,7 @@ namespace SPythonSyntaxTreeVisitor
                     if (left.type == right.type && left.type.name == "real")
                     {
                         var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _bin_expr.source_context);
-                        var floornode = new method_call(new ident("floor"), new expression_list(divnode));
+                        var floornode = new method_call(new ident("Floor"), new expression_list(divnode));
                         base.visit(floornode);
                         return;
                     }
