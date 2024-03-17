@@ -45,14 +45,24 @@ namespace VeryBasicParser
             parsertools.compilerDirectives = compilerDirectives;
             parsertools.CurrentFileName = Path.GetFullPath(FileName);
 
+            bool isUnit = false;
+            if (Text.EndsWith("unit"))
+            {
+                Text = Text.Substring(0, Text.Length - 4);
+                isUnit = true;
+            }
 
             var scanner = new Scanner();
             scanner.SetSource(Text, 0);
             scanner.parsertools = parsertools;// передали parsertools в объект сканера
             if (DefinesList != null)
                 scanner.Defines.AddRange(DefinesList);
+
             VeryBasicGPPGParser parser = new VeryBasicGPPGParser(scanner);
             parsertools.build_tree_for_formatter = build_tree_for_formatter;
+
+            parser.is_unit_to_be_parsed = isUnit;
+
             parser.parsertools = parsertools; // передали parsertools в объект парсера
 
             if (!parser.Parse())
@@ -72,13 +82,14 @@ namespace VeryBasicParser
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public VeryBasicLanguageParser()
-            : base("VeryBasic", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", false, new string[] { ".yavb" })
+            : base("VeryBasic", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", new string[] { "SpythonSystem" }, false, new string[] { ".yavb" })
         {
         }
 
         public override void Reset()
         {
             CompilerDirectives = new List<compiler_directive>();
+
             Errors.Clear();
         }
 

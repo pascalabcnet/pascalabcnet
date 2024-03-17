@@ -17,6 +17,7 @@ using System.Threading;
 using NETGenerator;
 using PascalABCCompiler.NetHelper;
 using PascalABCCompiler.SemanticTree;
+using PascalABCCompiler.TreeConverter;
 
 namespace PascalABCCompiler.NETGenerator
 {
@@ -462,7 +463,7 @@ namespace PascalABCCompiler.NETGenerator
         bool IsDllAndSystemNamespace(string name, string DllFileName)
         {
             return comp_opt.target == TargetType.Dll && DllFileName != "PABCRtl.dll" &&
-                (name == "PABCSystem" || name == "PABCExtensions" ||
+                (name == compiler_string_consts.pascalSystemUnitName || name == compiler_string_consts.pascalExtensionsUnitName ||
                  name.EndsWith(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
         }
 

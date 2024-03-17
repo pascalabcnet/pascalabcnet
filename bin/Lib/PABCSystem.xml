@@ -3101,6 +3101,22 @@
     <member name="M:PartialSum(System.Collections.Generic.IEnumerable{System.Numerics.BigInteger})">
       <summary>Возвращает последовательность частичных сумм элементов последовательности</summary>
     </member>
+    <member name="M:&lt;yield_helper_error_checkerr&gt;Scan``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,``0})">
+      <summary>Возвращает последовательность, в которой первый элемент равен первому элементу исходной последовательности, а каждый следующий - 
+результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной</summary>
+    </member>
+    <member name="M:Scan``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,``0})">
+      <summary>Возвращает последовательность, в которой первый элемент равен первому элементу исходной последовательности, а каждый следующий - 
+результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной</summary>
+    </member>
+    <member name="M:&lt;yield_helper_error_checkerr&gt;Scan``2(System.Collections.Generic.IEnumerable{``0},``1,System.Func{``1,``0,``1})">
+      <summary>Возвращает последовательность, в которой первый элемент равен first, а каждый следующий - 
+результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной</summary>
+    </member>
+    <member name="M:Scan``2(System.Collections.Generic.IEnumerable{``0},``1,System.Func{``1,``0,``1})">
+      <summary>Возвращает последовательность, в которой первый элемент равен first, а каждый следующий - 
+результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной</summary>
+    </member>
     <member name="M:Sum(System.Collections.Generic.IEnumerable{System.Numerics.BigInteger})">
       <summary>Возвращает сумму элементов последовательности</summary>
     </member>

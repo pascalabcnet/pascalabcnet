@@ -8,6 +8,7 @@
 	File "..\bin\GPPG.dll"
     File "..\bin\Localization.dll"
     File "..\bin\NETGenerator.dll"
+    File "..\bin\LanguageIntegrator.dll"
     File "..\bin\ParserTools.dll"
     File "..\bin\SemanticTree.dll"
     File "..\bin\SyntaxTree.dll"
@@ -59,6 +60,7 @@
     ${AddFile} "Errors.dll"
     ${AddFile} "Localization.dll"
     ${AddFile} "NETGenerator.dll"
+    ${AddFile} "LanguageIntegrator.dll"
     ${AddFile} "ParserTools.dll"
     ${AddFile} "SemanticTree.dll"
     ${AddFile} "SyntaxTree.dll"
@@ -158,6 +160,7 @@
     File ..\bin\Lib\Tasks1BoolIfCase.pcu
     File ..\bin\Lib\Tasks1Loops.pcu
     File ..\bin\Lib\Tasks1Arr.pcu
+    File ..\bin\Lib\WPF.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -246,6 +249,7 @@
     ${AddFile} "Tasks1BoolIfCase.pcu"
     ${AddFile} "Tasks1Loops.pcu"
     ${AddFile} "Tasks1Arr.pcu"
+    ${AddFile} "WPF.pcu"
 
 
     ${AddFile} "turtle.png"
@@ -348,6 +352,7 @@
     File ..\bin\Lib\PlotWPF.pas
     File ..\bin\Lib\XLSX.pas
     File ..\bin\Lib\Мозаика.pas
+    File ..\bin\Lib\WPF.pas
 
     File ..\bin\Lib\__RedirectIOMode.vb
     File ..\bin\Lib\VBSystem.vb
@@ -424,6 +429,7 @@
     ${AddFile} "PlotWPF.pas"
     ${AddFile} "XLSX.pas"
     ${AddFile} "Мозаика.pas"
+    ${AddFile} "WPF.pas"
 
 
     ${AddFile} "__RedirectIOMode.vb"

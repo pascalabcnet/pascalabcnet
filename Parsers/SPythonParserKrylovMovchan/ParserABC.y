@@ -1,7 +1,7 @@
 %{
    	public syntax_tree_node root;
 	public List<Error> errors;
-    public string current_file_name;
+    // public string current_file_name;
     public int max_errors = 10;
 	public VeryBasicParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
@@ -10,6 +10,8 @@
 	private SymbolTable symbolTable = new SymbolTable();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
+
+	public bool is_unit_to_be_parsed = false;
 %}
 
 %using PascalABCCompiler.SyntaxTree;
@@ -17,6 +19,7 @@
 %using PascalABCCompiler.Errors;
 %using System.Linq;
 %using System.Collections.Generic;
+%using System.IO;
 %using VeryBasicParser;
 
 %output = VeryBasicParserYacc.cs
@@ -35,13 +38,13 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
 %token <op> ASSIGN
-%token <op> PLUS MINUS MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
-%token <id> ID INT
+%token <op> PLUS MINUS STAR DIVIDE SLASHSLASH PERCENTAGE
+%token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %token <op> AND OR NOT
 
@@ -49,7 +52,7 @@
 %left AND
 %left LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %left PLUS MINUS
-%left MULTIPLY DIVIDE SLASHSLASH PERCENTAGE
+%left STAR DIVIDE SLASHSLASH PERCENTAGE
 %left NOT
 
 %type <id> identifier
@@ -60,6 +63,7 @@
 %type <stn> stmt_list block
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
 %type <td> proc_func_header form_param_type simple_type_identifier
+%type <stn> import_clause import_clause_one
 
 %start program
 
@@ -78,16 +82,71 @@ sect	= section
 
 %%
 program   
-	: decl_and_stmt_list
+	: import_clause decl_and_stmt_list
 		{
-			var stl = $1 as statement_list;
-			decl.AddFirst(decl_forward.defs);
-			// добавляем ноды инициализации глобальных переменных
-			// foreach (string elem in symbolTable) {
-			// 	var vds = new var_def_statement(new ident_list(new ident(elem)), null, new int32_const(0), definition_attribute.None, false, @$);
-			// 	stl.AddFirst((new var_statement(vds, @$)) as statement);
-			// }
-			root = $$ = NewProgramModule(null, null, null, new block(decl, stl, @$), new token_info(""), @$);
+			// main program
+			if (!is_unit_to_be_parsed) {
+				var ul = $1 as uses_list;
+				var stl = $2 as statement_list;
+				decl.AddFirst(decl_forward.defs);
+				root = $$ = NewProgramModule(null, null, ul, new block(decl, stl, @2), new token_info(""), @$);
+				$$.source_context = @$;
+			}
+			// unit
+			else {
+				decl.AddFirst(decl_forward.defs);
+				var interface_part = new interface_node(decl as declarations, $1 as uses_list, null, null); 
+				var initialization_part = new initfinal_part(null, $2 as statement_list, null, null, null, @$);
+
+				root = $$ = new unit_module(
+					new unit_name(new ident(Path.GetFileNameWithoutExtension(parsertools.CurrentFileName)),
+					UnitHeaderKeyword.Unit, @$), interface_part, null, 
+					initialization_part.initialization_sect, 
+					initialization_part.finalization_sect, null, @$);
+			}
+			
+		}
+	;
+
+import_clause
+	: 
+		{ 
+			$$ = null; 
+		}
+	| import_clause import_clause_one
+		{ 
+   			if (parsertools.build_tree_for_formatter)
+   			{
+	        	if ($1 == null)
+                {
+	        		$$ = new uses_closure($2 as uses_list,@$);
+                }
+	        	else {
+                    ($1 as uses_closure).AddUsesList($2 as uses_list,@$);
+                    $$ = $1;
+                }
+   			}
+   			else 
+   			{
+	        	if ($1 == null)
+                {
+                    $$ = $2;
+                    $$.source_context = @$;
+                }
+	        	else 
+                {
+                    ($1 as uses_list).AddUsesList($2 as uses_list,@$);
+                    $$ = $1;
+                    $$.source_context = @$;
+                }
+			}
+		}
+	;
+
+import_clause_one
+	: FROM identifier IMPORT STAR SEMICOLON
+		{
+			$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
 			$$.source_context = @$;
 		}
 	;
@@ -182,7 +241,7 @@ assign_stmt
 expr 	
 	: expr PLUS 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
-	| expr MULTIPLY 	expr	
+	| expr STAR 	expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| expr DIVIDE 		expr	
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }

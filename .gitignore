@@ -46,6 +46,7 @@
 **/NETGenerator.dll
 **/OptimizerConversion.dll
 **/PABCRtl.dll
+**/LanguageIntegrator.dll
 **/ParserTools.dll
 **/PascalABCParser.dll
 **/PluginsSupport.dll
