@@ -70,7 +70,7 @@ namespace IndentArranger
             for (beginIndex = 0; beginIndex < line.Length; ++beginIndex)
                 if (!Char.IsWhiteSpace(line[beginIndex]))
                     break;
-            if (line.Length < beginIndex + 3) return false;
+            if (line.Length < beginIndex + 4) return false;
 
             // получаем строковое представление токена
             string firstToken = line.Substring(beginIndex, 4);
