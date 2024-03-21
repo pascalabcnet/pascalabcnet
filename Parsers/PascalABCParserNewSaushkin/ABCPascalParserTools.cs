@@ -486,8 +486,13 @@ namespace PascalABCSavParser
                 // мы сюда точно не должны попасть. Это должна быть обычная строка!
                 this.AddErrorFromResource("IMPOSSIBLE_MULTILINE_ERROR", sc);
 
+            if (ss[ss.Length - 1].Trim().Length > 0)
+                // There should be no non-whitespace characters before the closing quotes of the multiline string
+                // Перед закрывающими кавычками многострочной строки не должно быть непробельных символов 
+                this.AddErrorFromResource("NON_WHITESPACE_CHARACTERS_BEFORE_CLOSING_QUOTES_OF_MULTILINE_STRING", sc);
+
             // Количество лидирующих пробелов в последней строке
-            var numspaces = ss[ss.Length-1].TakeWhile(Char.IsWhiteSpace).Count();
+            var numspaces = ss[ss.Length - 1].TakeWhile(Char.IsWhiteSpace).Count();
             // Во всех строках от первой до предпоследней (если они есть) количество лидирующих пробелов должно быть не меньше чем в последней
             // мультистрочная строка содержит несовместимые отступы
             // MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS
