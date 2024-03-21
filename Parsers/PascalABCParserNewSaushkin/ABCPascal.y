@@ -51,7 +51,7 @@
 %token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkStarStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
-%token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
+%token <stn> tkStringLiteral tkFormatStringLiteral tkMultilineStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkBigInteger tkFloat tkHex
 %token <id> tkUnknown
@@ -4500,6 +4500,19 @@ literal
             else
             {
                 $$ = NewFormatString($1 as string_const);
+            }
+        }
+    | tkMultilineStringLiteral
+        {
+            if (parsertools.build_tree_for_formatter)
+   			{
+   				var sc = $1 as string_const;
+   				sc.IsMultiline = true;
+                $$ = sc;
+            }
+            else
+            {
+                $$ = NewLiteral(new literal_const_line($1 as literal, @$));
             }
         }
 	;

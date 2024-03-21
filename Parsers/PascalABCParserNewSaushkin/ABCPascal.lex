@@ -38,6 +38,7 @@ BIGINTNUM {INTNUM}[bB][iI]
 FLOATNUM {INTNUM}\.{INTNUM}
 EXPNUM ({INTNUM}\.)?{INTNUM}[eE][+\-]?{INTNUM}
 STRINGNUM \'([^\'\n]|\'\')*\'
+MULTILINESTRINGNUM \'\'\'[ ]*\r?\n([^']|\'[^']|\'\'[^'])*\'\'\'
 FORMATSTRINGNUM \$\'([^\'\n]|\'\')*\'
 HEXNUM ${HexDigit}{HexDigit_}*
 SHARPCHARNUM #{Digit}+
@@ -489,6 +490,13 @@ UNICODEARROW \x890
   currentLexLocation = CurrentLexLocation;
   yylval.stn = parsertools.create_string_const(yytext,currentLexLocation); 
   return (int)Tokens.tkStringLiteral; 
+}
+
+{MULTILINESTRINGNUM} { 
+  yylval = new Union();
+  currentLexLocation = CurrentLexLocation;
+  yylval.stn = parsertools.create_multiline_string_const(yytext,currentLexLocation); 
+  return (int)Tokens.tkMultilineStringLiteral; 
 }
 
 {FORMATSTRINGNUM} { 

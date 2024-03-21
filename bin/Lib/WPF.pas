@@ -40,6 +40,7 @@ type
   Slider = Slider;
   ComboBox = ComboBox;
   TextBlock = TextBlock;
+  Border = System.Windows.Controls.Border;
   Rectangle = Rectangle;
 
   DrawingVisual = DrawingVisual;
