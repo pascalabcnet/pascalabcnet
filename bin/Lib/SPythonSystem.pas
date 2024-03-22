@@ -12,7 +12,9 @@ procedure print(params lst: array of object);
 
 // Basic type conversion methods
 
-function int(val: string): integer;
+//function int(val: string): integer;
+
+//function int(b: boolean): integer;
 
 function int(obj: object): integer;
 
@@ -56,10 +58,19 @@ procedure print(params lst: array of object);
 begin
   foreach var elem in lst do
     PABCSystem.Print(elem);
+  PABCSystem.Println();
 end;
 
-function int(val: string): integer := integer.Parse(val);
-
+//function int(val: string): integer := integer.Parse(val);
+{
+function int(b: boolean): integer;
+begin
+  if b then
+    Result := 1
+  else
+    Result := 0;
+end;
+}
 function int(obj: object): integer := Convert.ToInt32(obj);
 
 {

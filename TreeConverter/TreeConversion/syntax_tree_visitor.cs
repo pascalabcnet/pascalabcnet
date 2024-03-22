@@ -964,7 +964,7 @@ namespace PascalABCCompiler.TreeConverter
             if (tn != null)
             {
                 convertion_data_and_alghoritms.check_node_parser_error(tn);
-                tn.visit(this);
+                this.ProcessNode(tn);
             }
         }
 
@@ -981,7 +981,7 @@ namespace PascalABCCompiler.TreeConverter
             convertion_data_and_alghoritms.check_node_parser_error(tn);
             if (is_direct_type_decl && !(tn is SyntaxTree.ref_type))
                 is_direct_type_decl = false;
-            tn.visit(this);
+            this.ProcessNode(tn);
             /*#if (DEBUG)
                         }
                         catch (Exception e)
@@ -4273,7 +4273,7 @@ namespace PascalABCCompiler.TreeConverter
             bl.program_code.right_logical_bracket = new SyntaxTree.token_info("end");
             clmem.members.Add(new SyntaxTree.procedure_definition(constr, bl));
             disable_order_independ = true;
-            clmem.visit(this);
+            this.ProcessNode(clmem);
             disable_order_independ = false;
         }
         //\ssyy
@@ -10211,7 +10211,7 @@ namespace PascalABCCompiler.TreeConverter
                             //dot_node dnode = new dot_node(syntax_node, template_id_right);
                             template_id_right.name = new dot_node(syntax_node, id_right);
                             method_call mc = new method_call(template_id_right, new expression_list());
-                            mc.visit(this);
+                            this.ProcessNode(mc);
                             return;
                         }
                         return_value(expression_value_reciving(id_right, sil, en, true));
@@ -10260,7 +10260,7 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             dot_node dnode = new dot_node(syntax_node, id_right);
                             method_call mc = new method_call(dnode, new expression_list());
-                            mc.visit(this);
+                            this.ProcessNode(mc);
                             return;
                         }
                         return_value(expression_value_reciving(id_right, sil, en, true));
@@ -11691,7 +11691,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             //\ssyy
             foreach (SyntaxTree.const_definition cnst in _consts_definitions_list.const_defs)
-                cnst.visit(this);
+                this.ProcessNode(cnst);
         }
 
         public override void visit(SyntaxTree.const_definition _const_definition)
@@ -16790,7 +16790,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.program_tree _program_tree)
         {
-            _program_tree.compilation_units[0].visit(this);
+            this.ProcessNode(_program_tree.compilation_units[0]);
         }
 
         public override void visit(SyntaxTree.declarations _subprogram_definitions)
@@ -16802,7 +16802,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (sd is SyntaxTree.type_declaration)
                     {
                         convertion_data_and_alghoritms.check_node_parser_error(sd);
-                        sd.visit(this);
+                        this.ProcessNode(sd);
                     }
                 }
             }
@@ -16819,7 +16819,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 convertion_data_and_alghoritms.check_node_parser_error(sd);
                 if (!(sd is syntax_namespace_node))
-                    sd.visit(this);
+                    this.ProcessNode(sd);
             }
             if (SemanticRules.OrderIndependedFunctionNames)
             {
@@ -17199,7 +17199,7 @@ namespace PascalABCCompiler.TreeConverter
                     is_event = true;
                 else if (is_event)
                     vds.is_event = true;
-                vds.visit(this);
+                this.ProcessNode(vds);
             }
         }
 
@@ -17768,7 +17768,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var arr = _ident.name.Split('.');
                 var dn = new dot_node(new ident(_ident.name.Substring(0, _ident.name.LastIndexOf('.')), _ident.source_context), new ident(arr[arr.Length - 1], _ident.source_context));
-                dn.visit(this);
+                this.ProcessNode(dn);
                 return;
             }
             var mot = motivation_keeper.motivation;
@@ -20197,7 +20197,7 @@ namespace PascalABCCompiler.TreeConverter
 
             UpdateUnitDefinitionItemForUnit(_compiled_unit);
 
-            //_program_module.program_block.visit(this);
+            //_program_module.program_block.visit(this)
             //hard_node_test_and_visit(_program_module.program_block);
             //context.check_labels(context.converted_namespace.labels);
 
@@ -20234,7 +20234,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.declarations_as_statement node)
         {
             //throw new NotSupportedError(get_location(node));
-            node.defs.visit(this);
+            this.ProcessNode(node.defs);
             return_value(new empty_statement(null));
         }
         public override void visit(SyntaxTree.array_size node)
@@ -20548,7 +20548,7 @@ namespace PascalABCCompiler.TreeConverter
             id.template_params = new template_param_list();
             for (int i = 0; i < node.template_args.Count; i++)
                 id.template_params.Add(new named_type_reference(node.template_args[0] as SyntaxTree.ident, node.template_args[i].source_context));
-            id.visit(this);
+            this.ProcessNode(id);
         }
 
         public override void visit(SyntaxTree.default_operator _default_operator)
@@ -20568,7 +20568,7 @@ namespace PascalABCCompiler.TreeConverter
         
         public override void visit(SyntaxTree.bracket_expr _bracket_expr)
         {
-        	_bracket_expr.expr.visit(this);
+        	this.ProcessNode(_bracket_expr.expr);
         }
         
         public override void visit(SyntaxTree.attribute _attribute)
@@ -20895,7 +20895,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 ((SyntaxTree.dereference)_method_call).dereferencing_value = (SyntaxTree.addressed_value)(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.lambda_name, _function_lambda_call.source_context));
             }
-            _method_call.visit(this);
+            this.ProcessNode(_method_call);
         }
 
         public void lambda_header_visit(SymbolInfo si, SyntaxTree.function_header _function_header, type_node tn1)
@@ -21417,7 +21417,7 @@ namespace PascalABCCompiler.TreeConverter
         // frninja - захват полей класса для yield
         public override void visit(SyntaxTree.yield_unknown_ident _unk)
         {
-            ProcessUnknownIdent(_unk).visit(this);
+            this.ProcessNode(ProcessUnknownIdent(_unk));
         }
 
         public override void visit(SyntaxTree.yield_unknown_expression_type _unk_expr)
@@ -21425,14 +21425,14 @@ namespace PascalABCCompiler.TreeConverter
             // Отвечает за типизацию всех переменных с автовыведением типа
             // Пробую сделать по-другому: перевести в auto_type и потом на присваивании перехватить
             var t = new semantic_type_node(new auto_type(get_location(_unk_expr)));
-            t.visit(this);
+            this.ProcessNode(t);
         }
 
         // frninja 29/05/16 - выявляем тип перемнной в foreach
         public override void visit(SyntaxTree.yield_unknown_foreach_type _unk)
         {
             var t = new semantic_type_node(new ienumerable_auto_type(get_location(_unk)));
-            t.visit(this);
+            this.ProcessNode(t);
         }
 
         public override void visit(SyntaxTree.dot_question_node dqn)

@@ -38,19 +38,19 @@ namespace PascalABCCompiler.TreeConverter
 
 		public semantic_node visit(SyntaxTree.syntax_tree_node tn)
 		{
-            tn.visit(syntax_tree_visitor);
+            syntax_tree_visitor.ProcessNode(tn);
             return ret_semantic;
 		}
 
 		public statement_node visit(SyntaxTree.statement st)
 		{
-            st.visit(syntax_tree_visitor);
+            syntax_tree_visitor.ProcessNode(st);
             return ret_semantic as statement_node;
 		}
 
 		public expression_node visit(SyntaxTree.expression expr)
 		{
-            expr.visit(syntax_tree_visitor);
+            syntax_tree_visitor.ProcessNode(expr);
 
             /*addressed_expression ad = ret_semantic as addressed_expression;
             if (ad != null && ad.is_addressed)
@@ -78,13 +78,13 @@ namespace PascalABCCompiler.TreeConverter
 
 		public type_node visit(SyntaxTree.type_definition type_def)
 		{
-            type_def.visit(syntax_tree_visitor);
+            syntax_tree_visitor.ProcessNode(type_def);
             return ret_semantic as type_node;
 		}
 
 		public addressed_expression visit(SyntaxTree.addressed_value av)
 		{
-            av.visit(syntax_tree_visitor);
+            syntax_tree_visitor.ProcessNode(av);
             return ret_semantic as addressed_expression;
 		}
 

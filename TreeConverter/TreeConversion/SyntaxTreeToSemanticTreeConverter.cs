@@ -100,14 +100,14 @@ namespace PascalABCCompiler.TreeConverter
             stv.for_intellisense = for_intellisense;
 			SystemLibrary.SystemLibrary.syn_visitor = stv;
             SetSemanticRules(SyntaxUnit);
-            
+
 
             foreach (SyntaxTree.compiler_directive cd in SyntaxUnit.compiler_directives)
-                cd.visit(stv);
+                stv.ProcessNode(cd);
 
             stv.DirectivesToNodesLinks = CompilerDirectivesToSyntaxTreeNodesLinker.BuildLinks(SyntaxUnit, ErrorsList);  //MikhailoMMX добавил передачу списка ошибок (02.10.10)
 
-            SyntaxUnit.visit(stv);
+            stv.ProcessNode(SyntaxUnit);
             
             CompiledVariables.AddRange(stv.CompiledVariables);
             /*SyntaxTree.program_module pmod=SyntaxUnit as SyntaxTree.program_module;

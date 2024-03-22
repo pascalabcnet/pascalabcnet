@@ -42,23 +42,21 @@ namespace SPythonSyntaxTreeVisitor
         }*/
         public override void AddError(Error err, bool shouldReturn = false)
         {
+            // TODO : Add Error Rerouting according to Python semantics
             switch (err)
             {
-                case UndefinedNameReference _undef_err:
-                    var name = _undef_err.name;
+                case OperatorCanNotBeAppliedToThisTypes _op_err:
+                    if (_op_err.operator_name == "mod")
+                    {
+                        base.AddError(new OperatorCanNotBeAppliedToThisTypes("%", _op_err.left, _op_err.right, _op_err.loc), shouldReturn);
+                        return;
+                    }
+                    break;
+                case SimpleSemanticError _ss_err:
                     break;
             }
-            // TODO : Add Error Rerouting according to Python semantics
-            /*switch (err)
-            {
-                case OperatorCanNotBeAppliedToThisTypes _op_err:
-                    break;
-                default:
-                    base.AddError(err, shouldReturn);
-                    break;
-            }*/
             base.AddError(err, shouldReturn);
-           
+
         }
         public override void visit(bin_expr _bin_expr)
         {
@@ -67,13 +65,23 @@ namespace SPythonSyntaxTreeVisitor
 
             switch (_bin_expr.operation_type)
             {
+                case Operators.Plus:
+                    if (left.type == right.type && left.type.name == "boolean")
+                    {
+                        var int_left = new method_call(new ident("int"), new expression_list(new semantic_addr_value(left, left.location)), left.location);
+                        var int_right = new method_call(new ident("int"), new expression_list(new semantic_addr_value(right, right.location)), right.location);
+                        var bti_bin_expr = new bin_expr(int_left, int_right, _bin_expr.operation_type, _bin_expr.source_context);
+                        visit(bti_bin_expr);
+                        return;
+                    }
+                    break;
                 case Operators.Division:
                     if (left.type == right.type && left.type.name == "string")
                     {
-                        var mcn = new method_call(new dot_node(_bin_expr.left as ident, new ident("IndexOf")),
-                            new expression_list(_bin_expr.right as ident), _bin_expr.source_context);
-                        base.visit(mcn);
-                        return;
+                        var mcn = new method_call(new dot_node(new semantic_addr_value(left, left.location), new ident("IndexOf")),
+                            new expression_list(new semantic_addr_value(right, right.location)), _bin_expr.source_context);
+                        visit(mcn);
+                        return; 
                     }
                     break;
                 case Operators.IntegerDivision:
@@ -81,7 +89,7 @@ namespace SPythonSyntaxTreeVisitor
                     {
                         var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _bin_expr.source_context);
                         var floornode = new method_call(new ident("Floor"), new expression_list(divnode));
-                        base.visit(floornode);
+                        visit(floornode);
                         return;
                     }
                     break;
@@ -91,7 +99,7 @@ namespace SPythonSyntaxTreeVisitor
                         var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.IntegerDivision, _bin_expr.source_context);
                         var multnode = new bin_expr(new semantic_addr_value(right, right.location), divnode, Operators.Multiplication);
                         var modnode = new bin_expr(new semantic_addr_value(left, left.location), multnode, Operators.Minus);
-                        base.visit(modnode);
+                        visit(modnode);
                         return;
                     }
                     break;
