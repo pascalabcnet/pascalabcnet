@@ -7262,10 +7262,7 @@ end;
 procedure Print(f: Text; params args: array of object);
 begin
   if args.Length = 0 then
-  begin  
-    Writeln(f);
     exit;
-  end;  
   for var i := 0 to args.length - 1 do
     if PrintDelimDefault<>'' then
       Write(f, args[i], PrintDelimDefault)
@@ -7275,7 +7272,10 @@ end;
 procedure Println(f: Text; params args: array of object);
 begin
   if args.Length = 0 then
+  begin  
+    Writeln(f);
     exit;
+  end;  
   for var i := 0 to args.length - 2 do
     if PrintDelimDefault<>'' then
       Write(f, args[i], PrintDelimDefault)
