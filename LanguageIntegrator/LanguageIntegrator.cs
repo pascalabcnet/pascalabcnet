@@ -55,7 +55,7 @@ namespace LanguageIntegration
         {
             ParsersController.LoadStandardParsers();
 
-            // LoadAllLanguageKits();
+            LoadAllLanguageKits();
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace LanguageIntegration
         {
             ParsersController.Parsers.Clear();
             ParsersController.LoadStandardParsers();
-            // LoadParsersFromLanguageKits();
+            LoadParsersFromLanguageKits();
         }
 
         /// <summary>
