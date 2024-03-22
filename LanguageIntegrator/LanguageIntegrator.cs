@@ -37,7 +37,10 @@ namespace LanguageIntegration
         {
             DirectoryInfo languageKitsDirectory = GetLanguageKitsDirectory();
 
-            foreach (var languageKit in languageKitsDirectory?.GetDirectories())
+            if (languageKitsDirectory == null)
+                return;
+
+            foreach (var languageKit in languageKitsDirectory.GetDirectories())
             {
                 FileInfo[] dllFiles = languageKit.GetFiles();
                 
@@ -78,7 +81,10 @@ namespace LanguageIntegration
         {
             DirectoryInfo languageKitsDirectory = GetLanguageKitsDirectory();
 
-            foreach (var parserDll in languageKitsDirectory?.GetDirectories()
+            if (languageKitsDirectory == null)
+                return;
+
+            foreach (var parserDll in languageKitsDirectory.GetDirectories()
                 .SelectMany(directory => directory.GetFiles("*Parser.dll")))
             {
                 if (parserDll != null)
