@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
-<!-- syntaxdefinition for PythonABC (c) Andrew Podkovyrin, 2009 
-based on Python 3.0, most of syntax - for future :) -->
 
-<SyntaxDefinition name = "PythonABC" extensions = ".yavb">
+<SyntaxDefinition name = "Spython" extensions = ".pys">
 	
 	<Properties>
 		<Property name="LineComment" value="#"/>
