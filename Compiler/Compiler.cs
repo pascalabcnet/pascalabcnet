@@ -4172,8 +4172,8 @@ namespace PascalABCCompiler
                 }
             }
 
-            // Если файл .yavb то надо заменить исходный текст программы на другой с предварительной обработкой
-            if (Path.GetExtension(UnitFileName) == ".yavb")
+            // Если файл .pys то надо заменить исходный текст программы на другой с предварительной обработкой
+            if (Path.GetExtension(UnitFileName) == ".pys")
             {
                 IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
                 ia.ProcessSourceText(ref SourceText);

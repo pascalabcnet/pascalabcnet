@@ -15,7 +15,7 @@ namespace SPythonSyntaxTreeVisitor
 {
     public class spython_syntax_tree_visitor : syntax_tree_visitor, ISyntaxTreeVisitor
     {
-        private string[] filesExtensions = { ".yavb" };
+        private string[] filesExtensions = { ".pys" };
 
         public override string[] FilesExtensions
         {
