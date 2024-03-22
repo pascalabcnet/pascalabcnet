@@ -2340,7 +2340,7 @@ namespace PascalABCCompiler
             SetOutputFileTypeOption();
 
             // перемещаем PABCSystem в начало списка
-            MoveSystemUnitForwardInUnitsTopologicallySortedList();
+            // MoveSystemUnitForwardInUnitsTopologicallySortedList();
 
             // передача информации о типе выходного файла системному юниту
             if (UnitsTopologicallySortedList.Count > 0)
