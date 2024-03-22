@@ -45,10 +45,11 @@ namespace SPythonParser
             parsertools.compilerDirectives = compilerDirectives;
             parsertools.CurrentFileName = Path.GetFullPath(FileName);
 
+            // проверка подсказки компилятора, является ли программа модулем
             bool isUnit = false;
-            if (Text.EndsWith("unit"))
+            if (Text.EndsWith("<hint>unit"))
             {
-                Text = Text.Substring(0, Text.Length - 4);
+                Text = Text.Substring(0, Text.Length - 10);
                 isUnit = true;
             }
 

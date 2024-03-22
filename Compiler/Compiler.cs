@@ -4178,9 +4178,9 @@ namespace PascalABCCompiler
                 IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
                 ia.ProcessSourceText(ref SourceText);
 
-                // если модуль
+                // если модуль, то добавляем парсеру подсказку о том, что это модуль
                 if (currentUnit != firstCompilationUnit)
-                    SourceText += "unit";
+                    SourceText += "<hint>unit";
             }
 
             return SourceText;
