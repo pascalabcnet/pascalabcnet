@@ -5,7 +5,7 @@ using System.Text;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.SyntaxTree;
 
-namespace VeryBasicParser
+namespace SPythonParser
 {
     public class SPythonUnexpectedToken : SyntaxError
     {

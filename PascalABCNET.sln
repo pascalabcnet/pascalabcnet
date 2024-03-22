@@ -107,13 +107,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VeryBasicParser", "Parsers\SPythonParserKrylovMovchan\VeryBasicParser.csproj", "{81FE2BAA-D100-4596-A392-F03BBE30F829}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonParser", "Parsers\SPythonParserKrylovMovchan\SPythonParser.csproj", "{81FE2BAA-D100-4596-A392-F03BBE30F829}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YATLParser", "Parsers\YATLParser\YATLParser.csproj", "{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SemanticAnalyzers", "SemanticAnalyzers", "{AAA3A0F7-2990-4C44-BAC7-0C4BAA053E8A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonSyntaxTreeVisitor", "SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj", "{D38A21E0-1D61-4905-82B3-1800E1991D57}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageIntegrator", "LanguageIntegrator\LanguageIntegrator.csproj", "{A48D9069-D569-4110-9252-A10F139B669B}"
 EndProject
 Global

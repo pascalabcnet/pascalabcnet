@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.7.34221.43
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34601.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VeryBasicParser", "VeryBasicParser.csproj", "{81FE2BAA-D100-4596-A392-F03BBE30F829}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonParser", "SPythonParser.csproj", "{81FE2BAA-D100-4596-A392-F03BBE30F829}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

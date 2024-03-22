@@ -6,15 +6,15 @@ using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.ParserTools;
-using VeryBasicParser;
-using VeryBasicParserYacc;
+using SPythonParser;
+using SPythonParserYacc;
 using PascalABCCompiler.Errors;
 
 
 
-namespace VeryBasicParser
+namespace SPythonParser
 {
-    public class VeryBasicGPPGParserHelper
+    public class SPythonGPPGParserHelper
     {
         private List<Error> Errs;
         private List<CompilerWarning> Warnings;
@@ -22,7 +22,7 @@ namespace VeryBasicParser
         public bool build_tree_for_formatter = false;
         public List<string> DefinesList = null;
 
-        public VeryBasicGPPGParserHelper(List<Error> Errs, List<CompilerWarning> Warnings, string FileName)
+        public SPythonGPPGParserHelper(List<Error> Errs, List<CompilerWarning> Warnings, string FileName)
         {
             this.Errs = Errs;
             this.Warnings = Warnings;
@@ -39,7 +39,7 @@ namespace VeryBasicParser
             Console.SetError(sw);
 #endif
 #endif
-            VeryBasicParserTools parsertools = new VeryBasicParserTools(); // контекст сканера и парсера
+            SPythonParserTools parsertools = new SPythonParserTools(); // контекст сканера и парсера
             parsertools.errors = Errs;
             parsertools.warnings = Warnings;
             parsertools.compilerDirectives = compilerDirectives;
@@ -58,7 +58,7 @@ namespace VeryBasicParser
             if (DefinesList != null)
                 scanner.Defines.AddRange(DefinesList);
 
-            VeryBasicGPPGParser parser = new VeryBasicGPPGParser(scanner);
+            SPythonGPPGParser parser = new SPythonGPPGParser(scanner);
             parsertools.build_tree_for_formatter = build_tree_for_formatter;
 
             parser.is_unit_to_be_parsed = isUnit;
@@ -76,13 +76,13 @@ namespace VeryBasicParser
             return parser.root;
         }
     }
-    public class VeryBasicLanguageParser: BaseParser, IParser
+    public class SPythonLanguageParser: BaseParser, IParser
     {
-        private VeryBasicGPPGParserHelper localparserhelper;
+        private SPythonGPPGParserHelper localparserhelper;
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
-        public VeryBasicLanguageParser()
-            : base("VeryBasic", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", new string[] { "SpythonSystem" }, false, new string[] { ".yavb" })
+        public SPythonLanguageParser()
+            : base("SPython", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", new string[] { "SpythonSystem" }, false, new string[] { ".pys" })
         {
         }
 
@@ -137,7 +137,7 @@ namespace VeryBasicParser
 
             preprocessor2.Build(file_names, Errors, null);*/
 
-            localparserhelper = new VeryBasicGPPGParserHelper(Errors, Warnings, FileName);
+            localparserhelper = new SPythonGPPGParserHelper(Errors, Warnings, FileName);
             localparserhelper.DefinesList = DefinesList;
             syntax_tree_node root = localparserhelper.Parse(Text);
 

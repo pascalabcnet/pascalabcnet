@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using VeryBasicParserYacc;
+using SPythonParserYacc;
 
-namespace VeryBasicParser
+namespace SPythonParser
 {
     // Статический класс, определяющий ключевые слова языка
     public static class Keywords

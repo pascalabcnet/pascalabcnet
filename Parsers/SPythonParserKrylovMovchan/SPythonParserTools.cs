@@ -9,7 +9,7 @@ using QUT.Gppg;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
 
-namespace VeryBasicParser
+namespace SPythonParser
 {
     public static class StringResources
     {
@@ -54,7 +54,7 @@ namespace VeryBasicParser
 
         public SymbolTable OuterScope { get { return outerScope; } }
     }
-    public class VeryBasicParserTools
+    public class SPythonParserTools
     {
         private const int max_char_const = 0xFFFF;
         // SSM: Errors инициализируется в другом месте - сюда только передается!
@@ -68,7 +68,7 @@ namespace VeryBasicParser
 
         public List<var_def_statement> pascalABC_var_statements;
         public List<type_declaration> pascalABC_type_declarations;
-        public VeryBasicParserTools()
+        public SPythonParserTools()
         {
             NodesStack = new System.Collections.Stack();
             pascalABC_var_statements = new List<var_def_statement>();

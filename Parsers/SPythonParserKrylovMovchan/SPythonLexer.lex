@@ -1,11 +1,11 @@
-%using VeryBasicParser;
+%using SPythonParser;
 %using QUT.Gppg;
 %using PascalABCCompiler.SyntaxTree;
 %using PascalABCCompiler.ParserTools;
-%using VeryBasicParserYacc;
-%using VeryBasicParser;
+%using SPythonParserYacc;
+%using SPythonParser;
 
-%namespace VeryBasicParser
+%namespace SPythonParser
 
 Alpha         [a-zA-Z_]
 NonZeroDigit  [1-9]
@@ -17,7 +17,7 @@ STRINGNUM (\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
 ID {Alpha}{AlphaDigit}*
 
 %{
-  public VeryBasicParserTools parsertools;
+  public SPythonParserTools parsertools;
   public List<string> Defines = new List<string>();
   LexLocation currentLexLocation;
 %}
@@ -38,7 +38,7 @@ ID {Alpha}{AlphaDigit}*
 
 {STRINGNUM} {
   currentLexLocation = CurrentLexLocation;
-  yylval.stn = parsertools.create_string_const(yytext,currentLexLocation); 
+  yylval.stn = parsertools.create_string_const(yytext,currentLexLocation);
   return (int)Tokens.STRINGNUM;
 }
 
@@ -61,7 +61,7 @@ ID {Alpha}{AlphaDigit}*
       yylval.op = new op_type_node(Operators.LogicalNOT);
       break;
   }
-  
+
   return res;
 }
 
@@ -98,7 +98,7 @@ ID {Alpha}{AlphaDigit}*
 
 "##" {
   parsertools.AddError("Wrong indent", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
-	return (int)Tokens.EOF; 
+	return (int)Tokens.EOF;
 }
 
 [^ \r\n] {
@@ -107,7 +107,7 @@ ID {Alpha}{AlphaDigit}*
 }
 
 %{
-  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol); 
+  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
 %}
 
 %%
