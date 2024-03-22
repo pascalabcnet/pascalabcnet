@@ -4,7 +4,6 @@ using System;
 using PascalABCCompiler.Errors;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace PascalABCCompiler
@@ -152,6 +151,9 @@ namespace PascalABCCompiler
 
             DateTime ldt = DateTime.Now;
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+
+            // загрузка всех парсеров и других составляющих языков  EVA
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
             Compiler.InternalDebug.SkipPCUErrors = false;

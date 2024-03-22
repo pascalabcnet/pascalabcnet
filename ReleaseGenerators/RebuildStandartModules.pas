@@ -19,7 +19,8 @@ uses
    OpenCLABC, OpenCL,
    OpenGLABC, OpenGL,
    BBCMicroBit, School, SF, TwoPanelsWindow, NUnitABC, PlotWPF, XLSX, LightPT, Tasks, Мозаика,
-   TasksArr, TasksMatr, TasksStr, Tasks1Begin, Tasks1BoolIfCase, Tasks1Loops, Tasks1Arr
+   TasksArr, TasksMatr, TasksStr, Tasks1Begin, Tasks1BoolIfCase, Tasks1Loops, Tasks1Arr,
+   WPF
    ;
    
 begin

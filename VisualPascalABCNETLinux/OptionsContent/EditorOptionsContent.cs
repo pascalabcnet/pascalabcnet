@@ -74,7 +74,7 @@ namespace VisualPascalABC.OptionsContent
                     {
                         cbShowLinesNum.Checked = MainForm.UserOptions.ShowLineNums;
                         cbEnableFolding.Checked = MainForm.UserOptions.EnableFolding; // SSM 4.09.08
-                        cbShowMathBracket.Checked = MainForm.UserOptions.ShowMathBraket;
+                        cbShowMatchBracket.Checked = MainForm.UserOptions.ShowMatchBracket;
                         cbConvertTabsToSpaces.Checked = MainForm.UserOptions.ConverTabsToSpaces;
                         cbEnableMatchOperBrackets.Checked = MainForm.UserOptions.HighlightOperatorBrackets;
                         nudTabIndent.Value = MainForm.UserOptions.TabIndent;
@@ -110,7 +110,7 @@ namespace VisualPascalABC.OptionsContent
                     MainForm.UserOptions.TabIndent = (int)nudTabIndent.Value;
                     MainForm.UserOptions.ShowLineNums = cbShowLinesNum.Checked;
                     MainForm.UserOptions.EnableFolding = cbEnableFolding.Checked; // SSM 4.09.08
-                    MainForm.UserOptions.ShowMathBraket = cbShowMathBracket.Checked;
+                    MainForm.UserOptions.ShowMatchBracket = cbShowMatchBracket.Checked;
                     MainForm.UserOptions.HighlightOperatorBrackets = cbEnableMatchOperBrackets.Checked;
                     MainForm.ErrorCursorPosStrategy = SourceLocationAction.GotoBeg;//(SourceLocationAction)(cbErrorPos.SelectedItem as ObjectLocalisator).Value;
                     if (fcbFont.SelectedItem != null)

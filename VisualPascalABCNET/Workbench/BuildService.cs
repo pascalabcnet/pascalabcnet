@@ -70,14 +70,19 @@ namespace VisualPascalABC
             bool savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
             if (Path.GetDirectoryName(CompilerOptions1.SourceFileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
                 Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
+
             if (RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+            {
+                AddRuntimeServicesModuleToStandardModules(RuntimeServicesModule);
+            }
 
             string ofn = Workbench.VisualEnvironmentCompiler.Compile(CompilerOptions1);
             Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = savePCU;
 
             if (RuntimeServicesModule != null)
-                CompilerOptions1.RemoveStandardModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
+            {
+                RemoveRuntimeServicesModuleFromStandardModules();
+            }
 
             if (Workbench.VisualEnvironmentCompiler.Compiler.ErrorsList.Count != 0 || Workbench.VisualEnvironmentCompiler.Compiler.Warnings.Count != 0)
             {
@@ -112,8 +117,12 @@ namespace VisualPascalABC
             //string runtimeModuleFileName = CompilerOptions1.SearchDirectory + "\\" + RuntimeServicesModule;
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
             //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
+            
+            
             if (RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+            {
+                AddRuntimeServicesModuleToStandardModules(RuntimeServicesModule);
+            }
 
             ErrorsList.Clear();
 
@@ -127,7 +136,9 @@ namespace VisualPascalABC
             Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = savePCU;
 
             if (RuntimeServicesModule != null)
-                CompilerOptions1.RemoveStandardModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
+            {
+                RemoveRuntimeServicesModuleFromStandardModules();
+            }
 
             if (Workbench.VisualEnvironmentCompiler.Compiler.ErrorsList.Count != 0 || Workbench.VisualEnvironmentCompiler.Compiler.Warnings.Count != 0)
             {
@@ -160,8 +171,11 @@ namespace VisualPascalABC
             //string runtimeModuleFileName = CompilerOptions1.SearchDirectory + "\\" + RuntimeServicesModule;
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
             //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
+
             if (__RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
+            {
+                AddRuntimeServicesModuleToStandardModules(RuntimeServicesModule);
+            }
 
 
             ErrorsList.Clear();
@@ -196,9 +210,11 @@ namespace VisualPascalABC
             //string runtimeModuleFileName = CompilerOptions1.SearchDirectory + "\\" + RuntimeServicesModule;
             //if (RuntimeServicesModule!=null && File.Exists(runtimeModuleFileName))
             //    CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(runtimeModuleFileName, PascalABCCompiler.CompilerOptions.StandartModuleAddMethod.RightToMain));
-            if (__RuntimeServicesModule != null)
-                CompilerOptions1.StandardModules.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule, PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, PascalABCCompiler.SyntaxTree.LanguageId.C | PascalABCCompiler.SyntaxTree.LanguageId.PascalABCNET | PascalABCCompiler.SyntaxTree.LanguageId.CommonLanguage));
 
+            if (__RuntimeServicesModule != null)
+            {
+                AddRuntimeServicesModuleToStandardModules(RuntimeServicesModule);
+            }
 
             ErrorsList.Clear();
 
@@ -211,6 +227,29 @@ namespace VisualPascalABC
 
             Workbench.VisualEnvironmentCompiler.StartCompile(CompilerOptions1);
 
+        }
+
+        /// <summary>
+        /// Удаляет модуль сервиса времени выполнения из списков стандартных модулей всех языков
+        /// </summary>
+        private void RemoveRuntimeServicesModuleFromStandardModules()
+        {
+            foreach (var kv in CompilerOptions1.StandardModules)
+            {
+                CompilerOptions1.RemoveStandardModuleAtIndex(kv.Key, CompilerOptions1.StandardModules[kv.Key].Count - 1);
+            }
+        }
+
+        /// <summary>
+        /// Добавляет модуль сервиса времени выполнения в списки стандартных модулей всех языков
+        /// </summary>
+        private void AddRuntimeServicesModuleToStandardModules(string RuntimeServicesModule)
+        {
+            foreach (var kv in CompilerOptions1.StandardModules)
+            {
+                kv.Value.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule,
+                    PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, kv.Key));
+            }
         }
 
         public bool Build()
@@ -267,7 +306,9 @@ namespace VisualPascalABC
                     Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = __savePCU;
 
                     if (__RuntimeServicesModule != null)
-                        CompilerOptions1.RemoveStandardModuleAtIndex(CompilerOptions1.StandardModules.Count - 1);
+                    {
+                        RemoveRuntimeServicesModuleFromStandardModules();
+                    }
 
                     if (Workbench.VisualEnvironmentCompiler.Compiler.ErrorsList.Count != 0 || Workbench.VisualEnvironmentCompiler.Compiler.Warnings.Count != 0)
                     {

@@ -333,12 +333,6 @@ namespace PascalABCCompiler
         }
         private static void ChangeCompilerState(ICompiler sender, PascalABCCompiler.CompilerState State, string FileName)
         {
-            switch (State)
-            {
-                case CompilerState.ParserConnected:
-                    Console.WriteLine(string.Format(StringResourcesGet("CONNECTED_PARSER{0}"),sender.ParsersController.LastParser));
-                    return;
-            }
             if (DetailOut)
             {
                 Console.ForegroundColor = ConsoleColor.Gray;
@@ -444,6 +438,10 @@ namespace PascalABCCompiler
             OutputDirectory="";
             
             Console.Title = StringResourcesGet("STARTING");
+
+            // загрузка всех парсеров и других составляющих языков  EVA
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
+            
             Reset();
             Console.Title = Compiler.Banner;
             

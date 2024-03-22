@@ -2162,7 +2162,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (function.sym_info is compiled_function_node cfn0 &&
                     cfn0.comperehensive_type is compiled_type_node ctn0 &&
-                    (ctn0.compiled_type.Name == "PABCSystem" + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == "PABCExtensions" + compiler_string_consts.ImplementationSectionNamespaceName)
+                    (ctn0.compiled_type.Name == compiler_string_consts.pascalSystemUnitName + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == compiler_string_consts.pascalExtensionsUnitName + compiler_string_consts.ImplementationSectionNamespaceName)
                     && !ctn0.compiled_type.Assembly.FullName.StartsWith("PABCRtl")) // пропустить функции (методы расширения), определенные в сборке в ПИ PABCSystem, но не в PABCRtl.dll
                     continue;
                 // В режиме only_from_not_extensions пропускать все extensions
@@ -3013,6 +3013,8 @@ namespace PascalABCCompiler.TreeConverter
 
                 // Теперь раз в list осталась одна функция, найти её в functions и только её и оставить
                 // Надо делать копию functions иначе это влияет на следующий код
+                if (list[0].is_generic_function_instance)
+                    list[0] = list[0].original_function;
                 var functions1 = functions.Where(fun => fun.sym_info == list[0]).ToList();
                 if (functions1.Count == 0)
                     return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // это не должно случиться, но вдруг

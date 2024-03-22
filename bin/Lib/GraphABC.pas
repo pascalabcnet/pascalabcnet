@@ -2357,10 +2357,9 @@ function DeleteObject(obj: IntPtr): integer; external 'Gdi32.dll' name 'DeleteOb
 function CreateCompatibleDC(obj: IntPtr): IntPtr; external 'Gdi32.dll' name 'CreateCompatibleDC';
 
 procedure Picture.FloodFill(x, y: integer; c: Color);
-var
-  hdc, hBrush, hOldBrush: IntPtr;
+//var hdc, hBrush, hOldBrush: IntPtr;
 begin
-  var borderColor: Color := GetPixel(x, y);
+  {var borderColor: Color := GetPixel(x, y);
   
   var bc := ColorTranslator.ToWin32(borderColor);
   var cc := ColorTranslator.ToWin32(c);
@@ -2380,7 +2379,24 @@ begin
   
   DeleteObject(hdc);
   
-  Monitor.Exit(f);
+  Monitor.Exit(f);}
+  var st := new Stack<Point>();
+  var targetColor := bmp.GetPixel(x,y);
+  st.Push(Pnt(x,y));
+  while st.Count > 0 do
+  begin
+    var p := st.Pop;
+    if (p.x < 0) or (p.x >= WindowWidth) or (p.y < 0) or (p.y >= WindowHeight) then
+      continue;
+    if bmp.GetPixel(p.x,p.y) = targetColor then
+    begin
+      bmp.SetPixel(p.x,p.y,c);
+      st.Push(Pnt(p.x,p.y-1));
+      st.Push(Pnt(p.x,p.y+1));
+      st.Push(Pnt(p.x-1,p.y));
+      st.Push(Pnt(p.x+1,p.y));
+    end;
+  end;
 end;
 
 procedure Picture.Clear;

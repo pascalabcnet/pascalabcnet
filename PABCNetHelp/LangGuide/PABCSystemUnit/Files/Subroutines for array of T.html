@@ -51,13 +51,19 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает список случайным образом</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по возрастанию</td></tr>
+<tr><td><code><b>procedure</b> Sort(a: <b>array</b>  <b>of</b> string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; cmp: (T,T)-&gt;integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; less: (T,T)-&gt;boolean);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T,TKey&gt;(a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;TKey);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по ключу</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по ключу</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию</td></tr>
+<tr><td><code><b>procedure</b> Sort(<b>var</b> l: List&lt;string&gt;);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;; cmp: (T,T)-&gt;integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
@@ -65,13 +71,23 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по критерию сортировки, задаваемому функцией сравнения less</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T,T1&gt;(<b>var</b> l: List&lt;T&gt;; keySelector: T-&gt;T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию по ключу</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(<b>var</b> l: List&lt;T&gt;; keySelector: T-&gt;string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию</td></tr>
+<tr><td><code><b>procedure</b> SortDescending(a: <b>array</b>  <b>of</b> string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T,T1&gt;(<b>var</b> a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию по ключу</td></tr>
+<tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(<b>var</b> a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(l: List&lt;T&gt;);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по убыванию</td></tr>
+<tr><td><code><b>procedure</b> SortDescending(<b>var</b> l: List&lt;string&gt;);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по убыванию</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T,T1&gt;(<b>var</b> l: List&lt;T&gt;; keySelector: T-&gt;T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по убыванию по ключу</td></tr>
+<tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(<b>var</b> l: List&lt;T&gt;; keySelector: T-&gt;string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по убыванию по ключу</td></tr>
 </table>
 </body></HTML>

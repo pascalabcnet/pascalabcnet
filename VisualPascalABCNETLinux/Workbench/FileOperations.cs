@@ -10,6 +10,7 @@ using System.Drawing;
 //using ICSharpCode.FormsDesigner;
 using VisualPascalABCPlugins;
 using WeifenLuo.WinFormsUI.Docking;
+using PascalABCCompiler;
 
 namespace VisualPascalABC
 {

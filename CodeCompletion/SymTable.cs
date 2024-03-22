@@ -10,6 +10,8 @@ using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using System.Linq;
+using PascalABCCompiler;
+using PascalABCCompiler.TreeConverter;
 
 namespace CodeCompletion
 {
@@ -142,7 +144,7 @@ namespace CodeCompletion
         public static string GetTopScopeName(SymScope sc)
         {
             if (sc == null || sc.si == null) return "";
-            if (sc.si.name == "" || sc.si.name.Contains("$") || sc.si.name == PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name) return "";
+            if (sc.si.name == "" || sc.si.name.Contains("$") || sc.si.name == PascalABCCompiler.TreeConverter.compiler_string_consts.pascalSystemUnitName) return "";
             if (sc is ProcScope) return "";
             return sc.si.name + ".";
         }
@@ -493,7 +495,7 @@ namespace CodeCompletion
         
         private bool hasUsesCycle(SymScope unit, int deep=0)
         {
-            if (unit.Name == "PABCSystem")
+            if (unit.Name == compiler_string_consts.pascalSystemUnitName)
                 return true;
             if (deep > 100)
                 return true;
@@ -523,7 +525,7 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            if (this.si.name != "PABCSystem" || unit is NamespaceScope)
+            if (this.si.name != compiler_string_consts.pascalSystemUnitName || unit is NamespaceScope)
                 used_units.Add(unit);
         }
 

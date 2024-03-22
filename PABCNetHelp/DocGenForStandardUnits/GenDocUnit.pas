@@ -92,6 +92,15 @@ begin
   WriteLines('__PABC1.pas',l);
 end;
 
+function ClearParam(s: string): string;
+begin
+  var ind := Pos('<param',s);
+  var ind2 := Pos('</param>',s,ind + 1);
+  if (ind > 0) and (ind2 > 0) then
+    s := '///';
+  Result := s;
+end;
+
 procedure Step3;
 const fname = '__PABC1.pas';
 begin
@@ -99,13 +108,19 @@ begin
   var Prev: string := '';
   foreach var s in ReadLines(fname) do
   begin
-    if Prev.StartsWith('/// ') and s.StartsWith('///') and not s.StartsWith('///-') then
+    // Если есть summary, то взять только внутренность
+    var s1 := s.Replace('<summary>','').Replace('</summary>','');
+    // Если есть <param, то выбросить всю внутренность 
+    s1 := ClearParam(s1);
+    
+    if Prev.StartsWith('/// ') and s1.StartsWith('///') and not s1.StartsWith('///-') then
     begin
-      l[l.Count-1] := l[l.Count-1] + '' + s.Remove(0,3).Trim;
+      l[l.Count-1] := l[l.Count-1] + '' + s1.Remove(0,3).Trim;
     end
-    else l.Add(s);    
-    Prev := s;
+    else l.Add(s1);    
+    Prev := s1;
   end;
+  l := l.Where(s -> s <> '///').ToList;
   
   WriteLines('__PABC1-1.pas',l);
 end;

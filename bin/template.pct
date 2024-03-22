@@ -173,6 +173,14 @@ begin
   |
 end.
 
+[grabc]
+uses GraphABC;
+
+begin
+  |
+end.
+
+
 [wf]
 {$reference System.Windows.Forms.dll}
 {$reference System.Drawing.dll}

@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (04.11.2023)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (27.02.2024)
 unit School;
 
 interface
@@ -763,6 +763,7 @@ begin
       if prime > n then break;
       if prime >= m then Result.Add(prime)
     end;
+    if Result.Count = 0 then exit;
     m := Result[^1] + 1;
     if m >= n then exit
   end;  
@@ -1440,7 +1441,7 @@ function CalcIP.GenAddr: sequence of Addr32;
 begin
   var n := n_hosts;
   if n > 0 then
-    for var i := 0 to n_hosts - 1 do
+    for var i := 1 to n_hosts do
       yield network32 + i
   else yield sequence Seq&<Addr32>;
 end;

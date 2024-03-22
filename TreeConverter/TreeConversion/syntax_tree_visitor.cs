@@ -14962,7 +14962,7 @@ namespace PascalABCCompiler.TreeConverter
             var cnf = exp as common_namespace_function_call;
             if (cnf != null)
             {
-                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem") || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
             return convert_strong_to_constant_node(exp, exp.type, is_const_section && is_userdefined, is_const_section);
         }
@@ -15086,7 +15086,7 @@ namespace PascalABCCompiler.TreeConverter
             var cnf = exp as common_namespace_function_call;
             if (cnf != null)
             {
-                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem") || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
 
             return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
@@ -19809,6 +19809,36 @@ namespace PascalABCCompiler.TreeConverter
             ret.reset(); // SSM 19.01.17 не возвращать семантическое значение т.к. ничего не нужно добавлять в текущий список операторов!!
         }
 
+        // создать словарик чтобы для одного _visitor.context.CurrentScope.ScopeNum и для одного letVarExpr 
+        // мы заходили в этот visit один раз
+        private Dictionary<let_var_expr, List<int>> letDict = new Dictionary<let_var_expr, List<int>>();
+
+        // можно попробовать в одно ПИ не добавлять дважды - хранить словарь (let-переменная, номера ПИ в кот добавлена)
+        public override void visit(SyntaxTree.let_var_expr let_expr)
+        {
+            if (letDict.ContainsKey(let_expr) && letDict[let_expr].Contains(context.CurrentScope.ScopeNum))
+                return;
+
+            if (!letDict.ContainsKey(let_expr))
+                letDict[let_expr] = new List<int>();
+            letDict[let_expr].Add(context.CurrentScope.ScopeNum);
+
+            var exn = (expression_node)convert_strong(let_expr.ex);
+            var sav = new semantic_addr_value(exn);
+            var vds = new var_statement(let_expr.id, sav, let_expr.source_context);
+            if (let_expr.visit_var)
+            {
+                visit(vds.var_def);
+                //let_expr.visit_var = false;
+            }
+            else
+            {
+
+            }
+            return_value(exn);
+        }
+
+
         public override void visit(SyntaxTree.expression_as_statement node)
         {
             return_value((statement_node)convert_strong(node.expr));
@@ -21538,7 +21568,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public method_call ToNullable(expression e)
         {
-            var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
+            var dn = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("DQNToNullable"));
             return new method_call(dn, new expression_list(e), e.source_context);
         }
 
@@ -21561,7 +21591,7 @@ namespace PascalABCCompiler.TreeConverter
                 try_convert_typed_expression_to_function_call(ref av_cs);
                 if (!type_table.is_with_nil_allowed(av_cs.type))
                 {
-                    var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
+                    var dn = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("DQNToNullable"));
                     (av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false
                      = new method_call(dn, new expression_list((av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false), av.source_context);
 

@@ -585,8 +585,10 @@ namespace VisualPascalABC
         {
 
             if(_mainFormWindowStateMaximized)
-                this.WindowState = FormWindowState.Maximized;
-            //PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = "Russi         
+                this.WindowState = FormWindowState.Maximized;        
+
+            // загрузка всех парсеров и других составляющих языков  EVA
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
 
             ChangedSelectedTab();
             VisualEnvironmentCompiler.ChangeVisualEnvironmentState += new ChangeVisualEnvironmentStateDelegate(VisualEnvironmentCompiler_ChangeVisualEnvironmentState);
@@ -1638,7 +1640,6 @@ namespace VisualPascalABC
                 var aw = ABCHealthForm.Width;
                 var ah = ABCHealthForm.Height;
                 var c = new PascalABCCompiler.Compiler();
-                c.Reload();
                 var errors = new List<PascalABCCompiler.Errors.Error>();
                 var warnings = new List<PascalABCCompiler.Errors. CompilerWarning>();
 

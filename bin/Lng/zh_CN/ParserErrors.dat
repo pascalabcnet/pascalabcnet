@@ -8,5 +8,6 @@ UNEXPECTED_SYMBOL{0}=意外的符号 '{0}'
 BAD_EXPR=错误的表达式
 EXPECTED{0}={0} 预期
 BIG_CHAR_NUMBER=字符常量太大
+LOAD_ERROR{0}=解析器加载错误 {0}
 BAD_SOURCEFILE{0}_EXT=无法为文件 '{0}' 选择解析器
 COMPILATION_ERROR{0}{1}{2}={0}{1} 编译错误: {2}

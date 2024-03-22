@@ -10,6 +10,7 @@ using PascalABCCompiler.Errors;
 using PascalABCCompiler.TreeRealization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Data;
 
 namespace PascalABCCompiler
 {
@@ -388,10 +389,16 @@ namespace PascalABCCompiler
             sendCommand(ConsoleCompilerConstants.CompilerOptionsClearStandartModules);
             if (compilerOptions.Locale != null)
                 sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
-            foreach (PascalABCCompiler.CompilerOptions.StandardModule sm in compilerOptions.StandardModules)
-                sendCommand(
-                    ConsoleCompilerConstants.CompilerOptionsStandartModule,
-                    sm.Name,(int)sm.AddMethod,(int)sm.AddToLanguages);
+            
+            foreach (var kv in compilerOptions.StandardModules)
+            {
+                foreach (CompilerOptions.StandardModule module in kv.Value)
+                {
+					sendCommand(ConsoleCompilerConstants.CompilerOptionsStandartModule,
+					    module.name, (int)module.addMethod, module.languageToAdd);
+				}
+            }
+
         }
 
         public delegate void EnvorimentIdleDelegate();
@@ -566,6 +573,7 @@ namespace PascalABCCompiler
             pabcnetcProcess.StartInfo.CreateNoWindow = true;
             pabcnetcProcess.StartInfo.RedirectStandardOutput = true;
             pabcnetcProcess.StartInfo.RedirectStandardInput = true;
+            pabcnetcProcess.StartInfo.RedirectStandardError = true;
             pabcnetcProcess.EnableRaisingEvents = true;
             pabcnetcProcess.StartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
             pabcnetcProcess.Exited += pabcnetcProcess_Exited;
@@ -583,6 +591,8 @@ namespace PascalABCCompiler
 
         void pabcnetcProcess_Exited(object sender, EventArgs e)
         {
+            string error = pabcnetcProcess.StandardError.ReadToEnd();
+
             if (!compilerReloading)
             {
                 pabcnetcProcess = null;

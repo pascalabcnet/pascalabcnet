@@ -27,7 +27,8 @@ UNNECESSARY $endif=Лишний $endif
 ENDIF_ABSENT=Незакрытая директива $ifdef или $ifndef - отсутствует $endif
 UNNECESSARY $else=Лишний $else
 TYPE_NAME_EXPECTED=Ожидался тип
-
+MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS=Мультистрочная строка содержит несовместимые отступы
+NON_WHITESPACE_CHARACTERS_BEFORE_CLOSING_QUOTES_OF_MULTILINE_STRING=Перед закрывающими кавычками многострочной строки не должно быть непробельных символов 
 
 EOF1=конец файла
 EOF=(конец файла)

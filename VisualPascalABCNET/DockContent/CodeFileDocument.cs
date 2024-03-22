@@ -71,7 +71,7 @@ namespace VisualPascalABC
             TextEditor.EnableFolding = MainForm.UserOptions.EnableFolding; // SSM 4.09.08
             
 //            TextEditor.EnableFolding = MainForm.UserOptions.ShowLineNums;
-            TextEditor.ShowMatchingBracket = MainForm.UserOptions.ShowMathBraket;
+            TextEditor.ShowMatchingBracket = MainForm.UserOptions.ShowMatchBracket;
             TextEditor.ActiveTextAreaControl.TextArea.MouseClick += new MouseEventHandler(edit_MouseClick);
             TextEditor.Document.DocumentChanged += new ICSharpCode.TextEditor.Document.DocumentEventHandler(Document_DocumentChanged);
             TextEditor.ActiveTextAreaControl.SelectionManager.SelectionChanged += new EventHandler(SelectionManager_SelectionChanged);
@@ -520,7 +520,7 @@ namespace VisualPascalABC
                 VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName,
                 existing_text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
-                Warnings);
+                Warnings, PascalABCCompiler.Parsers.ParseMode.Normal);
             PascalABCCompiler.SyntaxTree.unit_module um = sn as PascalABCCompiler.SyntaxTree.unit_module;
             bool good_syntax = um != null;
             PascalABCCompiler.SyntaxTree.type_declaration form_decl = null;

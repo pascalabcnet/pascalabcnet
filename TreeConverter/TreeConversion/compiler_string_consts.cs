@@ -320,6 +320,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string default_constructor_name = "create";
 
         // SSM - Константы директив компилятора. Вообще разбросаны по коду. Пусть будут здесь (3.1.2011)
+        #region COMPILER DIRECTIVES
         public static string compiler_directive_apptype = "apptype";
         public static string compiler_directive_reference = "reference";
         public static string include_namespace_directive = "includenamespace";
@@ -345,20 +346,30 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_define = "define";
         public static string compiler_directive_include = "include";
         public static string compiler_directive_targetframework = "targetframework";
+        public const string version_string = "version";
+        public const string product_string = "product";
+        public const string company_string = "company";
+        public const string copyright_string = "copyright";
+        public const string trademark_string = "trademark";
+        public const string main_resource_string = "mainresource";
+        public const string title_string = "title";
+        public const string description_string = "description";
+        #endregion
 
-        // SSM (3.1.2011) Перенес эти константы сюда. 
-        public static string version_string = "version";
-        public static string product_string = "product";
-        public static string company_string = "company";
-        public static string copyright_string = "copyright";
-        public static string trademark_string = "trademark";
-        public static string main_resource_string = "mainresource";
-        public static string title_string = "title";
-        public static string description_string = "description";
-
+        // SSM (3.1.2011) Перенес эти константы сюда.
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
-        public static string system_unit_file_name = "PABCSystem";
-        public static string extensions_unit_file_name = "PABCExtensions";
+        #region PASCAL LANGUAGE
+        public const string pascalLanguageName = "PascalABC.NET";
+        public const string pascalSourceFileExtension = ".pas";
+        public const string pascalCompiledUnitExtension = ".pcu";
+        public static string pascalSystemUnitName = "PABCSystem";
+        public static string pascalExtensionsUnitName = "PABCExtensions";
+        public static readonly string[] pascalDefaultStandardModules = new string[]
+        {
+            pascalSystemUnitName,
+            pascalExtensionsUnitName
+        };
+        #endregion
 
         public static string get_array_type_name(string type_name, int rank)
         {

@@ -28,6 +28,9 @@ UNNECESSARY $endif=Extra $endif
 ENDIF_ABSENT=Not closed directive $ifdef or $ifndef - $endif is absent
 UNNECESSARY $else=Extra $else
 TYPE_NAME_EXPECTED=Type expected
+MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS=Multiline string contains inconsistent indents
+NON_WHITESPACE_CHARACTERS_BEFORE_CLOSING_QUOTES_OF_MULTILINE_STRING=There should be no non-whitespace characters before the closing quotes of the multiline string
+
 
 EOF1=end of file
 EOF=(end of file)

@@ -528,7 +528,7 @@ begin
   end;
   'Min3': begin 
     CheckData(InitialInput := |cRe|*3);
-    Generatetests(10,tRe(1,100)*2);
+    Generatetests(10,tRe(1,100)*3);
     CheckOutput(Min(Re(0),Re(1),Re(2)));
   end;
   'SeriesMin2': begin 

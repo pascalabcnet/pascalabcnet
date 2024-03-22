@@ -145,13 +145,21 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез массива от индекса from с шагом step длины не более count</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
+<tr><td><code><b>procedure</b> Sort(Self: <b>array</b>  <b>of</b> string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cmp: (T,T) -&gt;integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T,T1&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию по ключу</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(Self: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию</td></tr>
+<tr><td><code><b>procedure</b> SortDescending(Self: <b>array</b>  <b>of</b> string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T,T1&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
+<tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
 <tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: T-&gt;T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>

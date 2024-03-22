@@ -7,6 +7,7 @@ using QUT.Gppg;
 using GPPGParserScanner;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace PascalABCSavParser
 {
@@ -455,6 +456,61 @@ namespace PascalABCSavParser
             }
             text = ReplaceSpecialSymbols(text.Substring(1, text.Length - 2));
             lt = new string_const(text);
+            lt.source_context = sc;
+            return lt;
+        }
+
+        public literal create_multiline_string_const(string text, SourceContext sc)
+        {
+            if (build_tree_for_formatter)
+            {
+                literal lt1 = new string_const(text);
+                lt1.source_context = sc;
+                return lt1;
+            }
+
+            var NewLine = System.Environment.NewLine;
+            // Многострочная строка должна содержать как минимум два перехода на новую строку
+            // разобьём её по символам перехода на новую строку
+            //var ss = text.Split('\n');
+            text = text.Substring(3, text.Length - 6);
+            var ss = Regex.Split(text, System.Environment.NewLine);
+            // Если одна строка, то ошибка - MULTILINE_STRING_SHOULD_BE_PLACED_ON_SEVERAL_LINES
+            if (ss.Length == 1)
+                //this.AddErrorFromResource("MULTILINE_STRING_SHOULD_BE_PLACED_ON_SEVERAL_LINES", sc);
+                return create_string_const(text, sc);
+
+            // Проверим первую строку
+            ss[0] = ss[0].Trim();
+            if (ss[0].Length > 0)
+                // мы сюда точно не должны попасть. Это должна быть обычная строка!
+                this.AddErrorFromResource("IMPOSSIBLE_MULTILINE_ERROR", sc);
+
+            if (ss[ss.Length - 1].Trim().Length > 0)
+                // There should be no non-whitespace characters before the closing quotes of the multiline string
+                // Перед закрывающими кавычками многострочной строки не должно быть непробельных символов 
+                this.AddErrorFromResource("NON_WHITESPACE_CHARACTERS_BEFORE_CLOSING_QUOTES_OF_MULTILINE_STRING", sc);
+
+            // Количество лидирующих пробелов в последней строке
+            var numspaces = ss[ss.Length - 1].TakeWhile(Char.IsWhiteSpace).Count();
+            // Во всех строках от первой до предпоследней (если они есть) количество лидирующих пробелов должно быть не меньше чем в последней
+            // мультистрочная строка содержит несовместимые отступы
+            // MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS
+            for (var i = 1; i < ss.Length - 1; i++)
+                if (ss[i].TakeWhile(Char.IsWhiteSpace).Count() < numspaces)
+                {
+                    this.AddErrorFromResource("MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS", sc);
+                    break;
+                }
+            // Теперь удалить ровно такое количество пробелов в каждой строке с 1 по предпоследнюю
+            for (var i = 1; i < ss.Length - 1; i++)
+                ss[i] = ss[i].Remove(0, numspaces);
+            // Наконец, соберем text из всех строк с первой по предпоследнюю
+            var ll = ss.ToList();
+            ll.RemoveAt(0);
+            ll.RemoveAt(ll.Count - 1);
+            text = string.Join(NewLine, ll.ToArray());
+            literal lt = new string_const(text);
             lt.source_context = sc;
             return lt;
         }

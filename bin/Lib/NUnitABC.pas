@@ -24,6 +24,7 @@ type
   RepeatAttribute = NUnit.Framework.RepeatAttribute;
   TestFixtureAttribute = NUnit.Framework.TestFixtureAttribute;
   ValuesAttribute = NUnit.Framework.ValuesAttribute;
+  SequentialAttribute = NUnit.Framework.SequentialAttribute;
 
   Assert = NUnit.Framework.Assert;
   Assume = NUnit.Framework.Assume;

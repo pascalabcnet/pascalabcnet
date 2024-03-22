@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using PascalABCCompiler;
 
 namespace VisualPascalABC
 {

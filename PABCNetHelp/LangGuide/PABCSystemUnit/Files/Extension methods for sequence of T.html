@@ -25,6 +25,7 @@
 <param name="Keyword" value="PrintLines">
 <param name="Keyword" value="Println">
 <param name="Keyword" value="Product">
+<param name="Keyword" value="Scan">
 <param name="Keyword" value="SkipLast">
 <param name="Keyword" value="Slice">
 <param name="Keyword" value="Sorted">
@@ -109,7 +110,11 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕревращает последовательность в последовательность n-ок соседних элементов</td></tr>
 <tr><td><code><b>function</b> Order&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает отсортированную по возрастанию последовательность</td></tr>
+<tr><td><code><b>function</b> Order(Self: <b>sequence </b>  <b>of</b> string): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает отсортированную по возрастанию последовательность</td></tr>
 <tr><td><code><b>function</b> OrderDescending&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает отсортированную по убыванию последовательность</td></tr>
+<tr><td><code><b>function</b> OrderDescending(Self: <b>sequence </b>  <b>of</b> string): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает отсортированную по убыванию последовательность</td></tr>
 <tr><td><code><b>function</b> Pairwise&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> (T, T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕревращает последовательность в последовательность пар соседних элементов</td></tr>
@@ -149,6 +154,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает произведение элементов последовательности, спроектированных на числовое значение</td></tr>
 <tr><td><code><b>function</b> Product(Self: <b>sequence </b>  <b>of</b> BigInteger): BigInteger;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает произведение элементов последовательности</td></tr>
+<tr><td><code><b>function</b> Scan&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T) -&gt; T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность, в которой первый элемент равен первому элементу исходной последовательности, а каждый следующий -результат применени€ функции func к предыдущему элементу новой последовательности и текущему элементу исходной</td></tr>
+<tr><td><code><b>function</b> Scan&lt;T,T1&gt;(Self: <b>sequence </b>  <b>of</b> T; first: T1; func: (T1,T) -&gt; T1): <b>sequence </b>  <b>of</b> T1;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность, в которой первый элемент равен first, а каждый следующий -результат применени€ функции func к предыдущему элементу новой последовательности и текущему элементу исходной</td></tr>
 <tr><td><code><b>function</b> SkipLast&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T; count: integer := 1): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность без последних count элементов</td></tr>
 <tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from, step: integer): <b>sequence </b>  <b>of</b> T;</code>

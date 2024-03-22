@@ -4617,6 +4617,7 @@
       <HelpData Key="statement_list.void Add(statement st, )" Value="" />
       <HelpData Key="statement_list.void Add(statement st, SourceContext sc)" Value="" />
       <HelpData Key="string_const" Value="Строковая константа" />
+      <HelpData Key="string_const.IsMultiline" Value="" />
       <HelpData Key="string_const.Value" Value="Значенеи строковой константы" />
       <HelpData Key="string_const.override string ToString()" Value="" />
       <HelpData Key="string_num_definition" Value="Представление для класса строки вида string[256]." />

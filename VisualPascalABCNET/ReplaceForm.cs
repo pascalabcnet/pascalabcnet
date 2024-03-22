@@ -77,7 +77,7 @@ namespace VisualPascalABC
             resOffset = -1;
             //resLength = -1;
             System.Text.RegularExpressions.RegexOptions options = System.Text.RegularExpressions.RegexOptions.None;
-            if (!cbMathCase.Checked)
+            if (!cbMatchCase.Checked)
                 options = options | System.Text.RegularExpressions.RegexOptions.IgnoreCase;
             if (cbSearchUp.Checked)
                 options = options | System.Text.RegularExpressions.RegexOptions.RightToLeft;
@@ -205,7 +205,7 @@ namespace VisualPascalABC
             if (findSuccess)
             {
                 System.Text.RegularExpressions.RegexOptions options = System.Text.RegularExpressions.RegexOptions.None;
-                if (!cbMathCase.Checked)
+                if (!cbMatchCase.Checked)
                     options = options | System.Text.RegularExpressions.RegexOptions.IgnoreCase;
                 if (cbSearchUp.Checked)
                     options = options | System.Text.RegularExpressions.RegexOptions.RightToLeft;

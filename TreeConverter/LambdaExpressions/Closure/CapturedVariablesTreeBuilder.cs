@@ -95,6 +95,18 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+
+        // SSM 2024.01.09
+        public override void visit(let_var_expr letVarExpr)
+        {
+            ProcessNode(letVarExpr.ex);
+
+            _visitor.ProcessNode(letVarExpr);
+
+            SymbolInfo si = _visitor.context.find_first(letVarExpr.id.name);
+            _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(letVarExpr, si));
+        }
+
         public override void visit(statement_list stmtList)
         {
             if (stmtList.IsInternal) // просто обойти как продолжение объемлющего statement_list

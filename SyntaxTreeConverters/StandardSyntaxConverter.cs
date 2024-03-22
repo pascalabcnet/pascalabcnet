@@ -27,7 +27,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             //            stat.ProcessNode(root);
 #endif
             // SSM 02.01.24
-            LetExprVisitor.New.ProcessNode(root);
+            //LetExprVisitor.New.ProcessNode(root);
 
             // new range - до всего! До выноса выражения с лямбдой из foreach. 11.07 добавил поиск yields и присваивание pd.HasYield
             NewRangeDesugarAndFindHasYieldVisitor.New.ProcessNode(root);
