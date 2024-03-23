@@ -6,6 +6,7 @@ mkdir Release\PascalABCNETLinux\LibSource\
 mkdir Release\PascalABCNETLinux\Lng\Rus
 mkdir Release\PascalABCNETLinux\Lng\Eng
 mkdir Release\PascalABCNETLinux\Highlighting\
+mkdir Release\PascalABCNETLinux\LanguageKits\
 del Release\PascalABCNETLinux.zip
 
 
@@ -35,6 +36,7 @@ copy bin\pabcnetc.exe.config Release\PascalABCNETLinux\pabcnetc.exe.config
 copy bin\pabcnetcclear.exe Release\PascalABCNETLinux\pabcnetcclear.exe
 copy bin\pabcnetcclear.exe.config Release\PascalABCNETLinux\pabcnetcclear.exe.config
 copy bin\ParserTools.dll Release\PascalABCNETLinux\ParserTools.dll
+copy bin\LanguageIntegrator.dll Release\PascalABCNETLinux\LanguageIntegrator.dll
 copy bin\PascalABCNET.chm Release\PascalABCNETLinux\PascalABCNET.chm
 copy bin\PascalABCNETLinux.exe Release\PascalABCNETLinux\PascalABCNETLinux.exe
 copy bin\PascalABCNETLinux.exe.config Release\PascalABCNETLinux\PascalABCNETLinux.exe.config
