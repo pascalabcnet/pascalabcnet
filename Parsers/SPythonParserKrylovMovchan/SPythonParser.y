@@ -40,7 +40,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL
 %token <ex> INTNUM REALNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
@@ -59,7 +59,7 @@
 
 %type <id> identifier
 %type <ex> expr var_reference variable proc_func_call const_value
-%type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt
+%type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_and_stmt_list
 %type <stn> stmt_list block
@@ -215,6 +215,17 @@ stmt
 		{ $$ = $1; }
 	| continue_stmt
 		{ $$ = $1; }
+	| global_stmt
+		{ $$ = $1; }
+	;
+
+global_stmt
+	: GLOBAL identifier
+		{
+			symbolTable.Add($2.name);
+			$$ = new empty_statement();
+			$$.source_context = null;
+		}
 	;
 
 identifier

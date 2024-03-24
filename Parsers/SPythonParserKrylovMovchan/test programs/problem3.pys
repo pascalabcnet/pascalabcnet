@@ -1,6 +1,7 @@
 ﻿a = 10
 
 def f():
+    global a
     a = 2
     print(a)
 

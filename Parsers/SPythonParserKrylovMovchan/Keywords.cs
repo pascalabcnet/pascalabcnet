@@ -61,6 +61,7 @@ namespace SPythonParser
             keywords.Add(Convert("not"), (int)Tokens.NOT);
             keywords.Add(Convert("import"), (int)Tokens.IMPORT);
             keywords.Add(Convert("from"), (int)Tokens.FROM);
+            keywords.Add(Convert("global"), (int)Tokens.GLOBAL);
         }
 
         static Keywords()
