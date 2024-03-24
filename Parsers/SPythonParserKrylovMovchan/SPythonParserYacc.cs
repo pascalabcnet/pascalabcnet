@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 24.03.2024 15:24:15
+// DateTime: 24.03.2024 15:45:16
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -480,10 +480,19 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 {
 			foreach (ident id in (ValueStack[ValueStack.Depth-1].stn as ident_list).idents) {
 				if (globalVariables.Contains(id.name)) {
-					symbolTable.Add(id.name);
-					CurrentSemanticValue.stn = new empty_statement();
-					CurrentSemanticValue.stn.source_context = null;
+					// �?акое возможно �?ол�?ко если имя па�?аме�?�?а совпадае�? с именем глобал�?ной пе�?еменной
+					if (symbolTable.Contains(id.name)) {
+						parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", CurrentLocationSpan, id.name);
+						CurrentSemanticValue.stn = null;
+					}
+					// вс�? о�?ли�?но!
+					else {
+						symbolTable.Add(id.name);
+						CurrentSemanticValue.stn = new empty_statement();
+						CurrentSemanticValue.stn.source_context = null;
+					}
 				}
+				// не�? глобал�?ной пе�?еменной с �?аким именем
 				else {
 					parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", CurrentLocationSpan, id.name);
 					CurrentSemanticValue.stn = null;

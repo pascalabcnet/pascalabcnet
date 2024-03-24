@@ -225,10 +225,19 @@ global_stmt
 		{
 			foreach (ident id in ($2 as ident_list).idents) {
 				if (globalVariables.Contains(id.name)) {
-					symbolTable.Add(id.name);
-					$$ = new empty_statement();
-					$$.source_context = null;
+					// такое возможно только если имя параметра совпадает с именем глобальной переменной
+					if (symbolTable.Contains(id.name)) {
+						parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", @$, id.name);
+						$$ = null;
+					}
+					// всё отлично!
+					else {
+						symbolTable.Add(id.name);
+						$$ = new empty_statement();
+						$$.source_context = null;
+					}
 				}
+				// нет глобальной переменной с таким именем
 				else {
 					parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", @$, id.name);
 					$$ = null;
