@@ -2666,13 +2666,15 @@ namespace PascalABCCompiler
             List<string> names = new List<string>();
             foreach (SyntaxTree.unit_or_namespace un in usesList)
             {
-                string name = SyntaxTree.Utils.IdentListToString(un.name.idents, ".").ToLower();
+                var uui = un as SyntaxTree.uses_unit_in;
+                string name_str = (uui!=null ? uui.in_file.Value : SyntaxTree.Utils.IdentListToString(un.name.idents, "."));
+                var name_lower = name_str.ToLower();
                 if (un.source_context != null)
                 {
-                    if (names.Contains(name))
-                        throw new DuplicateUsesUnit(currentCompilationUnit.SyntaxTree.file_name, name, un.source_context);
+                    if (names.Contains(name_lower))
+                        throw new DuplicateUsesUnit(currentCompilationUnit.SyntaxTree.file_name, name_str, un.source_context);
                     else
-                        names.Add(name);
+                        names.Add(name_lower);
                 }
             }
         }
@@ -2858,7 +2860,7 @@ namespace PascalABCCompiler
             if (Path.IsPathRooted(FileName))
             {
                 found_dir_ind = 0;
-                return File.Exists(FileName) ? FileName : null;
+                return SourceFileExists(FileName) ? FileName : null;
             }
 
             for (int dir_i = 0; dir_i < Dirs.Length; ++dir_i)
@@ -2866,7 +2868,7 @@ namespace PascalABCCompiler
                 {
                     var Dir = Dirs[dir_i];
                     var res = Path.Combine(Dir, FileName);
-                    if (File.Exists(res))
+                    if (SourceFileExists(res))
                     {
                         found_dir_ind = dir_i;
                         // Path.GetFullPath чтобы нормализовать
@@ -2955,37 +2957,44 @@ namespace PascalABCCompiler
 
         public string GetUnitFileName(SyntaxTree.unit_or_namespace unitNode, string currentPath)
         {
-            if (unitNode is SyntaxTree.uses_unit_in unitNodeCasted && unitNodeCasted.name == null)
-                return unitNodeCasted.in_file.Value;
-
-            if (currentPath == null) throw new InvalidOperationException(unitNode.UsesPath());
-
-            var UnitName = unitNode.name.idents[0].name;
+            if (!Path.IsPathRooted(unitNode.UsesPath()) && currentPath == null)
+                throw new InvalidOperationException(unitNode.UsesPath());
+            var UnitName = unitNode.name?.idents[0].name;
 
             if (unitNode is SyntaxTree.uses_unit_in uui)
             {
 
                 TryThrowInvalidPath(uui.in_file.Value, uui.in_file.source_context);
 
-                if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
+                if (UnitName==null)
+                {
+                    UnitName = uui.in_file.Value;
+                    UnitName = Path.GetFileName(UnitName);
+                    UnitName = Path.ChangeExtension(UnitName, null);
+                } else if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
                     throw new UsesInWrongName(unitNode.source_context.FileName, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
             }
+            else if (UnitName == null)
+                throw new InvalidOperationException();
 
+            // UnitName передаётся только для вывода ошибок, а для поиска файла используется второй параметр
             return GetUnitFileName(UnitName, unitNode.UsesPath(), currentPath, unitNode.source_context);
         }
 
-        public string GetUnitFileName(string UnitName, string path, string curr_path, SyntaxTree.SourceContext source_context)
+        public string GetUnitFileName(string UnitName, string path, string currentPath, SyntaxTree.SourceContext source_context)
         {
-            var cache_key = Tuple.Create(path.ToLower(), curr_path?.ToLower());
+            if (UnitName == null)
+                throw new ArgumentNullException(nameof(UnitName));
+            var cache_key = Tuple.Create(path.ToLower(), currentPath?.ToLower());
             string res;
             if (GetUnitFileNameCache.TryGetValue(cache_key, out res))
                 return res;
 
             // число приоритета меньше = более важная папка
             // может выглядеть задом-наперёд, но так должно быть проще в будущем добавлять папки...
-            var SourceFileName = FindSourceFileName(path, curr_path, out var SourceFilePriority);
-            var PCUFileName = FindPCUFileName(path, curr_path, out var PCUFilePriority);
+            var SourceFileName = FindSourceFileName(path, currentPath, out var SourceFilePriority);
+            var PCUFileName = FindPCUFileName(path, currentPath, out var PCUFilePriority);
 
             var SourceFileExists = SourceFileName != null;
             //ToDo то есть Rebuild режим игнорирует .pcu, даже если нет .pas файла?
@@ -2993,12 +3002,7 @@ namespace PascalABCCompiler
             var PCUFileExists = (!CompilerOptions.Rebuild || !SourceFileExists) && PCUFileName != null;
 
             if (!PCUFileExists && !SourceFileExists)
-                if (UnitName == null)
-                    // вызов с "unitFileName == null" должен быть только там, где уже известно что хотя бы какой то файл есть
-                    // если где то ещё будет исопльзоваться unitFileName или source_context - надо будет добавить такую же проверку
-                    throw new InvalidOperationException(nameof(UnitName));
-                else
-                    throw new UnitNotFound(source_context.FileName, UnitName, source_context);
+                throw new UnitNotFound(source_context.FileName, UnitName, source_context);
 
             if (PCUFileExists && SourceFileExists)
             {
@@ -3024,9 +3028,9 @@ namespace PascalABCCompiler
             }
 
             if (PCUFileExists)
-                res = Path.Combine(curr_path, PCUFileName);
+                res = Path.Combine(currentPath??"", PCUFileName);
             else if (SourceFileExists)
-                res = Path.Combine(curr_path, SourceFileName);
+                res = Path.Combine(currentPath??"", SourceFileName);
             else
                 throw new InvalidOperationException(nameof(SourceFileExists)); // тело "if (PCUFileExists && SourceFileExists)" не должно присваивать false обоим переменным
 
@@ -3062,6 +3066,7 @@ namespace PascalABCCompiler
                 bool isModuleAlreadyInUsesSection = false;
                 foreach (SyntaxTree.unit_or_namespace currentUnitNode in usesList)
                 {
+                    if (currentUnitNode is SyntaxTree.uses_unit_in) continue;
                     if (currentUnitNode.name.idents.Count == 1 && currentUnitNode.name.idents[0].name.ToLower() == moduleName.ToLower())
                     {
                         isModuleAlreadyInUsesSection = true;
@@ -3930,7 +3935,7 @@ namespace PascalABCCompiler
             shouldReturnCurrentUnit = false;
             for (int i = interfaceUsesList.Count - 1 - currentUnit.InterfaceUsedUnits.Count; i >= 0; i--) // здесь откидываются модули с уже откомпилированными интерфейсами из секции uses (см. комментарий, обозначенный #1710)
             {
-                if (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || namespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name))
+                if (!(interfaceUsesList[i] is SyntaxTree.uses_unit_in) && (IsPossibleNetNamespaceOrStandardPasFile(interfaceUsesList[i], true, currentPath) || namespaces.ContainsKey(interfaceUsesList[i].name.idents[0].name)))
                 {
                     currentUnit.InterfaceUsedUnits.AddElement(new namespace_unit_node(GetNamespace(interfaceUsesList[i])), null);
                     currentUnit.possibleNamespaces.Add(interfaceUsesList[i]);
@@ -4036,7 +4041,7 @@ namespace PascalABCCompiler
             docs = GenUnitDocumentation(currentUnit, sourceText);
 
             #region SEMANTIC CHECKS : DIRECTIVES AND OUTPUT FILE TYPE
-
+            
             // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
             bool isDll = IsDll(currentUnit.SyntaxTree, out var dllDirective);
             SemanticCheckDLLDirectiveOnlyForLibraries(currentUnit.SyntaxTree, isDll, dllDirective);
