@@ -8,8 +8,10 @@
    	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 
 	private SymbolTable symbolTable = new SymbolTable();
+	private SymbolTable globalVariables = new SymbolTable();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
+	private bool isInsideFunction = false;
 
 	public bool is_unit_to_be_parsed = false;
 %}
@@ -227,11 +229,24 @@ identifier
 assign_stmt
 	: identifier ASSIGN expr
 		{
-			if (!symbolTable.Contains($1.name)) {
-				symbolTable.Add($1.name);
+			// объявление
+			if (!symbolTable.Contains($1.name) && (isInsideFunction || !globalVariables.Contains($1.name))) {
 				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
-				$$ = new var_statement(vds, @$);
+
+				// объявление глобальной переменной
+				if (symbolTable.OuterScope == null) {
+					globalVariables.Add($1.name);
+					decl.Add(new variable_definitions(vds, @$), @$);
+					$$ = new empty_statement();
+					$$.source_context = null;
+				}
+				// объявление локальной переменной
+				else {
+					symbolTable.Add($1.name);
+					$$ = new var_statement(vds, @$);
+				}
 			}
+			// присвоение
 			else {
 				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 			}
@@ -420,16 +435,30 @@ NestedSymbolTableEnd
 	;
 
 proc_func_decl
-	: NestedSymbolTableBegin proc_func_header block NestedSymbolTableEnd
+	: NestedSymbolTableBegin proc_func_header InsideFunction block OutsideFunction NestedSymbolTableEnd
 		{
 			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 			//pd1.AssignAttrList(null);
 			//$$ = pd1;
-			$$ = new procedure_definition($2 as procedure_header, new block(null, $3 as statement_list, @3), @$);
+			$$ = new procedure_definition($2 as procedure_header, new block(null, $4 as statement_list, @4), @$);
 
 			var pd = new procedure_definition($2 as procedure_header, null, @2);
             pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
 			decl_forward.Add(pd, @2);
+		}
+	;
+
+InsideFunction
+	:
+		{
+			isInsideFunction = true;
+		}
+	;
+
+OutsideFunction
+	:
+		{
+			isInsideFunction = false;
 		}
 	;
 

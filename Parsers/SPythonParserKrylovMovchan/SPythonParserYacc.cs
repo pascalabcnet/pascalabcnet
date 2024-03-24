@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  LAPTOP-MPBGOA9N
-// DateTime: 22.03.2024 15:48:24
-// UserName: krylo
+// Machine:  DESKTOP-56159VE
+// DateTime: 24.03.2024 11:12:38
+// UserName: ????
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -64,8 +64,10 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
    	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 
 	private SymbolTable symbolTable = new SymbolTable();
+	private SymbolTable globalVariables = new SymbolTable();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
+	private bool isInsideFunction = false;
 
 	public bool is_unit_to_be_parsed = false;
   // End verbatim content from SPythonParser.y
@@ -73,8 +75,8 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
 #pragma warning restore 649
-  private static Rule[] rules = new Rule[82];
-  private static State[] states = new State[145];
+  private static Rule[] rules = new Rule[84];
+  private static State[] states = new State[147];
   private static string[] nonTerms = new string[] {
       "identifier", "expr", "var_reference", "variable", "proc_func_call", "const_value", 
       "expr_list", "optional_expr_list", "proc_func_decl", "return_stmt", "break_stmt", 
@@ -83,15 +85,16 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       "decl_and_stmt_list", "stmt_list", "block", "program", "decl", "param_name", 
       "form_param_sect", "form_param_list", "optional_form_param_list", "proc_func_header", 
       "form_param_type", "simple_type_identifier", "import_clause", "import_clause_one", 
-      "$accept", "NestedSymbolTableBegin", "NestedSymbolTableEnd", };
+      "$accept", "NestedSymbolTableBegin", "NestedSymbolTableEnd", "InsideFunction", 
+      "OutsideFunction", };
 
   static SPythonGPPGParser() {
     states[0] = new State(-3,new int[]{-25,1,-34,3});
     states[1] = new State(new int[]{2,2});
     states[2] = new State(-1);
-    states[3] = new State(new int[]{38,52,6,76,15,57,16,58,30,59,5,95,3,100,10,107,11,110,12,112,14,140,27,-68,9,-68},new int[]{-22,4,-35,138,-21,139,-15,7,-13,8,-1,9,-24,66,-37,67,-14,75,-16,90,-3,91,-4,92,-5,53,-6,93,-17,94,-18,99,-10,106,-11,109,-12,111,-26,136,-9,137});
+    states[3] = new State(new int[]{38,52,6,76,15,57,16,58,30,59,5,95,3,100,10,107,11,110,12,112,14,142,27,-68,9,-68},new int[]{-22,4,-35,140,-21,141,-15,7,-13,8,-1,9,-24,66,-37,67,-14,75,-16,90,-3,91,-4,92,-5,53,-6,93,-17,94,-18,99,-10,106,-11,109,-12,111,-26,138,-9,139});
     states[4] = new State(new int[]{26,5,2,-2});
-    states[5] = new State(new int[]{38,52,6,76,15,57,16,58,30,59,5,95,3,100,10,107,11,110,12,112,27,-68,9,-68},new int[]{-21,6,-15,7,-13,8,-1,9,-24,66,-37,67,-14,75,-16,90,-3,91,-4,92,-5,53,-6,93,-17,94,-18,99,-10,106,-11,109,-12,111,-26,136,-9,137});
+    states[5] = new State(new int[]{38,52,6,76,15,57,16,58,30,59,5,95,3,100,10,107,11,110,12,112,27,-68,9,-68},new int[]{-21,6,-15,7,-13,8,-1,9,-24,66,-37,67,-14,75,-16,90,-3,91,-4,92,-5,53,-6,93,-17,94,-18,99,-10,106,-11,109,-12,111,-26,138,-9,139});
     states[6] = new State(-10);
     states[7] = new State(-6);
     states[8] = new State(-13);
@@ -133,7 +136,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
     states[44] = new State(new int[]{17,45,23,64,32,-40,34,-40,35,-40,33,-40,39,-40,40,-40,41,-40,42,-40,43,-40,44,-40,45,-40,46,-40,36,-40,37,-40,26,-40,2,-40,24,-40,18,-40,25,-40});
     states[45] = new State(new int[]{33,40,47,42,38,52,15,57,16,58,30,59,17,60,18,-47},new int[]{-8,46,-7,48,-2,63,-4,44,-1,51,-5,53,-6,54});
     states[46] = new State(new int[]{18,47});
-    states[47] = new State(-73);
+    states[47] = new State(-75);
     states[48] = new State(new int[]{24,49,18,-46});
     states[49] = new State(new int[]{33,40,47,42,38,52,15,57,16,58,30,59,17,60},new int[]{-2,50,-4,44,-1,51,-5,53,-6,54});
     states[50] = new State(new int[]{32,12,34,14,35,16,33,18,39,20,40,22,41,24,42,26,43,28,44,30,45,32,46,34,36,36,37,38,24,-49,18,-49});
@@ -153,7 +156,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
     states[64] = new State(new int[]{38,52},new int[]{-1,65});
     states[65] = new State(-65);
     states[66] = new State(-14);
-    states[67] = new State(new int[]{27,68,9,117},new int[]{-31,114});
+    states[67] = new State(new int[]{27,68,9,119},new int[]{-31,114});
     states[68] = new State(new int[]{38,52,6,76,15,57,16,58,30,59,5,95,3,100,10,107,11,110,12,112,27,-68},new int[]{-23,69,-15,113,-13,8,-1,9,-24,66,-37,74,-14,75,-16,90,-3,91,-4,92,-5,53,-6,93,-17,94,-18,99,-10,106,-11,109,-12,111});
     states[69] = new State(new int[]{26,70});
     states[70] = new State(new int[]{28,71,38,52,6,76,15,57,16,58,30,59,5,95,3,100,10,107,11,110,12,112,27,-68},new int[]{-15,73,-13,8,-1,9,-24,66,-37,74,-14,75,-16,90,-3,91,-4,92,-5,53,-6,93,-17,94,-18,99,-10,106,-11,109,-12,111});
@@ -200,37 +203,39 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
     states[111] = new State(-21);
     states[112] = new State(-60);
     states[113] = new State(-11);
-    states[114] = new State(-68,new int[]{-24,115,-37,74});
-    states[115] = new State(-69,new int[]{-38,116});
-    states[116] = new State(-70);
-    states[117] = new State(new int[]{38,52},new int[]{-1,118});
-    states[118] = new State(new int[]{17,119});
-    states[119] = new State(new int[]{38,52,18,-81},new int[]{-30,120,-29,128,-28,135,-27,131,-1,134});
-    states[120] = new State(new int[]{18,121});
-    states[121] = new State(new int[]{25,122,29,123});
-    states[122] = new State(-71);
-    states[123] = new State(new int[]{38,52},new int[]{-32,124,-33,126,-1,127});
-    states[124] = new State(new int[]{25,125});
-    states[125] = new State(-72);
-    states[126] = new State(-75);
+    states[114] = new State(-71,new int[]{-39,115});
+    states[115] = new State(-68,new int[]{-24,116,-37,74});
+    states[116] = new State(-72,new int[]{-40,117});
+    states[117] = new State(-69,new int[]{-38,118});
+    states[118] = new State(-70);
+    states[119] = new State(new int[]{38,52},new int[]{-1,120});
+    states[120] = new State(new int[]{17,121});
+    states[121] = new State(new int[]{38,52,18,-83},new int[]{-30,122,-29,130,-28,137,-27,133,-1,136});
+    states[122] = new State(new int[]{18,123});
+    states[123] = new State(new int[]{25,124,29,125});
+    states[124] = new State(-73);
+    states[125] = new State(new int[]{38,52},new int[]{-32,126,-33,128,-1,129});
+    states[126] = new State(new int[]{25,127});
     states[127] = new State(-74);
-    states[128] = new State(new int[]{24,129,18,-80});
-    states[129] = new State(new int[]{38,52},new int[]{-28,130,-27,131,-1,134});
-    states[130] = new State(-79);
-    states[131] = new State(new int[]{25,132});
-    states[132] = new State(new int[]{38,52},new int[]{-32,133,-33,126,-1,127});
-    states[133] = new State(-77);
-    states[134] = new State(-76);
-    states[135] = new State(-78);
-    states[136] = new State(-7);
-    states[137] = new State(-8);
-    states[138] = new State(-4);
-    states[139] = new State(-9);
-    states[140] = new State(new int[]{38,52},new int[]{-1,141});
-    states[141] = new State(new int[]{13,142});
-    states[142] = new State(new int[]{34,143});
-    states[143] = new State(new int[]{26,144});
-    states[144] = new State(-5);
+    states[128] = new State(-77);
+    states[129] = new State(-76);
+    states[130] = new State(new int[]{24,131,18,-82});
+    states[131] = new State(new int[]{38,52},new int[]{-28,132,-27,133,-1,136});
+    states[132] = new State(-81);
+    states[133] = new State(new int[]{25,134});
+    states[134] = new State(new int[]{38,52},new int[]{-32,135,-33,128,-1,129});
+    states[135] = new State(-79);
+    states[136] = new State(-78);
+    states[137] = new State(-80);
+    states[138] = new State(-7);
+    states[139] = new State(-8);
+    states[140] = new State(-4);
+    states[141] = new State(-9);
+    states[142] = new State(new int[]{38,52},new int[]{-1,143});
+    states[143] = new State(new int[]{13,144});
+    states[144] = new State(new int[]{34,145});
+    states[145] = new State(new int[]{26,146});
+    states[146] = new State(-5);
 
     rules[1] = new Rule(-36, new int[]{-25,2});
     rules[2] = new Rule(-25, new int[]{-34,-22});
@@ -301,18 +306,20 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
     rules[67] = new Rule(-24, new int[]{-37,27,-23,26,28,-38});
     rules[68] = new Rule(-37, new int[]{});
     rules[69] = new Rule(-38, new int[]{});
-    rules[70] = new Rule(-9, new int[]{-37,-31,-24,-38});
-    rules[71] = new Rule(-31, new int[]{9,-1,17,-30,18,25});
-    rules[72] = new Rule(-31, new int[]{9,-1,17,-30,18,29,-32,25});
-    rules[73] = new Rule(-5, new int[]{-4,17,-8,18});
-    rules[74] = new Rule(-33, new int[]{-1});
-    rules[75] = new Rule(-32, new int[]{-33});
-    rules[76] = new Rule(-27, new int[]{-1});
-    rules[77] = new Rule(-28, new int[]{-27,25,-32});
-    rules[78] = new Rule(-29, new int[]{-28});
-    rules[79] = new Rule(-29, new int[]{-29,24,-28});
-    rules[80] = new Rule(-30, new int[]{-29});
-    rules[81] = new Rule(-30, new int[]{});
+    rules[70] = new Rule(-9, new int[]{-37,-31,-39,-24,-40,-38});
+    rules[71] = new Rule(-39, new int[]{});
+    rules[72] = new Rule(-40, new int[]{});
+    rules[73] = new Rule(-31, new int[]{9,-1,17,-30,18,25});
+    rules[74] = new Rule(-31, new int[]{9,-1,17,-30,18,29,-32,25});
+    rules[75] = new Rule(-5, new int[]{-4,17,-8,18});
+    rules[76] = new Rule(-33, new int[]{-1});
+    rules[77] = new Rule(-32, new int[]{-33});
+    rules[78] = new Rule(-27, new int[]{-1});
+    rules[79] = new Rule(-28, new int[]{-27,25,-32});
+    rules[80] = new Rule(-29, new int[]{-28});
+    rules[81] = new Rule(-29, new int[]{-29,24,-28});
+    rules[82] = new Rule(-30, new int[]{-29});
+    rules[83] = new Rule(-30, new int[]{});
   }
 
   protected override void Initialize() {
@@ -465,11 +472,24 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 23: // assign_stmt -> identifier, ASSIGN, expr
 {
-			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name)) {
-				symbolTable.Add(ValueStack[ValueStack.Depth-3].id.name);
+			// об�?явление
+			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name) && (isInsideFunction || !globalVariables.Contains(ValueStack[ValueStack.Depth-3].id.name))) {
 				var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), null, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
-				CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
+
+				// об�?явление глобал�?ной пе�?еменной
+				if (symbolTable.OuterScope == null) {
+					globalVariables.Add(ValueStack[ValueStack.Depth-3].id.name);
+					decl.Add(new variable_definitions(vds, CurrentLocationSpan), CurrentLocationSpan);
+					CurrentSemanticValue.stn = new empty_statement();
+					CurrentSemanticValue.stn.source_context = null;
+				}
+				// об�?явление локал�?ной пе�?еменной
+				else {
+					symbolTable.Add(ValueStack[ValueStack.Depth-3].id.name);
+					CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
+				}
 			}
+			// п�?исвоение
 			else {
 				CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
 			}
@@ -648,37 +668,47 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			symbolTable = symbolTable.OuterScope;
 		}
         break;
-      case 70: // proc_func_decl -> NestedSymbolTableBegin, proc_func_header, block, 
-               //                   NestedSymbolTableEnd
+      case 70: // proc_func_decl -> NestedSymbolTableBegin, proc_func_header, InsideFunction, 
+               //                   block, OutsideFunction, NestedSymbolTableEnd
 {
 			//var pd1 = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
 			//pd1.AssignAttrList(null);
 			//$$ = pd1;
-			CurrentSemanticValue.stn = new procedure_definition(ValueStack[ValueStack.Depth-3].td as procedure_header, new block(null, ValueStack[ValueStack.Depth-2].stn as statement_list, LocationStack[LocationStack.Depth-2]), CurrentLocationSpan);
+			CurrentSemanticValue.stn = new procedure_definition(ValueStack[ValueStack.Depth-5].td as procedure_header, new block(null, ValueStack[ValueStack.Depth-3].stn as statement_list, LocationStack[LocationStack.Depth-3]), CurrentLocationSpan);
 
-			var pd = new procedure_definition(ValueStack[ValueStack.Depth-3].td as procedure_header, null, LocationStack[LocationStack.Depth-3]);
+			var pd = new procedure_definition(ValueStack[ValueStack.Depth-5].td as procedure_header, null, LocationStack[LocationStack.Depth-5]);
             pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
-			decl_forward.Add(pd, LocationStack[LocationStack.Depth-3]);
+			decl_forward.Add(pd, LocationStack[LocationStack.Depth-5]);
 		}
         break;
-      case 71: // proc_func_header -> DEF, identifier, LPAR, optional_form_param_list, RPAR, 
+      case 71: // InsideFunction -> /* empty */
+{
+			isInsideFunction = true;
+		}
+        break;
+      case 72: // OutsideFunction -> /* empty */
+{
+			isInsideFunction = false;
+		}
+        break;
+      case 73: // proc_func_header -> DEF, identifier, LPAR, optional_form_param_list, RPAR, 
                //                     COLON
 {
 			CurrentSemanticValue.td = new procedure_header(ValueStack[ValueStack.Depth-3].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), CurrentLocationSpan), new method_name(null,null, ValueStack[ValueStack.Depth-5].id, null, CurrentLocationSpan), null, CurrentLocationSpan);
 		}
         break;
-      case 72: // proc_func_header -> DEF, identifier, LPAR, optional_form_param_list, RPAR, 
+      case 74: // proc_func_header -> DEF, identifier, LPAR, optional_form_param_list, RPAR, 
                //                     ARROW, form_param_type, COLON
 {
 			CurrentSemanticValue.td = new function_header(ValueStack[ValueStack.Depth-5].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), CurrentLocationSpan), new method_name(null,null, ValueStack[ValueStack.Depth-7].id, null, CurrentLocationSpan), null, ValueStack[ValueStack.Depth-2].td as type_definition, CurrentLocationSpan);
 		}
         break;
-      case 73: // proc_func_call -> variable, LPAR, optional_expr_list, RPAR
+      case 75: // proc_func_call -> variable, LPAR, optional_expr_list, RPAR
 {
 			CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].ex as addressed_value, ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
 		}
         break;
-      case 74: // simple_type_identifier -> identifier
+      case 76: // simple_type_identifier -> identifier
 {
 			switch (ValueStack[ValueStack.Depth-1].id.name) {
 				case "bool":
@@ -707,40 +737,40 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			}
 		}
         break;
-      case 75: // form_param_type -> simple_type_identifier
+      case 77: // form_param_type -> simple_type_identifier
 {
 			CurrentSemanticValue.td = ValueStack[ValueStack.Depth-1].td as named_type_reference;
 		}
         break;
-      case 76: // param_name -> identifier
+      case 78: // param_name -> identifier
 {
 			symbolTable.Add(ValueStack[ValueStack.Depth-1].id.name);
 			CurrentSemanticValue.stn = new ident_list(ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan);
 		}
         break;
-      case 77: // form_param_sect -> param_name, COLON, form_param_type
+      case 79: // form_param_sect -> param_name, COLON, form_param_type
 {
 			CurrentSemanticValue.stn = new typed_parameters(ValueStack[ValueStack.Depth-3].stn as ident_list, ValueStack[ValueStack.Depth-1].td, parametr_kind.none, null, CurrentLocationSpan);
 		}
         break;
-      case 78: // form_param_list -> form_param_sect
+      case 80: // form_param_list -> form_param_sect
 {
 			CurrentSemanticValue.stn = new formal_parameters(ValueStack[ValueStack.Depth-1].stn as typed_parameters, CurrentLocationSpan);
         }
         break;
-      case 79: // form_param_list -> form_param_list, COMMA, form_param_sect
+      case 81: // form_param_list -> form_param_list, COMMA, form_param_sect
 {
 			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as formal_parameters).Add(ValueStack[ValueStack.Depth-1].stn as typed_parameters, CurrentLocationSpan);
         }
         break;
-      case 80: // optional_form_param_list -> form_param_list
+      case 82: // optional_form_param_list -> form_param_list
 {
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
 			if (CurrentSemanticValue.stn != null)
 				CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
 		}
         break;
-      case 81: // optional_form_param_list -> /* empty */
+      case 83: // optional_form_param_list -> /* empty */
 {
 			CurrentSemanticValue.stn = null;
 		}
