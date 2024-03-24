@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Errors.cs" />
     <Compile Include="spython_syntax_tree_visitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -51,6 +52,10 @@
     <ProjectReference Include="..\..\Errors\Errors.csproj">
       <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
       <Name>Errors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Localization\Localization.csproj">
+      <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
+      <Name>Localization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SemanticTree\SemanticTree.csproj">
       <Project>{613e0dda-aa8a-437c-ac45-507b47429ff9}</Project>

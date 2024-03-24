@@ -16,7 +16,10 @@ namespace SPythonSyntaxTreeVisitor
     public class spython_syntax_tree_visitor : syntax_tree_visitor, ISyntaxTreeVisitor
     {
         private string[] filesExtensions = { ".pys" };
-
+        public spython_syntax_tree_visitor(): base()
+        {
+            OnLeave = RunAdditionalChecks;
+        }
         public override string[] FilesExtensions
         {
             get
@@ -24,7 +27,7 @@ namespace SPythonSyntaxTreeVisitor
                 return filesExtensions;
             }
         }
-        /*public void RunAdditionalChecks(syntax_tree_node node)
+        public void RunAdditionalChecks(syntax_tree_node node)
         {
             switch (node)
             {
@@ -33,13 +36,28 @@ namespace SPythonSyntaxTreeVisitor
                     expression_node right = convert_strong(_bin_expr.right);
                     if (_bin_expr.operation_type == Operators.Plus)
                     {
-                        if (type_table.compare_types(left.type, right.type) == type_compare.greater_type)
-                            AddError(left.location, "NOT_ALLOWED_SUM_DIFF_TYPES");
-                        break;
+                        if ((left.type.name == "string" && right.type.name == "integer") || ((left.type.name == "integer" && right.type.name == "string")))
+                        {
+                            AddError(left.location, "SPYTHONSEMANTIC_NOT_ALLOWED_{0}_DIFF_TYPES_{1}_{2}", '+', left.type, right.type); ;
+                            //base.AddError(left.location, "SPYTHONSEMANTIC_NOT_ALLOWED_{0}_DIFF_TYPES_{1}_{2}", Operators.Plus, left.type, right.type); ;
+                            return;
+                        }
                     }
                     break;
             }
-        }*/
+        }
+        public override void AddError(location loc, string ErrResourceString, params object[] values)
+        {
+            Error err = new SPythonSemanticError(loc, ErrResourceString, values);
+            if (ErrResourceString == "FORWARD_DECLARATION_{0}_AS_BASE_TYPE")
+            {
+                throw err;
+            }
+            else
+            {
+                base.AddError(err);
+            }
+        }
         public override void AddError(Error err, bool shouldReturn = false)
         {
             // TODO : Add Error Rerouting according to Python semantics
