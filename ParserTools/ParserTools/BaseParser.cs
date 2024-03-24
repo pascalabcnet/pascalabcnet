@@ -1,23 +1,27 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using System;
 using System.Collections.Generic;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.Parsers
 {
+
     public abstract class BaseParser: IParser
     {
 
-        public BaseParser(string name, string version, string copyright, string[] systemUnitNames, 
-            bool caseSensitive, string[] filesExtensions)
+        public BaseParser(string name, string version, string copyright,
+            bool caseSensitive, string[] filesExtensions, string[] systemUnitNames, 
+            ParserTools.UnitWithCallback<compilation_unit>[] hiddenSystemUnits = null)
         {
             this.name = name;
             this.version = version;
             this.copyright = copyright;
-            this.SystemUnitNames = systemUnitNames;
             this.caseSensitive = caseSensitive;
             this.filesExtensions = filesExtensions;
+            this.SystemUnitNames = systemUnitNames;
+            this.HiddenSystemUnits = hiddenSystemUnits;
         }
 
         List<Error> errors = new List<Error>();
@@ -91,6 +95,8 @@ namespace PascalABCCompiler.Parsers
         }
 
         public string[] SystemUnitNames { get; }
+
+        public ParserTools.UnitWithCallback<compilation_unit>[] HiddenSystemUnits { get; }
 
         public SourceFilesProviderDelegate sourceFilesProvider = null;
         public virtual SourceFilesProviderDelegate SourceFilesProvider

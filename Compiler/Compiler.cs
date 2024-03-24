@@ -641,6 +641,21 @@ namespace PascalABCCompiler
             }
         }
 
+        public class HiddenStandardModule : StandardModule
+        {
+            private readonly Action<SyntaxTree.compilation_unit> postProcessor;
+
+            public HiddenStandardModule(string name, string languageToAdd, Action<SyntaxTree.compilation_unit> postProcessor) : base(name, languageToAdd)
+            {
+                this.postProcessor = postProcessor;
+            }
+
+            public void PostProcessSyntaxTree(SyntaxTree.compilation_unit syntaxTree)
+            {
+                postProcessor?.Invoke(syntaxTree);
+            }
+        }
+
         private Dictionary<string, List<StandardModule>> standardModules = new Dictionary<string, List<StandardModule>>();
 
         /// <summary>
@@ -661,6 +676,11 @@ namespace PascalABCCompiler
         }
 
         /// <summary>
+        /// Вспомогательный словарь для удобного доступа к скрытым стандартным модулям (также содержащимся в словаре StandardModules)
+        /// </summary>
+        public Dictionary<string, HiddenStandardModule> HiddenStandardModules { get; private set; } = new Dictionary<string, HiddenStandardModule>();
+
+        /// <summary>
         /// Заполняет словарь стандартных модулей для всех поддерживаемых языков
         /// </summary>
         private void LoadStandardModules()
@@ -668,7 +688,16 @@ namespace PascalABCCompiler
             foreach (Parsers.IParser parser in Parsers.Controller.Instance.Parsers)
             {
                 if (parser is Parsers.BaseParser baseParser)
+                {
                     standardModules[baseParser.Name] = baseParser.SystemUnitNames.Select(unitName => new StandardModule(unitName, baseParser.Name)).ToList();
+                    
+                    if (baseParser.HiddenSystemUnits != null)
+                    {
+                        List<HiddenStandardModule> modules = baseParser.HiddenSystemUnits.Select(hiddenUnit => new HiddenStandardModule(hiddenUnit.name, baseParser.Name, hiddenUnit.callback)).ToList();
+                        standardModules[baseParser.Name].AddRange(modules);
+                        modules.ForEach(module => HiddenStandardModules[module.name] = module);
+                    }   
+                }
             }
         }
 
@@ -4029,9 +4058,20 @@ namespace PascalABCCompiler
             if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
                 CompilerOptions.UseDllForSystemUnits = false;
 
-            if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне (синтаксический сахар)
+            if (errorsList.Count == 0) 
             {
+                // SSM 2/05/16 - для преобразования синтаксических деревьев извне (синтаксический сахар)
                 currentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(currentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
+
+                #region HIDDEN UNITS POST PROCESSING
+                string unitName = Path.GetFileNameWithoutExtension(unitFileName);
+
+                // если это скрытый модуль, то применить к его синтаксическому дереву сохраненное преобразование
+                if (unitName.EndsWith("Hidden") && CompilerOptions.HiddenStandardModules.ContainsKey(unitName))
+                {
+                    CompilerOptions.HiddenStandardModules[unitName].PostProcessSyntaxTree(currentUnit.SyntaxTree);
+                }
+                #endregion
             }
 
             // генерация документации к узлам синтаксического дерева EVA
