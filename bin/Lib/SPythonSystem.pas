@@ -44,7 +44,7 @@ function abs(x: integer): integer;
 
 function abs(x: real): real;
 
-function floor(x: real): real;
+// function floor(x: real): real;
 
 implementation
 
@@ -106,6 +106,6 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
 
-function floor(x: real): real := PABCSystem.Floor(x);
+// function floor(x: real): real := PABCSystem.Floor(x);
 
 end.

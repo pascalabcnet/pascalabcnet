@@ -88,7 +88,7 @@ namespace SPythonSyntaxTreeVisitor
                     if (left.type == right.type && left.type.name == "real")
                     {
                         var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _bin_expr.source_context);
-                        var floornode = new method_call(new ident("Floor"), new expression_list(divnode));
+                        var floornode = new method_call(new ident("@Floor"), new expression_list(divnode));
                         visit(floornode);
                         return;
                     }
