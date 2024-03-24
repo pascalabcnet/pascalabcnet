@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 24.03.2024 11:22:07
+// DateTime: 24.03.2024 15:13:08
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -473,9 +473,15 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 23: // global_stmt -> GLOBAL, identifier
 {
-			symbolTable.Add(ValueStack[ValueStack.Depth-1].id.name);
-			CurrentSemanticValue.stn = new empty_statement();
-			CurrentSemanticValue.stn.source_context = null;
+			if (globalVariables.Contains(ValueStack[ValueStack.Depth-1].id.name)) {
+				symbolTable.Add(ValueStack[ValueStack.Depth-1].id.name);
+				CurrentSemanticValue.stn = new empty_statement();
+				CurrentSemanticValue.stn.source_context = null;
+			}
+			else {
+				parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", CurrentLocationSpan, ValueStack[ValueStack.Depth-1].id.name);
+				CurrentSemanticValue.stn = null;
+			}
 		}
         break;
       case 24: // identifier -> ID

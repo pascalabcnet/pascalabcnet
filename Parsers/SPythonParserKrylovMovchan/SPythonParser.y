@@ -222,9 +222,15 @@ stmt
 global_stmt
 	: GLOBAL identifier
 		{
-			symbolTable.Add($2.name);
-			$$ = new empty_statement();
-			$$.source_context = null;
+			if (globalVariables.Contains($2.name)) {
+				symbolTable.Add($2.name);
+				$$ = new empty_statement();
+				$$.source_context = null;
+			}
+			else {
+				parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", @$, $2.name);
+				$$ = null;
+			}
 		}
 	;
 
