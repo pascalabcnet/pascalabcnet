@@ -57,19 +57,20 @@
 %left STAR DIVIDE SLASHSLASH PERCENTAGE
 %left NOT
 
-%type <id> identifier
+%type <id> ident
 %type <ex> expr var_reference variable proc_func_call const_value
 %type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_and_stmt_list
 %type <stn> stmt_list block
-%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
+%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list ident_list
 %type <td> proc_func_header form_param_type simple_type_identifier
 %type <stn> import_clause import_clause_one
 
 %start program
 
 /*
+ident	= identifier
 expr	= expression
 stmt	= statement
 proc	= procedure
@@ -146,7 +147,7 @@ import_clause
 	;
 
 import_clause_one
-	: FROM identifier IMPORT STAR SEMICOLON
+	: FROM ident IMPORT STAR SEMICOLON
 		{
 			$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
 			$$.source_context = @$;
@@ -220,21 +221,24 @@ stmt
 	;
 
 global_stmt
-	: GLOBAL identifier
+	: GLOBAL ident_list
 		{
-			if (globalVariables.Contains($2.name)) {
-				symbolTable.Add($2.name);
-				$$ = new empty_statement();
-				$$.source_context = null;
+			foreach (ident id in ($2 as ident_list).idents) {
+				if (globalVariables.Contains(id.name)) {
+					symbolTable.Add(id.name);
+					$$ = new empty_statement();
+					$$.source_context = null;
+				}
+				else {
+					parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", @$, id.name);
+					$$ = null;
+				}
 			}
-			else {
-				parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", @$, $2.name);
-				$$ = null;
-			}
+			
 		}
 	;
 
-identifier
+ident
 	: ID
 		{
 			if ($1.name == "result")
@@ -243,8 +247,19 @@ identifier
 		}
 	;
 
+ident_list
+    : ident                               
+        { 
+			$$ = new ident_list($1, @$);
+		}
+    | ident_list COMMA ident       
+        { 
+			$$ = ($1 as ident_list).Add($3, @$);
+		}
+    ;
+
 assign_stmt
-	: identifier ASSIGN expr
+	: ident ASSIGN expr
 		{
 			// объявление
 			if (!symbolTable.Contains($1.name) && (isInsideFunction || !globalVariables.Contains($1.name))) {
@@ -369,7 +384,7 @@ while_stmt
 	;
 
 for_stmt
-	: FOR identifier IN expr COLON block
+	: FOR ident IN expr COLON block
 		{
 			$$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$);
 		}
@@ -417,13 +432,13 @@ var_reference
 	;
 
 variable
-	: identifier
+	: ident
 		{ $$ = $1; }
 	| proc_func_call
 		{ $$ = $1; }
-	| variable DOT identifier
+	| variable DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
-	| const_value DOT identifier
+	| const_value DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	;
 
@@ -480,11 +495,11 @@ OutsideFunction
 	;
 
 proc_func_header
-	: DEF identifier LPAR optional_form_param_list RPAR COLON
+	: DEF ident LPAR optional_form_param_list RPAR COLON
 		{
 			$$ = new procedure_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$);
 		}
-	| DEF identifier LPAR optional_form_param_list RPAR ARROW form_param_type COLON
+	| DEF ident LPAR optional_form_param_list RPAR ARROW form_param_type COLON
 		{
 			$$ = new function_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $7 as type_definition, @$);
 		}
@@ -498,7 +513,7 @@ proc_func_call
 	;
 
 simple_type_identifier
-	: identifier
+	: ident
 		{
 			switch ($1.name) {
 				case "bool":
@@ -536,7 +551,7 @@ form_param_type
 	;
 
 param_name
-	: identifier
+	: ident
 		{
 			symbolTable.Add($1.name);
 			$$ = new ident_list($1, @$);
