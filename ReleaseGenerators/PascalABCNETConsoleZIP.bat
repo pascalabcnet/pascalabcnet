@@ -5,5 +5,6 @@ del ..\Release\PACNETConsole.zip
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip Lng\*.dat
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip Lng\*.LanguageName
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip doc\*.*
+..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip -dir LanguageKits
 cd ..\ReleaseGenerators
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip install_pabcnetc.bat
