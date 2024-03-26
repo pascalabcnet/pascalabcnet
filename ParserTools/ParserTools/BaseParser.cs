@@ -12,16 +12,15 @@ namespace PascalABCCompiler.Parsers
     {
 
         public BaseParser(string name, string version, string copyright,
-            bool caseSensitive, string[] filesExtensions, string[] systemUnitNames, 
-            ParserTools.UnitWithCallback<compilation_unit>[] hiddenSystemUnits = null)
+            bool caseSensitive, string[] filesExtensions,
+            StandardModule[] standardModules)
         {
             this.name = name;
             this.version = version;
             this.copyright = copyright;
             this.caseSensitive = caseSensitive;
             this.filesExtensions = filesExtensions;
-            this.SystemUnitNames = systemUnitNames;
-            this.HiddenSystemUnits = hiddenSystemUnits;
+            this.StandardModules = standardModules;
         }
 
         List<Error> errors = new List<Error>();
@@ -94,9 +93,17 @@ namespace PascalABCCompiler.Parsers
             get { return copyright; }
         }
 
-        public string[] SystemUnitNames { get; }
+        /// <summary>
+        /// Вспомогательная структура для хранения данных о стандартном модуле
+        /// </summary>
+        public struct StandardModule
+        {
+            public string name;
+            public bool isHidden;
+            public Action<compilation_unit> syntaxTreePostProcessor;
+        }
 
-        public ParserTools.UnitWithCallback<compilation_unit>[] HiddenSystemUnits { get; }
+        public StandardModule[] StandardModules { get; }
 
         public SourceFilesProviderDelegate sourceFilesProvider = null;
         public virtual SourceFilesProviderDelegate SourceFilesProvider
