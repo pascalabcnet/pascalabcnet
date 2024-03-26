@@ -36,7 +36,7 @@ namespace SPythonSyntaxTreeVisitor
                     expression_node right = convert_strong(_bin_expr.right);
                     if (_bin_expr.operation_type == Operators.Plus)
                     {
-                        if ((left.type.name == "string" && right.type.name == "integer") || ((left.type.name == "integer" && right.type.name == "string")))
+                        if ((left.type.name == "string" && right.type.name == "integer") || (left.type.name == "integer" && right.type.name == "string"))
                         {
                             AddError(left.location, "SPYTHONSEMANTIC_NOT_ALLOWED_{0}_DIFF_TYPES_{1}_{2}", '+', left.type, right.type); ;
                             //base.AddError(left.location, "SPYTHONSEMANTIC_NOT_ALLOWED_{0}_DIFF_TYPES_{1}_{2}", Operators.Plus, left.type, right.type); ;
@@ -45,6 +45,7 @@ namespace SPythonSyntaxTreeVisitor
                     }
                     break;
             }
+            return;
         }
         public override void AddError(location loc, string ErrResourceString, params object[] values)
         {
