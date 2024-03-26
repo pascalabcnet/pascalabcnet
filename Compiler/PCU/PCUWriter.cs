@@ -894,8 +894,9 @@ namespace PascalABCCompiler.PCU
             }
         }
         //\ssyy
-		
-        
+
+        private HashSet<type_node> added_indirect_types = new HashSet<type_node>();
+
         private void AddIndirectUsedUnitsForType(type_node tn, Dictionary<common_namespace_node, bool> ns_dict, bool interf)
         {
             if (tn is common_type_node)
@@ -920,7 +921,13 @@ namespace PascalABCCompiler.PCU
                 if (tn is common_generic_instance_type_node)
                 {
                     foreach (type_node param_tn in (tn as common_generic_instance_type_node).instance_params)
-                        AddIndirectUsedUnitsForType(param_tn, ns_dict, interf);
+                    {
+                        if (!added_indirect_types.Contains(param_tn))
+                        {
+                            added_indirect_types.Add(param_tn);
+                            AddIndirectUsedUnitsForType(param_tn, ns_dict, interf);
+                        }
+                    }
                 }
             }
         }
