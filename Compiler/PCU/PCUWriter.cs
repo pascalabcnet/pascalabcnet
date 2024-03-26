@@ -903,6 +903,7 @@ namespace PascalABCCompiler.PCU
                 common_namespace_node comp_cnn = (tn as common_type_node).comprehensive_namespace;
                 if (tn is common_generic_instance_type_node)
                     comp_cnn = (tn as common_generic_instance_type_node).common_original_generic.comprehensive_namespace;
+               
                 if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
                 {
                     var path = Compiler.GetUnitPath(unit, compiler.UnitsTopologicallySortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
@@ -916,6 +917,11 @@ namespace PascalABCCompiler.PCU
                 }
                 if (tn.base_type is common_type_node)
                     AddIndirectUsedUnitsForType(tn.base_type, ns_dict, interf);
+                if (tn is common_generic_instance_type_node)
+                {
+                    foreach (type_node param_tn in (tn as common_generic_instance_type_node).instance_params)
+                        AddIndirectUsedUnitsForType(param_tn, ns_dict, interf);
+                }
             }
         }
 
