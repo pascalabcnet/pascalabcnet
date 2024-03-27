@@ -18469,7 +18469,11 @@ namespace PascalABCCompiler.TreeConverter
                                         break;
                                     }
                                 }
-                                if (elem_type == null)
+                                if (ct.Name == "ValueCollection" && ct.IsNested && ct.GetGenericArguments().Length == 2)
+                                {
+                                    elem_type = ip[1];
+                                }
+                                else if (elem_type == null)
                                     elem_type = ip[0];
                             }
                                 
