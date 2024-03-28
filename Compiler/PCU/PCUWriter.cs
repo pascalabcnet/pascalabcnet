@@ -899,37 +899,30 @@ namespace PascalABCCompiler.PCU
 
         private void AddIndirectUsedUnitsForType(type_node tn, Dictionary<common_namespace_node, bool> ns_dict, bool interf)
         {
-            if (tn is common_type_node)
+            if (!added_indirect_types.Add(tn)) return;
+            if (!(tn is common_type_node ctn)) return;
+
+            common_namespace_node comp_cnn = ctn.comprehensive_namespace;
+			if (tn is common_generic_instance_type_node cgitn)
+			{
+				comp_cnn = cgitn.common_original_generic.comprehensive_namespace;
+				foreach (type_node param_tn in cgitn.instance_params)
+					AddIndirectUsedUnitsForType(param_tn, ns_dict, interf);
+			}
+
+            if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
             {
-                common_namespace_node comp_cnn = (tn as common_type_node).comprehensive_namespace;
-                if (tn is common_generic_instance_type_node)
-                    comp_cnn = (tn as common_generic_instance_type_node).common_original_generic.comprehensive_namespace;
-               
-                if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
-                {
-                    var path = Compiler.GetUnitPath(unit, compiler.UnitsTopologicallySortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
+                var path = Compiler.GetUnitPath(unit, compiler.UnitsTopologicallySortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
 
-                    if (interf)
-                        unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit, path);
-                    else
-                        unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit, path);
+                if (interf)
+                    unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit, path);
+                else
+                    unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit, path);
 
-                    ns_dict[comp_cnn] = true;
-                }
-                if (tn.base_type is common_type_node)
-                    AddIndirectUsedUnitsForType(tn.base_type, ns_dict, interf);
-                if (tn is common_generic_instance_type_node)
-                {
-                    foreach (type_node param_tn in (tn as common_generic_instance_type_node).instance_params)
-                    {
-                        if (!added_indirect_types.Contains(param_tn))
-                        {
-                            added_indirect_types.Add(param_tn);
-                            AddIndirectUsedUnitsForType(param_tn, ns_dict, interf);
-                        }
-                    }
-                }
+                ns_dict[comp_cnn] = true;
             }
+
+            AddIndirectUsedUnitsForType(tn.base_type, ns_dict, interf);
         }
 
         private void AddIndirectUsedUnitsForFunction(common_namespace_function_node cnfn, Dictionary<common_namespace_node, bool> ns_dict, bool interf)
