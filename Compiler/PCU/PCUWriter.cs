@@ -903,12 +903,12 @@ namespace PascalABCCompiler.PCU
             if (!(tn is common_type_node ctn)) return;
 
             common_namespace_node comp_cnn = ctn.comprehensive_namespace;
-			if (tn is common_generic_instance_type_node cgitn)
-			{
-				comp_cnn = cgitn.common_original_generic.comprehensive_namespace;
-				foreach (type_node param_tn in cgitn.instance_params)
-					AddIndirectUsedUnitsForType(param_tn, ns_dict, interf);
-			}
+            if (tn is common_generic_instance_type_node cgitn)
+            {
+                comp_cnn = cgitn.common_original_generic.comprehensive_namespace;
+                foreach (type_node param_tn in cgitn.instance_params)
+                    AddIndirectUsedUnitsForType(param_tn, ns_dict, interf);
+            }
 
             if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
             {
