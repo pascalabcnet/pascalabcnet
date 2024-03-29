@@ -5881,6 +5881,8 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_virtual_method_call = virtual_method_call;
             virtual_method_call = false;
             value.obj.visit(this);
+            if (value.obj is ICommonClassFieldReferenceNode)
+                is_field_reference = true;
             virtual_method_call = tmp_virtual_method_call;
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
