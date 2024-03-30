@@ -3,4 +3,9 @@ unit.f()
 
 def f():
     global unit.a
+    a = 2
+    print(unit.a)
     print(a)
+   
+f()
+print(unit.a)

@@ -58,13 +58,13 @@
 %left STAR DIVIDE SLASHSLASH PERCENTAGE
 %left NOT
 
-%type <id> ident
+%type <id> ident dotted_identifier
 %type <ex> expr var_reference proc_func_call const_value complex_variable variable complex_variable_or_ident
 %type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_and_stmt_list
 %type <stn> stmt_list block
-%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list ident_list
+%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
 %type <td> proc_func_header form_param_type simple_type_identifier
 %type <stn> import_clause import_clause_one
 
@@ -222,21 +222,19 @@ stmt
 	;
 
 global_stmt
-	: GLOBAL ident_list
+	: GLOBAL dotted_identifier
 		{
-			foreach (ident id in ($2 as ident_list).idents) {
-				// имя параметра совпадает с именем глобальной переменной
-				if (symbolTable.Contains(id.name)) {
-					parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", @$, id.name);
+			// имя параметра совпадает с именем глобальной переменной
+				if (symbolTable.Contains($2.name)) {
+					parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", @$, $2.name);
 					$$ = null;
 				}
 				// всё отлично!
 				else {
-					symbolTable.Add(id.name);
+					symbolTable.Add($2.name);
 					$$ = new empty_statement();
 					$$.source_context = null;
 				}
-			}
 			
 		}
 	;
@@ -251,16 +249,14 @@ ident
 		}
 	;
 
-ident_list
-    : ident                               
-        { 
-			$$ = new ident_list($1, @$);
+dotted_identifier
+	: ident
+		{ $$ = $1; }
+	| dotted_identifier DOT ident
+		{
+			$$ = new ident($1.name + "." + $3.name);
 		}
-    | ident_list COMMA ident       
-        { 
-			$$ = ($1 as ident_list).Add($3, @$);
-		}
-    ;
+	;
 
 assign_stmt
 	: ident ASSIGN expr
