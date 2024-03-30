@@ -42,7 +42,7 @@
 }
 
 %token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL
-%token <ex> INTNUM REALNUM
+%token <ex> INTNUM REALNUM TRUE FALSE
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
 %token <op> ASSIGN
@@ -336,7 +336,7 @@ expr
 	| ident
 		{
 			// Проверка на то что пытаемся читать не инициализированную переменную
-			if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name) && $1.name != "True" && $1.name != "False")
+			if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
 					parsertools.AddErrorFromResource("variable \"{0}\" is used but has no value", @$, $1.name);
 			
 			$$ = $1; 
@@ -348,6 +348,10 @@ const_value
 		{ $$ = $1; }
 	| REALNUM
 		{ $$ = $1; }
+	| TRUE
+		{ $$ = new ident("true"); }
+	| FALSE
+		{ $$ = new ident("false"); }
 	| STRINGNUM
 		{ $$ = $1 as literal; }
 	;
