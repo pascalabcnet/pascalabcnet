@@ -224,23 +224,16 @@ global_stmt
 	: GLOBAL ident_list
 		{
 			foreach (ident id in ($2 as ident_list).idents) {
-				if (globalVariables.Contains(id.name)) {
-					// такое возможно только если имя параметра совпадает с именем глобальной переменной
-					if (symbolTable.Contains(id.name)) {
-						parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", @$, id.name);
-						$$ = null;
-					}
-					// всё отлично!
-					else {
-						symbolTable.Add(id.name);
-						$$ = new empty_statement();
-						$$.source_context = null;
-					}
-				}
-				// нет глобальной переменной с таким именем
-				else {
-					parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", @$, id.name);
+				// имя параметра совпадает с именем глобальной переменной
+				if (symbolTable.Contains(id.name)) {
+					parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", @$, id.name);
 					$$ = null;
+				}
+				// всё отлично!
+				else {
+					symbolTable.Add(id.name);
+					$$ = new empty_statement();
+					$$.source_context = null;
 				}
 			}
 			
@@ -272,17 +265,18 @@ assign_stmt
 		{
 			// объявление
 			if (!symbolTable.Contains($1.name) && (isInsideFunction || !globalVariables.Contains($1.name))) {
-				var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
 
 				// объявление глобальной переменной
 				if (symbolTable.OuterScope == null) {
+					var vds = new var_def_statement(new ident_list($1, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
 					globalVariables.Add($1.name);
 					decl.Add(new variable_definitions(vds, @$), @$);
-					$$ = new empty_statement();
-					$$.source_context = null;
+					//decl.AddFirst(new variable_definitions(vds, @$));
+					$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 				}
 				// объявление локальной переменной
 				else {
+					var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
 					symbolTable.Add($1.name);
 					$$ = new var_statement(vds, @$);
 				}

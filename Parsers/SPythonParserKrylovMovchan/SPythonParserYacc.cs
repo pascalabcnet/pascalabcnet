@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 24.03.2024 15:45:16
+// DateTime: 27.03.2024 14:43:11
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -479,23 +479,16 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 23: // global_stmt -> GLOBAL, ident_list
 {
 			foreach (ident id in (ValueStack[ValueStack.Depth-1].stn as ident_list).idents) {
-				if (globalVariables.Contains(id.name)) {
-					// �?акое возможно �?ол�?ко если имя па�?аме�?�?а совпадае�? с именем глобал�?ной пе�?еменной
-					if (symbolTable.Contains(id.name)) {
-						parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", CurrentLocationSpan, id.name);
-						CurrentSemanticValue.stn = null;
-					}
-					// вс�? о�?ли�?но!
-					else {
-						symbolTable.Add(id.name);
-						CurrentSemanticValue.stn = new empty_statement();
-						CurrentSemanticValue.stn.source_context = null;
-					}
-				}
-				// не�? глобал�?ной пе�?еменной с �?аким именем
-				else {
-					parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", CurrentLocationSpan, id.name);
+				// имя па�?аме�?�?а совпадае�? с именем глобал�?ной пе�?еменной
+				if (symbolTable.Contains(id.name)) {
+					parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", CurrentLocationSpan, id.name);
 					CurrentSemanticValue.stn = null;
+				}
+				// вс�? о�?ли�?но!
+				else {
+					symbolTable.Add(id.name);
+					CurrentSemanticValue.stn = new empty_statement();
+					CurrentSemanticValue.stn.source_context = null;
 				}
 			}
 			
@@ -522,17 +515,18 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 {
 			// об�?явление
 			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-3].id.name) && (isInsideFunction || !globalVariables.Contains(ValueStack[ValueStack.Depth-3].id.name))) {
-				var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), null, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
 
 				// об�?явление глобал�?ной пе�?еменной
 				if (symbolTable.OuterScope == null) {
+					var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), new same_type_node(ValueStack[ValueStack.Depth-1].ex), null, definition_attribute.None, false, CurrentLocationSpan);
 					globalVariables.Add(ValueStack[ValueStack.Depth-3].id.name);
 					decl.Add(new variable_definitions(vds, CurrentLocationSpan), CurrentLocationSpan);
-					CurrentSemanticValue.stn = new empty_statement();
-					CurrentSemanticValue.stn.source_context = null;
+					//decl.AddFirst(new variable_definitions(vds, @$));
+					CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
 				}
 				// об�?явление локал�?ной пе�?еменной
 				else {
+					var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), null, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
 					symbolTable.Add(ValueStack[ValueStack.Depth-3].id.name);
 					CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
 				}
