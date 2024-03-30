@@ -81,22 +81,22 @@ namespace SPythonParser
         }
     }
 
-    public class SPythonLanguageParser: BaseParser, IParser
+    public class SPythonLanguageParser : BaseParser, IParser
     {
         private SPythonGPPGParserHelper localparserhelper;
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public SPythonLanguageParser()
             : base(
-                  name: "SPython", 
-                  version: "0.0.1", 
-                  copyright: "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", 
-                  caseSensitive: false, 
+                  name: "SPython",
+                  version: "0.0.1",
+                  copyright: "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan",
+                  caseSensitive: false,
                   filesExtensions: new string[] { ".pys", ".py" },
-                  systemUnitNames: new string[] { "SpythonSystem" }, 
-                  hiddenSystemUnits: new[] { new PascalABCCompiler.ParserTools.UnitWithCallback<compilation_unit> { name = "SpythonHidden", callback = ProcessHiddenUnit } })
-        {
-        }
+                  standardModules: new[] { new StandardModule() { name = "SpythonSystem" },
+                      new StandardModule() { name = "SpythonHidden", isHidden = true, syntaxTreePostProcessor = ProcessHiddenUnit } }
+                  )
+        { }
 
         private static readonly HiddenUnitVisitor hiddenUnitVisitor = new HiddenUnitVisitor();
 
