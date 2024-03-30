@@ -40,6 +40,7 @@ type
   Slider = Slider;
   ComboBox = ComboBox;
   TextBlock = TextBlock;
+  Border = System.Windows.Controls.Border;
   Rectangle = Rectangle;
 
   DrawingVisual = DrawingVisual;
@@ -307,17 +308,18 @@ begin
   Result := Self;
 end;
 
-function LoadFromXaml(fname: string): object;
+function ParseXaml(s: string): object;
 begin
-  var s := ReadAllText(fname);
   var context := new ParserContext();
   context.XmlnsDictionary.Add('','http://schemas.microsoft.com/winfx/2006/xaml/presentation');
   context.XmlnsDictionary.Add('x', 'http://schemas.microsoft.com/winfx/2006/xaml');
-  Result := System.Windows.Markup.XamlReader.Parse(ReadAllText(fname),nil);
+  Result := System.Windows.Markup.XamlReader.Parse(s,context);
+end;
 
-  //var s := new System.IO.FileStream(fname, System.IO.FileMode.Open);
-  //Result := System.Windows.Markup.XamlReader.Load(s);
-  //s.Close();
+function LoadFromXaml(fname: string): object;
+begin
+  var s := ReadAllText(fname);
+  Result := ParseXaml(s);
 end;
 
 // Функции создания элементов управления

@@ -343,8 +343,12 @@ type
   
   /// Стандартная подсистема ввода-вывода
   IOStandardSystem = class(IOSystem)
-    state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
-    sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
+    //state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
+    //sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
+    // SSM 28/02/24 - новая концепция для считывания из консоли без редиректа: буфер на одну строку
+    read_buf := new char[0];
+    rblen := 0;
+    rbpos := 0;
     buf: array of char := new char[buflen];
     pos := 0;
     realbuflen := -1; // только вначале
@@ -352,6 +356,7 @@ type
   public 
     constructor Create;
     procedure ReadNextBuf;
+    procedure ReadNextConsoleBuf;
     function peek: integer; virtual;// использует state и sym (стар) или буфер buf (нов)
     function read_symbol: char; virtual;// использует state и sym (стар) или буфер buf (нов)
     procedure read(var x: integer); virtual;
@@ -5452,6 +5457,14 @@ begin
   pos := 0;
 end;
 
+procedure IOStandardSystem.ReadNextConsoleBuf;
+begin
+  var sbuf := Console.ReadLine + NewLine;
+  read_buf := sbuf.ToCharArray;
+  rbpos := 0;
+  rblen := read_buf.Length;
+end;
+
 
 var
   _IsPipedRedirectedQuery := False;
@@ -5492,14 +5505,18 @@ begin
     if not console_alloc then
       AllocConsole;
     // SSM 29.11.14  
-    if state = 1 then // в sym - символ, считанный предыдущим Peek
+    {if state = 1 then // в sym - символ, считанный предыдущим Peek
       Result := sym
     else // в sym ничего нет
     begin
       state := 1;
       sym := Console.Read(); // считываение в буфер из одного символа
       Result := sym;
-    end; 
+    end; }
+    // SSM 28.02.23  
+    if rbpos >= rblen then // буфер строки пуст
+      ReadNextConsoleBuf;
+    Result := integer(read_buf[rbpos]); 
   end;
 end;
 
@@ -5518,7 +5535,7 @@ begin
     if not console_alloc then
       AllocConsole;
     // SSM 29.11.14  
-    if state = 1 then // в sym - символ, считанный предыдущим Peek
+    {if state = 1 then // в sym - символ, считанный предыдущим Peek
     begin
       state := 0;
       Result := char(sym);
@@ -5526,7 +5543,12 @@ begin
     end
     else // в sym ничего нет
       Result := char(Console.Read());
-    exit;  
+    exit;}
+    // SSM 28.02.23  
+    if rbpos >= rblen then // буфер строки пуст
+      ReadNextConsoleBuf;
+    Result := read_buf[rbpos];
+    rbpos += 1;  
   end;
 end;
 
@@ -5608,14 +5630,25 @@ begin
   begin
     if not console_alloc then
       AllocConsole;
-    if state = 1 then
+    {if state = 1 then
     begin
       state := 0;
       Result := char(sym) + Console.ReadLine;
       sym := -1;
     end
     else 
-      Result := Console.ReadLine;
+      Result := Console.ReadLine;}
+
+    // SSM 28.02.23  
+    if rbpos >= rblen then // буфер строки пуст
+      ReadNextConsoleBuf;
+    
+    // Проблема - там может уже оставаться 1 или 2 символа. Если так, то строка будет пустой!
+    var remlen := rblen - rbpos - NewLine.Length;
+    if remlen <= 0 then
+      Result := ''
+    else Result := string.Create(read_buf,rbpos,remlen);
+    rbpos := rblen;
   end;
 end;
 
@@ -7206,36 +7239,48 @@ procedure Print(params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  if PrintDelimDefault<>'' then
-    for var i := 0 to args.length - 1 do
+  for var i := 0 to args.length - 1 do
+    if PrintDelimDefault<>'' then
       Write(args[i], PrintDelimDefault)
-  else     
-    for var i := 0 to args.length - 1 do
-      Write(args[i])
+    else Write(args[i]);
 end;
 
 procedure Println(params args: array of object);
 begin
-  Print(args);
-  Writeln;
+  if args.Length = 0 then
+  begin  
+    Writeln;
+    exit;
+  end;  
+  for var i := 0 to args.length - 2 do
+    if PrintDelimDefault<>'' then
+      Write(args[i], PrintDelimDefault)
+    else Write(args[i]);
+  Writeln(args[args.Length-1]);
 end;
 
 procedure Print(f: Text; params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  if PrintDelimDefault<>'' then
-    for var i := 0 to args.length - 1 do
+  for var i := 0 to args.length - 1 do
+    if PrintDelimDefault<>'' then
       Write(f, args[i], PrintDelimDefault)
-  else     
-    for var i := 0 to args.length - 1 do
-      Write(f, args[i])
+    else Write(f, args[i])
 end;
 
 procedure Println(f: Text; params args: array of object);
 begin
-  Print(f, args);
-  Writeln(f);
+  if args.Length = 0 then
+  begin  
+    Writeln(f);
+    exit;
+  end;  
+  for var i := 0 to args.length - 2 do
+    if PrintDelimDefault<>'' then
+      Write(f, args[i], PrintDelimDefault)
+    else Write(f, args[i]);
+  Writeln(f, args[args.Length-1]);  
 end;
 
 procedure Serialize(fileName: string; obj: object);
