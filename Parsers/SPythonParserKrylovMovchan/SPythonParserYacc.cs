@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 27.03.2024 14:43:11
+// DateTime: 30.03.2024 10:19:48
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -518,11 +518,15 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 
 				// об�?явление глобал�?ной пе�?еменной
 				if (symbolTable.OuterScope == null) {
-					var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), new same_type_node(ValueStack[ValueStack.Depth-1].ex), null, definition_attribute.None, false, CurrentLocationSpan);
+					// var vds = new var_def_statement(new ident_list($1, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
+					var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, CurrentLocationSpan);
 					globalVariables.Add(ValueStack[ValueStack.Depth-3].id.name);
 					decl.Add(new variable_definitions(vds, CurrentLocationSpan), CurrentLocationSpan);
 					//decl.AddFirst(new variable_definitions(vds, @$));
-					CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
+
+					var ass = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
+					ass.first_assignment_defines_type = true;
+					CurrentSemanticValue.stn = ass;
 				}
 				// об�?явление локал�?ной пе�?еменной
 				else {
@@ -531,7 +535,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 					CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
 				}
 			}
-			// п�?исвоение
+			// п�?исваивание
 			else {
 				CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
 			}

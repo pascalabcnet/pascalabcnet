@@ -268,11 +268,15 @@ assign_stmt
 
 				// объявление глобальной переменной
 				if (symbolTable.OuterScope == null) {
-					var vds = new var_def_statement(new ident_list($1, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
+					// var vds = new var_def_statement(new ident_list($1, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
+					var vds = new var_def_statement(new ident_list($1, @1), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, @$);
 					globalVariables.Add($1.name);
 					decl.Add(new variable_definitions(vds, @$), @$);
 					//decl.AddFirst(new variable_definitions(vds, @$));
-					$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+
+					var ass = new assign($1 as addressed_value, $3, $2.type, @$);
+					ass.first_assignment_defines_type = true;
+					$$ = ass;
 				}
 				// объявление локальной переменной
 				else {
@@ -281,7 +285,7 @@ assign_stmt
 					$$ = new var_statement(vds, @$);
 				}
 			}
-			// присвоение
+			// присваивание
 			else {
 				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 			}
