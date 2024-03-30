@@ -12,6 +12,8 @@ procedure print(params lst: array of object);
 
 // Basic type conversion methods
 
+function stype(obj: object): System.Type;
+
 //function int(val: string): integer;
 
 //function int(b: boolean): integer;
@@ -71,6 +73,9 @@ begin
     Result := 0;
 end;
 }
+
+function stype(obj: object): System.Type := obj.GetType();
+
 function int(obj: object): integer := Convert.ToInt32(obj);
 
 {
