@@ -15,7 +15,7 @@ namespace SPythonSyntaxTreeVisitor
 {
     public class spython_syntax_tree_visitor : syntax_tree_visitor, ISyntaxTreeVisitor
     {
-        private string[] filesExtensions = { ".pys" };
+        private string[] filesExtensions = { ".pys", ".py" };
         public spython_syntax_tree_visitor(): base()
         {
             OnLeave = RunAdditionalChecks;
@@ -49,6 +49,7 @@ namespace SPythonSyntaxTreeVisitor
         }
         public override void AddError(location loc, string ErrResourceString, params object[] values)
         {
+
             Error err = new SPythonSemanticError(loc, ErrResourceString, values);
             if (ErrResourceString == "FORWARD_DECLARATION_{0}_AS_BASE_TYPE")
             {
@@ -70,6 +71,10 @@ namespace SPythonSyntaxTreeVisitor
                         base.AddError(new OperatorCanNotBeAppliedToThisTypes("%", _op_err.left, _op_err.right, _op_err.loc), shouldReturn);
                         return;
                     }
+                    else if (_op_err.operator_name == "div")
+                    {
+                        base.AddError(new OperatorCanNotBeAppliedToThisTypes("//", _op_err.left, _op_err.right, _op_err.loc), shouldReturn);
+                    }
                     break;
                 case SimpleSemanticError _ss_err:
                     break;
@@ -81,6 +86,8 @@ namespace SPythonSyntaxTreeVisitor
         {
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
+
+            RunAdditionalChecks(_bin_expr);
 
             switch (_bin_expr.operation_type)
             {
@@ -106,8 +113,12 @@ namespace SPythonSyntaxTreeVisitor
                 case Operators.IntegerDivision:
                     if (left.type == right.type && left.type.name == "real")
                     {
-                        var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _bin_expr.source_context);
-                        var floornode = new method_call(new ident("@Floor"), new expression_list(divnode));
+                        //var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _bin_expr.source_context);
+                        //var floornode = new method_call(new ident("@Floor"), new expression_list(divnode));
+                        var exprlist = new expression_list(); exprlist.source_context = _bin_expr.source_context;
+                        exprlist.Add(new semantic_addr_value(left, left.location));
+                        exprlist.Add(new semantic_addr_value(right, right.location));
+                        var floornode = new method_call(new ident("@FloorDiv"), exprlist, _bin_expr.source_context);
                         visit(floornode);
                         return;
                     }
@@ -115,9 +126,13 @@ namespace SPythonSyntaxTreeVisitor
                 case Operators.ModulusRemainder:
                     if (left.type == right.type && left.type.name == "real")
                     {
-                        var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.IntegerDivision, _bin_expr.source_context);
-                        var multnode = new bin_expr(new semantic_addr_value(right, right.location), divnode, Operators.Multiplication);
-                        var modnode = new bin_expr(new semantic_addr_value(left, left.location), multnode, Operators.Minus);
+                        //var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.IntegerDivision, _bin_expr.source_context);
+                        //var multnode = new bin_expr(new semantic_addr_value(right, right.location), divnode, Operators.Multiplication);
+                        //var modnode = new bin_expr(new semantic_addr_value(left, left.location), multnode, Operators.Minus);
+                        var exprlist = new expression_list(); exprlist.source_context = _bin_expr.source_context;
+                        exprlist.Add(new semantic_addr_value(left, left.location));
+                        exprlist.Add(new semantic_addr_value(right, right.location));
+                        var modnode = new method_call(new ident("@FloorMod"), exprlist, _bin_expr.source_context);
                         visit(modnode);
                         return;
                     }

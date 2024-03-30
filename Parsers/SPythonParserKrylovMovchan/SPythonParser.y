@@ -224,10 +224,10 @@ global_stmt
 	: GLOBAL ident_list
 		{
 			foreach (ident id in ($2 as ident_list).idents) {
-				if (globalVariables.Contains(id.name)) {
+				//if (globalVariables.Contains(id.name)) {
 					// такое возможно только если имя параметра совпадает с именем глобальной переменной
 					if (symbolTable.Contains(id.name)) {
-						parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", @$, id.name);
+						parsertools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", @$, id.name);
 						$$ = null;
 					}
 					// всё отлично!
@@ -236,14 +236,14 @@ global_stmt
 						$$ = new empty_statement();
 						$$.source_context = null;
 					}
-				}
+				//}
 				// нет глобальной переменной с таким именем
-				else {
-					parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", @$, id.name);
-					$$ = null;
-				}
+				//else {
+				//	parsertools.AddErrorFromResource("NO_GLOBAL_VAR_{0}", @$, id.name);
+				//	$$ = null;
+				//}
 			}
-			
+
 		}
 	;
 
@@ -257,12 +257,12 @@ ident
 	;
 
 ident_list
-    : ident                               
-        { 
+    : ident
+        {
 			$$ = new ident_list($1, @$);
 		}
-    | ident_list COMMA ident       
-        { 
+    | ident_list COMMA ident
+        {
 			$$ = ($1 as ident_list).Add($3, @$);
 		}
     ;

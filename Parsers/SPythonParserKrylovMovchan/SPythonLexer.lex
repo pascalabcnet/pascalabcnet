@@ -97,12 +97,12 @@ ID {Alpha}{AlphaDigit}*
 ")"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RPAR; }
 
 "##" {
-  parsertools.AddError("Wrong indent", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
+  parsertools.AddErrorFromResource("WRONG_INDENT", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
 	return (int)Tokens.EOF;
 }
 
 [^ \r\n] {
-  parsertools.AddError("Unexpected token!", CurrentLexLocation);
+  parsertools.AddErrorFromResource("UNEXPECTED_TOKEN_{0}", CurrentLexLocation, yytext);
 	return (int)Tokens.EOF;
 }
 

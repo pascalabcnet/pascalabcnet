@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-56159VE
-// DateTime: 24.03.2024 15:45:16
-// UserName: ????
+// Machine:  LAPTOP-MPBGOA9N
+// DateTime: 29.03.2024 17:12:23
+// UserName: krylo
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -479,10 +479,10 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 23: // global_stmt -> GLOBAL, ident_list
 {
 			foreach (ident id in (ValueStack[ValueStack.Depth-1].stn as ident_list).idents) {
-				if (globalVariables.Contains(id.name)) {
+				//if (globalVariables.Contains(id.name)) {
 					// �?акое возможно �?ол�?ко если имя па�?аме�?�?а совпадае�? с именем глобал�?ной пе�?еменной
 					if (symbolTable.Contains(id.name)) {
-						parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", CurrentLocationSpan, id.name);
+						parsertools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", CurrentLocationSpan, id.name);
 						CurrentSemanticValue.stn = null;
 					}
 					// вс�? о�?ли�?но!
@@ -491,14 +491,14 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 						CurrentSemanticValue.stn = new empty_statement();
 						CurrentSemanticValue.stn.source_context = null;
 					}
-				}
+				//}
 				// не�? глобал�?ной пе�?еменной с �?аким именем
-				else {
-					parsertools.AddErrorFromResource("There is no global variable with name \"{0}\"", CurrentLocationSpan, id.name);
-					CurrentSemanticValue.stn = null;
-				}
+				//else {
+				//	parsertools.AddErrorFromResource("NO_GLOBAL_VAR_{0}", @$, id.name);
+				//	$$ = null;
+				//}
 			}
-			
+
 		}
         break;
       case 24: // ident -> ID
@@ -509,12 +509,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 25: // ident_list -> ident
-{ 
+{
 			CurrentSemanticValue.stn = new ident_list(ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan);
 		}
         break;
       case 26: // ident_list -> ident_list, COMMA, ident
-{ 
+{
 			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as ident_list).Add(ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan);
 		}
         break;

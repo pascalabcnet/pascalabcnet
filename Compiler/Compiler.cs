@@ -4191,8 +4191,8 @@ namespace PascalABCCompiler
                 }
             }
 
-            // Если файл .pys то надо заменить исходный текст программы на другой с предварительной обработкой
-            if (Path.GetExtension(UnitFileName) == ".pys")
+            // Если файл .pys (или .py) то надо заменить исходный текст программы на другой с предварительной обработкой
+            if (Path.GetExtension(UnitFileName) == ".pys" || Path.GetExtension(UnitFileName) == ".py")
             {
                 IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
                 ia.ProcessSourceText(ref SourceText);

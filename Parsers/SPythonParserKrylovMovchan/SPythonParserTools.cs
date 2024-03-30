@@ -13,7 +13,7 @@ namespace SPythonParser
 {
     public static class StringResources
     {
-        private static string prefix = "PASCALABCPARSER_";
+        private static string prefix = "SPYTHONPARSER_";
         public static string Get(string Id)
         {
             string ret = PascalABCCompiler.StringResources.Get(prefix + Id);

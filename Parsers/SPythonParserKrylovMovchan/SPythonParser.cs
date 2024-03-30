@@ -59,7 +59,7 @@ namespace SPythonParser
 
             if (!parser.Parse())
                 if (Errs.Count == 0)
-                    parsertools.AddError("Неопознанная синтаксическая ошибка!", null);
+                    parsertools.AddErrorFromResource("UNEXPECTED_SYNTAX_ERROR", null);
 #if DEBUG
 #if _ERR
             sw.Close();
@@ -92,9 +92,9 @@ namespace SPythonParser
                   version: "0.0.1", 
                   copyright: "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", 
                   caseSensitive: false, 
-                  filesExtensions: new string[] { ".pys" },
-                  standardModules: new[] { new StandardModule() { name = "SpythonSystem" },
-                      new StandardModule() { name = "SpythonHidden", isHidden = true, syntaxTreePostProcessor = ProcessHiddenUnit } })
+                  filesExtensions: new string[] { ".pys", ".py" },
+                  systemUnitNames: new string[] { "SpythonSystem" }, 
+                  hiddenSystemUnits: new[] { new PascalABCCompiler.ParserTools.UnitWithCallback<compilation_unit> { name = "SpythonHidden", callback = ProcessHiddenUnit } })
         {
         }
 
