@@ -12,19 +12,13 @@ procedure print(params lst: array of object);
 
 // Basic type conversion methods
 
-//function int(val: string): integer;
+function int(val: string): integer;
 
-//function int(b: boolean): integer;
-
-function int(obj: object): integer;
-
-// function int(val: object): integer;
+function int(b: boolean): integer;
 
 function str(val: object): string;
 
 function float(val: string): real;
-
-// function float(val: object): single;
 
 // Basic sequence functions
 
@@ -33,6 +27,8 @@ function range(s: integer; e: integer; step: integer): sequence of integer;
 function range(e: integer): sequence of integer;
 
 function range(s: integer; e: integer): sequence of integer;
+
+function stype(obj: object): System.Type;
 
 //function all<T>(seq: sequence of T): boolean;
 
@@ -61,8 +57,8 @@ begin
   PABCSystem.Println();
 end;
 
-//function int(val: string): integer := integer.Parse(val);
-{
+function int(val: string): integer := integer.Parse(val);
+
 function int(b: boolean): integer;
 begin
   if b then
@@ -70,16 +66,8 @@ begin
   else
     Result := 0;
 end;
-}
-function int(obj: object): integer := Convert.ToInt32(obj);
 
-{
-function int(val: object): integer;
-begin
-  Result := val.GetHashCode();
-end;
-}
-function str(val: object): string := val.ToString(); 
+function str(obj: object): string := val.ToString(); 
 
 function float(val: string): real := real.Parse(val);
 
@@ -106,6 +94,6 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
 
-// function floor(x: real): real := PABCSystem.Floor(x);
+function stype(obj: object): System.Type := obj.GetType();
 
 end.
