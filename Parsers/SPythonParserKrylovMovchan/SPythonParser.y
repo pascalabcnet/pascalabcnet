@@ -236,7 +236,7 @@ global_stmt
 					$$.source_context = null;
 				}
 			}
-			
+
 		}
 	;
 
@@ -250,12 +250,12 @@ ident
 	;
 
 ident_list
-    : ident                               
-        { 
+    : ident
+        {
 			$$ = new ident_list($1, @$);
 		}
-    | ident_list COMMA ident       
-        { 
+    | ident_list COMMA ident
+        {
 			$$ = ($1 as ident_list).Add($3, @$);
 		}
     ;
@@ -269,7 +269,7 @@ assign_stmt
 				// объявление глобальной переменной
 				if (symbolTable.OuterScope == null) {
 					// var vds = new var_def_statement(new ident_list($1, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
-					var vds = new var_def_statement(new ident_list($1, @1), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, @$);
+					var vds = new var_def_statement(new ident_list($1, @1), new named_type_reference(new ident("UnknownType")), null, definition_attribute.None, false, @$);
 					globalVariables.Add($1.name);
 					decl.Add(new variable_definitions(vds, @$), @$);
 					//decl.AddFirst(new variable_definitions(vds, @$));

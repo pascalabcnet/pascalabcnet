@@ -126,5 +126,38 @@ namespace SPythonSyntaxTreeVisitor
             var new_bin_expr = new bin_expr(new semantic_addr_value(left), new semantic_addr_value(right), _bin_expr.operation_type, _bin_expr.source_context);
             base.visit(new_bin_expr);
         }
+        public override void visit(var_def_statement _var_def_statement)
+        {
+            if (_var_def_statement.vars_type != null)
+            {
+                var loc = get_location(_var_def_statement.vars_type);
+                type_node tn = find_type(_var_def_statement.vars_type as named_type_reference, loc);
+                _var_def_statement.vars_type = new semantic_type_node(tn);
+            }
+            base.visit(_var_def_statement);
+        }
+
+        public override void visit(ident _ident)
+        {
+            var si = context.find_first(_ident.name).sym_info as var_definition_node;
+            if (si != null && si.type.name == "UnknownType")
+            {
+                var loc = get_location(_ident);
+                AddError(loc, "USING_VARIABLE_BEFORE_ASSIGNMENT");
+            }
+            base.visit(_ident);
+        }
+
+        /*public override void visit(named_type_reference _named_type_reference)
+        {
+            var loc = get_location(_named_type_reference);
+            type_node tn = find_type(_named_type_reference, loc);
+            if (tn.name == "UnknownType")
+            {
+                base.AddError(loc, "USING_VARIABLE_BEFORE_ASSIGNMENT");
+            }
+            var _new_ntr = new semantic_addr_value(tn);
+            base.visit(_named_type_reference);
+        }*/
     }
 }

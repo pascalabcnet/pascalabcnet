@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-56159VE
-// DateTime: 30.03.2024 10:19:48
-// UserName: ????
+// Machine:  LAPTOP-MPBGOA9N
+// DateTime: 30.03.2024 13:56:49
+// UserName: krylo
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -491,7 +491,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 					CurrentSemanticValue.stn.source_context = null;
 				}
 			}
-			
+
 		}
         break;
       case 24: // ident -> ID
@@ -502,12 +502,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 25: // ident_list -> ident
-{ 
+{
 			CurrentSemanticValue.stn = new ident_list(ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan);
 		}
         break;
       case 26: // ident_list -> ident_list, COMMA, ident
-{ 
+{
 			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as ident_list).Add(ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan);
 		}
         break;
@@ -519,7 +519,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 				// об�?явление глобал�?ной пе�?еменной
 				if (symbolTable.OuterScope == null) {
 					// var vds = new var_def_statement(new ident_list($1, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
-					var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, CurrentLocationSpan);
+					var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-3].id, LocationStack[LocationStack.Depth-3]), new named_type_reference(new ident("UnknownType")), null, definition_attribute.None, false, CurrentLocationSpan);
 					globalVariables.Add(ValueStack[ValueStack.Depth-3].id.name);
 					decl.Add(new variable_definitions(vds, CurrentLocationSpan), CurrentLocationSpan);
 					//decl.AddFirst(new variable_definitions(vds, @$));

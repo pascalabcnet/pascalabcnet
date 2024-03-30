@@ -4,6 +4,9 @@ interface
 
 uses PABCSystem;
 
+type UnknownType = class
+end;
+
 // Basic IO methods
 
 function input(): string;
