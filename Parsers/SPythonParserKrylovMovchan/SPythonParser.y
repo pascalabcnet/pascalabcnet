@@ -59,7 +59,7 @@
 %left NOT
 
 %type <id> ident
-%type <ex> expr var_reference proc_func_call const_value complex_variable
+%type <ex> expr var_reference proc_func_call const_value complex_variable_name variable_name
 %type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_and_stmt_list
@@ -263,7 +263,7 @@ ident_list
     ;
 
 assign_stmt
-	: ident ASSIGN expr // когда можно будет присваивать не только ident'ам появится проблема с проверкой на использование переменных без инициализации
+	: ident ASSIGN expr
 		{
 			// объявление
 			if (!symbolTable.Contains($1.name) && (isInsideFunction || !globalVariables.Contains($1.name))) {
@@ -327,7 +327,7 @@ expr
 		{ $$ = new un_expr($2, $1.type, @$); }
 	| NOT	expr
 		{ $$ = new un_expr($2, $1.type, @$); }
-	| complex_variable
+	| complex_variable_name
 		{ $$ = $1; }
 	| const_value
 		{ $$ = $1; }
@@ -448,16 +448,21 @@ proc_func_call_stmt
 	;
 
 var_reference
-	: ident
-		{ $$ = $1; }
-	| complex_variable
+	: variable_name
 		{ $$ = $1; }
 	;
 
-complex_variable
+variable_name
+	: ident
+		{ $$ = $1; }
+	| complex_variable_name
+		{ $$ = $1; }
+	;
+
+complex_variable_name
 	: proc_func_call
 		{ $$ = $1; }
-	| complex_variable DOT ident
+	| complex_variable_name DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	| const_value DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
@@ -527,11 +532,7 @@ proc_func_header
 	;
 
 proc_func_call
-	: ident LPAR optional_expr_list RPAR
-		{
-			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
-		}
-	| complex_variable LPAR optional_expr_list RPAR
+	: variable_name LPAR optional_expr_list RPAR
 		{
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
 		}
