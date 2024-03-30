@@ -1,0 +1,6 @@
+﻿from unit import *
+unit.f()
+
+def f():
+    global unit.a
+    print(a)
