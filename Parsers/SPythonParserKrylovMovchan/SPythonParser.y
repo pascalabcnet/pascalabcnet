@@ -336,7 +336,7 @@ expr
 	| ident
 		{
 			// Проверка на то что пытаемся читать не инициализированную переменную
-			if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
+			if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name) && $1.name != "True" && $1.name != "False")
 					parsertools.AddErrorFromResource("variable \"{0}\" is used but has no value", @$, $1.name);
 			
 			$$ = $1; 

@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 30.03.2024 20:26:32
+// DateTime: 30.03.2024 20:59:09
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -608,7 +608,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 47: // expr -> ident
 {
 			// �?�?ове�?ка на �?о �?�?о п�?�?аемся �?и�?а�?�? не ини�?иализи�?ованн�?�? пе�?еменн�?�?
-			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-1].id.name) && !globalVariables.Contains(ValueStack[ValueStack.Depth-1].id.name))
+			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-1].id.name) && !globalVariables.Contains(ValueStack[ValueStack.Depth-1].id.name) && ValueStack[ValueStack.Depth-1].id.name != "True" && ValueStack[ValueStack.Depth-1].id.name != "False")
 					parsertools.AddErrorFromResource("variable \"{0}\" is used but has no value", CurrentLocationSpan, ValueStack[ValueStack.Depth-1].id.name);
 			
 			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].id; 
