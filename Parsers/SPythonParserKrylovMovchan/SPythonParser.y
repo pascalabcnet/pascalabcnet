@@ -58,13 +58,13 @@
 %left STAR DIVIDE SLASHSLASH PERCENTAGE
 %left NOT
 
-%type <id> ident dotted_identifier
-%type <ex> expr var_reference proc_func_call const_value complex_variable variable complex_variable_or_ident
+%type <id> ident dotted_ident
+%type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident
 %type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_and_stmt_list
 %type <stn> stmt_list block
-%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list dotted_identifier_list
+%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <td> proc_func_header form_param_type simple_type_identifier
 %type <stn> import_clause import_clause_one
 
@@ -222,7 +222,7 @@ stmt
 	;
 
 global_stmt
-	: GLOBAL dotted_identifier_list
+	: GLOBAL dotted_ident_list
 		{
 			foreach (var id in ($2 as ident_list).idents) {
 				// имя параметра совпадает с именем глобальной переменной
@@ -250,52 +250,57 @@ ident
 		}
 	;
 
-dotted_identifier
+dotted_ident
 	: ident
 		{ $$ = $1; }
-	| dotted_identifier DOT ident
+	| dotted_ident DOT ident
 		{
 			$$ = new ident($1.name + "." + $3.name);
 		}
 	;
 
-dotted_identifier_list
-    : dotted_identifier                               
+dotted_ident_list
+    : dotted_ident                               
         {
 			$$ = new ident_list($1, @$);
 		}
-    | dotted_identifier_list COMMA dotted_identifier       
+    | dotted_ident_list COMMA dotted_ident       
         { 
 			$$ = ($1 as ident_list).Add($3, @$);
 		}
     ;
 
 assign_stmt
-	: dotted_identifier ASSIGN expr
+	: variable ASSIGN expr
 		{
-			// объявление
-			if (!symbolTable.Contains($1.name) && (isInsideFunction || !globalVariables.Contains($1.name))) {
+			if ($1 is ident id) {
+				// объявление
+				if (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name))) {
 
-				// объявление глобальной переменной
-				if (symbolTable.OuterScope == null) {
-					// var vds = new var_def_statement(new ident_list($1, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
-					var vds = new var_def_statement(new ident_list($1, @1), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, @$);
-					globalVariables.Add($1.name);
-					decl.Add(new variable_definitions(vds, @$), @$);
-					//decl.AddFirst(new variable_definitions(vds, @$));
+					// объявление глобальной переменной
+					if (symbolTable.OuterScope == null) {
+						// var vds = new var_def_statement(new ident_list(id, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
+						var vds = new var_def_statement(new ident_list(id, @1), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, @$);
+						globalVariables.Add(id.name);
+						decl.Add(new variable_definitions(vds, @$), @$);
+						//decl.AddFirst(new variable_definitions(vds, @$));
 
-					var ass = new assign($1 as addressed_value, $3, $2.type, @$);
-					ass.first_assignment_defines_type = true;
-					$$ = ass;
+						var ass = new assign(id as addressed_value, $3, $2.type, @$);
+						ass.first_assignment_defines_type = true;
+						$$ = ass;
+					}
+					// объявление локальной переменной
+					else {
+						var vds = new var_def_statement(new ident_list(id, @1), null, $3, definition_attribute.None, false, @$);
+						symbolTable.Add(id.name);
+						$$ = new var_statement(vds, @$);
+					}
 				}
-				// объявление локальной переменной
+				// присваивание
 				else {
-					var vds = new var_def_statement(new ident_list($1, @1), null, $3, definition_attribute.None, false, @$);
-					symbolTable.Add($1.name);
-					$$ = new var_statement(vds, @$);
+					$$ = new assign(id as addressed_value, $3, $2.type, @$);
 				}
 			}
-			// присваивание
 			else {
 				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 			}
@@ -449,15 +454,10 @@ continue_stmt
 	;
 
 proc_func_call_stmt
-	:  var_reference
+	:  proc_func_call
         {
 			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$);
 		}
-	;
-
-var_reference
-	: variable
-		{ $$ = $1; }
 	;
 
 variable
