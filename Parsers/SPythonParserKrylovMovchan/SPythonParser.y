@@ -58,7 +58,7 @@
 %left STAR DIVIDE SLASHSLASH PERCENTAGE
 %left NOT
 
-%type <id> ident dotted_ident
+%type <id> ident dotted_ident range_ident
 %type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident
 %type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
@@ -418,9 +418,17 @@ while_stmt
 	;
 
 for_stmt
-	: FOR ident IN expr COLON block
+	: FOR range_ident IN expr COLON block
 		{
 			$$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$);
+		}
+	;
+
+range_ident
+	: ident
+		{
+			symbolTable.Add($1.name);
+			$$ = $1;
 		}
 	;
 
