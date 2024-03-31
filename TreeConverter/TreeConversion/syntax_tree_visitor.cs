@@ -21778,14 +21778,28 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(semantic_ith_element_of ith)
         {
+            var IsSequence = false;
+            var IsTuple = false;
             var sem_ex = convert_strong(ith.id);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-
-            var IsTuple = IsTupleType(t);
-            var IsSequence = !IsTuple && IsSequenceType(t);
+            {
+                bool bb;
+                type_node elem_type = null;
+                var b = FindIEnumerableElementType(sem_ex.type, ref elem_type, out bb);
+                if (b)
+                    IsSequence = true;
+                else
+                    AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                
+            }
+                
+            if (t != null)
+                IsTuple = IsTupleType(t);
+            
+            if (t != null)
+                IsSequence = !IsTuple && IsSequenceType(t);
 
             if (!IsTuple && !IsSequence)
             {
