@@ -10249,6 +10249,15 @@ namespace PascalABCCompiler.TreeConverter
                             mc.visit(this);
                             return;
                         }
+                        if (sil != null && sil.Count > 1)
+                        {
+                            List<SymbolInfo> no_extmeth_sil = new List<SymbolInfo>();
+                            foreach (var si in sil)
+                                if (si.sym_info is function_node && !(si.sym_info as function_node).is_extension_method)
+                                    no_extmeth_sil.Add(si);
+                            if (no_extmeth_sil.Count > 0)
+                                sil = no_extmeth_sil;
+                        }
                         return_value(expression_value_reciving(id_right, sil, en, true));
                         return;
                     }
