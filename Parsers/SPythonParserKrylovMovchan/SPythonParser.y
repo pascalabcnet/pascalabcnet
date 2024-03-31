@@ -64,7 +64,7 @@
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_and_stmt_list
 %type <stn> stmt_list block
-%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list
+%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list dotted_identifier_list
 %type <td> proc_func_header form_param_type simple_type_identifier
 %type <stn> import_clause import_clause_one
 
@@ -222,20 +222,21 @@ stmt
 	;
 
 global_stmt
-	: GLOBAL dotted_identifier
+	: GLOBAL dotted_identifier_list
 		{
-			// имя параметра совпадает с именем глобальной переменной
-				if (symbolTable.Contains($2.name)) {
-					parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", @$, $2.name);
+			foreach (var id in ($2 as ident_list).idents) {
+				// имя параметра совпадает с именем глобальной переменной
+				if (symbolTable.Contains(id.name)) {
+					parsertools.AddErrorFromResource("Global variable \"{0}\" has the same name as parameter", @$, id.name);
 					$$ = null;
 				}
 				// всё отлично!
 				else {
-					symbolTable.Add($2.name);
+					symbolTable.Add(id.name);
 					$$ = new empty_statement();
 					$$.source_context = null;
 				}
-			
+			}
 		}
 	;
 
@@ -258,8 +259,19 @@ dotted_identifier
 		}
 	;
 
+dotted_identifier_list
+    : dotted_identifier                               
+        {
+			$$ = new ident_list($1, @$);
+		}
+    | dotted_identifier_list COMMA dotted_identifier       
+        { 
+			$$ = ($1 as ident_list).Add($3, @$);
+		}
+    ;
+
 assign_stmt
-	: ident ASSIGN expr
+	: dotted_identifier ASSIGN expr
 		{
 			// объявление
 			if (!symbolTable.Contains($1.name) && (isInsideFunction || !globalVariables.Contains($1.name))) {

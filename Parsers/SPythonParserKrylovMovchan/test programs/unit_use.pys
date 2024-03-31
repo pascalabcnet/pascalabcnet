@@ -1,11 +1,9 @@
 ﻿from unit import *
-unit.f()
+b = 5
 
 def f():
-    global unit.a
-    a = 2
-    print(unit.a)
-    print(a)
+    global unit.a, b
+    unit.a = 1
    
 f()
 print(unit.a)
