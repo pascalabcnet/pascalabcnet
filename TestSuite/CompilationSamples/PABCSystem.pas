@@ -13714,11 +13714,11 @@ end;
 //>>     Методы расширения словарей # Extension methods for IDictionary
 // -----------------------------------------------------------------------------
 /// Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию
-function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key): Value; extensionmethod;
+function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key; V: Value := default(Value)): Value; extensionmethod;
 begin
   var b := Self.TryGetValue(K, Result);
   if not b then 
-    Result := default(Value);
+    Result := V;
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом
