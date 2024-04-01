@@ -2,9 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
@@ -75,7 +72,7 @@ namespace VisualPascalABC
         {
             this.StandartDirectories = StandartDirectories;
             this.ErrorsManager = ErrorsManager;
-            this.ChangeVisualEnvironmentState += new ChangeVisualEnvironmentStateDelegate(onChangeVisualEnvironmentState);
+            this.ChangeVisualEnvironmentState += onChangeVisualEnvironmentState;
             SetCompilingButtonsEnabled = setCompilingButtonsEnabled;
             SetDebugButtonsEnabled = setCompilingDebugEnabled;
             SetStateText = setStateText;
@@ -85,17 +82,20 @@ namespace VisualPascalABC
             this.ExecuteVECAction = ExecuteVECAction;
             PluginsMenuItem = pluginsMenuItem;
             PluginsToolStrip = pluginsToolStrip;
-            PluginsController = new VisualPascalABCPlugins.PluginsController(this, PluginsMenuItem, PluginsToolStrip, workbench);
+            PluginsController = new PluginsController(this, PluginsMenuItem, PluginsToolStrip, workbench);
             this.RunnerManager = RunnerManager;
             this.DebugHelper = DebugHelper;
-            DebugHelper.Starting += new DebugHelper.DebugHelperActionDelegate(DebugHelper_Starting);
-            DebugHelper.Exited += new DebugHelper.DebugHelperActionDelegate(DebugHelper_Exited);
-            RunnerManager.Starting += new RunnerManagerActionDelegate(RunnerManager_Starting);
-            RunnerManager.Exited += new RunnerManagerActionDelegate(RunnerManager_Exited);
+            DebugHelper.Starting += DebugHelper_Starting;
+            DebugHelper.Exited += DebugHelper_Exited;
+            RunnerManager.Starting += RunnerManager_Starting;
+            RunnerManager.Exited += RunnerManager_Exited;
             this.CodeCompletionParserController = WorkbenchServiceFactory.CodeCompletionParserController;
             this.CodeCompletionParserController.visualEnvironmentCompiler = this;
             this.UserOptions = UserOptions;
             this.OpenDocuments = OpenDocuments;
+            
+            PascalABCCompiler.Parsers.Controller.Instance.ParserConnected += OnParserConnected;
+            PascalABCCompiler.Parsers.Controller.Instance.ParserLoadErrorOccured += OnParserLoadErrorOccured;
         }
 
         void RunnerManager_Exited(string fileName)
@@ -316,6 +316,25 @@ namespace VisualPascalABC
                 AddTextToCompilerMessages(VECStringResources.Get("REMOTE_COMPILER_PREFIX") + text);
         }
         List<string> ParsedFiles = new List<string>();
+        
+        /// <summary>
+        /// Выводит сообщения о подключенных парсерах
+        /// </summary>
+        private void OnParserConnected(PascalABCCompiler.Parsers.IParser parser)
+        {
+            string parserConnectedMessage = string.Format(VECStringResources.Get("PARSER_CONNECTED{0}{1}"), parser, Path.GetFileName(parser.GetType().Assembly.Location));
+            parserConnectedMessage += Environment.NewLine;
+            AddTextToCompilerMessages(parserConnectedMessage);
+        }
+
+        /// <summary>
+        /// Выводит сообщения об ошибках, возникших при загрузке парсеров
+        /// </summary>
+        private void OnParserLoadErrorOccured(string errorMessage)
+        {
+            AddTextToCompilerMessages(errorMessage);
+        }
+
         private void OnChangeCompilerStateEx(PascalABCCompiler.ICompiler sender, PascalABCCompiler.CompilerState State, string FullFileName)
         {
 
@@ -344,14 +363,6 @@ namespace VisualPascalABC
                 case PascalABCCompiler.CompilerState.SemanticTreeConverterConnected: RusName = VECStringResources.Get("STATE_SEMANTICTREECONVERTERCONNECTED{0}"); break;
                 case PascalABCCompiler.CompilerState.SyntaxTreeConversion: RusName = VECStringResources.Get("STATE_SYNTAXTREECONVERSION{0}"); break;
                 case PascalABCCompiler.CompilerState.SyntaxTreeConverterConnected: RusName = VECStringResources.Get("STATE_SYNTAXTREECONVERTERCONNECTED{0}"); break;
-                case PascalABCCompiler.CompilerState.ParserConnected:
-                    FileName = Path.GetFileName(FileName);
-                    if(sender.CompilerType== PascalABCCompiler.CompilerType.Standart)
-                        RusName = string.Format(VECStringResources.Get("PARSER_CONNECTED{0}{1}"), sender.ParsersController.LastParser, FileName);
-                    else
-                        RusName = string.Format(VECStringResources.Get("PARSER_CONNECTED{0}"), FileName);
-                    FileName = null;
-                    break;
                 case PascalABCCompiler.CompilerState.Ready:
                     RusName = VECStringResources.Get("STATE_READY");
                     if (!StartingCompleted)

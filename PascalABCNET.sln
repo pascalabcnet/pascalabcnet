@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.34301.259
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualPascalABCNET", "VisualPascalABCNET", "{26843C5D-9D7E-4C2C-AC14-2D227FA5592E}"
 EndProject
@@ -107,7 +107,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignTupleDesugar", "AssignTupleOptimizer\AssignTupleDesugar.csproj", "{ADD567B7-8157-45E8-9673-FC6BCF5930D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageIntegrator", "LanguageIntegrator\LanguageIntegrator.csproj", "{A48D9069-D569-4110-9252-A10F139B669B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -505,18 +505,18 @@ Global
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Release|x86.ActiveCfg = Release|Any CPU
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Release|x86.Build.0 = Release|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|x86.Build.0 = Debug|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|x86.ActiveCfg = Release|Any CPU
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|x86.Build.0 = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|x86.Build.0 = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|x86.ActiveCfg = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -562,7 +562,7 @@ Global
 		{536CC813-7C4E-42BC-AE3A-BA1427F38756} = {EC68A3D8-6D63-4A79-ABA6-BF8E9D7756D7}
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C} = {BB6973BA-B3A2-4B31-A986-7CB008F22C4F}
-		{ADD567B7-8157-45E8-9673-FC6BCF5930D1} = {F8CE2712-826B-450B-A72F-D32D80C99858}
+		{A48D9069-D569-4110-9252-A10F139B669B} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68E993E6-EE86-4DDF-B0A1-4FE884F8AC39}

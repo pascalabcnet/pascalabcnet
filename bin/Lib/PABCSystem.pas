@@ -343,8 +343,12 @@ type
   
   /// Стандартная подсистема ввода-вывода
   IOStandardSystem = class(IOSystem)
-    state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
-    sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
+    //state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
+    //sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
+    // SSM 28/02/24 - новая концепция для считывания из консоли без редиректа: буфер на одну строку
+    read_buf := new char[0];
+    rblen := 0;
+    rbpos := 0;
     buf: array of char := new char[buflen];
     pos := 0;
     realbuflen := -1; // только вначале
@@ -352,6 +356,7 @@ type
   public 
     constructor Create;
     procedure ReadNextBuf;
+    procedure ReadNextConsoleBuf;
     function peek: integer; virtual;// использует state и sym (стар) или буфер buf (нов)
     function read_symbol: char; virtual;// использует state и sym (стар) или буфер buf (нов)
     procedure read(var x: integer); virtual;
@@ -2158,30 +2163,49 @@ function Length(a: System.Array; dim: integer): integer;
 ///- function Copy(a: array of T): array of T;
 /// Создаёт копию динамического массива
 function Copy(a: System.Array): System.Array;
+
 /// Сортирует динамический массив по возрастанию
 procedure Sort<T>(a: array of T);
+/// Сортирует динамический массив по возрастанию
+procedure Sort(a: array of string);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp
 procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(a: array of T; less: (T,T)->boolean);
 /// Сортирует динамический массив по ключу
 procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
+/// Сортирует динамический массив по ключу
+procedure Sort<T>(a: array of T; keySelector: T->string);
+
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
+/// Сортирует список по возрастанию
+procedure Sort(var l: List<string>);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 /// Сортирует список по возрастанию по ключу
 procedure Sort<T,T1>(var l: List<T>; keySelector: T->T1);
+/// Сортирует список по возрастанию по ключу
+procedure Sort<T>(var l: List<T>; keySelector: T->string);
+
 /// Сортирует динамический массив по убыванию
 procedure SortDescending<T>(a: array of T);
+/// Сортирует динамический массив по убыванию
+procedure SortDescending(a: array of string);
 /// Сортирует динамический массив по убыванию по ключу
 procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
+/// Сортирует динамический массив по убыванию по ключу
+procedure SortDescending<T>(var a: array of T; keySelector: T->string);
 /// Сортирует список по убыванию
 procedure SortDescending<T>(l: List<T>);
+/// Сортирует список по убыванию
+procedure SortDescending(var l: List<string>);
 /// Сортирует список по убыванию по ключу
 procedure SortDescending<T,T1>(var l: List<T>; keySelector: T->T1);
+/// Сортирует список по убыванию по ключу
+procedure SortDescending<T>(var l: List<T>; keySelector: T->string);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
@@ -5433,6 +5457,14 @@ begin
   pos := 0;
 end;
 
+procedure IOStandardSystem.ReadNextConsoleBuf;
+begin
+  var sbuf := Console.ReadLine + NewLine;
+  read_buf := sbuf.ToCharArray;
+  rbpos := 0;
+  rblen := read_buf.Length;
+end;
+
 
 var
   _IsPipedRedirectedQuery := False;
@@ -5473,14 +5505,18 @@ begin
     if not console_alloc then
       AllocConsole;
     // SSM 29.11.14  
-    if state = 1 then // в sym - символ, считанный предыдущим Peek
+    {if state = 1 then // в sym - символ, считанный предыдущим Peek
       Result := sym
     else // в sym ничего нет
     begin
       state := 1;
       sym := Console.Read(); // считываение в буфер из одного символа
       Result := sym;
-    end; 
+    end; }
+    // SSM 28.02.23  
+    if rbpos >= rblen then // буфер строки пуст
+      ReadNextConsoleBuf;
+    Result := integer(read_buf[rbpos]); 
   end;
 end;
 
@@ -5499,7 +5535,7 @@ begin
     if not console_alloc then
       AllocConsole;
     // SSM 29.11.14  
-    if state = 1 then // в sym - символ, считанный предыдущим Peek
+    {if state = 1 then // в sym - символ, считанный предыдущим Peek
     begin
       state := 0;
       Result := char(sym);
@@ -5507,7 +5543,12 @@ begin
     end
     else // в sym ничего нет
       Result := char(Console.Read());
-    exit;  
+    exit;}
+    // SSM 28.02.23  
+    if rbpos >= rblen then // буфер строки пуст
+      ReadNextConsoleBuf;
+    Result := read_buf[rbpos];
+    rbpos += 1;  
   end;
 end;
 
@@ -5589,14 +5630,25 @@ begin
   begin
     if not console_alloc then
       AllocConsole;
-    if state = 1 then
+    {if state = 1 then
     begin
       state := 0;
       Result := char(sym) + Console.ReadLine;
       sym := -1;
     end
     else 
-      Result := Console.ReadLine;
+      Result := Console.ReadLine;}
+
+    // SSM 28.02.23  
+    if rbpos >= rblen then // буфер строки пуст
+      ReadNextConsoleBuf;
+    
+    // Проблема - там может уже оставаться 1 или 2 символа. Если так, то строка будет пустой!
+    var remlen := rblen - rbpos - NewLine.Length;
+    if remlen <= 0 then
+      Result := ''
+    else Result := string.Create(read_buf,rbpos,remlen);
+    rbpos := rblen;
   end;
 end;
 
@@ -7187,36 +7239,48 @@ procedure Print(params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  if PrintDelimDefault<>'' then
-    for var i := 0 to args.length - 1 do
+  for var i := 0 to args.length - 1 do
+    if PrintDelimDefault<>'' then
       Write(args[i], PrintDelimDefault)
-  else     
-    for var i := 0 to args.length - 1 do
-      Write(args[i])
+    else Write(args[i]);
 end;
 
 procedure Println(params args: array of object);
 begin
-  Print(args);
-  Writeln;
+  if args.Length = 0 then
+  begin  
+    Writeln;
+    exit;
+  end;  
+  for var i := 0 to args.length - 2 do
+    if PrintDelimDefault<>'' then
+      Write(args[i], PrintDelimDefault)
+    else Write(args[i]);
+  Writeln(args[args.Length-1]);
 end;
 
 procedure Print(f: Text; params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  if PrintDelimDefault<>'' then
-    for var i := 0 to args.length - 1 do
+  for var i := 0 to args.length - 1 do
+    if PrintDelimDefault<>'' then
       Write(f, args[i], PrintDelimDefault)
-  else     
-    for var i := 0 to args.length - 1 do
-      Write(f, args[i])
+    else Write(f, args[i])
 end;
 
 procedure Println(f: Text; params args: array of object);
 begin
-  Print(f, args);
-  Writeln(f);
+  if args.Length = 0 then
+  begin  
+    Writeln(f);
+    exit;
+  end;  
+  for var i := 0 to args.length - 2 do
+    if PrintDelimDefault<>'' then
+      Write(f, args[i], PrintDelimDefault)
+    else Write(f, args[i]);
+  Writeln(f, args[args.Length-1]);  
 end;
 
 procedure Serialize(fileName: string; obj: object);
@@ -8788,6 +8852,11 @@ begin
   System.Array.Sort(a);
 end;
 
+procedure Sort(a: array of string);
+begin
+  System.Array.Sort(a, System.StringComparer.Ordinal);
+end;
+
 procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 begin
   System.Array.Sort(a, cmp);
@@ -8804,14 +8873,30 @@ begin
   System.Array.Sort(keys, a);
 end;
 
+procedure Sort<T>(a: array of T; keySelector: T->string);
+begin
+  var keys := System.Array.ConvertAll(a,keySelector);
+  System.Array.Sort(keys, a, System.StringComparer.Ordinal);
+end;
+
 procedure Sort<T>(l: List<T>);
 begin
   l.Sort();
 end;
 
+procedure Sort(var l: List<string>);
+begin
+  l := l.OrderBy(x->x, System.StringComparer.Ordinal).ToList;
+end;
+
 procedure Sort<T,T1>(var l: List<T>; keySelector: T->T1);
 begin
   l := l.OrderBy(x->keySelector(x)).ToList;
+end;
+
+procedure Sort<T>(var l: List<T>; keySelector: T->string);
+begin
+  l := l.OrderBy(x->keySelector(x),System.StringComparer.Ordinal).ToList;
 end;
 
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
@@ -8830,9 +8915,20 @@ begin
   Reverse(a);
 end;
 
+procedure SortDescending(a: array of string);
+begin
+  Sort(a);
+  Reverse(a);
+end;
+
 procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
 begin
   a := a.OrderByDescending(x->keySelector(x)).ToArray;
+end;
+
+procedure SortDescending<T>(var a: array of T; keySelector: T->string);
+begin
+  a := a.OrderByDescending(x->keySelector(x),System.StringComparer.Ordinal).ToArray;
 end;
 
 procedure SortDescending<T>(l: List<T>);
@@ -8841,9 +8937,19 @@ begin
   Reverse(l);
 end;
 
+procedure SortDescending(var l: List<string>);
+begin
+  l := l.OrderByDescending(x->x, System.StringComparer.Ordinal).ToList;
+end;
+
 procedure SortDescending<T,T1>(var l: List<T>; keySelector: T->T1);
 begin
   l := l.OrderByDescending(x->keySelector(x)).ToList;
+end;
+
+procedure SortDescending<T>(var l: List<T>; keySelector: T->string);
+begin
+  l := l.OrderByDescending(x->keySelector(x), System.StringComparer.Ordinal).ToList;
 end;
 
 procedure Reverse<T>(a: array of T);
@@ -10127,6 +10233,38 @@ begin
  end;
 end;
 
+// SSM 14/3/2024 - Scan 
+
+/// Возвращает последовательность, в которой первый элемент равен первому элементу исходной последовательности, а каждый следующий - 
+///результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной
+function Scan<T>(Self: sequence of T; func: (T,T) -> T): sequence of T; extensionmethod;
+begin
+  var e := Self.GetEnumerator;
+  if not e.MoveNext then
+    exit;
+  var s := e.Current;
+  yield s;
+  while e.MoveNext do
+  begin
+    s := func(s,e.Current);
+    yield s;
+  end;
+end;
+
+/// Возвращает последовательность, в которой первый элемент равен first, а каждый следующий - 
+///результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной
+function Scan<T,T1>(Self: sequence of T; first: T1; func: (T1,T) -> T1): sequence of T1; extensionmethod;
+begin
+  var e := Self.GetEnumerator;
+  var s := first;
+  yield s;
+  while e.MoveNext do
+  begin
+    s := func(s,e.Current);
+    yield s;
+  end;
+end;
+
 /// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
 {function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
@@ -10190,6 +10328,18 @@ end;
 function OrderDescending<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.OrderByDescending(x -> x);
+end;
+
+/// Возвращает отсортированную по возрастанию последовательность
+function Order(Self: sequence of string): sequence of string; extensionmethod;
+begin
+  Result := Self.OrderBy(x -> x, System.StringComparer.Ordinal);
+end;
+
+/// Возвращает отсортированную по убыванию последовательность
+function OrderDescending(Self: sequence of string): sequence of string; extensionmethod;
+begin
+  Result := Self.OrderByDescending(x -> x, System.StringComparer.Ordinal);
 end;
 
 /// Возвращает множество HashSet по данной последовательности
@@ -12085,10 +12235,23 @@ begin
   System.Array.Sort(Self);  
 end;
 
+/// Сортирует массив по возрастанию
+procedure Sort(Self: array of string); extensionmethod;
+begin
+  System.Array.Sort(Self,System.StringComparer.Ordinal);
+end;
+
 /// Сортирует массив по убыванию
 procedure SortDescending<T>(Self: array of T); extensionmethod;
 begin
   System.Array.Sort(Self);
+  Reverse(Self);
+end;
+
+/// Сортирует массив по убыванию
+procedure SortDescending(Self: array of string); extensionmethod;
+begin
+  System.Array.Sort(Self,System.StringComparer.Ordinal);
   Reverse(Self);
 end;
 
@@ -12105,12 +12268,27 @@ begin
   System.Array.Copy(a,Self,a.Length);
 end;
 
+/// Сортирует массив по возрастанию по ключу
+procedure Sort<T>(Self: array of T; keySelector: T -> string); extensionmethod;
+begin
+  var a := Self.OrderBy(keySelector,System.StringComparer.Ordinal).ToArray;
+  System.Array.Copy(a,Self,a.Length);
+end;
+
 /// Сортирует массив по убыванию по ключу
 procedure SortDescending<T,T1>(Self: array of T; keySelector: T -> T1); extensionmethod;
 begin
   var a := Self.OrderByDescending(keySelector).ToArray;
   System.Array.Copy(a,Self,a.Length);
 end;
+
+/// Сортирует массив по убыванию по ключу
+procedure SortDescending<T>(Self: array of T; keySelector: T -> string); extensionmethod;
+begin
+  var a := Self.OrderByDescending(keySelector,System.StringComparer.Ordinal).ToArray;
+  System.Array.Copy(a,Self,a.Length);
+end;
+
 
 /// Возвращает индекс последнего элемента массива
 function High(Self: System.Array); extensionmethod := High(Self);
@@ -13536,11 +13714,11 @@ end;
 //>>     Методы расширения словарей # Extension methods for IDictionary
 // -----------------------------------------------------------------------------
 /// Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию
-function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key): Value; extensionmethod;
+function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key; V: Value := default(Value)): Value; extensionmethod;
 begin
   var b := Self.TryGetValue(K, Result);
   if not b then 
-    Result := default(Value);
+    Result := V;
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом

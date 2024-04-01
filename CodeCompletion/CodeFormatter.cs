@@ -1135,9 +1135,18 @@ namespace CodeFormatters
             int pos = GetPosition(_string_const.source_context.begin_position.line_num, _string_const.source_context.begin_position.column_num);
             if (Text[pos] == '$')
                 sb.Append('$');
-            sb.Append("'");
-            sb.Append(_string_const.Value.Replace("'","''"));
-            sb.Append("'");
+            if (_string_const.IsMultiline)
+            {
+                //sb.Append("'''");
+                sb.Append(_string_const.Value);
+                //sb.Append("'''");
+            }
+            else
+            {
+                sb.Append("'");
+                sb.Append(_string_const.Value.Replace("'", "''"));
+                sb.Append("'");
+            }
         }
 
         public override void visit(expression_list _expression_list)

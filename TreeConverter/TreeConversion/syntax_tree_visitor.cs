@@ -10249,6 +10249,15 @@ namespace PascalABCCompiler.TreeConverter
                             mc.visit(this);
                             return;
                         }
+                        if (sil != null && sil.Count > 1)
+                        {
+                            List<SymbolInfo> no_extmeth_sil = new List<SymbolInfo>();
+                            foreach (var si in sil)
+                                if (si.sym_info is function_node && !(si.sym_info as function_node).is_extension_method)
+                                    no_extmeth_sil.Add(si);
+                            if (no_extmeth_sil.Count > 0)
+                                sil = no_extmeth_sil;
+                        }
                         return_value(expression_value_reciving(id_right, sil, en, true));
                         return;
                     }
@@ -14962,7 +14971,7 @@ namespace PascalABCCompiler.TreeConverter
             var cnf = exp as common_namespace_function_call;
             if (cnf != null)
             {
-                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem") || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
             return convert_strong_to_constant_node(exp, exp.type, is_const_section && is_userdefined, is_const_section);
         }
@@ -15086,7 +15095,7 @@ namespace PascalABCCompiler.TreeConverter
             var cnf = exp as common_namespace_function_call;
             if (cnf != null)
             {
-                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem") || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
 
             return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
@@ -18469,7 +18478,11 @@ namespace PascalABCCompiler.TreeConverter
                                         break;
                                     }
                                 }
-                                if (elem_type == null)
+                                if (ct.Name == "ValueCollection" && ct.IsNested && ct.GetGenericArguments().Length == 2)
+                                {
+                                    elem_type = ip[1];
+                                }
+                                else if (elem_type == null)
                                     elem_type = ip[0];
                             }
                                 
@@ -21568,7 +21581,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public method_call ToNullable(expression e)
         {
-            var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
+            var dn = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("DQNToNullable"));
             return new method_call(dn, new expression_list(e), e.source_context);
         }
 
@@ -21591,7 +21604,7 @@ namespace PascalABCCompiler.TreeConverter
                 try_convert_typed_expression_to_function_call(ref av_cs);
                 if (!type_table.is_with_nil_allowed(av_cs.type))
                 {
-                    var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
+                    var dn = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("DQNToNullable"));
                     (av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false
                      = new method_call(dn, new expression_list((av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false), av.source_context);
 
@@ -21765,14 +21778,28 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(semantic_ith_element_of ith)
         {
+            var IsSequence = false;
+            var IsTuple = false;
             var sem_ex = convert_strong(ith.id);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-
-            var IsTuple = IsTupleType(t);
-            var IsSequence = !IsTuple && IsSequenceType(t);
+            {
+                bool bb;
+                type_node elem_type = null;
+                var b = FindIEnumerableElementType(sem_ex.type, ref elem_type, out bb);
+                if (b)
+                    IsSequence = true;
+                else
+                    AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                
+            }
+                
+            if (t != null)
+                IsTuple = IsTupleType(t);
+            
+            if (t != null)
+                IsSequence = !IsTuple && IsSequenceType(t);
 
             if (!IsTuple && !IsSequence)
             {

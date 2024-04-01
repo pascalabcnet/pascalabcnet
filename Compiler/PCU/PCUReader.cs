@@ -282,7 +282,7 @@ namespace PascalABCCompiler.PCU
                 
                 //TODO сохранить в PCU
                 cun.scope.CaseSensitive = false;
-                if (string.Compare(unit_name, compiler_string_consts.system_unit_file_name, true)==0)
+                if (string.Compare(unit_name, compiler_string_consts.pascalSystemUnitName, true)==0)
                 	PascalABCCompiler.TreeConverter.syntax_tree_visitor.init_system_module(cun);
                 //ssyy
                 //Создаём область видимости для implementation - части
@@ -321,7 +321,13 @@ namespace PascalABCCompiler.PCU
                         cun.scope.Find(pcu_file.names[i].name);
                     }
                 }
-
+                for (int i = 0; i < pcu_file.implementation_names.Length; i++)
+                {
+                    if (pcu_file.implementation_names[i].always_restore)
+                    {
+                        cun.implementation_scope.Find(pcu_file.implementation_names[i].name);
+                    }
+                }
                 ChangeState(this, PCUReaderWriterState.EndReadTree, unit);
                 return unit;
             }

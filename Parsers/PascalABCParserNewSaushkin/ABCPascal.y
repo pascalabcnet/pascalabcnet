@@ -51,7 +51,7 @@
 %token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkStarStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
-%token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
+%token <stn> tkStringLiteral tkFormatStringLiteral tkMultilineStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkBigInteger tkFloat tkHex
 %token <id> tkUnknown
@@ -4502,6 +4502,19 @@ literal
                 $$ = NewFormatString($1 as string_const);
             }
         }
+    | tkMultilineStringLiteral
+        {
+            if (parsertools.build_tree_for_formatter)
+   			{
+   				var sc = $1 as string_const;
+   				sc.IsMultiline = true;
+                $$ = sc;
+            }
+            else
+            {
+                $$ = NewLiteral(new literal_const_line($1 as literal, @$));
+            }
+        }
 	;
 	
 literal_list
@@ -5091,7 +5104,7 @@ func_decl_lambda
 					idList.Add(idd2);
 				}	
 				var parsType = $5;
-				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
+				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, LexLocation.MergeAll(@2,@3,@4,@5)), LexLocation.MergeAll(@2,@3,@4,@5,@6));
 				
 				if ($6 != null)
 					for (int i = 0; i < ($6 as formal_parameters).Count; i++)

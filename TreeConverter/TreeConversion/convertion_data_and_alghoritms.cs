@@ -1204,13 +1204,44 @@ namespace PascalABCCompiler.TreeConverter
 						{
                             //issue #2161 - SSM 12.03.2020
                             //issue #348
-                            if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
+                            if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) && factparams[i].type is delegated_methods)
                             {
                                 possible_type_convertions ptci = new possible_type_convertions();
                                 ptci.first = null;
                                 ptci.second = null;
+                                if (formal_param_type.instance_params != null && formal_param_type.instance_params.Count > 0)
+                                {
+                                    var fn = (factparams[i].type as delegated_methods).proper_methods[0].simple_function_node;
+                                    if (fn.is_generic_function)
+                                    {
+                                        var fn_instance = fn.get_instance(formal_param_type.instance_params, true, factparams[i].location);
+                                        delegated_methods dm = new delegated_methods();
+                                        if (fn is common_namespace_function_node)
+                                            dm.proper_methods.AddElement(new common_namespace_function_call(fn_instance as common_namespace_function_node, factparams[i].location));
+                                        factparams[i].type = dm;
+                                    }
+                                    else if (!is_alone_method_defined)
+                                        return null;
+                                }
+                                else if (!is_alone_method_defined && formal_param_type.IsDelegate)
+                                    return null;
                                 ptci.from = factparams[i].type;
                                 ptci.to = formal_param_type;
+                                if (formal_param_type.IsDelegate)
+                                {
+                                    var ttc = type_table.get_convertions(formal_param_type, factparams[i].type);
+                                    if (ttc.first == null)
+                                    {
+                                        if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                                        {
+                                            error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
+                                            return null;
+                                        }
+                                        else
+                                            return null;
+                                    }
+                                }
+                                
                                 tc.AddElement(ptci);
                                 factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
                                 //return tc;
@@ -2162,7 +2193,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (function.sym_info is compiled_function_node cfn0 &&
                     cfn0.comperehensive_type is compiled_type_node ctn0 &&
-                    (ctn0.compiled_type.Name == "PABCSystem" + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == "PABCExtensions" + compiler_string_consts.ImplementationSectionNamespaceName)
+                    (ctn0.compiled_type.Name == compiler_string_consts.pascalSystemUnitName + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == compiler_string_consts.pascalExtensionsUnitName + compiler_string_consts.ImplementationSectionNamespaceName)
                     && !ctn0.compiled_type.Assembly.FullName.StartsWith("PABCRtl")) // пропустить функции (методы расширения), определенные в сборке в ПИ PABCSystem, но не в PABCRtl.dll
                     continue;
                 // В режиме only_from_not_extensions пропускать все extensions
@@ -3013,6 +3044,8 @@ namespace PascalABCCompiler.TreeConverter
 
                 // Теперь раз в list осталась одна функция, найти её в functions и только её и оставить
                 // Надо делать копию functions иначе это влияет на следующий код
+                if (list[0].is_generic_function_instance)
+                    list[0] = list[0].original_function;
                 var functions1 = functions.Where(fun => fun.sym_info == list[0]).ToList();
                 if (functions1.Count == 0)
                     return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // это не должно случиться, но вдруг
