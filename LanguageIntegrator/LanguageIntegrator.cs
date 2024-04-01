@@ -17,14 +17,17 @@ namespace LanguageIntegration
         private const string languageKitsDirectoryName = "LanguageKits";
 
         /// <summary>
-        /// Возвращает директорию, содержащую комплекты языков
+        /// Возвращает директорию, содержащую комплекты языков (если ее нет, то вернется null)
         /// </summary>
         private static DirectoryInfo GetLanguageKitsDirectory()
         {
             string binDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string languageKitsDirectoryPath = Path.Combine(binDirectoryPath, languageKitsDirectoryName);
 
-            return new DirectoryInfo(languageKitsDirectoryPath);
+            if (Directory.Exists(languageKitsDirectoryPath))
+                return new DirectoryInfo(languageKitsDirectoryPath);
+
+            return null;
         }
 
         /// <summary>
@@ -33,6 +36,9 @@ namespace LanguageIntegration
         public static void LoadAllLanguageKits()
         {
             DirectoryInfo languageKitsDirectory = GetLanguageKitsDirectory();
+
+            if (languageKitsDirectory == null)
+                return;
 
             foreach (var languageKit in languageKitsDirectory.GetDirectories())
             {
@@ -74,6 +80,9 @@ namespace LanguageIntegration
         public static void LoadParsersFromLanguageKits()
         {
             DirectoryInfo languageKitsDirectory = GetLanguageKitsDirectory();
+
+            if (languageKitsDirectory == null)
+                return;
 
             foreach (var parserDll in languageKitsDirectory.GetDirectories()
                 .SelectMany(directory => directory.GetFiles("*Parser.dll")))

@@ -76,6 +76,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+            // TestAssignIsDefVisitor.New.ProcessNode(root);
 #endif
 
             // simple_property

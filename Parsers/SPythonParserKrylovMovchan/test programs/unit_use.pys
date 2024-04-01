@@ -1,0 +1,9 @@
+﻿from unit import *
+b = 5
+
+def f():
+    global unit.a, b
+    unit.a = 1
+   
+f()
+print(unit.a)

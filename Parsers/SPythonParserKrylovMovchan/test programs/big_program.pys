@@ -1,4 +1,12 @@
-﻿from PABCSystem import *
-from spython_unit import *
+﻿a = 2
+a = 3
+b = 1 + a
+print(b)
 
-print(fib(12))
+if True:
+   c = 23
+
+
+
+def f():
+    print(a)
