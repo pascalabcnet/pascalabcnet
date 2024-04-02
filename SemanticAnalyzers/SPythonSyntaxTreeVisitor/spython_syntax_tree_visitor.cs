@@ -143,7 +143,7 @@ namespace SPythonSyntaxTreeVisitor
             if (si != null && si.type.name == "UnknownType")
             {
                 var loc = get_location(_ident);
-                AddError(loc, "USING_VARIABLE_BEFORE_ASSIGNMENT");
+                AddError(loc, "SPYTHONSEMANTIC_USING_VARIABLE_BEFORE_ASSIGNMENT");
             }
             base.visit(_ident);
         }
