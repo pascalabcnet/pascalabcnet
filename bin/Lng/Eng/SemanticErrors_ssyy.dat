@@ -94,6 +94,7 @@ TRIANGLE_BRACKETS_NOT_ALLOWED_WITH_COMMON_FUNCTIONS=Non-generic methods cannot b
 FUNCTION_{0}_DEPEND_FROM_{1}_TYPE_PARAMS=The number of type parameters in generic subprogramm '{0}' must be {1} 
 WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION=where-section is not valid in this context
 CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER=Cannot derive from generic parameter
+TYPE_{0}_INHERITS_SELF=Type '{0}' inherits from itself
 GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS=Cannot call the generic function '{0}' with these arguments
 CAN_NOT_DEDUCE_TYPE_PARAMS_FROM_CALL_{0}=The type arguments for method '{0}' cannot be inferred from the usage. Try specifying the type arguments explicitly
 CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS=The best overloaded method match for '{0}' has some invalid arguments

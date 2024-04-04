@@ -25,6 +25,7 @@
 <param name="Keyword" value="Random2">
 <param name="Keyword" value="Random3">
 <param name="Keyword" value="Randomize">
+<param name="Keyword" value="RandomReal">
 <param name="Keyword" value="Round">
 <param name="Keyword" value="RoundBigInteger">
 <param name="Keyword" value="Sign">
@@ -75,7 +76,7 @@
 <tr><td><code><b>function</b> Max(a: число, b: число): число;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальное из чисел a,b</td></tr>
 <tr><td><code><b>function</b> Max(a,b,...: T): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максиимальное из a,b,...</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальное из a,b,...</td></tr>
 <tr><td><code><b>function</b> Min(a: число, b: число): число;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальное из чисел a,b</td></tr>
 <tr><td><code><b>function</b> Min(a,b,...: T): T;</code>
@@ -148,6 +149,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Инициализирует датчик псевдослучайных чисел, используя значение seed. При одном и том же seed генерируются одинаковые псевдослучайные последовательности</td></tr>
 <tr><td><code><b>procedure</b> Randomize;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Инициализирует датчик псевдослучайных чисел</td></tr>
+<tr><td><code><b>function</b> RandomReal(a, b: real; digits: integer := 2): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits</td></tr>
 <tr><td><code><b>function</b> Round(x: real): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x, округленное до ближайшего целого. Если вещественное находится посередине между двумя целыми,то округление осуществляется к ближайшему четному (банковское округление): Round(2.5)=2, Round(3.5)=4</td></tr>
 <tr><td><code><b>function</b> Round(x: real; digits: integer): real;</code>

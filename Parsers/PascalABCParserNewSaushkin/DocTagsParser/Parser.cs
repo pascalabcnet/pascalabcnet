@@ -193,7 +193,7 @@ namespace PascalABCCompiler.DocTagsParser
         {
             get
             {
-                return "Copyright © 2005-2021 by Ivan Bondarev, Stanislav Mikhalkovich";
+                return "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich";
             }
         }
 

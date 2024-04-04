@@ -1,0 +1,24 @@
+//Compiler error messages
+%PREFIX%=COMPILATIONERROR_
+
+PROGRAM_MODULE_EXPECTED=需要程序但找到单元
+UNIT_MODULE_EXPECTED=需要单位但找到程序
+READ_PCU{0}_ERROR=读取 PCU 文件 '{0}' 时出错
+ASSEMBLY_{0}_NOT_FOUND=未找到 '{0}' 程序集
+UNIT_{0}_NOT_FOUND=未找到 '{0}' 单元
+SOURCE_FILE_{0}_NOT_FOUND=未找到 '{0}' 文件
+NO_ACCESS_TO_FILE{0}=无权访问 '{0}' 文件
+CYCLIC_UNIT_REFERENCE_WITH_UNIT_{0}=单元 '{0}' 的循环单元引用
+UNDEFINED_SEMANTIC_ERROR{0}=未定义的语义错误 : {0}
+RESOURCEFILE_{0}_NOT_FOUND=未找到 '{0}' 资源文件
+DUPLICATE_USES_UNIT{0}=使用部分中的重复标识符 '{0}'
+MAINRESOURCE_NOT_ALLOWED=mainresource 不能与以下指令一起使用：product、version、company、trademark、title、description
+DUPLICATE_DIRECTIVE{0}=重复指令 {0}
+FILE_{0}_NOT_FOUND=未找到 '{0}' 文件
+NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS=具有命名空间的文件只能在项目内部编译
+NAMESPACE_CANNOT_HAVE_IN_SECTION=命名空间不能有 'in' 部分
+APPTYPE_DLL_IS_ALLOWED_ONLY_FOR_LIBRARIES= {$apptype dll} 指令只允许用于库
+USES_IN_WRONG_NAME=uses-in（{0}）中的单元名必须与文件名（{1}）相同
+
+%PREFIX%=
+COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=模块 {0} 中的内部编译器错误 :'{1}'

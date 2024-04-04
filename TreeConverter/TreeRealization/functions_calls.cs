@@ -472,7 +472,7 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public class common_static_method_call : base_function_call_with_method<common_method_node>, SemanticTree.ICommonStaticMethodCallNode
     {
-        private common_type_node _common_type;
+        private common_type_node _common_type;//zachem dublirovat svojstvo iz common_method_node????
 
         public common_static_method_call(common_method_node static_method,location loc) :
             base(static_method,loc)
@@ -486,7 +486,9 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return _common_type;
+                if (_common_type != null)
+                    return _common_type;
+                return function_node.cont_type;
             }
         }
 
@@ -508,7 +510,9 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return _common_type;
+                if (_common_type != null)
+                    return _common_type;
+                return function_node.cont_type;
             }
         }
 

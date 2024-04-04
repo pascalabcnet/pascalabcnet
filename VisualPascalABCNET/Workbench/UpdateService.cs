@@ -53,7 +53,7 @@ namespace VisualPascalABC
             try
             {
                 WebClient client = new WebClient();
-                newVersion = client.DownloadString("http://pascalabc.net/downloads/pabcversion.txt").Trim();
+                newVersion = client.DownloadString("https://pascalabc.net/downloads/pabcversion.txt").Trim();
                 curVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 if ((new Version(curVersion)).CompareTo(new Version(newVersion)) == -1)
                     status = 0;

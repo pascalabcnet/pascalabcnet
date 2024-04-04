@@ -5446,7 +5446,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_name_assign_expr(name_assign_expr _name_assign_expr)
 		{
-			write_syntax_tree_node(_name_assign_expr);
+			write_expression(_name_assign_expr);
 			if (_name_assign_expr.name == null)
 			{
 				bw.Write((byte)0);
@@ -5990,6 +5990,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_yield_unknown_ident(yield_unknown_ident _yield_unknown_ident)
 		{
 			write_ident(_yield_unknown_ident);
+			if (_yield_unknown_ident.UnknownID == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_yield_unknown_ident.UnknownID.visit(this);
+			}
 		}
 
 
@@ -7089,6 +7098,78 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_expression_with_let.expr.visit(this);
+			}
+		}
+
+
+		public void visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			bw.Write((Int16)259);
+			write_lambda_any_type_node_syntax(_lambda_any_type_node_syntax);
+		}
+
+		public void write_lambda_any_type_node_syntax(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			write_expression(_lambda_any_type_node_syntax);
+		}
+
+
+		public void visit(ref_var_def_statement _ref_var_def_statement)
+		{
+			bw.Write((Int16)260);
+			write_ref_var_def_statement(_ref_var_def_statement);
+		}
+
+		public void write_ref_var_def_statement(ref_var_def_statement _ref_var_def_statement)
+		{
+			write_declaration(_ref_var_def_statement);
+			if (_ref_var_def_statement.var == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_ref_var_def_statement.var.visit(this);
+			}
+			if (_ref_var_def_statement.initial_value == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_ref_var_def_statement.initial_value.visit(this);
+			}
+		}
+
+
+		public void visit(let_var_expr _let_var_expr)
+		{
+			bw.Write((Int16)261);
+			write_let_var_expr(_let_var_expr);
+		}
+
+		public void write_let_var_expr(let_var_expr _let_var_expr)
+		{
+			write_expression(_let_var_expr);
+			if (_let_var_expr.id == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_let_var_expr.id.visit(this);
+			}
+			if (_let_var_expr.ex == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_let_var_expr.ex.visit(this);
 			}
 		}
 

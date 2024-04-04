@@ -1,7 +1,8 @@
 ﻿// Пример иллюстрирует использование знака "&" для снятия атрибута ключевого слова
 
 var 
-  &begin,&end: integer;
+  &begin,&end: integer;  
+  i: integer;
 
 begin
   &begin := 1;

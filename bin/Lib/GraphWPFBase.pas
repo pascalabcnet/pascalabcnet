@@ -60,7 +60,11 @@ var
 
 //var BrushesDict := new Dictionary<GColor,GBrush>;
 
-function GetBrush(c: GColor): GBrush := new SolidColorBrush(c);
+function GetBrush(c: GColor): GBrush;
+begin
+  Result := new SolidColorBrush(c);
+  Result.Freeze
+end;  
 {begin
   if not (c in BrushesDict) then
   begin

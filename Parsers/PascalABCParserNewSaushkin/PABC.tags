@@ -225,7 +225,6 @@
     <name value="template_type" />
     <name value="pointer_type" />
     <name value="structured_type" />
-    <name value="unpacked_structured_type" />
     <name value="unsized_array_type" />
     <name value="set_type" />
     <name value="file_type" />

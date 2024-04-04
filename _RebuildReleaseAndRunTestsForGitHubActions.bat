@@ -6,6 +6,7 @@ cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild /noconsole
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
+
 cd PABCRtl
 ..\..\bin\pabcnetc PABCRtl.pas /rebuild /noconsole
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
@@ -21,6 +22,7 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild /noconsole
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
+
 cd ..\bin
 REM MPGORunner.exe
 TestRunner.exe 1 1
@@ -35,7 +37,12 @@ TestRunner.exe 5 1
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 TestRunner.exe 6 1
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
+pabcnetcclear GitIgnoreTester.pas
+GitIgnoreTester.exe NoWait
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 cd ..
+
 GOTO EXIT
 
 :ERROR

@@ -1,10 +1,9 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using PascalABCCompiler.Errors;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace PascalABCCompiler
@@ -81,6 +80,8 @@ namespace PascalABCCompiler
                     return true;
 
                 case "output":
+                    if (!Compiler.CheckPathValid(value))
+                        return false;
                     co.OutputFileName = Path.GetFileName(value);
                     if (Path.IsPathRooted(value))
                     {
@@ -89,7 +90,16 @@ namespace PascalABCCompiler
                     return true;
 
                 case "searchdir":
+                    if (!Directory.Exists(value))
+                    {
+                        Console.WriteLine($"SearchDir \"{value}\" not found relative to \"{Environment.CurrentDirectory}\"");
+                        return false;
+                    }
                     co.SearchDirectory.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
+                    return true;
+
+                case "locale":
+                    co.Locale = value;
                     return true;
 
                 default:
@@ -119,12 +129,14 @@ namespace PascalABCCompiler
             Console.WriteLine("  /Define:<name>");
             Console.WriteLine("  /Output:<[path\\]name>");
             Console.WriteLine("  /SearchDir:<path>");
+            Console.WriteLine("  /Locale:<locale>");
             Console.WriteLine("  /Version:");
             Console.WriteLine();
             Console.WriteLine("/Help show this message");
             Console.WriteLine("/Output:<[path\\]name> compile into an executable called \"name\" and save it in \"path\" directory");
             Console.WriteLine("/Debug:0 generates code with all .NET optimizations");
             Console.WriteLine("/SearchDir:<path> add \"path\" to list of standart unit search directories. Last added paths would be searched first");
+            Console.WriteLine("/Locale:<locale> set locale of main thread of compiled program executable");
             Console.WriteLine("/Version: outputs PascalABC.NET version");
         }
 
@@ -139,6 +151,9 @@ namespace PascalABCCompiler
 
             DateTime ldt = DateTime.Now;
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+
+            // загрузка всех парсеров и других составляющих языков  EVA
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
             Compiler.InternalDebug.SkipPCUErrors = false;

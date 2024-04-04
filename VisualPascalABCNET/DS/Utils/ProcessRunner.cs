@@ -223,7 +223,10 @@ namespace VisualPascalABC.Utils
                 //process.StartInfo.UseShellExecute = false;
                 process.StartInfo.FileName = BatFile;
                 process.StartInfo.WorkingDirectory = workingDirectory;
-                process.StartInfo.Arguments = command.Replace(" ","\" \"") + " " + PascalABCCompiler.StringResourcesLanguage.CurrentLCID + " " + arguments;
+                //process.StartInfo.Arguments = command.Replace(" ","\" \"") + " " + PascalABCCompiler.StringResourcesLanguage.CurrentLCID + " " + arguments;
+                if (command.Contains(" "))
+                    command = "\"" + command + "\"";
+                process.StartInfo.Arguments = command + " " + PascalABCCompiler.StringResourcesLanguage.CurrentLCID + " " + arguments;
             }
             else
             {

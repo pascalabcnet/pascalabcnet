@@ -8,6 +8,8 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
+using PascalABCCompiler;
+using PascalABCCompiler.TreeConverter;
 //using ICSharpCode.SharpDevelop.Dom;
 
 namespace CodeCompletion
@@ -30,7 +32,7 @@ namespace CodeCompletion
             var controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
             CodeCompletion.CodeCompletionController.comp = comp;
-            CodeCompletion.CodeCompletionController.SetParser(".pas");
+            CodeCompletion.CodeCompletionController.SetParser(compiler_string_consts.pascalSourceFileExtension);
             CodeCompletion.CodeCompletionController.ParsersController = comp.ParsersController;
             var files = Directory.GetFiles(dir, "*.pas");
             var parser = comp.ParsersController;
@@ -102,7 +104,7 @@ namespace CodeCompletion
             var comp = new PascalABCCompiler.Compiler();
             var controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.CodeCompletionController.comp = comp;
-            CodeCompletion.CodeCompletionController.SetParser(".pas");
+            CodeCompletion.CodeCompletionController.SetParser(compiler_string_consts.pascalSourceFileExtension);
             CodeCompletion.CodeCompletionController.ParsersController = comp.ParsersController;
             var files = Directory.GetFiles(dir, "*.pas");
             var parser = comp.ParsersController;
@@ -134,6 +136,26 @@ namespace CodeCompletion
                     var line = GetLineByPos(lines, pos);
                     var col = GetColByPos(lines, pos);
                     shouldPositions.Add(new Position(line + 1, col + 1, 0, 0, null));
+                    string expr_without_brackets = null;
+                    PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
+                    string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+                    List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
+                    var errors = new List<PascalABCCompiler.Errors.Error>();
+                    expression expr = comp.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(FileName), full_expr, errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                    //expression expr = new ident(expr_without_brackets.Replace("{@}","").Replace("new ","").Trim());
+                    var fnd_scope = dc.GetSymDefinition(expr, line, col, keyw);
+                    var rf = new CodeCompletion.ReferenceFinder(fnd_scope, dc.visitor.entry_scope, cu, FileName, true);
+                    var positions = rf.FindPositions();
+                    compare_positions(FileName, shouldPositions.ToArray(), positions);
+                }
+
+                ind = content.IndexOf("{@@}");
+                if (ind != -1)
+                {
+                    var pos = ind + 5;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    shouldPositions.Add(new Position(line + 1, col, 0, 0, null));
                     string expr_without_brackets = null;
                     PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
                     string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
@@ -283,7 +305,7 @@ namespace CodeCompletion
     		int line=0;
     		int col=0;
     		PascalABCCompiler.Parsers.KeywordKind keyw;
-    		PascalABCCompiler.Parsers.IParser parser = CodeCompletionController.ParsersController.selectParser(".vb");
+    		PascalABCCompiler.Parsers.IParser parser = CodeCompletionController.ParsersController.SelectParser(".vb");
     		
     		string test_str = "System.Console";
     		off = test_str.Length;
@@ -318,8 +340,8 @@ namespace CodeCompletion
     		int line=0;
     		int col=0;
     		PascalABCCompiler.Parsers.KeywordKind keyw;
-            CodeCompletionController.ParsersController.Reload();
-    		PascalABCCompiler.Parsers.IParser parser = CodeCompletionController.ParsersController.selectParser(".pas");
+            LanguageIntegration.LanguageIntegrator.ReloadAllParsers();
+    		IParser parser = CodeCompletionController.ParsersController.SelectParser(compiler_string_consts.pascalSourceFileExtension);
     		
     		string test_str = "System.Console";
     		off = test_str.Length;
@@ -1071,10 +1093,12 @@ namespace CodeCompletion
         }
 
         public static void Test()
-        {
-            string test_dir = GetTestSuiteDir() + @"\formatter_tests";
-            string[] files = Directory.GetFiles(test_dir+@"\input","*.pas");
-            StreamWriter log = new StreamWriter(test_dir + @"\output\log.txt", false, Encoding.GetEncoding(1251));
+		{
+			string test_dir = Path.Combine(GetTestSuiteDir(), @"formatter_tests");
+			string output_dir = Path.Combine(test_dir, @"output");
+            Directory.CreateDirectory(output_dir);
+			string[] files = Directory.GetFiles(test_dir+@"\input","*.pas");
+            StreamWriter log = new StreamWriter(Path.Combine(output_dir, @"log.txt"), false, Encoding.GetEncoding(1251));
             SyntaxTreeComparer stc = new SyntaxTreeComparer();
             foreach (string s in files)
             {
@@ -1086,12 +1110,12 @@ namespace CodeCompletion
                 {
                     CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
                     Text = cf.FormatTree(Text, cu, 1, 1);
-                    StreamWriter sw = new StreamWriter(Path.Combine(test_dir + @"\output", Path.GetFileName(s)), false, Encoding.GetEncoding(1251));
+                    StreamWriter sw = new StreamWriter(Path.Combine(output_dir, Path.GetFileName(s)), false, Encoding.GetEncoding(1251));
                     sw.Write(Text);
                     sw.Close();
                     Errors.Clear();
                     Warnings.Clear();
-                    compilation_unit cu2 = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(Path.Combine(test_dir + @"\output", Path.GetFileName(s)), Text, Errors, Warnings);
+                    compilation_unit cu2 = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(Path.Combine(output_dir, Path.GetFileName(s)), Text, Errors, Warnings);
                     if (Errors.Count > 0)
                     {
                         for (int i = 0; i < Errors.Count; i++)
@@ -1112,7 +1136,7 @@ namespace CodeCompletion
                         }
                 }
             }
-            files = Directory.GetFiles(test_dir+@"\output", "*.pas");
+            files = Directory.GetFiles(output_dir, "*.pas");
             foreach (string s in files)
             {
                 var sr = new StreamReader(s, System.Text.Encoding.GetEncoding(1251));
@@ -1126,6 +1150,8 @@ namespace CodeCompletion
                 if (Text.Replace("\r\n","\n") != Text2.Replace("\r\n","\n"))
                 {
                     int line = 1;
+                    Text = Text.Replace("\r\n", "\n");
+                    Text2 = Text2.Replace("\r\n", "\n");
                     for (int i = 0; i < Math.Min(Text.Length, Text2.Length); i++)
                     {
                         if (Text[i] != Text2[i])

@@ -48,6 +48,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             // SSM 29.07.16 - если in_what - одномерный массив, то заменить код foreach на for
+            // Лямбды обходят старое дерево, поэтому не работает. Кстати, почему? SSM 04/08/22
             // if (OptimizeForeachInCase1DArray(_foreach_stmt, foreachCollection)) return;
 
             statements_list sl = new statements_list(get_location(_foreach_stmt.stmt));
@@ -88,17 +89,18 @@ namespace PascalABCCompiler.TreeConverter
         {
             var t = ConvertSemanticTypeNodeToNETType(elem_type);
             if (t == null)
-                AddError(inwhatloc, "TUPLE_OR_SEQUENCE_EXPECTED_FOREACH");
-
-            var IsTuple = false;
-            var IsSequence = false;
-            if (t.FullName.StartsWith("System.Tuple"))
-                IsTuple = true;
-            if (!IsTuple)
             {
-                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
-                    IsSequence = true;
+                bool bb;
+                type_node tn = null;
+                if (FindIEnumerableElementType(elem_type, ref tn, out bb))
+                    return;
+                AddError(inwhatloc, "TUPLE_OR_SEQUENCE_EXPECTED_FOREACH");
             }
+                
+
+            var IsTuple = IsTupleType(t);
+            var IsSequence = !IsTuple && IsSequenceType(t);
+
             if (!IsTuple && !IsSequence)
             {
                 AddError(inwhatloc, "TUPLE_OR_SEQUENCE_EXPECTED_FOREACH");
@@ -182,6 +184,8 @@ namespace PascalABCCompiler.TreeConverter
             if (/*!(foreachVariable.type is compiled_generic_instance_type_node) &&*/ !sys_coll_ienum) // SSM 16.09.18 - закомментировал это ограничение для фиксации бага #1184
                 convertion_data_and_alghoritms.check_convert_type_with_inheritance(elem_type, foreachVariable.type,
                     get_location(_foreach_stmt.identifier));
+            if (elem_type.IsDelegate && !foreachVariable.type.IsDelegate)
+                AddError(new CanNotConvertTypes(null, elem_type, foreachVariable.type, get_location(_foreach_stmt.identifier)));
             return foreachVariable;
         }
 

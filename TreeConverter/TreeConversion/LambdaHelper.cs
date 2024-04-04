@@ -391,7 +391,7 @@ namespace PascalABCCompiler.TreeConverter
                 res.return_value_type = visitor.convert_strong(def.return_type);
             else
                 res.return_value_type = null;
-            res.parameters.clear();
+            res.parameters.Clear();
             if (def.formal_parameters != null && def.formal_parameters.params_list.Count != 0)
             {
                 for (int i = 0; i < def.formal_parameters.params_list.Count; i++)
@@ -459,7 +459,7 @@ namespace PascalABCCompiler.TreeConverter
             }*/
         }
         #endregion
-
+        /*
         #region Генерация новых узлов синтаксического дерева
         /// <summary>
         /// Класс для генерации новых узлов синтаксического дерева
@@ -549,5 +549,6 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
         #endregion
+    */
     }
 }

@@ -538,6 +538,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new property_ident();
 				case 258:
 					return new expression_with_let();
+				case 259:
+					return new lambda_any_type_node_syntax();
+				case 260:
+					return new ref_var_def_statement();
+				case 261:
+					return new let_var_expr();
 			}
 			return null;
 		}
@@ -3579,7 +3585,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_name_assign_expr(name_assign_expr _name_assign_expr)
 		{
-			read_syntax_tree_node(_name_assign_expr);
+			read_expression(_name_assign_expr);
 			_name_assign_expr.name = _read_node() as ident;
 			_name_assign_expr.expr = _read_node() as expression;
 		}
@@ -3878,6 +3884,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_ident(yield_unknown_ident _yield_unknown_ident)
 		{
 			read_ident(_yield_unknown_ident);
+			_yield_unknown_ident.UnknownID = _read_node() as ident;
 		}
 
 
@@ -4516,6 +4523,43 @@ namespace PascalABCCompiler.SyntaxTree
 			read_addressed_value(_expression_with_let);
 			_expression_with_let.stat = _read_node() as statement_list;
 			_expression_with_let.expr = _read_node() as expression;
+		}
+
+
+		public void visit(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			read_lambda_any_type_node_syntax(_lambda_any_type_node_syntax);
+		}
+
+		public void read_lambda_any_type_node_syntax(lambda_any_type_node_syntax _lambda_any_type_node_syntax)
+		{
+			read_expression(_lambda_any_type_node_syntax);
+		}
+
+
+		public void visit(ref_var_def_statement _ref_var_def_statement)
+		{
+			read_ref_var_def_statement(_ref_var_def_statement);
+		}
+
+		public void read_ref_var_def_statement(ref_var_def_statement _ref_var_def_statement)
+		{
+			read_declaration(_ref_var_def_statement);
+			_ref_var_def_statement.var = _read_node() as ident;
+			_ref_var_def_statement.initial_value = _read_node() as addressed_value;
+		}
+
+
+		public void visit(let_var_expr _let_var_expr)
+		{
+			read_let_var_expr(_let_var_expr);
+		}
+
+		public void read_let_var_expr(let_var_expr _let_var_expr)
+		{
+			read_expression(_let_var_expr);
+			_let_var_expr.id = _read_node() as ident;
+			_let_var_expr.ex = _read_node() as expression;
 		}
 
 	}

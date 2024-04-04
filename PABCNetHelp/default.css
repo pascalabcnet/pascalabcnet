@@ -1,9 +1,9 @@
-BODY,
+﻿BODY,
 TABLE,
 TD {
         font-family: Arial;
         background-color: #ffffff;
-        font-size: 9pt;
+        font-size: 11pt;
 }
 
 BLOCKQUOTE {
@@ -18,15 +18,16 @@ dfn {
 }
 
 code {
+	font-family: Consolas, monospace;
         color: #000080;
-        font-size: 10pt;
+        font-size: 12pt;
 }
 
 code.codeit {
         color: #000000;
         font-family: Times;
         font-style: italic;
-        font-size: 10pt;
+        font-size: 12pt;
 }
 
 H1 {
@@ -34,7 +35,7 @@ H1 {
         font-weight: bold;
         margin-top: 12pt;
         margin-bottom: 6pt;
-        font-size: 12pt;
+        font-size: 14pt;
         color: #000080;
 }
 
@@ -43,7 +44,7 @@ H2 {
         font-weight: normal;
         margin-bottom: 2pt;
         margin-top: 6pt;
-        font-size: 11pt;
+        font-size: 13pt;
         color: #0000A0;
 }
 
@@ -51,7 +52,7 @@ H3 {
         font-weight: bold;
         margin-bottom: 2pt;
         margin-top: 6pt;
-        font-size: 10pt;
+        font-size: 12pt;
         color: #000000;
 }
 
@@ -60,15 +61,15 @@ H4 {
         color: #000080;
         margin-top: 6pt;
         margin-bottom: 2pt;
-        font-size: 10pt;
+        font-size: 11pt;
 }
 
 H5 {
-        font-size: 10.0pt;
+        font-size: 11.0pt;
 }
 
 H6 {
-        font-size: 10.0pt;
+        font-size: 11.0pt;
 }
 
 P {
@@ -76,14 +77,14 @@ P {
         margin-top: 6pt;
         margin-bottom: 0pt;
         font-family: Arial, sans-serif;
-        font-size: 9pt;
+        font-size: 11pt;
 }
 
 OL,
 UL {
         margin-top: 3pt;
         margin-bottom: 0pt;
-        font-size: 9pt;
+        font-size: 11pt;
         font-family: Arial, sans-serif;
 }
 

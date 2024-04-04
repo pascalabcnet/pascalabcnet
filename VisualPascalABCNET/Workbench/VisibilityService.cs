@@ -460,8 +460,8 @@ namespace VisualPascalABC
             clicked_stop_debug_in_menu = false;
             this.mDEBUGENDToolStripMenuItem.Enabled = false;
             //Data fileInfo = debuggedPage.ag as CodeFileDocumentControl;
-            //debuggedPage.Text = Path.GetFileName(fileInfo.FileName);
-            //debuggedPage.ToolTipText = fileInfo.FileName;
+            //debuggedPage.Text = Path.GetFileName(fileInfo.file_name);
+            //debuggedPage.ToolTipText = fileInfo.file_name;
             SetTabPageText(debuggedPage);
             ChangeDebugButtons(false);
             SaveDebugContext();

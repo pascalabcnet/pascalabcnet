@@ -838,7 +838,7 @@ namespace PascalABCCompiler.NETGenerator {
 
         public bool IsConstructedGenericType(Type t)
         {
-            if (t is TypeBuilder || t is GenericTypeParameterBuilder || t is EnumBuilder)
+            if (t is TypeBuilder || t is GenericTypeParameterBuilder || t is EnumBuilder || t.GetType().FullName == "System.Reflection.Emit.TypeBuilderInstantiation")
                 return true;
             if (t.IsGenericType)
                 foreach (Type gt in t.GetGenericArguments())
@@ -918,7 +918,7 @@ namespace PascalABCCompiler.NETGenerator {
             return TypeFactory.IEnumerableType.GetMethod("GetEnumerator", Type.EmptyTypes);
         }
 
-        public void SetAsProcessing(ICommonTypeNode type)
+		public void SetAsProcessing(ICommonTypeNode type)
         {
             processing_types[type] = true;
         }

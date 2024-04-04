@@ -180,6 +180,8 @@ var
 
   t: System.Threading.Thread;
   
+  ScreenScale: real := 1;
+  
 //------------ Вспомогательные -------------
 procedure SetLabelStepText(s: string);
 begin
@@ -780,6 +782,10 @@ end;
 
 procedure CorrectWHLT;
 begin
+  if RobField = nil then
+    exit;
+  if GraphABCControl = nil then
+    exit;
   if (RobField.DimX=0) or (RobField.DimY=0) then
     exit;
   var mw := (GraphABCControl.Width - 30) div RobField.DimX;
@@ -1113,6 +1119,8 @@ begin
   LabelGoodEndColor:= RGB(0,156,0);
   
   TaskIsCalled := False;
+  
+  ScreenScale := GraphABC.ScreenScale;
 
   Brush.Color := MainForm.BackColor;
   FillRectangle(0,0,1280,1024);
@@ -1120,7 +1128,7 @@ begin
   
   LoadIni(settings);
   MainForm.Invoke(SetWindowBounds, new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height));
-
+  
   //var (sw,sh) := ScreenSize;
   MainForm.Invoke(InitControls);
 

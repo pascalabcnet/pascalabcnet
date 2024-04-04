@@ -39,6 +39,7 @@ type
   GRect = System.Windows.Rect;
   /// Тип окна
   GWindow = System.Windows.Window;
+  /// Тип пера
   GPen = System.Windows.Media.Pen;
   /// Тип точки
   Point = System.Windows.Point;
@@ -48,6 +49,12 @@ type
   Vector = System.Windows.Vector;
   /// Тип кисти
   GBrush = System.Windows.Media.Brush;
+  /// Набор предопределенных кистей
+  Brushes = System.Windows.Media.Brushes;
+  /// Контекст рисования
+  DrawingContext = System.Windows.Media.DrawingContext;
+  /// Визуальный объект для отрисовки с помощью контекста рисования
+  DrawingVisual = System.Windows.Media.DrawingVisual;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
 
@@ -67,6 +74,13 @@ function GetFontFamily(name: string): FontFamily;
 //>>     Класс BrushType # BrushType class
 // -----------------------------------------------------
 type
+  ///!#
+  /// Параметры рисования
+  Parameters = static class
+  public
+    static ArrowSizeAlong: real := 10*4/5;
+    static ArrowSizeAcross: real := 4*4/5;
+  end;
   ///!#
   /// Тип кисти
   BrushType = class
@@ -89,6 +103,8 @@ type
     th: real := 1;
     fx,fy: real;
     rc: boolean := false;
+  public
+    ///--
     function PenConstruct: GPen;
     begin
       Result := new GPen(GetBrush(c),th);
@@ -103,6 +119,7 @@ type
         Result.StartLineCap := PenLineCap.Flat;
         Result.EndLineCap := PenLineCap.Flat;
       end;
+      Result.Freeze;
     end;
   public  
     /// Цвет пера
@@ -243,7 +260,10 @@ type
 // -----------------------------------------------------
 //>>     Класс Vector # Vector class
 // -----------------------------------------------------
-  /// Класс Vector
+  
+//{{{--doc: Конец секции 2 }}} 
+
+  // Класс Vector
   {Vector =  class
   public
     x,y: real;
@@ -255,9 +275,7 @@ type
     static function operator+(v: Vector; p: Point): Point := new Point(p.x+v.x,p.y+v.y);
     static function operator+(p: Point; v: Vector): Point := new Point(p.x+v.x,p.y+v.y);
   end;}
-  
-//{{{--doc: Конец секции 2 }}} 
-  
+ 
  
 //{{{doc: Начало секции 3 }}} 
 
@@ -343,6 +361,10 @@ procedure FillRectangle(x,y,w,h: real; c: Color);
 procedure Arc(x, y, r, angle1, angle2: real);
 /// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
 procedure Arc(x, y, r, angle1, angle2: real; c: Color);
+/// Рисует дугу окружности с центром в точке p и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX
+procedure Arc(p: Point; r, angle1, angle2: real);
+/// Рисует дугу окружности с центром в точке p и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
+ procedure Arc(p: Point; r, angle1, angle2: real; c: Color);
 
 /// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX
 procedure Sector(x, y, r, angle1, angle2: real);
@@ -374,6 +396,16 @@ procedure Lines(a: array of (Point,Point));
 /// Рисует отрезки, заданные массивом пар точек, цветом c 
 procedure Lines(a: array of (Point,Point); c: Color);
 /// Устанавливает текущую позицию рисования в точку (x,y)
+
+/// Рисует отрезок прямой от точки (x,y) до точки (x1,y1) со стрелкой на конце
+procedure Arrow(x,y,x1,y1: real);
+/// Рисует отрезок прямой от точки (x,y) до точки (x1,y1) цветом c со стрелкой на конце 
+procedure Arrow(x,y,x1,y1: real; c: Color);
+/// Рисует отрезок прямой от точки p до точки p1 со стрелкой на конце
+procedure Arrow(p,p1: Point);
+/// Рисует отрезок прямой от точки p до точки p1 цветом c со стрелкой на конце
+procedure Arrow(p,p1: Point; c: Color);
+
 procedure MoveTo(x,y: real);
 /// Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: real);
@@ -409,7 +441,7 @@ procedure DrawPolygon(points: array of Point; c: GColor);
 procedure FillPolygon(points: array of Point; c: GColor);
 
 // -----------------------------------------------------
-//>>     Класс Bitmap
+//>>     Класс Bitmap # Bitmap class
 // -----------------------------------------------------
 ///!#
 /// Класс битового образа
@@ -478,6 +510,8 @@ function Pnt(x,y: real): GPoint;
 function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): GBrush;
+/// Возвращает однотонную цветную кисть случайного цвета
+function RandomColorBrush: GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
 /// Возвращает однотонное цветное перо, заданное цветом и толщиной
@@ -507,48 +541,32 @@ procedure EndFrameBasedAnimation;
 // -----------------------------------------------------
 //>>     Функции для вывода текста # GraphWPF text functions
 // -----------------------------------------------------
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит строку в прямоугольник
-procedure DrawText(r: GRect; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит целое в прямоугольник
-procedure DrawText(r: GRect; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит вещественное в прямоугольник
-procedure DrawText(r: GRect; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит строку в прямоугольник
-procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит целое в прямоугольник
-procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит вещественное в прямоугольник
-procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом
-procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
+
+/// Выводит текстовое представление объекта в прямоугольник размера (w,h) с координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит текстовое представление объекта указанным цветом в прямоугольник (x,y,w,h)
+procedure DrawText(x, y, w, h: real; text: object; color: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит текстовое представление объекта в указанный прямоугольник
+procedure DrawText(rect: GRect; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит текстовое представление объекта в указанный прямоугольник указанным цветом
+procedure DrawText(rect: GRect; text: object; color: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит строку в прямоугольник (x,y,w,h) указанным шрифтом
+procedure DrawText(x, y, w, h: real; text: object; f: FontOptions; align: Alignment; angle: real);
 
 
-/// Выводит строку в позицию (x,y)
-procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит строку в позицию (x,y) цветом c
-procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит целое в позицию (x,y)
-procedure TextOut(x, y: real; text: integer; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит целое в позицию (x,y) цветом c
-procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит вещественное в позицию (x,y)
-procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит вещественное в позицию (x,y) цветом c
-procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
-/// Выводит строку в позицию (x,y) указанным шрифтом
-procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию (x,y)
+procedure TextOut(x, y: real; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию (x,y) указанным цветом
+procedure TextOut(x, y: real; text: object; color: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию (x,y) указанным шрифтом
+procedure TextOut(x, y: real; text: object; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию pos
+procedure TextOut(pos: Point; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию pos указанным цветом
+procedure TextOut(pos: Point; text: object; color: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит текстовое представление объекта в позицию pos указанным шрифтом
+procedure TextOut(pos: Point; text: object; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+
 
 /// Ширина текста при выводе
 function TextWidth(text: string): real;
@@ -634,6 +652,8 @@ var OnMouseDown: procedure(x, y: real; mousebutton: integer);
 var OnMouseUp: procedure(x, y: real; mousebutton: integer);
 /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
 var OnMouseMove: procedure(x, y: real; mousebutton: integer);
+/// Событие прокрутки колёсика мыши. delta - величина прокрутки: delta > 0 - от пользователя, delta < 0 - к пользователю
+var OnMouseWheel: procedure(delta: real);
 /// Событие нажатия клавиши
 var OnKeyDown: procedure(k: Key);
 /// Событие отжатия клавиши
@@ -704,15 +724,74 @@ function TextWidthPFont(text: string; f: FontOptions): real;
 function TextHeightPFont(text: string; f: FontOptions): real; 
 /// Размер текста (совместно с FastDraw)
 function TextSizePFont(text: string; f: FontOptions): Size;
+/// Создает визуальный объект и добавляет его к отображаемым объектам  
+function CreateVisual: DrawingVisual;
+/// Удаляет визуальный объект из отображаемых
+procedure RemoveVisual(visual: DrawingVisual);
+/// Рисует на визуальном объекте с помощью контекста рисования
+procedure DrawOnVisual(visual: DrawingVisual; proc: DrawingContext->());
+/// Рисует все визуальные объекты на битмапе рендеринга и очищает список визуальных объектов
+procedure FlushDrawingToBitmap;
 
-procedure AddToHost(v: Visual);
 
-{function GetDC: DrawingContext;
-procedure ReleaseDC(dc: DrawingContext);
-procedure FastClear(var dc: DrawingContext);}
+//procedure AddToHost(v: Visual);
+//procedure RemoveFromHost(v: Visual);
+
+function GetDC: DrawingContext;
+function CreateRenderTargetBitmap: RenderTargetBitmap;
+
+var AdditionalDrawOnDC: procedure(dc: DrawingContext);
+
+//procedure ReleaseDC(dc: DrawingContext);
+//procedure FastClear(var dc: DrawingContext);
+//procedure HostToRenderBitmap;
 
 procedure __InitModule__;
 procedure __FinalizeModule__;
+
+(*
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит строку в прямоугольник
+procedure DrawText(r: GRect; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит целое в прямоугольник
+procedure DrawText(r: GRect; number: integer; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит вещественное в прямоугольник
+procedure DrawText(r: GRect; number: real; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит строку в прямоугольник
+procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит целое в прямоугольник
+procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит вещественное в прямоугольник
+procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом
+procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
+
+// Выводит строку в позицию (x,y)
+procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит строку в позицию (x,y) цветом c
+procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит целое в позицию (x,y)
+procedure TextOut(x, y: real; text: integer; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит целое в позицию (x,y) цветом c
+procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит вещественное в позицию (x,y)
+procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит вещественное в позицию (x,y) цветом c
+procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+// Выводит строку в позицию (x,y) указанным шрифтом
+procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);}
+*)
 
 implementation
 
@@ -741,8 +820,17 @@ function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 function ColorBrush(c: Color) := GetBrush(c);
-function ColorPen(c: Color) := new GPen(GetBrush(c),Pen.Width);
-function ColorPen(c: Color; w: real) := new GPen(GetBrush(c),w);
+function RandomColorBrush := GetBrush(RandomColor);
+function ColorPen(c: Color): GPen;
+begin
+  Result := new GPen(GetBrush(c),Pen.Width);
+  Result.Freeze
+end;
+function ColorPen(c: Color; w: real): GPen;
+begin
+  Result := new GPen(GetBrush(c),w);
+  Result.Freeze
+end;
 
 function RandomPoint(w: real): Point := Pnt(Random(w,Window.Width-w),Random(w,Window.Height-w));
 
@@ -797,6 +885,11 @@ begin
   Host.children.Add(v);
 end;
 
+procedure RemoveFromHost(v: Visual);
+begin
+  Host.children.Remove(v);
+end;
+
 function GetDC: DrawingContext;
 begin
   var visual := new DrawingVisual();
@@ -817,6 +910,31 @@ begin
   if host.Children.Count > 1000 then
     HostToRenderBitmap
 end;
+
+/// Создает визуальный объект и добавляет его к отображаемым объектам  
+function CreateVisual: DrawingVisual;
+begin
+  var visual: DrawingVisual;
+  Redraw(()->begin visual := new DrawingVisual; AddToHost(visual) end );
+  Result := visual;
+end;
+
+/// Удаляет визуальный объект из отображаемых
+procedure RemoveVisual(visual: DrawingVisual) := Redraw(()->RemoveFromHost(visual));
+
+/// Рисует на визуальном объекте с помощью контекста рисования
+procedure DrawOnVisual(visual: DrawingVisual; proc: DrawingContext->());
+begin
+  Redraw(()->begin
+    var dc := visual.RenderOpen();
+    proc(dc);
+    dc.Close;
+  end);
+end;
+
+/// Рисует все визуальные объекты на битмапе рендеринга и очищает список визуальных объектов
+procedure FlushDrawingToBitmap := Redraw(()->HostToRenderBitmap());
+
 
 procedure FastDraw(commands: DrawingContext->());
 begin
@@ -1290,6 +1408,31 @@ begin
   ReleaseDC(dc);
 end;
 
+/// Нормированный вектор
+function Norm(Self: Vector): Vector; extensionmethod := Self/Self.Length;
+
+/// Вектор, ортогональный данному
+function Ortog(Self: Vector): Vector; extensionmethod := Vect(Self.Y, -Self.X);
+
+procedure ArrowPFull(x,y,x1,y1: real; p: GPen);
+begin
+  var szAlong := Parameters.ArrowSizeAlong / GlobalScale;
+  var szAcross := Parameters.ArrowSizeACross / GlobalScale;
+  
+  var (p1,p2) := (Pnt(x,y),Pnt(x1,y1));
+  var v := p2 - p1;
+  var (vnorm, vortognorm) := (v.Norm, v.Ortog.Norm);
+  
+  var p3 := p2 - vnorm * szAlong + vortognorm * szAcross;
+  var p4 := p2 - vnorm * szAlong - vortognorm * szAcross;
+  
+  var dc := GetDC();
+  dc.DrawLine(p, p1, p2);
+  
+  dc.DrawPolygon(Brushes.Black,p,Arr(p2,p3,p4));
+  ReleaseDC(dc);
+end;
+
 procedure SetPixel(x,y: real; c: Color) := InvokeVisual(SetPixelP, x, y, c);
 
 procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color)
@@ -1331,6 +1474,9 @@ procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenConstruct);
 procedure LinePC(x,y,x1,y1: real; c: GColor) := LinePFull(x,y,x1,y1,ColorPen(c));
 procedure PolyLineP(points: array of Point) := PolyLinePFull(points,Pen.PenConstruct);
 procedure PolyLinePC(points: array of Point; c: GColor) := PolyLinePFull(points,ColorPen(c));
+
+procedure ArrowP(x,y,x1,y1: real) := ArrowPFull(x,y,x1,y1,Pen.PenConstruct);
+procedure ArrowPC(x,y,x1,y1: real; c: GColor) := ArrowPFull(x,y,x1,y1,ColorPen(c));
 
 procedure PolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushConstruct,Pen.PenConstruct);
 procedure DrawPolygonP(points: array of Point) := PolygonPFull(points,nil,Pen.PenConstruct);
@@ -1386,6 +1532,8 @@ procedure FillRectangle(x,y,w,h: real; c: GColor) := InvokeVisual(FillRectangleP
 /// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
 procedure Arc(x, y, r, angle1, angle2: real) := InvokeVisual(ArcP,x, y, r, angle1, angle2);
 procedure Arc(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(ArcPC,x, y, r, angle1, angle2, c);
+procedure Arc(p: Point; r, angle1, angle2: real) := Arc(p.x, p.y, r, angle1, angle2);
+procedure Arc(p: Point; r, angle1, angle2: real; c: Color) := Arc(p.x, p.y, r, angle1, angle2, c);
 
 /// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
 procedure Sector(x, y, r, angle1, angle2: real) := InvokeVisual(SectorP,x, y, r, angle1, angle2);
@@ -1403,6 +1551,11 @@ procedure Line(p,p1: Point) := Line(p.x,p.y,p1.x,p1.y);
 procedure Line(p,p1: Point; c: Color) := Line(p.x,p.y,p1.x,p1.y,c);
 procedure Lines(a: array of (Point,Point)) := foreach var i in a.Indices do Line(a[i].Item1,a[i].Item2);
 procedure Lines(a: array of (Point,Point); c: Color) := foreach var i in a.Indices do Line(a[i].Item1,a[i].Item2,c);
+
+procedure Arrow(x,y,x1,y1: real) := InvokeVisual(ArrowP,x,y,x1,y1);
+procedure Arrow(x,y,x1,y1: real; c: GColor) := InvokeVisual(ArrowPC,x,y,x1,y1,c);
+procedure Arrow(p,p1: Point) := Arrow(p.x,p.y,p1.x,p1.y);
+procedure Arrow(p,p1: Point; c: Color) := Arrow(p.x,p.y,p1.x,p1.y,c);
 
 
 procedure MoveTo(x,y: real) := (Pen.fx,Pen.fy) := (x,y);
@@ -1498,41 +1651,52 @@ begin
     end;
 end;
 
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; text: string; align: Alignment; angle: real);
-begin
-  var (x0,y0) := (x,y);
-
-  var ft := FormTextFont(text,Font);
-  var sz := new Size(ft.Width,ft.Height);
-
-  DrawTextHelper(x, y, x0, y0, w, h, sz, align);
-  TextOutHelper(x,y,text,angle,x0,y0)
-end;
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment; angle: real);
-begin
-  var (x0,y0) := (x,y);
-
-  var ft := FormTextFont(text,Font);
-  var sz := new Size(ft.Width,ft.Height);
-
-  DrawTextHelper(x, y, x0, y0, w, h, sz, align);
-  TextOutHelper(x,y,text,angle,c,x0,y0)
-end;
-
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) данным шрифтом
-procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
+procedure DrawText(x, y, w, h: real; text: object; align: Alignment; angle: real);
 begin
   var (x0,y0) := (x,y);
   
-  var ft := FormTextFont(text,Font);
+  var textstr := text.ToString;
+  
+  var ft := FormTextFont(textstr,Font);
+  var sz := new Size(ft.Width,ft.Height);
+
+  DrawTextHelper(x, y, x0, y0, w, h, sz, align);
+  TextOutHelper(x,y,textstr,angle,x0,y0)
+end;
+
+procedure DrawText(x, y, w, h: real; text: object; color: GColor; align: Alignment; angle: real);
+begin
+  var (x0,y0) := (x,y);
+
+  var textstr := text.ToString;
+  
+  var ft := FormTextFont(textstr,Font);
+  var sz := new Size(ft.Width,ft.Height);
+
+  DrawTextHelper(x, y, x0, y0, w, h, sz, align);
+  TextOutHelper(x,y,textstr,angle,color,x0,y0)
+end;
+
+procedure DrawText(rect: GRect; text: object; align: Alignment; angle: real)
+  := DrawText(rect.x,rect.y,rect.Width,rect.Height,text,align,angle);
+
+procedure DrawText(rect: GRect; text: object; color: GColor; align: Alignment; angle: real)
+  := DrawText(rect.x,rect.y,rect.Width,rect.Height,text,align,angle);
+
+procedure DrawText(x, y, w, h: real; text: object; f: FontOptions; align: Alignment; angle: real);
+begin
+  var (x0,y0) := (x,y);
+  
+  var textstr := text.ToString;
+  
+  var ft := FormTextFont(textstr,Font);
   var sz := new Size(ft.Width,ft.Height);
 
   DrawTextHelper(x, y, x0, y0, w, h, sz, align, f);
-  TextOutHelper(x,y,text,angle,x0,y0,f)
+  TextOutHelper(x,y,textstr,angle,x0,y0,f)
 end;
 
+{
 /// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; number: integer; align: Alignment; angle: real) := DrawText(x, y, w, h, '' + number,align,angle);
 /// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
@@ -1553,32 +1717,28 @@ procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment; angle: r
 procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment; angle: real) := DrawText(r.x,r.y,r.Width,r.Height,number,c,align,angle);
 /// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment; angle: real) := DrawText(r.x,r.y,r.Width,r.Height,number,c,align,angle);
+}
 
-
-{function ConvertAlign(align: Alignment): Alignment;
-begin
-  Result := align;
-  case align of
-    Alignment.LeftTop: Result := Alignment.RightBottom;
-    Alignment.LeftCenter: Result := Alignment.RightCenter;
-    Alignment.LeftBottom: Result := Alignment.RightTop;
-    Alignment.CenterTop: Result := Alignment.CenterBottom;
-    Alignment.CenterBottom: Result := Alignment.CenterTop;
-    Alignment.RightTop: Result := Alignment.LeftBottom;
-    Alignment.RightCenter: Result := Alignment.LeftCenter;
-    Alignment.RightBottom: Result := Alignment.LeftTop;
-  end;
-end;}
-
+(*
 procedure TextOut(x, y: real; text: string; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text,{ConvertAlign(}align{)},angle);
 procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text, c,{ConvertAlign(}align{)},angle);
 procedure TextOut(x, y: real; text: integer; align: Alignment; angle: real) := TextOut(x, y, ''+text,align,angle);
 procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment; angle: real) := TextOut(x, y, ''+text, c,align,angle);
 procedure TextOut(x, y: real; text: real; align: Alignment; angle: real) := TextOut(x, y, ''+text,align,angle);
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment; angle: real) := TextOut(x, y, ''+text, c,align,angle);
-
-procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text, f, align, angle);
-
+*)
+procedure TextOut(x, y: real; text: object; align: Alignment; angle: real) 
+  := DrawText(x, y, 0, 0, text.ToString, align, angle);
+procedure TextOut(x, y: real; text: object; color: GColor; align: Alignment; angle: real) 
+  := DrawText(x, y, 0, 0, text.ToString, color, align, angle);
+procedure TextOut(x, y: real; text: object; f: FontOptions; align: Alignment; angle: real) 
+  := DrawText(x, y, 0, 0, text.ToString, f, align, angle);
+procedure TextOut(pos: Point; text: object; align: Alignment; angle: real) 
+  := TextOut(pos.x, pos.y, text, align, angle);
+procedure TextOut(pos: Point; text: object; color: GColor; align: Alignment; angle: real) 
+  := TextOut(pos.x, pos.y, text, color, align, angle);
+procedure TextOut(pos: Point; text: object; f: FontOptions; align: Alignment; angle: real) 
+  := TextOut(pos.x, pos.y, text, f, align, angle);
 
 type
   FS = auto class
@@ -1864,11 +2024,19 @@ begin
   var dc := myvis.RenderOpen;
   var r := Rect(0,0,Window.Width,Window.Height);
   var mm := (canvas as MyVisualHost).RenderTransform.Value;
+  var m1 := mm;
   mm.Invert;
   r.Transform(mm);
   dc.DrawRectangle(Brushes.White,nil,r);
-  var rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
+  
+  var rr: GRect;
+  if CurrentCoordType = MathematicalCoords then
+    rr := Rect(r.Left,r.Top,rtbmap.Width/m1.M11,rtbmap.Height/-m1.M22)
+  else rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
   dc.DrawImage(rtbmap,rr);
+  
+  if AdditionalDrawOnDC <> nil then
+    AdditionalDrawOnDC(dc);
   dc.Close;
   (canvas as MyVisualHost).children.Insert(0,myvis);
   
@@ -2084,6 +2252,13 @@ begin
     OnMouseMove(p.x, p.y, mb);
 end;
 
+procedure SystemOnMouseWheel(sender: Object; e: MouseWheelEventArgs);
+begin
+  var delta := e.Delta;
+  if OnMouseWheel <> nil then  
+    OnMouseWheel(delta);
+end;
+
 /// --- SystemKeyEvents
 procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs) := 
   if OnKeyDown<>nil then
@@ -2207,6 +2382,18 @@ begin
   FrameRate := 61;
 end;  
 
+function CreateRenderTargetBitmap: RenderTargetBitmap;
+begin
+  var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
+  var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
+  
+  var dpiX := integer(dpiXProperty.GetValue(nil, nil));
+  var dpiY := integer(dpiYProperty.GetValue(nil, nil));
+
+  var (scalex, scaley) := (dpiX/96,dpiY/96);
+  Result := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
+end;
+
 var mre := new ManualResetEvent(false);
 
 type 
@@ -2229,16 +2416,9 @@ public
     end;
     // Всегда последнее
     
-    var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
-    var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
-    
-    var dpiX := integer(dpiXProperty.GetValue(nil, nil));
-    var dpiY := integer(dpiYProperty.GetValue(nil, nil));
-  
+    RTbmap := CreateRenderTargetBitmap;
+
     var im := new Image();
-    
-    var (scalex, scaley) := (dpiX/96,dpiY/96);
-    RTbmap := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
     im.Source := RTbmap;
     
     // Рисуем на host
@@ -2269,6 +2449,7 @@ public
   
   procedure InitHandlers; override;
   begin
+    AdditionalDrawOnDC := procedure(dc) -> begin end;
     Closed += (sender,e) -> begin 
       if OnClose<>nil then
         OnClose;
@@ -2277,6 +2458,7 @@ public
     MouseDown += SystemOnMouseDown;
     MouseUp += SystemOnMouseUp;
     MouseMove += SystemOnMouseMove;
+    MouseWheel += SystemOnMouseWheel;
     KeyDown += SystemOnKeyDown;
     KeyUp += SystemOnKeyUp;
     TextInput += SystemOnKeyPress;

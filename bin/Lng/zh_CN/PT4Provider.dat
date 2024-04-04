@@ -1,0 +1,11 @@
+//PT4 Provider Plugin
+
+%PREFIX%=VPP_PT4PROVIDER_
+D_NAME=查看任务
+L_NAME=创建程序模板
+R_NAME=查看结果
+S_NAME=PT4 设置
+D_DESCRIPTION=查看任务
+L_DESCRIPTION=创建程序模板
+R_DESCRIPTION=查看结果
+PT4_Setup=PT4 设置

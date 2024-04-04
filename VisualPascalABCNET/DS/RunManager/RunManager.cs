@@ -7,6 +7,7 @@ using System.Text;
 using PascalABCCompiler.Errors;
 using System.IO;
 using System.Diagnostics;
+using VisualPascalABCPlugins;
 
 namespace VisualPascalABC
 {
@@ -204,10 +205,9 @@ namespace VisualPascalABC
             */
         }
 
-
-        public delegate void RunnerManagerActionDelegate(string fileName);
         public event RunnerManagerActionDelegate Exited;
         public event RunnerManagerActionDelegate Starting;
+        public event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun;
 
         public class StackTraceItem
         {
@@ -243,7 +243,7 @@ namespace VisualPascalABC
         
         public void SendText(string FileName, string Text)
         {
-            //messageServer.SendText(FileName, Text);
+            //messageServer.SendText(file_name, Text);
         }
 
         /*private void MessageQueueReceive_Callback(IAsyncResult ar)
@@ -282,6 +282,8 @@ namespace VisualPascalABC
             
             try
             {
+                if (ChangeArgsBeforeRun != null)
+                    ChangeArgsBeforeRun(ref args);
                 PRunner.Start(fileName, args, redirectIO, redirectErrors, RunWithPause, attachDebugger, fictive_attach);
                 if (Starting != null)
                     Starting(fileName);

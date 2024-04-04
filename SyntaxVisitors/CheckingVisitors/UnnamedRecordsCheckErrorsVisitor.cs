@@ -33,7 +33,8 @@ namespace SyntaxVisitors.CheckingVisitors
         }
         public void AddProcHeader(procedure_header h)
         {
-            Add(h.name.meth_name);
+            if (h.name != null)
+                Add(h.name.meth_name);
             if (h.template_args != null)
                 AddIdentList(h.template_args);
             if (h.parameters != null)

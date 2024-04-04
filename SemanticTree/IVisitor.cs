@@ -102,25 +102,25 @@ namespace PascalABCCompiler.SemanticTree
 
 		void visit(IBoolConstantNode value);
 
-        void visit(IByteConstantNode value);
+		void visit(IByteConstantNode value);
 
-        void visit(IIntConstantNode value);
+		void visit(IIntConstantNode value);
 
-        void visit(ISByteConstantNode value);
+		void visit(ISByteConstantNode value);
 
-        void visit(IShortConstantNode value);
+		void visit(IShortConstantNode value);
 
-        void visit(IUShortConstantNode value);
+		void visit(IUShortConstantNode value);
 
-        void visit(IUIntConstantNode value);
+		void visit(IUIntConstantNode value);
 
-        void visit(IULongConstantNode value);
+		void visit(IULongConstantNode value);
 
-        void visit(ILongConstantNode value);
+		void visit(ILongConstantNode value);
 
 		void visit(IDoubleConstantNode value);
 
-        void visit(IFloatConstantNode value);
+		void visit(IFloatConstantNode value);
 
 		void visit(ICharConstantNode value);
 
@@ -148,13 +148,13 @@ namespace PascalABCCompiler.SemanticTree
 
 		void visit(IConstantDefinitionNode value);
 
-        void visit(IClassConstantDefinitionNode value);
+		void visit(IClassConstantDefinitionNode value);
 
-        void visit(ICompiledClassConstantDefinitionNode value);
+		void visit(ICompiledClassConstantDefinitionNode value);
 
-        void visit(INamespaceConstantDefinitionNode value);
+		void visit(INamespaceConstantDefinitionNode value);
 
-        void visit(ICommonFunctionConstantDefinitionNode value);
+		void visit(ICommonFunctionConstantDefinitionNode value);
 
 		void visit(IPropertyNode value);
 
@@ -189,120 +189,123 @@ namespace PascalABCCompiler.SemanticTree
 		void visit(ISimpleArrayNode value);
 
 		void visit(ISimpleArrayIndexingNode value);
-		
+
 		void visit(IExternalStatementNode value);
-		
+
 		void visit(IRefTypeNode value);
-		
+
 		void visit(IGetAddrNode value);
-		
+
 		void visit(IDereferenceNode value);
 
-        void visit(IThrowNode value);
+		void visit(IThrowNode value);
 
-        void visit(ISwitchNode value);
+		void visit(ISwitchNode value);
 
-        void visit(ICaseVariantNode value);
+		void visit(ICaseVariantNode value);
 
-        void visit(ICaseRangeNode value);
+		void visit(ICaseRangeNode value);
 
-	    void visit(INullConstantNode value);
+		void visit(INullConstantNode value);
 
-        void visit(IUnsizedArray value);
+		void visit(IUnsizedArray value);
 
-        void visit(IRuntimeManagedMethodBody value);
+		void visit(IRuntimeManagedMethodBody value);
 
-        void visit(IAsNode value);
+		void visit(IAsNode value);
 
-        void visit(IIsNode value);
+		void visit(IIsNode value);
 
-        void visit(ISizeOfOperator value);
+		void visit(ISizeOfOperator value);
 
-        void visit(ITypeOfOperator value);
+		void visit(ITypeOfOperator value);
 
-        void visit(IExitProcedure value);
+		void visit(IExitProcedure value);
 
-        void visit(ITryBlockNode value);
+		void visit(ITryBlockNode value);
 
-        void visit(IExceptionFilterBlockNode value);
+		void visit(IExceptionFilterBlockNode value);
 
-        void visit(IArrayConstantNode value);
+		void visit(IArrayConstantNode value);
 
-        void visit(IStatementsExpressionNode value);
+		void visit(IStatementsExpressionNode value);
 
-        void visit(IQuestionColonExpressionNode value);
-        
-        void visit(IRecordConstantNode value);
+		void visit(IQuestionColonExpressionNode value);
 
-        void visit(ILabelNode value);
+		void visit(IRecordConstantNode value);
 
-        void visit(ILabeledStatementNode value);
+		void visit(ILabelNode value);
 
-        void visit(IGotoStatementNode value);
+		void visit(ILabeledStatementNode value);
 
-        void visit(ICompiledStaticMethodCallNodeAsConstant value);
+		void visit(IGotoStatementNode value);
 
-        void visit(ICompiledConstructorCallAsConstant value);
+		void visit(ICompiledStaticMethodCallNodeAsConstant value);
 
-        void visit(ICommonNamespaceFunctionCallNodeAsConstant value);
-        
-        void visit(IEnumConstNode value);
+		void visit(ICompiledConstructorCallAsConstant value);
 
-        void visit(IForeachNode value);
+		void visit(ICommonNamespaceFunctionCallNodeAsConstant value);
 
-        void visit(ILockStatement value);
+		void visit(IEnumConstNode value);
 
-        void visit(ILocalBlockVariableNode value);
-        
-        void visit(ILocalBlockVariableReferenceNode value);
-        
-        void visit(IRethrowStatement value);
-		
-        void visit(IForeachBreakNode value);
-        
-        void visit(IForeachContinueNode value);
-        
-        void visit(INamespaceConstantReference value);
-        
-        void visit(IFunctionConstantReference value);
-        
-        void visit(ICommonConstructorCallAsConstant value);
-        
-        void visit(IArrayInitializer value);
-        
-        void visit(ICommonEventNode value);
-        
-        void visit(IEventNode value);
-        
-        void visit(ICompiledEventNode value);
-        
-        void visit(IStaticEventReference value);
-        
-        void visit(INonStaticEventReference value);
-        
-        void visit(IRecordInitializer value);
+		void visit(IForeachNode value);
 
-        void visit(IDefaultOperatorNode value);
-        
-        void visit(IAttributeNode value);
-        
-        void visit(IPInvokeStatementNode value);
-        
-        void visit(IBasicFunctionCallNodeAsConstant value);
+		void visit(ILockStatement value);
 
-        void visit(ICompiledStaticFieldReferenceNodeAsConstant value);
+		void visit(ILocalBlockVariableNode value);
 
-        void visit(ILambdaFunctionNode value);
+		void visit(ILocalBlockVariableReferenceNode value);
 
-        void visit(ILambdaFunctionCallNode value);
+		void visit(IRethrowStatement value);
 
-        void visit(ICommonNamespaceEventNode value);
+		void visit(IForeachBreakNode value);
 
-        void visit(IDefaultOperatorNodeAsConstant value);
+		void visit(IForeachContinueNode value);
+
+		void visit(INamespaceConstantReference value);
+
+		void visit(IFunctionConstantReference value);
+
+		void visit(ICommonConstructorCallAsConstant value);
+
+		void visit(IArrayInitializer value);
+
+		void visit(ICommonEventNode value);
+
+		void visit(IEventNode value);
+
+		void visit(ICompiledEventNode value);
+
+		void visit(IStaticEventReference value);
+
+		void visit(INonStaticEventReference value);
+
+		void visit(IRecordInitializer value);
+
+		void visit(IDefaultOperatorNode value);
+
+		void visit(IAttributeNode value);
+
+		void visit(IPInvokeStatementNode value);
+
+		void visit(IBasicFunctionCallNodeAsConstant value);
+
+		void visit(ICompiledStaticFieldReferenceNodeAsConstant value);
+
+		void visit(ILambdaFunctionNode value);
+
+		void visit(ILambdaFunctionCallNode value);
+
+		void visit(ICommonNamespaceEventNode value);
+
+		void visit(IDefaultOperatorNodeAsConstant value);
 
 		void visit(IDoubleQuestionColonExpressionNode value);
 
 		void visit(ITypeOfOperatorAsConstant value);
-	}
 
+		void visit(ICommonStaticMethodCallNodeAsConstant value);
+
+		void visit(ISizeOfOperatorAsConstant value);
+	}
 }

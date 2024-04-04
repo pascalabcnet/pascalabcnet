@@ -59,6 +59,7 @@ namespace PascalABCCompiler.SystemLibrary
         private static compiled_type_node _ienumerable_interface;
         private static compiled_type_node _ilist1_interface;
         private static compiled_type_node _icollection1_interface;
+        private static compiled_type_node _ireadonlycollection_interface;
         private static compiled_type_node _ienumerable1_interface;
 
         private static compiled_function_node _delegate_combine_method;
@@ -1177,6 +1178,9 @@ namespace PascalABCCompiler.SystemLibrary
             _icollection_interface = compiled_type_node.get_type_node(typeof(ICollection));
             _ienumerable_interface = compiled_type_node.get_type_node(typeof(IEnumerable));
             _ilist1_interface = compiled_type_node.get_type_node(typeof(IList<>));
+            var t = Type.GetType("System.Collections.Generic.IReadOnlyCollection`1");
+            if (t != null)
+                _ireadonlycollection_interface = compiled_type_node.get_type_node(t);
             _icollection1_interface = compiled_type_node.get_type_node(typeof(ICollection<>));
             _ienumerable1_interface = compiled_type_node.get_type_node(typeof(IEnumerable<>));
             _assert_method = compiled_function_node.get_compiled_method(typeof(System.Diagnostics.Debug).GetMethod("Assert",new Type[1]{typeof(bool)}));
@@ -2187,7 +2191,7 @@ namespace PascalABCCompiler.SystemLibrary
             Type arr_type = typeof(System.Array);
             System.Reflection.MethodInfo resize_func_mi = arr_type.GetMethod("Resize");
             _resize_func = compiled_function_node.get_compiled_method(resize_func_mi);
-            _resize_func.parameters.clear();
+            _resize_func.parameters.Clear();
             common_parameter par0 = new common_parameter("Array", _object_type, SemanticTree.parameter_type.value, null,
                 concrete_parameter_type.cpt_none, null, null);
             common_parameter par1 = new common_parameter("Length", _integer_type, SemanticTree.parameter_type.value, null,
@@ -5259,7 +5263,15 @@ namespace PascalABCCompiler.SystemLibrary
                 return _ienumerable1_interface;
             }
         }
-        
+
+        public static compiled_type_node ireadonlycollection_interface
+        {
+            get
+            {
+                return _ireadonlycollection_interface;
+            }
+        }
+
         public static compiled_function_node assert_method
         {
         	get

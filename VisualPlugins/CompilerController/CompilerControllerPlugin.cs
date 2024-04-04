@@ -32,7 +32,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "Copyright © 2005-2021 by Ivan Bondarev, Stanislav Mikhalkovich";
+                return "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich";
             }
         }
 
@@ -103,6 +103,8 @@ namespace VisualPascalABCPlugins
                 key = key.OpenSubKey("Microsoft");
                 key = key.OpenSubKey("VisualStudio");
                 key = key.OpenSubKey("8.0");
+                if (key == null)
+                    return null;
                 string s = (string)key.GetValue("InstallDir");
                 key.Close();
                 s = System.IO.Path.GetDirectoryName(s);

@@ -1,5 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Arc">
+<param name="Keyword" value="Arrow">
 <param name="Keyword" value="Circle">
 <param name="Keyword" value="DrawCircle">
 <param name="Keyword" value="DrawEllipse">
@@ -20,7 +21,6 @@
 <param name="Keyword" value="LineTo">
 <param name="Keyword" value="MoveBy">
 <param name="Keyword" value="MoveRel">
-<param name="Keyword" value="MoveTo">
 <param name="Keyword" value="Pie">
 <param name="Keyword" value="Polygon">
 <param name="Keyword" value="PolyLine">
@@ -34,6 +34,18 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
 <tr><td><code><b>procedure</b> Arc(x, y, r, angle1, angle2: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c</td></tr>
+<tr><td><code><b>procedure</b> Arc(p: Point; r, angle1, angle2: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует дугу окружности с центром в точке p и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
+<tr><td><code><b>procedure</b> Arc(p: Point; r, angle1, angle2: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует дугу окружности с центром в точке p и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c</td></tr>
+<tr><td><code><b>procedure</b> Arrow(x,y,x1,y1: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию рисования в точку (x,y)Рисует отрезок прямой от точки (x,y) до точки (x1,y1) со стрелкой на конце</td></tr>
+<tr><td><code><b>procedure</b> Arrow(x,y,x1,y1: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки (x,y) до точки (x1,y1) цветом c со стрелкой на конце</td></tr>
+<tr><td><code><b>procedure</b> Arrow(p,p1: Point);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки p до точки p1 со стрелкой на конце</td></tr>
+<tr><td><code><b>procedure</b> Arrow(p,p1: Point; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки p до точки p1 цветом c со стрелкой на конце</td></tr>
 <tr><td><code><b>procedure</b> Circle(x,y,r: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует окружность с центром в точке (x,y) и радиусом r</td></tr>
 <tr><td><code><b>procedure</b> Circle(x,y,r: real; c: Color);</code>
@@ -132,10 +144,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает текущую позицию рисования на вектор (dx,dy)</td></tr>
 <tr><td><code><b>procedure</b> MoveRel(dx,dy: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает текущую позицию рисования на вектор (dx,dy)</td></tr>
-<tr><td><code><b>procedure</b> MoveTo(x,y: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию рисования в точку (x,y)</td></tr>
 <tr><td><code><b>procedure</b> Pie(x, y, r, angle1, angle2: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
+<tr><td><code><b>procedure</b> Pie(x, y, r, angle1, angle2: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c</td></tr>
 <tr><td><code><b>procedure</b> Polygon(points: <b>array</b>  <b>of</b> Point);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует многоугольник, заданный массивом точек</td></tr>
 <tr><td><code><b>procedure</b> Polygon(points: <b>array</b>  <b>of</b> Point; c: Color);</code>

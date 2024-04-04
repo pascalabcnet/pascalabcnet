@@ -32,6 +32,13 @@ namespace VisualPascalABCPlugins
         {
             get;
         }
+
+        /// SSM 07.08.22 кнопка пункта меню. В плагине преобразовать к ToolStripMenuItem
+        object menuItem { get; set; }
+
+        /// SSM 07.08.22 кнопка панели инструментов. В плагине преобразовать к ToolStripButton
+        object toolStripButton { get; set; } 
+
         void Execute();
     }
 
@@ -52,6 +59,11 @@ namespace VisualPascalABCPlugins
         void GetGUI(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems);
     }
 
+    public interface IExtendedVisualPascalABCPlugin: IVisualPascalABCPlugin
+    {
+        void AfterAddInGUI();
+    }
+
 
     public enum VisualEnvironmentState
     {
@@ -64,7 +76,13 @@ namespace VisualPascalABCPlugins
         ProcessExited
     }
     public delegate void ChangeVisualEnvironmentStateDelegate(VisualEnvironmentState State, object obj);
-    
+    // SSM 16/05/22 - перенес сюда из RunManager
+    public delegate void RunnerManagerActionDelegate(string fileName);
+    // SSM 02.07.22 - перед стартом компиляции для плагинов
+    public delegate void BuildServiceActionDelegate(string fileName);
+    // SSM 02.07.22 - перед запуском изменить параметры командной строки
+    public delegate void ChangeArgsBeforeRunDelegate(ref string args);
+
     public enum SourceLocationAction
     {
         SelectAndGotoBeg,
@@ -214,7 +232,7 @@ namespace VisualPascalABCPlugins
         bool RedirectConsoleIO { get; set; }
         bool ShowLineNums { get; set; }
         bool EnableFolding { get; set; }
-        bool ShowMathBraket { get; set; }
+        bool ShowMatchBracket { get; set; }
         bool ConverTabsToSpaces { get; set; }
         bool DeleteEXEAfterExecute { get; set; }
         bool DeletePDBAfterExecute { get; set; }
@@ -293,9 +311,12 @@ namespace VisualPascalABCPlugins
 
     public interface IWorkbenchRunService
     {
+        event RunnerManagerActionDelegate Starting; // можно вызывать из плагина
+        event RunnerManagerActionDelegate Exited;   // можно вызывать из плагина
+        event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun;
         bool IsRun();
         bool IsRun(string FileName);
-        bool Run(bool Debug);
+        bool Run(bool RedirectConsoleIO);
         bool Stop();
         void Stop(string FileName);
         bool Run(bool forDebugging, bool startWithGoto, bool need_first_brpt);
@@ -317,6 +338,7 @@ namespace VisualPascalABCPlugins
 
     public interface IWorkbenchBuildService
     {
+        BuildServiceActionDelegate BeforeCompile { get; set; }
         string Compile(string FileName, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment);
         string Compile(PascalABCCompiler.IProjectInfo project, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment);
         bool Build();
@@ -466,6 +488,7 @@ namespace VisualPascalABCPlugins
 
     public interface ICompilerConsoleWindow
     {
+        void AddTextToCompilerMessages(string text);
         void ClearConsole();
     }
 

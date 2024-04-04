@@ -3404,11 +3404,17 @@ namespace NodeGenerator
 
             generate_list_constructors(sw, manager);
 
-            //sw.WriteLine();
+            var sb = new StringBuilder();
+            sb.Append(this.node_name + " -> " + (this.base_class?.node_name ?? "object") + " [");
             foreach (node_field_info nfi in _subnodes)
 			{
-				nfi.generate_field_code(sw);
+                sb.Append(nfi.field_type_name + " " + nfi.field_name + ",");
+                nfi.generate_field_code(sw);
 			}
+            if (sb[sb.Length-1] == ',')
+                sb.Remove(sb.Length - 1, 1);
+            sb.Append("]\n");
+            File.AppendAllText("Tree.txt", sb.ToString());
 
             if (_subnodes.Count > 0)
                 sw.WriteLine();

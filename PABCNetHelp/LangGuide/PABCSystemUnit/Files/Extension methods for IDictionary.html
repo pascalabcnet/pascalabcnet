@@ -7,6 +7,8 @@
 </HEAD><body><H1>Методы расширения словарей</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Each&lt;Key,Source,Res&gt;(Self: <b>sequence </b>  <b>of</b> System.Linq.IGrouping&lt;Key,Source&gt;; grOperation: System.Linq.IGrouping&lt;Key,Source&gt; -&gt; Res): Dictionary&lt;Key,Res&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, сопоставляющий ключу группы результат групповой операции</td></tr>
+<tr><td><code><b>function</b> Each&lt;Key,Res&gt;(Self: <b>sequence </b>  <b>of</b> Key; proj: Key -&gt; Res): Dictionary&lt;Key,Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, сопоставляющий элементам последовательности определённые значения</td></tr>
 <tr><td><code><b>function</b> EachCount&lt;Key,Source&gt;(Self: <b>sequence </b>  <b>of</b> System.Linq.IGrouping&lt;Key,Source&gt;): Dictionary&lt;Key,integer&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом</td></tr>
 <tr><td><code><b>function</b> EachCount&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): Dictionary&lt;T,integer&gt;;</code>

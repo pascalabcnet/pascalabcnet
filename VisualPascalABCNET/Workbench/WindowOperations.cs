@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop.Gui;
@@ -19,7 +18,7 @@ namespace VisualPascalABC
     {
         internal CodeFileDocumentControl LastSelectedTab, BakSelectedTab;
         Dictionary<ICodeFileDocument, RichTextBox> OutputTextBoxs = new Dictionary<ICodeFileDocument, RichTextBox>();
-        
+
         private void AddOutputWindow()
         {
             if (OutputWindow == null)
@@ -100,7 +99,7 @@ namespace VisualPascalABC
                 DebugWatchListWindow = new DebugWatchListWindowForm(this);
                 Form1StringResources.SetTextForAllControls(DebugWatchListWindow);
             }
-            
+
             AddWindowToDockPanel(DebugWatchListWindow, MainDockPanel, OutputWindow.Dock, DockState.DockBottom, OutputWindow.IsFloat, BottomPane, int.MaxValue);
         }
 
@@ -144,7 +143,7 @@ namespace VisualPascalABC
             {
                 dc.Show(dp);
             }
-            
+
             if (dockToPane != null)
                 if (ind == int.MaxValue)
                     dc.Pane.DockTo(dockToPane, dockStyle, dockToPane.Contents.Count - 1);
@@ -188,11 +187,11 @@ namespace VisualPascalABC
         {
             CodeFileDocumentControl tp = new CodeFileDocumentControl(this);
             //tp.BorderStyle=BorderStyle.Fixed3D;
-            //tp.Font = new Font("MS Sans Serif", tp.Font.Size);
+            //tp.Font = new System.Drawing.Font("MS Sans Serif", tp.Font.Size);
             RichTextBox tb = OutputWindow.outputTextBox;
             if (OpenDocuments.Count > 0)
                 tb = CopyTextBox(OutputWindow.outputTextBox);
-            AddWindowToDockPanel(tp, tabControl, tp.Dock != dockStyle?dockStyle:tp.Dock, DockState.Document, tp.IsFloat, null, 0);
+            AddWindowToDockPanel(tp, tabControl, tp.Dock != dockStyle ? dockStyle : tp.Dock, DockState.Document, tp.IsFloat, null, 0);
             tb.Font = tp.TextEditor.Font;
             OutputTextBoxs.Add(tp, tb);
 
@@ -252,7 +251,7 @@ namespace VisualPascalABC
             SetTabPageText(edit);
             edit.SetHighlightingStrategyForFile(FileName);
             OpenDocuments.Add(Tools.FileNameToLower(FileName), edit);
-            //this.codeCompletionParserController.SetAsChanged(FileName);
+            //this.codeCompletionParserController.SetAsChanged(file_name);
             //ivan
             AddBreakPointHandler(edit, FileName);
             var RunService = WorkbenchServiceFactory.RunService;
@@ -313,6 +312,8 @@ namespace VisualPascalABC
             res.BackColor = orig.BackColor;
             res.Parent = orig.Parent;
             res.ContextMenuStrip = orig.ContextMenuStrip;
+            res.DetectUrls = true;
+            res.LinkClicked += OutputWindow.outputTextBox_LinkClicked;
             return res;
         }
 
@@ -471,7 +472,7 @@ namespace VisualPascalABC
                 AddEditorHandlers(edit);
             }
             WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + ".pas");
-            //edit.FileName = FileName;
+            //edit.file_name = file_name;
             //SetTabPageText(edit);
         }
 
@@ -495,7 +496,7 @@ namespace VisualPascalABC
                     tp.Text += string.Format(" [{0}]", PascalABCCompiler.StringResources.Get("VP_MF_TS_RUN"));
                 else
                     if (WorkbenchServiceFactory.DebuggerManager.IsRun(tp.EXEFileName, tp.FileName))
-                        tp.Text += string.Format(" [{0}]", PascalABCCompiler.StringResources.Get("VP_MF_MR_DEBUG"));
+                    tp.Text += string.Format(" [{0}]", PascalABCCompiler.StringResources.Get("VP_MF_MR_DEBUG"));
             }
             if (tp == ActiveCodeFileDocument && !tp.FromMetadata)
                 tp.Text = Convert.ToChar(0x25CF) + tp.Text;//25CF //2022
@@ -537,9 +538,47 @@ namespace VisualPascalABC
 
         delegate void AppendTextInternalAsyncDelegate(TextBoxBase textBox, string Text);
 
+        private System.Drawing.Color ConvertCodeToColor(char c)
+        {
+            switch ((UInt32)c)
+            {
+                case 65535: return System.Drawing.Color.Green;
+                case 65534: return System.Drawing.Color.Red;
+                case 65533: return System.Drawing.Color.OrangeRed;
+                case 65532: return System.Drawing.Color.Magenta;
+                case 65531: return System.Drawing.Color.Gray;
+                default: return System.Drawing.Color.Black;
+            }
+        }
+
+        private const int lastColorCharCode = 65531;
         private void AppendTextInternalAsync(TextBoxBase textBox, string Text)
         {
-            textBox.AppendText(Text);
+            var IsColored = Text.Any(c => (UInt32)c >= lastColorCharCode);
+            if (textBox is RichTextBox rtextBox && IsColored)
+            {
+                var lst = Text.ToList();
+
+                var ind0 = 0;
+                var ind = lst.FindIndex(c => (UInt32)c >= lastColorCharCode);
+                while (ind != -1)
+                {
+                    var ss = Text.Substring(ind0, ind - ind0);
+                    if (ss.Length > 0)
+                        rtextBox.AppendText(ss);
+
+                    rtextBox.SelectionColor = ConvertCodeToColor(lst[ind]);
+                    ind0 = ind + 1;
+                    if (ind0 == lst.Count)
+                        return;
+                    ind = lst.FindIndex(ind0, c => (UInt32)c >= lastColorCharCode);
+                } 
+                var ss1 = Text.Substring(ind0);
+                if (ss1.Length > 0)
+                    rtextBox.AppendText(ss1);
+            }
+            else
+                textBox.AppendText(Text);
         }
 
         delegate void InternalWriteToOutputBoxDel(string exc);
@@ -558,7 +597,7 @@ namespace VisualPascalABC
 
         public void AddTextToOutputWindowSync(string fileName, string text)
         {
-            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
+            //BeginInvoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), file_name, text);
             Invoke(new SetFileNameAndTextDelegate(AddTextToOutputWindow), fileName, text);
         }
 

@@ -384,6 +384,7 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return string.Format("{0} {1} {2}", to, OperatorServices.ToString(operator_type, LanguageId.PascalABCNET), from);
         }
+        public bool first_assignment_defines_type = false;
     }
 
     public partial class bin_expr
@@ -628,6 +629,7 @@ namespace PascalABCCompiler.SyntaxTree
             return "'" + Value + "'";
         }
         public bool IsInterpolated = false;
+        public bool IsMultiline = false;
     }
 
     public partial class expression_list
@@ -741,6 +743,7 @@ namespace PascalABCCompiler.SyntaxTree
         // frninja 20/05/16 - для методов хелперов yield
         public bool is_yield_helper = false;
         // end frninja
+        public bool IsAsync { get; set; } = false;
 
         public procedure_header(formal_parameters _parameters, procedure_attributes_list _proc_attributes, method_name _name, where_definition_list _where_defs, SourceContext sc)
         {
@@ -1588,15 +1591,15 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class yield_unknown_ident : ident
     {
-        protected ident _UnknownID;
+        //protected ident _UnknownID;
         protected ident _ClassName;
         protected bool _IsYieldInStaticMethod;
 
-        public ident UnknownID
+        /*public ident UnknownID
         {
             get { return _UnknownID; }
             set { _UnknownID = value; }
-        }
+        }*/
 
         public ident ClassName
         {
@@ -2090,6 +2093,24 @@ namespace PascalABCCompiler.SyntaxTree
         public bool IsDataClass { get ; set; }
     }
 
+    public partial class procedure_definition
+    {
+        /*public procedure_definition(procedure_header _proc_header, proc_block _proc_body, 
+            bool _is_short_definition)
+        {
+            this._proc_header = _proc_header;
+            this._proc_body = _proc_body;
+            this._is_short_definition = _is_short_definition;
+            FillParentsInDirectChilds();
+        }*/
+
+    }
+
     public class semantic_check_delegates_pointers_in_cached_function // класс - маркер семантической проверки
     { }
+
+    public partial class let_var_expr
+    {
+        public bool visit_var = true;
+    }
 }

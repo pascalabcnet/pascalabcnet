@@ -13,6 +13,13 @@ namespace PascalABCCompiler.TreeRealization
     public class expressions_list : extended_collection<expression_node>
     {
         public override string ToString() => string.Join(", ", this._elements);
+        public expressions_list Clone()
+        {
+            var exprl = new expressions_list();
+            foreach (var elem in this)
+                exprl.AddElement(elem);
+            return exprl;
+        }
     }
 	
     [Serializable]

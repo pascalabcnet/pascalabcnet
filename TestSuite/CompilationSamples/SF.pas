@@ -147,6 +147,12 @@ function Dst<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Dis
 /// Преобразует последовательность в строку
 function ToS<T>(Self: sequence of T; delim: string): string; extensionmethod := Self.JoinToString(delim);
 
+/// Преобразует последовательность в строку
+function JtS<T>(Self: sequence of T; delim: string): string; extensionmethod := Self.JoinToString(delim);
+
+/// Преобразует последовательность в строку
+function JtS<T>(Self: sequence of T): string; extensionmethod := Self.JoinToString();
+
 /// Сливает последовательнсть строк в одну строку 
 function Concat(Self: sequence of string): string; extensionmethod := Self.JoinToString('');
 
@@ -207,6 +213,9 @@ function SelM<T,T1>(Self: sequence of T; transform: T->sequence of T1): sequence
 /// Преобразует последовательность, используя функцию transform
 function Sel<T,T1>(Self: sequence of T; transform: T->T1): sequence of T1; extensionmethod := Self.Select(transform);
 
+/// Преобразует последовательность, используя функцию transform с индексом
+function Sel<T,T1>(Self: sequence of T; transform: (T,int)->T1): sequence of T1; extensionmethod := Self.Select(transform);
+
 /// Создаёт словарь в ссответствии с заданными функциями проекции на ключ и значение
 function ToD<T,TKey,TValue>(Self: sequence of T; keySelector: T->TKey; valueSelector: T->TValue): Dictionary<TKey,TValue>; extensionmethod := 
   Self.ToDictionary(keySelector,valueSelector);
@@ -221,6 +230,9 @@ function Agr<T,TAcc>(Self: sequence of T; seed: TAcc; func: (TAcc,T)->TAcc): TAc
 
 /// Фильтрует последовательность по условию cond
 function Wh<T>(Self: sequence of T; cond: T->boolean): sequence of T; extensionmethod := Self.Where(cond);
+
+/// Фильтрует последовательность по условию cond с индексом
+function Wh<T>(Self: sequence of T; cond: (T,integer)->boolean); extensionmethod := Self.Where(cond);
 
 /// Группирует элементы последовательности в соответствии с заданной функцией проекции на ключ группы
 function GrBy<T,TKey>(Self: sequence of T; selector: T->TKey): sequence of System.Linq.IGrouping<TKey,T>; extensionmethod := Self.GroupBy(selector);
@@ -285,6 +297,9 @@ function Cart<T>(Self: array of T; n: integer): sequence of array of T; extensio
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
 function Cart<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
+
+/// Возвращает n-тую декартову степень множества символов, заданного строкой
+function Cart(Self: string; n: integer): sequence of string; extensionmethod := Self.CartesianPower(n);
 
 /// Возвращает декартово произведение последовательностей в виде последовательности пар
 function Cart<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod := Self.Cartesian(b);

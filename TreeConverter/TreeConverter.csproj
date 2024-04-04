@@ -110,6 +110,7 @@
     <Compile Include="LambdaExpressions\LambdaProcessingState.cs" />
     <Compile Include="LambdaExpressions\LambdaResultTypeInferrer.cs" />
     <Compile Include="LambdaExpressions\LambdaSearcher.cs" />
+    <Compile Include="NetWrappers\AssemblyResolveScope.cs" />
     <Compile Include="TreeConversion\HasCapturedLambdaParameterInInternalLambdaBody.cs" />
     <Compile Include="TreeConversion\LambdaHelper.cs" />
     <Compile Include="SymbolTable\DSST\AreaArrayTable.cs">

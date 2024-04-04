@@ -926,7 +926,7 @@ namespace SymbolTable
                 ((to.symbol_kind == symbol_kind.sk_overload_function) && (add.symbol_kind == symbol_kind.sk_overload_function))
                 ||
                 ((to.symbol_kind == symbol_kind.sk_overload_procedure) && (add.symbol_kind == symbol_kind.sk_overload_procedure))
-                || to.sym_info != add.sym_info && to.sym_info is PascalABCCompiler.TreeRealization.function_node && add.sym_info is PascalABCCompiler.TreeRealization.function_node 
+                || to.sym_info != add.sym_info && (to.sym_info is PascalABCCompiler.TreeRealization.function_node || to.symbol_kind == symbol_kind.sk_overload_function) && add.sym_info is PascalABCCompiler.TreeRealization.function_node 
                 /*&& (to.sym_info as PascalABCCompiler.TreeRealization.function_node).is_extension_method*/ && (add.sym_info as PascalABCCompiler.TreeRealization.function_node).is_extension_method
                 );
         }
@@ -1109,11 +1109,9 @@ namespace SymbolTable
                     {
                         FindAllInClass(Name, CurrentArea, OnlyInThisClass, Result);
 
-                        if (Result.Count > 0) //если что-то нашли то заканчиваем
-                            return Result;
+                        //if (Result.Count > 0) //если что-то нашли то заканчиваем
+                        //    return Result;
 
-                        //Зачем искать в интерфейсах?
-                        //(ssyy) Не понимаю вопрос. Спросившему подумать, зачем в компиляторе нужен поиск.
                         FindAllInAreaList(Name, (CurrentArea as IInterfaceScope).TopInterfaceScopeArray, true, Result);
 
                         if (Result.Count > 0 || OnlyInType) //если что-то нашли то заканчиваем

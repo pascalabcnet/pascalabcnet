@@ -130,7 +130,7 @@ namespace VisualPascalABC
             if (comp != null)
             {
                 Assembly a = Assembly.GetAssembly(comp.GetType());
-                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2021 by Ivan Bondarev, Stanislav Mikhalkovich"));
+                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich"));
                 foreach (PascalABCCompiler.Parsers.IParser parser in comp.ParsersController.Parsers)
                     dgvModules.Items.Add(MakeItem("Parser",parser.Name, parser.Version, parser.Copyright));
                 foreach (PascalABCCompiler.SemanticTreeConverters.ISemanticTreeConverter conv in comp.SemanticTreeConvertersController.SemanticTreeConverters)
@@ -222,11 +222,6 @@ namespace VisualPascalABC
             System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("!PASCALABCNET_FORUM_LINK"));
         }
 
-        private void label12_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
         }
@@ -234,6 +229,11 @@ namespace VisualPascalABC
         private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("!PASCALABCNET_DEVELOPERS_LINK"));
+        }
+
+        private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("!PASCALABCNET_TELEGRAM_CHANNEL_LINK"));
         }
     }
 }

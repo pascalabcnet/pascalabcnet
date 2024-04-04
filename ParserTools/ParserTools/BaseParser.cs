@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Text;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.SyntaxTree;
 
@@ -11,12 +9,13 @@ namespace PascalABCCompiler.Parsers
     public abstract class BaseParser: IParser
     {
 
-        public BaseParser(string name, string version, string copyright, 
+        public BaseParser(string name, string version, string copyright, string[] systemUnitNames, 
             bool caseSensitive, string[] filesExtensions)
         {
             this.name = name;
             this.version = version;
             this.copyright = copyright;
+            this.SystemUnitNames = systemUnitNames;
             this.caseSensitive = caseSensitive;
             this.filesExtensions = filesExtensions;
         }
@@ -90,6 +89,8 @@ namespace PascalABCCompiler.Parsers
         {
             get { return copyright; }
         }
+
+        public string[] SystemUnitNames { get; }
 
         public SourceFilesProviderDelegate sourceFilesProvider = null;
         public virtual SourceFilesProviderDelegate SourceFilesProvider

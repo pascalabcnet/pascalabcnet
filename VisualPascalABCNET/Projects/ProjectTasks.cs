@@ -50,7 +50,8 @@ namespace VisualPascalABC
 				else
 				{
 					string[] assemblies = ReferenceForm.Instance.GetSelectedFileAssemblies();
-					List<string> assm_lst = new List<string>();
+                    string[] native_dlls = ReferenceForm.Instance.GetNativeDlls();
+                    List<string> assm_lst = new List<string>();
                     foreach (string dll in assemblies)
                     {
                         if (string.Compare(dll, Path.Combine(ProjectFactory.Instance.ProjectDirectory, Path.GetFileName(dll)), true) != 0)
@@ -83,8 +84,22 @@ namespace VisualPascalABC
 
                         }
                     }
-					//ProjectFactory.Instance.AddReferences(assm_lst.ToArray());
-				}
+
+                    //ProjectFactory.Instance.AddReferences(assm_lst.ToArray());
+                    foreach (string ndll in native_dlls)
+                    {
+                        try
+                        {
+                            var destndllname = Path.Combine(ProjectFactory.Instance.ProjectDirectory, Path.GetFileName(ndll));
+                            File.Copy(ndll, destndllname, true);
+                        }
+                        catch
+                        {
+                            
+                        }
+                    }
+
+                }
 			}
 		}
 		

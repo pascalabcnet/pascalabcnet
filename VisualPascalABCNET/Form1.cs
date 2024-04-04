@@ -234,6 +234,7 @@ namespace VisualPascalABC
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            
             InitializeComponent();
+            tsAutoInsertCode.Visible = false;
 
             VisualPABCSingleton.MainForm = this;
             WorkbenchStorage.MainProgramThread = System.Threading.Thread.CurrentThread;
@@ -584,8 +585,10 @@ namespace VisualPascalABC
         {
 
             if(_mainFormWindowStateMaximized)
-                this.WindowState = FormWindowState.Maximized;
-            //PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = "Russi         
+                this.WindowState = FormWindowState.Maximized;        
+
+            // загрузка всех парсеров и других составляющих языков  EVA
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
 
             ChangedSelectedTab();
             VisualEnvironmentCompiler.ChangeVisualEnvironmentState += new ChangeVisualEnvironmentStateDelegate(VisualEnvironmentCompiler_ChangeVisualEnvironmentState);
@@ -611,7 +614,7 @@ namespace VisualPascalABC
                 case VisualEnvironmentCompilerAction.OpenFile:
                     return WorkbenchServiceFactory.FileService.OpenFile((string)obj, null);
                 case VisualEnvironmentCompilerAction.GetDirectory:
-                    string s=VisualEnvironmentCompiler.Compiler.CompilerOptions.StandartDirectories[(string)obj] as string;
+                    string s=VisualEnvironmentCompiler.Compiler.CompilerOptions.StandardDirectories[(string)obj] as string;
                     if (s != null) 
                         return s;
                     return WorkbenchStorage.StandartDirectories[(string)obj] as string;
@@ -812,7 +815,15 @@ namespace VisualPascalABC
 
         private void miNew_Click(object sender, EventArgs e)
         {
-            WorkbenchServiceFactory.FileService.OpenFile(null, null);         
+            // SSM 26/04/22 - новый файл создается в папке текущего открытого файла
+            var CurrentFileNameDirectory = Path.GetDirectoryName(CurrentSourceFileName);
+            if (CurrentFileNameDirectory != "")
+            {
+                WorkbenchStorage.WorkingDirectory = CurrentFileNameDirectory;
+                Environment.CurrentDirectory = CurrentFileNameDirectory;
+            }
+            
+            WorkbenchServiceFactory.FileService.OpenFile(null, null);
         }
 
         private void miSaveAs_Click(object sender, EventArgs e)
@@ -1629,7 +1640,6 @@ namespace VisualPascalABC
                 var aw = ABCHealthForm.Width;
                 var ah = ABCHealthForm.Height;
                 var c = new PascalABCCompiler.Compiler();
-                c.Reload();
                 var errors = new List<PascalABCCompiler.Errors.Error>();
                 var warnings = new List<PascalABCCompiler.Errors. CompilerWarning>();
 

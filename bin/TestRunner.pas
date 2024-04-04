@@ -6,6 +6,7 @@
 {$reference CompilerTools.dll}
 {$reference Localization.dll}
 {$reference System.Windows.Forms.dll}
+{$reference ParserTools.dll}
 
 uses PascalABCCompiler, System.IO, System.Diagnostics;
 
@@ -108,6 +109,7 @@ begin
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir + PathSeparator + 'exe';
+    Directory.CreateDirectory(co.OutputDirectory);
     co.UseDllForSystemUnits := withdll;
     co.RunWithEnvironment := false;
     co.IgnoreRtlErrors := false;
@@ -122,6 +124,24 @@ begin
         raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
+    end;
+    if content.StartsWith('//!') then
+    begin
+      var warning := content.Substring(3, content.IndexOf(System.Environment.NewLine)-3).Trim;
+      if comp.Warnings.Count = 0 then
+      begin
+        if nogui then
+          raise new Exception('Missing warning in '+files[i]);
+        System.Windows.Forms.MessageBox.Show('Missing warning in '+files[i]);
+        Halt();
+      end;
+      if comp.Warnings[0].Message <> warning then
+      begin
+        if nogui then
+          raise new Exception('Wrong warning for '+files[i]+': '+comp.Warnings[0].Message);
+        System.Windows.Forms.MessageBox.Show('Wrong warning for '+files[i]+': '+comp.Warnings[0].Message);
+        Halt();
+      end;
     end;
     if i mod 50 = 0 then
     begin
@@ -336,6 +356,7 @@ end;
 
 procedure ClearDirByPattern(dir, pattern: string);
 begin
+  if not Directory.Exists(dir) then exit;
   var files := Directory.GetFiles(dir, pattern);
   for var i := 0 to files.Length - 1 do
   begin
@@ -383,6 +404,8 @@ end;
 begin
   //DeletePABCSystemPCU;
   try
+    PascalABCCompiler.Parsers.Controller.Instance.LoadStandardParsers();
+    
     TestSuiteDir := GetTestSuiteDir;
     System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
     if (ParamCount = 2) and (ParamStr(2) = '1') then

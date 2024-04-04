@@ -1,0 +1,18 @@
+
+
+
+# general ignore
+*.exe
+*.pdb
+*.xml
+/exe/*.dll
+/formatter_tests/output/**/*.pas
+
+
+
+/exe/input.txt
+/exe/out.txt
+/exe/test.txt
+/exe/*.dat
+
+

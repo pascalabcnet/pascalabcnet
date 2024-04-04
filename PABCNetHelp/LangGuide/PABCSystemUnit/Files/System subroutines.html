@@ -30,7 +30,9 @@
 <param name="Keyword" value="RenameFile">
 <param name="Keyword" value="RmDir">
 <param name="Keyword" value="SetCurrentDir">
-<param name="Keyword" value="Sleep"></object>
+<param name="Keyword" value="Sleep">
+<param name="Keyword" value="TypeName">
+<param name="Keyword" value="TypeToTypeName"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Cистемные подпрограммы</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> Assert(cond: boolean);</code>
@@ -109,5 +111,9 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущий каталог. Возвращает True, если каталог успешно удален</td></tr>
 <tr><td><code><b>procedure</b> Sleep(ms: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд</td></tr>
+<tr><td><code><b>function</b> TypeName(o: Object): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает имя типа объекта</td></tr>
+<tr><td><code><b>function</b> TypeToTypeName(t: System.Type): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Для типа System.Type возвращает имя типа объекта</td></tr>
 </table>
 </body></HTML>

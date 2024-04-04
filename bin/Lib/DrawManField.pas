@@ -154,7 +154,9 @@ var
   TaskIsCalled: boolean;
 
   t: System.Threading.Thread;
- 
+  
+  ScreenScale: real := 1;
+
 //------------ Вспомогательные -------------
 procedure SetLabelStepText(s: string);
 begin
@@ -505,6 +507,7 @@ end;
 function TDMField.IsSolution: boolean;
 begin
   DMColl.Normalize;
+  DMColl.Normalize;
   DMMakerColl.Normalize;
   
 {  for i:=0 to DMColl.Count-1 do
@@ -527,8 +530,8 @@ procedure LoadIni(var settings: IniSettings);
 var Ini: TIniFile;
 begin
   Ini := new TIniFile(IniFileName);
-  settings.Width := Ini.ReadInteger('DrawmanWindow','Width',679);
-  settings.Height := Ini.ReadInteger('DrawmanWindow','Height',490);
+  settings.Width := Ini.ReadInteger('DrawmanWindow','Width',Round(679*ScreenScale));
+  settings.Height := Ini.ReadInteger('DrawmanWindow','Height',Round(490*ScreenScale));
   settings.Left := Ini.ReadInteger('DrawmanWindow','Left',(Screen.PrimaryScreen.Bounds.Width-settings.Width) div 2);
   settings.Top := Ini.ReadInteger('DrawmanWindow','Top',(Screen.PrimaryScreen.Bounds.Height-settings.Height) div 2);
 
@@ -642,12 +645,15 @@ begin
 end;
 
 procedure CorrectWHLT;
-var mw,mh: integer;
 begin
+  if DMField = nil then
+    exit;
+  if GraphABCControl = nil then
+    exit;
   if (DMField.DimX=0) or (DMField.DimY=0) then
     exit;
-  mw := (GraphABCControl.Width - Zazx1 - ZazX2 - 30) div DMField.DimX;
-  mh := (GraphABCControl.Height - ZazY1 - ZazY2 - 20) div DMField.DimY;
+  var mw := (GraphABCControl.Width - Zazx1 - ZazX2 - 30) div DMField.DimX;
+  var mh := (GraphABCControl.Height - ZazY1 - ZazY2 - 20) div DMField.DimY;
   DMField.CellSize := min(mw,mh);
 {  if DMField.CellSize mod 2 = 1 then 
     DMField.CellSize := DMField.CellSize - 1;}
@@ -979,9 +985,15 @@ begin
   LabelGoodEndColor:= RGB(0,156,0);
   
   TaskIsCalled := False;
+  
+  ScreenScale := GraphABC.ScreenScale;
 
   Brush.Color := MainForm.BackColor;
   FillRectangle(0,0,1280,1024);
+  
+  LoadIni(settings);
+  MainForm.Invoke(_SetBoundsInternal);
+  
   MainForm.Invoke(InitControls);
   
   OnClose := MainWindowClose; 
@@ -989,11 +1001,10 @@ begin
 //  CenterWindow;
 
   DMField := new TDMField(0,0,50);
+  DMField.SetSpeed(settings.Speed);
 //  DMField.DrawCentered;
   t := System.Threading.Thread.CurrentThread;  
-  LoadIni(settings);
-  DMField.SetSpeed(settings.Speed);
-  MainForm.Invoke(_SetBoundsInternal);
+  
   //MainForm.Bounds := new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height);
   SetSmoothingOff;
   //GraphABCControl.BackColor := MainForm.BackColor;

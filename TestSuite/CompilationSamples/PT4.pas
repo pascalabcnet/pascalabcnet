@@ -3,7 +3,7 @@ unit PT4;
 
 //------------------------------------------------------------------------------
 // Модуль для подключения задачника Programming Taskbook
-// Версия 4.18
+// Версия 4.23
 // Copyright © 2006-2008 DarkStar, SSM
 // Copyright © 2010 М.Э.Абрамян, дополнения к версии 1.3
 // Copyright © 2014-2015 М.Э.Абрамян, дополнения к версии 4.13
@@ -12,11 +12,13 @@ unit PT4;
 // Copyright © 2017 М.Э.Абрамян, дополнения к версии 4.17
 // Copyright © 2018 М.Э.Абрамян, дополнения к версии 4.18
 // Copyright © 2019 М.Э.Абрамян, дополнения к версии 4.19
-// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2019
+// Copyright © 2021 М.Э.Абрамян, дополнения к версии 4.21
+// Copyright © 2023 М.Э.Абрамян, дополнения к версии 4.23
+// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2023
 //------------------------------------------------------------------------------
 
 {$apptype windows}
-{$platformtarget x86}
+//{$platformtarget x86}
 
 interface
 
@@ -47,13 +49,21 @@ type
   
   Node = class(IDisposable)
   private
-    isAllocMem: boolean;
+(*    isAllocMem: boolean;
     isDisposed: boolean;
     x: InternalNode;
     addr: IntPtr;
-    constructor Create(x: InternalNode; a: IntPtr);
+    constructor Create(x: InternalNode; a: IntPtr);*)
+    a: integer;
+    disposed: boolean;
     procedure Init(Data: integer; Next,Prev,Left,Right,Parent: Node);
-    procedure internalDispose(disposing: boolean);
+    constructor Create(addr, none: integer);
+    static function NodeToInt(n: Node): integer;
+    static function IntToNode(a:integer): Node;
+//    procedure internalDispose(disposing: boolean);
+    function getNodeProp(n: integer; name: string): Node;
+    procedure setNodeProp(n: integer; name: string; value: Node);
+
     procedure setNext(value: Node);
     function getNext: Node;
     procedure setPrev(value: Node);
@@ -81,6 +91,8 @@ type
     property Parent: Node read getParent write SetParent;
     property Data: integer read getData write SetData;
   end;
+
+var TaskName: string;
 
 /// Вывести формулировку задания
 procedure Task(name: string);
@@ -802,11 +814,12 @@ procedure PrintMatr<T>(a: List<List<T>>);
 
 // == Конец дополнений к версии 4.14 ==
 
+function GetSolutionInfo: string;
 
 implementation
 
 // == Версия 4.18. Дополнения ==
-uses ABCDatabases;
+uses ABCDatabases, System.Text;
 // == Версия 4.18. Конец дополнений ==
 
 const
@@ -828,25 +841,140 @@ procedure PutBoolean(val: boolean); forward;
 procedure PutNode(val: Node); forward;
 procedure PutPNode(val: PNode); forward;
 
-procedure StartPT(options: integer);    external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'startpt';
-procedure FreePT;                                       external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'freept';
-function CheckPT(var res: integer):string;external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'checkptf';
-procedure RaisePT(s1,s2: string);       external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'raisept';
-procedure Task(name: string);           external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'task';
-procedure GetR(var param: real);                external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getr';
-procedure PutR(param: real);                            external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putr';
-procedure GetN(var param: integer);     external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getn';
-procedure PutN(param: integer);         external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putn';
-procedure GetC(var param: char);                external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getc';
-procedure PutC(param: char);                    external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putc';
-procedure _GetS(param: System.Text.StringBuilder);external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'gets';
-procedure PutS(param: string);          external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'puts';
-procedure _GetB(var param: integer);    external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getb';
-procedure _PutB(param: integer);                external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putb';
-procedure _GetP(var param: IntPtr);     external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getp';
-procedure _PutP(param: IntPtr); external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putp';
-procedure DisposeP(sNode: IntPtr);      external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'disposep';
-function FinishPT(): integer;      external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'finishpt';  // == 4.13 ==
+procedure StartPT(options: integer);    external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'startpt';
+procedure FreePT;                                       external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'freept';
+procedure _CheckPT(InfoS: array of byte; var InfoT: integer);external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'checkpt'; //2021.05
+procedure _RaisePT(s1,s2: array of byte);       external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'raisept';
+procedure _Task(name: string);           external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'task';
+procedure GetR(var param: real);                external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'getr';
+procedure PutR(param: real);                            external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'putr';
+procedure GetN(var param: integer);     external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'getn';
+procedure PutN(param: integer);         external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'putn';
+procedure GetC(var param: char);                external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'getc';
+procedure PutC(param: char);                    external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'putc';
+procedure _GetS(param: array of byte);external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'gets';
+procedure _PutS(param: array of byte);          external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'puts';
+procedure _GetB(var param: integer);    external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'getb';
+procedure _PutB(param: integer);                external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'putb';
+procedure _GetP(var param: IntPtr);     external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'getp';
+procedure _PutP(param: IntPtr); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'putp';
+procedure _PutNode(param: integer); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'nodeputp';
+procedure DisposeP(sNode: IntPtr);      external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'disposep';
+procedure _NodeNew(var n: integer; data, next, prev, left, right, parent: integer); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'nodenew';
+procedure _NodeGetP(var n: integer); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'nodegetp';
+procedure _NodePutP(n: integer); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'nodeputp';
+procedure _NodeGetF(n, fn: integer; var f, err: integer); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'nodegetf';
+procedure _NodeSetF(n, fn, f: integer; var err: integer); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'nodesetf';
+procedure _NodeDispose(n: integer; var err: integer); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'nodedispose';
+function FinishPT(): integer;      external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'finishpt';  // == 4.13 ==
+procedure _GetSolutionInfo(info: array of byte);external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'getsolutioninfo';
+
+//2023.03>
+
+function ToBytes(s: string): array of byte;
+begin
+  var utf8 := Encoding.Unicode;
+  var ansi := Encoding.GetEncoding(1251);
+  result := Encoding.Convert(utf8, ansi, utf8.GetBytes(s));
+end;
+
+function FromBytes(a: array of byte): string;
+begin
+  var utf8 := Encoding.Unicode;
+  var ansi := Encoding.GetEncoding(1251);
+  var res := Encoding.Convert(ansi, utf8, a);
+  result := utf8.GetString(res);
+  result := result.substring(0, result.IndexOf(#0));
+end;
+
+//2023.03<
+
+
+//2021.05
+procedure SetLibLoader(p: IntPtr); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'setlibloader';  // == 4.21 ==
+var activate, inittaskgroup: System.Reflection.MethodInfo;
+
+function GetTopic(LibName: string): string;
+begin
+  var s := System.IO.Path.GetFileNameWithoutExtension(LibName).Substring(4);
+  var p := s.LastIndexOf('_');
+  if p > -1 then
+    s := s.Substring(0, p);
+  result := s;
+end;
+
+function LoadNETLib(LibName: string; Step: integer): integer;
+begin
+  if Step = 1 then
+  begin
+    var lib: System.Reflection.Assembly := nil;
+    var libClass: System.Type := nil;      
+    activate := nil;
+    inittaskgroup := nil;
+    try
+      lib := System.Reflection.Assembly.LoadFrom(LibName+'.dll');
+      LibName := GetTopic(LibName);
+      libClass := lib.GetType('xPT4'+LibName + '.xPT4' + LibName);
+      if libClass = nil then
+      begin  
+        LibName := LibName.ToUpper();
+        foreach var t in lib.GetTypes do
+        begin
+          if t.FullName.ToUpper = 'XPT4'+LibName + '.XPT4' + LibName then
+          begin  
+            libClass := t;
+            break;
+          end;
+        end;
+      end;                      
+      if libClass = nil then
+      begin  
+        result := 1;
+        exit;
+      end;
+      inittaskgroup := libClass.GetMethod('inittaskgroup');
+      activate := libClass.GetMethod('activate');
+      if (inittaskgroup <> nil) and (activate = nil) then
+        result := 2 // dll and inittaskgroup found, activate not found
+      else if (inittaskgroup = nil) or (activate = nil) then
+        result := 3 // dll found, activate or inittaskgroup not found
+      else
+        result := 0; // 1st step OK
+    except
+      result := 4;
+    end;
+  end
+  else  
+  begin  
+    if (activate <> nil) and (inittaskgroup <> nil) then
+      try
+        activate.Invoke(nil, Arr(LibName as Object));
+        inittaskgroup.Invoke(nil, nil);
+        result := 0; // 2nd step OK
+      except  
+        result := 2; // error while run methods
+      end
+    else
+      result := 1;  // empty methods
+  end;  
+end;    
+
+var PLoadNETLib := LoadNETLib;
+
+procedure Task(name: string);
+begin
+  SetLibLoader(Marshal.GetFunctionPointerForDelegate(PLoadNETLib));
+  _Task(name);
+  TaskName := name;
+end;
+
+function CheckPT(var res: integer): string;
+begin
+  var InfoS := new byte[200];
+  _CheckPT(InfoS, res);
+  result := FromBytes(InfoS);
+end;
+
 
 procedure Dispose(p: pointer);
 begin
@@ -857,18 +985,7 @@ end;
 // -----------------------------------------------------
 //                         Node
 // -----------------------------------------------------
-constructor Node.Create(x: InternalNode; a: IntPtr);
-begin
-  Self.x.Data := x.Data;
-  Self.x.Next := x.Next;
-  Self.x.Prev := x.Prev;
-  Self.x.Left := x.Left;
-  Self.x.Right := x.Right;
-  Self.x.Parent := x.Parent;
-  addr := a;
-  isAllocMem := false;
-  isDisposed := false;
-end;
+var nodes := new Dictionary<integer, Node>;
 
 constructor Node.Create;
 begin
@@ -902,234 +1019,107 @@ end;
 
 procedure Node.Dispose;
 begin
-  GC.SuppressFinalize(self);
-  internalDispose(true);
+  if disposed then
+    exit;
+  var err := 0;
+  _NodeDispose(a, err);
+  disposed := true;
+end;
+
+constructor Node.Create(addr, none: integer);
+begin
+  a := addr;
+  disposed := false;
+  nodes[a] := Self;
+end;  
+  
+class function Node.NodeToInt(n: Node): integer;
+begin
+  if n = nil then
+    result := 0
+  else
+    result := n.a;
+end;
+
+class function Node.IntToNode(a: integer): Node;
+begin
+  if a = 0 then
+    result := nil
+  else if nodes.ContainsKey(a) then
+    result := nodes[a]
+  else
+    result := new Node(a, 0);
 end;
 
 procedure Node.Init(Data: integer; Next,Prev,Left,Right,Parent: Node);
 begin
-  x.Data := Data;
-
-  if Next = nil then
-    x.Next := IntPtr.Zero
-  else x.Next := Next.addr;
-
-  if Prev = nil then        
-    x.Prev := IntPtr.Zero
-  else x.Prev := Prev.addr;
-
-  if Left = nil then        
-    x.Left := IntPtr.Zero
-  else x.Left := Left.addr;
-
-  if Right = nil then        
-    x.Right := IntPtr.Zero
-  else x.Right := Right.addr;
-
-  if Parent = nil then        
-    x.Parent := IntPtr.Zero
-  else x.Parent := Parent.addr;
-
-  addr := Marshal.AllocHGlobal(sizeof(InternalNode));
-  Marshal.StructureToPtr(x as object, addr, false);
-  isAllocMem := true;
-  isDisposed := false;
-  loadNodes.Add(self); 
+  var n: integer;
+  _NodeNew(n, data, NodeToInt(next), NodeToInt(prev),
+     NodeToInt(left), NodeToInt(right), NodeToInt(parent));
+  a := n;
+  disposed := false;
+  nodes[a] := Self;
 end;
 
-procedure Node.setNext(value:Node);
+
+function Node.getNodeProp(n: integer; name: string): Node;
 begin
-  if isDisposed then
-    raise new ObjectDisposedException(ToString, eMessage);
-  if value = nil then 
-  begin
-    x.Next := IntPtr.Zero; 
-    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
-  end else 
-  begin
-    x.Next := value.addr;
-    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
-  end;
+  if disposed then
+    raise new ObjectDisposedException('cannot access a disposed Node');
+  var val, err: integer;;
+  _NodeGetF(a, n, val, err);
+  if err <> 0 then
+    raise new ArgumentException('cannot get the ' + name + ' property');
+  result := IntToNode(val);
+end;        
+
+procedure Node.setNodeProp(n: integer; name: string; value: Node);
+begin
+  if disposed then
+    raise new ObjectDisposedException('cannot access a disposed Node');
+  var err: integer;;
+  _NodeSetF(a, n, NodeToInt(value), err);
+  if err <> 0 then
+    raise new ArgumentException('cannot set the ' + name + ' property');
 end;
 
-function Node.getNext:Node;
-var tmp: IntPtr;
-    tmpNode: Node;
-begin
-  result := nil;
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if x.Next <> IntPtr.Zero then 
-  begin
-     tmp := x.Next;
-     for var i:=0 to loadNodes.Count-1 do
-       if tmp.Equals(Node(loadNodes[i]).addr) then 
-         result:=Node(loadNodes[i]);
-     if result=nil then 
-     begin
-       tmpNode := new Node(InternalNode(Marshal.PtrToStructure(tmp,typeof(InternalNode))), tmp); 
-       loadNodes.Add(tmpNode);
-       result := tmpNode;                   
-     end;  
-  end;
-end;
+procedure Node.setNext(value: Node) := SetNodeProp(1, 'Next', value);
+function Node.getNext := GetNodeProp(1, 'Next');
 
-procedure Node.setPrev(value: Node);
-begin
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if value = nil then 
-  begin
-    x.Prev := IntPtr.Zero; 
-    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
-  end else 
-  begin
-    x.Prev := value.addr;
-    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
-  end;
-end;
+procedure Node.setPrev(value: Node) := SetNodeProp(2, 'Prev', value);
+function Node.getPrev := GetNodeProp(2, 'Prev');
 
-function Node.getPrev: Node;
-var tmp: IntPtr;
-    tmpNode:Node;
-begin
-  result := nil;
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if x.Prev <> IntPtr.Zero then begin
-     tmp := x.Prev;
-     for var i:=0 to loadNodes.Count-1 do
-       if tmp.Equals(Node(loadNodes[i]).addr) then 
-         result:=Node(loadNodes[i]);
-     if result=nil then begin           
-       tmpNode := new Node(InternalNode(Marshal.PtrToStructure(tmp,typeof(InternalNode))), tmp);
-       loadNodes.Add(tmpNode);
-       result := tmpNode;                   
-     end;  
-  end;
-end;
+procedure Node.setLeft(value: Node) := SetNodeProp(3, 'Left', value);
+function Node.getLeft := GetNodeProp(3, 'Left');
 
-procedure Node.setLeft(value: Node);
-begin
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if value = nil then 
-  begin
-    x.Left := IntPtr.Zero; 
-    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
-  end else 
-  begin
-    x.Left := value.addr;
-    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
-  end;
-end;
+procedure Node.setRight(value: Node) := SetNodeProp(4, 'Right', value);
+function Node.getRight := GetNodeProp(4, 'Right');
 
-function Node.getLeft: Node;
-var tmp: IntPtr;
-    tmpNode:Node;
-begin
-  result := nil;
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if x.Left <> IntPtr.Zero then begin
-     tmp := x.Left;
-     for var i:=0 to loadNodes.Count-1 do
-       if tmp.Equals(Node(loadNodes[i]).addr) then 
-         result:=Node(loadNodes[i]);
-     if result=nil then begin           
-       tmpNode := new Node(InternalNode(Marshal.PtrToStructure(tmp,typeof(InternalNode))), tmp);
-       loadNodes.Add(tmpNode);
-       result := tmpNode;                   
-     end;  
-  end;
-end;
-
-procedure Node.setRight(value: Node);
-begin
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if value = nil then 
-  begin
-    x.Right := IntPtr.Zero; 
-    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
-  end else 
-  begin
-    x.Right := value.addr;
-    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
-  end;
-end;
-
-function Node.getRight: Node;
-var tmp: IntPtr;
-    tmpNode:Node;
-begin
-  result := nil;
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if x.Right <> IntPtr.Zero then begin
-     tmp := x.Right;
-     for var i:=0 to loadNodes.Count-1 do
-       if tmp.Equals(Node(loadNodes[i]).addr) then 
-         result:=Node(loadNodes[i]);
-     if result=nil then begin           
-       tmpNode := new Node(InternalNode(Marshal.PtrToStructure(tmp,typeof(InternalNode))), tmp);
-       loadNodes.Add(tmpNode);
-       result := tmpNode;                   
-     end;  
-  end;
-end;
-
-procedure Node.setParent(value: Node);
-begin
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if value = nil then 
-  begin
-    x.Parent := IntPtr.Zero; 
-    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
-  end else 
-  begin
-    x.Parent := value.addr;
-    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
-  end;
-end;
-
-function Node.getParent: Node;
-var tmp: IntPtr;
-    tmpNode:Node;
-begin
-  result := nil;
-  if isDisposed then
-     raise new ObjectDisposedException(ToString, eMessage);
-  if x.Parent <> IntPtr.Zero then begin
-     tmp := x.Parent;
-     for var i:=0 to loadNodes.Count-1 do
-       if tmp.Equals(Node(loadNodes[i]).addr) then 
-         result:=Node(loadNodes[i]);
-     if result=nil then begin           
-       tmpNode := new Node(InternalNode(Marshal.PtrToStructure(tmp,typeof(InternalNode))), tmp);
-       loadNodes.Add(tmpNode);
-       result := tmpNode;                   
-     end;  
-  end;
-end;
+procedure Node.setParent(value: Node) := SetNodeProp(5, 'Parent', value);
+function Node.getParent := GetNodeProp(5, 'Parent');
 
 procedure Node.setData(value: integer);
 begin
-  if isDisposed then
-    raise new ObjectDisposedException(ToString, eMessage);
-  self.x.Data := value;
-  Marshal.StructureToPtr(x as object, addr, isAllocMem);
+  if disposed then
+    raise new ObjectDisposedException('cannot access a disposed Node');
+  var err: integer;
+  _NodeSetF(a, 0, value, err);
+  if err <> 0 then
+    raise new ArgumentException('cannot set the Data property');
 end;
 
 function Node.getData: integer;
 begin
-  if isDisposed then
-    raise new ObjectDisposedException(ToString, eMessage);
-  result := self.x.Data;
+  if disposed then
+    raise new ObjectDisposedException('cannot access a disposed Node');
+  var val, err: integer;  
+  _NodeGetF(a, 0, val, err);
+  if err <> 0 then
+    raise new ArgumentException('cannot get the Data property');
+  result := val;
 end;
 
-procedure Node.internalDispose(disposing: boolean);
+(*procedure Node.internalDispose(disposing: boolean);
 begin
   if not isDisposed then
   //lock(self)
@@ -1141,6 +1131,144 @@ begin
     isDisposed := true;
   end;  
 end;
+*)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 procedure internalWrite(args: array of object); forward;
 
@@ -1194,11 +1322,15 @@ begin
 end;
 
 function GetString: string;
-var val: System.Text.StringBuilder;
 begin
-  val := new System.Text.StringBuilder(200);//TODO почему 200?
+  var val := new byte[200];
   _gets(val);
-  result := val.ToString;
+  result := FromBytes(val);
+end;
+
+procedure PutS(param: string);
+begin
+  _puts(ToBytes(param));
 end;
 
 function GetBool: boolean;
@@ -1214,41 +1346,41 @@ begin
 end;
 
 function GetNode: Node;
-  procedure GetPtr(var sNode:InternalNode; var pNode: IntPtr);
-  var p:IntPtr;
-  begin
-    p := IntPtr.Zero;
-    _GetP(p);
-    pNode := p;
-    if p <> IntPtr.Zero then 
-      sNode := InternalNode(Marshal.PtrToStructure(p, typeof(InternalNode)));
-  end;
-var 
-  p: IntPtr;
-  sNode: InternalNode;
 begin
-  //raise new NotSupportedException('Работа с динамическими структурами задачника PT4 не поддерживается в этой версии компилятора. Исправление ошибки планируется в следуйщей версии');
-  //result := new PT4Node(sNode, p);// fixme здесь ошибка генерации кода!
-  p := IntPtr.Zero;
-  sNode.Data := 0;
-  sNode.Next := IntPtr.Zero;
-  sNode.Prev := IntPtr.Zero;
-  sNode.Left := IntPtr.Zero;
-  sNode.Right := IntPtr.Zero;
-  sNode.Parent := IntPtr.Zero;
-  GetPtr(sNode, p);  
-  if p = IntPtr.Zero then
-    result := nil
-  else begin  
-    for var i:=0 to loadNodes.Count-1 do 
-      if sNode=Node(loadNodes[i]).x then
-         result := Node(loadNodes[i]);
-    if result = nil then begin
-      result := new Node(sNode, p);
-      loadNodes.Add(result);
-    end;
-  end;
+  var n: integer;
+  _NodeGetP(n);
+  result := Node.IntToNode(n);
 end;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function GetPNode: PNode;
 var ip: IntPtr;
@@ -1853,10 +1985,11 @@ end;
 
 procedure Put(param: Node);
 begin
-  PutP(param);  
+  if param = nil then
+    _PutNode(0)
+  else
+    _PutNode(param.a);
 end;
-
-
 
 // == Версия 4.17. Конец дополнений ==
 
@@ -1892,16 +2025,16 @@ begin
 end;
 
 procedure PutNode(val: Node);
-var p: IntPtr;
 begin
-  p := IntPtr.Zero;
-  if val <> nil then begin
-    if val.isDisposed then
-      raise new ObjectDisposedException(val.ToString, eMessage);
-    p := val.addr; 
-  end;   
-  _PutP(p);
+  if val = nil then
+    _PutNode(0)
+  else
+    _PutNode(val.a);
 end;
+
+
+
+
 
 procedure PutPNode(val: PNode);
 var pp: pointer;
@@ -1913,6 +2046,11 @@ end;
 // -----------------------------------------------------
 //                  Генерация исключений
 // -----------------------------------------------------
+procedure RaisePT(s1, s2: string);
+begin
+  _RaisePT(ToBytes(s1), ToBytes(s2));
+end;
+
 procedure RaisePTAndCheckPT(e: Exception);
 begin
   RaisePT(e.GetType.ToString, e.Message);
@@ -2145,8 +2283,13 @@ begin
   end;
 end;
 
+var finalized := False;
+
 procedure __FinalizeModule__;
 begin
+  if finalized then
+    exit;
+  finalized := True;
   InfoS := CheckPT(InfoT);
   if InfoT=0 then 
     Console.WriteLine(InfoS);
@@ -2211,7 +2354,21 @@ var
 var 
   _Width: integer := 0;
 
-procedure ShowStr(s: string); external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'show';
+
+procedure _show(s: array of byte); external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'show';
+
+
+procedure ShowStr(s: string);
+begin
+  var utf8 := new UTF8Encoding();
+  var byteCount := utf8.GetByteCount(s);
+  var bytes := new Byte[byteCount];
+  var bytesEncodedCount := utf8.GetBytes(s, 0, s.Length, bytes, 0);
+  _show(bytes);
+
+
+//  _show(ToBytes(s));
+end;
 
 procedure Show(s: string);
 begin
@@ -2540,7 +2697,7 @@ end;
 
 // == Конец дополнений к версии 4.18 ==
 
-procedure HideTask; external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'hidetask';
+procedure HideTask; external '%PABCSYSTEM%\PT4\xPT4PABC2.dll' name 'hidetask';
 
 procedure SetPrecision(N: Integer);
 begin
@@ -3096,8 +3253,16 @@ end;
 
 // == Конец дополнений к версии 4.14 ==
 
+function GetSolutionInfo: string;
+begin
+  var val := new byte[500];
+  _getsolutioninfo(val);
+  result := FromBytes(val);
+end;
+
 initialization
   __InitModule;
 finalization
   __FinalizeModule__;
+  GetSolutionInfo;
 end.

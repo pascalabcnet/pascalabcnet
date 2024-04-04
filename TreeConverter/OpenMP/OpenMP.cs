@@ -943,10 +943,10 @@ namespace PascalABCCompiler.TreeConverter
                 VarFinderSyntaxVisitor VFvis = new VarFinderSyntaxVisitor(syntax_body, syntax_tree_visitor.context, true);
                 SyntaxTree.compiler_directive dir = syntax_tree_visitor.DirectivesToNodesLinks[for_node];
                 //if (DirInfosTable[dir].ErrorName == "WARNING_IN_CLAUSE_PARAMETERS_REPEATED_VARS")
-                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                 //else if (DirInfosTable[dir].ErrorName == "ERROR_IN_CLAUSE_PARAMETERS")
                 //{
-                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), for_node.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                 //}
                 //else
                
@@ -1057,10 +1057,10 @@ namespace PascalABCCompiler.TreeConverter
                     SyntaxTree.compiler_directive dir = syntax_tree_visitor.DirectivesToNodesLinks[syntax_stmts];
                     
                     //if (DirInfosTable[dir].ErrorName == "WARNING_IN_CLAUSE_PARAMETERS_REPEATED_VARS")
-                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                     //else if (DirInfosTable[dir].ErrorName == "ERROR_IN_CLAUSE_PARAMETERS")
                     //{
-                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.FileName, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
+                    //    syntax_tree_visitor.AddWarning(new Errors.CommonWarning(StringResources.Get(DirInfosTable[dir].ErrorName), syntax_stmts.source_context.file_name, DirInfosTable[dir].SC.begin_position.line_num, DirInfosTable[dir].SC.begin_position.column_num));
                     //}
                     //else
                     if (DirInfosTable[dir].ErrorName != null)
@@ -1205,6 +1205,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             return null;
         }
+
         private static SyntaxTree.type_definition get_diapason(type_node sem_type)
         {
             if (sem_type is compiled_type_node)
@@ -1223,6 +1224,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             return null;
         }
+
         /// <summary>
         /// Возвращает по семантическому типу соответсвующий ему синтаксический тип
         /// </summary>
@@ -1266,6 +1268,37 @@ namespace PascalABCCompiler.TreeConverter
                     return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string("System.IntPtr", sem_type.location), sem_type.location);
                 else if (sem_type is compiled_type_node ctn2 && ctn2.compiled_type == typeof(System.UIntPtr))
                     return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string("System.UIntPtr", sem_type.location), sem_type.location);
+                else if (sem_type is common_type_node && (sem_type as common_type_node).IsDelegate)
+                {
+                    var tn = sem_type as common_type_node;
+                    var invokeMeth = tn.find_first_in_type("Invoke");
+                    if (invokeMeth != null)
+                    {
+                        var fn = invokeMeth.sym_info as function_node;
+                        PascalABCCompiler.SyntaxTree.procedure_header header;
+                        if (fn.return_value_type != null)
+                        {
+                            header = new PascalABCCompiler.SyntaxTree.function_header(ConvertToSyntaxType(fn.return_value_type));
+                        }
+                        else
+                        {
+                            header = new PascalABCCompiler.SyntaxTree.procedure_header();
+                        }
+                        header.parameters = new PascalABCCompiler.SyntaxTree.formal_parameters();
+                        foreach (var param in fn.parameters)
+                        {
+                            var tparam = new PascalABCCompiler.SyntaxTree.typed_parameters();
+                            tparam.vars_type = ConvertToSyntaxType(param.type);
+                            tparam.idents = new PascalABCCompiler.SyntaxTree.ident_list();
+                            tparam.idents.Add(new PascalABCCompiler.SyntaxTree.ident(param.name));
+                            header.parameters.Add(tparam);
+
+                        }
+                        return header;
+                    }
+                    else
+                        return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName, sem_type.location), sem_type.location);
+                }
                 else
                     return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName, sem_type.location), sem_type.location);
             }

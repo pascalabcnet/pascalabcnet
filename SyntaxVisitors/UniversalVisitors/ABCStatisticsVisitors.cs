@@ -176,7 +176,9 @@ namespace SyntaxVisitors
         }
         public override void visit(procedure_call pc)
         {
-            if (pc.func_name is method_call mc && mc.dereferencing_value is ident id && (id.name.ToLower() == "read" || id.name.ToLower() == "readln"))
+            if (pc.func_name is method_call mc)
+                if (mc.dereferencing_value is ident id)
+                    if (id.name != null && (id.name.ToLower() == "read" || id.name.ToLower() == "readln"))
             {
                 syntax_tree_node n = pc;
                 do
@@ -189,7 +191,8 @@ namespace SyntaxVisitors
                 else
                     ReadProc += 1;
             }
-            if (pc.func_name is method_call mc1 && mc1.dereferencing_value is ident id1 && (id1.name.ToLower() == "write" || id1.name.ToLower() == "writeln")
+            if (pc.func_name is method_call mc1 && mc1.dereferencing_value is ident id1 && 
+                (id1.name != null && (id1.name.ToLower() == "write" || id1.name.ToLower() == "writeln"))
                 && mc1.parameters != null && mc1.parameters.expressions.Any(ex => ex is char_const cc && cc.cconst == ' '))
             {
                 WriteProcWithSpace += 1;
@@ -238,7 +241,9 @@ namespace SyntaxVisitors
                 NegativePercent += stat.OldStrings;
             }
             if (NegativePercent < 0)
+            {
                 NegativePercent = 0;
+            }
 
             Percent -= NegativePercent;
 
@@ -271,11 +276,11 @@ namespace SyntaxVisitors
             }
             if (stat.TuplesCount > 0)
             {
-                PositivePercent += Math.Min(stat.PrintCount, 4) * 5;
+                PositivePercent += Math.Min(stat.TuplesCount, 4) * 5;
             }
             if (stat.DynamicArrays > 0)
             {
-                PositivePercent += Math.Min(stat.PrintCount, 4) * 5;
+                PositivePercent += Math.Min(stat.DynamicArrays, 4) * 5;
             }
             if (stat.UnpackingAssign > 0)
             {

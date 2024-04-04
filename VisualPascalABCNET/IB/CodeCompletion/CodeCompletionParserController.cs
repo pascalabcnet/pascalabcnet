@@ -26,7 +26,10 @@ namespace VisualPascalABC
             try
             {
                 if (th != null)
+                {
                     th.Abort();
+                    th.Join(); // Это обязательно. По большому счету вообще Abort надо заменить на современное завершение потоков
+                }
             }
             catch
             {
@@ -169,7 +172,7 @@ namespace VisualPascalABC
                         open_files[FileName] = false;
                         if (dc.is_compiled)
                         {
-                            //CodeCompletion.CodeCompletionController.comp_modules.Remove(FileName);
+                            //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
                             if (tmp != null && tmp.visitor.entry_scope != null)
                             {
                                 tmp.visitor.entry_scope.Clear();

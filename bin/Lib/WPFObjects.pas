@@ -169,13 +169,13 @@ type
     ob: FrameworkElement;
     gr: Grid; // Grid связан только с текстом
     t: TextBlock;
+    ChildrenWPF := new List<ObjectWPF>;
+    procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True; Hidden: boolean := False);
+  protected  
     transfgroup: TransformGroup;
     rot: RotateTransform;
     sca: ScaleTransform;
     transl: TranslateTransform;
-
-    ChildrenWPF := new List<ObjectWPF>;
-    procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True; Hidden: boolean := False);
   public
     /// Направление движения по оси X. Используется методом Move
     auto property Dx: real;
@@ -338,8 +338,18 @@ type
   private
     procedure AnimMoveByP(a,b,sec: real);
     begin
-      var ax := new DoubleAnimation(a + transl.X, System.TimeSpan.FromSeconds(sec));
-      var ay := new DoubleAnimation(b + transl.Y, System.TimeSpan.FromSeconds(sec));
+      var (x,y) := (transl.X,transl.Y);
+      var ax := new DoubleAnimation(a + x, System.TimeSpan.FromSeconds(sec));
+      var ay := new DoubleAnimation(b + y, System.TimeSpan.FromSeconds(sec));
+      ax.FillBehavior := FillBehavior.Stop;
+      ay.FillBehavior := FillBehavior.Stop;
+      var transl1 := transl;
+      ax.Completed += (o,e) -> begin
+        transl1.X := x + a; // transl - ошибка с лямбдами!
+      end;  
+      ay.Completed += (o,e) -> begin
+        transl1.Y := y + b;
+      end;  
       transl.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
       transl.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
@@ -348,6 +358,15 @@ type
     begin
       var ax := new DoubleAnimation(x, System.TimeSpan.FromSeconds(sec));
       var ay := new DoubleAnimation(y, System.TimeSpan.FromSeconds(sec));
+      ax.FillBehavior := FillBehavior.Stop;
+      ay.FillBehavior := FillBehavior.Stop;
+      var transl1 := transl;
+      ax.Completed += (o,e) -> begin
+        transl1.X := x;
+      end;  
+      ay.Completed += (o,e) -> begin
+        transl1.Y := y;
+      end;  
       transl.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
       transl.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
@@ -361,6 +380,10 @@ type
     procedure AnimRotateP(a,sec: real);
     begin
       var an := new DoubleAnimation(a + rot.Angle, System.TimeSpan.FromSeconds(sec));
+      an.FillBehavior := FillBehavior.Stop;
+      an.Completed += (o,e) -> begin
+        rot.Angle := a + rot.Angle;
+      end;  
       rot.BeginAnimation(RotateTransform.AngleProperty, an, HandoffBehavior.Compose);
     end;
     procedure AnimScaleP(a,sec: real);
@@ -368,6 +391,11 @@ type
       var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
       sca.CenterX := Width / 2;
       sca.CenterY := Height / 2;
+      an.FillBehavior := FillBehavior.Stop;
+      an.Completed += (o,e) -> begin
+        sca.ScaleX := a;
+        sca.ScaleY := a;
+      end;  
       sca.BeginAnimation(ScaleTransform.ScaleXProperty, an, HandoffBehavior.Compose);
       sca.BeginAnimation(ScaleTransform.ScaleYProperty, an, HandoffBehavior.Compose);
     end;
@@ -1233,7 +1261,7 @@ type
 // -----------------------------------------------------
   /// Класс графических объектов "Рисунок"
   PictureWPF = class(ObjectWPF)
-  private
+  protected
     function CreateBitmapImage(fname: string) := new BitmapImage(new System.Uri(fname,System.UriKind.Relative)); 
     procedure Rest(x,y,w,h: real; b: BitmapImage);
     begin
@@ -1244,6 +1272,7 @@ type
 
       InitOb(x,y,w,h,im);
     end;
+  private
     procedure InitOb3(x,y,w,h: real; fname: string);
     begin
       var b := CreateBitmapImage(fname);
@@ -1758,6 +1787,15 @@ begin
   end;  
 end;
 
+procedure DrawWPFObjects(dc: DrawingContext);
+begin
+  var bmp := CreateRenderTargetBitmap;
+
+  var rr := Rect(0,0,bmp.Width,bmp.Height);
+  bmp.Render(host);
+  dc.DrawImage(bmp,rr);
+end;
+
 procedure __InitModule;
 begin
   AdditionalInit := procedure ->
@@ -1792,6 +1830,7 @@ begin
     var g := MainWindow.Content as DockPanel;
     (g.children[0] as Canvas).ClipToBounds := False; // SSM 04/08/20 - возвращаем в False иначе графику GraphWPF становится не видно
     g.children.Add(host); // Слой графики WPF - последний
+    AdditionalDrawOnDC += DrawWPFObjects;
   end;
   app.Dispatcher.Invoke(AdditionalInit);
 end;

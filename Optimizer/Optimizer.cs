@@ -1,8 +1,9 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
 using System.Text;
+using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 
 namespace PascalABCCompiler
@@ -18,6 +19,7 @@ namespace PascalABCCompiler
         private bool condition_block = false;
         private bool has_returns = false;
         private bool has_goto = false;
+        private Dictionary<common_method_node, common_method_node> processed_methods = new Dictionary<common_method_node, common_method_node>();
         private bool no_infinite_recursion;
 
         public Optimizer()
@@ -140,6 +142,9 @@ namespace PascalABCCompiler
 
         private void VisitMethod(common_method_node cmn)
         {
+            if (processed_methods.ContainsKey(cmn))
+                return;
+            processed_methods.Add(cmn, cmn);
             if (extended_mode)
                 VisitVariables(cmn.var_definition_nodes_list);
             foreach (var_definition_node vdn in cmn.var_definition_nodes_list)
@@ -584,16 +589,30 @@ namespace PascalABCCompiler
                 if (!(i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type == semantic_node_type.empty_statement))
                     is_break_stmt = false;
             }
-            if (!tuple_decomp)
-                foreach (local_block_variable vdn in stmt.local_variables)
+            int tuples_num = 0;
+            foreach (local_block_variable vdn in stmt.local_variables)
+            {
+                if (vdn.name.StartsWith("#fpl") || vdn.name.StartsWith("#temp_var"))
                 {
-                    VarInfo vi = helper.GetVariable(vdn);
-                    if (isUnused(vi, vdn))
-                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-
-                    if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
-                        AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
+                    tuple_decomp = true;
+                    if (vdn.type is generic_instance_type_node)
+                        tuples_num = (vdn.type as generic_instance_type_node).instance_params.Count;
+                    else if (vdn.type is compiled_type_node)
+                        tuples_num = (vdn.type as compiled_type_node).compiled_type.GetGenericArguments().Length;
+                    continue;
                 }
+                else if (tuples_num > 0)
+                {
+                    tuples_num--;
+                    continue;
+                }    
+                VarInfo vi = helper.GetVariable(vdn);
+                if (isUnused(vi, vdn))
+                    warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+
+                if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
+                    AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
+            }
         }
 
         private void VisitExternalStatementNode(external_statement sn)
@@ -1092,7 +1111,7 @@ namespace PascalABCCompiler
         private void VisitCommonNamespaceFunctionCall(common_namespace_function_call en)
         {
             CheckInfiniteRecursion(en);
-            if ((en.function_node.name == "Reset" || en.function_node.name == "Rewrite" || en.function_node.name == "Assign") && en.function_node.comprehensive_namespace.namespace_name == "PABCSystem")
+            if ((en.function_node.name == "Reset" || en.function_node.name == "Rewrite" || en.function_node.name == "Assign") && en.function_node.comprehensive_namespace.namespace_name == compiler_string_consts.pascalSystemUnitName)
             {
                 expression_node p = en.parameters[0];
                 switch (p.semantic_node_type)

@@ -17,7 +17,7 @@ procedure Left;
 procedure Up;
 /// Переместить Робота вниз
 procedure Down;
-/// Закрасить текущую ячейку
+/// Закрасить текущую клетку
 procedure Paint;
 /// Возвращает True, если справа от Робота - свободно, и False в противном случае
 function FreeFromRight: boolean;
@@ -35,9 +35,9 @@ function WallFromLeft: boolean;
 function WallFromUp: boolean;
 /// Возвращает True, если снизу от Робота - стена, и False в противном случае
 function WallFromDown: boolean;
-/// Возвращает True, если текущая ячейка не закрашена, и False в противном случае
+/// Возвращает True, если текущая клетка не закрашена, и False в противном случае
 function CellIsFree: boolean;
-/// Возвращает True, если текущая ячейка закрашена, и False в противном случае
+/// Возвращает True, если текущая клетка закрашена, и False в противном случае
 function CellIsPainted: boolean;
 /// Вызывать задание с именем name
 procedure Task(name: string);
@@ -79,10 +79,14 @@ function СлеваСтена: boolean;
 function СверхуСтена: boolean;
 /// Возвращает True, если снизу от Робота - стена, и False в противном случае
 function СнизуСтена: boolean;
-/// Возвращает True, если текущая ячейка не закрашена, и False в противном случае
+/// Возвращает True, если текущая клетка не закрашена, и False в противном случае
 function ЯчейкаНеЗакрашена: boolean;
-/// Возвращает True, если текущая ячейка закрашена, и False в противном случае
+/// Возвращает True, если текущая клетка закрашена, и False в противном случае
 function ЯчейкаЗакрашена: boolean;
+/// Возвращает True, если текущая клетка не закрашена, и False в противном случае
+function КлеткаНеЗакрашена: boolean;
+/// Возвращает True, если текущая клетка закрашена, и False в противном случае
+function КлеткаЗакрашена: boolean;
 /// Вызывать задание с данным именем
 procedure Задание(имя: string);
 /// Создать пустое поле размера 9 на 11 клеток
@@ -250,6 +254,8 @@ function СверхуСтена := WallFromUp;
 function СнизуСтена := WallFromDown;
 function ЯчейкаНеЗакрашена := CellIsFree;
 function ЯчейкаЗакрашена := CellIsPainted;
+function КлеткаНеЗакрашена := CellIsFree;
+function КлеткаЗакрашена := CellIsPainted;
 procedure Задание(имя: string) := Task(имя);
 procedure СтандартноеПоле := StandardField;
 procedure Поле(n,m: integer) := Field(n,m);
@@ -410,6 +416,12 @@ begin
   RegisterTask('pp7',pp7);
   RegisterTask('pp8',pp8);
 
+  RegisterTask('br1',br1);
+  RegisterTask('br2',br2);
+  RegisterTask('br3',br3);
+  RegisterTask('br4',br4);
+  RegisterTask('br5',br5);
+
   RegisterTask('examen1',examen1);
   RegisterTask('examen2',examen2);
   RegisterTask('examen3',examen3);
@@ -420,6 +432,7 @@ begin
   RegisterTask('examen8',examen8);
   RegisterTask('examen9',examen9);
   RegisterTask('examen10',examen10);
+  
 end;
 
 procedure Task(name: string);

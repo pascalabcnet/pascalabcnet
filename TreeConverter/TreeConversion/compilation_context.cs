@@ -2462,11 +2462,17 @@ namespace PascalABCCompiler.TreeConverter
             common_method_node stat_ctor;
             if (sil == null)
             {
-                stat_ctor = new common_method_node(stat_ctor_name, null, null, generic_def,
+                if (generic_def.static_constr != null)
+                    stat_ctor = generic_def.static_constr;
+                else
+                {
+                    stat_ctor = new common_method_node(stat_ctor_name, null, null, generic_def,
                     SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_public, null);
-                stat_ctor.is_constructor = true;
-                generic_def.add_name(stat_ctor_name, new SymbolInfo(stat_ctor));
-                generic_def.methods.AddElement(stat_ctor);
+                    stat_ctor.is_constructor = true;
+                    generic_def.add_name(stat_ctor_name, new SymbolInfo(stat_ctor));
+                    generic_def.methods.AddElement(stat_ctor);
+                }
+                
             }
             else
             {
@@ -2739,7 +2745,19 @@ namespace PascalABCCompiler.TreeConverter
 		
         private void check_implement_abstract_function(common_type_node cnode, function_node meth, type_node interf)
         {
+            //if (meth.field_access_level == SemanticTree.field_access_level.fal_private)
+            //    return;
         	List<SymbolInfo> sil = cnode.find_in_type(meth.name, cnode.Scope);
+            if (meth.field_access_level == SemanticTree.field_access_level.fal_private)
+            {
+                var base_type = cnode.base_type; 
+                while (base_type != null && base_type.IsAbstract)
+                {
+                    base_type = base_type.base_type;
+                }
+                if (base_type != null && !base_type.IsAbstract && base_type != SystemLibrary.SystemLibrary.object_type)
+                    return;
+            }
             function_node fn = null;
             if (sil != null)
             {
@@ -2889,7 +2907,8 @@ namespace PascalABCCompiler.TreeConverter
                     commn.field_access_level != SemanticTree.field_access_level.fal_public ||
                     commn.is_constructor)
                 {
-                    bad = true;
+                    if (!(commn.name.IndexOf(".") != -1 && commn.field_access_level != SemanticTree.field_access_level.fal_public))
+                        bad = true;
                 }
             }
             else
@@ -3943,6 +3962,14 @@ namespace PascalABCCompiler.TreeConverter
             cmn.overrided_method = FindMethodToOverride(cmn);
             if (cmn.overrided_method == null)
                 AddError(cmn.loc, "NO_METHOD_TO_OVERRIDE");
+            for (int i = 0; i < cmn.parameters.Count; i++)
+            {
+                var cp = cmn.parameters[i];
+                if (cp.type.IsDelegate && cp.type is common_type_node && (cp.type as common_type_node).name.IndexOf("$") != -1)
+                {
+                    cp.type = cmn.overrided_method.parameters[i].type;
+                }
+            }
             cmn.SetName(cmn.overrided_method.name);
         }
 

@@ -2,7 +2,7 @@
 <param name="Keyword" value="AdjacentFind">
 <param name="Keyword" value="ArrEqual">
 <param name="Keyword" value="BinarySearch">
-<param name="Keyword" value="Cartesian">
+<param name="Keyword" value="CartesianPower">
 <param name="Keyword" value="Combinations">
 <param name="Keyword" value="ConvertAll">
 <param name="Keyword" value="Fill">
@@ -29,22 +29,31 @@
 <param name="Keyword" value="Slice">
 <param name="Keyword" value="Sort">
 <param name="Keyword" value="SortDescending">
-<param name="Keyword" value="Transform"></object>
+<param name="Keyword" value="Transform">
+<param name="Keyword" value="расширение"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения одномерных динамических массивов</H1>
-<table border=0 cellpadding=5><tr><td><code><b>function</b> AdjacentFind&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; eq: (T,T)-&gt;boolean; start: integer := 0): integer;</code>
+<table border=0 cellpadding=5><tr><td><code>(расширение <b>sequence </b>  <b>of</b> T) <b>function</b> Cartesian&lt;T, T1&gt;(b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности пар</td></tr>
+<tr><td><code>(расширение <b>sequence </b>  <b>of</b> T) <b>function</b> Cartesian&lt;T, T1&gt;(b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества символов, заданного строкой</td></tr>
+<tr><td><code><b>function</b> AdjacentFind&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; eq: (T,T)-&gt;boolean; start: integer := 0): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1</td></tr>
 <tr><td><code><b>function</b> ArrEqual&lt;T&gt;(Self,b: <b>array</b>  <b>of</b> T): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает, совпадают ли массивы</td></tr>
 <tr><td><code><b>function</b> BinarySearch&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет бинарный поиск в отсортированном массиве</td></tr>
-<tr><td><code><b>function</b> Cartesian&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<tr><td><code><b>function</b> CartesianPower&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества элементов, заданного массивом</td></tr>
-<tr><td><code><b>function</b> Cartesian&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества элементов, заданного массивом</td></tr>
+<tr><td><code><b>function</b> CartesianPower&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества элементов, заданного последовательностью</td></tr>
+<tr><td><code><b>function</b> CartesianPower(Self: string; n: integer): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества символов, заданного строкой</td></tr>
 <tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
 <tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
+<tr><td><code><b>function</b> Combinations(Self: string; m: integer): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b>  <b>of</b> T; converter: T-&gt;T1): <b>array</b>  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива и возвращает преобразованный массив</td></tr>
@@ -122,6 +131,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки из n элементов по m</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки из n элементов по m</td></tr>
+<tr><td><code><b>function</b> Permutations(Self: string): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки букв в строке в виде последовательности строк</td></tr>
+<tr><td><code><b>function</b> Permutations(Self: string; m: integer): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк</td></tr>
 <tr><td><code><b>function</b> RandomElement&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный элемент массива</td></tr>
 <tr><td><code><b>function</b> Shuffle&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
@@ -132,13 +145,21 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез массива от индекса from с шагом step длины не более count</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
+<tr><td><code><b>procedure</b> Sort(Self: <b>array</b>  <b>of</b> string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cmp: (T,T) -&gt;integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T,T1&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию по ключу</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(Self: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию</td></tr>
+<tr><td><code><b>procedure</b> SortDescending(Self: <b>array</b>  <b>of</b> string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T,T1&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
+<tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
 <tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: T-&gt;T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>

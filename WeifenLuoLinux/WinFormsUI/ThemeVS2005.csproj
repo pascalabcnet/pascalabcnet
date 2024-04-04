@@ -1,0 +1,147 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <PackageId>DockPanelSuite.ThemeVS2005</PackageId>
+    <PackageVersion>3.1.0</PackageVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+    <Authors>Weifen Luo and other contributors</Authors>
+    <Description>Visual Studio 2005 theme for DockPanel Suite.</Description>
+    <Copyright>(C) 2007-2020 Weifen Luo and other contributors</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>http://dockpanelsuite.com</PackageProjectUrl>
+    <PackageReleaseNotes>
+      Release notes can be found at GitHub,
+      https://github.com/dockpanelsuite/dockpanelsuite/releases
+    </PackageReleaseNotes>
+    <TargetFrameworks>netcoreapp3.1;net35;net40</TargetFrameworks>
+    <UseWindowsForms>true</UseWindowsForms>
+    <StartupObject />
+    <RootNamespace>WeifenLuo.WinFormsUI</RootNamespace>
+    <AssemblyName>WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>dockpanelsuite.snk</AssemblyOriginatorKeyFile>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThemeVS2005\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ThemeVS2005\Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ThemeVS2005\VS2005AutoHideStrip.cs" />
+    <Compile Include="ThemeVS2005\VS2005AutoHideWindowFactory.cs" />
+    <Compile Include="ThemeVS2005\VS2005DockIndicatorFactory.cs" />
+    <Compile Include="ThemeVS2005\VS2005DockPaneCaption.cs" />
+    <Compile Include="ThemeVS2005\VS2005DockPaneSplitterControlFactory.cs" />
+    <Compile Include="ThemeVS2005\VS2005DockPaneStrip.cs" />
+    <Compile Include="ThemeVS2005\VS2005Theme.cs" />
+    <Compile Include="ThemeVS2005\VS2005PaneIndicatorFactory.cs" />
+    <Compile Include="ThemeVS2005\VS2005PanelIndicatorFactory.cs" />
+    <Compile Include="ThemeVS2005\VS2005DockOutlineFactory.cs" />
+    <Compile Include="ThemeVS2005\VS2005WindowSplitterControlFactory.cs" />
+    <Compile Include="ThemeVS2005\VS2005DockWindowFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dockpanelsuite.snk" />
+    <None Include="license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ThemeVS2005\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThemeVS2005\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PaneDiamond.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PaneDiamond_Bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\Dockindicator_PaneDiamond_Fill.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PaneDiamond_Hotspot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PaneDiamond_HotspotIndex.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PaneDiamond_HotspotIndex_VS2012.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PaneDiamond_Left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PaneDiamond_Right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PaneDiamond_Top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelBottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelBottom_Active.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelFill.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelFill_Active.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelLeft_Active.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelRight_Active.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelTop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockIndicator_PanelTop_Active.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockPane_AutoHide.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockPane_Close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockPane_Dock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockPane_Option.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemeVS2005\Resources\DockPane_OptionOverflow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="WeifenLuo.WinFormsUI.Docking.Linux.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,4 +1,5 @@
-﻿type
+﻿//!Невозможно инстанцировать, так как тип T не наследован от List<integer>
+type
   t1<T> = class
   where T: List<integer>;
     

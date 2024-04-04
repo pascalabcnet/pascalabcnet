@@ -45,15 +45,20 @@
     <Compile Include="AllVarsInProcYieldsProba.cs" />
     <Compile Include="BaseVisitors\CollectNamespaces.cs" />
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
+    <Compile Include="LightSymInfoVisitors\BindCollectLightSymInfo.cs" />
+    <Compile Include="LightSymInfoVisitors\CollectFullLightSymInfoVisitor.cs" />
+    <Compile Include="LightSymInfoVisitors\CollectLightSymInfoVisitor.cs" />
+    <Compile Include="LightSymInfoVisitors\LightScopeCreator.cs" />
+    <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
     <Compile Include="SugarVisitors\CacheFunctionVisitor.cs" />
+    <Compile Include="SugarVisitors\LetExprVisitor.cs" />
+    <Compile Include="SugarVisitors\TestAssignIsDefVisitor.cs" />
     <Compile Include="SugarVisitors\UnpackLambdaParametersVisitor.cs" />
+    <Compile Include="TeacherControl\TeacherControl.cs" />
     <Compile Include="UniversalVisitors\ABCStatisticsVisitors.cs" />
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />
     <Compile Include="CheckingVisitors\UnnamedRecordsCheckErrorsVisitor.cs" />
-    <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
-    <Compile Include="LightSymInfoVisitors\SymInfoCollect1.cs" />
-    <Compile Include="LightSymInfoVisitors\SymInfoCollect1Helper.cs" />
     <Compile Include="PatternsVisitors\ExtendedIsDesugaringVisitor.cs" />
     <Compile Include="PatternsVisitors\PatternsDesugaringVisitor.cs" />
     <Compile Include="PatternsVisitors\ReplaceNamesInIsVarVisitor.cs" />
@@ -114,10 +119,6 @@
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
-      <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
-      <Name>TreeConverter</Name>
     </ProjectReference>
     <ProjectReference Include="..\Yield\YieldHelpers\YieldHelpers.csproj">
       <Project>{ce5c55c2-a11c-4e94-a9fa-3fc6ca3e4c09}</Project>

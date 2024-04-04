@@ -12,11 +12,12 @@ CYCLIC_UNIT_REFERENCE_WITH_UNIT_{0}=Циклічний зв'язок з моду
 UNDEFINED_SEMANTIC_ERROR{0}=Невизначена семантична помилка : {0} 
 RESOURCEFILE_{0}_NOT_FOUND=Файл '{0}' не знайдено
 DUPLICATE_USES_UNIT{0}=Повторне підключення модуля {0} в секції uses
-MAINRESOURCE_NOT_ALLOWED=Неприпустимо сумісне використання директиви mainresource і директив product, version, company, trademark, title, description
+MAINRESOURCE_NOT_ALLOWED=Неприпустимо сумісне використання директиви mainresource і директив product, version, company, trademark, title, description, copyright
 DUPLICATE_DIRECTIVE{0}=Повторное объявление директивы {0}
 FILE_{0}_NOT_FOUND=Файл '{0}' не знайдено
 NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS=Компиляция файлов с пространствами имен допустима только в проектах
 USES_IN_WRONG_NAME=Ім'я модуля в uses-in ({0}) має збігатися з ім'ям файлу ({1})
+UNSUPPORTED_TARGETFRAMEWORK_{0}=TargetFramework '{0}' не підтримується
 
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Внутрішня помилка компілятора в модулі {0} :'{1}'

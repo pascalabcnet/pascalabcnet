@@ -1,0 +1,180 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D1B610E3-444E-4438-9CB3-A4EB05CB3954}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>DesignerHost</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>DesignerHost</RootNamespace>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Design">
+      <Name>System.Design</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.ico" />
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DesignerComponentCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KeystrokeMessageFilter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PABCCodeProvider.cs" />
+    <Compile Include="PropertyGridSite.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleDesignerHost.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleDesignerLoader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleDesignerNameAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleDesignerSerializationManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleDesignerTransaction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleDesignSite.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleDocumentWindow.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SampleEventBindingService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleMenuCommandService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleNameExtenderProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleResourceService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleSelectionItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleSelectionService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleToolboxService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleTypeDescriptorFilterService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SampleTypeResolutionService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ServiceRequests.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StringStack.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ToolboxPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SampleDocumentWindow.resx">
+      <DependentUpon>SampleDocumentWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServiceRequests.resx">
+      <DependentUpon>ServiceRequests.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

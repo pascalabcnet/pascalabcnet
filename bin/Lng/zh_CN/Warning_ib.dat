@@ -1,0 +1,12 @@
+﻿%PREFIX%=WARNING_
+USE_VAR_{0}_WITHOUT_ASSIGN=使用未分配的局部变量 '{0}'
+UNUSED_VAR_{0}=变量 '{0}' 已声明但从未使用过
+UNUSED_FIELD_{0}=字段 '{0}' 已声明但从未使用过
+UNUSED_PARAM_{0}=参数 '{0}' 从未使用过
+ASS_WITHOUT_USE_{0}=已分配变量 '{0}' 但从未使用过该值
+UNREACHABLE_CODE_DETECTED=检测到无法访问的代码
+UNDEFINED_RETURN_VALUE_{0}=不设置函数 '{0}' 的返回值
+DO_NOT_USE_SHORT_STRINGS=不要使用短字符串
+DO_NOT_USE_POINTERS_TO_RECORDS=不要使用记录指针。 你改为 classes
+INFINITE_RECURSION=检测到无限递归
+UNKNOWN_DIRECTIVE=未知指令 '{0}'

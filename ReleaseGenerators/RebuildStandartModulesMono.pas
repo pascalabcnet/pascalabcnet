@@ -1,15 +1,15 @@
 ﻿uses 
    PABCSystem, PABCExtensions, __RedirectIOMode, __RunMode,
+   GraphABC,GraphABCHelper,
+   DMCollect, DMTaskMaker, DMZadan, Drawman, DrawManField,
+   Robot, RobotField, RobotTaskMaker, RobotZadan,
    Events, FilesOperations, 
-   NumLibABC,
+   //NumLibABC,
    IniFile, PointerTools, PointRect, 
    Sockets, Utils, Timers, 
    Collections, Arrays, Core, ClientServer, Countries,
-   ABCDatabases
-   {,
-   OpenGLABCBase, OpenGL, OpenGLABC
-   ,
-   BBCMicroBit, School, SF, TwoPanelsWindow}
+   ABCDatabases,
+   School, SF
    ;
    
 begin

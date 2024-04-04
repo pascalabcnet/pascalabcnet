@@ -1,4 +1,5 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Iterate">
 <param name="Keyword" value="PartitionPoints">
 <param name="Keyword" value="Range">
 <param name="Keyword" value="ReadSeqInteger">
@@ -16,7 +17,9 @@
 <param name="Keyword" value="SeqWhile"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы для генерации последовательностей</H1>
-<table border=0 cellpadding=5><tr><td><code><b>function</b> PartitionPoints(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Iterate&lt;T&gt;(first: T; next: T-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next</td></tr>
+<tr><td><code><b>function</b> PartitionPoints(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей</td></tr>
 <tr><td><code><b>function</b> Range(a, b: integer): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b</td></tr>
@@ -30,6 +33,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность символов от c1 до c2</td></tr>
 <tr><td><code><b>function</b> Range(c1, c2: char; step: integer): <b>sequence </b>  <b>of</b> char;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность символов от c1 до c2 с шагом step</td></tr>
+<tr><td><code><b>function</b> Range(a, b, step: real): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных от a до b с шагом step</td></tr>
 <tr><td><code><b>function</b> ReadSeqInteger(n: integer): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n целых, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadSeqInteger(prompt: string; n: integer): <b>sequence </b>  <b>of</b> integer;</code>
@@ -70,7 +75,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>
 <tr><td><code><b>function</b> SeqRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>
-<tr><td><code><b>function</b> SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): <b>sequence </b>  <b>of</b> real;</code>
+<tr><td><code><b>function</b> SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10; digits: integer := 1): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных вещественных элементов</td></tr>
 <tr><td><code><b>function</b> SeqWhile&lt;T&gt;(first: T; next: T-&gt;T; pred: T-&gt;boolean): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов с начальным значением first,функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности</td></tr>

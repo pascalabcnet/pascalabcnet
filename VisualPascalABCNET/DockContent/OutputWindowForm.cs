@@ -18,6 +18,20 @@ namespace VisualPascalABC
         {
             InitializeComponent();
             Form1StringResources.SetTextForAllControls(this.contextMenuStrip1);
+            outputTextBox.DetectUrls = true;
+            outputTextBox.LinkClicked += outputTextBox_LinkClicked;
+        }
+
+        public void outputTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(e.LinkText);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private void OutputWindowForm_FormClosing(object sender, FormClosingEventArgs e)

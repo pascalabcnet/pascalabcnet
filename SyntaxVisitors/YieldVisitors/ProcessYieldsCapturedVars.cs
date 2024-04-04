@@ -456,37 +456,36 @@ namespace SyntaxVisitors
 
         private where_definition_list GetMethodWhereSection(procedure_definition pd)
         {
-            if (!IsClassMethod(pd))
+
+            where_definition_list res = null;
+            if (pd.proc_header.where_defs != null)
             {
-                if (pd.proc_header.where_defs != null)
-                {
-                    return ObjectCopier.Clone(pd.proc_header.where_defs);
-                    //return pd.proc_header.where_defs.TypedClone();
-                }
-                else
-                {
-                    var pdPredefs = UpperTo<declarations>().defs
-                        .OfType<procedure_definition>()
-                        .Where(lpd => lpd.proc_body == null
-                                && lpd.proc_header.name.meth_name.name.ToLower() == pd.proc_header.name.meth_name.name.ToLower()
-                                && lpd.proc_header.proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_forward) != -1);
-                    if (pdPredefs.Count() > 0)
-                    {
-                        return ObjectCopier.Clone(pdPredefs.First().proc_header.where_defs);
-                        //return pdPredefs.First().proc_header.where_defs.TypedClone();
-                    }
-                }
+                res = ObjectCopier.Clone(pd.proc_header.where_defs);
+                //return pd.proc_header.where_defs.TypedClone();
             }
             else
             {
-                class_definition cd = GetMethodClassDefinition(pd);
-                if (cd != null)
+                var pdPredefs = UpperTo<declarations>().defs
+                    .OfType<procedure_definition>()
+                    .Where(lpd => lpd.proc_body == null
+                            && lpd.proc_header.name.meth_name.name.ToLower() == pd.proc_header.name.meth_name.name.ToLower()
+                            && lpd.proc_header.proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_forward) != -1);
+                if (pdPredefs.Count() > 0)
                 {
-                    return ObjectCopier.Clone(cd.where_section);
+                    res = ObjectCopier.Clone(pdPredefs.First().proc_header.where_defs);
+                    //return pdPredefs.First().proc_header.where_defs.TypedClone();
                 }
             }
 
-            return null;
+            if (GetMethodClassDefinition(pd) is class_definition cd && cd.where_section != null)
+            {
+                if (res==null)
+                    res = ObjectCopier.Clone(cd.where_section);
+                else
+                    res.defs.AddRange(cd.where_section.defs.Select(ObjectCopier.Clone));
+            }
+
+            return res;
         }
 
         /// <summary>
@@ -528,7 +527,7 @@ namespace SyntaxVisitors
                 {
                     cu.visit(methodsVis);
                     // Collect
-                    collectedMethods.UnionWith(methodsVis.CollectedMethods.Select(id => id.name.ToLower()));
+                    collectedMethods.UnionWith(methodsVis.CollectedMethods.Select(id => id.name != null ? id.name.ToLower() : null));
                 }
             }
         }

@@ -2534,7 +2534,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="name_assign_expr" BaseName="syntax_tree_node">
+    <SyntaxNode Name="name_assign_expr" BaseName="expression">
       <Fields>
         <SyntaxField Name="name" SyntaxType="ident" />
         <SyntaxField Name="expr" SyntaxType="expression" />
@@ -2757,7 +2757,9 @@
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="yield_unknown_ident" BaseName="ident">
-      <Fields />
+      <Fields>
+        <SyntaxField Name="UnknownID" SyntaxType="ident" />
+      </Fields>
       <Methods />
       <Tags>
         <CategoryIndices>
@@ -3336,6 +3338,36 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="lambda_any_type_node_syntax" BaseName="expression">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="ref_var_def_statement" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="var" SyntaxType="ident" />
+        <SyntaxField Name="initial_value" SyntaxType="addressed_value" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="let_var_expr" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="id" SyntaxType="ident" />
+        <SyntaxField Name="ex" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3403,12 +3435,14 @@
       <HelpData Key=".handlers" Value="" />
       <HelpData Key=".has_deref" Value="" />
       <HelpData Key=".i" Value="" />
+      <HelpData Key=".id" Value="" />
       <HelpData Key=".if_false" Value="" />
       <HelpData Key=".if_true" Value="" />
       <HelpData Key=".il" Value="" />
       <HelpData Key=".in_what" Value="" />
       <HelpData Key=".index" Value="" />
       <HelpData Key=".index_expr" Value="" />
+      <HelpData Key=".initial_value" Value="ссылка на addrvalue, которой интциализируется идентификатор" />
       <HelpData Key=".inverted" Value="" />
       <HelpData Key=".item_expression" Value="" />
       <HelpData Key=".left" Value="" />
@@ -3458,6 +3492,7 @@
       <HelpData Key=".v" Value="" />
       <HelpData Key=".val" Value="" />
       <HelpData Key=".value" Value="" />
+      <HelpData Key=".var" Value="" />
       <HelpData Key=".var_attr" Value="" />
       <HelpData Key=".variants" Value="" />
       <HelpData Key=".vars" Value="" />
@@ -3518,7 +3553,7 @@
       <HelpData Key="assign_tuple" Value="" />
       <HelpData Key="assign_tuple.expr" Value="" />
       <HelpData Key="assign_tuple.vars" Value="" />
-      <HelpData Key="assign_var_tuple" Value="" />
+      <HelpData Key="assign_var_tuple" Value="Это внутри begin:var (a,b) := (1,2);&#xD;&#xA;" />
       <HelpData Key="assign_var_tuple.expr" Value="" />
       <HelpData Key="assign_var_tuple.idents" Value="" />
       <HelpData Key="attribute" Value="" />
@@ -4087,10 +4122,14 @@
       <HelpData Key="labeled_statement.to_statement" Value="" />
       <HelpData Key="labelname_list" Value="" />
       <HelpData Key="labelname_list.names" Value="" />
+      <HelpData Key="lambda_any_type_node_syntax" Value="Marker. On semantic level becomes lambda_any_type_node in generic_conversions.SaveLambdasStates" />
       <HelpData Key="lambda_inferred_type" Value="" />
       <HelpData Key="lambda_inferred_type._realType" Value="" />
       <HelpData Key="lambda_inferred_type.realType" Value="" />
       <HelpData Key="lambda_inferred_type.real_type" Value="" />
+      <HelpData Key="let_var_expr" Value="" />
+      <HelpData Key="let_var_expr.ex" Value="" />
+      <HelpData Key="let_var_expr.id" Value="" />
       <HelpData Key="literal" Value="#12 либо 'abc'" />
       <HelpData Key="literal_const_line" Value="Представляет в синтаксическом дереве строку вида #123'abc'#124#125." />
       <HelpData Key="literal_const_line.literal_const_line Add(literal _literal)" Value="" />
@@ -4449,6 +4488,9 @@
       <HelpData Key="recursive_tuple_parameter" Value="Рекурсивный паттерн-параметр." />
       <HelpData Key="ref_type" Value="" />
       <HelpData Key="ref_type.pointed_to" Value="" />
+      <HelpData Key="ref_var_def_statement" Value="Для конструкции refvar id := ref addrValue, которая не имеет аналога в языке и генерируется при развертывании кортежного присваивания в конструкции (a,a[i]) := (b,666);" />
+      <HelpData Key="ref_var_def_statement.initial_value" Value="" />
+      <HelpData Key="ref_var_def_statement.var" Value="ref var id := ref add_value" />
       <HelpData Key="repeat_node" Value="Цикл с постусловием (repeat)" />
       <HelpData Key="repeat_node.expr" Value="Условие завершения цикла" />
       <HelpData Key="repeat_node.statements" Value="Тело цикла" />
@@ -4575,6 +4617,7 @@
       <HelpData Key="statement_list.void Add(statement st, )" Value="" />
       <HelpData Key="statement_list.void Add(statement st, SourceContext sc)" Value="" />
       <HelpData Key="string_const" Value="Строковая константа" />
+      <HelpData Key="string_const.IsMultiline" Value="" />
       <HelpData Key="string_const.Value" Value="Значенеи строковой константы" />
       <HelpData Key="string_const.override string ToString()" Value="" />
       <HelpData Key="string_num_definition" Value="Представление для класса строки вида string[256]." />
@@ -4856,7 +4899,7 @@
       <HelpData Key="var_statement." Value="" />
       <HelpData Key="var_statement.override string ToString()" Value="" />
       <HelpData Key="var_statement.var_def" Value="" />
-      <HelpData Key="var_tuple_def_statement" Value="" />
+      <HelpData Key="var_tuple_def_statement" Value="Это только в секции до begin: var (a,b) := (3,4); begin" />
       <HelpData Key="variable_definitions" Value="Секция описания переменных (до beginа). Состоит из var_def_statement. Не путать с var_statement - однострочным описанием переменной внутри begin-end" />
       <HelpData Key="variable_definitions." Value="" />
       <HelpData Key="variable_definitions.override string ToString()" Value="" />
@@ -4944,6 +4987,7 @@
       <HelpData Key="yield_unknown_foreach_type_ident.unknown_foreach" Value="" />
       <HelpData Key="yield_unknown_ident" Value="Неопознанный идентификатор. Откладывает определение необходимости захвата имени как поля класса до этапа семантики." />
       <HelpData Key="yield_unknown_ident.ClassName" Value="" />
+      <HelpData Key="yield_unknown_ident.IsYieldInStaticMethod" Value="" />
       <HelpData Key="yield_unknown_ident.UnknownID" Value="" />
       <HelpData Key="yield_var_def_statement_with_unknown_type" Value="Узел-обертка для yield для определения типов локальных переменных в var_def_statement" />
       <HelpData Key="yield_var_def_statement_with_unknown_type.vars" Value="" />

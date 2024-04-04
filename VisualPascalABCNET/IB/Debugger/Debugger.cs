@@ -342,7 +342,7 @@ namespace VisualPascalABC
         }
 
         /// <summary>
-        /// Добавить Breakpoint в файл fileName строку line
+        /// Добавить Breakpoint в файл file_name строку line
         /// </summary>
         public Breakpoint AddBreakPoint(string fileName, int line, bool commonBreakpoint)
         {
@@ -367,7 +367,7 @@ namespace VisualPascalABC
         }
 		
         /// <summary>
-        /// Получить список Breakpointov в файле fileName
+        /// Получить список Breakpointov в файле file_name
         /// </summary>
         public List<Breakpoint> GetBreakpointsInFile(string fileName)
         {
@@ -412,7 +412,7 @@ namespace VisualPascalABC
             dbg.ProcessExited += debugProcessExit;
             dbg.BreakpointHit += debugBreakpointHit;
             //if (brPoint != null) dbg.RemoveBreakpoint(brPoint);
-            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+            this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(file_name) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             this.PrevFullFileName = FullFileName;
@@ -460,16 +460,16 @@ namespace VisualPascalABC
         	    sourceFileName = workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName;
         	else
         	    sourceFileName = ProjectFactory.Instance.CurrentProject.MainFile;
-        	this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(fileName) + ".pas";
+        	this.FileName = sourceFileName;//Path.GetFileNameWithoutExtension(file_name) + ".pas";
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = CodeCompletion.CodeCompletionController.ParsersController.selectParser(Path.GetExtension(FullFileName).ToLower());
+            this.parser = CodeCompletion.CodeCompletionController.ParsersController.SelectParser(Path.GetExtension(FullFileName).ToLower());
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
         	dbg.ProcessStarted += debugProcessStarted;
             dbg.ProcessExited += debugProcessExit;
-            //brPoint = dbg.AddBreakpoint(FileName, frm.VisualEnvironmentCompiler.Compiler.BeginOffset);
+            //brPoint = dbg.AddBreakpoint(file_name, frm.VisualEnvironmentCompiler.Compiler.BeginOffset);
             try
             {
                 debuggedProcess = dbg.DebugActiveProcess(handle, fileName);
@@ -1299,6 +1299,13 @@ namespace VisualPascalABC
                                     return new ValueItem(nv, null);
                             }
                         }
+                    }
+                    foreach (NamedValue nv in val_list)//smotrim sredi lokalnyh peremennyh
+                    {
+                        if (nv.Name.IndexOf(':') != -1)
+                        {
+                            continue;
+                        }
                         if (string.Compare(nv.Name, var, true) == 0)
                         {
                             return new ValueItem(nv, null);
@@ -1755,7 +1762,7 @@ namespace VisualPascalABC
         {
             try
             {
-                //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).FileName,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
+                //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).file_name,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
                   //  (frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column+100), true);
                 workbench.WidgetController.SetStartDebugDisabled();
                 currentBreakpoint = dbg.AddBreakpoint(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);

@@ -214,6 +214,10 @@ namespace PascalABCCompiler.SemanticTree
         {
             get;
         }
+		List<ITypeNode> ImplementingInterfacesOrEmpty
+        {
+            get;
+        }
 
         //Является ли generic-параметром
         bool is_generic_parameter
@@ -1707,6 +1711,16 @@ namespace PascalABCCompiler.SemanticTree
         }
     }
 
+    //Интерфейс для представления BigInteger констант.
+    public interface IBigIntConstantNode : IConstantNode
+    {
+        //Значение константы.
+        System.Numerics.BigInteger constant_value
+        {
+            get;
+        }
+    }
+
     //Интерфейс для представления unsigned int констант.
     public interface IUIntConstantNode : IConstantNode
     {
@@ -1827,7 +1841,15 @@ namespace PascalABCCompiler.SemanticTree
     	}
     }
     
-    public interface ICompiledStaticMethodCallNodeAsConstant : IConstantNode
+	public interface ICommonStaticMethodCallNodeAsConstant : IConstantNode
+    {
+		ICommonStaticMethodCallNode MethodCall
+		{
+			get;
+		}
+	}
+
+	public interface ICompiledStaticMethodCallNodeAsConstant : IConstantNode
     {
         ICompiledStaticMethodCallNode MethodCall
         {
@@ -1874,6 +1896,14 @@ namespace PascalABCCompiler.SemanticTree
 			get;
 		}
 	}
+
+	public interface ISizeOfOperatorAsConstant : IConstantNode
+    {
+		ISizeOfOperator SizeOfOperator
+        {
+			get;
+        }
+    }
 
 	public interface ICompiledConstructorCallAsConstant : IConstantNode
     {

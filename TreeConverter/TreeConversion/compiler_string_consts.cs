@@ -38,6 +38,8 @@ namespace PascalABCCompiler.TreeConverter
             oper_names[mod_name] = "op_Modulus";
             oper_names[not_name] = "op_LogicalNot";
             oper_names[noteq_name] = "op_Inequality";
+            oper_names[shl_name] = "op_LeftShift";
+            oper_names[shr_name] = "op_RightShift";
         }
 
         public static string GetNETOperName(string name)
@@ -318,6 +320,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string default_constructor_name = "create";
 
         // SSM - Константы директив компилятора. Вообще разбросаны по коду. Пусть будут здесь (3.1.2011)
+        #region COMPILER DIRECTIVES
         public static string compiler_directive_apptype = "apptype";
         public static string compiler_directive_reference = "reference";
         public static string include_namespace_directive = "includenamespace";
@@ -332,20 +335,42 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_resource = "resource";
         public static string compiler_directive_platformtarget = "platformtarget";
         public static string compiler_directive_faststrings = "faststrings";
+        public static string compiler_directive_gendoc = "gendoc";
+        public static string compiler_directive_region = "region";
+        public static string compiler_directive_endregion = "endregion";
+        public static string compiler_directive_ifdef = "ifdef";
+        public static string compiler_directive_endif = "endif";
+        public static string compiler_directive_ifndef = "ifndef";
+        public static string compiler_directive_else = "else";
+        public static string compiler_directive_undef = "undef";
+        public static string compiler_directive_define = "define";
+        public static string compiler_directive_include = "include";
+        public static string compiler_directive_targetframework = "targetframework";
+        public static string compiler_directive_hidden_idents = "hiddenidents";
+        public const string version_string = "version";
+        public const string product_string = "product";
+        public const string company_string = "company";
+        public const string copyright_string = "copyright";
+        public const string trademark_string = "trademark";
+        public const string main_resource_string = "mainresource";
+        public const string title_string = "title";
+        public const string description_string = "description";
+        #endregion
 
-        // SSM (3.1.2011) Перенес эти константы сюда. 
-        public static string version_string = "version";
-        public static string product_string = "product";
-        public static string company_string = "company";
-        public static string copyright_string = "copyright";
-        public static string trademark_string = "trademark";
-        public static string main_resource_string = "mainresource";
-        public static string title_string = "title";
-        public static string description_string = "description";
-
+        // SSM (3.1.2011) Перенес эти константы сюда.
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
-        public static string system_unit_file_name = "PABCSystem";
-        public static string extensions_unit_file_name = "PABCExtensions";
+        #region PASCAL LANGUAGE
+        public const string pascalLanguageName = "PascalABC.NET";
+        public const string pascalSourceFileExtension = ".pas";
+        public const string pascalCompiledUnitExtension = ".pcu";
+        public static string pascalSystemUnitName = "PABCSystem";
+        public static string pascalExtensionsUnitName = "PABCExtensions";
+        public static readonly string[] pascalDefaultStandardModules = new string[]
+        {
+            pascalSystemUnitName,
+            pascalExtensionsUnitName
+        };
+        #endregion
 
         public static string get_array_type_name(string type_name, int rank)
         {
@@ -373,11 +398,11 @@ namespace PascalABCCompiler.TreeConverter
         public static string ienumerable_auto_type_name = "IEnumerableAutoType"; // SSM 05.07.16 - тип, который определяется на этапе компиляции при первом присваивании
         public static string recort_printable_name_template = "record{0}end";
         public static string set_name = "TypedSet";
-        public const string deconstruct_method_name = "deconstruct";
-        public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
-        public const string wild_cards_tuple_equal_function_name = "__WildCardsTupleEqual";
-        public const string seq_function_name = "Seq";
-        public const string count_property_name = "Count";
+        public const string deconstruct_method_name = "deconstruct"; // Есть дубль - если менять здесь, то и в дубле!!
+        //public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
+        //public const string wild_cards_tuple_equal_function_name = "__WildCardsTupleEqual";
+        //public const string seq_function_name = "Seq";
+        //public const string count_property_name = "Count";
         public static string bounded_array_printable_name_template = "array [{0}..{1}] of {2}";
         public static string array_printable_name_template = "array of {0}";
         public static string multi_dim_array_printable_name_template = "array [{0}] of {1}";

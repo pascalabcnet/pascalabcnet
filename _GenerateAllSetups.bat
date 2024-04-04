@@ -39,6 +39,7 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
+
 cd ..\bin
 TestRunner.exe 1
 TestRunner.exe 2

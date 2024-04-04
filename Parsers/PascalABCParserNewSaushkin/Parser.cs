@@ -114,7 +114,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public PascalABCNewLanguageParser()
-            : base("PascalABC.NET", "1.2", "Copyright © 2005-2021 by Ivan Bondarev, Stanislav Mikhalkovich", false, new string[] { ".pas" })
+            : base("PascalABC.NET", "1.2", "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich", new string[] { "PABCSystem", "PABCExtensions" }, false, new string[] { ".pas" })
         {
         }
 
@@ -190,7 +190,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             Errors.Clear();
             Warnings.Clear();
             /*string[] file_names = new string[1];
-            file_names[0] = FileName;
+            file_names[0] = file_name;
 
             preprocessor2.Build(file_names, Errors, null);*/
 

@@ -63,6 +63,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -110,9 +111,7 @@
     <Compile Include="Preprocessor3Yacc.cs" />
     <Compile Include="PreprocessorTools.cs" />
     <Compile Include="SemanticRules.cs" />
-    <Compile Include="ShiftReduceParserCode.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="ShiftReduceParserCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Errors\Errors.csproj">
@@ -134,10 +133,6 @@
     <ProjectReference Include="..\..\SyntaxVisitors\SyntaxVisitors.csproj">
       <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
       <Name>SyntaxVisitors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\TreeConverter\TreeConverter.csproj">
-      <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>
-      <Name>TreeConverter</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,6 +9,7 @@
 	string directivename;
 	string directiveparam;
 	LexLocation currentLexLocation;
+	bool HiddenIdents = false;
 %}
 
 %namespace GPPGParserScanner
@@ -20,9 +21,11 @@
 
 Letter [[:IsLetter:]_]
 Digit [0-9]
+Digit_ [0-9_]
 LetterDigit {Letter}|{Digit}
-ID {Letter}{LetterDigit}* 
+ID `?{Letter}{LetterDigit}* 
 HexDigit {Digit}|[abcdefABCDEF]
+HexDigit_ {Digit}|[abcdefABCDEF_]
 DotChr [^\r\n]
 OneLineCmnt  \/\/{DotChr}*
 
@@ -31,13 +34,14 @@ DotChr1 [^\r\n}]
 NOTASCII [^\x00-x7F]
 
 CHARACTERNUM '[^'\n]'
-INTNUM {Digit}+
+INTNUM {Digit}{Digit_}*
 BIGINTNUM {INTNUM}[bB][iI]
 FLOATNUM {INTNUM}\.{INTNUM}
 EXPNUM ({INTNUM}\.)?{INTNUM}[eE][+\-]?{INTNUM}
 STRINGNUM \'([^\'\n]|\'\')*\'
+MULTILINESTRINGNUM \'\'\'[ ]*\r?\n([^']|\'[^']|\'\'[^'])*\'\'\'
 FORMATSTRINGNUM \$\'([^\'\n]|\'\')*\'
-HEXNUM ${HexDigit}+
+HEXNUM ${HexDigit}{HexDigit_}*
 SHARPCHARNUM #{Digit}+
 OLDDIRECTIVE #{ID}
 IFDEF \{\$ifdef\ {DotChr1}*\} 
@@ -68,7 +72,11 @@ UNICODEARROW \x890
 
 	parsertools.DivideDirectiveOn(yytext,out directivename,out directiveparam);
     parsertools.CheckDirectiveParams(directivename,directiveparam); // directivename in UPPERCASE!
-	if (directivename == "INCLUDE")
+	if (directivename == "HIDDENIDENTS")
+	{
+		HiddenIdents = true;
+	}
+	else if (directivename == "INCLUDE")
 	{
 		TryInclude(directiveparam);
 	}
@@ -252,6 +260,8 @@ UNICODEARROW \x890
   currentLexLocation = CurrentLexLocation;
   if (res == (int)Tokens.tkIdentifier)
   {
+    if (cur_yytext[0] == '`' && !HiddenIdents)
+    	parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, "`");
 	yylval = new Union(); 
     yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
   }
@@ -371,7 +381,6 @@ UNICODEARROW \x890
     case (int)Tokens.tkEvent:
     case (int)Tokens.tkDefault:
     case (int)Tokens.tkTemplate:
-    case (int)Tokens.tkPacked:
     case (int)Tokens.tkExports:
     case (int)Tokens.tkResourceString:
     case (int)Tokens.tkThreadvar:
@@ -390,6 +399,8 @@ UNICODEARROW \x890
     case (int)Tokens.tkWhen:
     case (int)Tokens.tkStatic:
     case (int)Tokens.tkStep:
+    case (int)Tokens.tkAsync:
+    case (int)Tokens.tkAwait:
 		yylval = new Union();
         yylval.ti = new token_info(cur_yytext,currentLexLocation);
         break;
@@ -488,6 +499,13 @@ UNICODEARROW \x890
   return (int)Tokens.tkStringLiteral; 
 }
 
+{MULTILINESTRINGNUM} { 
+  yylval = new Union();
+  currentLexLocation = CurrentLexLocation;
+  yylval.stn = parsertools.create_multiline_string_const(yytext,currentLexLocation); 
+  return (int)Tokens.tkMultilineStringLiteral; 
+}
+
 {FORMATSTRINGNUM} { 
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
@@ -581,4 +599,4 @@ UNICODEARROW \x890
             }
     }
 
-// Статический класс, определяющий ключевые слова языка, находится в файле Keywords.cs
+// РЎС‚Р°С‚РёС‡РµСЃРєРёР№ РєР»Р°СЃСЃ, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РєР»СЋС‡РµРІС‹Рµ СЃР»РѕРІР° СЏР·С‹РєР°, РЅР°С…РѕРґРёС‚СЃСЏ РІ С„Р°Р№Р»Рµ Keywords.cs

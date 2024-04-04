@@ -663,12 +663,18 @@ namespace PascalABCCompiler.TreeConverter
                     syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref en);
                     return en;
                 }
-                AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
+                if (en is null_const_node && pct.first.convertion_method is basic_function_node)
+                {
+                    en.type = to;
+                    return en;
+                }
+                else
+                    AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
 			}
 
 			if (pct.first==null)
 			{
-                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null)
+                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
                 {
                     return convert_type(en, (to as delegated_methods).empty_param_method.ret_type, loc);
                 }
@@ -679,9 +685,11 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
                     else
                         return en;
-                } 
+                }
                 else if (en.type is undefined_type && en is base_function_call bfc)
                     throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", bfc.function.name);
+                else if (en is enum_const_node && (en as enum_const_node).constant_value != 0)
+                    return new int_const_node((en as enum_const_node).constant_value, loc);
                 else AddError(new CanNotConvertTypes(en, en.type, to, loc));
 			}
 
@@ -1196,20 +1204,56 @@ namespace PascalABCCompiler.TreeConverter
 						{
                             //issue #2161 - SSM 12.03.2020
                             //issue #348
-                            if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
+                            if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) && factparams[i].type is delegated_methods)
                             {
                                 possible_type_convertions ptci = new possible_type_convertions();
                                 ptci.first = null;
                                 ptci.second = null;
+                                if (formal_param_type.instance_params != null && formal_param_type.instance_params.Count > 0)
+                                {
+                                    var fn = (factparams[i].type as delegated_methods).proper_methods[0].simple_function_node;
+                                    if (fn.is_generic_function)
+                                    {
+                                        var fn_instance = fn.get_instance(formal_param_type.instance_params, true, factparams[i].location);
+                                        delegated_methods dm = new delegated_methods();
+                                        if (fn is common_namespace_function_node)
+                                            dm.proper_methods.AddElement(new common_namespace_function_call(fn_instance as common_namespace_function_node, factparams[i].location));
+                                        factparams[i].type = dm;
+                                    }
+                                    else if (!is_alone_method_defined)
+                                        return null;
+                                }
+                                else if (!is_alone_method_defined && formal_param_type.IsDelegate)
+                                    return null;
                                 ptci.from = factparams[i].type;
                                 ptci.to = formal_param_type;
+                                if (formal_param_type.IsDelegate)
+                                {
+                                    var ttc = type_table.get_convertions(formal_param_type, factparams[i].type);
+                                    if (ttc.first == null)
+                                    {
+                                        if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                                        {
+                                            error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
+                                            return null;
+                                        }
+                                        else
+                                            return null;
+                                    }
+                                }
+                                
                                 tc.AddElement(ptci);
                                 factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
-                                return tc;
+                                //return tc;
                             }
-                            if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                            else if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                            {
                                 error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
-							return null;
+                                return null;
+                            }
+                            else
+                                return null;
+							//return null;
                             
 						}
 					}
@@ -1365,7 +1409,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 for (var i = 0; i < left_original.parameters.Count; i++)
                 {
-                    if (left_original.parameters[i].is_params || right_original.parameters[i].is_params)
+                    if (left_original.parameters[i].is_params || i < right_original.parameters.Count && right_original.parameters[i].is_params || i >= right_original.parameters.Count)
                     {
                         return MoreSpecific.None;
                     }
@@ -1447,6 +1491,8 @@ namespace PascalABCCompiler.TreeConverter
 
 			for(int i=0;i<left.Count;i++)
 			{
+                if (i >= right.Count)
+                    break;
 				type_conversion_compare tcc=compare_type_conversions(left[i],right[i]);
 				if (tcc==type_conversion_compare.less_type_conversion)
 				{
@@ -1917,11 +1963,16 @@ namespace PascalABCCompiler.TreeConverter
                     arri.type = fn.parameters[fn.parameters.Count - 1].type;
                     exprs.AddElement(arri);
                 }
+                // SSM 02/05/23 - этот код ответственен за добавление параметров по умолчанию.
+                // После внедрения именованных параметров здесь необходим более интеллектуальный код - для соответствующих
+                // именованных параметров вместо значений по умолчанию будут добавляться их значения при вызове
+                // Поступим проще - выберем одну функцию с указанными именованными параметрами и подставим все - по умолчанию и именованные
+                // Если функций с указанными именоваными параметрами остается две - то кидать ошибку
                 common_function_node cfn = (common_function_node)fn;
                 for (int j = exprs.Count; j < cfn.parameters.Count; j++)
                 {
                     common_parameter cp = (common_parameter)cfn.parameters[j];
-                    if (cp.default_value != null)
+                    if (cp.default_value != null) // default_value хранится в формальном параметре. А значение именованного параметра хранится в вызове!!
                         exprs.AddElement(cp.default_value);
                 }
             }
@@ -2111,15 +2162,24 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 
-        //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
-        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
+        public List<function_node> select_function_helper(expressions_list parameters, List<SymbolInfo> functions, 
+             location loc, List<SyntaxTree.expression> syntax_nodes_parameters, bool only_from_not_extensions,
+             out Errors.Error err_out)
         {
+            // Возвращает список function_node, если он состоит из одной, то меняет parameters, 
+            // в err возвращает ошибку или null если ошибки не было
+            // Возможная проблема - parameters меняется после первого вызова с ошибкой и во втором вызове он некорректный
+            err_out = null;
+            var set_of_possible_functions = new List<function_node>();
+
             if (functions == null)
             {
-                return AddError<function_node>(new NoFunctionWithThisName(loc));
+                err_out = new NoFunctionWithThisName(loc);
+                return set_of_possible_functions;
             }
-
-            var set_of_possible_functions = new List<function_node>();
+            string FunctionName = "";
+            if (functions != null && functions.Count > 0)
+                FunctionName = (functions[0].sym_info as function_node).name;
 
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
@@ -2131,9 +2191,9 @@ namespace PascalABCCompiler.TreeConverter
 
             foreach (SymbolInfo function in functions)
             {
-                if (function.sym_info is compiled_function_node cfn0 && 
+                if (function.sym_info is compiled_function_node cfn0 &&
                     cfn0.comperehensive_type is compiled_type_node ctn0 &&
-                    (ctn0.compiled_type.Name == "PABCSystem" + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == "PABCExtensions" + compiler_string_consts.ImplementationSectionNamespaceName)
+                    (ctn0.compiled_type.Name == compiler_string_consts.pascalSystemUnitName + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == compiler_string_consts.pascalExtensionsUnitName + compiler_string_consts.ImplementationSectionNamespaceName)
                     && !ctn0.compiled_type.Assembly.FullName.StartsWith("PABCRtl")) // пропустить функции (методы расширения), определенные в сборке в ПИ PABCSystem, но не в PABCRtl.dll
                     continue;
                 // В режиме only_from_not_extensions пропускать все extensions
@@ -2143,9 +2203,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
                 {
                     continue;
-                    //throw new CompilerInternalError("Function name is used to define another kind of object.");
                 }
-                
+
                 function_node fn = null;
                 if (function.sym_info.general_node_type == general_node_type.property_node)
                 {
@@ -2205,7 +2264,13 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             continue;
                         }
-                        set_of_possible_functions.Add(fn);
+                        else if ((func = find_eq_method_in_list(fn, set_of_possible_functions)) != null)
+                        {
+                            if (!(fn is compiled_function_node cfn && func is compiled_function_node cfn2 && (cfn.polymorphic_state == polymorphic_state.ps_static || cfn2.polymorphic_state == polymorphic_state.ps_static)))
+                                set_of_possible_functions.Add(fn);
+                        }
+                        else   
+                            set_of_possible_functions.Add(fn);
                     }
                 }
                 if (parameters.Count > fn.parameters.Count)
@@ -2226,7 +2291,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 //else if ((parameters.Count == 0 && fn.parameters.Count == 1) && fn.parameters[0].is_params && !set_of_possible_functions.Contains(fn))
                 // SSM 6.08.18 - так просто исправить не получается - видимо, сопоставление параметров работает неверно
-                else if ((parameters.Count == fn.parameters.Count - 1) && fn.parameters[fn.parameters.Count-1].is_params && !set_of_possible_functions.Contains(fn))
+                else if ((parameters.Count == fn.parameters.Count - 1) && fn.parameters[fn.parameters.Count - 1].is_params && !set_of_possible_functions.Contains(fn))
                     set_of_possible_functions.Add(fn);
                 else if (fn.num_of_default_parameters != 0 && parameters.Count >= fn.parameters.Count - fn.num_of_default_parameters)
                 {
@@ -2242,7 +2307,8 @@ namespace PascalABCCompiler.TreeConverter
 
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
-                return AddError<function_node>(new NoFunctionWithSameParametresNum(loc, is_alone_method_defined, first_function));
+                err_out = new NoFunctionWithSameParametresNum(loc, is_alone_method_defined, first_function);
+                return set_of_possible_functions;
             }
 
             //(ssyy) Инициализируем is_alone_defined
@@ -2261,7 +2327,9 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     try
                     {
-
+                        // syntax_nodes_parameters в DeduceFunction - ничего плохого нет. Из них фильтруются 
+                        // только function_lambda_definition, а в значениях именованных аргументов их не может быть. 
+                        // Хотя и в этом случае проблем не вижу
                         function_node inst = generic_convertions.DeduceFunction(func, parameters,
                                                                                 is_alone_method_defined, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
                         if (inst == null)
@@ -2289,9 +2357,10 @@ namespace PascalABCCompiler.TreeConverter
                         set_of_possible_functions.RemoveAt(i);
                         lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException = exc;
                     }
-                    catch(Errors.Error err)
+                    catch (Errors.Error err1)
                     {
-                        return AddError<function_node>(err);
+                        err_out = err1;
+                        return set_of_possible_functions;
                     }
                 }
             }
@@ -2311,8 +2380,9 @@ namespace PascalABCCompiler.TreeConverter
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
                 if (is_op)
-                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1 ? parameters[1] : null, loc));
-                return AddError<function_node>(loc, "CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS", first_function.name);
+                    err_out = new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1 ? parameters[1] : null, loc);
+                else err_out = new SimpleSemanticError(loc, "CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS", first_function.name);
+                return set_of_possible_functions;
             }
 
             possible_type_convertions_list_list tcll = new possible_type_convertions_list_list();
@@ -2351,13 +2421,13 @@ namespace PascalABCCompiler.TreeConverter
                                         form_is_procedure = true;
                                 }
                             }
-                            
+
                             if (fact_is_function_with_return_value && form_is_procedure)
                             {
                                 proc_func_or_lambdaAndNotDelegate_OK_flag = false;
                                 break;
                             }
-                            if (fact_is_lambda && ! form_is_delegate) // лямбда вместо не делегата - исключает функцию из рассмотрения
+                            if (fact_is_lambda && !form_is_delegate) // лямбда вместо не делегата - исключает функцию из рассмотрения
                             {
                                 proc_func_or_lambdaAndNotDelegate_OK_flag = false;
                                 break;
@@ -2369,7 +2439,11 @@ namespace PascalABCCompiler.TreeConverter
                     tc = null;
                 // Вот здесь - если фактический параметр - функция, а формальный - процедура хотя бы в одном параметре, то надо нивелировать все преобразования и присваивать tc=null и не влазить в следующий код!!!
                 if (err != null)
-                    return AddError<function_node>(err);
+                {
+                    err_out = err;
+                    return set_of_possible_functions;
+                }
+                    
                 //fix dlja lambd i extension metodov (c->c.IsDigit)
                 if (tc == null)
                 {
@@ -2390,7 +2464,10 @@ namespace PascalABCCompiler.TreeConverter
                         tc = get_conversions(el, set_of_possible_functions[i].parameters,
                             is_alone_method_defined, loc, out err);
                         if (err != null)
-                            return AddError<function_node>(err);
+                        {
+                            err_out = err;
+                            return set_of_possible_functions;
+                        }
                     }
 
                 }
@@ -2414,47 +2491,57 @@ namespace PascalABCCompiler.TreeConverter
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
                 if (_is_assigment && parameters.Count == 2)
-                    return AddError<function_node>(new CanNotConvertTypes(parameters[1], parameters[1].type, parameters[0].type, parameters[1].location));
-                if (_tmp_bfn != null && parameters.Count == 2)
-                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1], loc));
-                if (is_op)
-                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1?parameters[1]:null, loc));
-                return AddError<function_node>(new NoFunctionWithSameArguments(loc, is_alone_method_defined));
+                    err_out = new CanNotConvertTypes(parameters[1], parameters[1].type, parameters[0].type, parameters[1].location);
+                else if (_tmp_bfn != null && parameters.Count == 2)
+                    err_out = new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1], loc);
+                else if (is_op)
+                    err_out = new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1 ? parameters[1] : null, loc);
+                else err_out = new NoFunctionWithSameArguments(FunctionName, loc, is_alone_method_defined);
+                return set_of_possible_functions;
             }
 
             if (set_of_possible_functions.Count == 1)
             {
                 check_single_possible_convertion(loc, tcll[0]);
                 convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
-                return set_of_possible_functions[0];
+                return set_of_possible_functions;
             }
 
             // Если остались параметры функция и процедура - обе без параметров, но функция возвращает T, то функция будет удалена этим алгоритмом, что неправильно!
             // Потому что не учитывается вызов - в вызове может быть функция!!
-            delete_greater_functions(set_of_possible_functions,tcll); // SSM 06/06/19 refactoring
+            delete_greater_functions(set_of_possible_functions, tcll); // SSM 06/06/19 refactoring
 
             if (set_of_possible_functions.Count == 1)
             {
                 check_single_possible_convertion(loc, tcll[0]);
                 convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
-                return set_of_possible_functions[0];
+                return set_of_possible_functions;
             }
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
             if (set_of_possible_functions.Count == 2 && indefinits.Count == 0)
-                if (set_of_possible_functions[0] is basic_function_node && set_of_possible_functions[1] is basic_function_node 
+                if (set_of_possible_functions[0] is basic_function_node && set_of_possible_functions[1] is basic_function_node
                     // добавил это условие из-за комментария. Не понимаю, почему иначе не работает +=. Все тесты проходят 01.07.19 если закомментировать вообще этот if !!!
-                    && set_of_possible_functions[0].name == "+=" && set_of_possible_functions[1].name == "+=") 
-                    return set_of_possible_functions[0];
+                    && set_of_possible_functions[0].name == "+=" && set_of_possible_functions[1].name == "+=")
+                {
+                    var tlist = new List<function_node>();
+                    tlist.Add(set_of_possible_functions[0]);
+                    return tlist;
+                }
+                    
 
             if (indefinits.Count > 0)
             {
                 if (indefinits.Count == 1 && set_of_possible_functions.Count == 0)
                 {
-                    return indefinits[0];
+                    var tlist1 = new List<function_node>();
+                    tlist1.Add(indefinits[0]);
+                    return tlist1;
                 }
                 indefinits.AddRange(set_of_possible_functions);
-                return new indefinite_functions_set(indefinits);
+                var tlist = new List<function_node>();
+                tlist.Add(new indefinite_functions_set(indefinits));
+                return tlist;
             }
 
             bool exist_indefinite_parameter = false;
@@ -2469,7 +2556,9 @@ namespace PascalABCCompiler.TreeConverter
             if (exist_indefinite_parameter)
             {
                 indefinits.AddRange(set_of_possible_functions);
-                return new indefinite_functions_set(indefinits);
+                var tlist = new List<function_node>();
+                tlist.Add(new indefinite_functions_set(indefinits));
+                return tlist;
             }
 
             // Удалить функции, у которых тип возвращаемого значения меньше.
@@ -2542,9 +2631,15 @@ namespace PascalABCCompiler.TreeConverter
                     Errors.Error err = null;
                     possible_type_convertions_list tcl = get_conversions(parameters, funcs[0].parameters, true, loc, out err);
                     if (err != null)
-                        return AddError<function_node>(err);
-                    convert_function_call_expressions(funcs[0], parameters, tcl);
-                    return funcs[0];
+                    {
+                        err_out = err;
+                        return set_of_possible_functions;
+                    }
+                        
+                    convert_function_call_expressions(funcs[0], parameters, tcl); // вот тут заполняются параметры
+                    var tlist = new List<function_node>();
+                    tlist.Add(funcs[0]);
+                    return tlist;
                 }
 
                 Func<Type, bool> IsFunc = t => t.IsGenericType && t.FullName.StartsWith("System.Func");
@@ -2561,7 +2656,7 @@ namespace PascalABCCompiler.TreeConverter
                     Type t = ct.compiled_type;
                     return IsFunc(t);
                 };
-                  
+
 
                 var ParamsCount = funcs[0].parameters.Count;
                 var b = funcs.All(f => f.parameters.Count == ParamsCount); // у всех функций с данной дистанцией должно быть одинаковое количество параметров
@@ -2573,14 +2668,14 @@ namespace PascalABCCompiler.TreeConverter
                 // более точно - bools контролирует только возвращаемые значения - параметры контролирует AllOK
 
                 var AllOK = true; // Это означает, что все параметры с одним номером если функциональные, то у них - одинаковое количество и типы Generic-параметров
-                for (var i=0; i < ParamsCount; i++)
+                for (var i = 0; i < ParamsCount; i++)
                 {
                     // Хочу взять проекцию всех функций на i-тый параметр
                     var parsi = funcs.Select(f => f.parameters[i].type);
                     if (parsi.Any(p => !IsFuncT(p))) // Если какой-то параметр не функция у какой-то из функций с данной дистанцией, то пропустим этот параметр! 
                         // Это - странно! Даже если это - Action, то пропускаем! Это - очень слабая логика!
                         continue;
-
+                    // ЕСЛИ ВСЕ ПАРАМЕТРЫ _ НЕ ФУНКЦИИ, ТО ВСЕ ПРОПУСТЯТСЯ!!!
                     var argss = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()).ToArray(); // последовательность массивов параметров Func
                     var cnts = argss.Select(a => a.Count());
 
@@ -2619,14 +2714,22 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (funcs[0].is_extension_method)
                         {
-                            fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                            if (i - 1 >= syntax_nodes_parameters.Count)
+                                fldiResType = null;
+                            // syntax_nodes_parameters[i - 1] или [i] - может быть другое количество синтаксических параметров 
+                            // при вызове - тогда упадет. Не понимаю, почему этого не происходит
+                            else fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
                         }
                         else
                         {
-                            fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                            // Здесь возможно будет несинхрон если в syntax_nodes_parameters пропущены какие то параметры по умолчанию
+                            // Или такого быть не может?
+                            if (i >= syntax_nodes_parameters.Count)
+                                fldiResType = null;
+                            else fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
                         }
                     }
-                        // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
+                    // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
 
                     // Получается, что fldiResType рассчитывается только если фактическими функциональными параметрами выступают лямбда-выражения. Если имена функций - это не сработает. Это - ОШИБКА!
 
@@ -2648,7 +2751,9 @@ namespace PascalABCCompiler.TreeConverter
                 if (bc == 1) // урра! нашлась ровно одна функция! мы победили!
                 {
                     var ind = bools.IndexOf(true);
-                    return funcs[ind];
+                    var tlist = new List<function_node>();
+                    tlist.Add(funcs[ind]);
+                    return tlist;
                 }
                 if (bc == 0) // SSM 04.06.19 - с этим расстоянием не осталось функций - перейти к следующему расстоянию
                     continue;
@@ -2726,7 +2831,11 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 var c = ct1.GetGenericArguments().Length;
                                 if (c != 0 && (ct1.GetGenericArguments().Last().FullName == null || ct1.GetGenericArguments().Last().FullName.StartsWith("System.Nullable")))
-                                    return f2;
+                                {
+                                    var tlist = new List<function_node>();
+                                    tlist.Add(f2);
+                                    return tlist;
+                                }
                             }
 
                             System.Type ct2 = ctn2.compiled_type;
@@ -2734,7 +2843,11 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 var c = ct2.GetGenericArguments().Length;
                                 if (c != 0 && (ct2.GetGenericArguments().Last().FullName == null || ct2.GetGenericArguments().Last().FullName.StartsWith("System.Nullable")))
-                                    return f1;
+                                {
+                                    var tlist = new List<function_node>();
+                                    tlist.Add(f1);
+                                    return tlist;
+                                }
                             }
                         }
 
@@ -2783,24 +2896,211 @@ namespace PascalABCCompiler.TreeConverter
                 foreach (function_node fn in funcs)
                 {
                     if (fn.is_generic_function_instance)
-                    foreach (parameter p in fn.original_function.parameters)
-                    {
-                        if (p.type.is_generic_parameter)
+                        foreach (parameter p in fn.original_function.parameters)
                         {
-                            to_remove.Add(fn);
-                            break;
+                            if (p.type.is_generic_parameter)
+                            {
+                                to_remove.Add(fn);
+                                break;
+                            }
                         }
-                    }
                 }
                 if (set_of_possible_functions.Count - to_remove.Count == 1)
                 {
                     foreach (function_node fn in to_remove)
                         set_of_possible_functions.Remove(fn);
-                    return set_of_possible_functions[0];
+                    var tlist = new List<function_node>();
+                    tlist.Add(set_of_possible_functions[0]);
+                    return tlist;
+                }
+            }
+            if (set_of_possible_functions.Count == 2 && set_of_possible_functions[0].return_value_type == set_of_possible_functions[1].return_value_type)
+            {
+                if (set_of_possible_functions[0].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[1].semantic_node_type != semantic_node_type.basic_function_node)
+                {
+                    var tlist = new List<function_node>();
+                    tlist.Add(set_of_possible_functions[1]);
+                    return tlist;
+                }
+                else if (set_of_possible_functions[1].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[0].semantic_node_type != semantic_node_type.basic_function_node)
+                {
+                    var tlist = new List<function_node>();
+                    tlist.Add(set_of_possible_functions[0]);
+                    return tlist;
                 }
             }
 
-            return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, set_of_possible_functions));
+            err_out = new SeveralFunctionsCanBeCalled(loc, set_of_possible_functions);
+            return set_of_possible_functions;
+        }
+
+        //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
+        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, 
+            List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false, int params_inc = 0)
+        {
+            // only_from_not_extensions = false - не вырезается первый параметр (Включая методы расширения)
+            // only_from_not_extensions = true - вырезается первый параметр (Исключая методы расширения)
+            string FunctionName = "";
+            // а вот в func[i].parameters - только если это метод расширения. Для методов не надо !!!
+            if (functions != null && functions.Count > 0)
+            { 
+                FunctionName = (functions[0].sym_info as function_node).name;
+            }
+            // с какого номера начинаются именованные параметры
+            var indexOfFirstNamedArgument = -1;
+            if (syntax_nodes_parameters != null)
+                indexOfFirstNamedArgument = syntax_nodes_parameters.FindIndex(exp => exp is SyntaxTree.name_assign_expr);
+
+            if (indexOfFirstNamedArgument == -1)
+            {
+                Errors.Error err_out;
+                var list = select_function_helper(parameters, functions, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                if (err_out != null)
+                    return AddError<function_node>(err_out);
+                return list[0];
+            }
+            else
+            {
+                var indexOfFirstNamedArgumentSem = indexOfFirstNamedArgument + params_inc;
+
+                // Вначале ищем среди оставшихся параметров именованные
+                // Создадим список имен ident именованных аргументов. 
+                List<SyntaxTree.ident> NamesInNamedArguments = syntax_nodes_parameters.Skip(indexOfFirstNamedArgument)
+                    .Select(par => (par as SyntaxTree.name_assign_expr).name).ToList();
+                foreach (var name in NamesInNamedArguments)
+                {
+                    // Есть ли это имя в оставшихся параметрах
+                    var found = false;
+                    foreach (var ff in functions)
+                    {
+                        var is_ext1 = (ff.sym_info as function_node).is_extension_method;
+                        var names = (ff.sym_info as function_node).parameters.Skip(indexOfFirstNamedArgument + (is_ext1 ? 1 : 0)).Select(par => par.name);
+                        var fo = names.Contains(name.name, StringComparer.OrdinalIgnoreCase);
+                        if (fo)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    // Если какое то имя не найдено ни в одном элементе list - found = false - кидать ошибку о неизвестном имени
+                    if (!found)
+                    {
+                        // Здесь - две ситуации. Если среди неименованных аргументов нет, то
+                        var foundUnnamed = false;
+                        foreach (var ff in functions)
+                        {
+                            var is_ext1 = (ff.sym_info as function_node).is_extension_method;
+                            var names = (ff.sym_info as function_node).parameters.Take(indexOfFirstNamedArgument + (is_ext1 ? 1 : 0)).Select(par => par.name);
+                            var fo = names.Contains(name.name, StringComparer.OrdinalIgnoreCase);
+                            if (fo)
+                            {
+                                foundUnnamed = true;
+                                break;
+                            }
+                        }
+                        if (!foundUnnamed)
+                            return AddError<function_node>(syntax_tree_visitor.get_location(name), "UNDEFINED_NAMED_ARGUMENT_{0}", name.name);
+                        // иначе: Именованный аргумент Вася задает параметр, который уже получил значение как неименованный аргумент
+                        return AddError<function_node>(syntax_tree_visitor.get_location(name), "NAMED_ARGUMENT_{0}_SPECIFIES_PARAMETER_THAT_HAD_VALUE_AS_UNNAMED_ARGUMENT", name.name);
+                    }
+                }
+
+                // сделаем копию parameters без именованных аргументов
+                var parameters_helper = new expressions_list();
+                for (int i = 0; i < indexOfFirstNamedArgumentSem; i++)
+                    parameters_helper.AddElement(parameters[i]);
+
+                Errors.Error err_out;
+                var syntax_nodes_parameters1 = syntax_nodes_parameters.Take(indexOfFirstNamedArgument).ToList();
+                var list = select_function_helper(parameters_helper, functions, loc, syntax_nodes_parameters1, only_from_not_extensions, out err_out);
+                if (list.Count == 0 && err_out != null) // С именованными уже точно ничего не получится
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, functions.Count == 1));
+
+                // Теперь остались функции functions, такие что каждый именованный аргумент есть хотя бы в одной из них
+                var hs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (int i = indexOfFirstNamedArgument; i < syntax_nodes_parameters.Count; i++)
+                {
+                    var nae = syntax_nodes_parameters[i] as SyntaxTree.name_assign_expr;
+                    hs.Add(nae.name.name);
+                }
+                // В syntax_nodes_parameters и parameters по идее должно быть одно и то же количество значений
+
+                // В C# - вот такое сообщение об ошибке: 
+                // Наиболее подходящий перегруженный метод 'proc' не имеет параметра с именем 'Вася'
+
+                // Удалим из list все неподходящие, где нет таких имен параметров в оставшейся части
+                list.RemoveAll(ff =>
+                {
+                    var is_ext1 = ff.is_extension_method;
+                    var names = ff.parameters.Skip(indexOfFirstNamedArgument + (is_ext1 ? 1 : 0)).Select(par => par.name);
+                    var hsnames = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
+                    return !hs.IsSubsetOf(hsnames); 
+                    // то есть все имена в именованных аргументах должны находиться среди оставшихся параметров по умолчанию
+                });
+                if (list.Count == 0)
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // или false - не знаю
+                if (list.Count > 1)
+                    return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, list)); // или другое сообщение
+
+                // Теперь раз в list осталась одна функция, найти её в functions и только её и оставить
+                // Надо делать копию functions иначе это влияет на следующий код
+                if (list[0].is_generic_function_instance)
+                    list[0] = list[0].original_function;
+                var functions1 = functions.Where(fun => fun.sym_info == list[0]).ToList();
+                if (functions1.Count == 0)
+                    return AddError<function_node>(new NoFunctionWithSameArguments(FunctionName, loc, true)); // это не должно случиться, но вдруг
+                // Вот и в functions осталась одна функция
+                // Теперь делаем словарь сопоставлений именам -> expression_node (в параметрах)
+                var dict = new Dictionary<string, expression_node>(StringComparer.OrdinalIgnoreCase); // Это словарь именованных аргументов
+                for (int i = indexOfFirstNamedArgument; i < syntax_nodes_parameters.Count; i++)
+                {
+                    var nae = syntax_nodes_parameters[i] as SyntaxTree.name_assign_expr;
+                    //dict[nae.name.name] = parameters[i + (NeedIncrementIndexFNA ? 1 : 0)]; // parameters и syntax_nodes_parameters д.б.одной длины
+                    dict[nae.name.name] = parameters[i + params_inc];
+                }
+                // Вот теперь как-то хвост в parameters надо менять на параметры по умолчанию или на те, что хранятся в dict
+                // Я бы очистил хвост parameters и добавлял бы в него как раньше параметры по умолчанию
+                parameters.remove_range(indexOfFirstNamedArgumentSem, parameters.Count - indexOfFirstNamedArgumentSem); // удалить хвост
+
+                var fun1 = functions1[0].sym_info as function_node; // это - единственная функция
+                var is_ext = fun1.is_extension_method;
+                for (int i = indexOfFirstNamedArgument + (is_ext ? 1 : 0); i < fun1.parameters.Count; i++) // сверить это с другим кодом
+                {
+                    var par = fun1.parameters[i];
+                    var paramexpr = par.default_value;
+                    var name = par.name;
+                    if (dict.ContainsKey(name))
+                        paramexpr = dict[name]; // вместо значения по умолчанию взять значение именованного параметра
+                    parameters.AddElement(paramexpr);
+                }
+                // И наконец всё готово!!!
+                // syntax_nodes_parameters мне кажется всё испортят - там именованные аргументы стоят не на своих местах!!!
+                // Это единственный - опасный и потенциально с ошибками вызов!
+                // Но ощущение, что всё верно, т.к. это нужно только для параметров лямбд, а у именованных аргументов их быть не может
+                list = select_function_helper(parameters, functions1, loc, syntax_nodes_parameters, only_from_not_extensions, out err_out);
+                if (err_out != null)
+                    return AddError<function_node>(err_out);
+                return list[0];
+            }
+
+            // для именованных параметров последовательность может быть такая
+            // Если именованных параметров при вызове нет, то - этот алгоритм. Если есть, то
+            // 1. Оставить только неименованные параметры и вызвать select_function_helper
+            //    Если не найдено ни одной функции, то ошибка и выход
+            //    Если найдена одна функция и это ошибка, то её и кинуть - выход
+            //    Если найдена одна функция и ошибки нет или найдено две и более функций (с ошибкой разумеется), то
+            // 2. Ищем среди найденных функций только те, в которых среди оставшихся после основных параметрах по умолчанию
+            //    есть параметры по умолчанию ровно с такими же именами как и именованные параметры при вызове
+            //    Повторяющиеся именованные параметры при вызове отсекать ранее
+            // 3. Думаю, так: если не осталось ни одной функции, то - ошибка
+            //    Если осталось более одной функции, то - ошибка.
+            //    Если осталась ровно одна функция, то 
+            // 4. Сформировать вызов такой функции с полными семантическими параметрами. Вместо параметров по умолчанию
+            //    подставить их значнеия, именованных параметров подставить ИХ значения.
+            //    И вызвать select_function_helper. И либо он вернет ошибку либо единственную правильную функцию
+            //    Основная проблема: parameters - это параметры при вызове, в них нет имён, это семантика
+            //    Взять недостающие значения по умолчанию из functions[0] и заменить именованные их значениями
+            //    В parameters как-то по особому хранить именованные и первый раз не учитывать
         }
 
         private int get_type_distance(type_node from, type_node to)
@@ -3024,9 +3324,10 @@ namespace PascalABCCompiler.TreeConverter
                 tn1 = tn2;
                 tn2 = t;
             }
+            if (n1 == n2) return tn1;
             // Первый тип  - меньше или равен
             if ((int)n1 <= (int)int_types.integer_type && (int)n2 <= (int)int_types.integer_type) return SystemLibrary.SystemLibrary.integer_type;
-            if (n1 == n2) return tn1;
+            
             // Первый тип  - меньше
             if ((int)n2 == (int)int_types.uint64_type)
                 return SystemLibrary.SystemLibrary.uint64_type;
@@ -3048,19 +3349,6 @@ namespace PascalABCCompiler.TreeConverter
             return null; // это вхолостую
         }
 
-        public bool ContainsForward(type_node tn)
-        {
-            if (tn.ForwardDeclarationOnly || tn.original_generic != null && tn.original_generic.ForwardDeclarationOnly)
-                return true;
-            if (tn is generic_instance_type_node tni)
-                foreach (var t in tn.instance_params)
-                {
-                    var r = ContainsForward(t);
-                    if (r)
-                        return r;
-                }
-            return false;
-        }
     }
 
 }
