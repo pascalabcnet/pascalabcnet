@@ -613,7 +613,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return null;
+                return compiled_type_node.get_type_node(typeof(object));
             }
         }
 
@@ -647,7 +647,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override List<SymbolInfo> find(string name, bool no_search_in_extension_methods = false)
         {
-            return null;
+            return base_type.find(name, no_search_in_extension_methods);
         }
 
         public override void add_name(string name, SymbolInfo si)
@@ -657,12 +657,12 @@ namespace PascalABCCompiler.TreeRealization
 
         public override List<SymbolInfo> find_in_type(string name, bool no_search_in_extension_methods = false)
         {
-            return null;
+            return base_type.find_in_type(name, no_search_in_extension_methods);
         }
 
         public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
-            return null;
+            return base_type.find_in_type(name, CurrentScope, orig_generic_or_null, no_search_in_extension_methods);
         }
 
         public override bool is_value

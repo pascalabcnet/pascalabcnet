@@ -275,6 +275,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                     dn = new dot_node(getClassIdent(classField.cont_type),
                         new ident(id.name, id.source_context), id.source_context);
                 }
+                else if (si.sym_info is common_property_node cpn && cpn.polymorphic_state == polymorphic_state.ps_static)
+                {
+                    dn = new dot_node(getClassIdent(cpn.common_comprehensive_type),
+                        new ident(id.name, id.source_context), id.source_context);
+                }
                 else if (si.sym_info is class_constant_definition ccd)
                 {
                     dn = new dot_node(getClassIdent(ccd.comperehensive_type),

@@ -7248,7 +7248,10 @@ end;
 procedure Println(params args: array of object);
 begin
   if args.Length = 0 then
+  begin  
+    Writeln;
     exit;
+  end;  
   for var i := 0 to args.length - 2 do
     if PrintDelimDefault<>'' then
       Write(args[i], PrintDelimDefault)
@@ -7269,7 +7272,10 @@ end;
 procedure Println(f: Text; params args: array of object);
 begin
   if args.Length = 0 then
+  begin  
+    Writeln(f);
     exit;
+  end;  
   for var i := 0 to args.length - 2 do
     if PrintDelimDefault<>'' then
       Write(f, args[i], PrintDelimDefault)
@@ -13708,11 +13714,11 @@ end;
 //>>     Методы расширения словарей # Extension methods for IDictionary
 // -----------------------------------------------------------------------------
 /// Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию
-function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key): Value; extensionmethod;
+function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key; V: Value := default(Value)): Value; extensionmethod;
 begin
   var b := Self.TryGetValue(K, Result);
   if not b then 
-    Result := default(Value);
+    Result := V;
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом

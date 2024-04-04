@@ -22,6 +22,12 @@ namespace PascalABCCompiler.TreeConverter
 
             addressed_expression to;
             expression_node from;
+
+            // SSM - идея для особого присваивания, по которому находится тип в SymTable
+            /*var sc = context.CurrentScope;
+            var ttt = sc.Find("a");
+            (ttt[0].sym_info as namespace_variable).type = convert_strong(_assign.from).type;*/
+
             AssignCheckAndConvert(_assign, out to, out from);
 
 
@@ -112,6 +118,21 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         private void AssignCheckAndConvert(assign _assign, out addressed_expression to, out expression_node from)
         {
+            // SSM 29/03/24
+            var fromAsLambda0 = _assign.from as function_lambda_definition;
+            expression_node from0 = null;
+            if (fromAsLambda0 == null)
+            {
+                // Перенёс вычисление from в начало - чтобы потом сделать узел, задающий тип при первом присваивании
+                from0 = convert_strong(_assign.from);
+                 if (_assign.first_assignment_defines_type) // всегда в этом случае должно быть присваивание := а не += и т.д.
+                 {
+                      var sc = context.CurrentScope;
+                      var ttt = sc.Find((_assign.to as ident).name); // всегда в этом случае должно быть простое имя
+                      (ttt[0].sym_info as namespace_variable).type = from0.type;
+                 }
+            }
+
             internal_is_assign = true;
             to = convert_address_strong(_assign.to);
             internal_is_assign = false;
@@ -146,7 +167,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                from = convert_strong(_assign.from);
+                from = from0;
                 ProcessAssigntToAutoType(to, ref from);
             }
             // end

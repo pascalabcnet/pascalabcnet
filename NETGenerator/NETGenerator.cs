@@ -5881,6 +5881,8 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_virtual_method_call = virtual_method_call;
             virtual_method_call = false;
             value.obj.visit(this);
+            if (value.obj is ICommonClassFieldReferenceNode)
+                is_field_reference = true;
             virtual_method_call = tmp_virtual_method_call;
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
@@ -7713,7 +7715,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (value.obj.type.is_generic_parameter)
                     il.Emit(OpCodes.Constrained, helper.GetTypeReference(value.obj.type).tp);
-                else if (value.obj.conversion_type != null && value.obj.conversion_type.is_generic_parameter && (!value.obj.type.IsInterface || value.obj.conversion_type.ImplementingInterfaces.Count > 0))
+                else if (value.obj.conversion_type != null && value.obj.conversion_type.is_generic_parameter && (!value.obj.type.IsInterface || value.obj.conversion_type.ImplementingInterfaces.Contains(value.obj.type)))
                     il.Emit(OpCodes.Constrained, helper.GetTypeReference(value.obj.conversion_type).tp);
                 il.EmitCall(OpCodes.Callvirt, mi, null);
             }
@@ -10184,9 +10186,9 @@ namespace PascalABCCompiler.NETGenerator
                             il.Emit(OpCodes.Stsfld, vi.fb);
                             il.Emit(OpCodes.Ldsfld, vi.fb);
                         }
-                        
+
                     }
-                         
+
                     copy_string = false;
                 }
                 il.Emit(OpCodes.Stloc, pin_lb);
@@ -10271,7 +10273,7 @@ namespace PascalABCCompiler.NETGenerator
                     get_meth = mb.GetArrayMethod(ti.tp, "Get", CallingConventions.HasThis, elem_type, lst.ToArray());
                     addr_meth = mb.GetArrayMethod(ti.tp, "Address", CallingConventions.HasThis, elem_type.MakeByRefType(), lst.ToArray());
                 }
-                
+
                 for (int i = 0; i < indices.Length; i++)
                     indices[i].visit(this);
             }
@@ -10288,42 +10290,53 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
                 if (temp_is_dot_expr)
+            {
+                if (elem_type.IsGenericParameter)
                 {
-                    if (elem_type.IsGenericParameter)
+                    if (value.array.type.element_type.is_generic_parameter && value.array.type.element_type.base_type != null && value.array.type.element_type.base_type.is_class && value.array.type.element_type.base_type.base_type != null)
                     {
-                        if (indices == null)
-                            il.Emit(OpCodes.Ldelema, elem_type);
-                        else
-                            il.Emit(OpCodes.Call, addr_meth);
-                }
-                    else if (elem_type.IsValueType == true)
-                    {
-                        if (indices == null)
-                            il.Emit(OpCodes.Ldelema, elem_type);
-                        else
-                            il.Emit(OpCodes.Call, addr_meth);
-                    }
-                    else if (elem_type.IsPointer)
-                    {
-                        if (indices == null)
-                            il.Emit(OpCodes.Ldelem_I);
-                        else
-                            il.Emit(OpCodes.Call, addr_meth);
-                    }
-                    else
                         if (indices == null)
                             il.Emit(OpCodes.Ldelem_Ref);
                         else
                             il.Emit(OpCodes.Call, get_meth);
-
+                    }
+                    else
+                    {
+                        if (indices == null)
+                            il.Emit(OpCodes.Ldelema, elem_type);
+                        else
+                            il.Emit(OpCodes.Call, addr_meth);
+                    }
+                        
                 }
-                else
+                else if (elem_type.IsValueType == true)
                 {
                     if (indices == null)
-                        NETGeneratorTools.PushLdelem(il, elem_type, true);
+                        il.Emit(OpCodes.Ldelema, elem_type);
                     else
-                        il.Emit(OpCodes.Call, get_meth);
+                        il.Emit(OpCodes.Call, addr_meth);
                 }
+                else if (elem_type.IsPointer)
+                {
+                    if (indices == null)
+                        il.Emit(OpCodes.Ldelem_I);
+                    else
+                        il.Emit(OpCodes.Call, addr_meth);
+                }
+                else
+                    if (indices == null)
+                    il.Emit(OpCodes.Ldelem_Ref);
+                else
+                    il.Emit(OpCodes.Call, get_meth);
+
+            }
+            else
+            {
+                if (indices == null)
+                    NETGeneratorTools.PushLdelem(il, elem_type, true);
+                else
+                    il.Emit(OpCodes.Call, get_meth);
+            }
             is_addr = temp_is_addr;
             is_dot_expr = temp_is_dot_expr;
             //if (pinned_handle != null)

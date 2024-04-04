@@ -1144,6 +1144,20 @@ namespace PascalABCCompiler.TreeRealization
                         }
                     }
                 }
+                else if (to is delegated_methods)
+                {
+                    var proper_meth = (to as delegated_methods).proper_methods[0].simple_function_node;
+                    if (dii.parameters.Count == proper_meth.parameters.Count)
+                    {
+                        //ms100 error fixed (DS)
+                        bool eq = TreeConverter.convertion_data_and_alghoritms.function_eq_params_and_result(dii.invoke_method, proper_meth);
+                        if (eq)
+                        {
+                            delegate_to_delegate_type_converter dtdtc = new delegate_to_delegate_type_converter(to);
+                            add_conversion(ret, new convert_types_function_node(dtdtc.convert_delegates_to_delegates, false), from, to);
+                        }
+                    }
+                }
 
                 if (dii.parameters.Count == 0)
                 {
