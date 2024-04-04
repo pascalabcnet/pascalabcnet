@@ -1187,7 +1187,9 @@ namespace PascalABCCompiler
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_endregion, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_ifdef,
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_endif, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_ifndef,
                 PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_define, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_else,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_undef, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_include});
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_undef, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_include,
+                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_hidden_idents,
+        });
 
         private Dictionary<string, List<compiler_directive>> GetCompilerDirectives(List<CompilationUnit> Units)
         {
