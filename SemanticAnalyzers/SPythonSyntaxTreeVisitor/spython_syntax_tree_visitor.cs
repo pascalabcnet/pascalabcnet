@@ -154,7 +154,7 @@ namespace SPythonSyntaxTreeVisitor
 
         public override void visit(ident _ident)
         {
-            var si = context.find_first(_ident.name).sym_info as var_definition_node;
+            var si = context.find_first(_ident.name)?.sym_info as var_definition_node;
             if (si != null && si.type.name == "UnknownType")
             {
                 var loc = get_location(_ident);
