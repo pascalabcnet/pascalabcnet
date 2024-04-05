@@ -59,7 +59,7 @@
 %left NOT
 
 %type <id> ident dotted_ident range_ident
-%type <ex> expr proc_func_call const_value variable
+%type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident
 %type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_and_stmt_list
@@ -265,7 +265,7 @@ dotted_ident_list
 			$$ = new ident_list($1, @$);
 		}
     | dotted_ident_list COMMA dotted_ident       
-        {
+        { 
 			$$ = ($1 as ident_list).Add($3, @$);
 		}
     ;
@@ -276,13 +276,14 @@ assign_stmt
 			if ($1 is ident id) {
 				// объявление
 				if (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name))) {
-				// объявление глобальной переменной
-				if (symbolTable.OuterScope == null) {
-					// var vds = new var_def_statement(new ident_list(id, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
-					var vds = new var_def_statement(new ident_list(id, @1), new named_type_reference(new ident("UnknownType")), null, definition_attribute.None, false, @$);
-					globalVariables.Add(id.name);
-					decl.Add(new variable_definitions(vds, @$), @$);
-					//decl.AddFirst(new variable_definitions(vds, @$));
+
+					// объявление глобальной переменной
+					if (symbolTable.OuterScope == null) {
+						// var vds = new var_def_statement(new ident_list(id, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
+						var vds = new var_def_statement(new ident_list(id, @1), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, @$);
+						globalVariables.Add(id.name);
+						decl.Add(new variable_definitions(vds, @$), @$);
+						//decl.AddFirst(new variable_definitions(vds, @$));
 
 						var ass = new assign(id as addressed_value, $3, $2.type, @$);
 						ass.first_assignment_defines_type = true;
@@ -339,12 +340,20 @@ expr
 		{ $$ = new un_expr($2, $1.type, @$); }
 	| NOT	expr
 		{ $$ = new un_expr($2, $1.type, @$); }
-	| variable
+	| complex_variable
 		{ $$ = $1; }
 	| const_value
 		{ $$ = $1; }
 	| LPAR expr RPAR
 		{ $$ = $2; }
+	| ident
+		{
+			// Проверка на то что пытаемся считать не инициализированную переменную
+			if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
+					parsertools.AddErrorFromResource("variable \"{0}\" is used but has no value", @$, $1.name);
+			
+			$$ = $1; 
+		}
 	;
 
 const_value
@@ -462,12 +471,24 @@ proc_func_call_stmt
 variable
 	: ident
 		{ $$ = $1; }
-	| proc_func_call
+	| complex_variable
 		{ $$ = $1; }
-	| variable DOT ident
+	;
+
+complex_variable
+	: proc_func_call
+		{ $$ = $1; }
+	| complex_variable_or_ident DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	| const_value DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
+	;
+
+complex_variable_or_ident
+	: ident 
+		{ $$ = $1; }
+	| complex_variable
+		{ $$ = $1; }
 	;
 
 block
