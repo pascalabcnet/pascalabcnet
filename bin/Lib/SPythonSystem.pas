@@ -33,8 +33,6 @@ function range(e: integer): sequence of integer;
 
 function range(s: integer; e: integer): sequence of integer;
 
-function stype(obj: object): System.Type;
-
 //function all<T>(seq: sequence of T): boolean;
 
 //function any<T>(seq: sequence of T): boolean;
@@ -71,13 +69,12 @@ begin
   else
     Result := 0;
 end;
-}
 
 function stype(obj: object): System.Type := obj.GetType();
 
 function int(obj: object): integer := Convert.ToInt32(obj);
 
-function str(obj: object): string := val.ToString(); 
+function str(val: object): string := val.ToString(); 
 
 function float(val: string): real := real.Parse(val);
 
@@ -103,7 +100,5 @@ end;
 function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
-
-function stype(obj: object): System.Type := obj.GetType();
 
 end.
