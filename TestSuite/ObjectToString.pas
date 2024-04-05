@@ -12,9 +12,9 @@
 var res := new StringBuilder;
 procedure Test(o: object);
 begin
-  TypeName(o, res);
+  res.AppendTypeName(o);
   res.Append('{ ');
-  res.AppendObjectToString(o);
+  res.AppendObjectString(o);
   res.Append(' }'#10);
 end;
 
