@@ -1703,7 +1703,7 @@ namespace PascalABCCompiler.TreeConverter
         {
         }
 
-        private type_node find_type(string name, location loc)
+        protected type_node find_type(string name, location loc)
         {
             definition_node di = context.check_name_node_type(name, loc, general_node_type.type_node);
             type_node tn = (type_node)di;
@@ -1711,7 +1711,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //(ssyy) разбил
-        private type_node find_type(SyntaxTree.named_type_reference names, location loc)
+        protected type_node find_type(SyntaxTree.named_type_reference names, location loc)
         {
             definition_node di;
             SyntaxTree.template_type_reference ttr = names as SyntaxTree.template_type_reference;

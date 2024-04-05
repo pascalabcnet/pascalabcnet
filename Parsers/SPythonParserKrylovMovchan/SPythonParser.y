@@ -265,7 +265,7 @@ dotted_ident_list
 			$$ = new ident_list($1, @$);
 		}
     | dotted_ident_list COMMA dotted_ident       
-        { 
+        {
 			$$ = ($1 as ident_list).Add($3, @$);
 		}
     ;
@@ -276,14 +276,13 @@ assign_stmt
 			if ($1 is ident id) {
 				// объявление
 				if (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name))) {
-
-					// объявление глобальной переменной
-					if (symbolTable.OuterScope == null) {
-						// var vds = new var_def_statement(new ident_list(id, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
-						var vds = new var_def_statement(new ident_list(id, @1), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, @$);
-						globalVariables.Add(id.name);
-						decl.Add(new variable_definitions(vds, @$), @$);
-						//decl.AddFirst(new variable_definitions(vds, @$));
+				// объявление глобальной переменной
+				if (symbolTable.OuterScope == null) {
+					// var vds = new var_def_statement(new ident_list($1, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
+					var vds = new var_def_statement(new ident_list($1, @1), new named_type_reference(new ident("UnknownType")), null, definition_attribute.None, false, @$);
+					globalVariables.Add($1.name);
+					decl.Add(new variable_definitions(vds, @$), @$);
+					//decl.AddFirst(new variable_definitions(vds, @$));
 
 						var ass = new assign(id as addressed_value, $3, $2.type, @$);
 						ass.first_assignment_defines_type = true;

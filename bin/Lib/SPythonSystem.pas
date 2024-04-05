@@ -4,6 +4,9 @@ interface
 
 uses PABCSystem;
 
+type UnknownType = class
+end;
+
 // Basic IO methods
 
 function input(): string;
@@ -13,7 +16,9 @@ procedure print(params lst: array of object);
 // Basic type conversion methods
 
 function int(val: string): integer;
+function stype(obj: object): System.Type;
 
+//function int(val: string): integer;
 function int(b: boolean): integer;
 
 function str(val: object): string;
@@ -66,6 +71,11 @@ begin
   else
     Result := 0;
 end;
+}
+
+function stype(obj: object): System.Type := obj.GetType();
+
+function int(obj: object): integer := Convert.ToInt32(obj);
 
 function str(obj: object): string := val.ToString(); 
 
