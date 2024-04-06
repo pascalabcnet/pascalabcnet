@@ -178,10 +178,14 @@ namespace IndentArranger
                 lastNotEmptyLine = lineCounter;
             }
 
-            // закрытие всех отступов в конце файла
-            // (заменить "currentLineIndentLevel + 1" на "currentLineIndentLevel" если есть блок оборачивающий всю программу)
-            programLines[lastNotEmptyLine] +=
-                string.Concat(Enumerable.Repeat(";" + unindentToken, indentStack.Count() - 1));
+
+            if (lastNotEmptyLine != -1)
+            {
+                // закрытие всех отступов в конце файла
+                // (заменить "currentLineIndentLevel + 1" на "currentLineIndentLevel" если есть блок оборачивающий всю программу)
+                programLines[lastNotEmptyLine] +=
+                    string.Concat(Enumerable.Repeat(";" + unindentToken, indentStack.Count() - 1));
+            }
         }
     }
 }
