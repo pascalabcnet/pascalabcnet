@@ -12,6 +12,9 @@ function FloorMod(x: real; y: real): real;
 
 procedure TestProcedure();
 
+type UnknownType = class
+end;
+
 implementation
 
 procedure TestProcedure();

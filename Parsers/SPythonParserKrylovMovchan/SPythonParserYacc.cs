@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-56159VE
-// DateTime: 05.04.2024 22:13:57
-// UserName: ????
+// Machine:  LAPTOP-MPBGOA9N
+// DateTime: 06.04.2024 10:34:59
+// UserName: krylo
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -535,7 +535,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 28: // dotted_ident_list -> dotted_ident_list, COMMA, dotted_ident
-{ 
+{
 			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as ident_list).Add(ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan);
 		}
         break;
@@ -635,9 +635,9 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 {
 			// �?�?ове�?ка на �?о �?�?о п�?�?аемся с�?и�?а�?�? не ини�?иализи�?ованн�?�? пе�?еменн�?�?
 			if (!symbolTable.Contains(ValueStack[ValueStack.Depth-1].id.name) && !globalVariables.Contains(ValueStack[ValueStack.Depth-1].id.name))
-					parsertools.AddErrorFromResource("variable \"{0}\" is used but has no value", CurrentLocationSpan, ValueStack[ValueStack.Depth-1].id.name);
-			
-			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].id; 
+					parsertools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", CurrentLocationSpan, ValueStack[ValueStack.Depth-1].id.name);
+
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].id;
 		}
         break;
       case 50: // const_value -> INTNUM

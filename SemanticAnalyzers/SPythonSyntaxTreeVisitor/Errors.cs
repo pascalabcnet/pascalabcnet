@@ -13,10 +13,15 @@ namespace SPythonSyntaxTreeVisitor
         public SPythonSemanticError(location loc, string ErrResourceString, params object[] values) : base(loc, ErrResourceString, values) { }
         public override string ToString()
         {
+            string err_res = ErrorResourceString;
+            if (!ErrorResourceString.StartsWith("SPYTHONSEMANTIC_"))
+            {
+                err_res = "SEMANTICERROR_" + ErrResourceString;
+            }
             if (values != null)
-                return string.Format(PascalABCCompiler.StringResources.Get(ErrorResourceString), values);
+                return string.Format(PascalABCCompiler.StringResources.Get(err_res), values);
             else
-                return string.Format(PascalABCCompiler.StringResources.Get(ErrorResourceString), "");
+                return string.Format(PascalABCCompiler.StringResources.Get(err_res), "");
         }
     }
 }

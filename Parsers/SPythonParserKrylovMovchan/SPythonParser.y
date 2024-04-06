@@ -260,12 +260,12 @@ dotted_ident
 	;
 
 dotted_ident_list
-    : dotted_ident                               
+    : dotted_ident
         {
 			$$ = new ident_list($1, @$);
 		}
-    | dotted_ident_list COMMA dotted_ident       
-        { 
+    | dotted_ident_list COMMA dotted_ident
+        {
 			$$ = ($1 as ident_list).Add($3, @$);
 		}
     ;
@@ -350,9 +350,9 @@ expr
 		{
 			// Проверка на то что пытаемся считать не инициализированную переменную
 			if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
-					parsertools.AddErrorFromResource("variable \"{0}\" is used but has no value", @$, $1.name);
-			
-			$$ = $1; 
+					parsertools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
+
+			$$ = $1;
 		}
 	;
 
@@ -485,7 +485,7 @@ complex_variable
 	;
 
 complex_variable_or_ident
-	: ident 
+	: ident
 		{ $$ = $1; }
 	| complex_variable
 		{ $$ = $1; }

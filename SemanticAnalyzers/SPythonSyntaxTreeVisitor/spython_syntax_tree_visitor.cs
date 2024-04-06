@@ -87,11 +87,13 @@ namespace SPythonSyntaxTreeVisitor
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
 
-            RunAdditionalChecks(_bin_expr);
+            var new_bin_expr = new bin_expr(new semantic_addr_value(left), new semantic_addr_value(right), _bin_expr.operation_type, _bin_expr.source_context);
+
+            RunAdditionalChecks(new_bin_expr);
 
             switch (_bin_expr.operation_type)
             {
-                case Operators.Plus:
+                /*case Operators.Plus:
                     if (left.type == right.type && left.type.name == "boolean")
                     {
                         var int_left = new method_call(new ident("int"), new expression_list(new semantic_addr_value(left, left.location)), left.location);
@@ -100,7 +102,7 @@ namespace SPythonSyntaxTreeVisitor
                         visit(bti_bin_expr);
                         return;
                     }
-                    break;
+                    break;*/
                 case Operators.Division:
                     if (left.type == right.type && left.type.name == "string")
                     {
@@ -138,10 +140,9 @@ namespace SPythonSyntaxTreeVisitor
                     }
                     break;
             }
-            var new_bin_expr = new bin_expr(new semantic_addr_value(left), new semantic_addr_value(right), _bin_expr.operation_type, _bin_expr.source_context);
             base.visit(new_bin_expr);
         }
-        public override void visit(var_def_statement _var_def_statement)
+        /*public override void visit(var_def_statement _var_def_statement)
         {
             if (_var_def_statement.vars_type != null)
             {
@@ -155,13 +156,13 @@ namespace SPythonSyntaxTreeVisitor
         public override void visit(ident _ident)
         {
             var si = context.find_first(_ident.name)?.sym_info as var_definition_node;
-            if (si != null && si.type.name == "UnknownType")
+            if (si != null && si.type.name == "@UnknownType")
             {
                 var loc = get_location(_ident);
                 AddError(loc, "SPYTHONSEMANTIC_USING_VARIABLE_BEFORE_ASSIGNMENT");
             }
             base.visit(_ident);
-        }
+        }*/
 
         /*public override void visit(named_type_reference _named_type_reference)
         {
