@@ -408,11 +408,12 @@ namespace PascalABCCompiler.TreeConverter
             //allow_procedure = true;
             if ((!allow_procedure) && (fn.return_value_type == null))
             {
-                throw new SimpleSemanticError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
+                syntax_tree_visitor.AddError(new FunctionExpectedProcedureMeet(fn, loc));
+                // throw new SimpleSemanticError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
             }
 
             if (fn.return_value_type is undefined_type)
-                throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", fn.name);
+                 throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", fn.name);
             expression_node expr_node = null;
             switch (fn.semantic_node_type)
             {

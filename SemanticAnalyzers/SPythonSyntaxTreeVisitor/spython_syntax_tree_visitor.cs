@@ -49,7 +49,6 @@ namespace SPythonSyntaxTreeVisitor
         }
         public override void AddError(location loc, string ErrResourceString, params object[] values)
         {
-
             Error err = new SPythonSemanticError(loc, ErrResourceString, values);
             if (ErrResourceString == "FORWARD_DECLARATION_{0}_AS_BASE_TYPE")
             {
@@ -74,8 +73,12 @@ namespace SPythonSyntaxTreeVisitor
                     else if (_op_err.operator_name == "div")
                     {
                         base.AddError(new OperatorCanNotBeAppliedToThisTypes("//", _op_err.left, _op_err.right, _op_err.loc), shouldReturn);
+                        return;
                     }
                     break;
+                case FunctionExpectedProcedureMeet _proc_meet:
+                    base.AddError(new SPythonSemanticError(_proc_meet.loc, "SPYTHONSEMANTIC_FUNCTION_{0}_NO_RETURN", _proc_meet.function.name));
+                    return;
                 case SimpleSemanticError _ss_err:
                     break;
             }
