@@ -12,6 +12,15 @@ using System.IO.Compression;
 namespace PascalABCCompiler.ParserTools
 {
 
+    /// <summary>
+    /// ¬спомогательна€ структура дл€ модулей с ассоциированным обработчиком (например визитором синтаксического дерева)
+    /// </summary>
+    public struct UnitWithCallback<T>
+    {
+        public string name;
+        public Action<T> callback;
+    }
+
     public class CGTResourceExtractor
     {
 

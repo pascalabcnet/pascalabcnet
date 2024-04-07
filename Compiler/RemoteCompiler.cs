@@ -390,7 +390,7 @@ namespace PascalABCCompiler
             if (compilerOptions.Locale != null)
                 sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
             
-            foreach (var kv in compilerOptions.StandardModulesByLanguages)
+            foreach (var kv in compilerOptions.StandardModules)
             {
                 foreach (CompilerOptions.StandardModule module in kv.Value)
                 {

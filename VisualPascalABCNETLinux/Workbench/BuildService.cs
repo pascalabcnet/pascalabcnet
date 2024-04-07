@@ -237,9 +237,9 @@ namespace VisualPascalABC
         /// </summary>
         private void RemoveRuntimeServicesModuleFromStandardModules()
         {
-            foreach (var kv in CompilerOptions1.StandardModulesByLanguages)
+            foreach (var kv in CompilerOptions1.StandardModules)
             {
-                CompilerOptions1.RemoveStandardModuleAtIndex(kv.Key, CompilerOptions1.StandardModulesByLanguages[kv.Key].Count - 1);
+                CompilerOptions1.RemoveStandardModuleAtIndex(kv.Key, CompilerOptions1.StandardModules[kv.Key].Count - 1);
             }
         }
 
@@ -248,7 +248,7 @@ namespace VisualPascalABC
         /// </summary>
         private void AddRuntimeServicesModuleToStandardModules(string RuntimeServicesModule)
         {
-            foreach (var kv in CompilerOptions1.StandardModulesByLanguages)
+            foreach (var kv in CompilerOptions1.StandardModules)
             {
                 kv.Value.Add(new PascalABCCompiler.CompilerOptions.StandardModule(RuntimeServicesModule,
                     PascalABCCompiler.CompilerOptions.StandardModuleAddMethod.RightToMain, kv.Key));

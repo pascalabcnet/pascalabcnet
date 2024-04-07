@@ -615,58 +615,73 @@ namespace PascalABCCompiler
             public string name = null;
             public StandardModuleAddMethod addMethod = StandardModuleAddMethod.LeftToAll;
             public string languageToAdd = TreeConverter.compiler_string_consts.pascalLanguageName;
-
-            public bool isHidden = false;
-            public readonly Action<SyntaxTree.compilation_unit> syntaxTreePostProcessor;
-
-            public StandardModule(string name, string languageToAdd)
+            
+            public StandardModule(string Name, StandardModuleAddMethod addMethod)
             {
-                this.name = name;
-                this.languageToAdd = languageToAdd;
-            }
-
-            public StandardModule(string name, StandardModuleAddMethod addMethod, string languageToAdd) : this(name, languageToAdd)
-            {
+                this.name = Name;
                 this.addMethod = addMethod;
             }
 
-            /// <summary>
-            /// Позволяет добавить callback, ассоциированный с данным модулем
-            /// </summary>
-            public StandardModule(string name, string languageToAdd, bool isHidden, Action<SyntaxTree.compilation_unit> syntaxTreePostProcessor) : this(name, languageToAdd)
+            public StandardModule(string name, StandardModuleAddMethod addMethod, string languageToAdd)
             {
-                this.isHidden = isHidden;
-                this.syntaxTreePostProcessor = syntaxTreePostProcessor;
+                this.name = name;
+                this.languageToAdd = languageToAdd;
+                this.addMethod = addMethod;
             }
 
+            public StandardModule(string name)
+            {
+                this.name = name;
+            }
+
+            public StandardModule(string name, string languageToAdd)
+            {
+                this.languageToAdd = languageToAdd;
+                this.name = name;
+            }
         }
 
-        private Dictionary<string, List<StandardModule>> standardModulesForLanguages = new Dictionary<string, List<StandardModule>>();
+        public class HiddenStandardModule : StandardModule
+        {
+            private readonly Action<SyntaxTree.compilation_unit> postProcessor;
+
+            public HiddenStandardModule(string name, string languageToAdd, Action<SyntaxTree.compilation_unit> postProcessor) : base(name, languageToAdd)
+            {
+                this.postProcessor = postProcessor;
+            }
+
+            public void PostProcessSyntaxTree(SyntaxTree.compilation_unit syntaxTree)
+            {
+                postProcessor?.Invoke(syntaxTree);
+            }
+        }
+
+        private Dictionary<string, List<StandardModule>> standardModules = new Dictionary<string, List<StandardModule>>();
 
         /// <summary>
         /// Списки стандартных модулей для поддерживаемых языков (первым в списке должен быть модуль "System")
         /// </summary>
-        public Dictionary<string, List<StandardModule>> StandardModulesByLanguages
+        public Dictionary<string, List<StandardModule>> StandardModules
         {
             get
             {
-                if (standardModulesForLanguages.Count == 0)
+                if (standardModules.Count == 0)
                     LoadStandardModules();
-                return standardModulesForLanguages;
+                return standardModules;
             }
             set
             {
-                standardModulesForLanguages = value;
+                standardModules = value;
             }
         }
 
         /// <summary>
-        /// Вспомогательный словарь для удобного поиска модулей по имени
+        /// Вспомогательный словарь для удобного доступа к скрытым стандартным модулям (также содержащимся в словаре StandardModules)
         /// </summary>
-        public Dictionary<string, StandardModule> StandardModules { get; private set; } 
+        public Dictionary<string, HiddenStandardModule> HiddenStandardModules { get; private set; } = new Dictionary<string, HiddenStandardModule>();
 
         /// <summary>
-        /// Заполняет словари стандартных модулей для всех поддерживаемых языков
+        /// Заполняет словарь стандартных модулей для всех поддерживаемых языков
         /// </summary>
         private void LoadStandardModules()
         {
@@ -674,24 +689,30 @@ namespace PascalABCCompiler
             {
                 if (parser is Parsers.BaseParser baseParser)
                 {
-                    standardModulesForLanguages[baseParser.Name] = baseParser.StandardModules.Select(module => new StandardModule(module.name, baseParser.Name, module.isHidden, module.syntaxTreePostProcessor)).ToList();
+                    standardModules[baseParser.Name] = baseParser.SystemUnitNames.Select(unitName => new StandardModule(unitName, baseParser.Name)).ToList();
+                    
+                    if (baseParser.HiddenSystemUnits != null)
+                    {
+                        List<HiddenStandardModule> modules = baseParser.HiddenSystemUnits.Select(hiddenUnit => new HiddenStandardModule(hiddenUnit.name, baseParser.Name, hiddenUnit.callback)).ToList();
+                        standardModules[baseParser.Name].AddRange(modules);
+                        modules.ForEach(module => HiddenStandardModules[module.name] = module);
+                    }   
                 }
             }
-            StandardModules = standardModulesForLanguages.Values.SelectMany(modules => modules).ToDictionary(module => module.name);
         }
 
         public void RemoveStandardModule(string language, string name)
         {
-            int moduleIndex = StandardModulesByLanguages[language].FindIndex(module => module.name == name);
+            int moduleIndex = StandardModules[language].FindIndex(module => module.name == name);
             
             if (moduleIndex != -1)
-                StandardModulesByLanguages[language].RemoveAt(moduleIndex);
+                StandardModules[language].RemoveAt(moduleIndex);
         }
 
         public void RemoveStandardModuleAtIndex(string language, int index)
         {
-            if (index < StandardModulesByLanguages[language].Count)
-                StandardModulesByLanguages[language].RemoveAt(index);
+            if (index < StandardModules[language].Count)
+                StandardModules[language].RemoveAt(index);
         }
 
 
@@ -1309,7 +1330,7 @@ namespace PascalABCCompiler
 
         private void MoveSystemUnitForwardInUnitsTopologicallySortedList()
         {
-            if (CompilerOptions.StandardModulesByLanguages.Count == 0)
+            if (CompilerOptions.StandardModules.Count == 0)
                 return;
 
             CompilationUnit systemUnit = null;
@@ -1321,7 +1342,7 @@ namespace PascalABCCompiler
                 string unitName = (unit.SemanticTree as common_unit_node).unit_name;
 
                 // Пока что сделана проверка для всех языков   |    Вопрос  EVA
-                if (CompilerOptions.StandardModulesByLanguages.Select(kv => kv.Value[0].name).Contains(unitName))
+                if (CompilerOptions.StandardModules.Select(kv => kv.Value[0].name).Contains(unitName))
                 {
                     systemUnit = unit;
                     break;
@@ -2698,7 +2719,7 @@ namespace PascalABCCompiler
             {
                 if (unitModule.interface_part.uses_modules == null)
                 {
-                    if (CompilerOptions.StandardModulesByLanguages[currentCompilationUnit.languageName].Count > 0)
+                    if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count > 0)
                     {
                         unitModule.interface_part.uses_modules = new SyntaxTree.uses_list();
                         unitModule.interface_part.uses_modules.source_context = new SyntaxTree.SourceContext();
@@ -2712,7 +2733,7 @@ namespace PascalABCCompiler
             {
                 if (programModule.used_units == null)
                 {
-                    if (CompilerOptions.StandardModulesByLanguages[currentCompilationUnit.languageName].Count > 0)
+                    if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count > 0)
                     {
                         programModule.used_units = new SyntaxTree.uses_list();
                         programModule.used_units.source_context = new SyntaxTree.SourceContext();
@@ -3046,21 +3067,21 @@ namespace PascalABCCompiler
 
         public void AddStandardUnitsToInterfaceUsesSection(SyntaxTree.compilation_unit unitSyntaxTree)
         {
-            if (CompilerOptions.StandardModulesByLanguages[currentCompilationUnit.languageName].Count == 0)
+            if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count == 0)
                 return;
 
             List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(unitSyntaxTree);
 
             string currentModuleName = Path.GetFileNameWithoutExtension(unitSyntaxTree.file_name).ToLower();
 
-            foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModulesByLanguages[currentCompilationUnit.languageName])
+            foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModules[currentCompilationUnit.languageName])
             {
                 string moduleName = Path.GetFileNameWithoutExtension(module.name);
                 if (moduleName.ToLower() == currentModuleName)
                     return;
             }
 
-            foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModulesByLanguages[currentCompilationUnit.languageName])
+            foreach (CompilerOptions.StandardModule module in CompilerOptions.StandardModules[currentCompilationUnit.languageName])
             {
                 // если мы компилируем не основную программу, а добавлять нужно в основную программу, то пропускаем
                 if (module.addMethod == CompilerOptions.StandardModuleAddMethod.RightToMain && currentCompilationUnit != firstCompilationUnit)
@@ -4042,13 +4063,13 @@ namespace PascalABCCompiler
                 // SSM 2/05/16 - для преобразования синтаксических деревьев извне (синтаксический сахар)
                 currentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(currentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
 
-                #region SYNTAX TREE POST PROCESSING
+                #region HIDDEN UNITS POST PROCESSING
                 string unitName = Path.GetFileNameWithoutExtension(unitFileName);
 
-                // если это стандартный модуль, содержащий  то применить к его синтаксическому дереву сохраненное преобразование
-                if (CompilerOptions.StandardModules.ContainsKey(unitName) && CompilerOptions.StandardModules[unitName].syntaxTreePostProcessor != null)
+                // если это скрытый модуль, то применить к его синтаксическому дереву сохраненное преобразование
+                if (unitName.EndsWith("Hidden") && CompilerOptions.HiddenStandardModules.ContainsKey(unitName))
                 {
-                    CompilerOptions.StandardModules[unitName].syntaxTreePostProcessor.Invoke(currentUnit.SyntaxTree);
+                    CompilerOptions.HiddenStandardModules[unitName].PostProcessSyntaxTree(currentUnit.SyntaxTree);
                 }
                 #endregion
             }
