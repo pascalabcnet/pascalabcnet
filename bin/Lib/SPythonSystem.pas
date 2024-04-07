@@ -10,6 +10,8 @@ function input(): string;
 
 procedure print(params lst: array of object);
 
+procedure println(params lst: array of object);
+
 // Basic type conversion methods
 
 function int(val: string): integer;
@@ -54,7 +56,13 @@ procedure print(params lst: array of object);
 begin
   foreach var elem in lst do
     PABCSystem.Print(elem);
-  PABCSystem.Println();
+end;
+
+procedure println(params lst: array of object);
+begin
+  foreach var elem in lst do
+    PABCSystem.Print(elem);
+  PABCSystem.Println(); 
 end;
 
 function int(val: string): integer := integer.Parse(val);
