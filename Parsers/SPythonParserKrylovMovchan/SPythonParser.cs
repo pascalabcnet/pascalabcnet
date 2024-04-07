@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Text;
+using System.Reflection;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
+using PascalABCCompiler.ParserTools;
+using SPythonParser;
 using SPythonParserYacc;
 using PascalABCCompiler.Errors;
-using SyntaxVisitors;
 
 
 
@@ -42,7 +46,12 @@ namespace SPythonParser
             parsertools.CurrentFileName = Path.GetFullPath(FileName);
 
             // проверка подсказки компилятора, является ли программа модулем
-            bool isUnit = IsUsedAsUnit(ref Text);
+            bool isUnit = false;
+            if (Text.EndsWith("<hint>unit"))
+            {
+                Text = Text.Substring(0, Text.Length - 10);
+                isUnit = true;
+            }
 
             var scanner = new Scanner();
             scanner.SetSource(Text, 0);
@@ -67,42 +76,15 @@ namespace SPythonParser
 #endif
             return parser.root;
         }
-
-        private bool IsUsedAsUnit(ref string Text)
-        {
-            bool isUnit = false;
-            if (Text.EndsWith("<hint>unit"))
-            {
-                Text = Text.Substring(0, Text.Length - 10);
-                isUnit = true;
-            }
-
-            return isUnit;
-        }
     }
-
-    public class SPythonLanguageParser : BaseParser, IParser
+    public class SPythonLanguageParser: BaseParser, IParser
     {
         private SPythonGPPGParserHelper localparserhelper;
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public SPythonLanguageParser()
-            : base(
-                  name: "SPython", 
-                  version: "0.0.1", 
-                  copyright: "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", 
-                  caseSensitive: false, 
-                  filesExtensions: new string[] { ".pys" },
-                  systemUnitNames: new string[] { "SpythonSystem" }, 
-                  hiddenSystemUnits: new[] { new PascalABCCompiler.ParserTools.UnitWithCallback<compilation_unit> { name = "SpythonHidden", callback = ProcessHiddenUnit } })
+            : base("SPython", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", new string[] { "SpythonSystem" }, false, new string[] { ".pys" })
         {
-        }
-
-        private static readonly HiddenUnitVisitor hiddenUnitVisitor = new HiddenUnitVisitor();
-
-        private static void ProcessHiddenUnit(compilation_unit syntaxTree)
-        {
-            syntaxTree.visit(hiddenUnitVisitor);
         }
 
         public override void Reset()

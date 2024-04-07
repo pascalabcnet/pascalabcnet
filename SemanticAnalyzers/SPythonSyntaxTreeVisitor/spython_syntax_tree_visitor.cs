@@ -118,12 +118,8 @@ namespace SPythonSyntaxTreeVisitor
                 case Operators.IntegerDivision:
                     if (left.type == right.type && left.type.name == "real")
                     {
-                        //var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _bin_expr.source_context);
-                        //var floornode = new method_call(new ident("@Floor"), new expression_list(divnode));
-                        var exprlist = new expression_list(); exprlist.source_context = _bin_expr.source_context;
-                        exprlist.Add(new semantic_addr_value(left, left.location));
-                        exprlist.Add(new semantic_addr_value(right, right.location));
-                        var floornode = new method_call(new ident("@FloorDiv"), exprlist, _bin_expr.source_context);
+                        var divnode = new bin_expr(new semantic_addr_value(left, left.location), new semantic_addr_value(right, right.location), Operators.Division, _bin_expr.source_context);
+                        var floornode = new method_call(new ident("Floor"), new expression_list(divnode));
                         visit(floornode);
                         return;
                     }
