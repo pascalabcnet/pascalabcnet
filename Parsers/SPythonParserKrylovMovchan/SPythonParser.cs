@@ -88,15 +88,15 @@ namespace SPythonParser
 
         public SPythonLanguageParser()
             : base(
-                  name: "SPython",
-                  version: "0.0.1",
-                  copyright: "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan",
-                  caseSensitive: false,
-                  filesExtensions: new string[] { ".pys", ".py" },
-                  standardModules: new[] { new StandardModule() { name = "SpythonSystem" },
-                      new StandardModule() { name = "SpythonHidden", isHidden = true, syntaxTreePostProcessor = ProcessHiddenUnit } }
-                  )
-        { }
+                  name: "SPython", 
+                  version: "0.0.1", 
+                  copyright: "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", 
+                  caseSensitive: false, 
+                  filesExtensions: new string[] { ".pys" },
+                  systemUnitNames: new string[] { "SpythonSystem" }, 
+                  hiddenSystemUnits: new[] { new PascalABCCompiler.ParserTools.UnitWithCallback<compilation_unit> { name = "SpythonHidden", callback = ProcessHiddenUnit } })
+        {
+        }
 
         private static readonly HiddenUnitVisitor hiddenUnitVisitor = new HiddenUnitVisitor();
 

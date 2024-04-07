@@ -71,9 +71,9 @@ namespace YATL
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public YATLLanguageParser()
-            : base("YATL", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov", false, new string[] { ".yatp" },
-                  new[] { new StandardModule() { name = "YatlSystem" } }) // такое же имя стандартного модуля, как у другого языка не поддерживается
-        { }
+            : base("YATL", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov", false, new string[] { ".yatp" }, new string[] { "PABCSystem", "PABCExtensions" })
+        {
+        }
 
         public override void Reset()
         {
