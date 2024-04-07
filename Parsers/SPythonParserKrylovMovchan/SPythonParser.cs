@@ -83,7 +83,7 @@ namespace SPythonParser
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public SPythonLanguageParser()
-            : base("SPython", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", new string[] { "SpythonSystem" }, false, new string[] { ".pys" })
+            : base("SPython", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", new string[] { "SpythonSystem", "SpythonHidden" }, false, new string[] { ".pys" })
         {
         }
 
