@@ -24,7 +24,7 @@ Letter [[:IsLetter:]_]
 Digit [0-9]
 Digit_ [0-9_]
 LetterDigit {Letter}|{Digit}
-ID `?{Letter}{LetterDigit}* 
+ID {Letter}{LetterDigit}* 
 HexDigit {Digit}|[abcdefABCDEF]
 HexDigit_ {Digit}|[abcdefABCDEF_]
 DotChr [^\r\n]
@@ -255,14 +255,14 @@ UNICODEARROW \x890
 
 \x01 { return (int)Tokens.INVISIBLE; }
 
-[&]?{ID}  { 
+[&]?[!]?{ID}  { 
   string cur_yytext = yytext;
   int res = Keywords.KeywordOrIDToken(cur_yytext);
   currentLexLocation = CurrentLexLocation;
   if (res == (int)Tokens.tkIdentifier)
   {
-    if (cur_yytext[0] == '`' && !HiddenIdents && !ExprMode)
-    	parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, "`");
+    if (cur_yytext[0] == '!' && !HiddenIdents && !ExprMode)
+    	parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, ""+cur_yytext[0]);
 	yylval = new Union(); 
     yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
   }
