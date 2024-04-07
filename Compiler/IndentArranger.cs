@@ -88,34 +88,24 @@ namespace IndentArranger
             {
                 lineCounter++;
 
-                bool isEmptyLine = true; // строка не содержит символов кроме 'space'\t\n\r
+                bool isEmptyLine = true; // строка не содержит символов кроме \s\t\n\r
                 int currentLineSpaceCounter = 0;
 
                 for (int i = 0; i < line.Length; ++i)
                 {
-                    switch (line[i])
+                    if (line[i] == '\t')
                     {
-                        case ' ':
-                            if (isEmptyLine)
-                                currentLineSpaceCounter++;
-                            break;
-                        case '\t':
-                            if (isEmptyLine)
-                            {
-                                // один \t выравнивает до следующего отступа
-                                currentLineSpaceCounter += indentSpaceNumber;
-                                currentLineSpaceCounter &= ~(indentSpaceNumber - 1);
-                            }
-                            break;
-                        default:
-                            if (char.IsWhiteSpace(line[i]))
-                                break;
-
-                            isEmptyLine = false;
-                            break;
+                        // один \t выравнивает до следующего отступа
+                        currentLineSpaceCounter += indentSpaceNumber;
+                        currentLineSpaceCounter &= ~(indentSpaceNumber - 1);
                     }
-                    if (!isEmptyLine)
+                    else if (char.IsWhiteSpace(line[i]))
+                        currentLineSpaceCounter++;
+                    else
+                    {
+                        isEmptyLine = false;
                         break;
+                    }
                 }
 
                 // пропуск строки не содержащей код 
@@ -140,9 +130,7 @@ namespace IndentArranger
                         indentStack.Push(currentLineSpaceCounter);
                     }
                     else
-                    {
-                        //ошибка (отступ в первой строке программы)
-                    }
+                        programLines[0] = badIndentToken + programLines[0];
                 }
                 // оставшиеся случаи: отступ некорректный или уменьшение на один или несколько отступов
                 else
