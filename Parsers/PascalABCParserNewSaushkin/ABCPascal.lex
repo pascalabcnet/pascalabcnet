@@ -10,6 +10,7 @@
 	string directiveparam;
 	LexLocation currentLexLocation;
 	bool HiddenIdents = false;
+	bool ExprMode = false;
 %}
 
 %namespace GPPGParserScanner
@@ -248,9 +249,9 @@ UNICODEARROW \x890
 
 \u2192 			{ yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
 
-\<\<expression\>\> { return (int)Tokens.tkParseModeExpression; }
-\<\<statement\>\>  { return (int)Tokens.tkParseModeStatement; }
-\<\<type\>\>  { return (int)Tokens.tkParseModeType; }
+\<\<expression\>\> { ExprMode = true; return (int)Tokens.tkParseModeExpression; }
+\<\<statement\>\>  { ExprMode = true; return (int)Tokens.tkParseModeStatement; }
+\<\<type\>\>  { ExprMode = true; return (int)Tokens.tkParseModeType; }
 
 \x01 { return (int)Tokens.INVISIBLE; }
 
@@ -260,7 +261,7 @@ UNICODEARROW \x890
   currentLexLocation = CurrentLexLocation;
   if (res == (int)Tokens.tkIdentifier)
   {
-    if (cur_yytext[0] == '`' && !HiddenIdents)
+    if (cur_yytext[0] == '`' && !HiddenIdents && !ExprMode)
     	parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, "`");
 	yylval = new Union(); 
     yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
