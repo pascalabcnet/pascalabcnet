@@ -1242,12 +1242,6 @@
     <member name="M:PointerToString(System.Void*)">
       <summary>Преобразует указатель к строковому представлению</summary>
     </member>
-    <member name="M:TypeToTypeName(System.Type)">
-      <summary>Для типа System.Type возвращает имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object)">
-      <summary>Возвращает имя типа объекта</summary>
-    </member>
     <member name="M:Exec(System.String)">
       <summary>Запускает программу или документ с именем fileName</summary>
     </member>
@@ -2626,8 +2620,32 @@
     <member name="M:GetRuntimeSize``1">
       <summary>Вычисление размера типа на этапе выполнения</summary>
     </member>
+    <member name="M:TypeToTypeName(System.Type)">
+      <summary>Для типа System.Type возвращает имя типа объекта</summary>
+    </member>
+    <member name="M:TypeToTypeName(System.Type,System.Text.StringBuilder)">
+      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
+    </member>
+    <member name="M:TypeToTypeName(System.Type,System.IO.TextWriter)">
+      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
+    </member>
+    <member name="M:TypeName(System.Object)">
+      <summary>Возвращает имя типа объекта</summary>
+    </member>
+    <member name="M:TypeName(System.Object,System.Text.StringBuilder)">
+      <summary>Записывает в res имя типа объекта</summary>
+    </member>
+    <member name="M:TypeName(System.Object,System.IO.TextWriter)">
+      <summary>Записывает в res имя типа объекта</summary>
+    </member>
     <member name="M:_ObjectToString(System.Object)">
       <summary>Возвращает строку для вывода в write</summary>
+    </member>
+    <member name="M:_ObjectToString(System.Object,System.Text.StringBuilder)">
+      <summary>Записывает в res строку для вывода в write</summary>
+    </member>
+    <member name="M:_ObjectToString(System.Object,System.IO.TextWriter)">
+      <summary>Записывает в res строку для вывода в write</summary>
     </member>
     <member name="M:ExecuteAssemlyIsDll">
       <summary>--</summary>
