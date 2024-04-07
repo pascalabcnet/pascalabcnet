@@ -346,6 +346,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_define = "define";
         public static string compiler_directive_include = "include";
         public static string compiler_directive_targetframework = "targetframework";
+        public static string compiler_directive_hidden_idents = "hiddenidents";
         public const string version_string = "version";
         public const string product_string = "product";
         public const string company_string = "company";

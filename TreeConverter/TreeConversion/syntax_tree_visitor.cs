@@ -10263,6 +10263,15 @@ namespace PascalABCCompiler.TreeConverter
                             this.ProcessNode(mc);
                             return;
                         }
+                        if (sil != null && sil.Count > 1)
+                        {
+                            List<SymbolInfo> no_extmeth_sil = new List<SymbolInfo>();
+                            foreach (var si in sil)
+                                if (si.sym_info is function_node && !(si.sym_info as function_node).is_extension_method)
+                                    no_extmeth_sil.Add(si);
+                            if (no_extmeth_sil.Count > 0)
+                                sil = no_extmeth_sil;
+                        }
                         return_value(expression_value_reciving(id_right, sil, en, true));
                         return;
                     }
@@ -21784,14 +21793,28 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(semantic_ith_element_of ith)
         {
+            var IsSequence = false;
+            var IsTuple = false;
             var sem_ex = convert_strong(ith.id);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
             if (t == null)
-                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-
-            var IsTuple = IsTupleType(t);
-            var IsSequence = !IsTuple && IsSequenceType(t);
+            {
+                bool bb;
+                type_node elem_type = null;
+                var b = FindIEnumerableElementType(sem_ex.type, ref elem_type, out bb);
+                if (b)
+                    IsSequence = true;
+                else
+                    AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+                
+            }
+                
+            if (t != null)
+                IsTuple = IsTupleType(t);
+            
+            if (t != null)
+                IsSequence = !IsTuple && IsSequenceType(t);
 
             if (!IsTuple && !IsSequence)
             {

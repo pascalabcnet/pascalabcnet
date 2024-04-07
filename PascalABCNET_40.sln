@@ -99,6 +99,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeTemplatesPlugin40", "Vi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageIntegrator", "LanguageIntegrator\LanguageIntegrator.csproj", "{A48D9069-D569-4110-9252-A10F139B669B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -445,6 +447,18 @@ Global
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.ActiveCfg = Release|Any CPU
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.Build.0 = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Debug|x86.Build.0 = Debug|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|x86.ActiveCfg = Release|Any CPU
+		{A48D9069-D569-4110-9252-A10F139B669B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
