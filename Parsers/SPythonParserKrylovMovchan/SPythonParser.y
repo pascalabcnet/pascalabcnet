@@ -58,7 +58,7 @@
 %left STAR DIVIDE SLASHSLASH PERCENTAGE
 %left NOT
 
-%type <id> ident dotted_ident range_ident
+%type <id> ident dotted_ident range_ident func_name_ident
 %type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident
 %type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
@@ -432,6 +432,14 @@ range_ident
 		}
 	;
 
+func_name_ident
+	: ident
+		{
+			globalVariables.Add($1.name);
+			$$ = $1;
+		}
+	;
+
 // return `expr` ~ result := `expr`; exit;
 return_stmt
 	: RETURN expr
@@ -544,11 +552,11 @@ OutsideFunction
 	;
 
 proc_func_header
-	: DEF ident LPAR optional_form_param_list RPAR COLON
+	: DEF func_name_ident LPAR optional_form_param_list RPAR COLON
 		{
 			$$ = new procedure_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$);
 		}
-	| DEF ident LPAR optional_form_param_list RPAR ARROW form_param_type COLON
+	| DEF func_name_ident LPAR optional_form_param_list RPAR ARROW form_param_type COLON
 		{
 			$$ = new function_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $7 as type_definition, @$);
 		}
