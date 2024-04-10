@@ -11179,6 +11179,8 @@ begin
     yield c.TakeGroup().ToArray;
 end;
 
+/// Группирует подряд идущие элементы с одинаковыми значениями ключами
+/// Использует компаратор comp
 function AdjacentGroupBy<T,TKey>(self: sequence of T; by: T->TKey; comp: IEqualityComparer<TKey>): sequence of (TKey, array of T); extensionmethod;
 begin
   var enmr := self.GetEnumerator;
@@ -11213,6 +11215,8 @@ begin
   
   yield (key, l.ToArray);
 end;
+/// Группирует подряд идущие элементы с одинаковыми значениями ключами
+/// Использует компаратор по-умолчанию
 function AdjacentGroupBy<T,TKey>(self: sequence of T; by: T->TKey); extensionmethod := self.AdjacentGroupBy(by, nil);
 
 /// Возвращает количество элементов, равных указанному значению
