@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 11.04.2024 21:18:11
+// DateTime: 11.04.2024 21:26:19
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -762,7 +762,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 { CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); }
         break;
       case 78: // complex_variable -> LBRACKET, expr_list, RBRACKET
-{ CurrentSemanticValue.ex = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan); }
+{
+
+			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan); 
+			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, CurrentLocationSpan);
+			CurrentSemanticValue.ex = new method_call(dn as addressed_value, null, CurrentLocationSpan);
+		}
         break;
       case 79: // complex_variable_or_ident -> ident
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].id; }

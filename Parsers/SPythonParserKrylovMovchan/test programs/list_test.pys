@@ -1,4 +1,4 @@
 ﻿b = 1
 c = 3.4
-a = [b, b + 1, c].toList()
+a = [b, b + 1, c]
 print(stype(a))
