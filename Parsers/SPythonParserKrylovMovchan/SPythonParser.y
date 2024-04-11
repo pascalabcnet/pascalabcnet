@@ -346,6 +346,8 @@ expr
 		{ $$ = $1; }
 	| LPAR expr RPAR
 		{ $$ = $2; }
+	| LBRACKET expr_list RBRACKET
+		{ $$ = new array_const_new($2 as expression_list, @$); }
 	| ident
 		{
 			// Проверка на то что пытаемся считать не инициализированную переменную
