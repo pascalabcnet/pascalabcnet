@@ -1,2 +1,4 @@
-﻿a = [1, 2, 3.4]
-print(a)
+﻿b = 1
+c = 3.4
+a = [b, b + 1, c].toList()
+print(stype(a))

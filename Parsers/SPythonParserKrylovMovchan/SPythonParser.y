@@ -346,8 +346,6 @@ expr
 		{ $$ = $1; }
 	| LPAR expr RPAR
 		{ $$ = $2; }
-	| LBRACKET expr_list RBRACKET
-		{ $$ = new array_const_new($2 as expression_list, @$); }
 	| ident
 		{
 			// Проверка на то что пытаемся считать не инициализированную переменную
@@ -492,6 +490,8 @@ complex_variable
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	| const_value DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
+	| LBRACKET expr_list RBRACKET
+		{ $$ = new array_const_new($2 as expression_list, @$); }
 	;
 
 complex_variable_or_ident
