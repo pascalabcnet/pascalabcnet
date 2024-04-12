@@ -491,6 +491,7 @@ complex_variable
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	| const_value DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
+	// list constant
 	| LBRACKET expr_list RBRACKET
 		{
 
@@ -498,6 +499,13 @@ complex_variable
 			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
 		}
+	// index property
+	| complex_variable_or_ident LBRACKET expr RBRACKET
+		{
+			var el = new expression_list($3 as expression);
+			$$ = new indexer($1 as addressed_value, el, @$);
+		}
+	// list generator
 	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
 		{
 			dot_node dn;
