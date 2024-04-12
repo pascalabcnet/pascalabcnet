@@ -6,6 +6,7 @@
 	public SPythonParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
    	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
+	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 
 	private SymbolTable symbolTable = new SymbolTable();
 	private SymbolTable globalVariables = new SymbolTable();
@@ -349,8 +350,8 @@ expr
 	| ident
 		{
 			// Проверка на то что пытаемся считать не инициализированную переменную
-			if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
-					parsertools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
+			//if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
+					//parsertools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
 
 			$$ = $1;
 		}
@@ -496,6 +497,27 @@ complex_variable
 			var acn = new array_const_new($2 as expression_list, @$); 
 			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
+		}
+	| LBRACKET expr FOR ident IN expr RBRACKET
+		{
+			var dn = new dot_node($6 as addressed_value, (new ident("Select")) as addressed_value, @$);
+
+			
+			var idList = new ident_list($4, @4); 
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
+			
+			var sl = new statement_list(new assign("result",$2,@2),@2);
+			sl.expr_lambda_body = true;
+
+			var lambda = new function_lambda_definition(
+				lambdaHelper.CreateLambdaName(), formalPars, 
+				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
+
+
+			var mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
+			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
+			$$ = new method_call(dn as addressed_value, null, @$);
+			//$$ = mc;
 		}
 	;
 
