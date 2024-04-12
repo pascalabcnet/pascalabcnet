@@ -53,6 +53,9 @@ namespace SPythonParser
                 isUnit = true;
             }
 
+            IndentArranger ia = new IndentArranger();
+            ia.ProcessSourceText(ref Text);
+
             var scanner = new Scanner();
             scanner.SetSource(Text, 0);
             scanner.parsertools = parsertools;// передали parsertools в объект сканера

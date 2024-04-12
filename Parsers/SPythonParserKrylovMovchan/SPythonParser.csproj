@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Errors.cs" />
+    <Compile Include="IndentArranger.cs" />
     <Compile Include="Keywords.cs" />
     <Compile Include="SPythonLexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
