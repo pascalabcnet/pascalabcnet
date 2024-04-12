@@ -544,36 +544,6 @@ complex_variable
 			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
 		}
-	/*| LBRACKET expr FOR ident IN expr IF expr RBRACKET
-		{
-			string ident_name = $4.name;
-			var idList = new ident_list(new ident(ident_name), @4); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
-
-			var dn = new dot_node($6 as addressed_value, (new ident("Where")) as addressed_value, @$);
-			
-			var sl = new statement_list(new assign("result",$8,@8),@8);
-			sl.expr_lambda_body = true;
-			var lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars, 
-				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
-
-			var mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
-			dn = new dot_node(mc as addressed_value, (new ident("Select")) as addressed_value, @$);
-			
-			idList = new ident_list($4, @4); 
-			formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
-			sl = new statement_list(new assign("result",$2,@2),@2);
-			sl.expr_lambda_body = true;
-			lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars, 
-				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
-			
-			mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
-			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
-
-			$$ = new method_call(dn as addressed_value, null, @$);
-		}*/
 	;
 
 optional_condition
