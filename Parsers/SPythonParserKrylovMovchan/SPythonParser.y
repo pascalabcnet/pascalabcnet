@@ -60,7 +60,7 @@
 %left NOT
 
 %type <id> ident dotted_ident range_ident func_name_ident
-%type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident
+%type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident optional_condition
 %type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> decl_or_stmt decl_and_stmt_list
@@ -498,30 +498,54 @@ complex_variable
 			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
 		}
-	| LBRACKET expr FOR ident IN expr RBRACKET
+	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
 		{
+			dot_node dn;
+			ident_list idList;
+			formal_parameters formalPars;
+			statement_list sl;
+			function_lambda_definition lambda;
+			method_call mc;
+
+			// [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
+			if ($7 != null) {
+				string ident_name = $4.name;
+				idList = new ident_list(new ident(ident_name), @4); 
+				formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
+
+				dn = new dot_node($6 as addressed_value, (new ident("Where")) as addressed_value, @$);
+			
+				sl = new statement_list(new assign("result",$7,@8),@8);
+				sl.expr_lambda_body = true;
+				lambda = new function_lambda_definition(
+				lambdaHelper.CreateLambdaName(), formalPars, 
+				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
+
+				mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
+				dn = new dot_node(mc as addressed_value, (new ident("Select")) as addressed_value, @$);
+			}
 			// [ expr1 for ident in expr2 ] -> expr2.Select(ident -> expr1).ToList()
-			var dn = new dot_node($6 as addressed_value, (new ident("Select")) as addressed_value, @$);
+			else
+				dn = new dot_node($6 as addressed_value, (new ident("Select")) as addressed_value, @$);
 
 			
-			var idList = new ident_list($4, @4); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
+			idList = new ident_list($4, @4); 
+			formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
 			
-			var sl = new statement_list(new assign("result",$2,@2),@2);
+			sl = new statement_list(new assign("result",$2,@2),@2);
 			sl.expr_lambda_body = true;
 
-			var lambda = new function_lambda_definition(
+			lambda = new function_lambda_definition(
 				lambdaHelper.CreateLambdaName(), formalPars, 
 				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
 
 
-			var mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
+			mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
 			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
 		}
-	| LBRACKET expr FOR ident IN expr IF expr RBRACKET
+	/*| LBRACKET expr FOR ident IN expr IF expr RBRACKET
 		{
-			// [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
 			string ident_name = $4.name;
 			var idList = new ident_list(new ident(ident_name), @4); 
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
@@ -549,7 +573,14 @@ complex_variable
 			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
 
 			$$ = new method_call(dn as addressed_value, null, @$);
-		}
+		}*/
+	;
+
+optional_condition
+	: 
+		{ $$ = null; }
+	| IF expr
+		{ $$ = $2; }
 	;
 
 complex_variable_or_ident
