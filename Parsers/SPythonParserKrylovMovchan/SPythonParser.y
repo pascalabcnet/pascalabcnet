@@ -60,10 +60,10 @@
 %left NOT
 
 %type <id> ident dotted_ident range_ident func_name_ident
-%type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident optional_condition
-%type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
+%type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident optional_condition act_param
+%type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
-%type <stn> decl_or_stmt decl_and_stmt_list
+%type <stn> decl_or_stmt decl_and_stmt_list expr_list
 %type <stn> stmt_list block
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <td> proc_func_header form_param_type simple_type_identifier
@@ -83,6 +83,7 @@ param	= parameter
 assign	= assignment
 form	= formal
 sect	= section
+act		= actual
 */
 
 %%
@@ -370,13 +371,6 @@ const_value
 		{ $$ = $1 as literal; }
 	;
 
-optional_expr_list
-	: expr_list
-		{ $$ = $1; }
-	|
-		{ $$ = null; }
-	;
-
 expr_list
 	: expr
 		{
@@ -632,7 +626,7 @@ proc_func_header
 	;
 
 proc_func_call
-	: variable LPAR optional_expr_list RPAR
+	: variable LPAR optional_act_param_list RPAR
 		{
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
 		}
@@ -705,6 +699,37 @@ form_param_list
 optional_form_param_list
     : form_param_list
         {
+			$$ = $1;
+			if ($$ != null)
+				$$.source_context = @$;
+		}
+	|
+        {
+			$$ = null;
+		}
+    ;
+
+act_param
+	: expr
+		{ $$ = $1; }
+	| ident ASSIGN expr
+		{ $$ = new name_assign_expr($1,$3,@$); }
+	;
+
+act_param_list
+	: act_param
+		{
+			$$ = new expression_list($1, @$); 
+		}
+	| act_param_list COMMA act_param
+		{
+			$$ = ($1 as expression_list).Add($3, @$); 
+		}
+	;
+
+optional_act_param_list
+	: act_param_list
+		{
 			$$ = $1;
 			if ($$ != null)
 				$$.source_context = @$;
