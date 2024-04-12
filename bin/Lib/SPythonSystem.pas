@@ -44,6 +44,13 @@ function abs(x: real): real;
 
 // function floor(x: real): real;
 
+//Standard functions with Lists
+
+function len<T>(list: List<T>): integer;
+function sorted<T>(list: List<T>): PABCSystem.List<T>;
+function sum(list: List<integer>): integer;
+function sum(list: List<real>): real;
+
 implementation
 
 function input(): string;
@@ -105,5 +112,17 @@ end;
 function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
+
+function len<T>(list: List<T>): integer := list.Count;
+
+function sorted<T>(list: List<T>): PABCSystem.List<T>;
+begin
+  var nlist := new PABCSystem.List<T>(list);
+  nlist.sort();
+  Result := nlist;
+end;
+
+function sum(list: List<integer>): integer := list.sum();
+function sum(list: List<real>): real := list.sum();
 
 end.
