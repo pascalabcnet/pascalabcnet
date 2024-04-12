@@ -1,4 +1,4 @@
-﻿a = [int(input()) for i in range(0, 3)]
+﻿a = [2 * i + 1 for i in range(0, 10) if i % 3 == 0]
 println(stype(a))
 for i in a:
     print(i)
