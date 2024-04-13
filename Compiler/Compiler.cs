@@ -4174,12 +4174,14 @@ namespace PascalABCCompiler
                 }
             }
 
+            // TODO: унести это отсюда
             // Если файл .pys (или .py) то надо заменить исходный текст программы на другой с предварительной обработкой
             if (Path.GetExtension(UnitFileName) == ".pys" || Path.GetExtension(UnitFileName) == ".py")
             {
                 IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
                 ia.ProcessSourceText(ref SourceText);
 
+                // TODO: инвертировать зависимости (вынести из компилятора модули питона)
                 // если модуль, то добавляем парсеру подсказку о том, что это модуль
                 if (currentUnit != firstCompilationUnit)
                     SourceText += "<hint>unit";

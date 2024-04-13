@@ -143,6 +143,8 @@ namespace SPythonSyntaxTreeVisitor
             }
             base.visit(new_bin_expr);
         }
+        
+        // Реализация глобальных переменных для семантики. Возможно, пригодится позже   EVA
         /*public override void visit(var_def_statement _var_def_statement)
         {
             if (_var_def_statement.vars_type != null)

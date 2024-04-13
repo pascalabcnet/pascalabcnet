@@ -8,14 +8,21 @@ uses PABCSystem;
 
 function input(): string;
 
-procedure print(params lst: array of object);
-
-procedure println(params lst: array of object);
+procedure print(item: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2, item3: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2, item3, item4: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2, item3, item4, item5: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2, item3, item4, item5, item6: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2, item3, item4, item5, item6, item7: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9: object; sep: string := ' '; &end: string := '\n');
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10: object; sep: string := ' '; &end: string := '\n');
 
 // Basic type conversion methods
 
 function int(val: string): integer;
-function stype(obj: object): System.Type;
+function &type(obj: object): System.Type;
 
 //function int(val: string): integer;
 function int(b: boolean): integer;
@@ -52,6 +59,77 @@ begin
   Result := PABCSystem.ReadlnString();
 end;
 
+procedure implPrint(sep: string; params items: array of object);
+begin
+  PABCSystem.Write(items[0]);
+  for var i := 1 to items.Length do
+  begin
+    PABCSystem.Write(sep);
+    PABCSystem.Write(items[i]);
+  end;
+end;
+
+procedure print(item: object; sep: string; &end: string);
+begin
+  implPrint(sep, item);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2, item3: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2, item3);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2, item3, item4: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2, item3, item4);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2, item3, item4, item5: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2, item3, item4, item5);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2, item3, item4, item5, item6: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2, item3, item4, item5, item6);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2, item3, item4, item5, item6, item7: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2, item3, item4, item5, item6, item7);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2, item3, item4, item5, item6, item7, item8);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2, item3, item4, item5, item6, item7, item8, item9);
+  PABCSystem.Write(&end);
+end;
+
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10: object; sep: string; &end: string);
+begin
+  implPrint(sep, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
+  PABCSystem.Write(&end);
+end;
+
+{
 procedure print(params lst: array of object);
 begin
   foreach var elem in lst do
@@ -64,6 +142,7 @@ begin
     PABCSystem.Print(elem);
   PABCSystem.Println(); 
 end;
+}
 
 function int(val: string): integer := integer.Parse(val);
 
@@ -75,7 +154,7 @@ begin
     Result := 0;
 end;
 
-function stype(obj: object): System.Type := obj.GetType();
+function &type(obj: object): System.Type := obj.GetType();
 
 function int(obj: object): integer := Convert.ToInt32(obj);
 
@@ -85,17 +164,17 @@ function float(val: string): real := real.Parse(val);
 
 function range(s: integer; e: integer; step: integer): sequence of integer;
 begin
-  Result := PABCSystem.Range(s, e-1, step);
+  Result := PABCSystem.Range(s, e - 1, step);
 end;
 
 function range(s: integer; e: integer): sequence of integer;
 begin
-  Result := PABCSystem.Range(s, e-1);
+  Result := PABCSystem.Range(s, e - 1);
 end;
 
 function range(e: integer): sequence of integer;
 begin
-  Result := PABCSystem.Range(0, e-1);
+  Result := PABCSystem.Range(0, e - 1);
 end;
 
 //function all<T>(seq: sequence of T): boolean := seq.All(x -> x);
