@@ -8,16 +8,16 @@ uses PABCSystem;
 
 function input(): string;
 
-procedure print(item: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2, item3: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2, item3, item4: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2, item3, item4, item5: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2, item3, item4, item5, item6: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2, item3, item4, item5, item6, item7: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9: object; sep: string := ' '; &end: string := '\n');
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10: object; sep: string := ' '; &end: string := '\n');
+procedure print(item: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2, item3: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2, item3, item4: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2, item3, item4, item5: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2, item3, item4, item5, item6: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2, item3, item4, item5, item6, item7: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9: object; sep: string := ' '; &end: string := #10);
+procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10: object; sep: string := ' '; &end: string := #10);
 
 // Basic type conversion methods
 
@@ -62,7 +62,7 @@ end;
 procedure implPrint(sep: string; params items: array of object);
 begin
   PABCSystem.Write(items[0]);
-  for var i := 1 to items.Length do
+  for var i := 1 to items.Length - 1 do
   begin
     PABCSystem.Write(sep);
     PABCSystem.Write(items[i]);
