@@ -8,16 +8,17 @@ uses PABCSystem;
 
 function input(): string;
 
-procedure print(item: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2, item3: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2, item3, item4: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2, item3, item4, item5: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2, item3, item4, item5, item6: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2, item3, item4, item5, item6, item7: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9: object; sep: string := ' '; &end: string := #10);
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10: object; sep: string := ' '; &end: string := #10);
+procedure print(sep:string := ' '; &end: string := #10);
+procedure print(e1: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2, e3: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2, e3, e4: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2, e3, e4, e5: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2, e3, e4, e5, e6: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2, e3, e4, e5, e6, e7: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2, e3, e4, e5, e6, e7, e8: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2, e3, e4, e5, e6, e7, e8, e9: object; sep:string := ' '; &end: string := #10);
+procedure print(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10: object; sep:string := ' '; &end: string := #10);
 
 // Basic type conversion methods
 
@@ -51,6 +52,16 @@ function abs(x: real): real;
 
 // function floor(x: real): real;
 
+//Standard functions with Lists
+
+function len<T>(list: List<T>): integer;
+
+function sorted<T>(list: List<T>): PABCSystem.List<T>;
+
+function sum(list: List<integer>): integer;
+
+function sum(list: List<real>): real;
+
 implementation
 
 function input(): string;
@@ -59,90 +70,38 @@ begin
   Result := PABCSystem.ReadlnString();
 end;
 
-procedure implPrint(sep: string; params items: array of object);
-begin
-  PABCSystem.Write(items[0]);
-  for var i := 1 to items.Length - 1 do
-  begin
-    PABCSystem.Write(sep);
-    PABCSystem.Write(items[i]);
-  end;
-end;
+procedure print(sep:string; &end: string);
+begin PABCSystem.Write(&end); end;
 
-procedure print(item: object; sep: string; &end: string);
-begin
-  implPrint(sep, item);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, &end); end;
 
-procedure print(item1, item2: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1, e2: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, &end); end;
 
-procedure print(item1, item2, item3: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2, item3);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1, e2, e3: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, sep, e3, &end); end;
 
-procedure print(item1, item2, item3, item4: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2, item3, item4);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1, e2, e3, e4: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, &end); end;
 
-procedure print(item1, item2, item3, item4, item5: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2, item3, item4, item5);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1, e2, e3, e4, e5: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, &end); end;
 
-procedure print(item1, item2, item3, item4, item5, item6: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2, item3, item4, item5, item6);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1, e2, e3, e4, e5, e6: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, &end); end;
 
-procedure print(item1, item2, item3, item4, item5, item6, item7: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2, item3, item4, item5, item6, item7);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1, e2, e3, e4, e5, e6, e7: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, sep, e7, &end); end;
 
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2, item3, item4, item5, item6, item7, item8);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1, e2, e3, e4, e5, e6, e7, e8: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, sep, e7, sep, e8, &end); end;
 
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2, item3, item4, item5, item6, item7, item8, item9);
-  PABCSystem.Write(&end);
-end;
+procedure print(e1, e2, e3, e4, e5, e6, e7, e8, e9: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, sep, e7, sep, e8, sep, e9, &end); end;
 
-procedure print(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10: object; sep: string; &end: string);
-begin
-  implPrint(sep, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
-  PABCSystem.Write(&end);
-end;
-
-{
-procedure print(params lst: array of object);
-begin
-  foreach var elem in lst do
-    PABCSystem.Print(elem);
-end;
-
-procedure println(params lst: array of object);
-begin
-  foreach var elem in lst do
-    PABCSystem.Print(elem);
-  PABCSystem.Println(); 
-end;
-}
+procedure print(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10: object; sep:string; &end: string);
+begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, sep, e7, sep, e8, sep, e9, sep, e10, &end); end;
 
 function int(val: string): integer := integer.Parse(val);
 
@@ -184,5 +143,17 @@ end;
 function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
+
+function len<T>(list: List<T>): integer := list.Count;
+
+function sorted<T>(list: List<T>): PABCSystem.List<T>;
+begin
+  var new_list := new PABCSystem.List<T>(list);
+  new_list.sort();
+  Result := new_list;
+end;
+
+function sum(list: List<integer>): integer := list.sum();
+function sum(list: List<real>): real := list.sum();
 
 end.

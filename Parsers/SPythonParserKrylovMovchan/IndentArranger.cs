@@ -4,14 +4,11 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
-namespace IndentArranger
+namespace SPythonParser
 {   
     public class IndentArranger
     {
         private int lineCounter = -1;
-
-        public string CreatedFileName { get; private set; }
-        public string CreatedFilePath { get; private set; }
 
         // количество пробелов соответствующее одному \t (в одном отступе)
         private const int indentSpaceNumber = 4;
@@ -23,14 +20,7 @@ namespace IndentArranger
         // регулярное выражение разбивающее строку программы на группы, последняя из которых - комментарий в конце строки
         private static readonly Regex programLineRegex = new Regex("^(([^\n\"\'#])+|(\'([^\'\n\\\\]|\\\\.)*\')|(\"([^\"\n\\\\]|\\\\.)*\"))*(#.*)?$");
 
-        public IndentArranger(string path)
-        {
-            CreatedFileName =
-                Path.GetFileNameWithoutExtension(path) + 
-                createdFileNameAddition + ".txt";
-
-            CreatedFilePath = Path.GetDirectoryName(path) + "\\" + CreatedFileName;
-        }
+        public IndentArranger() {}
 
         public void ProcessSourceText(ref string sourceText)
         {
@@ -42,7 +32,7 @@ namespace IndentArranger
             // добавляем токены для начала/конца отступов и ; в конце stmt
             ArrangeIndents(ref programLines);
 
-            sourceText = programLines.JoinIntoString("\n");
+            sourceText = String.Join("\n", programLines);
 
             // создание файла с полученным текстом для дебага
             // File.WriteAllText(CreatedFilePath, sourceText);

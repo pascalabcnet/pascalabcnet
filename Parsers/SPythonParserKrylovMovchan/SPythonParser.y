@@ -6,6 +6,7 @@
 	public SPythonParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
    	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
+	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 
 	private SymbolTable symbolTable = new SymbolTable();
 	private SymbolTable globalVariables = new SymbolTable();
@@ -59,10 +60,10 @@
 %left NOT
 
 %type <id> ident dotted_ident range_ident func_name_ident
-%type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident
-%type <stn> expr_list optional_expr_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
+%type <ex> expr proc_func_call const_value complex_variable variable complex_variable_or_ident optional_condition act_param
+%type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
-%type <stn> decl_or_stmt decl_and_stmt_list
+%type <stn> decl_or_stmt decl_and_stmt_list expr_list
 %type <stn> stmt_list block
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <td> proc_func_header form_param_type simple_type_identifier
@@ -82,6 +83,7 @@ param	= parameter
 assign	= assignment
 form	= formal
 sect	= section
+act		= actual
 */
 
 %%
@@ -349,8 +351,8 @@ expr
 	| ident
 		{
 			// Проверка на то что пытаемся считать не инициализированную переменную
-			if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
-					parsertools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
+			//if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
+					//parsertools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
 
 			$$ = $1;
 		}
@@ -367,13 +369,6 @@ const_value
 		{ $$ = new ident("false"); }
 	| STRINGNUM
 		{ $$ = $1 as literal; }
-	;
-
-optional_expr_list
-	: expr_list
-		{ $$ = $1; }
-	|
-		{ $$ = null; }
 	;
 
 expr_list
@@ -490,6 +485,74 @@ complex_variable
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	| const_value DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
+	// list constant
+	| LBRACKET expr_list RBRACKET
+		{
+
+			var acn = new array_const_new($2 as expression_list, @$); 
+			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, @$);
+			$$ = new method_call(dn as addressed_value, null, @$);
+		}
+	// index property
+	| complex_variable_or_ident LBRACKET expr RBRACKET
+		{
+			var el = new expression_list($3 as expression);
+			$$ = new indexer($1 as addressed_value, el, @$);
+		}
+	// list generator
+	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
+		{
+			dot_node dn;
+			ident_list idList;
+			formal_parameters formalPars;
+			statement_list sl;
+			function_lambda_definition lambda;
+			method_call mc;
+
+			// [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
+			if ($7 != null) {
+				string ident_name = $4.name;
+				idList = new ident_list(new ident(ident_name), @4); 
+				formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
+
+				dn = new dot_node($6 as addressed_value, (new ident("Where")) as addressed_value, @$);
+			
+				sl = new statement_list(new assign("result",$7,@8),@8);
+				sl.expr_lambda_body = true;
+				lambda = new function_lambda_definition(
+				lambdaHelper.CreateLambdaName(), formalPars, 
+				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
+
+				mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
+				dn = new dot_node(mc as addressed_value, (new ident("Select")) as addressed_value, @$);
+			}
+			// [ expr1 for ident in expr2 ] -> expr2.Select(ident -> expr1).ToList()
+			else
+				dn = new dot_node($6 as addressed_value, (new ident("Select")) as addressed_value, @$);
+
+			
+			idList = new ident_list($4, @4); 
+			formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
+			
+			sl = new statement_list(new assign("result",$2,@2),@2);
+			sl.expr_lambda_body = true;
+
+			lambda = new function_lambda_definition(
+				lambdaHelper.CreateLambdaName(), formalPars, 
+				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
+
+
+			mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
+			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
+			$$ = new method_call(dn as addressed_value, null, @$);
+		}
+	;
+
+optional_condition
+	: 
+		{ $$ = null; }
+	| IF expr
+		{ $$ = $2; }
 	;
 
 complex_variable_or_ident
@@ -563,7 +626,7 @@ proc_func_header
 	;
 
 proc_func_call
-	: variable LPAR optional_expr_list RPAR
+	: variable LPAR optional_act_param_list RPAR
 		{
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
 		}
@@ -636,6 +699,37 @@ form_param_list
 optional_form_param_list
     : form_param_list
         {
+			$$ = $1;
+			if ($$ != null)
+				$$.source_context = @$;
+		}
+	|
+        {
+			$$ = null;
+		}
+    ;
+
+act_param
+	: expr
+		{ $$ = $1; }
+	| ident ASSIGN expr
+		{ $$ = new name_assign_expr($1,$3,@$); }
+	;
+
+act_param_list
+	: act_param
+		{
+			$$ = new expression_list($1, @$); 
+		}
+	| act_param_list COMMA act_param
+		{
+			$$ = ($1 as expression_list).Add($3, @$); 
+		}
+	;
+
+optional_act_param_list
+	: act_param_list
+		{
 			$$ = $1;
 			if ($$ != null)
 				$$.source_context = @$;

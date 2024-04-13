@@ -608,14 +608,14 @@ namespace PascalABCCompiler
 
         // LeftToAll - слева во все модули, RightToMain - справа, только в основную программу
         public enum StandardModuleAddMethod { LeftToAll, RightToMain };
-        
+
         [Serializable()]
         public class StandardModule : MarshalByRefObject
         {
             public string name = null;
             public StandardModuleAddMethod addMethod = StandardModuleAddMethod.LeftToAll;
             public string languageToAdd = TreeConverter.compiler_string_consts.pascalLanguageName;
-            
+
             public StandardModule(string Name, StandardModuleAddMethod addMethod)
             {
                 this.name = Name;
@@ -675,7 +675,7 @@ namespace PascalABCCompiler
         public void RemoveStandardModule(string language, string name)
         {
             int moduleIndex = StandardModules[language].FindIndex(module => module.name == name);
-            
+
             if (moduleIndex != -1)
                 StandardModules[language].RemoveAt(moduleIndex);
         }
@@ -1091,13 +1091,13 @@ namespace PascalABCCompiler
         {
             internalDebug = comp.InternalDebug;
             OnChangeCompilerState += ChangeCompilerStateEvent;
-           
+
             if (SourceFilesProvider != null)
                 sourceFilesProvider = SourceFilesProvider;
-            
+
             if (ChangeCompilerState != null)
                 OnChangeCompilerState += ChangeCompilerState;
-            
+
             supportedSourceFiles = comp.SupportedSourceFiles;
             supportedProjectFiles = comp.SupportedProjectFiles;
         }
@@ -1105,13 +1105,13 @@ namespace PascalABCCompiler
         public Compiler(SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
         {
             OnChangeCompilerState += ChangeCompilerStateEvent;
-            
+
             if (SourceFilesProvider != null)
                 sourceFilesProvider = SourceFilesProvider;
-            
+
             if (ChangeCompilerState != null)
                 OnChangeCompilerState += ChangeCompilerState;
-            
+
             Reload();
         }
 
@@ -1130,7 +1130,7 @@ namespace PascalABCCompiler
             InternalDebug = new CompilerInternalDebug();
 
             ParsersController.SourceFilesProvider = sourceFilesProvider;
-            
+
             SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
             CodeGeneratorsController = new CodeGenerators.Controller();
 
@@ -4178,10 +4178,6 @@ namespace PascalABCCompiler
             // Если файл .pys (или .py) то надо заменить исходный текст программы на другой с предварительной обработкой
             if (Path.GetExtension(UnitFileName) == ".pys" || Path.GetExtension(UnitFileName) == ".py")
             {
-                IndentArranger.IndentArranger ia = new IndentArranger.IndentArranger(UnitFileName);
-                ia.ProcessSourceText(ref SourceText);
-
-                // TODO: инвертировать зависимости (вынести из компилятора модули питона)
                 // если модуль, то добавляем парсеру подсказку о том, что это модуль
                 if (currentUnit != firstCompilationUnit)
                     SourceText += "<hint>unit";

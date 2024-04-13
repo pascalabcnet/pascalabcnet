@@ -1,0 +1,10 @@
+﻿a = [2 * i + 1 for i in range(0, 10) if i % 3 == 0]
+print(type(a))
+for i in a:
+    print(i, end=' ')
+
+print()
+for i in range(len(a)):
+    print(i, a[i], sep=': ')
+
+print()
