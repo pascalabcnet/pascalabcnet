@@ -1,0 +1,15 @@
+﻿def f(n: int) -> int:
+  if n == 0:
+    return 1
+  return n + g(n - 1)
+
+
+def g(n: int) -> int:
+  if n == 0:
+    return 0
+  return n - f(n - 1) // 2
+
+
+for i in range(10):
+  print(i, ': ', f(i), ' ', g(i), sep='')
+    
