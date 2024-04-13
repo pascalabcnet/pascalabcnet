@@ -150,7 +150,7 @@ import_clause
 	;
 
 import_clause_one
-	: FROM ident IMPORT STAR SEMICOLON
+	: IMPORT ident SEMICOLON
 		{
 			$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
 			$$.source_context = @$;

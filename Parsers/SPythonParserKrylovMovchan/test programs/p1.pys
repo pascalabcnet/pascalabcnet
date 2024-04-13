@@ -1,0 +1,7 @@
+﻿import time
+import random
+a = [random.randint(-1000000, 1000000) for i in range(100000000)]
+t1 = time.ttime()
+a.sort()
+t2 = time.ttime()
+print(t2 - t1)
