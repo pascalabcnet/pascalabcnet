@@ -10866,7 +10866,37 @@ begin
     raise new System.ArgumentNullException('b');
   if c = nil then
     raise new System.ArgumentNullException('c');
-  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z)-> (p[0], p[1], z)).Zip(c, (p, z)-> (p[0], p[1], p[2], z));
+  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z)).Zip(c, (p, z) -> (p[0], p[1], p[2], z));
+end;
+
+/// Объединяет две последовательности в последовательность двухэлементных кортежей
+function Zip<T, T1>(Self: sequence of T; a: sequence of T1): sequence of (T, T1); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  Result := Self.Zip(a, (x, y) -> (x, y));
+end;
+
+/// Объединяет три последовательности в последовательность трехэлементных кортежей
+function Zip<T, T1, T2>(Self: sequence of T; a: sequence of T1; b: sequence of T2): sequence of (T, T1, T2); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  if b = nil then
+    raise new System.ArgumentNullException('b');
+  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z));
+end;
+
+/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
+function Zip<T, T1, T2, T3>(Self: sequence of T; a: sequence of T1; b: sequence of T2; c: sequence of T3): sequence of (T, T1, T2, T3); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  if b = nil then
+    raise new System.ArgumentNullException('b');
+  if c = nil then
+    raise new System.ArgumentNullException('c');
+  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z)).Zip(c, (p, z) -> (p[0], p[1], p[2], z));
 end;
 
 /// Разъединяет последовательность двухэлементных кортежей на две последовательности. Реализуется двухпроходным алгоритмом
