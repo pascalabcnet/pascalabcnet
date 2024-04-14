@@ -1144,7 +1144,7 @@ namespace PascalABCCompiler.TreeRealization
                         }
                     }
                 }
-                else if (to is delegated_methods)
+                else if (to is delegated_methods && (to as delegated_methods).proper_methods.Count > 0)
                 {
                     var proper_meth = (to as delegated_methods).proper_methods[0].simple_function_node;
                     if (dii.parameters.Count == proper_meth.parameters.Count)
