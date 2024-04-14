@@ -27,7 +27,7 @@ namespace SPythonSyntaxTreeVisitor
                 return filesExtensions;
             }
         }
-        public void RunAdditionalChecks(syntax_tree_node node)
+        private void RunAdditionalChecks(syntax_tree_node node)
         {
             switch (node)
             {

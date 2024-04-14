@@ -1,5 +1,0 @@
-﻿#unit time
-import PABCSystem
-
-def ttime() -> float:
-    return Milliseconds() / 1000

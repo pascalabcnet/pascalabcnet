@@ -10,7 +10,6 @@ using System.IO;
 
 namespace PascalABCCompiler.TreeConverter.TreeConversion
 {
-    // TODO Добавить чтение dll с синтакс визиторами
     class SyntaxTreeVisitorsController
     {
         private List<syntax_tree_visitor> syntaxTreeVisitors = new List<syntax_tree_visitor>();

@@ -1,0 +1,9 @@
+﻿import time
+n = 100000000
+i = 1.
+sum = 0.
+start = time.ttime() * 1000
+while i<n:
+    sum = sum + 1.0/i
+    i = i + 1
+print(sum, time.ttime() * 1000 - start)
