@@ -1506,6 +1506,19 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
+/// Для типа System.Type возвращает имя типа объекта
+function TypeToTypeName(t: System.Type): string;
+/// Для типа System.Type записывает в res имя типа объекта
+procedure TypeToTypeName(t: System.Type; res: StringBuilder);
+/// Для типа System.Type записывает в res имя типа объекта
+procedure TypeToTypeName(t: System.Type; res: TextWriter);
+/// Возвращает имя типа объекта
+function TypeName(o: object): string;
+/// Записывает в res имя типа объекта
+procedure TypeName(o: object; res: StringBuilder);
+/// Записывает в res имя типа объекта
+procedure TypeName(o: object; res: TextWriter);
+
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
 //procedure New<T>(var p: ^T); 
@@ -2660,19 +2673,6 @@ function RuntimeDetermineType(T: System.Type): byte;
 function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
-
-/// Для типа System.Type возвращает имя типа объекта
-function TypeToTypeName(t: System.Type): string;
-/// Для типа System.Type записывает в res имя типа объекта
-procedure TypeToTypeName(t: System.Type; res: StringBuilder);
-/// Для типа System.Type записывает в res имя типа объекта
-procedure TypeToTypeName(t: System.Type; res: TextWriter);
-/// Возвращает имя типа объекта
-function TypeName(o: object): string;
-/// Записывает в res имя типа объекта
-procedure TypeName(o: object; res: StringBuilder);
-/// Записывает в res имя типа объекта
-procedure TypeName(o: object; res: TextWriter);
 
 /// Возвращает строку для вывода в write
 function _ObjectToString(o: object): string;

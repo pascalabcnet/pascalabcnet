@@ -39,6 +39,7 @@
 <param name="Keyword" value="ToSortedSet">
 <param name="Keyword" value="UnZipTuple">
 <param name="Keyword" value="WriteLines">
+<param name="Keyword" value="Zip">
 <param name="Keyword" value="ZipTuple"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения последовательностей</H1>
@@ -190,6 +191,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность четырехэлементных кортежей на четыре последовательности. Реализуется многопроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> WriteLines(Self: <b>sequence </b>  <b>of</b> string; fname: string): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность строк в файл</td></tr>
+<tr><td><code><b>function</b> Zip&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности в последовательность двухэлементных кортежей</td></tr>
+<tr><td><code><b>function</b> Zip&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет три последовательности в последовательность трехэлементных кортежей</td></tr>
+<tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2; c: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет четыре последовательности в последовательность четырехэлементных кортежей</td></tr>
 <tr><td><code><b>function</b> ZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности в последовательность двухэлементных кортежей</td></tr>
 <tr><td><code><b>function</b> ZipTuple&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>

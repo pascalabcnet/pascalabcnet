@@ -111,9 +111,17 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущий каталог. Возвращает True, если каталог успешно удален</td></tr>
 <tr><td><code><b>procedure</b> Sleep(ms: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд</td></tr>
-<tr><td><code><b>function</b> TypeName(o: Object): string;</code>
+<tr><td><code><b>function</b> TypeName(o: object): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает имя типа объекта</td></tr>
+<tr><td><code><b>procedure</b> TypeName(o: object; res: StringBuilder);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в res имя типа объекта</td></tr>
+<tr><td><code><b>procedure</b> TypeName(o: object; res: TextWriter);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в res имя типа объекта</td></tr>
 <tr><td><code><b>function</b> TypeToTypeName(t: System.Type): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Для типа System.Type возвращает имя типа объекта</td></tr>
+<tr><td><code><b>procedure</b> TypeToTypeName(t: System.Type; res: StringBuilder);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Для типа System.Type записывает в res имя типа объекта</td></tr>
+<tr><td><code><b>procedure</b> TypeToTypeName(t: System.Type; res: TextWriter);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Для типа System.Type записывает в res имя типа объекта</td></tr>
 </table>
 </body></HTML>
