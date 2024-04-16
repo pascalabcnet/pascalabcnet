@@ -1305,7 +1305,6 @@ var
   x_coord, y_coord: integer;
   NotLockDrawing: boolean;
   
-  StartIsComplete: boolean;
   MainFormThread: System.Threading.Thread;
   
   // coords for write 
@@ -4207,7 +4206,6 @@ end;
 procedure InitForm0;
 begin
   InitForm;
-  StartIsComplete := True;
   Application.Run(MainForm);
 end;
 
@@ -4218,12 +4216,13 @@ begin
   sf.FormatFlags := StringFormatFlags.MeasureTrailingSpaces;
   firstcall := False;
   clMoneyGreen := RGB(192, 220, 192);
-  StartIsComplete := False;
   MainFormThread := new System.Threading.Thread(InitForm0);
   MainFormThread.Start;
-  while not StartIsComplete do
-    Sleep(30);
-  Sleep(30);
+  
+  var StartIsComplete := false;
+  MainForm.Shown += (o,e)->(StartIsComplete := true);
+  while not StartIsComplete do Sleep(1);
+  
   SetSmoothingOn;
   _GraphABCControl := f;
   CurrentIOSystem := new IOGraphABCSystem;
