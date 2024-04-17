@@ -4180,10 +4180,10 @@ function operator implicit(s: string): StringBuilder; extensionmethod := new Str
 type
   ObjectToStringUtils = static class
     
-    static procedure MethodToString(mi: System.Reflection.MethodInfo; write_sub_names: boolean; res: TextWriter);
-    const lambda_name='lambda';
-    const sugar_name_begin='<>';
-    const par_separator = ', ';
+    public static procedure MethodToString(mi: System.Reflection.MethodInfo; write_sub_names: boolean; res: TextWriter);
+      const lambda_name='lambda';
+      const sugar_name_begin='<>';
+      const par_separator = ', ';
     begin
       var rt := mi.ReturnType;
       if rt=typeof(Void) then rt := nil;
@@ -4231,8 +4231,9 @@ type
       
     end;
     
-    static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
-    const val_sep = '; ';
+    private static empty_obj_arr := new object[0];
+    public static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
+      const val_sep = '; ';
     begin
       res.Write('(');
       var any_vals := false;
@@ -4275,7 +4276,7 @@ type
           res.Write('=');
           var val: object;
           try
-            val := mi.Invoke(o, &Array.Empty&<object>);
+            val := mi.Invoke(o, empty_obj_arr);
           except
             on e: System.Reflection.TargetInvocationException do
               val := e.InnerException.ToString;
@@ -4286,7 +4287,7 @@ type
       res.Write(')');
     end;
     
-    static procedure Append(o: Object; prev: Stack<object>; res: TextWriter);
+    public static procedure Append(o: Object; prev: Stack<object>; res: TextWriter);
     begin
       if prev.Contains(o) then
       begin
@@ -4299,8 +4300,8 @@ type
       if prev.Pop<>o then raise new InvalidOperationException;
       
     end;
-    static procedure AppendImpl(o: Object; prev: Stack<object>; res: TextWriter);
-    const max_seq_len = 100;
+    public static procedure AppendImpl(o: Object; prev: Stack<object>; res: TextWriter);
+      const max_seq_len = 100;
     begin
       if o = nil then
       begin
