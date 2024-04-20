@@ -101,6 +101,11 @@ namespace PascalABCSavParser
 
         }
 
+        protected override string GetFromStringResources(string res)
+        {
+            return StringResources.Get(res);
+        }
+
         public int TokenPriority(string tok)
         {
             switch (tok)

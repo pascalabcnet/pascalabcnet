@@ -60,6 +60,11 @@ namespace PascalABCCompiler.ParserTools
             return args.Max();
         }
 
+        protected virtual string GetFromStringResources(string id)
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddError(string message, LexLocation loc)
         {
             errors.Add(new SyntaxError(message, currentFileName, loc, null));
@@ -67,7 +72,7 @@ namespace PascalABCCompiler.ParserTools
 
         public void AddErrorFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)
         {
-            res = StringResources.Get(res);
+            res = GetFromStringResources(res);
             if (pars != null && pars.Length > 0)
                 res = string.Format(res, pars);
             errors.Add(new SyntaxError(res, currentFileName, loc, null));
@@ -75,7 +80,7 @@ namespace PascalABCCompiler.ParserTools
 
         public void AddWarningFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)
         {
-            res = StringResources.Get(res);
+            res = GetFromStringResources(res);
             if (pars != null && pars.Length > 0)
                 res = string.Format(res, pars);
             warnings.Add(new CommonWarning(res, currentFileName, loc.begin_position.line_num, loc.begin_position.column_num));
