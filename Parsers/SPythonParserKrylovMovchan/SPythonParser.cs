@@ -22,6 +22,8 @@ namespace SPythonParser
         public bool build_tree_for_formatter = false;
         public List<string> DefinesList = null;
 
+        public static Func<bool> CheckIfParsingUnit;
+
         public SPythonGPPGParserHelper(List<Error> Errs, List<CompilerWarning> Warnings, string FileName)
         {
             this.Errs = Errs;
@@ -44,14 +46,7 @@ namespace SPythonParser
             parsertools.warnings = Warnings;
             parsertools.compilerDirectives = compilerDirectives;
             parsertools.CurrentFileName = Path.GetFullPath(FileName);
-
-            // проверка подсказки компилятора, является ли программа модулем
-            bool isUnit = false;
-            if (Text.EndsWith("<hint>unit"))
-            {
-                Text = Text.Substring(0, Text.Length - 10);
-                isUnit = true;
-            }
+            
 
             IndentArranger ia = new IndentArranger();
             ia.ProcessSourceText(ref Text);
@@ -65,7 +60,7 @@ namespace SPythonParser
             SPythonGPPGParser parser = new SPythonGPPGParser(scanner);
             parsertools.build_tree_for_formatter = build_tree_for_formatter;
 
-            parser.is_unit_to_be_parsed = isUnit;
+            parser.is_unit_to_be_parsed = CheckIfParsingUnit.Invoke();
 
             parser.parsertools = parsertools; // передали parsertools в объект парсера
 
@@ -88,6 +83,12 @@ namespace SPythonParser
         public SPythonLanguageParser()
             : base("SPython", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", new string[] { "SpythonSystem", "SpythonHidden" }, false, new string[] { ".pys" })
         {
+            SPythonGPPGParserHelper.CheckIfParsingUnit = CallCheckIfParsingUnit;
+        }
+
+        public bool CallCheckIfParsingUnit()
+        {
+            return CheckIfParsingUnit.Invoke();
         }
 
         public override void Reset()

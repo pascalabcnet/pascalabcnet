@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using System;
 using System.Collections.Generic;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.SyntaxTree;
@@ -91,6 +92,8 @@ namespace PascalABCCompiler.Parsers
         }
 
         public string[] SystemUnitNames { get; }
+
+        public Func<bool> CheckIfParsingUnit { get; set; }
 
         public SourceFilesProviderDelegate sourceFilesProvider = null;
         public virtual SourceFilesProviderDelegate SourceFilesProvider

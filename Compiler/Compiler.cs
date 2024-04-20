@@ -1130,6 +1130,7 @@ namespace PascalABCCompiler
             InternalDebug = new CompilerInternalDebug();
 
             ParsersController.SourceFilesProvider = sourceFilesProvider;
+            ParsersController.SendUnitCheckToParsers(CurrentUnitIsNotMainProgram);
 
             SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
             CodeGeneratorsController = new CodeGenerators.Controller();
@@ -3465,7 +3466,7 @@ namespace PascalABCCompiler
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
 
             // если в программе используются эти модули, то RTL не используется
-            string[] standardFilesExcludedFromRTL = new string[] { "PT4", "School", "CRT", "Arrays", "MPI", "Collections", "Core"};
+            string[] standardFilesExcludedFromRTL = new string[] { "PT4", "School", "CRT", "Arrays", "MPI", "Collections", "Core" };
 
             bool includeInRTL = standardFilesExcludedFromRTL.All(file => !file.Equals(fileNameWithoutExtension, StringComparison.CurrentCultureIgnoreCase));
 
@@ -4069,8 +4070,6 @@ namespace PascalABCCompiler
 
             UnitTable[UnitId] = currentUnit;
 
-            currentCompilationUnit = currentUnit;
-
             // здесь добавляем стандартные модули в секцию uses интерфейса
 #if DEBUG
             if (InternalDebug.AddStandartUnits)
@@ -4174,17 +4173,12 @@ namespace PascalABCCompiler
                 }
             }
 
-            // TODO: унести это отсюда
-            // Если файл .pys (или .py) то надо заменить исходный текст программы на другой с предварительной обработкой
-            
-            if (Path.GetExtension(UnitFileName) == ".pys" || Path.GetExtension(UnitFileName) == ".py")
-            {
-                // если модуль, то добавляем парсеру подсказку о том, что это модуль
-                if (currentUnit != firstCompilationUnit)
-                    SourceText += "<hint>unit";
-            }
-            
             return SourceText;
+        }
+
+        private bool CurrentUnitIsNotMainProgram()
+        {
+            return currentCompilationUnit != null;
         }
 
         private Dictionary<SyntaxTree.syntax_tree_node, string> GenUnitDocumentation(CompilationUnit currentUnit, string SourceText)
