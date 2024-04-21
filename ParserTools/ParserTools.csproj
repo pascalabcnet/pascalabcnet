@@ -74,7 +74,7 @@
     <Compile Include="ParserTools\Errors.cs" />
     <Compile Include="ParserTools\IPreprocessor.cs" />
     <Compile Include="ParserTools\KeyWord.cs" />
-    <Compile Include="ParserTools\LanguageInformation.cs" />
+    <Compile Include="ParserTools\ILanguageInformation.cs" />
     <Compile Include="ParserTools\ParserTools.cs" />
     <Compile Include="ParserTools\ShiftReduceParserCode.cs" />
     <Compile Include="ParserTools\SourceContextMap.cs" />
