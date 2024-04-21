@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.Parsers
 {
-    public abstract class BaseParser: IParser
+    public abstract class BaseParser : IParser
     {
         // SSM: класс, являющийся обёрткой над GPPG парсером
         public abstract class BaseGPPGParserHelper
@@ -25,10 +24,7 @@ namespace PascalABCCompiler.Parsers
                 this.fileName = FileName;
             }
 
-            public virtual syntax_tree_node Parse(string Text, List<compiler_directive> compilerDirectives = null)
-            {
-                throw new NotImplementedException();
-            }
+            public abstract syntax_tree_node Parse(string Text, List<compiler_directive> compilerDirectives = null);
         }
 
 

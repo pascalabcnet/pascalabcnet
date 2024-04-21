@@ -60,10 +60,7 @@ namespace PascalABCCompiler.ParserTools
             return args.Max();
         }
 
-        protected virtual string GetFromStringResources(string id)
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract string GetFromStringResources(string id);
 
         public void AddError(string message, LexLocation loc)
         {
