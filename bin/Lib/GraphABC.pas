@@ -4202,12 +4202,19 @@ begin
   //if (System.Environment.OSVersion.Version.Major >= 6) then SetProcessDPIAware();
   InitBMP;
   
+  SetSmoothingOn;
+  _GraphABCControl := f;
+  CurrentIOSystem := new IOGraphABCSystem;
 end;
+
+var mre := new ManualResetEvent(false);
 
 procedure InitForm0;
 begin
   InitForm;
   StartIsComplete := True;
+  
+  mre.Set();
   Application.Run(MainForm);
 end;
 
@@ -4221,12 +4228,12 @@ begin
   StartIsComplete := False;
   MainFormThread := new System.Threading.Thread(InitForm0);
   MainFormThread.Start;
-  while not StartIsComplete do
-    Sleep(30);
-  Sleep(30);
-  SetSmoothingOn;
-  _GraphABCControl := f;
-  CurrentIOSystem := new IOGraphABCSystem;
+  
+  mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
+  
+  //while not StartIsComplete do
+  //  Sleep(30);
+  //Sleep(30);
 end;
 
 procedure SetConsoleIO;
