@@ -4488,14 +4488,10 @@ type
     
   end;
   
-procedure TypeToTypeName(t: System.Type; res: TextWriter);
+function TryWriteFromTypeCode(t: System.Type; res: TextWriter): boolean;
 begin
-  if t=nil then
-  begin
-    res.Write( 'nil' );
-    exit;
-  end;
-  
+  Result := not t.IsEnum;
+  if not Result then exit;
   case &Type.GetTypeCode(t) of
     
     // int
@@ -4521,77 +4517,85 @@ begin
     
     TypeCode.String:  res.Write('string');
     
-    else
-    begin
-      
-      if t.IsArray then
-      begin
-        res.Write('array');
-        var rank := t.GetArrayRank;
-        if rank>1 then
-        begin
-          res.Write('[');
-          loop rank-1 do res.Write(',');
-          res.Write(']');
-        end else
-        if rank<1 then
-          raise new NotImplementedException;
-        res.Write(' of ');
-        TypeToTypeName(t.GetElementType, res);
-        exit;
-      end;
-      
-      if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
-      begin
-        var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
-        if (typed<>nil) and (
-          // Выводим как sequence только классы, созданные yield функцией
-          // "clyield#" это yield класс паскаля
-          t.Name.StartsWith('clyield#') or
-          // А все yield классы C# являются вложенными и скрытыми
-          (t.DeclaringType<>nil) and not t.IsPublic
-        ) then
-        begin
-          res.Write('sequence of ');
-          TypeToTypeName(typed.GetGenericArguments.Single, res);
-          exit;
-        end;
-      end;
-      
-      var name := t.Name;
-      
-      if t.IsSubclassOf(typeof(Delegate)) then
-      begin
-        var mi := t.GetMethod('Invoke');
-        if mi=nil then raise new NotImplementedException;
-        ObjectToStringUtils.MethodToString(mi, false, res);
-        exit;
-      end;
-      
-      // typeof(t1<T>) или typeof(t1<>)
-      // typeof(t1<>) можно проверить отдельно с .IsGenericTypeDefinition
-      // Но в данном случае это не нужно
-      if t.IsGenericType then
-      begin
-        res.Write( name.Remove(name.IndexOf('`')) );
-        res.Write('<');
-        var any_gen_par := false;
-        foreach var gen_par in t.GetGenericArguments do
-        begin
-          if any_gen_par then
-            res.Write(', ') else
-            any_gen_par := true;
-          TypeToTypeName(gen_par, res);
-        end;
-        res.Write('>');
-        exit;
-      end;
-      
-      res.Write(name);
-    end;
-    
+    else Result := false;
+  end;
+end;
+
+procedure TypeToTypeName(t: System.Type; res: TextWriter);
+begin
+  if t=nil then
+  begin
+    res.Write( 'nil' );
+    exit;
   end;
   
+  if TryWriteFromTypeCode(t, res) then
+    exit;
+  
+  if t.IsArray then
+  begin
+    res.Write('array');
+    var rank := t.GetArrayRank;
+    if rank>1 then
+    begin
+      res.Write('[');
+      loop rank-1 do res.Write(',');
+      res.Write(']');
+    end else
+    if rank<1 then
+      raise new NotImplementedException;
+    res.Write(' of ');
+    TypeToTypeName(t.GetElementType, res);
+    exit;
+  end;
+  
+  if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
+  begin
+    var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
+    if (typed<>nil) and (
+      // Выводим как sequence только классы, созданные yield функцией
+      // "clyield#" это yield класс паскаля
+      t.Name.StartsWith('clyield#') or
+      // А все yield классы C# являются вложенными и скрытыми
+      (t.DeclaringType<>nil) and not t.IsPublic
+    ) then
+    begin
+      res.Write('sequence of ');
+      TypeToTypeName(typed.GetGenericArguments.Single, res);
+      exit;
+    end;
+  end;
+  
+  var name := t.Name;
+  
+  if t.IsSubclassOf(typeof(Delegate)) then
+  begin
+    var mi := t.GetMethod('Invoke');
+    if mi=nil then raise new NotImplementedException;
+    ObjectToStringUtils.MethodToString(mi, false, res);
+    exit;
+  end;
+  
+  // typeof(t1<T>) или typeof(t1<>)
+  // typeof(t1<>) можно проверить отдельно с .IsGenericTypeDefinition
+  // Но в данном случае это не нужно
+  if t.IsGenericType then
+  begin
+    res.Write( name.Remove(name.IndexOf('`')) );
+    res.Write('<');
+    var any_gen_par := false;
+    foreach var gen_par in t.GetGenericArguments do
+    begin
+      if any_gen_par then
+        res.Write(', ') else
+        any_gen_par := true;
+      TypeToTypeName(gen_par, res);
+    end;
+    res.Write('>');
+    exit;
+  end;
+  
+  res.Write(name);
 end;
 procedure TypeToTypeName(t: System.Type; res: StringBuilder) :=
 TypeToTypeName(t, new StringWriter(res));
