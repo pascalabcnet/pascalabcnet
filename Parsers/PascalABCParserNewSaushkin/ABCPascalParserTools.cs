@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
 using QUT.Gppg;
-using GPPGParserScanner;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;

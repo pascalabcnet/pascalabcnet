@@ -126,6 +126,7 @@ UNICODEARROW \x890
 		if (Defines.Contains(directiveparam))
 			Defines.Remove(directiveparam);
 	}
+  parsertools.compilerDirectives.Add(new compiler_directive(new token_info(directivename), new token_info(directiveparam), CurrentLexLocation));
 }
 
 <EXCLUDETEXT>{OneLineCmnt} {
@@ -178,7 +179,7 @@ UNICODEARROW \x890
 		if (ind_to_remove != -1)
 			parsertools.compilerDirectives.RemoveAt(ind_to_remove);
 	}
-	
+  parsertools.compilerDirectives.Add(new compiler_directive(new token_info(directivename), new token_info(directiveparam), CurrentLexLocation));
 }
 
 <EXCLUDETEXT>.|\n {
