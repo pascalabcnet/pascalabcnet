@@ -558,7 +558,9 @@ namespace PascalABCCompiler.TreeConverter
             if (!from_pabc_dll)
             {
                 SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(unit, compiler_string_consts.read_procedure_name);
+                var si = SystemLibrary.SystemLibInitializer.read_procedure.SymbolInfo;
                 SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(unit, compiler_string_consts.readln_procedure_name);
+                si = SystemLibrary.SystemLibInitializer.readln_procedure.SymbolInfo;
             }
             else
             {

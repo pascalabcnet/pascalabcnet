@@ -9,7 +9,7 @@
     public List<Error> errors;
     public string current_file_name;
     public int max_errors = 10;
-    public PT parsertools;
+    public PascalParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
@@ -357,7 +357,7 @@ uses_clause_one_or_empty
 		}
 	| uses_clause_one
 		{
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				$$ = new uses_closure($1 as uses_list,@$);
 			$$ = $1;
 		}
@@ -370,7 +370,7 @@ uses_clause
 		}
     | uses_clause uses_clause_one            
         { 
-   			if (parsertools.build_tree_for_formatter)
+   			if (parsertools.buildTreeForFormatter)
    			{
 	        	if ($1 == null)
                 {
@@ -1022,7 +1022,7 @@ const_variable
 		{ $$ = $1; }
 /*    | tkRoundOpen const_expr tkRoundClose 
         { 
-            if (!parsertools.build_tree_for_formatter) 
+            if (!parsertools.buildTreeForFormatter) 
             {
                 $2.source_context = @$;
                 $$ = $2;
@@ -1040,7 +1040,7 @@ const_variable
     | const_variable tkSquareOpen format_const_expr tkSquareClose
         { 
     		var fe = $3 as format_expr;
-            if (!parsertools.build_tree_for_formatter)
+            if (!parsertools.buildTreeForFormatter)
             {
                 if (fe.expr == null)
                     fe.expr = new int32_const(int.MaxValue,@3);
@@ -1289,7 +1289,7 @@ type_decl_type
 simple_type_question
 	: simple_type tkQuestion
 		{
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
                 $$ = $1;
             }
@@ -1303,7 +1303,7 @@ simple_type_question
 		}
 	| template_type tkQuestion
 		{
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
                 $$ = $1;
             }
@@ -1398,7 +1398,7 @@ template_param
 		{ $$ = $1; }
     | simple_type tkQuestion
 		{
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
                 $$ = $1;
             }
@@ -2167,7 +2167,7 @@ property_specifiers
         	{
 				var id = NewId("#GetGen", @2);
                 procedure_definition pr = null;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                     pr = CreateAndAddToClassReadFunc($2, id, @2);
 				$$ = NewPropertySpecifiersRead($1, id, pr, $2, $3 as property_accessors, @$); // $2 передаётся для форматирования 
 			}
@@ -2188,9 +2188,9 @@ property_specifiers
         	{
 				var id = NewId("#SetGen", @2);
                 procedure_definition pr = null;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                     pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
-                if (parsertools.build_tree_for_formatter)
+                if (parsertools.buildTreeForFormatter)
 					$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 передаётся для форматирования
 				else $$ = NewPropertySpecifiersWrite($1, id, pr, null, $3 as property_accessors, @$); 	
 			}
@@ -2213,9 +2213,9 @@ write_property_specifiers
         	{
 				var id = NewId("#SetGen", @2);
                 procedure_definition pr = null;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                     pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
-                if (parsertools.build_tree_for_formatter)
+                if (parsertools.buildTreeForFormatter)
 					$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, null, @$);
 				else $$ = NewPropertySpecifiersWrite($1, id, pr, null, null, @$);	
 			}
@@ -2234,7 +2234,7 @@ read_property_specifiers
         	{
 				var id = NewId("#GetGen", @2);
                 procedure_definition pr = null;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                     pr = CreateAndAddToClassReadFunc($2,id,@2);
 				$$ = NewPropertySpecifiersRead($1, id, pr, $2, null, @$);
 			}
@@ -2290,7 +2290,7 @@ typed_var_init_expression
 		{ $$ = $1; }
 	| const_simple_expr tkDotDot const_term // SSM 18/01/20
 		{ 
-		if (parsertools.build_tree_for_formatter)
+		if (parsertools.buildTreeForFormatter)
 			$$ = new diapason_expr($1,$3,@$);
 		else 
 			$$ = new diapason_expr_new($1,$3,@$); 
@@ -2349,7 +2349,7 @@ constr_destr_decl
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
             var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,LexLocation.MergeAll(@1,@2,@3));
             $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @1.Merge(@5));
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
     | class_or_static tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
@@ -2358,7 +2358,7 @@ constr_destr_decl
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
             var tmp = new constructor(null,$4 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$3 as method_name,false,true,null,null,LexLocation.MergeAll(@1,@2,@3,@4));
             $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($6 as statement,@6),@6), @1.Merge(@6));
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
     ;
@@ -2374,7 +2374,7 @@ inclass_constr_destr_decl
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
             var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,LexLocation.MergeAll(@1,@2,@3));
             $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @1.Merge(@5));
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
     | class_or_static tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
@@ -2383,7 +2383,7 @@ inclass_constr_destr_decl
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
             var tmp = new constructor(null,$4 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$3 as method_name,false,true,null,null,LexLocation.MergeAll(@1,@2,@3,@4));
             $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($6 as statement,@6),@6), @1.Merge(@6));
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
     ;
@@ -2502,19 +2502,19 @@ inclass_proc_func_decl_noclass
 	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
 	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
 	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@4));
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
     ;
@@ -2862,7 +2862,7 @@ assignment
 /*    | variable tkQuestionSquareOpen format_expr tkSquareClose assign_operator expr
 		{
 			var fe = $3 as format_expr;
-            if (!parsertools.build_tree_for_formatter)
+            if (!parsertools.buildTreeForFormatter)
             {
                 if (fe.expr == null)
                     fe.expr = new int32_const(int.MaxValue,@3);
@@ -3123,7 +3123,7 @@ foreach_stmt
         }
     | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 index_or_nothing tkDo unlabelled_stmt // сахарное правило
         { 
-        	if (parsertools.build_tree_for_formatter)
+        	if (parsertools.buildTreeForFormatter)
         	{
         		var il = $4 as ident_list;
         		il.source_context = LexLocation.MergeAll(@4,@5); // нужно для форматирования
@@ -3413,7 +3413,7 @@ question_expr
 new_question_expr
 	: tkIf expr_l1_for_new_question_expr tkThen expr_l1_for_new_question_expr tkElse expr_l1_for_new_question_expr 
         { 
-        	if (parsertools.build_tree_for_formatter)
+        	if (parsertools.buildTreeForFormatter)
         	{
         		$$ = new if_expr_new($2, $4, $6, @$);
         	}
@@ -3529,7 +3529,7 @@ field_in_unnamed_object
             	}            	
             } 
 			if (name == null)
-				parsertools.errors.Add(new bad_anon_type(parsertools.CurrentFileName, @1, null));	
+				parsertools.errors.Add(new bad_anon_type(parsertools.currentFileName, @1, null));	
 			$$ = new name_assign_expr(name,$1,@$);
 		}
 	;
@@ -3545,7 +3545,7 @@ list_fields_in_unnamed_object
 			var nel = $1 as name_assign_expr_list;
 			var ss = nel.name_expr.Select(ne=>ne.name.name).FirstOrDefault(x=>string.Compare(x,($3 as name_assign_expr).name.name,true)==0);
             if (ss != null)
-            	parsertools.errors.Add(new anon_type_duplicate_name(parsertools.CurrentFileName, @3, null));
+            	parsertools.errors.Add(new anon_type_duplicate_name(parsertools.currentFileName, @3, null));
 			nel.Add($3 as name_assign_expr);
 			$$ = $1;
 		}
@@ -3990,7 +3990,7 @@ relop
 		{ $$ = $1; }
     | tkNot tkIn
 		{ 
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				$$ = $2;
 			else
 			{
@@ -4005,7 +4005,7 @@ simple_expr
 		{ $$ = $1; }
     | simple_expr tkDotDot term1 
 	{ 
-		if (parsertools.build_tree_for_formatter)
+		if (parsertools.buildTreeForFormatter)
 			$$ = new diapason_expr($1,$3,@$);
 		else 
 			$$ = new diapason_expr_new($1,$3,@$); 
@@ -4328,7 +4328,7 @@ variable
 		}
     | tkRoundOpen expr tkRoundClose         
         {
-		    if (!parsertools.build_tree_for_formatter) 
+		    if (!parsertools.buildTreeForFormatter) 
             {
                 $2.source_context = @$;
                 $$ = $2;
@@ -4337,7 +4337,7 @@ variable
         }
     | tkRoundOpen var_with_init_for_expr_with_let_list expr tkRoundClose
 		{
-		    if (!parsertools.build_tree_for_formatter) 
+		    if (!parsertools.buildTreeForFormatter) 
             {
                 $3.source_context = @$;
                 $$ = $3;
@@ -4360,7 +4360,7 @@ variable
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                 {
                     if (fe.expr == null)
                         fe.expr = new int32_const(int.MaxValue,@3);
@@ -4401,7 +4401,7 @@ variable
     | variable_or_literal_or_number tkQuestionSquareOpen format_expr tkSquareClose                
         {
         	var fe = $3 as format_expr; // SSM 9/01/17
-            if (!parsertools.build_tree_for_formatter)
+            if (!parsertools.buildTreeForFormatter)
             {
                 if (fe.expr == null)
                     fe.expr = new int32_const(int.MaxValue,@3);
@@ -4493,7 +4493,7 @@ literal
         }
     | tkFormatStringLiteral
         {
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
                 $$ = $1 as string_const;
             }
@@ -4504,7 +4504,7 @@ literal
         }
     | tkMultilineStringLiteral
         {
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
    				var sc = $1 as string_const;
    				sc.IsMultiline = true;
