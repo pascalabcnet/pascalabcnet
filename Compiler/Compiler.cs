@@ -3038,6 +3038,8 @@ namespace PascalABCCompiler
 
         public void AddStandardUnitsToInterfaceUsesSection(SyntaxTree.compilation_unit unitSyntaxTree)
         {
+            if (!(CompilerOptions.StandardModules.ContainsKey(currentCompilationUnit.languageName)))
+                return;
             if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count == 0)
                 return;
 
