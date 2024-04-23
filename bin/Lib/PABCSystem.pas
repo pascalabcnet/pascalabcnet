@@ -2666,7 +2666,7 @@ function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
 
-/// Возвращает строку для вывода в write
+/// Возвращает строку для вывода подобного Write
 function _ObjectToString(o: object): string;
 
 function IsUnix: boolean;
