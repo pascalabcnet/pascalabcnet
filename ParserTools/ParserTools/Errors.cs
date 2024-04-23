@@ -13,6 +13,42 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    public abstract class UnexpectedToken : SyntaxError
+    {
+        private string message;
+        private string expected;
+
+        public UnexpectedToken(string fileName, string expected, SourceContext sourceContext, syntax_tree_node node)
+            : base("", fileName, sourceContext, node)
+        {
+            message = string.Format(GetFromStringResources(), expected);
+            this.expected = expected;
+        }
+
+        protected abstract string GetFromStringResources();
+
+        public override string Message
+        {
+            get
+            {
+                return message;
+            }
+        }
+
+        public string Expected
+        {
+            get
+            {
+                return expected;
+            }
+            set
+            {
+                expected = value;
+                message = string.Format(GetFromStringResources(), expected);
+            }
+        }
+    }
+
     public class UnexpectedNodeType : SyntaxError
     {
         public UnexpectedNodeType(string _file_name, SourceContext _source_context, syntax_tree_node _node)

@@ -1218,6 +1218,10 @@ namespace PascalABCCompiler.TreeConverter
                                         delegated_methods dm = new delegated_methods();
                                         if (fn is common_namespace_function_node)
                                             dm.proper_methods.AddElement(new common_namespace_function_call(fn_instance as common_namespace_function_node, factparams[i].location));
+                                        else if (fn is common_method_node cmn && cmn.IsStatic)
+                                            dm.proper_methods.AddElement(new common_static_method_call(fn_instance as common_method_node, factparams[i].location));
+                                        else if (fn is common_method_node cmn2)
+                                            dm.proper_methods.AddElement(new common_method_call(fn_instance as common_method_node, ((factparams[i].type as delegated_methods).proper_methods[0] as common_method_call).obj, factparams[i].location));
                                         factparams[i].type = dm;
                                     }
                                     else if (!is_alone_method_defined)

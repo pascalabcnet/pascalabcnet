@@ -6,8 +6,27 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.Parsers
 {
-    public abstract class BaseParser: IParser
+    public abstract class BaseParser : IParser
     {
+        // SSM: класс, являющийся обёрткой над GPPG парсером
+        public abstract class BaseGPPGParserHelper
+        {
+            protected List<Error> errors;
+            protected List<CompilerWarning> warnings;
+            protected string fileName;
+            public bool buildTreeForFormatter = false;
+            public List<string> definesList = null;
+
+            public BaseGPPGParserHelper(List<Error> Errs, List<CompilerWarning> Warnings, string FileName)
+            {
+                this.errors = Errs;
+                this.warnings = Warnings;
+                this.fileName = FileName;
+            }
+
+            public abstract syntax_tree_node Parse(string Text, List<compiler_directive> compilerDirectives = null);
+        }
+
 
         public BaseParser(string name, string version, string copyright, string[] systemUnitNames, 
             bool caseSensitive, string[] filesExtensions)

@@ -129,7 +129,7 @@ namespace PascalABCCompiler.TreeConverter
                  {
                       var sc = context.CurrentScope;
                       var ttt = sc.Find((_assign.to as ident).name); // всегда в этом случае должно быть простое имя
-                      (ttt[0].sym_info as namespace_variable).type = from0.type;
+                      (ttt[0].sym_info as var_definition_node).type = from0.type;
                  }
             }
 

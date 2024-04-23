@@ -850,6 +850,11 @@ namespace PascalABCCompiler.TreeConverter
             for (int i = 1; i < names.names.Count - 1; i++)
             {
                 List<SymbolInfo> sil = null;
+                if (di is common_unit_node)
+                {
+                    sil = (di as common_unit_node).find_only_in_namespace(names.names[i].name); // SSM 23.04.24 fix #3086
+                }
+                else
                 if (di is namespace_node)
                 {
                     sil = (di as namespace_node).find(names.names[i].name);

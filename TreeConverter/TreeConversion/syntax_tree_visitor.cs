@@ -558,7 +558,9 @@ namespace PascalABCCompiler.TreeConverter
             if (!from_pabc_dll)
             {
                 SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(unit, compiler_string_consts.read_procedure_name);
+                var si = SystemLibrary.SystemLibInitializer.read_procedure.SymbolInfo;
                 SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(unit, compiler_string_consts.readln_procedure_name);
+                si = SystemLibrary.SystemLibInitializer.readln_procedure.SymbolInfo;
             }
             else
             {
@@ -803,7 +805,7 @@ namespace PascalABCCompiler.TreeConverter
 
             //st = prepare_statement(st);
             statement_node sn = null;
-            //try
+            try
             {
                 sn = ret.visit(st);
                 // SSM 19/01/17 закомментировал две следующие строчки
@@ -819,14 +821,16 @@ namespace PascalABCCompiler.TreeConverter
                     ErrorsList.Add(e);
                     return new empty_statement(null);
                 }
-            }
+            }*/
             catch (Exception e)
             {
-                if (ThrowCompilationError)
+                var s = e.StackTrace;
+                var runMethodInfo = e.TargetSite;
+                //if (ThrowCompilationError)
                     throw e;
-                else
-                    return new empty_statement(null);
-            }*/
+                //else
+                //    return new empty_statement(null);
+            }
             //sn.loc=get_location(st);
 
             #region MikhailoMMX, обработка критических секций OpenMP

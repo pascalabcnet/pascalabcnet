@@ -1,5 +1,5 @@
 %{
-    public PT parsertools;
+    public PascalParserTools parsertools;
     Stack<BufferContext> buffStack = new Stack<BufferContext>();
     Stack<string> fNameStack = new Stack<string>();
 	Stack<int> IfStack = new Stack<int>(); // 0 - if, 1 - else
@@ -10,6 +10,7 @@
 	string directiveparam;
 	LexLocation currentLexLocation;
 	bool HiddenIdents = false;
+	bool ExprMode = false;
 %}
 
 %namespace GPPGParserScanner
@@ -23,7 +24,7 @@ Letter [[:IsLetter:]_]
 Digit [0-9]
 Digit_ [0-9_]
 LetterDigit {Letter}|{Digit}
-ID `?{Letter}{LetterDigit}* 
+ID {Letter}{LetterDigit}* 
 HexDigit {Digit}|[abcdefABCDEF]
 HexDigit_ {Digit}|[abcdefABCDEF_]
 DotChr [^\r\n]
@@ -67,7 +68,7 @@ UNICODEARROW \x890
 }
 
 {DIRECTIVE} {
-	if (parsertools.build_tree_for_formatter)
+	if (parsertools.buildTreeForFormatter)
 		break;
 
 	parsertools.DivideDirectiveOn(yytext,out directivename,out directiveparam);
@@ -248,20 +249,20 @@ UNICODEARROW \x890
 
 \u2192 			{ yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
 
-\<\<expression\>\> { return (int)Tokens.tkParseModeExpression; }
-\<\<statement\>\>  { return (int)Tokens.tkParseModeStatement; }
-\<\<type\>\>  { return (int)Tokens.tkParseModeType; }
+\<\<expression\>\> { ExprMode = true; return (int)Tokens.tkParseModeExpression; }
+\<\<statement\>\>  { ExprMode = true; return (int)Tokens.tkParseModeStatement; }
+\<\<type\>\>  { ExprMode = true; return (int)Tokens.tkParseModeType; }
 
 \x01 { return (int)Tokens.INVISIBLE; }
 
-[&]?{ID}  { 
+[&]?[!]?{ID}  { 
   string cur_yytext = yytext;
   int res = Keywords.KeywordOrIDToken(cur_yytext);
   currentLexLocation = CurrentLexLocation;
   if (res == (int)Tokens.tkIdentifier)
   {
-    if (cur_yytext[0] == '`' && !HiddenIdents)
-    	parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, "`");
+    if (cur_yytext[0] == '!' && !HiddenIdents && !ExprMode)
+    	parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, ""+cur_yytext[0]);
 	yylval = new Union(); 
     yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
   }
@@ -543,7 +544,7 @@ UNICODEARROW \x890
   public LexLocation CurrentLexLocation
   {
       get {
-          return new LexLocation(tokLin, tokCol, tokELin, tokECol, parsertools.CurrentFileName);
+          return new LexLocation(tokLin, tokCol, tokELin, tokECol, parsertools.currentFileName);
 	  }
   }
   
@@ -555,7 +556,7 @@ UNICODEARROW \x890
         if (buffStack.Count == 0) 
 		    return true;
         RestoreBuffCtx(buffStack.Pop());
-		parsertools.CurrentFileName = fNameStack.Pop();
+		parsertools.currentFileName = fNameStack.Pop();
         return false;     
     }
   
@@ -580,7 +581,7 @@ UNICODEARROW \x890
                 BufferContext savedCtx = MkBuffCtx();
                 string full_path = fName;
                 if (!Path.IsPathRooted(full_path))
-                    full_path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(parsertools.CurrentFileName), fName));
+                    full_path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(parsertools.currentFileName), fName));
                     
                 if (fNameStack.Contains(full_path))
                 {
@@ -589,8 +590,8 @@ UNICODEARROW \x890
                 }
                     
                 SetSource(File.ReadAllText(full_path), 0);
-				fNameStack.Push(parsertools.CurrentFileName);
-				parsertools.CurrentFileName = full_path;
+				fNameStack.Push(parsertools.currentFileName);
+				parsertools.currentFileName = full_path;
                 buffStack.Push(savedCtx); 
             }
             catch
