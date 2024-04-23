@@ -6,9 +6,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Errors;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace PascalABCCompiler.Parsers
 {

@@ -23,6 +23,7 @@ begin
   Test(1);
   Test('abc');
   Test(new System.UIntPtr(123));
+  Test(System.ConsoleColor.Cyan);
   
   Test(new byte[2,1,1,1,1,1,1,1,2]);
   Test(new byte[2,1,1,1,0,1,1,1,2]);

@@ -2122,7 +2122,7 @@ namespace PascalABCCompiler
                 if (project.ProjectType == ProjectType.WindowsApp)
                     compilerOptions.target = NETGenerator.TargetType.WinExe;
 
-                // возможно, требуется переименование   EVA 
+                // при использовании учесть удаление res_file из этой функции при кодогенерации  EVA
                 // CreateRCFile(compilerOptions);
             }
         }
@@ -2528,9 +2528,6 @@ namespace PascalABCCompiler
                     CodeGeneratorsController.EmitAssemblyRedirects(
                         assemblyResolveScope,
                         CompilerOptions.OutputFileName);
-
-                    if (compilerOptions.MainResourceFileName != null)
-                        File.Delete(compilerOptions.MainResourceFileName);
                 }
         }
 
@@ -3038,6 +3035,8 @@ namespace PascalABCCompiler
 
         public void AddStandardUnitsToInterfaceUsesSection(SyntaxTree.compilation_unit unitSyntaxTree)
         {
+            if (!(CompilerOptions.StandardModules.ContainsKey(currentCompilationUnit.languageName)))
+                return;
             if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count == 0)
                 return;
 

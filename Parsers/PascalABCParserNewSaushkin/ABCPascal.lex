@@ -1,5 +1,5 @@
 %{
-    public PT parsertools;
+    public PascalParserTools parsertools;
     Stack<BufferContext> buffStack = new Stack<BufferContext>();
     Stack<string> fNameStack = new Stack<string>();
 	Stack<int> IfStack = new Stack<int>(); // 0 - if, 1 - else
@@ -68,7 +68,7 @@ UNICODEARROW \x890
 }
 
 {DIRECTIVE} {
-	if (parsertools.build_tree_for_formatter)
+	if (parsertools.buildTreeForFormatter)
 		break;
 
 	parsertools.DivideDirectiveOn(yytext,out directivename,out directiveparam);
@@ -544,7 +544,7 @@ UNICODEARROW \x890
   public LexLocation CurrentLexLocation
   {
       get {
-          return new LexLocation(tokLin, tokCol, tokELin, tokECol, parsertools.CurrentFileName);
+          return new LexLocation(tokLin, tokCol, tokELin, tokECol, parsertools.currentFileName);
 	  }
   }
   
@@ -556,7 +556,7 @@ UNICODEARROW \x890
         if (buffStack.Count == 0) 
 		    return true;
         RestoreBuffCtx(buffStack.Pop());
-		parsertools.CurrentFileName = fNameStack.Pop();
+		parsertools.currentFileName = fNameStack.Pop();
         return false;     
     }
   
@@ -581,7 +581,7 @@ UNICODEARROW \x890
                 BufferContext savedCtx = MkBuffCtx();
                 string full_path = fName;
                 if (!Path.IsPathRooted(full_path))
-                    full_path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(parsertools.CurrentFileName), fName));
+                    full_path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(parsertools.currentFileName), fName));
                     
                 if (fNameStack.Contains(full_path))
                 {
@@ -590,8 +590,8 @@ UNICODEARROW \x890
                 }
                     
                 SetSource(File.ReadAllText(full_path), 0);
-				fNameStack.Push(parsertools.CurrentFileName);
-				parsertools.CurrentFileName = full_path;
+				fNameStack.Push(parsertools.currentFileName);
+				parsertools.currentFileName = full_path;
                 buffStack.Push(savedCtx); 
             }
             catch
