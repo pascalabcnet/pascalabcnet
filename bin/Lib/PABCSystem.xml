@@ -1267,22 +1267,10 @@
       <summary>Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги</summary>
     </member>
     <member name="M:TypeToTypeName(System.Type)">
-      <summary>Для типа System.Type возвращает имя типа объекта</summary>
-    </member>
-    <member name="M:TypeToTypeName(System.Type,System.Text.StringBuilder)">
-      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
-    </member>
-    <member name="M:TypeToTypeName(System.Type,System.IO.TextWriter)">
-      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
+      <summary>Возвращает имя отражённого типа "t"</summary>
     </member>
     <member name="M:TypeName(System.Object)">
-      <summary>Возвращает имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object,System.Text.StringBuilder)">
-      <summary>Записывает в res имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res имя типа объекта</summary>
+      <summary>Возвращает имя типа объекта "o"</summary>
     </member>
     <member name="M:ExtractFileName(System.String)">
       <summary>Выделяет имя файла из полного имени файла fileName</summary>
@@ -2639,13 +2627,7 @@
       <summary>Вычисление размера типа на этапе выполнения</summary>
     </member>
     <member name="M:_ObjectToString(System.Object)">
-      <summary>Возвращает строку для вывода в write</summary>
-    </member>
-    <member name="M:_ObjectToString(System.Object,System.Text.StringBuilder)">
-      <summary>Записывает в res строку для вывода в write</summary>
-    </member>
-    <member name="M:_ObjectToString(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res строку для вывода в write</summary>
+      <summary>Возвращает строку для вывода подобного Write</summary>
     </member>
     <member name="M:ExecuteAssemlyIsDll">
       <summary>--</summary>
@@ -2911,6 +2893,24 @@
     <member name="C:AllDelimiters">
       <summary>Константа - символы-разделители слов
  !! symbols - word delimiters</summary>
+    </member>
+    <member name="M:WriteTypeToTypeName(System.IO.TextWriter,System.Type)">
+      <summary>Записывает в self имя отражённого типа "t"</summary>
+    </member>
+    <member name="M:WriteTypeName(System.IO.TextWriter,System.Object)">
+      <summary>Записывает в self имя типа объекта "o"</summary>
+    </member>
+    <member name="M:WriteObjectString(System.IO.TextWriter,System.Object)">
+      <summary>Записывает в self строку для вывода подобного Write</summary>
+    </member>
+    <member name="M:AppendTypeToTypeName(System.Text.StringBuilder,System.Type)">
+      <summary>Добавляет в self имя отражённого типа "t"</summary>
+    </member>
+    <member name="M:AppendTypeName(System.Text.StringBuilder,System.Object)">
+      <summary>Добавляет в self имя типа объекта "o"</summary>
+    </member>
+    <member name="M:AppendObjectString(System.Text.StringBuilder,System.Object)">
+      <summary>Добавляет в self строку для вывода подобного Write</summary>
     </member>
     <member name="M:+``1(``0[],``0[])">
       <summary>Объединяет два массива</summary>

@@ -4605,6 +4605,8 @@ type
     
   end;
   
+//{{{doc: Начало методов расширения TypeName/ObjectString }}}
+
 /// Записывает в self имя отражённого типа "t"
 procedure WriteTypeToTypeName(self: TextWriter; t: System.Type); extensionmethod :=
   ObjectToStringUtils.TypeToTypeName(t, self);
@@ -4624,6 +4626,8 @@ procedure AppendTypeName(self: StringBuilder; o: object); extensionmethod :=
 /// Добавляет в self строку для вывода подобного Write
 procedure AppendObjectString(self: StringBuilder; o: object); extensionmethod :=
   StringWriter.Create(self).WriteObjectString(o);
+
+//{{{--doc: Конец методов расширения TypeName/ObjectString }}}
 
 function TypeToTypeName(t: System.Type): string;
 begin
