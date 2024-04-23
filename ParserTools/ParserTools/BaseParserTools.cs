@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using QUT.Gppg;
+using PascalABCCompiler.Parsers;
 
 namespace PascalABCCompiler.ParserTools
 {
@@ -36,6 +37,9 @@ namespace PascalABCCompiler.ParserTools
         public List<compiler_directive> compilerDirectives;
 
         public static Dictionary<string, string> tokenNum; // строки, соответствующие терминалам, для вывода ошибок - SSM
+
+        protected BaseParser parserCached;
+        protected abstract BaseParser ParserCached { get; }
 
         public SourceContext ToSourceContext(LexLocation loc)
         {
@@ -87,6 +91,42 @@ namespace PascalABCCompiler.ParserTools
         {
             text = text.Replace("''", "'");
             return text;
+        }
+
+        public void CheckDirectiveParams(string directiveName, string directiveParam, SourceContext loc)
+        {
+            BaseParser parserNeeded = ParserCached;
+
+            // проверка имени директивы
+            if (!parserNeeded.ValidDirectives.ContainsKey(directiveName))
+            {
+                AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", loc, directiveName);
+                return;
+            }
+
+            // случай директивы без параметров
+            if (directiveParam == null)
+            {
+                // если задан формат параметров и не допускается импользование без параметра
+                if (parserNeeded.ValidDirectives[directiveName] != null && !parserNeeded.ValidDirectives[directiveName].format.IsMatch(""))
+                {
+                    AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
+                }
+                return;
+            }
+
+            // проверка на добавление параметров директиве без параметров
+            if (parserNeeded.ValidDirectives[directiveName] == null)
+            {
+                AddErrorFromResource("UNNECESSARY_DIRECTIVE_PARAM{0}", loc, directiveName);
+                return;
+            }
+
+            // проверка параметров директивы
+            if (!parserNeeded.ValidDirectives[directiveName].format.IsMatch(directiveParam.ToLower()))
+            {
+                AddErrorFromResource("INCORRECT_DIRECTIVE_PARAM{0}", loc, directiveParam);
+            }
         }
 
         public char_const create_char_const(string text, SourceContext sc)

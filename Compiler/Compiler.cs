@@ -1231,7 +1231,7 @@ namespace PascalABCCompiler
         }
 
         /// <summary>
-        /// преобразует в директивы семантического уровня
+        /// преобразует в директивы семантического уровня | в TreeConverter такая же функция  EVA
         /// </summary>
         private List<compiler_directive> GetDirectivesAsSemanticNodes(List<SyntaxTree.compiler_directive> compilerDirectives, string unitFileName)
         {

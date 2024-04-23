@@ -5,6 +5,9 @@ using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Linq;
 using PascalABCCompiler.ParserTools;
+using PascalABCCompiler.PascalABCNewParser;
+using PascalABCCompiler.Parsers;
+using System.Text.RegularExpressions;
 
 namespace PascalABCSavParser
 {
@@ -38,6 +41,16 @@ namespace PascalABCSavParser
         public List<function_lambda_definition> pascalABCLambdaDefinitions;
         public List<var_def_statement> pascalABCVarStatements;
         public List<type_declaration> pascalABCTypeDeclarations;
+
+        protected override BaseParser ParserCached 
+        { 
+            get
+            {
+                if (parserCached == null)
+                    parserCached = Controller.Instance.SelectParser(".pas") as BaseParser;
+                return parserCached;
+            }
+        }
 
         static PascalParserTools()
         {
@@ -89,16 +102,50 @@ namespace PascalABCSavParser
             pascalABCTypeDeclarations = new List<type_declaration>();
         }
 
-        public void DivideDirectiveOn(string yytext, out string directivename, out string directiveparam)
+        public void ParseDirective(string directive, QUT.Gppg.LexLocation location, out string directiveName, out string directiveParam)
         {
-            var ind = yytext.IndexOfAny(new char[]{' ','}'});
-            directivename = yytext.Substring(2,ind-2).ToUpper().Trim();
-            directiveparam = yytext.Substring(ind + 1).TrimEnd('}').Trim();
-        }
+            directiveName = directiveParam = null;
 
-        public void CheckDirectiveParams(string directivename, string directiveparam)
-        {
+            List<string> words = directive.Split(new char[2] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            
+            // убрали пробелы перед }
+            if (words.Last() == "}")
+            {
+                words[words.Count - 2] += "}";
+                words.RemoveAt(words.Count - 1);
+            }
 
+            // пустая директива
+            if (words[0] == "{$}")
+            {
+                AddErrorFromResource("EMPTY_DIRECTIVE", location);
+                return;
+            }
+            
+            // пробелы перед именем директивы
+            if (words[0] == "{$")
+            {
+                words[0] += words[1];
+                words.RemoveAt(1);
+            }
+
+            if (words.Count == 1)
+            {
+                directiveName = words[0].Substring(2, words[0].Length - 3);
+            }
+            else
+            {
+                directiveName = words[0].Substring(2, words[0].Length - 2);
+                directiveParam = words[1].TrimEnd('}');
+            }
+
+            ParserCached.ValidDirectives.TryGetValue(directiveName, out var directiveInfo);
+
+            // много параметров 
+            if (directiveInfo != null && !directiveInfo.spaceInParameterAllowed && words.Count > 2)
+            {
+                AddErrorFromResource("DIRECTIVE_HAS_TOO_MANY_PARAMS", location);
+            }
         }
 
         protected override string GetFromStringResources(string res)
