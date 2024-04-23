@@ -349,7 +349,7 @@ namespace PascalABCCompiler.PCU
             {
                 if (base_type != null && base_type.IsDelegate)
                     return base_type.find_in_type(name, CurrentScope, null, no_search_in_extension_methods);
-                else if (name == compiler_string_consts.deconstruct_method_name)
+                else if (name == StringConstants.deconstruct_method_name)
                     return SystemLibrary.SystemLibrary.object_type.find_in_type(name, CurrentScope, null, no_search_in_extension_methods);
 
                 // SSM перенес из common_type_node (types.cs 2116) - без этого не работали методы расширения последовательностей для типов в pcu, реализующих IEnumerable<T>

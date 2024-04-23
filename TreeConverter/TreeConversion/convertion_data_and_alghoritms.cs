@@ -1085,7 +1085,7 @@ namespace PascalABCCompiler.TreeConverter
                                 internal_interface ii = cmc.obj.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                                 if (ii != null)
                                 {
-                                    if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                                    if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                                     {
                                         bounded_array_interface bai = (bounded_array_interface)ii;
                                         class_field cf = bai.int_array;
@@ -1160,7 +1160,7 @@ namespace PascalABCCompiler.TreeConverter
                         expression_node to = new simple_array_indexing(tc.var_ref,//factparams[formalparams.Count - 1],
                             new int_const_node(i - formalparams.Count + 1, factparams[i].location), aii.element_type, factparams[i].location);
                         expression_node from = factparams[i];
-                        statement_node stat = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, to, from, factparams[i].location);
+                        statement_node stat = syntax_tree_visitor.find_operator(StringConstants.assign_name, to, from, factparams[i].location);
                         tc.snl.AddElement(stat);
                     }
 
@@ -1195,7 +1195,7 @@ namespace PascalABCCompiler.TreeConverter
                                 expression_node to = new simple_array_indexing(tc.var_ref,//factparams[formalparams.Count - 1],
                                     new int_const_node(i - formalparams.Count + 1, factparams[i].location), aii.element_type, factparams[i].location);
                                 expression_node from = factparams[i];
-                                statement_node stat = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, to, from, factparams[i].location);
+                                statement_node stat = syntax_tree_visitor.find_operator(StringConstants.assign_name, to, from, factparams[i].location);
                                 tc.snl.AddElement(stat);
                             }
 
@@ -1270,7 +1270,7 @@ namespace PascalABCCompiler.TreeConverter
                                 new int_const_node(i - formalparams.Count + 1, factparams[i].location), aii.element_type, factparams[i].location);
                             expression_node from = create_simple_function_call(ptc.first.convertion_method,
                                 factparams[i].location, factparams[i]);
-                            statement_node stat = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, to, from, factparams[i].location);
+                            statement_node stat = syntax_tree_visitor.find_operator(StringConstants.assign_name, to, from, factparams[i].location);
                             tc.snl.AddElement(stat);
                         }
 					}
@@ -2187,8 +2187,8 @@ namespace PascalABCCompiler.TreeConverter
 
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
-            bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
-            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null || first_function.name.ToLower() == "in";
+            bool _is_assigment = first_function.name == StringConstants.assign_name;
+            bool is_op = StringConstants.GetNETOperName(first_function.name) != null || first_function.name.ToLower() == "in";
             basic_function_node _tmp_bfn = functions.FirstOrDefault().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
@@ -2197,7 +2197,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (function.sym_info is compiled_function_node cfn0 &&
                     cfn0.comperehensive_type is compiled_type_node ctn0 &&
-                    (ctn0.compiled_type.Name == compiler_string_consts.pascalSystemUnitName + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == compiler_string_consts.pascalExtensionsUnitName + compiler_string_consts.ImplementationSectionNamespaceName)
+                    (ctn0.compiled_type.Name == StringConstants.pascalSystemUnitName + StringConstants.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == StringConstants.pascalExtensionsUnitName + StringConstants.ImplementationSectionNamespaceName)
                     && !ctn0.compiled_type.Assembly.FullName.StartsWith("PABCRtl")) // пропустить функции (методы расширения), определенные в сборке в ПИ PABCSystem, но не в PABCRtl.dll
                     continue;
                 // В режиме only_from_not_extensions пропускать все extensions
@@ -3174,7 +3174,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		private string get_return_variable_name(string function_name)
 		{
-			return (compiler_string_consts.function_return_value_prefix+function_name);
+			return (StringConstants.function_return_value_prefix+function_name);
 		}
 
         public void create_function_return_variable(common_function_node cfn, SymbolInfo ret_var)

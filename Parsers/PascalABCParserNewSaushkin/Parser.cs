@@ -121,42 +121,44 @@ namespace PascalABCCompiler.PascalABCNewParser
 
         private void InitializeValidDirectives()
         {
+            #region VALID DIRECTIVES
             ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.CurrentCultureIgnoreCase)
             {
-                [compiler_directive_apptype] = new DirectiveInfo(new Regex(@"console|windows|dll|pcu")),
-                [compiler_directive_reference] = new DirectiveInfo(new Regex(@".+\.dll")),
-                [include_namespace_directive] = new DirectiveInfo(new Regex(@".+\.pas")),
-                [compiler_savepcu] = new DirectiveInfo(new Regex(@"true|false")),
-                [compiler_directive_zerobasedstrings] = new DirectiveInfo(new Regex(@"on|off|")),
-                [compiler_directive_zerobasedstrings_ON] = null,
-                [compiler_directive_zerobasedstrings_OFF] = null,
-                [compiler_directive_nullbasedstrings_ON] = null,
-                [compiler_directive_nullbasedstrings_OFF] = null,
-                [compiler_directive_initstring_as_empty_ON] = null,
-                [compiler_directive_initstring_as_empty_OFF] = null,
-                [compiler_directive_resource] = new DirectiveInfo(new Regex(@".+\.res")),
-                [compiler_directive_platformtarget] = new DirectiveInfo(new Regex(@"x86|x64|anycpu|dotnet5win|dotnet5linux|dotnet5macos|native")),
-                [compiler_directive_faststrings] = null,
-                [compiler_directive_gendoc] = new DirectiveInfo(new Regex(@"true|false")),
-                [compiler_directive_region] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_ \-]*"), true),
-                [compiler_directive_endregion] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_ \-]*"), true),
-                [compiler_directive_ifdef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
-                [compiler_directive_endif] = null,
-                [compiler_directive_ifndef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
-                [compiler_directive_else] = null,
-                [compiler_directive_undef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
-                [compiler_directive_define] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
-                [compiler_directive_include] = new DirectiveInfo(new Regex(@"\w+")),
-                [compiler_directive_targetframework] = new DirectiveInfo(new Regex(@"net\d+")),
-                [compiler_directive_hidden_idents] = null,
-                [version_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [product_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [company_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [trademark_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [main_resource_string] = new DirectiveInfo(new Regex(@".+\.res")),
-                [title_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [description_string] = new DirectiveInfo(new Regex(@"\w+"))
-            };
+                [StringConstants.compiler_directive_apptype] = new DirectiveInfo(new Regex(@"console|windows|dll|pcu")),
+                [StringConstants.compiler_directive_reference] = new DirectiveInfo(new Regex(@".+\.dll")),
+                [StringConstants.include_namespace_directive] = new DirectiveInfo(new Regex(@".+\.pas")),
+                [StringConstants.compiler_savepcu] = new DirectiveInfo(new Regex(@"true|false")),
+                [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(new Regex(@"on|off|")),
+                [StringConstants.compiler_directive_zerobasedstrings_ON] = null,
+                [StringConstants.compiler_directive_zerobasedstrings_OFF] = null,
+                [StringConstants.compiler_directive_nullbasedstrings_ON] = null,
+                [StringConstants.compiler_directive_nullbasedstrings_OFF] = null,
+                [StringConstants.compiler_directive_initstring_as_empty_ON] = null,
+                [StringConstants.compiler_directive_initstring_as_empty_OFF] = null,
+                [StringConstants.compiler_directive_resource] = new DirectiveInfo(new Regex(@".+\.res")),
+                [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(new Regex(@"x86|x64|anycpu|dotnet5win|dotnet5linux|dotnet5macos|native")),
+                [StringConstants.compiler_directive_faststrings] = null,
+                [StringConstants.compiler_directive_gendoc] = new DirectiveInfo(new Regex(@"true|false")),
+                [StringConstants.compiler_directive_region] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_ \-]*"), true),
+                [StringConstants.compiler_directive_endregion] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_ \-]*"), true),
+                [StringConstants.compiler_directive_ifdef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
+                [StringConstants.compiler_directive_endif] = null,
+                [StringConstants.compiler_directive_ifndef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
+                [StringConstants.compiler_directive_else] = null,
+                [StringConstants.compiler_directive_undef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
+                [StringConstants.compiler_directive_define] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
+                [StringConstants.compiler_directive_include] = new DirectiveInfo(new Regex(@"\w+")),
+                [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(new Regex(@"net\d+")),
+                [StringConstants.compiler_directive_hidden_idents] = null,
+                [StringConstants.version_string] = new DirectiveInfo(new Regex(@"\w+")),
+                [StringConstants.product_string] = new DirectiveInfo(new Regex(@"\w+")),
+                [StringConstants.company_string] = new DirectiveInfo(new Regex(@"\w+")),
+                [StringConstants.trademark_string] = new DirectiveInfo(new Regex(@"\w+")),
+                [StringConstants.main_resource_string] = new DirectiveInfo(new Regex(@".+\.res")),
+                [StringConstants.title_string] = new DirectiveInfo(new Regex(@"\w+")),
+                [StringConstants.description_string] = new DirectiveInfo(new Regex(@"\w+"))
+            }; 
+            #endregion
         }
 
         public override SourceFilesProviderDelegate SourceFilesProvider
@@ -314,40 +316,5 @@ namespace PascalABCCompiler.PascalABCNewParser
                 return null;
             }
         }
-
-        public static string compiler_directive_apptype = "apptype";
-        public static string compiler_directive_reference = "reference";
-        public static string include_namespace_directive = "includenamespace";
-        public static string compiler_savepcu = "savepcu";
-        public static string compiler_directive_zerobasedstrings = "zerobasedstrings";
-        public static string compiler_directive_zerobasedstrings_ON = "string_zerobased+";
-        public static string compiler_directive_zerobasedstrings_OFF = "string_zerobased-";
-        public static string compiler_directive_nullbasedstrings_ON = "string_nullbased+"; // для совместимости. Deprecated
-        public static string compiler_directive_nullbasedstrings_OFF = "string_nullbased-"; // для совместимости. Deprecated
-        public static string compiler_directive_initstring_as_empty_ON = "string_initempty+";
-        public static string compiler_directive_initstring_as_empty_OFF = "string_initempty-";
-        public static string compiler_directive_resource = "resource";
-        public static string compiler_directive_platformtarget = "platformtarget";
-        public static string compiler_directive_faststrings = "faststrings";
-        public static string compiler_directive_gendoc = "gendoc";
-        public static string compiler_directive_region = "region";
-        public static string compiler_directive_endregion = "endregion";
-        public static string compiler_directive_ifdef = "ifdef";
-        public static string compiler_directive_endif = "endif";
-        public static string compiler_directive_ifndef = "ifndef";
-        public static string compiler_directive_else = "else";
-        public static string compiler_directive_undef = "undef";
-        public static string compiler_directive_define = "define";
-        public static string compiler_directive_include = "include";
-        public static string compiler_directive_targetframework = "targetframework";
-        public static string compiler_directive_hidden_idents = "hiddenidents";
-        public const string version_string = "version";
-        public const string product_string = "product";
-        public const string company_string = "company";
-        public const string copyright_string = "copyright";
-        public const string trademark_string = "trademark";
-        public const string main_resource_string = "mainresource";
-        public const string title_string = "title";
-        public const string description_string = "description";
     }
 }

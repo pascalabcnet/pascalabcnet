@@ -171,7 +171,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             var varName = ((IVAriableDefinitionNode)symbolInfo.SymbolInfo.sym_info).name.ToLower();
             var ff = symbolInfo.SymbolInfo.sym_info.GetType();
-            var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName == compiler_string_consts.self_word;
+            var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName == PascalABCCompiler.StringConstants.self_word;
             SourceContext sourceCtxt = null;
             if (symbolInfo.SymbolInfo.sym_info.location != null)
                 sourceCtxt = new SourceContext(symbolInfo.SymbolInfo.sym_info.location.begin_line_num, symbolInfo.SymbolInfo.sym_info.location.begin_column_num,
@@ -401,7 +401,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                 dotnode1 = new dot_node(ClassName, new ident(varName));
                             else
                                 dotnode1 = new dot_node(
-                                new ident(compiler_string_consts.self_word, sourceCtxt),
+                                new ident(PascalABCCompiler.StringConstants.self_word, sourceCtxt),
                                 new ident(
                                     _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex]
                                         .GeneratedUpperClassFieldName, sourceCtxt), sourceCtxt);
@@ -457,7 +457,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         else
                         {
                             var dotnode1 = new dot_node(
-                                new ident(compiler_string_consts.self_word, sourceCtxt),
+                                new ident(PascalABCCompiler.StringConstants.self_word, sourceCtxt),
                                 new ident(varName, sourceCtxt), sourceCtxt);
 
                             _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
@@ -517,7 +517,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     }
 
                     var dotnode1 = new dot_node(
-                                new ident(compiler_string_consts.self_word, sourceCtxt),
+                                new ident(PascalABCCompiler.StringConstants.self_word, sourceCtxt),
                                 new ident(varName, sourceCtxt), sourceCtxt);
 
                     _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
@@ -580,7 +580,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                             cl.AssignNodeForUpperClassFieldInitialization =
                                 new assign(
                                     new dot_node(new ident(cl.GeneratedSubstitutingFieldName),new ident(cl.GeneratedUpperClassFieldName)),
-                                    new ident(compiler_string_consts.self_word));
+                                    new ident(PascalABCCompiler.StringConstants.self_word));
 
                         }
                     }
@@ -685,7 +685,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                    new ScopeClassDefinition(currentNode.CorrespondingSyntaxTreeNode,
                                                                             typeDeclaration,
                                                                             currentNode,
-                                                                            compiler_string_consts.self_word));
+                                                                            PascalABCCompiler.StringConstants.self_word));
                     }
                 }
                 else

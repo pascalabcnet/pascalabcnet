@@ -275,7 +275,7 @@ UNICODEARROW \x890
   if (res == (int)Tokens.tkIdentifier)
   {
     if (cur_yytext[0] == '!' && !HiddenIdents && !ExprMode)
-    	parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, ""+cur_yytext[0]);
+    	parserTools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, ""+cur_yytext[0]);
 	yylval = new Union(); 
     yylval.id = parserTools.create_ident(cur_yytext,currentLexLocation);
   }
