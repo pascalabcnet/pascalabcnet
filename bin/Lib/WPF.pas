@@ -275,10 +275,12 @@ begin
     Self.Children.Add(c);
 end;
 
-procedure StackPanel.AddButtons(buttons: array of Button; 
+function ArrControls(params cc: array of Control) := cc;
+
+procedure StackPanel.AddControls(controls: sequence of Control; 
   Width: real := real.NaN; Height: real := real.NaN; Padding: Thickness := 0; Margin: Thickness := 0);
 begin
-  foreach var b in buttons do
+  foreach var b in controls do
   begin  
     b.Margin := Margin;
     b.Padding := Padding;
