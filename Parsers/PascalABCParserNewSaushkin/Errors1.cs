@@ -1,8 +1,6 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using PascalABCCompiler.SyntaxTree;
-using System.Collections.Generic;
 
 namespace PascalABCCompiler.Errors
 {
@@ -71,37 +69,18 @@ namespace PascalABCCompiler.Errors
         {
         }
     }
-    public class PABCNETUnexpectedToken : SyntaxError
+
+    public class PABCNETUnexpectedToken : UnexpectedToken
     {
-        private string _message;
-        private string _expected;
-        public PABCNETUnexpectedToken(string _file_name, string expected, SourceContext _source_context, syntax_tree_node _node)
-            : base("", _file_name, _source_context, _node)
+
+        public PABCNETUnexpectedToken(string fileName, string expected, SourceContext sourceContext, syntax_tree_node node)
+            : base(fileName, expected, sourceContext, node) { }
+
+        protected override string GetFromStringResources()
         {
-            _message = string.Format(PascalABCSavParser.StringResources.Get("EXPECTED{0}"), expected);
-            _expected = expected;
-        }
-        
-        public override string Message
-        {
-            get
-            {
-                return _message;
-            }
+            return PascalABCSavParser.StringResources.Get("EXPECTED{0}");
         }
 
-        public string Expected
-        {
-            get
-            {
-                return _expected;
-            }
-            set
-            {
-                _expected = value;
-                _message = string.Format(PascalABCSavParser.StringResources.Get("EXPECTED{0}"), _expected);
-            }
-        }
     }
 
 }

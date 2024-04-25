@@ -1266,6 +1266,24 @@
     <member name="M:EnumerateAllDirectories(System.String)">
       <summary>Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги</summary>
     </member>
+    <member name="M:TypeToTypeName(System.Type)">
+      <summary>Для типа System.Type возвращает имя типа объекта</summary>
+    </member>
+    <member name="M:TypeToTypeName(System.Type,System.Text.StringBuilder)">
+      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
+    </member>
+    <member name="M:TypeToTypeName(System.Type,System.IO.TextWriter)">
+      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
+    </member>
+    <member name="M:TypeName(System.Object)">
+      <summary>Возвращает имя типа объекта</summary>
+    </member>
+    <member name="M:TypeName(System.Object,System.Text.StringBuilder)">
+      <summary>Записывает в res имя типа объекта</summary>
+    </member>
+    <member name="M:TypeName(System.Object,System.IO.TextWriter)">
+      <summary>Записывает в res имя типа объекта</summary>
+    </member>
     <member name="M:ExtractFileName(System.String)">
       <summary>Выделяет имя файла из полного имени файла fileName</summary>
     </member>
@@ -2620,24 +2638,6 @@
     <member name="M:GetRuntimeSize``1">
       <summary>Вычисление размера типа на этапе выполнения</summary>
     </member>
-    <member name="M:TypeToTypeName(System.Type)">
-      <summary>Для типа System.Type возвращает имя типа объекта</summary>
-    </member>
-    <member name="M:TypeToTypeName(System.Type,System.Text.StringBuilder)">
-      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
-    </member>
-    <member name="M:TypeToTypeName(System.Type,System.IO.TextWriter)">
-      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object)">
-      <summary>Возвращает имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object,System.Text.StringBuilder)">
-      <summary>Записывает в res имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res имя типа объекта</summary>
-    </member>
     <member name="M:_ObjectToString(System.Object)">
       <summary>Возвращает строку для вывода в write</summary>
     </member>
@@ -3217,6 +3217,15 @@
       <summary>Объединяет три последовательности в последовательность трехэлементных кортежей</summary>
     </member>
     <member name="M:ZipTuple``4(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Collections.Generic.IEnumerable{``2},System.Collections.Generic.IEnumerable{``3})">
+      <summary>Объединяет четыре последовательности в последовательность четырехэлементных кортежей</summary>
+    </member>
+    <member name="M:Zip``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1})">
+      <summary>Объединяет две последовательности в последовательность двухэлементных кортежей</summary>
+    </member>
+    <member name="M:Zip``3(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Collections.Generic.IEnumerable{``2})">
+      <summary>Объединяет три последовательности в последовательность трехэлементных кортежей</summary>
+    </member>
+    <member name="M:Zip``4(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Collections.Generic.IEnumerable{``2},System.Collections.Generic.IEnumerable{``3})">
       <summary>Объединяет четыре последовательности в последовательность четырехэлементных кортежей</summary>
     </member>
     <member name="M:UnZipTuple``2(System.Collections.Generic.IEnumerable{System.Tuple{``0,``1}})">

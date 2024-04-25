@@ -1506,6 +1506,19 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
+/// Для типа System.Type возвращает имя типа объекта
+function TypeToTypeName(t: System.Type): string;
+/// Для типа System.Type записывает в res имя типа объекта
+procedure TypeToTypeName(t: System.Type; res: StringBuilder);
+/// Для типа System.Type записывает в res имя типа объекта
+procedure TypeToTypeName(t: System.Type; res: TextWriter);
+/// Возвращает имя типа объекта
+function TypeName(o: object): string;
+/// Записывает в res имя типа объекта
+procedure TypeName(o: object; res: StringBuilder);
+/// Записывает в res имя типа объекта
+procedure TypeName(o: object; res: TextWriter);
+
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
 //procedure New<T>(var p: ^T); 
@@ -2660,19 +2673,6 @@ function RuntimeDetermineType(T: System.Type): byte;
 function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
-
-/// Для типа System.Type возвращает имя типа объекта
-function TypeToTypeName(t: System.Type): string;
-/// Для типа System.Type записывает в res имя типа объекта
-procedure TypeToTypeName(t: System.Type; res: StringBuilder);
-/// Для типа System.Type записывает в res имя типа объекта
-procedure TypeToTypeName(t: System.Type; res: TextWriter);
-/// Возвращает имя типа объекта
-function TypeName(o: object): string;
-/// Записывает в res имя типа объекта
-procedure TypeName(o: object; res: StringBuilder);
-/// Записывает в res имя типа объекта
-procedure TypeName(o: object; res: TextWriter);
 
 /// Возвращает строку для вывода в write
 function _ObjectToString(o: object): string;
@@ -4180,10 +4180,10 @@ function operator implicit(s: string): StringBuilder; extensionmethod := new Str
 type
   ObjectToStringUtils = static class
     
-    static procedure MethodToString(mi: System.Reflection.MethodInfo; write_sub_names: boolean; res: TextWriter);
-    const lambda_name='lambda';
-    const sugar_name_begin='<>';
-    const par_separator = ', ';
+    public static procedure MethodToString(mi: System.Reflection.MethodInfo; write_sub_names: boolean; res: TextWriter);
+      const lambda_name='lambda';
+      const sugar_name_begin='<>';
+      const par_separator = ', ';
     begin
       var rt := mi.ReturnType;
       if rt=typeof(Void) then rt := nil;
@@ -4231,8 +4231,9 @@ type
       
     end;
     
-    static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
-    const val_sep = '; ';
+    private static empty_obj_arr := new object[0];
+    public static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
+      const val_sep = '; ';
     begin
       res.Write('(');
       var any_vals := false;
@@ -4275,7 +4276,7 @@ type
           res.Write('=');
           var val: object;
           try
-            val := mi.Invoke(o, &Array.Empty&<object>);
+            val := mi.Invoke(o, empty_obj_arr);
           except
             on e: System.Reflection.TargetInvocationException do
               val := e.InnerException.ToString;
@@ -4286,7 +4287,7 @@ type
       res.Write(')');
     end;
     
-    static procedure Append(o: Object; prev: Stack<object>; res: TextWriter);
+    public static procedure Append(o: Object; prev: Stack<object>; res: TextWriter);
     begin
       if prev.Contains(o) then
       begin
@@ -4299,8 +4300,8 @@ type
       if prev.Pop<>o then raise new InvalidOperationException;
       
     end;
-    static procedure AppendImpl(o: Object; prev: Stack<object>; res: TextWriter);
-    const max_seq_len = 100;
+    public static procedure AppendImpl(o: Object; prev: Stack<object>; res: TextWriter);
+      const max_seq_len = 100;
     begin
       if o = nil then
       begin
@@ -4488,14 +4489,10 @@ type
     
   end;
   
-procedure TypeToTypeName(t: System.Type; res: TextWriter);
+function TryWriteFromTypeCode(t: System.Type; res: TextWriter): boolean;
 begin
-  if t=nil then
-  begin
-    res.Write( 'nil' );
-    exit;
-  end;
-  
+  Result := not t.IsEnum;
+  if not Result then exit;
   case &Type.GetTypeCode(t) of
     
     // int
@@ -4521,77 +4518,85 @@ begin
     
     TypeCode.String:  res.Write('string');
     
-    else
-    begin
-      
-      if t.IsArray then
-      begin
-        res.Write('array');
-        var rank := t.GetArrayRank;
-        if rank>1 then
-        begin
-          res.Write('[');
-          loop rank-1 do res.Write(',');
-          res.Write(']');
-        end else
-        if rank<1 then
-          raise new NotImplementedException;
-        res.Write(' of ');
-        TypeToTypeName(t.GetElementType, res);
-        exit;
-      end;
-      
-      if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
-      begin
-        var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
-        if (typed<>nil) and (
-          // Выводим как sequence только классы, созданные yield функцией
-          // "clyield#" это yield класс паскаля
-          t.Name.StartsWith('clyield#') or
-          // А все yield классы C# являются вложенными и скрытыми
-          (t.DeclaringType<>nil) and not t.IsPublic
-        ) then
-        begin
-          res.Write('sequence of ');
-          TypeToTypeName(typed.GetGenericArguments.Single, res);
-          exit;
-        end;
-      end;
-      
-      var name := t.Name;
-      
-      if t.IsSubclassOf(typeof(Delegate)) then
-      begin
-        var mi := t.GetMethod('Invoke');
-        if mi=nil then raise new NotImplementedException;
-        ObjectToStringUtils.MethodToString(mi, false, res);
-        exit;
-      end;
-      
-      // typeof(t1<T>) или typeof(t1<>)
-      // typeof(t1<>) можно проверить отдельно с .IsGenericTypeDefinition
-      // Но в данном случае это не нужно
-      if t.IsGenericType then
-      begin
-        res.Write( name.Remove(name.IndexOf('`')) );
-        res.Write('<');
-        var any_gen_par := false;
-        foreach var gen_par in t.GetGenericArguments do
-        begin
-          if any_gen_par then
-            res.Write(', ') else
-            any_gen_par := true;
-          TypeToTypeName(gen_par, res);
-        end;
-        res.Write('>');
-        exit;
-      end;
-      
-      res.Write(name);
-    end;
-    
+    else Result := false;
+  end;
+end;
+
+procedure TypeToTypeName(t: System.Type; res: TextWriter);
+begin
+  if t=nil then
+  begin
+    res.Write( 'nil' );
+    exit;
   end;
   
+  if TryWriteFromTypeCode(t, res) then
+    exit;
+  
+  if t.IsArray then
+  begin
+    res.Write('array');
+    var rank := t.GetArrayRank;
+    if rank>1 then
+    begin
+      res.Write('[');
+      loop rank-1 do res.Write(',');
+      res.Write(']');
+    end else
+    if rank<1 then
+      raise new NotImplementedException;
+    res.Write(' of ');
+    TypeToTypeName(t.GetElementType, res);
+    exit;
+  end;
+  
+  if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
+  begin
+    var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
+    if (typed<>nil) and (
+      // Выводим как sequence только классы, созданные yield функцией
+      // "clyield#" это yield класс паскаля
+      t.Name.StartsWith('clyield#') or
+      // А все yield классы C# являются вложенными и скрытыми
+      (t.DeclaringType<>nil) and not t.IsPublic
+    ) then
+    begin
+      res.Write('sequence of ');
+      TypeToTypeName(typed.GetGenericArguments.Single, res);
+      exit;
+    end;
+  end;
+  
+  var name := t.Name;
+  
+  if t.IsSubclassOf(typeof(Delegate)) then
+  begin
+    var mi := t.GetMethod('Invoke');
+    if mi=nil then raise new NotImplementedException;
+    ObjectToStringUtils.MethodToString(mi, false, res);
+    exit;
+  end;
+  
+  // typeof(t1<T>) или typeof(t1<>)
+  // typeof(t1<>) можно проверить отдельно с .IsGenericTypeDefinition
+  // Но в данном случае это не нужно
+  if t.IsGenericType then
+  begin
+    res.Write( name.Remove(name.IndexOf('`')) );
+    res.Write('<');
+    var any_gen_par := false;
+    foreach var gen_par in t.GetGenericArguments do
+    begin
+      if any_gen_par then
+        res.Write(', ') else
+        any_gen_par := true;
+      TypeToTypeName(gen_par, res);
+    end;
+    res.Write('>');
+    exit;
+  end;
+  
+  res.Write(name);
 end;
 procedure TypeToTypeName(t: System.Type; res: StringBuilder) :=
 TypeToTypeName(t, new StringWriter(res));
@@ -10866,7 +10871,37 @@ begin
     raise new System.ArgumentNullException('b');
   if c = nil then
     raise new System.ArgumentNullException('c');
-  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z)-> (p[0], p[1], z)).Zip(c, (p, z)-> (p[0], p[1], p[2], z));
+  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z)).Zip(c, (p, z) -> (p[0], p[1], p[2], z));
+end;
+
+/// Объединяет две последовательности в последовательность двухэлементных кортежей
+function Zip<T, T1>(Self: sequence of T; a: sequence of T1): sequence of (T, T1); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  Result := Self.Zip(a, (x, y) -> (x, y));
+end;
+
+/// Объединяет три последовательности в последовательность трехэлементных кортежей
+function Zip<T, T1, T2>(Self: sequence of T; a: sequence of T1; b: sequence of T2): sequence of (T, T1, T2); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  if b = nil then
+    raise new System.ArgumentNullException('b');
+  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z));
+end;
+
+/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
+function Zip<T, T1, T2, T3>(Self: sequence of T; a: sequence of T1; b: sequence of T2; c: sequence of T3): sequence of (T, T1, T2, T3); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  if b = nil then
+    raise new System.ArgumentNullException('b');
+  if c = nil then
+    raise new System.ArgumentNullException('c');
+  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z)).Zip(c, (p, z) -> (p[0], p[1], p[2], z));
 end;
 
 /// Разъединяет последовательность двухэлементных кортежей на две последовательности. Реализуется двухпроходным алгоритмом
