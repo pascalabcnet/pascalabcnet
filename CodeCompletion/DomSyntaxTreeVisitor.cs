@@ -43,8 +43,9 @@ namespace CodeCompletion
         public static bool use_semantic_for_intellisense;
         private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
         public SemanticOptions semantic_options = new SemanticOptions();
-		
-		public DomSyntaxTreeVisitor(DomConverter converter)
+        public Hashtable cur_used_assemblies;
+
+        public DomSyntaxTreeVisitor(DomConverter converter)
 		{
 			//tcst = new TreeConverterSymbolTable(false);
 			this.converter = converter;
@@ -70,6 +71,7 @@ namespace CodeCompletion
                 //throw e;
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
+            cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();
             if (use_semantic_for_intellisense && !parse_only_interface)
             try
             {

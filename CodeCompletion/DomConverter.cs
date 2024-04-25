@@ -117,7 +117,7 @@ namespace CodeCompletion
                 CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
             visitor.Convert(cu);
             is_compiled = true;
-            cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();
+            cur_used_assemblies = visitor.cur_used_assemblies;
             return;
         }
 
