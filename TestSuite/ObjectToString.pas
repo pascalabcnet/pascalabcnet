@@ -14,7 +14,7 @@ procedure Test(o: object);
 begin
   TypeName(o, res);
   res.Append('{ ');
-  res.AppendObjectString(o);
+  _ObjectToString(o, res);
   res.Append(' }'#10);
 end;
 

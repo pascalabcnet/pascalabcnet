@@ -1508,17 +1508,17 @@ function EnumerateAllDirectories(path: string): sequence of string;
 
 /// Возвращает имя отражённого типа "t"
 function TypeToTypeName(t: System.Type): string;
-/// Добавляет в self имя отражённого типа "t"
-procedure TypeToTypeName(t: System.Type; sb: StringBuilder);
-/// Записывает в self имя отражённого типа "t"
-procedure TypeToTypeName(t: System.Type; tw: TextWriter);
+/// Добавляет в res имя отражённого типа "t"
+procedure TypeToTypeName(t: System.Type; res: StringBuilder);
+/// Записывает в res имя отражённого типа "t"
+procedure TypeToTypeName(t: System.Type; res: TextWriter);
 
 /// Возвращает имя типа объекта "o"
 function TypeName(o: object): string;
-/// Добавляет в sb имя типа объекта "o"
-procedure TypeName(o: object; sb: StringBuilder);
-/// Записывает в tw имя типа объекта "o"
-procedure TypeName(o: object; tw: TextWriter);
+/// Добавляет в res имя типа объекта "o"
+procedure TypeName(o: object; res: StringBuilder);
+/// Записывает в res имя типа объекта "o"
+procedure TypeName(o: object; res: TextWriter);
 
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
@@ -2677,6 +2677,10 @@ function GetRuntimeSize<T>: integer;
 
 /// Возвращает строку для вывода подобного Write
 function _ObjectToString(o: object): string;
+/// Добавляет в res строку для вывода подобного Write
+procedure _ObjectToString(o: object; res: StringBuilder);
+/// Записывает в res строку для вывода подобного Write
+procedure _ObjectToString(o: object; res: TextWriter);
 
 function IsUnix: boolean;
 ///--
@@ -4484,141 +4488,144 @@ type
       
     end;
     
-    static function TryWriteFromTypeCode(t: System.Type; res: TextWriter): boolean;
-    begin
-      Result := not t.IsEnum;
-      if not Result then exit;
-      case &Type.GetTypeCode(t) of
-        
-        // int
-        TypeCode.SByte:   res.Write('shortint');
-        TypeCode.Byte:    res.Write('byte');
-        TypeCode.Boolean: res.Write('boolean');
-        
-        TypeCode.Int16:   res.Write('smallint');
-        TypeCode.UInt16:  res.Write('word');
-        TypeCode.Char:    res.Write('char');
-        
-        TypeCode.Int32:   res.Write('integer');
-        TypeCode.UInt32:  res.Write('longword');
-        
-        TypeCode.Int64:   res.Write('int64');
-        TypeCode.UInt64:  res.Write('uint64');
-        TypeCode.DateTime:res.Write('DateTime');
-        
-        // float
-        TypeCode.Single:  res.Write('single');
-        TypeCode.Double:  res.Write('real');
-        TypeCode.Decimal: res.Write('decimal');
-        
-        TypeCode.String:  res.Write('string');
-        
-        else Result := false;
-      end;
-    end;
+  end;
+  
+function TryWriteFromTypeCode(t: System.Type; res: TextWriter): boolean;
+begin
+  Result := not t.IsEnum;
+  if not Result then exit;
+  case &Type.GetTypeCode(t) of
     
-    static procedure TypeToTypeName(t: System.Type; res: TextWriter);
-    begin
-      if t=nil then
-      begin
-        res.Write( 'nil' );
-        exit;
-      end;
-      
-      if TryWriteFromTypeCode(t, res) then
-        exit;
-      
-      if t.IsArray then
-      begin
-        res.Write('array');
-        var rank := t.GetArrayRank;
-        if rank>1 then
-        begin
-          res.Write('[');
-          loop rank-1 do res.Write(',');
-          res.Write(']');
-        end else
-        if rank<1 then
-          raise new NotImplementedException;
-        res.Write(' of ');
-        TypeToTypeName(t.GetElementType, res);
-        exit;
-      end;
-      
-      if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
-      begin
-        var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
-        if (typed<>nil) and (
-          // Выводим как sequence только классы, созданные yield функцией
-          // "clyield#" это yield класс паскаля
-          t.Name.StartsWith('clyield#') or
-          // А все yield классы C# являются вложенными и скрытыми
-          (t.DeclaringType<>nil) and not t.IsPublic
-        ) then
-        begin
-          res.Write('sequence of ');
-          TypeToTypeName(typed.GetGenericArguments.Single, res);
-          exit;
-        end;
-      end;
-      
-      var name := t.Name;
-      
-      if t.IsSubclassOf(typeof(Delegate)) then
-      begin
-        var mi := t.GetMethod('Invoke');
-        if mi=nil then raise new NotImplementedException;
-        ObjectToStringUtils.MethodToString(mi, false, res);
-        exit;
-      end;
-      
-      // typeof(t1<T>) или typeof(t1<>)
-      // typeof(t1<>) можно проверить отдельно с .IsGenericTypeDefinition
-      // Но в данном случае это не нужно
-      if t.IsGenericType then
-      begin
-        res.Write( name.Remove(name.IndexOf('`')) );
-        res.Write('<');
-        var any_gen_par := false;
-        foreach var gen_par in t.GetGenericArguments do
-        begin
-          if any_gen_par then
-            res.Write(', ') else
-            any_gen_par := true;
-          TypeToTypeName(gen_par, res);
-        end;
-        res.Write('>');
-        exit;
-      end;
-      
-      res.Write(name);
-    end;
+    // int
+    TypeCode.SByte:   res.Write('shortint');
+    TypeCode.Byte:    res.Write('byte');
+    TypeCode.Boolean: res.Write('boolean');
     
-    static procedure TypeName(o: object; res: TextWriter);
+    TypeCode.Int16:   res.Write('smallint');
+    TypeCode.UInt16:  res.Write('word');
+    TypeCode.Char:    res.Write('char');
+    
+    TypeCode.Int32:   res.Write('integer');
+    TypeCode.UInt32:  res.Write('longword');
+    
+    TypeCode.Int64:   res.Write('int64');
+    TypeCode.UInt64:  res.Write('uint64');
+    TypeCode.DateTime:res.Write('DateTime');
+    
+    // float
+    TypeCode.Single:  res.Write('single');
+    TypeCode.Double:  res.Write('real');
+    TypeCode.Decimal: res.Write('decimal');
+    
+    TypeCode.String:  res.Write('string');
+    
+    else Result := false;
+  end;
+end;
+
+procedure TypeToTypeName(t: System.Type; res: TextWriter);
+begin
+  if t=nil then
+  begin
+    res.Write( 'nil' );
+    exit;
+  end;
+  
+  if TryWriteFromTypeCode(t, res) then
+    exit;
+  
+  if t.IsArray then
+  begin
+    res.Write('array');
+    var rank := t.GetArrayRank;
+    if rank>1 then
     begin
-      var t := o?.GetType;
-      
-      // Зачем? TypeName(@a) не работает
-      // Можно сделать TypeName волшебной функцией, вызывая
-      // System.Reflection.Pointer.Box, но сейчас это не происходит
-//      if t = typeof(System.Reflection.Pointer) then
-//      begin
-//        ...
-//        exit;
-//      end;
-      
-      var static_arr_field := t?.GetField('NullBasedArray');
-      if static_arr_field<>nil then
-      begin
-        TypeName(static_arr_field.GetValue(o), res);
-        exit;
-      end;
-      
-      TypeToTypeName(t, res);
+      res.Write('[');
+      loop rank-1 do res.Write(',');
+      res.Write(']');
+    end else
+    if rank<1 then
+      raise new NotImplementedException;
+    res.Write(' of ');
+    TypeToTypeName(t.GetElementType, res);
+    exit;
+  end;
+  
+  if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
+  begin
+    var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
+    if (typed<>nil) and (
+      // Выводим как sequence только классы, созданные yield функцией
+      // "clyield#" это yield класс паскаля
+      t.Name.StartsWith('clyield#') or
+      // А все yield классы C# являются вложенными и скрытыми
+      (t.DeclaringType<>nil) and not t.IsPublic
+    ) then
+    begin
+      res.Write('sequence of ');
+      TypeToTypeName(typed.GetGenericArguments.Single, res);
+      exit;
     end;
   end;
   
-{$region TypeToTypeName}
+  var name := t.Name;
+  
+  if t.IsSubclassOf(typeof(Delegate)) then
+  begin
+    var mi := t.GetMethod('Invoke');
+    if mi=nil then raise new NotImplementedException;
+    ObjectToStringUtils.MethodToString(mi, false, res);
+    exit;
+  end;
+  
+  // typeof(t1<T>) или typeof(t1<>)
+  // typeof(t1<>) можно проверить отдельно с .IsGenericTypeDefinition
+  // Но в данном случае это не нужно
+  if t.IsGenericType then
+  begin
+    res.Write( name.Remove(name.IndexOf('`')) );
+    res.Write('<');
+    var any_gen_par := false;
+    foreach var gen_par in t.GetGenericArguments do
+    begin
+      if any_gen_par then
+        res.Write(', ') else
+        any_gen_par := true;
+      TypeToTypeName(gen_par, res);
+    end;
+    res.Write('>');
+    exit;
+  end;
+  
+  res.Write(name);
+end;
+procedure TypeToTypeName(t: System.Type; res: StringBuilder) :=
+  TypeToTypeName(t, new StringWriter(res));
+
+procedure TypeName(o: object; res: TextWriter);
+begin
+  var t := o?.GetType;
+  
+  // Зачем? TypeName(@a) не работает
+  // Можно сделать TypeName волшебной функцией, вызывая
+  // System.Reflection.Pointer.Box, но сейчас это не происходит
+//  if t = typeof(System.Reflection.Pointer) then
+//  begin
+//    ...
+//    exit;
+//  end;
+  
+  var static_arr_field := t?.GetField('NullBasedArray');
+  if static_arr_field<>nil then
+  begin
+    TypeName(static_arr_field.GetValue(o), res);
+    exit;
+  end;
+  
+  TypeToTypeName(t, res);
+end;
+procedure TypeName(o: object; res: StringBuilder) :=
+  TypeName(o, new StringWriter(res));
 
 function TypeToTypeName(t: System.Type): string;
 begin
@@ -4627,16 +4634,6 @@ begin
   Result := res.ToString;
 end;
 
-procedure TypeToTypeName(t: System.Type; sb: StringBuilder) :=
-  TypeToTypeName(t, new StringWriter(sb));
-
-procedure TypeToTypeName(t: System.Type; tw: TextWriter) :=
-  ObjectToStringUtils.TypeToTypeName(t, tw);
-
-{$endregion TypeToTypeName}
-
-{$region TypeName}
-
 function TypeName(o: object): string;
 begin
   var res := new StringBuilder;
@@ -4644,36 +4641,16 @@ begin
   Result := res.ToString;
 end;
 
-procedure TypeName(o: object; sb: StringBuilder) :=
-  TypeName(o, new StringWriter(sb));
-
-procedure TypeName(o: object; tw: TextWriter) :=
-  ObjectToStringUtils.TypeName(o, tw);
-
-{$endregion TypeName}
-
-{$region ObjectToString}
-
-//{{{doc: Начало методов расширения ObjectString }}}
-
-/// Записывает в self строку для вывода подобного Write
-procedure WriteObjectString(self: TextWriter; o: object); extensionmethod :=
-  ObjectToStringUtils.Append(o, new Stack<object>, self);
-
-/// Добавляет в self строку для вывода подобного Write
-procedure AppendObjectString(self: StringBuilder; o: object); extensionmethod :=
-  StringWriter.Create(self).WriteObjectString(o);
-
-//{{{--doc: Конец методов расширения ObjectString }}}
-
+procedure _ObjectToString(o: object; res: TextWriter) :=
+  ObjectToStringUtils.Append(o, new Stack<object>, res);
+procedure _ObjectToString(o: object; res: StringBuilder) :=
+  _ObjectToString(o, new StringWriter(res));
 function _ObjectToString(o: object): string;
 begin
   var res := new StringBuilder;
-  res.AppendObjectString(o);
+  _ObjectToString(o, res);
   Result := res.ToString;
 end;
-
-{$endregion ObjectToString}
 
 //------------------------------------------------------------------------------
 //          Операции для array of T

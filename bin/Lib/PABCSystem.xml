@@ -1270,19 +1270,19 @@
       <summary>Возвращает имя отражённого типа "t"</summary>
     </member>
     <member name="M:TypeToTypeName(System.Type,System.Text.StringBuilder)">
-      <summary>Добавляет в self имя отражённого типа "t"</summary>
+      <summary>Добавляет в res имя отражённого типа "t"</summary>
     </member>
     <member name="M:TypeToTypeName(System.Type,System.IO.TextWriter)">
-      <summary>Записывает в self имя отражённого типа "t"</summary>
+      <summary>Записывает в res имя отражённого типа "t"</summary>
     </member>
     <member name="M:TypeName(System.Object)">
       <summary>Возвращает имя типа объекта "o"</summary>
     </member>
     <member name="M:TypeName(System.Object,System.Text.StringBuilder)">
-      <summary>Добавляет в sb имя типа объекта "o"</summary>
+      <summary>Добавляет в res имя типа объекта "o"</summary>
     </member>
     <member name="M:TypeName(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в tw имя типа объекта "o"</summary>
+      <summary>Записывает в res имя типа объекта "o"</summary>
     </member>
     <member name="M:ExtractFileName(System.String)">
       <summary>Выделяет имя файла из полного имени файла fileName</summary>
@@ -2641,6 +2641,12 @@
     <member name="M:_ObjectToString(System.Object)">
       <summary>Возвращает строку для вывода подобного Write</summary>
     </member>
+    <member name="M:_ObjectToString(System.Object,System.Text.StringBuilder)">
+      <summary>Добавляет в res строку для вывода подобного Write</summary>
+    </member>
+    <member name="M:_ObjectToString(System.Object,System.IO.TextWriter)">
+      <summary>Записывает в res строку для вывода подобного Write</summary>
+    </member>
     <member name="M:ExecuteAssemlyIsDll">
       <summary>--</summary>
     </member>
@@ -2905,12 +2911,6 @@
     <member name="C:AllDelimiters">
       <summary>Константа - символы-разделители слов
  !! symbols - word delimiters</summary>
-    </member>
-    <member name="M:WriteObjectString(System.IO.TextWriter,System.Object)">
-      <summary>Записывает в self строку для вывода подобного Write</summary>
-    </member>
-    <member name="M:AppendObjectString(System.Text.StringBuilder,System.Object)">
-      <summary>Добавляет в self строку для вывода подобного Write</summary>
     </member>
     <member name="M:+``1(``0[],``0[])">
       <summary>Объединяет два массива</summary>
