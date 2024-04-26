@@ -1508,8 +1508,17 @@ function EnumerateAllDirectories(path: string): sequence of string;
 
 /// Возвращает имя отражённого типа "t"
 function TypeToTypeName(t: System.Type): string;
+/// Добавляет в self имя отражённого типа "t"
+procedure TypeToTypeName(t: System.Type; sb: StringBuilder);
+/// Записывает в self имя отражённого типа "t"
+procedure TypeToTypeName(t: System.Type; tw: TextWriter);
+
 /// Возвращает имя типа объекта "o"
 function TypeName(o: object): string;
+/// Добавляет в sb имя типа объекта "o"
+procedure TypeName(o: object; sb: StringBuilder);
+/// Записывает в tw имя типа объекта "o"
+procedure TypeName(o: object; tw: TextWriter);
 
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
@@ -4609,43 +4618,53 @@ type
     end;
   end;
   
-//{{{doc: Начало методов расширения TypeName/ObjectString }}}
-
-/// Записывает в self имя отражённого типа "t"
-procedure WriteTypeToTypeName(self: TextWriter; t: System.Type); extensionmethod :=
-  ObjectToStringUtils.TypeToTypeName(t, self);
-/// Записывает в self имя типа объекта "o"
-procedure WriteTypeName(self: TextWriter; o: object); extensionmethod :=
-  ObjectToStringUtils.TypeName(o, self);
-/// Записывает в self строку для вывода подобного Write
-procedure WriteObjectString(self: TextWriter; o: object); extensionmethod :=
-  ObjectToStringUtils.Append(o, new Stack<object>, self);
-
-/// Добавляет в self имя отражённого типа "t"
-procedure AppendTypeToTypeName(self: StringBuilder; t: System.Type); extensionmethod :=
-  StringWriter.Create(self).WriteTypeToTypeName(t);
-/// Добавляет в self имя типа объекта "o"
-procedure AppendTypeName(self: StringBuilder; o: object); extensionmethod :=
-  StringWriter.Create(self).WriteTypeName(o);
-/// Добавляет в self строку для вывода подобного Write
-procedure AppendObjectString(self: StringBuilder; o: object); extensionmethod :=
-  StringWriter.Create(self).WriteObjectString(o);
-
-//{{{--doc: Конец методов расширения TypeName/ObjectString }}}
+{$region TypeToTypeName}
 
 function TypeToTypeName(t: System.Type): string;
 begin
   var res := new StringBuilder;
-  res.AppendTypeToTypeName(t);
+  TypeToTypeName(t, res);
   Result := res.ToString;
 end;
+
+procedure TypeToTypeName(t: System.Type; sb: StringBuilder) :=
+  TypeToTypeName(t, new StringWriter(sb));
+
+procedure TypeToTypeName(t: System.Type; tw: TextWriter) :=
+  ObjectToStringUtils.TypeToTypeName(t, tw);
+
+{$endregion TypeToTypeName}
+
+{$region TypeName}
 
 function TypeName(o: object): string;
 begin
   var res := new StringBuilder;
-  res.AppendTypeName(o);
+  TypeName(o, res);
   Result := res.ToString;
 end;
+
+procedure TypeName(o: object; sb: StringBuilder) :=
+  TypeName(o, new StringWriter(sb));
+
+procedure TypeName(o: object; tw: TextWriter) :=
+  ObjectToStringUtils.TypeName(o, tw);
+
+{$endregion TypeName}
+
+{$region ObjectToString}
+
+//{{{doc: Начало методов расширения ObjectString }}}
+
+/// Записывает в self строку для вывода подобного Write
+procedure WriteObjectString(self: TextWriter; o: object); extensionmethod :=
+  ObjectToStringUtils.Append(o, new Stack<object>, self);
+
+/// Добавляет в self строку для вывода подобного Write
+procedure AppendObjectString(self: StringBuilder; o: object); extensionmethod :=
+  StringWriter.Create(self).WriteObjectString(o);
+
+//{{{--doc: Конец методов расширения ObjectString }}}
 
 function _ObjectToString(o: object): string;
 begin
@@ -4653,6 +4672,8 @@ begin
   res.AppendObjectString(o);
   Result := res.ToString;
 end;
+
+{$endregion ObjectToString}
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
