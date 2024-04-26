@@ -1267,22 +1267,22 @@
       <summary>Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги</summary>
     </member>
     <member name="M:TypeToTypeName(System.Type)">
-      <summary>Для типа System.Type возвращает имя типа объекта</summary>
+      <summary>Возвращает имя отражённого типа "t"</summary>
     </member>
     <member name="M:TypeToTypeName(System.Type,System.Text.StringBuilder)">
-      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
+      <summary>Добавляет в res имя отражённого типа "t"</summary>
     </member>
     <member name="M:TypeToTypeName(System.Type,System.IO.TextWriter)">
-      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
+      <summary>Записывает в res имя отражённого типа "t"</summary>
     </member>
     <member name="M:TypeName(System.Object)">
-      <summary>Возвращает имя типа объекта</summary>
+      <summary>Возвращает имя типа объекта "o"</summary>
     </member>
     <member name="M:TypeName(System.Object,System.Text.StringBuilder)">
-      <summary>Записывает в res имя типа объекта</summary>
+      <summary>Добавляет в res имя типа объекта "o"</summary>
     </member>
     <member name="M:TypeName(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res имя типа объекта</summary>
+      <summary>Записывает в res имя типа объекта "o"</summary>
     </member>
     <member name="M:ExtractFileName(System.String)">
       <summary>Выделяет имя файла из полного имени файла fileName</summary>
@@ -2639,13 +2639,13 @@
       <summary>Вычисление размера типа на этапе выполнения</summary>
     </member>
     <member name="M:_ObjectToString(System.Object)">
-      <summary>Возвращает строку для вывода в write</summary>
+      <summary>Возвращает строку для вывода подобного Write</summary>
     </member>
     <member name="M:_ObjectToString(System.Object,System.Text.StringBuilder)">
-      <summary>Записывает в res строку для вывода в write</summary>
+      <summary>Добавляет в res строку для вывода подобного Write</summary>
     </member>
     <member name="M:_ObjectToString(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res строку для вывода в write</summary>
+      <summary>Записывает в res строку для вывода подобного Write</summary>
     </member>
     <member name="M:ExecuteAssemlyIsDll">
       <summary>--</summary>
