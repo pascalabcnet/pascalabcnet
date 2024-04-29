@@ -112,6 +112,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         {
             InitializeValidDirectives();
         }
+        
         public override void Reset()
         {
             CompilerDirectives = new List<compiler_directive>();
