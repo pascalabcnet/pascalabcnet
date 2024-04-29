@@ -87,13 +87,21 @@ namespace PascalABCCompiler.ParserTools
             warnings.Add(new CommonWarning(res, currentFileName, loc.begin_position.line_num, loc.begin_position.column_num));
         }
 
-        public string ReplaceSpecialSymbols(string text)
+        protected string ReplaceSpecialSymbols(string text)
         {
             text = text.Replace("''", "'");
             return text;
         }
 
-        public void CheckDirectiveParams(string directiveName, string directiveParam, SourceContext loc)
+        protected string DeleteQuotesFromDirectiveParam(string param)
+        {
+            if (param.Length != 1 && param.StartsWith("'") && param.EndsWith("'"))
+                return param.Substring(1, param.Length - 2);
+           
+            return param;
+        }
+
+        public void CheckDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
         {
             BaseParser parserNeeded = ParserCached;
 
@@ -104,11 +112,13 @@ namespace PascalABCCompiler.ParserTools
                 return;
             }
 
-            // случай директивы без параметров
-            if (directiveParam == null)
+            var directiveInfo = parserNeeded.ValidDirectives[directiveName];
+
+            // случай директивы, переданной без параметров
+            if (directiveParams.Count == 0)
             {
-                // если задан формат параметров и не допускается импользование без параметра
-                if (parserNeeded.ValidDirectives[directiveName] != null && !parserNeeded.ValidDirectives[directiveName].format.IsMatch(""))
+                // если задан формат параметров и не поддерживается 0 параметров
+                if (directiveInfo != null && !directiveInfo.paramsNums.Contains(0))
                 {
                     AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
                 }
@@ -116,16 +126,22 @@ namespace PascalABCCompiler.ParserTools
             }
 
             // проверка на добавление параметров директиве без параметров
-            if (parserNeeded.ValidDirectives[directiveName] == null)
+            if (directiveInfo == null)
             {
                 AddErrorFromResource("UNNECESSARY_DIRECTIVE_PARAM{0}", loc, directiveName);
                 return;
             }
 
-            // проверка параметров директивы
-            if (!parserNeeded.ValidDirectives[directiveName].format.IsMatch(directiveParam.ToLower()))
+            // проверка кол-ва параметров директивы (учитывается случай, когда их может не быть)
+            if (directiveInfo.checkParamsNumNeeded && !directiveInfo.paramsNums.Contains(directiveParams.Count))
             {
-                AddErrorFromResource("INCORRECT_DIRECTIVE_PARAM{0}", loc, directiveParam);
+                AddErrorFromResource("DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}", loc, directiveName, string.Join(", ", directiveInfo.paramsNums));
+                return;
+            }
+
+            if (!directiveInfo.ParamsValid(directiveParams, out int indexOfMismatch))
+            {
+                AddErrorFromResource("INCORRECT_DIRECTIVE_PARAM{0}{1}", loc, directiveName, directiveParams[indexOfMismatch]);
             }
         }
 

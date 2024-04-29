@@ -102,27 +102,28 @@ namespace PascalABCSavParser
             pascalABCTypeDeclarations = new List<type_declaration>();
         }
 
-        public void ParseDirective(string directive, QUT.Gppg.LexLocation location, out string directiveName, out string directiveParam)
+        public void ParseDirective(string directive, QUT.Gppg.LexLocation location, out string directiveName, out List<string> directiveParams)
         {
-            directiveName = directiveParam = null;
+            directiveName = null;
+            directiveParams = new List<string>();
 
-            List<string> words = directive.Split(new char[2] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            
-            // убрали пробелы перед }
+            List<string> words = Regex.Split(directive, @"('.*?')|\s+").Where(word => word != "").ToList();
+
+            // подсоединяем } к последнему слову
             if (words.Last() == "}")
             {
                 words[words.Count - 2] += "}";
                 words.RemoveAt(words.Count - 1);
             }
 
-            // пустая директива
+            // пустая директива - ошибка
             if (words[0] == "{$}")
             {
                 AddErrorFromResource("EMPTY_DIRECTIVE", location);
                 return;
             }
             
-            // пробелы перед именем директивы
+            // подсоединяем первое слово к {$
             if (words[0] == "{$")
             {
                 words[0] += words[1];
@@ -136,15 +137,8 @@ namespace PascalABCSavParser
             else
             {
                 directiveName = words[0].Substring(2, words[0].Length - 2);
-                directiveParam = words[1].TrimEnd('}');
-            }
-
-            ParserCached.ValidDirectives.TryGetValue(directiveName, out var directiveInfo);
-
-            // много параметров 
-            if (directiveInfo != null && !directiveInfo.spaceInParameterAllowed && words.Count > 2)
-            {
-                AddErrorFromResource("DIRECTIVE_HAS_TOO_MANY_PARAMS", location);
+                words[words.Count - 1] = words[words.Count - 1].TrimEnd('}');
+                directiveParams = words.Skip(1).Select(word => DeleteQuotesFromDirectiveParam(word)).ToList();
             }
         }
 

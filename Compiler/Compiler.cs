@@ -1167,7 +1167,7 @@ namespace PascalABCCompiler
 
 
         #region COMPILER DIRECTIVES
-        
+
         /// <summary>
         /// Список всех допустимых директив компилятора
         /// </summary>
@@ -3379,10 +3379,6 @@ namespace PascalABCCompiler
             {
                 if (directive.name.ToLower() == StringConstants.compiler_directive_reference)
                 {
-                    #region SEMANTIC CHECKS : EMPTY REFERENCE
-                    if (string.IsNullOrEmpty(directive.directive))
-                        throw new TreeConverter.SimpleSemanticError(directive.location, "EXPECTED_ASSEMBLY_NAME"); // Семантическая ошибка
-                    #endregion
 
                     referenceDirectives.Add(directive);
                 }

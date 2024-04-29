@@ -69,12 +69,12 @@ UNICODEARROW \x890
 	if (parserTools.buildTreeForFormatter)
 		break;
 
-  parserTools.ParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParam);
+  parserTools.ParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParams);
 
   if (directiveName == null) // случай пустой директивы
     break;
 
-  parserTools.CheckDirectiveParams(directiveName, directiveParam, CurrentLexLocation);
+  parserTools.CheckDirectiveParams(directiveName, directiveParams, CurrentLexLocation);
 
   directiveName = directiveName.ToUpper();
 
@@ -84,12 +84,12 @@ UNICODEARROW \x890
 	}
 	else if (directiveName == "INCLUDE")
 	{
-		TryInclude(directiveParam);
+		TryInclude(directiveParams[0]);
 	}
 	else if (directiveName == "IFDEF")
 	{
 		IfStack.Push(0);
-		if (!Defines.Contains(directiveParam))
+		if (!Defines.Contains(directiveParams[0]))
 		{
 			BEGIN(EXCLUDETEXT);
 			IfExclude = 1;
@@ -98,7 +98,7 @@ UNICODEARROW \x890
 	else if (directiveName == "IFNDEF")
 	{
 		IfStack.Push(0);
-		if (Defines.Contains(directiveParam))
+		if (Defines.Contains(directiveParams[0]))
 		{
 			BEGIN(EXCLUDETEXT);	    
 			IfExclude = 1;
@@ -123,13 +123,13 @@ UNICODEARROW \x890
 	}
 	else if (directiveName == "DEFINE")
 	{
-		if (!Defines.Contains(directiveParam))
-			Defines.Add(directiveParam);
+		if (!Defines.Contains(directiveParams[0]))
+			Defines.Add(directiveParams[0]);
 	}
 	else if (directiveName == "UNDEF")
 	{
-		if (Defines.Contains(directiveParam))
-			Defines.Remove(directiveParam);
+		if (Defines.Contains(directiveParams[0]))
+			Defines.Remove(directiveParams[0]);
 	}
 }
 
@@ -139,12 +139,12 @@ UNICODEARROW \x890
 
 <EXCLUDETEXT>{DIRECTIVE} {
 	
-  parserTools.ParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParam);
+  parserTools.ParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParams);
 
   if (directiveName == null) // случай пустой директивы
     break;
 
-  parserTools.CheckDirectiveParams(directiveName, directiveParam, CurrentLexLocation);
+  parserTools.CheckDirectiveParams(directiveName, directiveParams, CurrentLexLocation);
 	
   directiveName = directiveName.ToUpper();
 

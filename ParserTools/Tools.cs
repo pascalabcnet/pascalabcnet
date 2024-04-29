@@ -1,27 +1,9 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace PascalABCCompiler
 {
-    namespace ParserTools
-    {
-        public class DirectiveInfo
-        {
-            public Regex format;
-            public bool spaceInParameterAllowed;
-
-            public DirectiveInfo(Regex format, bool spaceInParameterAllowed = false)
-            {
-                this.format = format;
-                this.spaceInParameterAllowed = spaceInParameterAllowed;
-            }
-        }
-    }
-
-    
 
     public enum SourceFileOperation
     {

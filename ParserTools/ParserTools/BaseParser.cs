@@ -112,7 +112,7 @@ namespace PascalABCCompiler.Parsers
 
         public string[] SystemUnitNames { get; }
 
-        public Dictionary<string, ParserTools.DirectiveInfo> ValidDirectives { get; protected set; } 
+        public Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; protected set; } 
 
         public SourceFilesProviderDelegate sourceFilesProvider = null;
         public virtual SourceFilesProviderDelegate SourceFilesProvider

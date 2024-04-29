@@ -8,8 +8,8 @@ using PascalABCSavParser;
 using PascalABCCompiler.Parsers;
 using GPPGParserScanner;
 using GPPGPreprocessor3;
-using System.Text.RegularExpressions;
-using PascalABCCompiler.ParserTools;
+using PascalABCCompiler.ParserTools.Directives;
+using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
 
 namespace PascalABCCompiler.PascalABCNewParser
 {
@@ -112,51 +112,51 @@ namespace PascalABCCompiler.PascalABCNewParser
         {
             InitializeValidDirectives();
         }
-
         public override void Reset()
         {
             CompilerDirectives = new List<compiler_directive>();
             Errors.Clear();
         }
 
+
         private void InitializeValidDirectives()
         {
             #region VALID DIRECTIVES
             ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.CurrentCultureIgnoreCase)
             {
-                [StringConstants.compiler_directive_apptype] = new DirectiveInfo(new Regex(@"console|windows|dll|pcu")),
-                [StringConstants.compiler_directive_reference] = new DirectiveInfo(new Regex(@".+\.dll")),
-                [StringConstants.include_namespace_directive] = new DirectiveInfo(new Regex(@".+\.pas")),
-                [StringConstants.compiler_savepcu] = new DirectiveInfo(new Regex(@"true|false")),
-                [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(new Regex(@"on|off|")),
+                [StringConstants.compiler_directive_apptype] = new DirectiveInfo(SingleAnyOfCheck("console", "windows", "dll", "pcu")),
+                [StringConstants.compiler_directive_reference] = new DirectiveInfo(SingleAnyExtOfCheck(".dll", ".exe")),
+                [StringConstants.include_namespace_directive] = new DirectiveInfo(SingleAnyOfCheck(".pas")),
+                [StringConstants.compiler_savepcu] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
+                [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(SingleAnyOfCheck("on", "off"), paramsNums: new int[2] { 0, 1 }),
                 [StringConstants.compiler_directive_zerobasedstrings_ON] = null,
                 [StringConstants.compiler_directive_zerobasedstrings_OFF] = null,
                 [StringConstants.compiler_directive_nullbasedstrings_ON] = null,
                 [StringConstants.compiler_directive_nullbasedstrings_OFF] = null,
                 [StringConstants.compiler_directive_initstring_as_empty_ON] = null,
                 [StringConstants.compiler_directive_initstring_as_empty_OFF] = null,
-                [StringConstants.compiler_directive_resource] = new DirectiveInfo(new Regex(@".+\.res")),
-                [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(new Regex(@"x86|x64|anycpu|dotnet5win|dotnet5linux|dotnet5macos|native")),
+                [StringConstants.compiler_directive_resource] = new DirectiveInfo(SingleAnyExtOfCheck(".res")),
+                [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(SingleAnyOfCheck("x86", "x64", "anycpu", "dotnet5win", "dotnet5linux", "dotnet5macos", "native")),
                 [StringConstants.compiler_directive_faststrings] = null,
-                [StringConstants.compiler_directive_gendoc] = new DirectiveInfo(new Regex(@"true|false")),
-                [StringConstants.compiler_directive_region] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_ \-]*"), true),
-                [StringConstants.compiler_directive_endregion] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_ \-]*"), true),
-                [StringConstants.compiler_directive_ifdef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
+                [StringConstants.compiler_directive_gendoc] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
+                [StringConstants.compiler_directive_region] = new DirectiveInfo(checkParamsNumNeeded: false),
+                [StringConstants.compiler_directive_endregion] = new DirectiveInfo(checkParamsNumNeeded: false),
+                [StringConstants.compiler_directive_ifdef] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_endif] = null,
-                [StringConstants.compiler_directive_ifndef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
+                [StringConstants.compiler_directive_ifndef] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_else] = null,
-                [StringConstants.compiler_directive_undef] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
-                [StringConstants.compiler_directive_define] = new DirectiveInfo(new Regex(@"[\p{L}_][\p{L}0-9_\-]*")),
-                [StringConstants.compiler_directive_include] = new DirectiveInfo(new Regex(@"\w+")),
-                [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(new Regex(@"net\d+")),
+                [StringConstants.compiler_directive_undef] = new DirectiveInfo(SingleIsValidIdCheck()),
+                [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck()),
+                [StringConstants.compiler_directive_include] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(new ParamChecksCollection(new IsWordCheck(1))),
                 [StringConstants.compiler_directive_hidden_idents] = null,
-                [StringConstants.version_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [StringConstants.product_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [StringConstants.company_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [StringConstants.trademark_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [StringConstants.main_resource_string] = new DirectiveInfo(new Regex(@".+\.res")),
-                [StringConstants.title_string] = new DirectiveInfo(new Regex(@"\w+")),
-                [StringConstants.description_string] = new DirectiveInfo(new Regex(@"\w+"))
+                [StringConstants.version_string] = new DirectiveInfo(),
+                [StringConstants.product_string] = new DirectiveInfo(),
+                [StringConstants.company_string] = new DirectiveInfo(),
+                [StringConstants.trademark_string] = new DirectiveInfo(),
+                [StringConstants.main_resource_string] = new DirectiveInfo(SingleAnyExtOfCheck(".res")),
+                [StringConstants.title_string] = new DirectiveInfo(),
+                [StringConstants.description_string] = new DirectiveInfo()
             }; 
             #endregion
         }

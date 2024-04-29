@@ -141,9 +141,6 @@
     <Compile Include="TreeConversion\CompilationErrors.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TreeConversion\compiler_string_consts.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="TreeConversion\convertion_data_and_alghoritms.cs">
       <SubType>Code</SubType>
     </Compile>
