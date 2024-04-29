@@ -1165,30 +1165,7 @@ namespace PascalABCCompiler
             }
         }
 
-
         #region COMPILER DIRECTIVES
-
-        /// <summary>
-        /// Список всех допустимых директив компилятора
-        /// </summary>
-        private static HashSet<string> knownDirectives = new HashSet<string>(new string[] { StringConstants.main_resource_string,
-                StringConstants.trademark_string, StringConstants.copyright_string,
-                StringConstants.company_string, StringConstants.product_string,
-                StringConstants.version_string, StringConstants.compiler_directive_apptype,
-                StringConstants.compiler_directive_reference, StringConstants.include_namespace_directive,
-                StringConstants.compiler_savepcu, StringConstants.compiler_directive_zerobasedstrings,
-                StringConstants.compiler_directive_zerobasedstrings_ON, StringConstants.compiler_directive_zerobasedstrings_OFF,
-                StringConstants.compiler_directive_nullbasedstrings_ON, StringConstants.compiler_directive_nullbasedstrings_OFF,
-                StringConstants.compiler_directive_initstring_as_empty_ON, StringConstants.compiler_directive_initstring_as_empty_OFF,
-                StringConstants.compiler_directive_resource, StringConstants.compiler_directive_platformtarget,
-                StringConstants.compiler_directive_targetframework, StringConstants.compiler_directive_faststrings,
-                StringConstants.compiler_directive_gendoc, StringConstants.compiler_directive_region, 
-                StringConstants.compiler_directive_endregion, StringConstants.compiler_directive_ifdef,
-                StringConstants.compiler_directive_endif, StringConstants.compiler_directive_ifndef,
-                StringConstants.compiler_directive_define, StringConstants.compiler_directive_else,
-                StringConstants.compiler_directive_undef, StringConstants.compiler_directive_include,
-                StringConstants.compiler_directive_hidden_idents
-        });
 
         /// <summary>
         /// Формирует словарь директив компилятора, собирая их из всех переданных модулей
@@ -1209,11 +1186,10 @@ namespace PascalABCCompiler
                     {
                         if (!directives.ContainsKey(cd.name))
                             directives.Add(cd.name, new List<compiler_directive>());
+                        // TODO: сделать проверку на дубликаты централизованной (в другом месте)  EVA
                         else if (cd.name.Equals("mainresource", StringComparison.CurrentCultureIgnoreCase))
                             throw new DuplicateDirective(cd.location.doc.file_name, "mainresource", cd.location);
                         directives[cd.name].Insert(0, cd);
-                        if (!knownDirectives.Contains(cd.name.ToLower()))
-                            warnings.Add(new Errors.CommonWarning(string.Format(StringResources.Get("WARNING_UNKNOWN_DIRECTIVE"), cd.name), cd.location.doc.file_name, cd.location.begin_line_num, cd.location.begin_column_num));
                     }
                 }
             }
@@ -1985,6 +1961,7 @@ namespace PascalABCCompiler
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                         break;
                     default:
+                        // TODO: заменить на нормальную ошибку   EVA 
                         throw new Exception("No possible OutputFileType!");
                 }
             }
@@ -2039,6 +2016,7 @@ namespace PascalABCCompiler
                         }
                         break;
                     default:
+                        // TODO: заменить на нормальную ошибку   EVA
                         throw new Exception("Unknown platform!");
                 }
                 if (CompilerOptions.Only32Bit)
