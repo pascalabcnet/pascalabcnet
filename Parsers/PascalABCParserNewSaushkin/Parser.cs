@@ -143,7 +143,7 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.compiler_directive_region] = new DirectiveInfo(checkParamsNumNeeded: false),
                 [StringConstants.compiler_directive_endregion] = new DirectiveInfo(checkParamsNumNeeded: false),
                 [StringConstants.compiler_directive_ifdef] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_endif] = null,
+                [StringConstants.compiler_directive_endif] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }),
                 [StringConstants.compiler_directive_ifndef] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_else] = null,
                 [StringConstants.compiler_directive_undef] = new DirectiveInfo(SingleIsValidIdCheck()),
