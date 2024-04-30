@@ -118,7 +118,7 @@ namespace PascalABCCompiler.ParserTools
             if (directiveParams.Count == 0)
             {
                 // если задан формат параметров и не поддерживается 0 параметров
-                if (directiveInfo != null && !directiveInfo.paramsNums.Contains(0))
+                if (directiveInfo != null && directiveInfo.checkParamsNumNeeded && !directiveInfo.paramsNums.Contains(0))
                 {
                     AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
                 }
