@@ -126,8 +126,8 @@ namespace PascalABCCompiler.PascalABCNewParser
             ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.CurrentCultureIgnoreCase)
             {
                 [StringConstants.compiler_directive_apptype] = new DirectiveInfo(SingleAnyOfCheck("console", "windows", "dll", "pcu")),
-                [StringConstants.compiler_directive_reference] = new DirectiveInfo(SingleAnyExtOfCheck(".dll", ".exe")),
-                [StringConstants.include_namespace_directive] = new DirectiveInfo(SingleAnyOfCheck(".pas")),
+                [StringConstants.compiler_directive_reference] = new DirectiveInfo(),
+                [StringConstants.include_namespace_directive] = new DirectiveInfo(),
                 [StringConstants.compiler_savepcu] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
                 [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(SingleAnyOfCheck("on", "off"), paramsNums: new int[2] { 0, 1 }),
                 [StringConstants.compiler_directive_zerobasedstrings_ON] = null,
@@ -136,7 +136,7 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.compiler_directive_nullbasedstrings_OFF] = null,
                 [StringConstants.compiler_directive_initstring_as_empty_ON] = null,
                 [StringConstants.compiler_directive_initstring_as_empty_OFF] = null,
-                [StringConstants.compiler_directive_resource] = new DirectiveInfo(SingleAnyExtOfCheck(".res")),
+                [StringConstants.compiler_directive_resource] = new DirectiveInfo(),
                 [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(SingleAnyOfCheck("x86", "x64", "anycpu", "dotnet5win", "dotnet5linux", "dotnet5macos", "native")),
                 [StringConstants.compiler_directive_faststrings] = null,
                 [StringConstants.compiler_directive_gendoc] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
@@ -155,7 +155,7 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.product_string] = new DirectiveInfo(),
                 [StringConstants.company_string] = new DirectiveInfo(),
                 [StringConstants.trademark_string] = new DirectiveInfo(),
-                [StringConstants.main_resource_string] = new DirectiveInfo(SingleAnyExtOfCheck(".res")),
+                [StringConstants.main_resource_string] = new DirectiveInfo(),
                 [StringConstants.title_string] = new DirectiveInfo(),
                 [StringConstants.description_string] = new DirectiveInfo()
             }; 
