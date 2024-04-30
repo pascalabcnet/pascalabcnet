@@ -360,8 +360,9 @@ namespace PascalABCCompiler
         public const string pascalLanguageName = "PascalABC.NET";
         public const string pascalSourceFileExtension = ".pas";
         public const string pascalCompiledUnitExtension = ".pcu";
-        public static string pascalSystemUnitName = "PABCSystem";
-        public static string pascalExtensionsUnitName = "PABCExtensions";
+        public const string pascalSystemUnitName = "PABCSystem";
+        public const string pascalSystemUnitNamespaceName = "PascalABCSystem";
+        public const string pascalExtensionsUnitName = "PABCExtensions";
         public static readonly string[] pascalDefaultStandardModules = new string[]
         {
             pascalSystemUnitName,

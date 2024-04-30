@@ -490,10 +490,10 @@ namespace PascalABCCompiler.SystemLibrary
                 new SymbolTable.Scope[0]);
             common_unit_node _system_unit = new common_unit_node(main_scope,impl_scope,null,null);
             
-            common_namespace_node cnn = new common_namespace_node(null, _system_unit, StringConstants.pascalSystemUnitName,
+            common_namespace_node cnn = new common_namespace_node(null, _system_unit, StringConstants.pascalSystemUnitNamespaceName,
                 symbol_table.CreateScope(main_scope),system_unit_location);
 
-            main_scope.AddSymbol(StringConstants.pascalSystemUnitName, new PascalABCCompiler.TreeConverter.SymbolInfo(cnn));
+            main_scope.AddSymbol(StringConstants.pascalSystemUnitNamespaceName, new PascalABCCompiler.TreeConverter.SymbolInfo(cnn));
 
             //SymbolTable.Scope sc = cnn.scope;
             SymbolTable.Scope sc = main_scope;

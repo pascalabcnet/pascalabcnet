@@ -8,7 +8,6 @@ using System.IO;
 using PascalABCCompiler.SyntaxTree;
 using System.Reflection;
 using PascalABCCompiler;
-using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.Parsers;
 
@@ -2973,7 +2972,7 @@ namespace CodeCompletion
                                 str += ".";
 
                         }
-                        if (string.Compare(str, StringConstants.pascalSystemUnitName, true) == 0)
+                        if (string.Compare(str, StringConstants.pascalSystemUnitNamespaceName, true) == 0)
                             has_system_unit = true;
                         if (string.Compare(str, StringConstants.pascalExtensionsUnitName, true) == 0)
                             has_extensions_unit = true;
@@ -4798,7 +4797,7 @@ namespace CodeCompletion
                         if (i < s.name.idents.Count - 1) str += ".";
 
                     }
-                    if (string.Compare(str, StringConstants.pascalSystemUnitName, true) == 0)
+                    if (string.Compare(str, StringConstants.pascalSystemUnitNamespaceName, true) == 0)
                         has_system_unit = true;
                     if (string.Compare(str, StringConstants.pascalExtensionsUnitName, true) == 0)
                         has_extensions_unit = true;
