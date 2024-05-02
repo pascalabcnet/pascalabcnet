@@ -146,7 +146,7 @@ namespace PascalABCCompiler.ParserTools.Directives
         {
             for (var i = 0; i < checks.Count; i++)
             {
-                // если параметров неограниченное кол-во (как у region)
+                // если параметров неограниченное кол-во (как у region) и для них одна проверка
                 if (checks[i].paramsToCheckNum == -1)
                 {
                     if (checks[i].CheckParams(directiveParams, out int ind))

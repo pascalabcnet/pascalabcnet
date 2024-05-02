@@ -108,7 +108,7 @@ namespace PascalABCCompiler.ParserTools
             // проверка имени директивы
             if (!parserNeeded.ValidDirectives.ContainsKey(directiveName))
             {
-                AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", loc, directiveName);
+                AddWarningFromResource("UNKNOWN_DIRECTIVE{0}", loc, directiveName);
                 return;
             }
 

@@ -145,7 +145,7 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.compiler_directive_ifdef] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_endif] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }),
                 [StringConstants.compiler_directive_ifndef] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_else] = null,
+                [StringConstants.compiler_directive_else] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }),
                 [StringConstants.compiler_directive_undef] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_include] = new DirectiveInfo(),
@@ -157,7 +157,8 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.trademark_string] = new DirectiveInfo(),
                 [StringConstants.main_resource_string] = new DirectiveInfo(),
                 [StringConstants.title_string] = new DirectiveInfo(),
-                [StringConstants.description_string] = new DirectiveInfo()
+                [StringConstants.description_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_omp] = new DirectiveInfo(SingleAnyOfCheck("critical", "parallel"), checkParamsNumNeeded: false)
             }; 
             #endregion
         }
