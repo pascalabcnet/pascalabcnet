@@ -1506,17 +1506,18 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
-/// Для типа System.Type возвращает имя типа объекта
+/// Возвращает имя отражённого типа "t"
 function TypeToTypeName(t: System.Type): string;
-/// Для типа System.Type записывает в res имя типа объекта
+/// Добавляет в res имя отражённого типа "t"
 procedure TypeToTypeName(t: System.Type; res: StringBuilder);
-/// Для типа System.Type записывает в res имя типа объекта
+/// Записывает в res имя отражённого типа "t"
 procedure TypeToTypeName(t: System.Type; res: TextWriter);
-/// Возвращает имя типа объекта
+
+/// Возвращает имя типа объекта "o"
 function TypeName(o: object): string;
-/// Записывает в res имя типа объекта
+/// Добавляет в res имя типа объекта "o"
 procedure TypeName(o: object; res: StringBuilder);
-/// Записывает в res имя типа объекта
+/// Записывает в res имя типа объекта "o"
 procedure TypeName(o: object; res: TextWriter);
 
 ///-procedure New<T>(var p: ^T); 
@@ -2674,11 +2675,11 @@ function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
 
-/// Возвращает строку для вывода в write
+/// Возвращает строку для вывода подобного Write
 function _ObjectToString(o: object): string;
-/// Записывает в res строку для вывода в write
+/// Добавляет в res строку для вывода подобного Write
 procedure _ObjectToString(o: object; res: StringBuilder);
-/// Записывает в res строку для вывода в write
+/// Записывает в res строку для вывода подобного Write
 procedure _ObjectToString(o: object; res: TextWriter);
 
 function IsUnix: boolean;
@@ -4599,7 +4600,7 @@ begin
   res.Write(name);
 end;
 procedure TypeToTypeName(t: System.Type; res: StringBuilder) :=
-TypeToTypeName(t, new StringWriter(res));
+  TypeToTypeName(t, new StringWriter(res));
 
 procedure TypeName(o: object; res: TextWriter);
 begin
@@ -4624,7 +4625,7 @@ begin
   TypeToTypeName(t, res);
 end;
 procedure TypeName(o: object; res: StringBuilder) :=
-TypeName(o, new StringWriter(res));
+  TypeName(o, new StringWriter(res));
 
 function TypeToTypeName(t: System.Type): string;
 begin
@@ -4641,9 +4642,9 @@ begin
 end;
 
 procedure _ObjectToString(o: object; res: TextWriter) :=
-ObjectToStringUtils.Append(o, new Stack<object>, res);
+  ObjectToStringUtils.Append(o, new Stack<object>, res);
 procedure _ObjectToString(o: object; res: StringBuilder) :=
-_ObjectToString(o, new StringWriter(res));
+  _ObjectToString(o, new StringWriter(res));
 function _ObjectToString(o: object): string;
 begin
   var res := new StringBuilder;
