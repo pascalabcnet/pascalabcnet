@@ -2707,9 +2707,9 @@ namespace CodeCompletion
         PascalABCCompiler.TreeRealization.using_namespace_list unl = new PascalABCCompiler.TreeRealization.using_namespace_list();
 		public SymScope cur_scope;
 
-        public string FindPCUFileName(string UnitName)
+        public static string FindPCUFileName(string UnitName, string curr_path)
         {
-        	return CodeCompletionController.comp.FindPCUFileName(UnitName,System.IO.Path.GetDirectoryName(doc.file_name), out _);
+        	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _);
         }
         
 		private void add_system_unit()
@@ -2771,6 +2771,121 @@ namespace CodeCompletion
                     entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                     entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, dc.visitor.entry_scope);
                 }
+            }
+        }
+
+        private static void add_unit_ref(unit_or_namespace s, string curr_path,
+            SymScope cur_scope, Hashtable ns_cache, bool allow_import_types,
+            ref bool has_system_unit, ref bool has_extensions_unit,
+            using_namespace_list unl)
+        {
+
+            try
+            {
+                if (s is uses_unit_in uui)
+                {
+                    string unit_name = CodeCompletionNameHelper.FindSourceFileName(uui.in_file.Value, out _, curr_path);
+                    if (unit_name==null) throw new InvalidOperationException($"uses '{uui.in_file.Value}';");
+
+                    DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
+                    if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
+                    {
+                        dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
+                    }
+                    if (dc.visitor != null)
+                    {
+                        dc.visitor.entry_scope.InitAssemblies();
+                        cur_scope.AddUsedUnit(dc.visitor.entry_scope);
+                        cur_scope.AddName(Path.GetFileNameWithoutExtension(unit_name), dc.visitor.entry_scope);
+                    }
+
+                }
+                else
+                {
+                    string str = "";
+                    for (int i = 0; i < s.name.idents.Count; i++)
+                    {
+                        str += s.name.idents[i].name;
+                        NamespaceScope ns_scope = null;
+                        if (i == 0)
+                        {
+                            string pcu_unit_name = FindPCUFileName(str, curr_path);
+                            string unit_name = CodeCompletionNameHelper.FindSourceFileName(str, out _, curr_path);
+
+                            /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
+                                unit_name = null;*/
+                            if (unit_name != null)
+                            {
+                                DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
+                                if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
+                                {
+                                    dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
+                                }
+                                if (dc.visitor != null)
+                                {
+                                    dc.visitor.entry_scope.InitAssemblies();
+                                    cur_scope.AddUsedUnit(dc.visitor.entry_scope);
+                                    cur_scope.AddName(str, dc.visitor.entry_scope);
+                                }
+                            }
+                            else
+                            {
+                                //unit_name = FindPCUFileName(str);
+                                unit_name = pcu_unit_name;
+                                if (unit_name != null)
+                                {
+                                    IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
+                                    SymScope ss = pcu_rdr.GetUnit(unit_name);
+                                    UnitDocCache.Load(ss, unit_name);
+                                    cur_scope.AddUsedUnit(ss);
+                                    cur_scope.AddName(str, ss);
+                                }
+                                else
+                                {
+                                    if (CodeCompletion.CodeCompletionController.pabcNamespaces.ContainsKey(str.ToLower()))
+                                    {
+                                        InterfaceUnitScope un_scope = CodeCompletion.CodeCompletionController.pabcNamespaces[str.ToLower()];
+                                        cur_scope.AddUsedUnit(un_scope);
+                                        cur_scope.AddName(str, un_scope);
+                                    }
+                                    else if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
+                                    {
+                                        ns_scope = new NamespaceScope(str);
+                                        ns_cache[str] = str;
+                                        cur_scope.AddName(str, ns_scope);
+                                        if (s.name.idents.Count == 1)
+                                            cur_scope.AddUsedUnit(ns_scope);
+                                    }
+                                    else if (PascalABCCompiler.NetHelper.NetHelper.IsType(str) && allow_import_types)
+                                    {
+                                        Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(str);
+                                        cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
+                                    }
+
+                                }
+                                //unit_name = System.IO.Path.GetDirectoryName(_program_module.file_name)+"\\"+str+System.IO.Path.GetExtension(_program_module.file_name);
+                            }
+                        }
+                        if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
+                            //possible_namespaces.Add(str);
+                            cur_scope.AddUsedUnit(new NamespaceScope(str));
+                        if (i < s.name.idents.Count - 1)
+                            str += ".";
+
+                    }
+                    if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_name, true) == 0)
+                        has_system_unit = true;
+                    if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, true) == 0)
+                        has_extensions_unit = true;
+                    unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
             }
         }
 
@@ -2898,93 +3013,9 @@ namespace CodeCompletion
                 for (int j = _program_module.used_units.units.Count - 1; j >= 0; j--)
                 {
                     unit_or_namespace s = _program_module.used_units.units[j];
-
-                    try
-                    {
-                        string str = "";
-                        for (int i = 0; i < s.name.idents.Count; i++)
-                        {
-                            str += s.name.idents[i].name;
-                            NamespaceScope ns_scope = null;
-                            if (i == 0)
-                            {
-                                string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(_program_module.file_name));
-
-                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
-                                    && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;*/
-                                if (unit_name != null)
-                                {
-                                    DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
-                                    if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
-                                    {
-                                        dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
-                                    }
-                                    if (dc.visitor != null)
-                                    {
-                                        dc.visitor.entry_scope.InitAssemblies();
-                                        cur_scope.AddUsedUnit(dc.visitor.entry_scope);
-                                        cur_scope.AddName(str, dc.visitor.entry_scope);
-                                    }
-                                }
-                                else
-                                {
-                                    //unit_name = FindPCUFileName(str);
-                                    unit_name = pcu_unit_name;
-                                    if (unit_name != null)
-                                    {
-                                        IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
-                                        SymScope ss = pcu_rdr.GetUnit(unit_name);
-                                        UnitDocCache.Load(ss, unit_name);
-                                        cur_scope.AddUsedUnit(ss);
-                                        cur_scope.AddName(str, ss);
-                                    }
-                                    else
-                                    {
-                                        if (CodeCompletion.CodeCompletionController.pabcNamespaces.ContainsKey(str.ToLower()))
-                                        {
-                                            InterfaceUnitScope un_scope = CodeCompletion.CodeCompletionController.pabcNamespaces[str.ToLower()];
-                                            cur_scope.AddUsedUnit(un_scope);
-                                            cur_scope.AddName(str, un_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
-                                        {
-                                            ns_scope = new NamespaceScope(str);
-                                            ns_cache[str] = str;
-                                            cur_scope.AddName(str, ns_scope);
-                                            if (s.name.idents.Count == 1)
-                                                cur_scope.AddUsedUnit(ns_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsType(str) && semantic_options.allow_import_types)
-                                        {
-                                            Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(str);
-                                            cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
-                                        }
-                                        
-                                    }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.file_name)+"\\"+str+System.IO.Path.GetExtension(_program_module.file_name);
-                                }
-                            }
-                            if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
-                                //possible_namespaces.Add(str);
-                                cur_scope.AddUsedUnit(new NamespaceScope(str));
-                            if (i < s.name.idents.Count - 1)
-                                str += ".";
-
-                        }
-                        if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_name, true) == 0)
-                            has_system_unit = true;
-                        if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, true) == 0)
-                            has_extensions_unit = true;
-                        unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
-                    }
-                    catch (Exception e)
-                    {
-#if DEBUG
-                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
-#endif
-                    }
+                    add_unit_ref(s, Path.GetDirectoryName(_program_module.file_name),
+                        cur_scope, ns_cache, semantic_options.allow_import_types,
+                        ref has_system_unit, ref has_extensions_unit, unl);
                 }
 
             }
@@ -4720,89 +4751,9 @@ namespace CodeCompletion
                 for (int j = _interface_node.uses_modules.units.Count - 1; j >= 0; j--)
                 {
                     unit_or_namespace s = _interface_node.uses_modules.units[j];
-                    string str = "";
-                    for (int i = 0; i < s.name.idents.Count; i++)
-                    {
-                        str += s.name.idents[i].name;
-                        NamespaceScope ns_scope = null;
-                        if (i == 0)
-                        {
-                            try
-                            {
-                                string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
-
-                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
-                                    && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;*/
-                                if (unit_name != null)
-                                {
-                                    DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
-                                    if (dc == null)
-                                    {
-                                        dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
-                                    }
-                                    if (dc.visitor != null)
-                                    {
-                                        dc.visitor.entry_scope.InitAssemblies();
-                                        cur_scope.AddUsedUnit(dc.visitor.entry_scope);
-                                        cur_scope.AddName(str, dc.visitor.entry_scope);
-                                    }
-                                }
-                                else
-                                {
-                                    //unit_name = FindPCUFileName(str);
-                                    unit_name = pcu_unit_name;
-                                    if (unit_name != null)
-                                    {
-                                        IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
-                                        SymScope ss = pcu_rdr.GetUnit(unit_name);
-                                        UnitDocCache.Load(ss, unit_name);
-                                        cur_scope.AddUsedUnit(ss);
-                                        cur_scope.AddName(str, ss);
-                                    }
-                                    else
-                                    {
-                                    	if (CodeCompletion.CodeCompletionController.pabcNamespaces.ContainsKey(str.ToLower()))
-                                        {
-                                            InterfaceUnitScope un_scope = CodeCompletion.CodeCompletionController.pabcNamespaces[str.ToLower()];
-                                            cur_scope.AddUsedUnit(un_scope);
-                                            cur_scope.AddName(str, un_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
-                                        {
-                                            ns_scope = new NamespaceScope(str);
-                                            ns_cache[str] = str;
-                                            cur_scope.AddName(str, ns_scope);
-                                            if (s.name.idents.Count == 1)
-                                                cur_scope.AddUsedUnit(ns_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsType(str) && semantic_options.allow_import_types)
-                                        {
-                                            Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(str);
-                                            cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
-                                        }
-                                    }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.file_name)+"\\"+str+System.IO.Path.GetExtension(_program_module.file_name);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-#if DEBUG
-                                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
-#endif
-                            }
-                        }
-                        if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
-                            cur_scope.AddUsedUnit(new NamespaceScope(str));
-                        if (i < s.name.idents.Count - 1) str += ".";
-
-                    }
-                    if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_name, true) == 0)
-                        has_system_unit = true;
-                    if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, true) == 0)
-                        has_extensions_unit = true;
-                    unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
+                    add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
+                        cur_scope, ns_cache, semantic_options.allow_import_types,
+                        ref has_system_unit, ref has_extensions_unit, unl);
                 }
             }
             //if (_interface_node.unit_name.idunit_name.name != PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name)
@@ -4842,79 +4793,10 @@ namespace CodeCompletion
                 for (int j = _implementation_node.uses_modules.units.Count - 1; j >= 0; j--)
                 {
                     unit_or_namespace s = _implementation_node.uses_modules.units[j];
-                    string str = "";
-                    for (int i = 0; i < s.name.idents.Count; i++)
-                    {
-                        str += s.name.idents[i].name;
-                        NamespaceScope ns_scope = null;
-                        if (i == 0)
-                        {
-                            try
-                            {
-                                string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
-
-                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
-                                       && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;*/
-                                if (unit_name != null)
-                                {
-                                    DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
-                                    if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
-                                    {
-                                        dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
-                                    }
-                                    if (dc.visitor != null)
-                                    {
-                                        dc.visitor.entry_scope.InitAssemblies();
-                                        cur_scope.AddUsedUnit(dc.visitor.entry_scope);
-                                        cur_scope.AddName(str, dc.visitor.entry_scope);
-                                    }
-                                }
-                                else
-                                {
-                                    //unit_name = FindPCUFileName(str);
-                                    unit_name = pcu_unit_name;
-                                    if (unit_name != null)
-                                    {
-                                        IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
-                                        SymScope ss = pcu_rdr.GetUnit(unit_name);
-                                        UnitDocCache.Load(ss, unit_name);
-                                        cur_scope.AddUsedUnit(ss);
-                                        cur_scope.AddName(str, ss);
-                                    }
-                                    else
-                                    {
-                                        if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
-                                        {
-                                            ns_scope = new NamespaceScope(str);
-                                            cur_scope.AddName(str, ns_scope);
-                                            if (s.name.idents.Count == 1)
-                                                cur_scope.AddUsedUnit(ns_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsType(str) && semantic_options.allow_import_types)
-                                        {
-                                            Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(str);
-                                            cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
-                                        }
-                                    }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.file_name)+"\\"+str+System.IO.Path.GetExtension(_program_module.file_name);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-#if DEBUG
-                                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
-#endif
-                            }
-                        }
-                        if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
-                            cur_scope.AddUsedUnit(new NamespaceScope(str));
-                        if (i < s.name.idents.Count - 1)
-                            str += ".";
-                    }
-
-                    unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
+                    bool has_system_unit = false, has_extensions_unit = false;
+                    add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
+                        cur_scope, ns_cache, semantic_options.allow_import_types,
+                        ref has_system_unit, ref has_extensions_unit, unl);
                 }
             }
             impl_scope = cur_scope;
