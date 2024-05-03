@@ -19806,11 +19806,9 @@ namespace PascalABCCompiler.TreeConverter
                 SemanticRules.InitStringAsEmptyString = false;
                 return;
             }
-            if (node.Name.text == "platform" && node.Directive.text.ToLower() == "native")
+            if (node.Name.text == StringConstants.compiler_directive_platformtarget && node.Directive.text.ToLower() == "native")
             {
                 SemanticRules.GenerateNativeCode = true;
-                
-                
                 return;
             }
         }
