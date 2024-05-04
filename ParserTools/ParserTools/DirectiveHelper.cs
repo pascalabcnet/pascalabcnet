@@ -177,15 +177,17 @@ namespace PascalABCCompiler.ParserTools.Directives
 
         public bool CheckParams(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
+            int directivesChecked = 0;
             for (var i = 0; i < checks.Length; i++)
             {
                 // каждая проверка работает с кол-вом параметров, которое в ней указано
-                if (!checks[i].CheckParams(directiveParams.Skip(i).Take(checks[i].paramsToCheckNum).ToArray(), out int index))
+                if (!checks[i].CheckParams(directiveParams.Skip(directivesChecked).Take(checks[i].paramsToCheckNum).ToArray(), out int index))
                 {
                     indexOfMismatch = index;
                     errorMessage = checks[i].errorMessage;
                     return false;
                 }
+                directivesChecked += checks[i].paramsToCheckNum;
             }
 
             indexOfMismatch = -1;
