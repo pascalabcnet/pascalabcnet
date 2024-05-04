@@ -279,12 +279,6 @@ namespace PascalABCCompiler
         {
             this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
         }
-
-        public ResourceFileNotFound(string ResFileName)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_RESOURCEFILE_{0}_NOT_FOUND"), ResFileName), null)
-        {
-            //this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
-        }
     }
 
     public class IncludeNamespaceInUnitError : CompilerCompilationError
@@ -397,10 +391,28 @@ namespace PascalABCCompiler
 
     public class UnsupportedTargetFramework : CompilerCompilationError
     {
-        public UnsupportedTargetFramework(string FrameworkName, TreeRealization.location sl)
+        public UnsupportedTargetFramework(string FrameworkName, location sl)
             : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGETFRAMEWORK_{0}"), FrameworkName))
         {
             this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+        }
+    }
+
+    public class UnsupportedTargetPlatform : CompilerCompilationError
+    {
+        public UnsupportedTargetPlatform(string platformName, location loc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGET_PLATFORM{0}"), platformName))
+        {
+            sourceLocation = new SourceLocation(loc.doc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
+        }
+    }
+
+    public class UnsupportedOutputFileType : CompilerCompilationError
+    {
+        public UnsupportedOutputFileType(string outputFileType, location loc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_OUTPUT_FILE_TYPE{0}"), outputFileType))
+        {
+            sourceLocation = new SourceLocation(loc.doc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
         }
     }
 
@@ -1945,8 +1957,8 @@ namespace PascalABCCompiler
         {
             if (compilerDirectives.ContainsKey(StringConstants.compiler_directive_apptype))
             {
-                string directive = compilerDirectives[StringConstants.compiler_directive_apptype][0].directive.ToLower();
-                switch (directive)
+                string outputFileType = compilerDirectives[StringConstants.compiler_directive_apptype][0].directive.ToLower();
+                switch (outputFileType)
                 {
                     case "console":
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.ConsoleApplicaton;
@@ -1961,8 +1973,8 @@ namespace PascalABCCompiler
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                         break;
                     default:
-                        // TODO: заменить на нормальную ошибку   EVA 
-                        throw new Exception("No possible OutputFileType!");
+                        ErrorsList.Add(new UnsupportedOutputFileType(outputFileType, compilerDirectives[StringConstants.compiler_directive_apptype][0].location));
+                        break;
                 }
             }
 
@@ -1980,8 +1992,8 @@ namespace PascalABCCompiler
             List<compiler_directive> compilerDirectivesList = new List<compiler_directive>();
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_platformtarget, out compilerDirectivesList))
             {
-                string plt = compilerDirectivesList[0].directive.ToLower();
-                switch (plt)
+                string platformName = compilerDirectivesList[0].directive.ToLower();
+                switch (platformName)
                 {
                     case "x86":
                         compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
@@ -2016,8 +2028,8 @@ namespace PascalABCCompiler
                         }
                         break;
                     default:
-                        // TODO: заменить на нормальную ошибку   EVA
-                        throw new Exception("Unknown platform!");
+                        ErrorsList.Add(new UnsupportedTargetPlatform(platformName, compilerDirectivesList[0].location));
+                        break;
                 }
                 if (CompilerOptions.Only32Bit)
                     compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;

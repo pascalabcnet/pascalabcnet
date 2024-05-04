@@ -19,7 +19,9 @@ NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS=Files with namespaces can be compiled
 NAMESPACE_CANNOT_HAVE_IN_SECTION=Namespace cannot have 'in' section
 APPTYPE_DLL_IS_ALLOWED_ONLY_FOR_LIBRARIES= {$apptype dll} directive is allowed only for libraries
 USES_IN_WRONG_NAME=Unit name in uses-in ({0}) must be same as file name ({1})
-UNSUPPORTED_TARGETFRAMEWORK_{0}=TargetFramework '{0}' not supported
+UNSUPPORTED_TARGETFRAMEWORK_{0}=TargetFramework '{0}' is not supported
+UNSUPPORTED_TARGET_PLATFORM{0}=Platform '{0}' is not supported
+UNSUPPORTED_OUTPUT_FILE_TYPE{0}=Output file type '{0}' is not supported
 
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Internal compiler error in module {0} :'{1}'
