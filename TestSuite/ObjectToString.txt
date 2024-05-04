@@ -8,13 +8,19 @@ ValueTuple<integer, real>{ (1, 2.3) }
 array[,,,,,,,,] of byte{ [[[[[[[[[0,0]]]]]]]],[[[[[[[[0,0]]]]]]]]] }
 array[,,,,,,,,] of byte{ [[[[[[[[[]]]]]]]]] }
 List<real>{ [1.2,3] }
+HashSet<real>{ {1.2,3} }
 sequence of integer{ [2,3,4] }
+sequence of array of integer{ [[1],[2],[3],[4],[5]] }
 ArrayList{ [6,7,8] }
-r1{ (a=123; b=abc; p=123) }
+array of sequence of integer{ [[0]] }
+array of IEnumerable{ [[0]] }
+r1{ (a=123; b=abc; p=123; f=System.Exception: Expected Exception) }
 procedure(byte){ procedure lambda(b: byte) }
 procedure(byte){ procedure lambda(b: byte) => procedure Invoke(b: byte) }
 function: Object{ (d1=procedure lambda(b: byte)) => function lambda: Object }
 function: Object{ (d1=procedure lambda(b: byte)) => function lambda: Object => function Invoke: Object }
+array of procedure(byte){ [procedure lambda(b: byte)] }
+array of MulticastDelegate{ [procedure lambda(b: byte)] }
 Dictionary<[TKey], [TValue]>
 Base<byte, array of byte, word>
 Base<[T], array of [T], word>
