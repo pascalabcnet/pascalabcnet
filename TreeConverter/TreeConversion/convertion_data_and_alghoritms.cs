@@ -2258,20 +2258,31 @@ namespace PascalABCCompiler.TreeConverter
                     //TODO: Здесь нужно поправить, если создавать возможность вызова метода с параметрами по умолчанию из откомпилированной dll.
                     if (parameters.Count == fn.parameters.Count)
                     {
-                        function_node func = null;
-                        if ((func = is_exist_eq_method_in_list(fn, set_of_possible_functions)) != null)
+                        function_node fm = null;
+                        if ((fm = is_exist_eq_method_in_list(fn, set_of_possible_functions)) != null)
                         {
-                            if (!eq_type_nodes(fn.return_value_type, func.return_value_type))
+                            if (!eq_type_nodes(fn.return_value_type, fm.return_value_type))
                             {
-                                set_of_possible_functions[set_of_possible_functions.IndexOf(func)] = fn;
+                                set_of_possible_functions[set_of_possible_functions.IndexOf(fm)] = fn;
 
                             }
                             continue;
                         }
-                        else if ((func = find_eq_method_in_list(fn, set_of_possible_functions)) != null)
+                        else if ((fm = find_eq_method_in_list(fn, set_of_possible_functions)) != null)
                         {
-                            if (!(fn is compiled_function_node cfn && func is compiled_function_node cfn2 && (cfn.polymorphic_state == polymorphic_state.ps_static || cfn2.polymorphic_state == polymorphic_state.ps_static)))
-                                set_of_possible_functions.Add(fn);
+                            // SSM 29/04/24 - небольшой рефакторинг для большей понятности
+                            if (fn is compiled_function_node cfnfn && fm is compiled_function_node cfnfm && (cfnfn.polymorphic_state == polymorphic_state.ps_static || cfnfm.polymorphic_state == polymorphic_state.ps_static))
+                            {
+
+                            }
+                            // SSM 29/04/24 - добавил такое же условие что и в предыдущей ветке 
+                            else if (fn is compiled_function_node cfnfn1 && fm is compiled_function_node cfnfm1
+                                && ! (cfnfn1.comperehensive_type.IsInterface || cfnfm1.comperehensive_type.IsInterface)// для интерфейсов обрабатывается ниже
+                                && cfnfn1.comperehensive_type != cfnfm1.comperehensive_type)
+                            {
+                                // пропускается такая же функция, но из предка!
+                            }
+                            else set_of_possible_functions.Add(fn);
                         }
                         else   
                             set_of_possible_functions.Add(fn);
