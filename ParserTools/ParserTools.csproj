@@ -68,6 +68,7 @@
     <Compile Include="ParsersController.cs" />
     <Compile Include="ParserTools\BaseParser.cs" />
     <Compile Include="ParserTools\BaseParserTools.cs" />
+    <Compile Include="ParserTools\DirectiveHelper.cs" />
     <Compile Include="ParserTools\IParser.cs" />
     <Compile Include="ParserTools\CommentBinder.cs" />
     <Compile Include="ParserTools\DefaultLanguageInformation.cs" />

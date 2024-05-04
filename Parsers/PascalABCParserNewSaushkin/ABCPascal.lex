@@ -1,13 +1,11 @@
 %{
-    public PascalParserTools parsertools;
+    public PascalParserTools parserTools;
     Stack<BufferContext> buffStack = new Stack<BufferContext>();
     Stack<string> fNameStack = new Stack<string>();
 	Stack<int> IfStack = new Stack<int>(); // 0 - if, 1 - else
 	public List<string> Defines = new List<string>();
 	int IfExclude;
 	string Pars;
-	string directivename;
-	string directiveparam;
 	LexLocation currentLexLocation;
 	bool HiddenIdents = false;
 	bool ExprMode = false;
@@ -68,63 +66,70 @@ UNICODEARROW \x890
 }
 
 {DIRECTIVE} {
-	if (parsertools.buildTreeForFormatter)
+	if (parserTools.buildTreeForFormatter)
 		break;
 
-	parsertools.DivideDirectiveOn(yytext,out directivename,out directiveparam);
-    parsertools.CheckDirectiveParams(directivename,directiveparam); // directivename in UPPERCASE!
-	if (directivename == "HIDDENIDENTS")
+  parserTools.ParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParams);
+
+  if (directiveName == null) // случай пустой директивы
+    break;
+
+  parserTools.CheckDirectiveParams(directiveName, directiveParams, CurrentLexLocation);
+
+  directiveName = directiveName.ToUpper();
+
+	if (directiveName == "HIDDENIDENTS")
 	{
 		HiddenIdents = true;
 	}
-	else if (directivename == "INCLUDE")
+	else if (directiveName == "INCLUDE")
 	{
-		TryInclude(directiveparam);
+		TryInclude(directiveParams[0]);
 	}
-	else if (directivename == "IFDEF")
+	else if (directiveName == "IFDEF")
 	{
 		IfStack.Push(0);
-		if (!Defines.Contains(directiveparam))
+		if (!Defines.Contains(directiveParams[0]))
 		{
 			BEGIN(EXCLUDETEXT);
 			IfExclude = 1;
 		}
 	}
-	else if (directivename == "IFNDEF")
+	else if (directiveName == "IFNDEF")
 	{
 		IfStack.Push(0);
-		if (Defines.Contains(directiveparam))
+		if (Defines.Contains(directiveParams[0]))
 		{
 			BEGIN(EXCLUDETEXT);	    
 			IfExclude = 1;
 		}
 	}
-	else if (directivename == "ELSE")
+	else if (directiveName == "ELSE")
 	{
 		if (IfStack.Count==0)
-			parsertools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
+			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
 		if (IfStack.Peek()==1) 
-			parsertools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
+			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
 		IfStack.Pop();	
 		IfStack.Push(1);
 		BEGIN(EXCLUDETEXT);
 		IfExclude = 1;
 	}
-	else if (directivename == "ENDIF")
+	else if (directiveName == "ENDIF")
 	{
 		if (IfStack.Count == 0)
-			parsertools.AddErrorFromResource("UNNECESSARY $endif",CurrentLexLocation);	   
+			parserTools.AddErrorFromResource("UNNECESSARY $endif",CurrentLexLocation);	   
 		IfStack.Pop();
 	}
-	else if (directivename == "DEFINE")
+	else if (directiveName == "DEFINE")
 	{
-		if (!Defines.Contains(directiveparam))
-			Defines.Add(directiveparam);
+		if (!Defines.Contains(directiveParams[0]))
+			Defines.Add(directiveParams[0]);
 	}
-	else if (directivename == "UNDEF")
+	else if (directiveName == "UNDEF")
 	{
-		if (Defines.Contains(directiveparam))
-			Defines.Remove(directiveparam);
+		if (Defines.Contains(directiveParams[0]))
+			Defines.Remove(directiveParams[0]);
 	}
 }
 
@@ -133,31 +138,39 @@ UNICODEARROW \x890
 }
 
 <EXCLUDETEXT>{DIRECTIVE} {
-	parsertools.DivideDirectiveOn(yytext,out directivename,out directiveparam);
-    parsertools.CheckDirectiveParams(directivename,directiveparam); // directivename in UPPERCASE!
-	if (directivename == "IFDEF")
+	
+  parserTools.ParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParams);
+
+  if (directiveName == null) // случай пустой директивы
+    break;
+
+  parserTools.CheckDirectiveParams(directiveName, directiveParams, CurrentLexLocation);
+	
+  directiveName = directiveName.ToUpper();
+
+  if (directiveName == "IFDEF")
 	{
 		IfStack.Push(0);
 		IfExclude++;
 	}
-	else if (directivename == "IFNDEF")
+	else if (directiveName == "IFNDEF")
 	{
 		IfStack.Push(0);
 		IfExclude++;
 	}
-	else if (directivename == "ELSE")
+	else if (directiveName == "ELSE")
 	{
 		if (IfStack.Peek() == 1) 
-			parsertools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
+			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
 		IfStack.Pop();	
 		IfStack.Push(1);
 		if (IfExclude == 1)
 			BEGIN(INITIAL);
 	}
-	else if (directivename == "ENDIF")
+	else if (directiveName == "ENDIF")
 	{
 		if (IfStack.Count==0)
-			parsertools.AddErrorFromResource("UNNECESSARY $endif",CurrentLexLocation);	   
+			parserTools.AddErrorFromResource("UNNECESSARY $endif",CurrentLexLocation);	   
 		IfStack.Pop();
 		IfExclude--;
 		if (IfExclude == 0)
@@ -166,17 +179,17 @@ UNICODEARROW \x890
 	else if (IfExclude > 0)
 	{
 		int ind_to_remove = -1;
-		for (int i=0; i<parsertools.compilerDirectives.Count; i++)
+		for (int i=0; i<parserTools.compilerDirectives.Count; i++)
 		{
-			if (parsertools.compilerDirectives[i].source_context.begin_position.line_num == CurrentLexLocation.StartLine && 
-				parsertools.compilerDirectives[i].source_context.begin_position.column_num - 2 == CurrentLexLocation.StartColumn + 1)
+			if (parserTools.compilerDirectives[i].source_context.begin_position.line_num == CurrentLexLocation.StartLine && 
+				parserTools.compilerDirectives[i].source_context.begin_position.column_num - 2 == CurrentLexLocation.StartColumn + 1)
 				{
 					ind_to_remove = i;
 					break;
 				}
 		}
 		if (ind_to_remove != -1)
-			parsertools.compilerDirectives.RemoveAt(ind_to_remove);
+			parserTools.compilerDirectives.RemoveAt(ind_to_remove);
 	}
 	
 }
@@ -262,9 +275,9 @@ UNICODEARROW \x890
   if (res == (int)Tokens.tkIdentifier)
   {
     if (cur_yytext[0] == '!' && !HiddenIdents && !ExprMode)
-    	parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, ""+cur_yytext[0]);
+    	parserTools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, ""+cur_yytext[0]);
 	yylval = new Union(); 
-    yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
+    yylval.id = parserTools.create_ident(cur_yytext,currentLexLocation);
   }
   else 
 	switch (res)
@@ -466,14 +479,14 @@ UNICODEARROW \x890
 {INTNUM} { 
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
-  yylval.ex = parsertools.create_int_const(yytext,currentLexLocation); 
+  yylval.ex = parserTools.create_int_const(yytext,currentLexLocation); 
   return (int)Tokens.tkInteger; 
 }
 
 {BIGINTNUM} { 
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
-  yylval.ex = parsertools.create_bigint_const(yytext,currentLexLocation); 
+  yylval.ex = parserTools.create_bigint_const(yytext,currentLexLocation); 
   return (int)Tokens.tkBigInteger; 
 }
 
@@ -481,7 +494,7 @@ UNICODEARROW \x890
 {HEXNUM} { 
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
-  yylval.ex = parsertools.create_hex_const(yytext,currentLexLocation);
+  yylval.ex = parserTools.create_hex_const(yytext,currentLexLocation);
   return (int)Tokens.tkHex; 
 }
 
@@ -489,35 +502,35 @@ UNICODEARROW \x890
 {EXPNUM} {
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
-  yylval.ex = parsertools.create_double_const(yytext,currentLexLocation);
+  yylval.ex = parserTools.create_double_const(yytext,currentLexLocation);
   return (int)Tokens.tkFloat;
 }
 
 {STRINGNUM} { 
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
-  yylval.stn = parsertools.create_string_const(yytext,currentLexLocation); 
+  yylval.stn = parserTools.create_string_const(yytext,currentLexLocation); 
   return (int)Tokens.tkStringLiteral; 
 }
 
 {MULTILINESTRINGNUM} { 
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
-  yylval.stn = parsertools.create_multiline_string_const(yytext,currentLexLocation); 
+  yylval.stn = parserTools.create_multiline_string_const(yytext,currentLexLocation); 
   return (int)Tokens.tkMultilineStringLiteral; 
 }
 
 {FORMATSTRINGNUM} { 
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
-  yylval.stn = parsertools.create_format_string_const(yytext,currentLexLocation); 
+  yylval.stn = parserTools.create_format_string_const(yytext,currentLexLocation); 
   return (int)Tokens.tkFormatStringLiteral; 
 }
 
 {SHARPCHARNUM} {
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;
-  yylval.stn = parsertools.create_sharp_char_const(yytext,currentLexLocation); 
+  yylval.stn = parserTools.create_sharp_char_const(yytext,currentLexLocation); 
   return (int)Tokens.tkAsciiChar; 
 }
 
@@ -528,7 +541,7 @@ UNICODEARROW \x890
 }
 
 [^ \r\n\t] {
-  parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, yytext);
+  parserTools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}",CurrentLexLocation, yytext);
   return -1;
 }
 
@@ -544,32 +557,32 @@ UNICODEARROW \x890
   public LexLocation CurrentLexLocation
   {
       get {
-          return new LexLocation(tokLin, tokCol, tokELin, tokECol, parsertools.currentFileName);
+          return new LexLocation(tokLin, tokCol, tokELin, tokECol, parserTools.currentFileName);
 	  }
   }
   
     protected override bool yywrap()
     {
 	    if (IfStack.Count > 0)
-		    parsertools.AddErrorFromResource("ENDIF_ABSENT",CurrentLexLocation);
+		    parserTools.AddErrorFromResource("ENDIF_ABSENT",CurrentLexLocation);
 		BEGIN(INITIAL);	
         if (buffStack.Count == 0) 
 		    return true;
         RestoreBuffCtx(buffStack.Pop());
-		parsertools.currentFileName = fNameStack.Pop();
+		parserTools.currentFileName = fNameStack.Pop();
         return false;     
     }
   
     public override void yyerror(string format, params object[] args) 
     {
-		string errorMsg = parsertools.CreateErrorString(yytext,args);
-		parsertools.AddError(errorMsg,CurrentLexLocation);
+		string errorMsg = parserTools.CreateErrorString(yytext,args);
+		parserTools.AddError(errorMsg,CurrentLexLocation);
     }
   
     private void TryInclude(string fName)
     {
         if (fName == null || fName.Length == 0)
-            parsertools.AddErrorFromResource("INCLUDE_EMPTY_FILE",CurrentLexLocation);
+            parserTools.AddErrorFromResource("INCLUDE_EMPTY_FILE",CurrentLexLocation);
         else 
             try {
                 if (fName.StartsWith("'"))
@@ -581,22 +594,22 @@ UNICODEARROW \x890
                 BufferContext savedCtx = MkBuffCtx();
                 string full_path = fName;
                 if (!Path.IsPathRooted(full_path))
-                    full_path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(parsertools.currentFileName), fName));
+                    full_path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(parserTools.currentFileName), fName));
                     
                 if (fNameStack.Contains(full_path))
                 {
-                    parsertools.AddErrorFromResource("RECUR_INCLUDE", CurrentLexLocation, fName);
+                    parserTools.AddErrorFromResource("RECUR_INCLUDE", CurrentLexLocation, fName);
                     return;
                 }
                     
                 SetSource(File.ReadAllText(full_path), 0);
-				fNameStack.Push(parsertools.currentFileName);
-				parsertools.currentFileName = full_path;
+				fNameStack.Push(parserTools.currentFileName);
+				parserTools.currentFileName = full_path;
                 buffStack.Push(savedCtx); 
             }
             catch
             {
-                parsertools.AddErrorFromResource("INCLUDE_COULDNT_OPEN_FILE{0}",CurrentLexLocation,fName);
+                parserTools.AddErrorFromResource("INCLUDE_COULDNT_OPEN_FILE{0}",CurrentLexLocation,fName);
             }
     }
 

@@ -90,7 +90,7 @@ namespace PascalABCCompiler.TreeConverter
                         expr,
                         ind_expr,
                         new int_const_node((expr.type as short_string_type_node).Length, null), from);
-                    return_value(find_operator(compiler_string_consts.assign_name, expr, ind_expr, get_location(_assign)));
+                    return_value(find_operator(StringConstants.assign_name, expr, ind_expr, get_location(_assign)));
                     return true;
                 }
                 if (to.type.type_special_kind == type_special_kind.short_string)
@@ -103,7 +103,7 @@ namespace PascalABCCompiler.TreeConverter
                         convertion_data_and_alghoritms.convert_type(from, SystemLibrary.SystemLibrary.string_type),
                         new int_const_node((to.type as short_string_type_node).Length,
                             null));
-                    statement_node en = find_operator(compiler_string_consts.assign_name, to, clip_expr, get_location(_assign));
+                    statement_node en = find_operator(StringConstants.assign_name, to, clip_expr, get_location(_assign));
                     return_value(en);
                     return true;
                 }

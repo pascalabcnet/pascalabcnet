@@ -109,7 +109,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                TreeConverter.SymbolInfo si = namespaces[0].findFirstOnlyInNamespace(TreeConverter.compiler_string_consts.system_unit_marker);
+                TreeConverter.SymbolInfo si = namespaces[0].findFirstOnlyInNamespace(StringConstants.system_unit_marker);
                 if (si == null)
                     return false;
                 if (si.sym_info is constant_definition_node)
