@@ -3,6 +3,8 @@ string{ abc }
 UIntPtr{ 123 }
 ConsoleColor{ Cyan }
 List<integer>+Enumerator{ (Current=0) }
+(integer, real){ (1, 2.3) }
+ValueTuple<integer, real>{ (1, 2.3) }
 array[,,,,,,,,] of byte{ [[[[[[[[[0,0]]]]]]]],[[[[[[[[0,0]]]]]]]]] }
 array[,,,,,,,,] of byte{ [[[[[[[[[]]]]]]]]] }
 List<real>{ [1.2,3] }
