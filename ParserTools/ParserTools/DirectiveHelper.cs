@@ -7,13 +7,17 @@ using PascalABCCompiler.Errors;
 
 namespace PascalABCCompiler.ParserTools.Directives
 {
+    /// <summary>
+    /// Класс для хранения информации о директиве компилятора (количество параметров, проверки для параметров и др.)
+    /// </summary>
     public class DirectiveInfo
     {
         private ParamChecksCollection checks;
 
-        public int[] paramsNums = new int[1] { 1 };
+        public int[] paramsNums = new int[1] { 1 }; // по умолчанию один параметр
         public bool checkParamsNumNeeded;
 
+        // по умолчанию никаких проверок параметров, но включена проверка их кол-ва
         public DirectiveInfo(ParamChecksCollection paramChecks = null, bool checkParamsNumNeeded = true, int[] paramsNums = null)
         {
             this.checks = paramChecks;
@@ -22,6 +26,9 @@ namespace PascalABCCompiler.ParserTools.Directives
             this.checkParamsNumNeeded = checkParamsNumNeeded;
         }
 
+        /// <summary>
+        /// Функция для проверки всех параметров директивы
+        /// </summary>
         public bool ParamsValid(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
             // если проверки не нужны
@@ -35,9 +42,12 @@ namespace PascalABCCompiler.ParserTools.Directives
         }
     }
 
+    /// <summary>
+    /// Базовый класс для всех проверок параметров директив
+    /// </summary>
     public abstract class ParamCheckBase
     {
-        public int paramsToCheckNum;
+        public int paramsToCheckNum; // кол-во параметров, проверяемых одной проверкой, по умолчанию - 1
 
         public string errorMessage = "";
 
@@ -46,11 +56,17 @@ namespace PascalABCCompiler.ParserTools.Directives
             this.paramsToCheckNum = paramsToCheckNum;
         }
 
+        /// <summary>
+        /// Проверка одного параметра
+        /// </summary>
         public abstract bool CheckParam(string param);
 
-        public bool CheckParams(List<string> directiveParams, out int indexOfMismatch)
+        /// <summary>
+        /// Проверка нужного кол-ва параметров
+        /// </summary>
+        public bool CheckParams(string[] directiveParams, out int indexOfMismatch)
         {
-            for (var i = 0; i < directiveParams.Count; i++)
+            for (var i = 0; i < directiveParams.Length; i++)
             {
                 if (!CheckParam(directiveParams[i]))
                 {
@@ -62,18 +78,11 @@ namespace PascalABCCompiler.ParserTools.Directives
             indexOfMismatch = -1;
             return true;
         }
-
-        public static ParamCheckBase operator +(ParamCheckBase left, ParamCheckBase right)
-        {
-            return new FuncCheck(s => left.CheckParam(s) || right.CheckParam(s));
-        }
-
-        public static ParamCheckBase operator *(ParamCheckBase left, ParamCheckBase right)
-        {
-            return new FuncCheck(s => left.CheckParam(s) && right.CheckParam(s));
-        }
     }
 
+    /// <summary>
+    /// Класс для пользовательской проверки параметров (можно передать лямбду с проверкой)
+    /// </summary>
     public sealed class FuncCheck : ParamCheckBase
     {
         Predicate<string> check;
@@ -87,6 +96,9 @@ namespace PascalABCCompiler.ParserTools.Directives
         public override bool CheckParam(string s) => check(s);
     }
 
+    /// <summary>
+    /// Проверка, что параметр имеет формат идентификатора
+    /// </summary>
     public class IsValidIdentifierCheck : ParamCheckBase
     {
 
@@ -102,6 +114,9 @@ namespace PascalABCCompiler.ParserTools.Directives
         }
     }
 
+    /// <summary>
+    /// Проверка принадлежности параметра списку возможных вариантов
+    /// </summary>
     public class IsAnyOfCheck : ParamCheckBase
     {
         private string[] paramVariants;
@@ -127,6 +142,9 @@ namespace PascalABCCompiler.ParserTools.Directives
         }
     }
 
+    /// <summary>
+    /// Проверка, что расширение параметра входит в список возможных расширений
+    /// </summary>
     public class IsAnyExtensionsOfCheck : ParamCheckBase
     {
         private string[] extVariants;
@@ -145,34 +163,24 @@ namespace PascalABCCompiler.ParserTools.Directives
         }
     }
 
-
-    public class IsWordCheck : ParamCheckBase
-    {
-        public IsWordCheck(int paramsToCheckNum = 1) : base(paramsToCheckNum) 
-        { 
-            errorMessage = ParserErrorsStringResources.Get("EXPECTED_WORD");
-        }
-
-        public override bool CheckParam(string param)
-        {
-            return Regex.IsMatch(param, @"^\w+$");
-        }
-    }
-
+    /// <summary>
+    /// Класс для хранения всех проверок одной директивы 
+    /// </summary>
     public class ParamChecksCollection
     {
-        private readonly List<ParamCheckBase> checks = new List<ParamCheckBase>();
+        private readonly ParamCheckBase[] checks;
 
         public ParamChecksCollection(params ParamCheckBase[] checks)
         {
-            this.checks = checks.ToList();
+            this.checks = checks;
         }
 
         public bool CheckParams(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
-            for (var i = 0; i < checks.Count; i++)
+            for (var i = 0; i < checks.Length; i++)
             {
-                if (!checks[i].CheckParams(directiveParams.Take(checks[i].paramsToCheckNum).ToList(), out int index))
+                // каждая проверка работает с кол-вом параметров, которое в ней указано
+                if (!checks[i].CheckParams(directiveParams.Skip(i).Take(checks[i].paramsToCheckNum).ToArray(), out int index))
                 {
                     indexOfMismatch = index;
                     errorMessage = checks[i].errorMessage;
@@ -186,9 +194,12 @@ namespace PascalABCCompiler.ParserTools.Directives
         }
     }
 
-
+    /// <summary>
+    /// Класс вспомогательных методов для работы с директивами
+    /// </summary>
     public static class DirectiveHelper
     {
+        #region SINGLE CHECKS WRAPPERS
         public static ParamChecksCollection SingleAnyOfCheck(params string[] paramVariants)
         {
             return new ParamChecksCollection(new IsAnyOfCheck(1, paramVariants));
@@ -203,6 +214,7 @@ namespace PascalABCCompiler.ParserTools.Directives
         {
             return new ParamChecksCollection(new IsValidIdentifierCheck(1));
         }
+        #endregion
     }
 }
 

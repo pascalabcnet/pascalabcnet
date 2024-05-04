@@ -2049,43 +2049,43 @@ namespace PascalABCCompiler
         {
             List<compiler_directive> compilerDirectivesList;
             
-            if (compilerDirectives.TryGetValue(StringConstants.product_string, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_product_string, out compilerDirectivesList))
             {
                 compilerOptions.Product = compilerDirectivesList[0].directive;
             }
-            if (compilerDirectives.TryGetValue(StringConstants.version_string, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_version_string, out compilerDirectivesList))
             {
                 compilerOptions.ProductVersion = compilerDirectivesList[0].directive;
             }
-            if (compilerDirectives.TryGetValue(StringConstants.company_string, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_company_string, out compilerDirectivesList))
             {
                 compilerOptions.Company = compilerDirectivesList[0].directive;
             }
-            if (compilerDirectives.TryGetValue(StringConstants.trademark_string, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_trademark_string, out compilerDirectivesList))
             {
                 compilerOptions.TradeMark = compilerDirectivesList[0].directive;
             }
-            if (compilerDirectives.TryGetValue(StringConstants.copyright_string, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_copyright_string, out compilerDirectivesList))
             {
                 compilerOptions.Copyright = compilerDirectivesList[0].directive;
             }
-            if (compilerDirectives.TryGetValue(StringConstants.title_string, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_title_string, out compilerDirectivesList))
             {
                 compilerOptions.Title = compilerDirectivesList[0].directive;
             }
-            if (compilerDirectives.TryGetValue(StringConstants.description_string, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_description_string, out compilerDirectivesList))
             {
                 compilerOptions.Description = compilerDirectivesList[0].directive;
             }
-            if (compilerDirectives.TryGetValue(StringConstants.main_resource_string, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_main_resource_string, out compilerDirectivesList))
             {
-                if (compilerDirectives.ContainsKey(StringConstants.product_string) ||
-                    compilerDirectives.ContainsKey(StringConstants.version_string) ||
-                    compilerDirectives.ContainsKey(StringConstants.company_string) ||
-                    compilerDirectives.ContainsKey(StringConstants.trademark_string) ||
-                    compilerDirectives.ContainsKey(StringConstants.title_string) ||
-                    compilerDirectives.ContainsKey(StringConstants.description_string) ||
-                    compilerDirectives.ContainsKey(StringConstants.copyright_string))
+                if (compilerDirectives.ContainsKey(StringConstants.compiler_directive_product_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_version_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_company_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_trademark_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_title_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_description_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_copyright_string))
                 {
                     ErrorsList.Add(new MainResourceNotAllowed(compilerDirectivesList[0].location));
                 }
@@ -3154,7 +3154,7 @@ namespace PascalABCCompiler
         {
             var directives = GetDirectivesAsSemanticNodes(unit.SyntaxTree.compiler_directives, unit.SyntaxTree.file_name);
 
-            return directives.Any(directive => directive.name.ToLower() == StringConstants.include_namespace_directive);
+            return directives.Any(directive => directive.name.ToLower() == StringConstants.compiler_directive_include_namespace);
         }
 
 
@@ -3293,7 +3293,7 @@ namespace PascalABCCompiler
             List<string> files = new List<string>();
             foreach (compiler_directive cd in directives)
             {
-                if (cd.name.ToLower() == StringConstants.include_namespace_directive)
+                if (cd.name.ToLower() == StringConstants.compiler_directive_include_namespace)
                 {
                     string directive = cd.directive.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
 
@@ -4294,7 +4294,7 @@ namespace PascalABCCompiler
                     if (((SyntaxTree.unit_module)Unit.SyntaxTree).unit_name.HeaderKeyword == PascalABCCompiler.SyntaxTree.UnitHeaderKeyword.Library)
                         return;
                     foreach (SyntaxTree.compiler_directive cd in Unit.SyntaxTree.compiler_directives)
-                        if (cd.Name.text.ToLower() == StringConstants.compiler_savepcu)
+                        if (cd.Name.text.ToLower() == StringConstants.compiler_directive_savepcu)
                             if (!Convert.ToBoolean(cd.Directive.text))
                                 return;
                 }

@@ -102,6 +102,9 @@ namespace PascalABCSavParser
             pascalABCTypeDeclarations = new List<type_declaration>();
         }
 
+        /// <summary>
+        /// Разбор директивы, согласно спецификации языка
+        /// </summary>
         public void ParseDirective(string directive, QUT.Gppg.LexLocation location, out string directiveName, out List<string> directiveParams)
         {
             directiveName = null;

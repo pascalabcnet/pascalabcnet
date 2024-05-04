@@ -319,8 +319,8 @@ namespace PascalABCCompiler
         #region PASCAL COMPILER DIRECTIVES
         public static string compiler_directive_apptype = "apptype";
         public static string compiler_directive_reference = "reference";
-        public static string include_namespace_directive = "includenamespace";
-        public static string compiler_savepcu = "savepcu";
+        public static string compiler_directive_include_namespace = "includenamespace";
+        public static string compiler_directive_savepcu = "savepcu";
         public static string compiler_directive_zerobasedstrings = "zerobasedstrings";
         public static string compiler_directive_zerobasedstrings_ON = "string_zerobased+";
         public static string compiler_directive_zerobasedstrings_OFF = "string_zerobased-";
@@ -344,14 +344,14 @@ namespace PascalABCCompiler
         public static string compiler_directive_targetframework = "targetframework";
         public static string compiler_directive_hidden_idents = "hiddenidents";
         public static string compiler_directive_omp = "omp";
-        public const string version_string = "version";
-        public const string product_string = "product";
-        public const string company_string = "company";
-        public const string copyright_string = "copyright";
-        public const string trademark_string = "trademark";
-        public const string main_resource_string = "mainresource";
-        public const string title_string = "title";
-        public const string description_string = "description";
+        public const string compiler_directive_version_string = "version";
+        public const string compiler_directive_product_string = "product";
+        public const string compiler_directive_company_string = "company";
+        public const string compiler_directive_copyright_string = "copyright";
+        public const string compiler_directive_trademark_string = "trademark";
+        public const string compiler_directive_main_resource_string = "mainresource";
+        public const string compiler_directive_title_string = "title";
+        public const string compiler_directive_description_string = "description";
         #endregion
 
         // SSM (3.1.2011) Перенес эти константы сюда.

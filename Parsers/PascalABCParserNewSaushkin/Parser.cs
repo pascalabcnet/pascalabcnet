@@ -120,17 +120,20 @@ namespace PascalABCCompiler.PascalABCNewParser
         }
 
 
+        /// <summary>
+        /// Здесь записываются все директивы, поддерживаемые языком, а также правила для проверки их параметров (ограничения, накладываемые со стороны языка)
+        /// </summary>
         private void InitializeValidDirectives()
         {
             #region VALID DIRECTIVES
             ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.CurrentCultureIgnoreCase)
             {
                 [StringConstants.compiler_directive_apptype] = new DirectiveInfo(SingleAnyOfCheck("console", "windows", "dll", "pcu")),
-                [StringConstants.compiler_directive_reference] = new DirectiveInfo(),
-                [StringConstants.include_namespace_directive] = new DirectiveInfo(),
-                [StringConstants.compiler_savepcu] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
+                [StringConstants.compiler_directive_reference] = new DirectiveInfo(), // нет параметров - никаких проверок
+                [StringConstants.compiler_directive_include_namespace] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_savepcu] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
                 [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(SingleAnyOfCheck("on", "off"), paramsNums: new int[2] { 0, 1 }),
-                [StringConstants.compiler_directive_zerobasedstrings_ON] = null,
+                [StringConstants.compiler_directive_zerobasedstrings_ON] = null, // от null, скорее всего, придется избавиться, это не лучший подход  EVA
                 [StringConstants.compiler_directive_zerobasedstrings_OFF] = null,
                 [StringConstants.compiler_directive_nullbasedstrings_ON] = null,
                 [StringConstants.compiler_directive_nullbasedstrings_OFF] = null,
@@ -151,13 +154,13 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.compiler_directive_include] = new DirectiveInfo(),
                 [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(),
                 [StringConstants.compiler_directive_hidden_idents] = null,
-                [StringConstants.version_string] = new DirectiveInfo(),
-                [StringConstants.product_string] = new DirectiveInfo(),
-                [StringConstants.company_string] = new DirectiveInfo(),
-                [StringConstants.trademark_string] = new DirectiveInfo(),
-                [StringConstants.main_resource_string] = new DirectiveInfo(),
-                [StringConstants.title_string] = new DirectiveInfo(),
-                [StringConstants.description_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_version_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_product_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_company_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_trademark_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_main_resource_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_title_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_description_string] = new DirectiveInfo(),
                 [StringConstants.compiler_directive_omp] = new DirectiveInfo(SingleAnyOfCheck("critical", "parallel"), checkParamsNumNeeded: false)
             }; 
             #endregion
