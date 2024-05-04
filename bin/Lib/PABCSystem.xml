@@ -3285,7 +3285,7 @@
     <member name="M:Batch``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
       <summary>Разбивает последовательность на серии длины size</summary>
     </member>
-    <member name="M:Batch``2(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Func{System.Collections.Generic.IEnumerable{``0},``1})">
+    <member name="M:Batch``2(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Func{``0[],``1})">
       <summary>Разбивает последовательность на серии длины size и применяет проекцию к каждой серии</summary>
     </member>
     <member name="M:SliceSeqImpl``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32,System.Int32)">
