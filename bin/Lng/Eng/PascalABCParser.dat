@@ -95,3 +95,4 @@ NIL_IN_UNNAMED_OBJECT=Anonymous class field cannot be initialized by nil constan
 YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY=yield statement cannot be used in lambda body
 SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5=Slices of multidimensional arrays are allowed only for arrays with rank < 5
 LEFT_SIDE_CANNOT_BE_ASSIGNED_TO=Left side cannot be assigned to
+DIFF_DEFINE_NAME=The define name '{2}' in directive '{0}' does not match define name '{1}' from the corresponding 'ifdef'/'ifndef'
