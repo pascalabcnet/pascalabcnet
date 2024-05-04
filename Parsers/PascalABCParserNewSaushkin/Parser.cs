@@ -149,7 +149,7 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.compiler_directive_undef] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_include] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(new ParamChecksCollection(new IsWordCheck(1))),
+                [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(),
                 [StringConstants.compiler_directive_hidden_idents] = null,
                 [StringConstants.version_string] = new DirectiveInfo(),
                 [StringConstants.product_string] = new DirectiveInfo(),

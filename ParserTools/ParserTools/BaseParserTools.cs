@@ -135,13 +135,29 @@ namespace PascalABCCompiler.ParserTools
             // проверка кол-ва параметров директивы (учитывается случай, когда их может не быть)
             if (directiveInfo.checkParamsNumNeeded && !directiveInfo.paramsNums.Contains(directiveParams.Count))
             {
-                AddErrorFromResource("DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}", loc, directiveName, string.Join(", ", directiveInfo.paramsNums));
+                string paramsNumString = "";
+                int maxParamsNum = directiveInfo.paramsNums.Max();
+                if (directiveInfo.paramsNums.Length > 1)
+                {
+                    if (directiveParams.Count > maxParamsNum)
+                    {
+                        string paramString = maxParamsNum > 1 ? GetFromStringResources("PARAM_MULTIPLE1") : GetFromStringResources("PARAM_SINGLE2");
+                        paramsNumString = GetFromStringResources("NOT_MORE_THAN") + " " + maxParamsNum + " " + paramString;
+                    }
+                }
+                else
+                {
+                    string paramString = directiveInfo.paramsNums[0] > 1 ? GetFromStringResources("PARAM_MULTIPLE2") : GetFromStringResources("PARAM_SINGLE1");
+                    paramsNumString = GetFromStringResources("EXACTLY") + " " + directiveInfo.paramsNums[0] + " " + paramString;
+                }
+
+                AddErrorFromResource("DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}", loc, directiveName, paramsNumString);
                 return;
             }
 
-            if (!directiveInfo.ParamsValid(directiveParams, out int indexOfMismatch))
+            if (!directiveInfo.ParamsValid(directiveParams, out int indexOfMismatch, out string specificErrorMessage))
             {
-                AddErrorFromResource("INCORRECT_DIRECTIVE_PARAM{0}{1}", loc, directiveName, directiveParams[indexOfMismatch]);
+                AddErrorFromResource("INCORRECT_DIRECTIVE_PARAM{0}{1}{2}", loc, directiveName, directiveParams[indexOfMismatch], specificErrorMessage);
             }
         }
 

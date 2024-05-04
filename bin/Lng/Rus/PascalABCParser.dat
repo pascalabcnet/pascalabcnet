@@ -23,9 +23,9 @@ UNSUPPORTED_OLD_DIRECTIVES=Директивы компилятора в стил
 UNKNOWN_DIRECTIVE{0}=Неизвестная директива '{0}'
 MISSING_DIRECTIVE_PARAM{0}=Директива '{0}' должна иметь параметр
 UNNECESSARY_DIRECTIVE_PARAM{0}=Директива '{0}' не допускает параметров
-INCORRECT_DIRECTIVE_PARAM{0}{1}=Директиве '{0}' передан недопустимый параметр: '{1}'
+INCORRECT_DIRECTIVE_PARAM{0}{1}{2}=Недопустимый параметр '{1}' для директивы '{0}'. {2}
 EMPTY_DIRECTIVE=Пустая директива недопустима
-DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}=Директива '{0}' должна иметь следующее количество параметров: {1}
+DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}=Директива '{0}' должна иметь {1}
 INCLUDE_COULDNT_OPEN_FILE{0}=Директива компилятора $include: нельзя открыть файл '{0}'
 INCLUDE_EMPTY_FILE=Директива компилятора $include: не указано имя файла 
 RECUR_INCLUDE=Директива компилятора $include: рекурсивное включение файла 
@@ -35,6 +35,13 @@ UNNECESSARY $else=Лишний $else
 TYPE_NAME_EXPECTED=Ожидался тип
 MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS=Мультистрочная строка содержит несовместимые отступы
 NON_WHITESPACE_CHARACTERS_BEFORE_CLOSING_QUOTES_OF_MULTILINE_STRING=Перед закрывающими кавычками многострочной строки не должно быть непробельных символов 
+
+PARAM_SINGLE1=параметр
+PARAM_SINGLE2=параметра
+PARAM_MULTIPLE1=параметров
+PARAM_MULTIPLE2=параметра
+NOT_MORE_THAN=не более
+EXACTLY=ровно
 
 EOF1=конец файла
 EOF=(конец файла)

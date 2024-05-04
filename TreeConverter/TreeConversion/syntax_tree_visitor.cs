@@ -19773,7 +19773,6 @@ namespace PascalABCCompiler.TreeConverter
                     SemanticRules.ZeroBasedStrings = true;
                 else if (paramOnOff == "off")
                     SemanticRules.ZeroBasedStrings = false;
-                //SemanticRules.ZeroBasedStrings = node.Directive.text.ToLower() == StringConstants.true_const_name;
                 return;
             }
             if (node.Name.text.ToLower() == StringConstants.compiler_directive_zerobasedstrings_ON)

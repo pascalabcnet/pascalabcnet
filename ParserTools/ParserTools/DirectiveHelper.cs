@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using PascalABCCompiler.Errors;
 
 namespace PascalABCCompiler.ParserTools.Directives
 {
@@ -21,21 +22,24 @@ namespace PascalABCCompiler.ParserTools.Directives
             this.checkParamsNumNeeded = checkParamsNumNeeded;
         }
 
-        public bool ParamsValid(List<string> directiveParams, out int indexOfMismatch)
+        public bool ParamsValid(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
             // если проверки не нужны
             if (checks == null)
             {
                 indexOfMismatch = -1;
+                errorMessage = null;
                 return true;
             }
-            return checks.CheckParams(directiveParams, out indexOfMismatch);
+            return checks.CheckParams(directiveParams, out indexOfMismatch, out errorMessage);
         }
     }
 
     public abstract class ParamCheckBase
     {
         public int paramsToCheckNum;
+
+        public string errorMessage = "";
 
         public ParamCheckBase(int paramsToCheckNum = 1)
         {
@@ -74,8 +78,9 @@ namespace PascalABCCompiler.ParserTools.Directives
     {
         Predicate<string> check;
 
-        public FuncCheck(Predicate<string> pred, int paramsToCheckNum = 1) : base(paramsToCheckNum)
+        public FuncCheck(Predicate<string> pred, string errorMessage = "", int paramsToCheckNum = 1) : base(paramsToCheckNum)
         {
+            this.errorMessage = errorMessage;
             check = pred;
         }
 
@@ -84,7 +89,12 @@ namespace PascalABCCompiler.ParserTools.Directives
 
     public class IsValidIdentifierCheck : ParamCheckBase
     {
-        public IsValidIdentifierCheck(int paramsToCheckNum = 1) : base(paramsToCheckNum) { }
+
+        public IsValidIdentifierCheck(int paramsToCheckNum = 1) : base(paramsToCheckNum)
+        {
+            errorMessage = ParserErrorsStringResources.Get("EXPECTED_IDENTIFIER");
+        
+        }
 
         public override bool CheckParam(string param)
         {
@@ -99,6 +109,16 @@ namespace PascalABCCompiler.ParserTools.Directives
         public IsAnyOfCheck(int paramsToCheckNum = 1, params string[] paramVariants) : base(paramsToCheckNum)
         {
             this.paramVariants = paramVariants;
+            
+            if (paramVariants.Length <= 5)
+            {
+                string firstPartOfError = ParserErrorsStringResources.Get("AVAILABLE_PARAM_VARIANTS{0}");
+                errorMessage = string.Format(firstPartOfError, string.Join(", ", paramVariants));
+            }
+            else
+            {
+                errorMessage = ParserErrorsStringResources.Get("SEE_THE_HELP_FOR_VARIANTS");
+            }
         }
 
         public override bool CheckParam(string param)
@@ -114,6 +134,9 @@ namespace PascalABCCompiler.ParserTools.Directives
         public IsAnyExtensionsOfCheck(int paramsToCheckNum = 1, params string[] extVariants) : base(paramsToCheckNum)
         {
             this.extVariants = extVariants;
+
+            string firstPartOfError = ParserErrorsStringResources.Get("AVAILABLE_EXT_VARIANTS{0}");
+            errorMessage = string.Format(firstPartOfError, string.Join(", ", extVariants));
         }
 
         public override bool CheckParam(string param)
@@ -125,7 +148,10 @@ namespace PascalABCCompiler.ParserTools.Directives
 
     public class IsWordCheck : ParamCheckBase
     {
-        public IsWordCheck(int paramsToCheckNum = 1) : base(paramsToCheckNum) { }
+        public IsWordCheck(int paramsToCheckNum = 1) : base(paramsToCheckNum) 
+        { 
+            errorMessage = ParserErrorsStringResources.Get("EXPECTED_WORD");
+        }
 
         public override bool CheckParam(string param)
         {
@@ -142,29 +168,20 @@ namespace PascalABCCompiler.ParserTools.Directives
             this.checks = checks.ToList();
         }
 
-        public bool CheckParams(List<string> directiveParams, out int indexOfMismatch)
+        public bool CheckParams(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
             for (var i = 0; i < checks.Count; i++)
             {
-                // если параметров неограниченное кол-во (как у region) и для них одна проверка
-                if (checks[i].paramsToCheckNum == -1)
-                {
-                    if (checks[i].CheckParams(directiveParams, out int ind))
-                    {
-                        indexOfMismatch = ind;
-                        return false;
-                    }
-                    break;
-                }
-
                 if (!checks[i].CheckParams(directiveParams.Take(checks[i].paramsToCheckNum).ToList(), out int index))
                 {
                     indexOfMismatch = index;
+                    errorMessage = checks[i].errorMessage;
                     return false;
                 }
             }
 
             indexOfMismatch = -1;
+            errorMessage = null;
             return true;
         }
     }

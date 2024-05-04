@@ -24,9 +24,9 @@ UNSUPPORTED_OLD_DIRECTIVES=Compiler directives began with # are not supported. U
 UNKNOWN_DIRECTIVE{0}=Unknown directive '{0}'
 MISSING_DIRECTIVE_PARAM{0}=Directive '{0}' requires a parameter
 UNNECESSARY_DIRECTIVE_PARAM{0}=Directive '{0}' is used without parameters
-INCORRECT_DIRECTIVE_PARAM{0}{1}=Invalid parameter '{0}' passed to directive '{1}'
+INCORRECT_DIRECTIVE_PARAM{0}{1}{2}=Invalid parameter '{0}' passed to directive '{1}'. {2}
 EMPTY_DIRECTIVE=Empty directive is not allowed
-DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}=Directive '{0}' must have the following number of parameters: {1}
+DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}=Directive '{0}' must have {1}
 INCLUDE_COULDNT_OPEN_FILE{0}=Compiler directive $include: can't open file '{0}'
 INCLUDE_EMPTY_FILE=Compiler directive $include: file name is absent
 RECUR_INCLUDE=Compiler directive $include: recursive include
@@ -37,6 +37,12 @@ TYPE_NAME_EXPECTED=Type expected
 MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS=Multiline string contains inconsistent indents
 NON_WHITESPACE_CHARACTERS_BEFORE_CLOSING_QUOTES_OF_MULTILINE_STRING=There should be no non-whitespace characters before the closing quotes of the multiline string
 
+PARAM_SINGLE1=parameter
+PARAM_SINGLE2=parameter
+PARAM_MULTIPLE1=parameters
+PARAM_MULTIPLE2=parameters
+NOT_MORE_THAN=no more than
+EXACTLY=exactly
 
 EOF1=end of file
 EOF=(end of file)
