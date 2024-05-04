@@ -34,6 +34,9 @@ begin
   TestO(System.ConsoleColor.Cyan);
   TestO(Lst(0).GetEnumerator);
   
+  TestO(System.Tuple.Create(1,2.3));
+  TestO(System.ValueTuple.Create(1,2.3));
+  
   TestO(new byte[2,1,1,1,1,1,1,1,2]);
   TestO(new byte[2,1,1,1,0,1,1,1,2]);
   TestO(|1.2,3|.ToList);
