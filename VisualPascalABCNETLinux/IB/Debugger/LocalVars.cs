@@ -297,9 +297,9 @@ namespace VisualPascalABC
                         List<Mono.Debugging.Evaluation.TypeValueReference> types = new List<Mono.Debugging.Evaluation.TypeValueReference>();
                         try
                         {
-                            if (val.TypeName.Contains(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName))
+                            if (val.TypeName.Contains(PascalABCCompiler.StringConstants.ImplementationSectionNamespaceName))
                         	{
-                                string interf_name = val.TypeName.Substring(0, val.TypeName.IndexOf(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
+                                string interf_name = val.TypeName.Substring(0, val.TypeName.IndexOf(PascalABCCompiler.StringConstants.ImplementationSectionNamespaceName));
                         		Type t = AssemblyHelper.GetTypeForStatic(interf_name);
                                 var tr = new Mono.Debugging.Evaluation.TypeValueReference(frame.SourceBacktrace.GetEvaluationContext(frame.Index, Mono.Debugging.Client.EvaluationOptions.DefaultOptions), 
                                             (frame.DebuggerSession as Mono.Debugging.Soft.SoftDebuggerSession).GetType(t.FullName));

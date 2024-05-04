@@ -32,7 +32,7 @@ namespace CodeCompletion
             var controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
             CodeCompletion.CodeCompletionController.comp = comp;
-            CodeCompletion.CodeCompletionController.SetParser(compiler_string_consts.pascalSourceFileExtension);
+            CodeCompletion.CodeCompletionController.SetParser(StringConstants.pascalSourceFileExtension);
             CodeCompletion.CodeCompletionController.ParsersController = comp.ParsersController;
             var files = Directory.GetFiles(dir, "*.pas");
             var parser = comp.ParsersController;
@@ -104,7 +104,7 @@ namespace CodeCompletion
             var comp = new PascalABCCompiler.Compiler();
             var controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.CodeCompletionController.comp = comp;
-            CodeCompletion.CodeCompletionController.SetParser(compiler_string_consts.pascalSourceFileExtension);
+            CodeCompletion.CodeCompletionController.SetParser(StringConstants.pascalSourceFileExtension);
             CodeCompletion.CodeCompletionController.ParsersController = comp.ParsersController;
             var files = Directory.GetFiles(dir, "*.pas");
             var parser = comp.ParsersController;
@@ -341,7 +341,7 @@ namespace CodeCompletion
     		int col=0;
     		PascalABCCompiler.Parsers.KeywordKind keyw;
             LanguageIntegration.LanguageIntegrator.ReloadAllParsers();
-    		IParser parser = CodeCompletionController.ParsersController.SelectParser(compiler_string_consts.pascalSourceFileExtension);
+    		IParser parser = CodeCompletionController.ParsersController.SelectParser(StringConstants.pascalSourceFileExtension);
     		
     		string test_str = "System.Console";
     		off = test_str.Length;

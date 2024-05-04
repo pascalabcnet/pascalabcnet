@@ -4567,6 +4567,24 @@ begin
     end;
   end;
   
+  var gen_args := t.GetGenericArguments;
+  
+  //TODO t.IsClass, чтобы ValueTuple пока что не ловило
+  if t.GetInterfaces.Contains(typeof(System.Runtime.CompilerServices.ITuple)) and t.IsClass then
+  begin
+    res.Write('(');
+    var any_gen_arg := false;
+    foreach var arg in gen_args do
+    begin
+      if any_gen_arg then
+        res.Write(', ') else
+        any_gen_arg := true;
+      TypeToTypeName(arg, res);
+    end;
+    res.Write(')');
+    exit;
+  end;
+  
   var name := t.Name;
   
   if t.IsSubclassOf(typeof(Delegate)) then
@@ -4577,7 +4595,6 @@ begin
     exit;
   end;
   
-  var gen_args := t.GetGenericArguments;
   // "Lst(0).GetEnumerator.GetType.DeclaringType" возвращает List<T>, а не List<integer>
   // При чём этот T.IsNested возвращает true, хотя это параметр а не вложенный тип
   if t.IsNested and not t.IsGenericParameter then

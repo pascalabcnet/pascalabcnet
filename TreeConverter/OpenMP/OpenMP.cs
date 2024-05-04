@@ -2062,7 +2062,7 @@ namespace PascalABCCompiler.TreeConverter
             SyntaxTree.if_node result = new PascalABCCompiler.SyntaxTree.if_node();
             SyntaxTree.un_expr ue = new PascalABCCompiler.SyntaxTree.un_expr();
             ue.operation_type = PascalABCCompiler.SyntaxTree.Operators.LogicalNOT;
-            ue.subnode = new SyntaxTree.ident(TreeConverter.compiler_string_consts.OMP_NESTED);
+            ue.subnode = new SyntaxTree.ident(StringConstants.OMP_NESTED);
             result.condition = ue;
 
             SyntaxTree.assign AssignInParVar = new PascalABCCompiler.SyntaxTree.assign();

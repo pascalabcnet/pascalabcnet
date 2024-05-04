@@ -82,6 +82,10 @@
       <Project>{613E0DDA-AA8A-437C-AC45-507B47429FF9}</Project>
       <Name>SemanticTree</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
+      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
+      <Name>StringConstants</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
       <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
       <Name>TreeConverter</Name>

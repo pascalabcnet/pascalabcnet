@@ -50,12 +50,12 @@ namespace PascalABCCompiler.TreeRealization
         public static void add_default_ctor(common_type_node param)
         {
             common_method_node cnode = new common_method_node(
-                compiler_string_consts.default_constructor_name, param, null,
+                StringConstants.default_constructor_name, param, null,
                 param, SemanticTree.polymorphic_state.ps_common,
                 SemanticTree.field_access_level.fal_public, null);
             cnode.is_constructor = true;
             param.methods.AddElement(cnode);
-            param.add_name(compiler_string_consts.default_constructor_name, new SymbolInfo(cnode));
+            param.add_name(StringConstants.default_constructor_name, new SymbolInfo(cnode));
             param.has_default_constructor = true;
             param.has_explicit_default_constructor = true;
         }
@@ -374,7 +374,7 @@ namespace PascalABCCompiler.TreeRealization
             SystemLibrary.SystemLibrary.init_reference_type(instance);
             instance.conform_basic_functions();
             //(ssyy) Нужно, чтобы добавились конструкторы
-            //ctnode.find_in_type(compiler_string_consts.default_constructor_name);
+            //ctnode.find_in_type(StringConstants.default_constructor_name);
             instance.instance_params = param_types;
 
             property_node orig_pn = original.default_property_node;
@@ -1447,7 +1447,7 @@ namespace PascalABCCompiler.TreeRealization
             string rez;
             if (type_name)
             {
-                int last = name.LastIndexOf(compiler_string_consts.generic_params_infix);
+                int last = name.LastIndexOf(StringConstants.generic_params_infix);
                 if (last < 0)
                 {
                     rez = name;
@@ -1475,7 +1475,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             if (tn.is_generic_parameter && tn.base_type != null && tn.base_type.IsAbstract && !(tn is common_type_node && (tn as common_type_node).has_default_constructor))
                 return false;
-            List<SymbolInfo> sil = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
+            List<SymbolInfo> sil = tn.find_in_type(StringConstants.default_constructor_name, tn.Scope);
             if (sil != null)
             {
                 foreach (SymbolInfo si in sil)
@@ -2227,9 +2227,9 @@ namespace PascalABCCompiler.TreeRealization
 
         public void conform_basic_functions()
         {
-            conform_basic_function(compiler_string_consts.assign_name, 0);
-            conform_basic_function(compiler_string_consts.eq_name, 1);
-            conform_basic_function(compiler_string_consts.noteq_name, 2);
+            conform_basic_function(StringConstants.assign_name, 0);
+            conform_basic_function(StringConstants.eq_name, 1);
+            conform_basic_function(StringConstants.noteq_name, 2);
             temp_names = null;
         }
 

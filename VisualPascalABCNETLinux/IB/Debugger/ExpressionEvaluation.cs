@@ -730,7 +730,7 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name), "+");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.plus_name), "+");
                 }
             }
             eval_stack.Push(res);
@@ -1083,7 +1083,7 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name), "-");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.minus_name), "-");
                 }
             }
             eval_stack.Push(res);
@@ -1345,7 +1345,7 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name), "*");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.mul_name), "*");
                 }
             }
             eval_stack.Push(res);
@@ -1594,7 +1594,7 @@ namespace VisualPascalABC
                     left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
                 if (right.monoValue == null && right.prim_val != null)
                     right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
-                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name), "/");
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.div_name), "/");
             }
             eval_stack.Push(res);
         }
@@ -1782,7 +1782,7 @@ namespace VisualPascalABC
                     left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
                 if (right.monoValue == null && right.prim_val != null)
                     right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
-                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name), "div");
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.idiv_name), "div");
             }
             eval_stack.Push(res);
         }
@@ -1980,7 +1980,7 @@ namespace VisualPascalABC
                     left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
                 if (right.monoValue == null && right.prim_val != null)
                     right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
-                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name), "and");
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.and_name), "and");
             }
         }
 
@@ -2176,7 +2176,7 @@ namespace VisualPascalABC
                     left.monoValue = DebugUtils.MakeMonoValue(left.prim_val);
                 if (right.monoValue == null && right.prim_val != null)
                     right.monoValue = DebugUtils.MakeMonoValue(right.prim_val);
-                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name), "-");
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.plus_name), "-");
             }
         }
 
@@ -3027,7 +3027,7 @@ namespace VisualPascalABC
                 }
                 else
                     {
-                        string op = PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name);
+                        string op = PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.eq_name);
                         if (left.obj_val.Type != right.obj_val.Type)
                         {
                             Type left_type = AssemblyHelper.GetType(left.obj_val.Type.FullName);
@@ -3379,7 +3379,7 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    string op = PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name);
+                    string op = PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.noteq_name);
                     if (left.obj_val.Type != right.obj_val.Type)
                     {
                         Type left_type = AssemblyHelper.GetType(left.obj_val.Type.FullName);
@@ -3706,7 +3706,7 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name), "<");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.sm_name), "<");
                 }
             }
             eval_stack.Push(res);
@@ -3988,7 +3988,7 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name), "<=");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.smeq_name), "<=");
                 }
             }
             eval_stack.Push(res);
@@ -4271,7 +4271,7 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name), ">");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.gr_name), ">");
                 }
             }
             eval_stack.Push(res);
@@ -4554,7 +4554,7 @@ namespace VisualPascalABC
                 }
                 else
                 {
-                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name), ">=");
+                    res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.greq_name), ">=");
                 }
             }
             eval_stack.Push(res);
@@ -4744,7 +4744,7 @@ namespace VisualPascalABC
                     left.obj_val = DebugUtils.MakeValue(left.prim_val);
                 if (right.obj_val == null && right.prim_val != null)
                     right.obj_val = DebugUtils.MakeValue(right.prim_val);
-                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name), "mod");
+                res.monoValue = EvalCommonOperation(left.monoValue, right.monoValue, PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.mod_name), "mod");
             }
         }
 
@@ -4905,7 +4905,7 @@ namespace VisualPascalABC
             }
             else
             {
-                string op = PascalABCCompiler.TreeConverter.compiler_string_consts.GetNETOperName(PascalABCCompiler.TreeConverter.compiler_string_consts.not_name);
+                string op = PascalABCCompiler.StringConstants.GetNETOperName(PascalABCCompiler.StringConstants.not_name);
                 {
                     IList<MemberInfo> mems = left.obj_val.Type.GetMember(op, Debugger.BindingFlags.All);
                     if (mems != null && mems.Count == 1 && mems[0] is MethodInfo)

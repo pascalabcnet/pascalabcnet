@@ -433,7 +433,7 @@ namespace VisualPascalABC
             timer.Interval = 2000;
             timer.Tick += TimerTicked;*/
             //timer.Start();
-            WorkbenchServiceFactory.CodeCompletionParserController.RunParseThread();
+            WorkbenchServiceFactory.CodeCompletionParserController.SwitchOnIntellisence();
             /*this.tsGotoRealization = new System.Windows.Forms.ToolStripMenuItem();
             this.tsGotoRealization.Enabled = false;
             //this.tsGotoRealization.Image = ((System.Drawing.Image)(resources.GetObject("tsGotoDefinition.Image")));

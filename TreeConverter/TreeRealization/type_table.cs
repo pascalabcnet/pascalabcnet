@@ -957,7 +957,7 @@ namespace PascalABCCompiler.TreeRealization
                 null_const_node ncn = new null_const_node(_to, call_location);
                 null_const_node ncn2 = new null_const_node(_to, call_location);
 
-                PascalABCCompiler.TreeConverter.SymbolInfo si = pr.type.find_first_in_type(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name);
+                PascalABCCompiler.TreeConverter.SymbolInfo si = pr.type.find_first_in_type(StringConstants.eq_name);
 
                 basic_function_node fn = si.sym_info as basic_function_node;
                 expression_node condition = null;

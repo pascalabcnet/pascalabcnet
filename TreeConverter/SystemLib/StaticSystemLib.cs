@@ -514,7 +514,7 @@ namespace PascalABCCompiler.SystemLibrary
             SemanticTree.basic_function_type bft,type_node ret_val_type)
         {
             basic_function_node bfn = new basic_function_node(bft, ret_val_type, true);
-            basic_parameter bpar = new basic_parameter(compiler_string_consts.unary_param_name, param_type,
+            basic_parameter bpar = new basic_parameter(StringConstants.unary_param_name, param_type,
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(bpar);
             add_stand_type(bft, bfn);
@@ -526,9 +526,9 @@ namespace PascalABCCompiler.SystemLibrary
             SemanticTree.basic_function_type bft,type_node ret_value_type)
         {
             basic_function_node bfn = new basic_function_node(bft, ret_value_type,true,operator_name);
-            basic_parameter par_left = new basic_parameter(compiler_string_consts.left_param_name, left,
+            basic_parameter par_left = new basic_parameter(StringConstants.left_param_name, left,
                 SemanticTree.parameter_type.value, bfn);
-            basic_parameter par_right = new basic_parameter(compiler_string_consts.right_param_name, right,
+            basic_parameter par_right = new basic_parameter(StringConstants.right_param_name, right,
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(par_left);
             bfn.parameters.AddElement(par_right);
@@ -541,7 +541,7 @@ namespace PascalABCCompiler.SystemLibrary
             SemanticTree.basic_function_type bft, type_node ret_value_type)
         {
             basic_function_node bfn = new basic_function_node(bft, ret_value_type,true, operator_name);
-            basic_parameter par = new basic_parameter(compiler_string_consts.unary_param_name, to,
+            basic_parameter par = new basic_parameter(StringConstants.unary_param_name, to,
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(par);
             to.add_name(operator_name, new SymbolInfo(bfn));
@@ -588,7 +588,7 @@ namespace PascalABCCompiler.SystemLibrary
             SemanticTree.basic_function_type bft, bool is_implicit)
         {
             basic_function_node conv_method = new basic_function_node(bft, to,false);
-            basic_parameter bp = new basic_parameter(compiler_string_consts.unary_param_name,
+            basic_parameter bp = new basic_parameter(StringConstants.unary_param_name,
                 from, SemanticTree.parameter_type.value, conv_method);
             conv_method.parameters.AddElement(bp);
 
@@ -603,7 +603,7 @@ namespace PascalABCCompiler.SystemLibrary
             SemanticTree.basic_function_type bft, bool is_implicit)
         {
             basic_function_node conv_method = new basic_function_node(bft, to, false);
-            basic_parameter bp = new basic_parameter(compiler_string_consts.unary_param_name,
+            basic_parameter bp = new basic_parameter(StringConstants.unary_param_name,
                 from, SemanticTree.parameter_type.value, conv_method);
             conv_method.parameters.AddElement(bp);
             type_table.add_generated_type_conversion_from_defined(from, to, conv_method, tc, is_implicit);
@@ -622,7 +622,7 @@ namespace PascalABCCompiler.SystemLibrary
         private static basic_function_node create_oti_method(SemanticTree.basic_function_type bft, type_node type)
         {
             basic_function_node bfn = new basic_function_node(bft, type,true);
-            basic_parameter cp = new basic_parameter(compiler_string_consts.unary_param_name, type,
+            basic_parameter cp = new basic_parameter(StringConstants.unary_param_name, type,
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(cp);
 			add_stand_type(bft, bfn);
@@ -632,7 +632,7 @@ namespace PascalABCCompiler.SystemLibrary
         private static basic_function_node create_oti_method(SemanticTree.basic_function_type bft, type_node type, SemanticTree.parameter_type pt)
         {
             basic_function_node bfn = new basic_function_node(bft, type, true);
-            basic_parameter cp = new basic_parameter(compiler_string_consts.unary_param_name, type,
+            basic_parameter cp = new basic_parameter(StringConstants.unary_param_name, type,
                 pt, bfn);
             bfn.parameters.AddElement(cp);
             //TODO: Важен порядок вызовов.
@@ -924,7 +924,7 @@ namespace PascalABCCompiler.SystemLibrary
         private static basic_function_node create_emty_function(type_node ret_type, string name)
         {
             basic_function_node bfn = new basic_function_node(SemanticTree.basic_function_type.none, ret_type, true, name);
-            basic_parameter par = new basic_parameter(compiler_string_consts.unary_param_name, ret_type,
+            basic_parameter par = new basic_parameter(StringConstants.unary_param_name, ret_type,
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(par);
             bfn.compile_time_executor = delegated_empty_method;
@@ -940,10 +940,10 @@ namespace PascalABCCompiler.SystemLibrary
             basic_function_node inc_method = create_inc_method(SemanticTree.basic_function_type.binc, _byte_type);
             basic_function_node dec_method = create_dec_method(SemanticTree.basic_function_type.bdec, _byte_type);
 
-            SymbolInfo si = _byte_type.find_in_type(compiler_string_consts.greq_name);
+            SymbolInfo si = _byte_type.find_in_type(StringConstants.greq_name);
             basic_function_node greq = (basic_function_node)si.sym_info;
 
-            si = _byte_type.find(compiler_string_consts.smeq_name);
+            si = _byte_type.find(StringConstants.smeq_name);
             basic_function_node loeq = (basic_function_node)si.sym_info;
 
             constant_node cn_max = new byte_const_node(byte.MaxValue, null);
@@ -971,17 +971,17 @@ namespace PascalABCCompiler.SystemLibrary
             basic_function_node inc_var = create_oti_method(vinc, type, SemanticTree.parameter_type.var);
             basic_function_node dec_var = create_oti_method(vdec, type, SemanticTree.parameter_type.var);
 
-            SymbolInfo si = type.find_first_in_type(compiler_string_consts.greq_name);
+            SymbolInfo si = type.find_first_in_type(StringConstants.greq_name);
             basic_function_node greq = (basic_function_node)si.sym_info;
         
-            si = type.find(compiler_string_consts.smeq_name).FirstOrDefault();
+            si = type.find(StringConstants.smeq_name).FirstOrDefault();
             basic_function_node loeq = (basic_function_node)si.sym_info;
             
 			
-            si = type.find(compiler_string_consts.sm_name).FirstOrDefault();
+            si = type.find(StringConstants.sm_name).FirstOrDefault();
             basic_function_node lo = (basic_function_node)si.sym_info;
             
-            si = type.find(compiler_string_consts.gr_name).FirstOrDefault();
+            si = type.find(StringConstants.gr_name).FirstOrDefault();
             basic_function_node gr = (basic_function_node)si.sym_info;
 
             ordinal_type_interface oti = new ordinal_type_interface(inc_value, dec_value, inc_var, dec_var,
@@ -1034,10 +1034,10 @@ namespace PascalABCCompiler.SystemLibrary
             //basic_function_node inc_method = create_oti_method(SemanticTree.basic_function_type.iinc, _integer_type);
             //basic_function_node dec_method = create_oti_method(SemanticTree.basic_function_type.idec, _integer_type);
 
-            SymbolInfo si = _integer_type.find_in_type(compiler_string_consts.greq_name);
+            SymbolInfo si = _integer_type.find_in_type(StringConstants.greq_name);
             basic_function_node greq = (basic_function_node)si.sym_info;
 
-            si = _integer_type.find(compiler_string_consts.smeq_name);
+            si = _integer_type.find(StringConstants.smeq_name);
             basic_function_node loeq = (basic_function_node)si.sym_info;
 
             //DarkStar Changed MinValue->MaxValue
@@ -1095,17 +1095,17 @@ namespace PascalABCCompiler.SystemLibrary
             basic_function_node inc_method = create_inc_method(SemanticTree.basic_function_type.iinc, _integer_type);
             basic_function_node dec_method = create_dec_method(SemanticTree.basic_function_type.iinc, _integer_type);
 
-            SymbolInfo si = _char_type.find(compiler_string_consts.greq_name);
+            SymbolInfo si = _char_type.find(StringConstants.greq_name);
             basic_function_node greq = (basic_function_node)si.sym_info;
 
-            si = _char_type.find(compiler_string_consts.smeq_name);
+            si = _char_type.find(StringConstants.smeq_name);
             basic_function_node loeq = (basic_function_node)si.sym_info;
 
             constant_node cn_max = new char_const_node(char.MaxValue,null);
             constant_node cn_min = new char_const_node(char.MinValue,null);
 
             basic_function_node c2i_method = new basic_function_node(SemanticTree.basic_function_type.chartoi, _integer_type,true);
-            basic_parameter cp = new basic_parameter(compiler_string_consts.unary_param_name, _char_type,
+            basic_parameter cp = new basic_parameter(StringConstants.unary_param_name, _char_type,
                 SemanticTree.parameter_type.value, c2i_method);
             //TODO: Сделано очень плохо.
             add_stand_type(SemanticTree.basic_function_type.chartoi, c2i_method);
@@ -1150,28 +1150,28 @@ namespace PascalABCCompiler.SystemLibrary
             Decimal     signed      128
              */
             _byte_type = compiled_type_node.get_type_node(typeof(byte), symtab);
-            _byte_type.SetName(compiler_string_consts.byte_type_name);
+            _byte_type.SetName(StringConstants.byte_type_name);
 
             _sbyte_type = compiled_type_node.get_type_node(typeof(sbyte), symtab);
-            _sbyte_type.SetName(compiler_string_consts.sbyte_type_name);
+            _sbyte_type.SetName(StringConstants.sbyte_type_name);
 
             _short_type = compiled_type_node.get_type_node(typeof(short), symtab);
-            _short_type.SetName(compiler_string_consts.short_type_name);
+            _short_type.SetName(StringConstants.short_type_name);
 
             _ushort_type = compiled_type_node.get_type_node(typeof(ushort), symtab);
-            _ushort_type.SetName(compiler_string_consts.ushort_type_name);
+            _ushort_type.SetName(StringConstants.ushort_type_name);
 
             _integer_type = compiled_type_node.get_type_node(typeof(int), symtab);
-            _integer_type.SetName(compiler_string_consts.integer_type_name);
+            _integer_type.SetName(StringConstants.integer_type_name);
 
             _uint_type = compiled_type_node.get_type_node(typeof(uint), symtab);
-            _uint_type.SetName(compiler_string_consts.uint_type_name);
+            _uint_type.SetName(StringConstants.uint_type_name);
 
             _int64_type = compiled_type_node.get_type_node(typeof(long), symtab);
-            _int64_type.SetName(compiler_string_consts.long_type_name);
+            _int64_type.SetName(StringConstants.long_type_name);
 
             _uint64_type = compiled_type_node.get_type_node(typeof(ulong), symtab);
-            _uint64_type.SetName(compiler_string_consts.ulong_type_name);
+            _uint64_type.SetName(StringConstants.ulong_type_name);
 
             _icloneable_interface = compiled_type_node.get_type_node(typeof(ICloneable), symtab);
             _ilist_interface = compiled_type_node.get_type_node(typeof(IList), symtab);
@@ -1185,41 +1185,41 @@ namespace PascalABCCompiler.SystemLibrary
             _ienumerable1_interface = compiled_type_node.get_type_node(typeof(IEnumerable<>));
             _assert_method = compiled_function_node.get_compiled_method(typeof(System.Diagnostics.Debug).GetMethod("Assert",new Type[1]{typeof(bool)}));
             _decimal_type = compiled_type_node.get_type_node(typeof(decimal), symtab);
-            //_decimal_type.SetName(compiler_string_consts.decimal_type_name);
+            //_decimal_type.SetName(StringConstants.decimal_type_name);
             make_assign_operator(_decimal_type, SemanticTree.basic_function_type.objassign);
 
             _bool_type = compiled_type_node.get_type_node(typeof(bool), symtab);
-            _bool_type.SetName(compiler_string_consts.bool_type_name);
+            _bool_type.SetName(StringConstants.bool_type_name);
 
             _double_type = compiled_type_node.get_type_node(typeof(double), symtab);
-            _double_type.SetName(compiler_string_consts.real_type_name);
+            _double_type.SetName(StringConstants.real_type_name);
 
             _float_type = compiled_type_node.get_type_node(typeof(float), symtab);
-            _float_type.SetName(compiler_string_consts.float_type_name);
+            _float_type.SetName(StringConstants.float_type_name);
 
             _char_type = compiled_type_node.get_type_node(typeof(char), symtab);
-            _char_type.SetName(compiler_string_consts.char_type_name);
+            _char_type.SetName(StringConstants.char_type_name);
 
             _string_type = compiled_type_node.get_type_node(typeof(string), symtab);
-            _string_type.SetName(compiler_string_consts.string_type_name);
+            _string_type.SetName(StringConstants.string_type_name);
 
             _pointer_type = compiled_type_node.get_type_node(NetHelper.NetHelper.void_ptr_type, symtab);
-            _pointer_type.SetName(compiler_string_consts.pointer_type_name);
+            _pointer_type.SetName(StringConstants.pointer_type_name);
 
             _object_type = compiled_type_node.get_type_node(typeof(object), symtab);
-            _object_type.SetName(compiler_string_consts.object_type_name);
+            _object_type.SetName(StringConstants.object_type_name);
 
             _complex_type = compiled_type_node.get_type_node(typeof(System.Numerics.Complex), symtab);
             _complex_type_constructor = compiled_constructor_node.get_compiled_constructor(_complex_type.compiled_type.GetConstructor(new Type[] { typeof(double), typeof(double)}));
             _enum_base_type = compiled_type_node.get_type_node(typeof(System.Enum), symtab);
 
             _delegate_base_type = compiled_type_node.get_type_node(typeof(System.MulticastDelegate), symtab);
-            _delegate_base_type.SetName(compiler_string_consts.base_delegate_type_name);
+            _delegate_base_type.SetName(StringConstants.base_delegate_type_name);
 
             _system_delegate_type = compiled_type_node.get_type_node(typeof(System.Delegate), symtab);
 
             _array_base_type = compiled_type_node.get_type_node(typeof(System.Array), symtab);
-            _array_base_type.SetName(compiler_string_consts.base_array_type_name);
+            _array_base_type.SetName(StringConstants.base_array_type_name);
 
             _void_type = compiled_type_node.get_type_node(typeof(void), symtab);
 
@@ -1230,24 +1230,24 @@ namespace PascalABCCompiler.SystemLibrary
             arr_params[0]=delegate_type;
             arr_params[1]=delegate_type;
             _delegate_combine_method =
-            compiled_function_node.get_compiled_method(delegate_type.GetMethod(compiler_string_consts.combine_method_name, arr_params));
+            compiled_function_node.get_compiled_method(delegate_type.GetMethod(StringConstants.combine_method_name, arr_params));
 
             _delegate_remove_method =
-            compiled_function_node.get_compiled_method(delegate_type.GetMethod(compiler_string_consts.remove_method_name, arr_params));
+            compiled_function_node.get_compiled_method(delegate_type.GetMethod(StringConstants.remove_method_name, arr_params));
 
             _object_equals_method =
-                compiled_function_node.get_compiled_method(typeof(object).GetMethod(compiler_string_consts.object_equals_name, new Type[2] { typeof(object), typeof(object) }));
+                compiled_function_node.get_compiled_method(typeof(object).GetMethod(StringConstants.object_equals_name, new Type[2] { typeof(object), typeof(object) }));
 
             //Это для прикола. Убрать!
-            //make_common_binary_operation(compiler_string_consts.plus_name, _integer_type, _integer_type, _byte_type, SemanticTree.basic_function_type.badd, _byte_type);
+            //make_common_binary_operation(StringConstants.plus_name, _integer_type, _integer_type, _byte_type, SemanticTree.basic_function_type.badd, _byte_type);
 
 
             //Это нормально? (чтобы работало i:=+15;)
             /*
-            make_unary_operator(compiler_string_consts.plus_name, _byte_type, SemanticTree.basic_function_type.none);
-            make_unary_operator(compiler_string_consts.plus_name, _integer_type, SemanticTree.basic_function_type.none);
-            make_unary_operator(compiler_string_consts.plus_name, _long_type, SemanticTree.basic_function_type.none);
-            make_unary_operator(compiler_string_consts.plus_name, _real_type, SemanticTree.basic_function_type.none);
+            make_unary_operator(StringConstants.plus_name, _byte_type, SemanticTree.basic_function_type.none);
+            make_unary_operator(StringConstants.plus_name, _integer_type, SemanticTree.basic_function_type.none);
+            make_unary_operator(StringConstants.plus_name, _long_type, SemanticTree.basic_function_type.none);
+            make_unary_operator(StringConstants.plus_name, _real_type, SemanticTree.basic_function_type.none);
             */            
             
             //integer type
@@ -1266,33 +1266,33 @@ namespace PascalABCCompiler.SystemLibrary
             //Присваивание для integer.
             _int_assign=make_assign_operator(_integer_type, SemanticTree.basic_function_type.iassign);
             //Унарные операции.
-            _int_unmin=make_unary_operator(compiler_string_consts.minus_name, _integer_type, SemanticTree.basic_function_type.iunmin);
-            _int_not = make_unary_operator(compiler_string_consts.not_name, _integer_type, SemanticTree.basic_function_type.inot);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _integer_type, _integer_type);
+            _int_unmin=make_unary_operator(StringConstants.minus_name, _integer_type, SemanticTree.basic_function_type.iunmin);
+            _int_not = make_unary_operator(StringConstants.not_name, _integer_type, SemanticTree.basic_function_type.inot);
+            make_unary_empty_operator(StringConstants.plus_name, _integer_type, _integer_type);
             //Арифметические операции.
-            _int_add = make_binary_operator(compiler_string_consts.plus_name, _integer_type, SemanticTree.basic_function_type.iadd);            
-            _int_sub = make_binary_operator(compiler_string_consts.minus_name, _integer_type, SemanticTree.basic_function_type.isub);
-            _int_mul=make_binary_operator(compiler_string_consts.mul_name, _integer_type, SemanticTree.basic_function_type.imul);
-            _int_idiv=make_binary_operator(compiler_string_consts.idiv_name, _integer_type, SemanticTree.basic_function_type.idiv);
-            _int_mod=make_binary_operator(compiler_string_consts.mod_name, _integer_type, SemanticTree.basic_function_type.imod);
+            _int_add = make_binary_operator(StringConstants.plus_name, _integer_type, SemanticTree.basic_function_type.iadd);            
+            _int_sub = make_binary_operator(StringConstants.minus_name, _integer_type, SemanticTree.basic_function_type.isub);
+            _int_mul=make_binary_operator(StringConstants.mul_name, _integer_type, SemanticTree.basic_function_type.imul);
+            _int_idiv=make_binary_operator(StringConstants.idiv_name, _integer_type, SemanticTree.basic_function_type.idiv);
+            _int_mod=make_binary_operator(StringConstants.mod_name, _integer_type, SemanticTree.basic_function_type.imod);
             //Операция / для integer.
-            _int_div = make_common_binary_operation(compiler_string_consts.div_name, _integer_type, _double_type, _double_type,
+            _int_div = make_common_binary_operation(StringConstants.div_name, _integer_type, _double_type, _double_type,
                 SemanticTree.basic_function_type.ddiv, _double_type);
-            //_int_div = make_common_binary_operation(compiler_string_consts.div_name, _integer_type, _integer_type, _integer_type,
+            //_int_div = make_common_binary_operation(StringConstants.div_name, _integer_type, _integer_type, _integer_type,
             //    SemanticTree.basic_function_type.ddiv, _real_type);
             //Опрерации сравнения.
-            _int_gr=make_binary_operator(compiler_string_consts.gr_name, _integer_type, SemanticTree.basic_function_type.igr, _bool_type);
-            _int_greq=make_binary_operator(compiler_string_consts.greq_name, _integer_type, SemanticTree.basic_function_type.igreq, _bool_type);
-            _int_sm=make_binary_operator(compiler_string_consts.sm_name, _integer_type, SemanticTree.basic_function_type.ism, _bool_type);
-            _int_smeq=make_binary_operator(compiler_string_consts.smeq_name, _integer_type, SemanticTree.basic_function_type.ismeq, _bool_type);
-            _int_eq=make_binary_operator(compiler_string_consts.eq_name, _integer_type, SemanticTree.basic_function_type.ieq, _bool_type);
-            _int_noteq=make_binary_operator(compiler_string_consts.noteq_name, _integer_type, SemanticTree.basic_function_type.inoteq, _bool_type);
+            _int_gr=make_binary_operator(StringConstants.gr_name, _integer_type, SemanticTree.basic_function_type.igr, _bool_type);
+            _int_greq=make_binary_operator(StringConstants.greq_name, _integer_type, SemanticTree.basic_function_type.igreq, _bool_type);
+            _int_sm=make_binary_operator(StringConstants.sm_name, _integer_type, SemanticTree.basic_function_type.ism, _bool_type);
+            _int_smeq=make_binary_operator(StringConstants.smeq_name, _integer_type, SemanticTree.basic_function_type.ismeq, _bool_type);
+            _int_eq=make_binary_operator(StringConstants.eq_name, _integer_type, SemanticTree.basic_function_type.ieq, _bool_type);
+            _int_noteq=make_binary_operator(StringConstants.noteq_name, _integer_type, SemanticTree.basic_function_type.inoteq, _bool_type);
             //Логические опреции.
-            _int_and=make_binary_operator(compiler_string_consts.and_name, _integer_type, SemanticTree.basic_function_type.iand);
-            _int_or=make_binary_operator(compiler_string_consts.or_name, _integer_type, SemanticTree.basic_function_type.ior);
-            _int_xor=make_binary_operator(compiler_string_consts.xor_name, _integer_type, SemanticTree.basic_function_type.ixor);
-            _int_shl=make_binary_operator(compiler_string_consts.shl_name, _integer_type, SemanticTree.basic_function_type.ishl);
-            _int_shr=make_binary_operator(compiler_string_consts.shr_name, _integer_type, SemanticTree.basic_function_type.ishr);
+            _int_and=make_binary_operator(StringConstants.and_name, _integer_type, SemanticTree.basic_function_type.iand);
+            _int_or=make_binary_operator(StringConstants.or_name, _integer_type, SemanticTree.basic_function_type.ior);
+            _int_xor=make_binary_operator(StringConstants.xor_name, _integer_type, SemanticTree.basic_function_type.ixor);
+            _int_shl=make_binary_operator(StringConstants.shl_name, _integer_type, SemanticTree.basic_function_type.ishl);
+            _int_shr=make_binary_operator(StringConstants.shr_name, _integer_type, SemanticTree.basic_function_type.ishr);
 
 
             //byte type.
@@ -1310,59 +1310,59 @@ namespace PascalABCCompiler.SystemLibrary
             _byte_to_float = make_type_conversion(_byte_type, _float_type, type_compare.less_type, SemanticTree.basic_function_type.btof);
             _byte_to_double = make_type_conversion(_byte_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.btod);
             //Унарные операции.
-            _byte_unmin = make_unary_operator(compiler_string_consts.minus_name, _byte_type, SemanticTree.basic_function_type.bunmin, _integer_type);
-            _byte_not = make_unary_operator(compiler_string_consts.not_name, _byte_type, SemanticTree.basic_function_type.bnot);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _byte_type, _byte_type);
+            _byte_unmin = make_unary_operator(StringConstants.minus_name, _byte_type, SemanticTree.basic_function_type.bunmin, _integer_type);
+            _byte_not = make_unary_operator(StringConstants.not_name, _byte_type, SemanticTree.basic_function_type.bnot);
+            make_unary_empty_operator(StringConstants.plus_name, _byte_type, _byte_type);
             //Опрерации сравнения.
             /*
-            _byte_gr = make_binary_operator(compiler_string_consts.gr_name, _byte_type, SemanticTree.basic_function_type.bgr, _bool_type);
-            _byte_greq = make_binary_operator(compiler_string_consts.greq_name, _byte_type, SemanticTree.basic_function_type.bgreq, _bool_type);
-            _byte_sm = make_binary_operator(compiler_string_consts.sm_name, _byte_type, SemanticTree.basic_function_type.bsm, _bool_type);
-            _byte_smeq = make_binary_operator(compiler_string_consts.smeq_name, _byte_type, SemanticTree.basic_function_type.bsmeq, _bool_type);
-            _byte_eq = make_binary_operator(compiler_string_consts.eq_name, _byte_type, SemanticTree.basic_function_type.beq, _bool_type);
-            _byte_noteq = make_binary_operator(compiler_string_consts.noteq_name, _byte_type, SemanticTree.basic_function_type.bnoteq, _bool_type);
+            _byte_gr = make_binary_operator(StringConstants.gr_name, _byte_type, SemanticTree.basic_function_type.bgr, _bool_type);
+            _byte_greq = make_binary_operator(StringConstants.greq_name, _byte_type, SemanticTree.basic_function_type.bgreq, _bool_type);
+            _byte_sm = make_binary_operator(StringConstants.sm_name, _byte_type, SemanticTree.basic_function_type.bsm, _bool_type);
+            _byte_smeq = make_binary_operator(StringConstants.smeq_name, _byte_type, SemanticTree.basic_function_type.bsmeq, _bool_type);
+            _byte_eq = make_binary_operator(StringConstants.eq_name, _byte_type, SemanticTree.basic_function_type.beq, _bool_type);
+            _byte_noteq = make_binary_operator(StringConstants.noteq_name, _byte_type, SemanticTree.basic_function_type.bnoteq, _bool_type);
              */
 
-            add_function_to_type(compiler_string_consts.not_name, _byte_type, _int_unmin);
+            add_function_to_type(StringConstants.not_name, _byte_type, _int_unmin);
 
-            add_function_to_type(compiler_string_consts.gr_name, _byte_type, _int_gr);
-            add_function_to_type(compiler_string_consts.greq_name, _byte_type, _int_greq);
-            add_function_to_type(compiler_string_consts.sm_name, _byte_type, _int_sm);
-            add_function_to_type(compiler_string_consts.smeq_name, _byte_type, _int_smeq);
-            add_function_to_type(compiler_string_consts.eq_name, _byte_type, _int_eq);
-            add_function_to_type(compiler_string_consts.noteq_name, _byte_type, _int_noteq);
+            add_function_to_type(StringConstants.gr_name, _byte_type, _int_gr);
+            add_function_to_type(StringConstants.greq_name, _byte_type, _int_greq);
+            add_function_to_type(StringConstants.sm_name, _byte_type, _int_sm);
+            add_function_to_type(StringConstants.smeq_name, _byte_type, _int_smeq);
+            add_function_to_type(StringConstants.eq_name, _byte_type, _int_eq);
+            add_function_to_type(StringConstants.noteq_name, _byte_type, _int_noteq);
 
-            add_function_to_type(compiler_string_consts.plus_name, _byte_type, _int_add);
-            add_function_to_type(compiler_string_consts.minus_name, _byte_type, _int_sub);
-            add_function_to_type(compiler_string_consts.mul_name, _byte_type, _int_mul);
-            add_function_to_type(compiler_string_consts.div_name, _byte_type, _int_div);
-			add_function_to_type(compiler_string_consts.idiv_name, _byte_type, _int_idiv);
-			add_function_to_type(compiler_string_consts.mod_name, _byte_type, _int_mod);
+            add_function_to_type(StringConstants.plus_name, _byte_type, _int_add);
+            add_function_to_type(StringConstants.minus_name, _byte_type, _int_sub);
+            add_function_to_type(StringConstants.mul_name, _byte_type, _int_mul);
+            add_function_to_type(StringConstants.div_name, _byte_type, _int_div);
+			add_function_to_type(StringConstants.idiv_name, _byte_type, _int_idiv);
+			add_function_to_type(StringConstants.mod_name, _byte_type, _int_mod);
 			
-            /*add_funtion_to_type(compiler_string_consts.and_name, _byte_type, _int_and);
-            add_funtion_to_type(compiler_string_consts.or_name, _byte_type, _int_or);
-            add_funtion_to_type(compiler_string_consts.xor_name, _byte_type, _int_xor);*/
+            /*add_funtion_to_type(StringConstants.and_name, _byte_type, _int_and);
+            add_funtion_to_type(StringConstants.or_name, _byte_type, _int_or);
+            add_funtion_to_type(StringConstants.xor_name, _byte_type, _int_xor);*/
             //Арифметические операции.
-            //_byte_add = make_common_binary_operation(compiler_string_consts.plus_name, _byte_type, _byte_type,_byte_type, SemanticTree.basic_function_type.badd, _integer_type);
+            //_byte_add = make_common_binary_operation(StringConstants.plus_name, _byte_type, _byte_type,_byte_type, SemanticTree.basic_function_type.badd, _integer_type);
             /*
-            _byte_sub = make_common_binary_operation(compiler_string_consts.minus_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bsub, _integer_type);
-            _byte_mul = make_common_binary_operation(compiler_string_consts.mul_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bmul, _integer_type);
-            _byte_idiv = make_common_binary_operation(compiler_string_consts.idiv_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bdiv, _integer_type);
-            _byte_mod = make_common_binary_operation(compiler_string_consts.mod_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bmod, _integer_type);
+            _byte_sub = make_common_binary_operation(StringConstants.minus_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bsub, _integer_type);
+            _byte_mul = make_common_binary_operation(StringConstants.mul_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bmul, _integer_type);
+            _byte_idiv = make_common_binary_operation(StringConstants.idiv_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bdiv, _integer_type);
+            _byte_mod = make_common_binary_operation(StringConstants.mod_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bmod, _integer_type);
             */
             //Операция / для byte.
-            _byte_div = make_common_binary_operation(compiler_string_consts.div_name, _byte_type, _double_type, _double_type,
+            _byte_div = make_common_binary_operation(StringConstants.div_name, _byte_type, _double_type, _double_type,
                 SemanticTree.basic_function_type.ddiv, _double_type);
             //Логические опреции.
             
-            _byte_and = make_common_binary_operation(compiler_string_consts.and_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.band, _byte_type);
-            _byte_or = make_common_binary_operation(compiler_string_consts.or_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bor, _byte_type);
-            _byte_xor = make_common_binary_operation(compiler_string_consts.xor_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bxor, _byte_type);
+            _byte_and = make_common_binary_operation(StringConstants.and_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.band, _byte_type);
+            _byte_or = make_common_binary_operation(StringConstants.or_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bor, _byte_type);
+            _byte_xor = make_common_binary_operation(StringConstants.xor_name, _byte_type, _byte_type, _byte_type, SemanticTree.basic_function_type.bxor, _byte_type);
             
-            add_function_to_type(compiler_string_consts.shl_name, _byte_type, _int_shl);
-            add_function_to_type(compiler_string_consts.shr_name, _byte_type, _int_shr);
-            //_byte_shl = make_binary_operator(compiler_string_consts.shl_name, _byte_type, SemanticTree.basic_function_type.bshl);
-            //_byte_shr = make_binary_operator(compiler_string_consts.shr_name, _byte_type, SemanticTree.basic_function_type.bshr);
+            add_function_to_type(StringConstants.shl_name, _byte_type, _int_shl);
+            add_function_to_type(StringConstants.shr_name, _byte_type, _int_shr);
+            //_byte_shl = make_binary_operator(StringConstants.shl_name, _byte_type, SemanticTree.basic_function_type.bshl);
+            //_byte_shr = make_binary_operator(StringConstants.shr_name, _byte_type, SemanticTree.basic_function_type.bshr);
 
             //sbyte type.
             //Assign.
@@ -1379,37 +1379,37 @@ namespace PascalABCCompiler.SystemLibrary
             _sbyte_to_float = make_type_conversion(_sbyte_type, _float_type, type_compare.less_type, SemanticTree.basic_function_type.sbtof);
             _sbyte_to_double = make_type_conversion(_sbyte_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.sbtod);
             //Унарные операции.
-            _sbyte_unmin = make_unary_operator(compiler_string_consts.minus_name, _sbyte_type, SemanticTree.basic_function_type.sbunmin, _integer_type);
-            _sbyte_not = make_unary_operator(compiler_string_consts.not_name, _sbyte_type, SemanticTree.basic_function_type.sbnot);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _sbyte_type, _sbyte_type);
+            _sbyte_unmin = make_unary_operator(StringConstants.minus_name, _sbyte_type, SemanticTree.basic_function_type.sbunmin, _integer_type);
+            _sbyte_not = make_unary_operator(StringConstants.not_name, _sbyte_type, SemanticTree.basic_function_type.sbnot);
+            make_unary_empty_operator(StringConstants.plus_name, _sbyte_type, _sbyte_type);
 
-            add_function_to_type(compiler_string_consts.not_name, _sbyte_type, _int_unmin);
+            add_function_to_type(StringConstants.not_name, _sbyte_type, _int_unmin);
 
-            add_function_to_type(compiler_string_consts.gr_name, _sbyte_type, _int_gr);
-            add_function_to_type(compiler_string_consts.greq_name, _sbyte_type, _int_greq);
-            add_function_to_type(compiler_string_consts.sm_name, _sbyte_type, _int_sm);
-            add_function_to_type(compiler_string_consts.smeq_name, _sbyte_type, _int_smeq);
-            add_function_to_type(compiler_string_consts.eq_name, _sbyte_type, _int_eq);
-            add_function_to_type(compiler_string_consts.noteq_name, _sbyte_type, _int_noteq);
+            add_function_to_type(StringConstants.gr_name, _sbyte_type, _int_gr);
+            add_function_to_type(StringConstants.greq_name, _sbyte_type, _int_greq);
+            add_function_to_type(StringConstants.sm_name, _sbyte_type, _int_sm);
+            add_function_to_type(StringConstants.smeq_name, _sbyte_type, _int_smeq);
+            add_function_to_type(StringConstants.eq_name, _sbyte_type, _int_eq);
+            add_function_to_type(StringConstants.noteq_name, _sbyte_type, _int_noteq);
 
-            add_function_to_type(compiler_string_consts.plus_name, _sbyte_type, _int_add);
-            add_function_to_type(compiler_string_consts.minus_name, _sbyte_type, _int_sub);
-            add_function_to_type(compiler_string_consts.mul_name, _sbyte_type, _int_mul);
-            add_function_to_type(compiler_string_consts.div_name, _sbyte_type, _int_div);
-			add_function_to_type(compiler_string_consts.idiv_name, _sbyte_type, _int_idiv);
-			add_function_to_type(compiler_string_consts.mod_name, _sbyte_type, _int_mod);
+            add_function_to_type(StringConstants.plus_name, _sbyte_type, _int_add);
+            add_function_to_type(StringConstants.minus_name, _sbyte_type, _int_sub);
+            add_function_to_type(StringConstants.mul_name, _sbyte_type, _int_mul);
+            add_function_to_type(StringConstants.div_name, _sbyte_type, _int_div);
+			add_function_to_type(StringConstants.idiv_name, _sbyte_type, _int_idiv);
+			add_function_to_type(StringConstants.mod_name, _sbyte_type, _int_mod);
 			
             //Операция / для byte.
-            _sbyte_div = make_common_binary_operation(compiler_string_consts.div_name, _sbyte_type, _double_type, _double_type,
+            _sbyte_div = make_common_binary_operation(StringConstants.div_name, _sbyte_type, _double_type, _double_type,
                 SemanticTree.basic_function_type.ddiv, _double_type);
             //Логические опреции.
             
-            _sbyte_and = make_common_binary_operation(compiler_string_consts.and_name, _sbyte_type, _sbyte_type, _sbyte_type, SemanticTree.basic_function_type.sband, _sbyte_type);
-            _sbyte_or = make_common_binary_operation(compiler_string_consts.or_name, _sbyte_type, _sbyte_type, _sbyte_type, SemanticTree.basic_function_type.sbor, _sbyte_type);
-            _sbyte_xor = make_common_binary_operation(compiler_string_consts.xor_name, _sbyte_type,_sbyte_type, _sbyte_type, SemanticTree.basic_function_type.sbxor, _sbyte_type);
+            _sbyte_and = make_common_binary_operation(StringConstants.and_name, _sbyte_type, _sbyte_type, _sbyte_type, SemanticTree.basic_function_type.sband, _sbyte_type);
+            _sbyte_or = make_common_binary_operation(StringConstants.or_name, _sbyte_type, _sbyte_type, _sbyte_type, SemanticTree.basic_function_type.sbor, _sbyte_type);
+            _sbyte_xor = make_common_binary_operation(StringConstants.xor_name, _sbyte_type,_sbyte_type, _sbyte_type, SemanticTree.basic_function_type.sbxor, _sbyte_type);
             
-            add_function_to_type(compiler_string_consts.shl_name, _sbyte_type, _int_shl);
-            add_function_to_type(compiler_string_consts.shr_name, _sbyte_type, _int_shr);
+            add_function_to_type(StringConstants.shl_name, _sbyte_type, _int_shl);
+            add_function_to_type(StringConstants.shr_name, _sbyte_type, _int_shr);
 
             	    //short type.
             //Assign.
@@ -1426,41 +1426,41 @@ namespace PascalABCCompiler.SystemLibrary
             _short_to_float = make_type_conversion(_short_type, _float_type, type_compare.less_type, SemanticTree.basic_function_type.stof);
             _short_to_double = make_type_conversion(_short_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.stod);
             //Унарные операции.
-            _short_unmin = make_unary_operator(compiler_string_consts.minus_name, _short_type, SemanticTree.basic_function_type.sunmin,_integer_type);
-            _short_not = make_unary_operator(compiler_string_consts.not_name, _short_type, SemanticTree.basic_function_type.snot);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _short_type, _short_type);
+            _short_unmin = make_unary_operator(StringConstants.minus_name, _short_type, SemanticTree.basic_function_type.sunmin,_integer_type);
+            _short_not = make_unary_operator(StringConstants.not_name, _short_type, SemanticTree.basic_function_type.snot);
+            make_unary_empty_operator(StringConstants.plus_name, _short_type, _short_type);
 
-            add_function_to_type(compiler_string_consts.not_name, _short_type, _int_unmin);
+            add_function_to_type(StringConstants.not_name, _short_type, _int_unmin);
 
-            add_function_to_type(compiler_string_consts.gr_name, _short_type, _int_gr);
-            add_function_to_type(compiler_string_consts.greq_name, _short_type, _int_greq);
-            add_function_to_type(compiler_string_consts.sm_name, _short_type, _int_sm);
-            add_function_to_type(compiler_string_consts.smeq_name, _short_type, _int_smeq);
-            add_function_to_type(compiler_string_consts.eq_name, _short_type, _int_eq);
-            add_function_to_type(compiler_string_consts.noteq_name, _short_type, _int_noteq);
+            add_function_to_type(StringConstants.gr_name, _short_type, _int_gr);
+            add_function_to_type(StringConstants.greq_name, _short_type, _int_greq);
+            add_function_to_type(StringConstants.sm_name, _short_type, _int_sm);
+            add_function_to_type(StringConstants.smeq_name, _short_type, _int_smeq);
+            add_function_to_type(StringConstants.eq_name, _short_type, _int_eq);
+            add_function_to_type(StringConstants.noteq_name, _short_type, _int_noteq);
 
-            add_function_to_type(compiler_string_consts.plus_name, _short_type, _int_add);
-            add_function_to_type(compiler_string_consts.minus_name, _short_type, _int_sub);
-            add_function_to_type(compiler_string_consts.mul_name, _short_type, _int_mul);
-            add_function_to_type(compiler_string_consts.div_name, _short_type, _int_div);
-			add_function_to_type(compiler_string_consts.idiv_name, _short_type, _int_idiv);
-			add_function_to_type(compiler_string_consts.mod_name, _short_type, _int_mod);
+            add_function_to_type(StringConstants.plus_name, _short_type, _int_add);
+            add_function_to_type(StringConstants.minus_name, _short_type, _int_sub);
+            add_function_to_type(StringConstants.mul_name, _short_type, _int_mul);
+            add_function_to_type(StringConstants.div_name, _short_type, _int_div);
+			add_function_to_type(StringConstants.idiv_name, _short_type, _int_idiv);
+			add_function_to_type(StringConstants.mod_name, _short_type, _int_mod);
 			
-            /*add_funtion_to_type(compiler_string_consts.and_name, _short_type, _int_and);
-            add_funtion_to_type(compiler_string_consts.or_name, _short_type, _int_or);
-            add_funtion_to_type(compiler_string_consts.xor_name, _short_type, _int_xor);*/
+            /*add_funtion_to_type(StringConstants.and_name, _short_type, _int_and);
+            add_funtion_to_type(StringConstants.or_name, _short_type, _int_or);
+            add_funtion_to_type(StringConstants.xor_name, _short_type, _int_xor);*/
 
             //Операция / для byte.
-            _short_div = make_common_binary_operation(compiler_string_consts.div_name, _short_type, _double_type, _double_type,
+            _short_div = make_common_binary_operation(StringConstants.div_name, _short_type, _double_type, _double_type,
                 SemanticTree.basic_function_type.ddiv, _double_type);
             //Логические опреции.
             
-            _short_and = make_common_binary_operation(compiler_string_consts.and_name, _short_type, _short_type, _short_type, SemanticTree.basic_function_type.sand, _short_type);
-            _short_or = make_common_binary_operation(compiler_string_consts.or_name, _short_type, _short_type, _short_type, SemanticTree.basic_function_type.sor, _short_type);
-            _short_xor = make_common_binary_operation(compiler_string_consts.xor_name, _short_type, _short_type, _short_type, SemanticTree.basic_function_type.sxor, _short_type);
+            _short_and = make_common_binary_operation(StringConstants.and_name, _short_type, _short_type, _short_type, SemanticTree.basic_function_type.sand, _short_type);
+            _short_or = make_common_binary_operation(StringConstants.or_name, _short_type, _short_type, _short_type, SemanticTree.basic_function_type.sor, _short_type);
+            _short_xor = make_common_binary_operation(StringConstants.xor_name, _short_type, _short_type, _short_type, SemanticTree.basic_function_type.sxor, _short_type);
             
-            add_function_to_type(compiler_string_consts.shl_name, _short_type, _int_shl);
-            add_function_to_type(compiler_string_consts.shr_name, _short_type, _int_shr);
+            add_function_to_type(StringConstants.shl_name, _short_type, _int_shl);
+            add_function_to_type(StringConstants.shr_name, _short_type, _int_shr);
 
             //ushort type.
             //Assign.
@@ -1477,58 +1477,58 @@ namespace PascalABCCompiler.SystemLibrary
             _ushort_to_float = make_type_conversion(_ushort_type, _float_type, type_compare.less_type, SemanticTree.basic_function_type.ustof);
             _ushort_to_double = make_type_conversion(_ushort_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.ustod);
             //Унарные операции.
-            _ushort_unmin = make_unary_operator(compiler_string_consts.minus_name, _ushort_type, SemanticTree.basic_function_type.usunmin, _integer_type);
-            _ushort_not = make_unary_operator(compiler_string_consts.not_name, _ushort_type, SemanticTree.basic_function_type.usnot);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _ushort_type, _ushort_type);
+            _ushort_unmin = make_unary_operator(StringConstants.minus_name, _ushort_type, SemanticTree.basic_function_type.usunmin, _integer_type);
+            _ushort_not = make_unary_operator(StringConstants.not_name, _ushort_type, SemanticTree.basic_function_type.usnot);
+            make_unary_empty_operator(StringConstants.plus_name, _ushort_type, _ushort_type);
 
-            add_function_to_type(compiler_string_consts.not_name, _ushort_type, _int_unmin);
+            add_function_to_type(StringConstants.not_name, _ushort_type, _int_unmin);
 
-            add_function_to_type(compiler_string_consts.gr_name, _ushort_type, _int_gr);
-            add_function_to_type(compiler_string_consts.greq_name, _ushort_type, _int_greq);
-            add_function_to_type(compiler_string_consts.sm_name, _ushort_type, _int_sm);
-            add_function_to_type(compiler_string_consts.smeq_name, _ushort_type, _int_smeq);
-            add_function_to_type(compiler_string_consts.eq_name, _ushort_type, _int_eq);
-            add_function_to_type(compiler_string_consts.noteq_name, _ushort_type, _int_noteq);
+            add_function_to_type(StringConstants.gr_name, _ushort_type, _int_gr);
+            add_function_to_type(StringConstants.greq_name, _ushort_type, _int_greq);
+            add_function_to_type(StringConstants.sm_name, _ushort_type, _int_sm);
+            add_function_to_type(StringConstants.smeq_name, _ushort_type, _int_smeq);
+            add_function_to_type(StringConstants.eq_name, _ushort_type, _int_eq);
+            add_function_to_type(StringConstants.noteq_name, _ushort_type, _int_noteq);
 
-            add_function_to_type(compiler_string_consts.plus_name, _ushort_type, _int_add);
-            add_function_to_type(compiler_string_consts.minus_name, _ushort_type, _int_sub);
-            add_function_to_type(compiler_string_consts.mul_name, _ushort_type, _int_mul);
-            add_function_to_type(compiler_string_consts.div_name, _ushort_type, _int_div);
-			add_function_to_type(compiler_string_consts.idiv_name, _ushort_type, _int_idiv);
-			add_function_to_type(compiler_string_consts.mod_name, _ushort_type, _int_mod);
+            add_function_to_type(StringConstants.plus_name, _ushort_type, _int_add);
+            add_function_to_type(StringConstants.minus_name, _ushort_type, _int_sub);
+            add_function_to_type(StringConstants.mul_name, _ushort_type, _int_mul);
+            add_function_to_type(StringConstants.div_name, _ushort_type, _int_div);
+			add_function_to_type(StringConstants.idiv_name, _ushort_type, _int_idiv);
+			add_function_to_type(StringConstants.mod_name, _ushort_type, _int_mod);
 			
-            /*add_funtion_to_type(compiler_string_consts.and_name, _ushort_type, _int_and);
-            add_funtion_to_type(compiler_string_consts.or_name, _ushort_type, _int_or);
-            add_funtion_to_type(compiler_string_consts.xor_name, _ushort_type, _int_xor);*/
+            /*add_funtion_to_type(StringConstants.and_name, _ushort_type, _int_and);
+            add_funtion_to_type(StringConstants.or_name, _ushort_type, _int_or);
+            add_funtion_to_type(StringConstants.xor_name, _ushort_type, _int_xor);*/
 
             //Опрерации сравнения.
             /*
-            _ushort_gr = make_binary_operator(compiler_string_consts.gr_name, _ushort_type, SemanticTree.basic_function_type.usgr, _bool_type);
-            _ushort_greq = make_binary_operator(compiler_string_consts.greq_name, _ushort_type, SemanticTree.basic_function_type.usgreq, _bool_type);
-            _ushort_sm = make_binary_operator(compiler_string_consts.sm_name, _ushort_type, SemanticTree.basic_function_type.ussm, _bool_type);
-            _ushort_smeq = make_binary_operator(compiler_string_consts.smeq_name, _ushort_type, SemanticTree.basic_function_type.ussmeq, _bool_type);
-            _ushort_eq = make_binary_operator(compiler_string_consts.eq_name, _ushort_type, SemanticTree.basic_function_type.useq, _bool_type);
-            _ushort_noteq = make_binary_operator(compiler_string_consts.noteq_name, _ushort_type, SemanticTree.basic_function_type.usnoteq, _bool_type);
+            _ushort_gr = make_binary_operator(StringConstants.gr_name, _ushort_type, SemanticTree.basic_function_type.usgr, _bool_type);
+            _ushort_greq = make_binary_operator(StringConstants.greq_name, _ushort_type, SemanticTree.basic_function_type.usgreq, _bool_type);
+            _ushort_sm = make_binary_operator(StringConstants.sm_name, _ushort_type, SemanticTree.basic_function_type.ussm, _bool_type);
+            _ushort_smeq = make_binary_operator(StringConstants.smeq_name, _ushort_type, SemanticTree.basic_function_type.ussmeq, _bool_type);
+            _ushort_eq = make_binary_operator(StringConstants.eq_name, _ushort_type, SemanticTree.basic_function_type.useq, _bool_type);
+            _ushort_noteq = make_binary_operator(StringConstants.noteq_name, _ushort_type, SemanticTree.basic_function_type.usnoteq, _bool_type);
             */
             //Арифметические операции.
             /*
-            _ushort_add = make_common_binary_operation(compiler_string_consts.plus_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usadd, _integer_type);
-            _ushort_sub = make_common_binary_operation(compiler_string_consts.minus_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.ussub, _integer_type);
-            _ushort_mul = make_common_binary_operation(compiler_string_consts.mul_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usmul, _integer_type);
-            _ushort_idiv = make_common_binary_operation(compiler_string_consts.idiv_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usdiv, _integer_type);
-            _ushort_mod = make_common_binary_operation(compiler_string_consts.mod_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usmod, _integer_type);
+            _ushort_add = make_common_binary_operation(StringConstants.plus_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usadd, _integer_type);
+            _ushort_sub = make_common_binary_operation(StringConstants.minus_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.ussub, _integer_type);
+            _ushort_mul = make_common_binary_operation(StringConstants.mul_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usmul, _integer_type);
+            _ushort_idiv = make_common_binary_operation(StringConstants.idiv_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usdiv, _integer_type);
+            _ushort_mod = make_common_binary_operation(StringConstants.mod_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usmod, _integer_type);
             */
             //Операция / для byte.
-            _ushort_div = make_common_binary_operation(compiler_string_consts.div_name, _ushort_type, _double_type, _double_type,
+            _ushort_div = make_common_binary_operation(StringConstants.div_name, _ushort_type, _double_type, _double_type,
                 SemanticTree.basic_function_type.ddiv, _double_type);
             //Логические опреции.
             
-            _ushort_and = make_common_binary_operation(compiler_string_consts.and_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usand, _ushort_type);
-            _ushort_or = make_common_binary_operation(compiler_string_consts.or_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usor, _ushort_type);
-            _ushort_xor = make_common_binary_operation(compiler_string_consts.xor_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usxor, _ushort_type);
+            _ushort_and = make_common_binary_operation(StringConstants.and_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usand, _ushort_type);
+            _ushort_or = make_common_binary_operation(StringConstants.or_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usor, _ushort_type);
+            _ushort_xor = make_common_binary_operation(StringConstants.xor_name, _ushort_type, _ushort_type, _ushort_type, SemanticTree.basic_function_type.usxor, _ushort_type);
             
-            add_function_to_type(compiler_string_consts.shl_name, _ushort_type, _int_shl);
-            add_function_to_type(compiler_string_consts.shr_name, _ushort_type, _int_shr);
+            add_function_to_type(StringConstants.shl_name, _ushort_type, _int_shl);
+            add_function_to_type(StringConstants.shr_name, _ushort_type, _int_shr);
 
        
 
@@ -1547,50 +1547,50 @@ namespace PascalABCCompiler.SystemLibrary
             _uint_to_float = make_type_conversion(_uint_type, _float_type, type_compare.less_type, SemanticTree.basic_function_type.uitof);
             _uint_to_double = make_type_conversion(_uint_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.uitod);
             //Унарные операции.
-            _uint_unmin = make_unary_operator(compiler_string_consts.minus_name, _uint_type, SemanticTree.basic_function_type.uiunmin, _int64_type);
-            _uint_not = make_unary_operator(compiler_string_consts.not_name, _uint_type, SemanticTree.basic_function_type.uinot);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _uint_type, _uint_type);
+            _uint_unmin = make_unary_operator(StringConstants.minus_name, _uint_type, SemanticTree.basic_function_type.uiunmin, _int64_type);
+            _uint_not = make_unary_operator(StringConstants.not_name, _uint_type, SemanticTree.basic_function_type.uinot);
+            make_unary_empty_operator(StringConstants.plus_name, _uint_type, _uint_type);
             //Опрерации сравнения.
-            _uint_gr = make_binary_operator(compiler_string_consts.gr_name, _uint_type, SemanticTree.basic_function_type.uigr, _bool_type);
-            _uint_greq = make_binary_operator(compiler_string_consts.greq_name, _uint_type, SemanticTree.basic_function_type.uigreq, _bool_type);
-            _uint_sm = make_binary_operator(compiler_string_consts.sm_name, _uint_type, SemanticTree.basic_function_type.uism, _bool_type);
-            _uint_smeq = make_binary_operator(compiler_string_consts.smeq_name, _uint_type, SemanticTree.basic_function_type.uismeq, _bool_type);
-            _uint_eq = make_binary_operator(compiler_string_consts.eq_name, _uint_type, SemanticTree.basic_function_type.uieq, _bool_type);
-            _uint_noteq = make_binary_operator(compiler_string_consts.noteq_name, _uint_type, SemanticTree.basic_function_type.uinoteq, _bool_type);
+            _uint_gr = make_binary_operator(StringConstants.gr_name, _uint_type, SemanticTree.basic_function_type.uigr, _bool_type);
+            _uint_greq = make_binary_operator(StringConstants.greq_name, _uint_type, SemanticTree.basic_function_type.uigreq, _bool_type);
+            _uint_sm = make_binary_operator(StringConstants.sm_name, _uint_type, SemanticTree.basic_function_type.uism, _bool_type);
+            _uint_smeq = make_binary_operator(StringConstants.smeq_name, _uint_type, SemanticTree.basic_function_type.uismeq, _bool_type);
+            _uint_eq = make_binary_operator(StringConstants.eq_name, _uint_type, SemanticTree.basic_function_type.uieq, _bool_type);
+            _uint_noteq = make_binary_operator(StringConstants.noteq_name, _uint_type, SemanticTree.basic_function_type.uinoteq, _bool_type);
             //Арифметические операции.
-            /*_uint_add = make_common_binary_operation(compiler_string_consts.plus_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uiadd, _uint_type);
-            _uint_sub = make_common_binary_operation(compiler_string_consts.minus_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uisub, _uint_type);
-            _uint_mul = make_common_binary_operation(compiler_string_consts.mul_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uimul, _uint_type);
-            _uint_idiv = make_common_binary_operation(compiler_string_consts.idiv_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uidiv, _uint_type);
-            _uint_mod = make_common_binary_operation(compiler_string_consts.mod_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uimod, _uint_type);
+            /*_uint_add = make_common_binary_operation(StringConstants.plus_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uiadd, _uint_type);
+            _uint_sub = make_common_binary_operation(StringConstants.minus_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uisub, _uint_type);
+            _uint_mul = make_common_binary_operation(StringConstants.mul_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uimul, _uint_type);
+            _uint_idiv = make_common_binary_operation(StringConstants.idiv_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uidiv, _uint_type);
+            _uint_mod = make_common_binary_operation(StringConstants.mod_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uimod, _uint_type);
             //Операция / для byte.
-            _uint_div = make_common_binary_operation(compiler_string_consts.div_name, _uint_type, _real_type, _real_type,
+            _uint_div = make_common_binary_operation(StringConstants.div_name, _uint_type, _real_type, _real_type,
                 SemanticTree.basic_function_type.ddiv, _real_type);
             //Логические опреции.
-            _uint_and = make_common_binary_operation(compiler_string_consts.and_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uiand, _uint_type);
-            _uint_or = make_common_binary_operation(compiler_string_consts.or_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uior, _uint_type);
-            _uint_xor = make_common_binary_operation(compiler_string_consts.xor_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uixor, _uint_type);
-            //add_funtion_to_type(compiler_string_consts.shl_name, _uint_type, _int_shl);
-            //add_funtion_to_type(compiler_string_consts.shr_name, _uint_type, _int_shr);
-            _uint_shl = make_common_binary_operation(compiler_string_consts.shl_name, _uint_type, _uint_type, _integer_type, SemanticTree.basic_function_type.uishl,_uint_type);
-            _uint_shr = make_common_binary_operation(compiler_string_consts.shr_name, _uint_type, _uint_type, _integer_type, SemanticTree.basic_function_type.uishr, _uint_type);*/
+            _uint_and = make_common_binary_operation(StringConstants.and_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uiand, _uint_type);
+            _uint_or = make_common_binary_operation(StringConstants.or_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uior, _uint_type);
+            _uint_xor = make_common_binary_operation(StringConstants.xor_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uixor, _uint_type);
+            //add_funtion_to_type(StringConstants.shl_name, _uint_type, _int_shl);
+            //add_funtion_to_type(StringConstants.shr_name, _uint_type, _int_shr);
+            _uint_shl = make_common_binary_operation(StringConstants.shl_name, _uint_type, _uint_type, _integer_type, SemanticTree.basic_function_type.uishl,_uint_type);
+            _uint_shr = make_common_binary_operation(StringConstants.shr_name, _uint_type, _uint_type, _integer_type, SemanticTree.basic_function_type.uishr, _uint_type);*/
 			
-            _uint_add = make_common_binary_operation(compiler_string_consts.plus_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uiadd, _int64_type);
-            _uint_sub = make_common_binary_operation(compiler_string_consts.minus_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uisub, _int64_type);
-            _uint_mul = make_common_binary_operation(compiler_string_consts.mul_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uimul, _int64_type);
-            _uint_idiv = make_common_binary_operation(compiler_string_consts.idiv_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uidiv, _int64_type);
-            _uint_mod = make_common_binary_operation(compiler_string_consts.mod_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uimod, _int64_type);
+            _uint_add = make_common_binary_operation(StringConstants.plus_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uiadd, _int64_type);
+            _uint_sub = make_common_binary_operation(StringConstants.minus_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uisub, _int64_type);
+            _uint_mul = make_common_binary_operation(StringConstants.mul_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uimul, _int64_type);
+            _uint_idiv = make_common_binary_operation(StringConstants.idiv_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uidiv, _int64_type);
+            _uint_mod = make_common_binary_operation(StringConstants.mod_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uimod, _int64_type);
             //Операция / для byte.
-            _uint_div = make_common_binary_operation(compiler_string_consts.div_name, _uint_type, _double_type, _double_type,
+            _uint_div = make_common_binary_operation(StringConstants.div_name, _uint_type, _double_type, _double_type,
                 SemanticTree.basic_function_type.ddiv, _double_type);
             //Логические опреции.
-            _uint_and = make_common_binary_operation(compiler_string_consts.and_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uiand, _uint_type);
-            _uint_or = make_common_binary_operation(compiler_string_consts.or_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uior, _uint_type);
-            _uint_xor = make_common_binary_operation(compiler_string_consts.xor_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uixor, _uint_type);
-            //add_funtion_to_type(compiler_string_consts.shl_name, _uint_type, _int_shl);
-            //add_funtion_to_type(compiler_string_consts.shr_name, _uint_type, _int_shr);
-            _uint_shl = make_common_binary_operation(compiler_string_consts.shl_name, _uint_type, _uint_type, _integer_type, SemanticTree.basic_function_type.uishl,_uint_type);
-            _uint_shr = make_common_binary_operation(compiler_string_consts.shr_name, _uint_type, _uint_type, _integer_type, SemanticTree.basic_function_type.uishr, _uint_type);
+            _uint_and = make_common_binary_operation(StringConstants.and_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uiand, _uint_type);
+            _uint_or = make_common_binary_operation(StringConstants.or_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uior, _uint_type);
+            _uint_xor = make_common_binary_operation(StringConstants.xor_name, _uint_type, _uint_type, _uint_type, SemanticTree.basic_function_type.uixor, _uint_type);
+            //add_funtion_to_type(StringConstants.shl_name, _uint_type, _int_shl);
+            //add_funtion_to_type(StringConstants.shr_name, _uint_type, _int_shr);
+            _uint_shl = make_common_binary_operation(StringConstants.shl_name, _uint_type, _uint_type, _integer_type, SemanticTree.basic_function_type.uishl,_uint_type);
+            _uint_shr = make_common_binary_operation(StringConstants.shr_name, _uint_type, _uint_type, _integer_type, SemanticTree.basic_function_type.uishr, _uint_type);
             
             /*make_function_comparison(_int_add, _uint_add, function_compare.greater);
             make_function_comparison(_int_sub, _uint_sub, function_compare.greater);
@@ -1637,33 +1637,33 @@ namespace PascalABCCompiler.SystemLibrary
             _long_to_float = make_type_conversion(_int64_type, _float_type, type_compare.less_type, SemanticTree.basic_function_type.ltof);
             _long_to_double = make_type_conversion(_int64_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.ltod);
             //Унарные операции.
-            _long_unmin = make_unary_operator(compiler_string_consts.minus_name, _int64_type, SemanticTree.basic_function_type.lunmin);
-            _long_not = make_unary_operator(compiler_string_consts.not_name, _int64_type, SemanticTree.basic_function_type.lnot);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _int64_type, _int64_type);
+            _long_unmin = make_unary_operator(StringConstants.minus_name, _int64_type, SemanticTree.basic_function_type.lunmin);
+            _long_not = make_unary_operator(StringConstants.not_name, _int64_type, SemanticTree.basic_function_type.lnot);
+            make_unary_empty_operator(StringConstants.plus_name, _int64_type, _int64_type);
             //Опрерации сравнения.
-            _long_gr = make_binary_operator(compiler_string_consts.gr_name, _int64_type, SemanticTree.basic_function_type.lgr, _bool_type);
-            _long_greq = make_binary_operator(compiler_string_consts.greq_name, _int64_type, SemanticTree.basic_function_type.lgreq, _bool_type);
-            _long_sm = make_binary_operator(compiler_string_consts.sm_name, _int64_type, SemanticTree.basic_function_type.lsm, _bool_type);
-            _long_smeq = make_binary_operator(compiler_string_consts.smeq_name, _int64_type, SemanticTree.basic_function_type.lsmeq, _bool_type);
-            _long_eq = make_binary_operator(compiler_string_consts.eq_name, _int64_type, SemanticTree.basic_function_type.leq, _bool_type);
-            _long_noteq = make_binary_operator(compiler_string_consts.noteq_name, _int64_type, SemanticTree.basic_function_type.lnoteq, _bool_type);
+            _long_gr = make_binary_operator(StringConstants.gr_name, _int64_type, SemanticTree.basic_function_type.lgr, _bool_type);
+            _long_greq = make_binary_operator(StringConstants.greq_name, _int64_type, SemanticTree.basic_function_type.lgreq, _bool_type);
+            _long_sm = make_binary_operator(StringConstants.sm_name, _int64_type, SemanticTree.basic_function_type.lsm, _bool_type);
+            _long_smeq = make_binary_operator(StringConstants.smeq_name, _int64_type, SemanticTree.basic_function_type.lsmeq, _bool_type);
+            _long_eq = make_binary_operator(StringConstants.eq_name, _int64_type, SemanticTree.basic_function_type.leq, _bool_type);
+            _long_noteq = make_binary_operator(StringConstants.noteq_name, _int64_type, SemanticTree.basic_function_type.lnoteq, _bool_type);
             //Арифметические операции.
-            _long_add = make_common_binary_operation(compiler_string_consts.plus_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.ladd, _int64_type);
-            _long_sub = make_common_binary_operation(compiler_string_consts.minus_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lsub, _int64_type);
-            _long_mul = make_common_binary_operation(compiler_string_consts.mul_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lmul, _int64_type);
-            _long_idiv = make_common_binary_operation(compiler_string_consts.idiv_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.ldiv, _int64_type);
-            _long_mod = make_common_binary_operation(compiler_string_consts.mod_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lmod, _int64_type);
+            _long_add = make_common_binary_operation(StringConstants.plus_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.ladd, _int64_type);
+            _long_sub = make_common_binary_operation(StringConstants.minus_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lsub, _int64_type);
+            _long_mul = make_common_binary_operation(StringConstants.mul_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lmul, _int64_type);
+            _long_idiv = make_common_binary_operation(StringConstants.idiv_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.ldiv, _int64_type);
+            _long_mod = make_common_binary_operation(StringConstants.mod_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lmod, _int64_type);
             //Операция / для byte.
-            _long_div = make_common_binary_operation(compiler_string_consts.div_name, _int64_type, _double_type, _double_type,
+            _long_div = make_common_binary_operation(StringConstants.div_name, _int64_type, _double_type, _double_type,
                 SemanticTree.basic_function_type.ddiv, _double_type);
             //Логические опреции.
-            _long_and = make_common_binary_operation(compiler_string_consts.and_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.land, _int64_type);
-            _long_or = make_common_binary_operation(compiler_string_consts.or_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lor, _int64_type);
-            _long_xor = make_common_binary_operation(compiler_string_consts.xor_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lxor, _int64_type);
-            //add_funtion_to_type(compiler_string_consts.shl_name, _long_type, _int_shl);
-            //add_funtion_to_type(compiler_string_consts.shr_name, _long_type, _int_shr);
-            _long_shl = make_common_binary_operation(compiler_string_consts.shl_name, _int64_type, _int64_type, _integer_type, SemanticTree.basic_function_type.lshl, _int64_type);
-            _long_shr = make_common_binary_operation(compiler_string_consts.shr_name, _int64_type, _int64_type, _integer_type, SemanticTree.basic_function_type.lshr, _int64_type);
+            _long_and = make_common_binary_operation(StringConstants.and_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.land, _int64_type);
+            _long_or = make_common_binary_operation(StringConstants.or_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lor, _int64_type);
+            _long_xor = make_common_binary_operation(StringConstants.xor_name, _int64_type, _int64_type, _int64_type, SemanticTree.basic_function_type.lxor, _int64_type);
+            //add_funtion_to_type(StringConstants.shl_name, _long_type, _int_shl);
+            //add_funtion_to_type(StringConstants.shr_name, _long_type, _int_shr);
+            _long_shl = make_common_binary_operation(StringConstants.shl_name, _int64_type, _int64_type, _integer_type, SemanticTree.basic_function_type.lshl, _int64_type);
+            _long_shr = make_common_binary_operation(StringConstants.shr_name, _int64_type, _int64_type, _integer_type, SemanticTree.basic_function_type.lshr, _int64_type);
 
             make_function_comparison(_long_add, _uint_add, function_compare.greater);
             make_function_comparison(_long_sub, _uint_sub, function_compare.greater);
@@ -1710,33 +1710,33 @@ namespace PascalABCCompiler.SystemLibrary
             _ulong_to_float = make_type_conversion(_uint64_type, _float_type, type_compare.less_type, SemanticTree.basic_function_type.ultof);
             _ulong_to_double = make_type_conversion(_uint64_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.ultod);
             //Унарные операции.
-            _ulong_unmin = make_unary_operator(compiler_string_consts.minus_name, _uint64_type, SemanticTree.basic_function_type.ulunmin, _uint64_type);
-            _ulong_not = make_unary_operator(compiler_string_consts.not_name, _uint64_type, SemanticTree.basic_function_type.ulnot);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _uint64_type, _uint64_type);
+            _ulong_unmin = make_unary_operator(StringConstants.minus_name, _uint64_type, SemanticTree.basic_function_type.ulunmin, _uint64_type);
+            _ulong_not = make_unary_operator(StringConstants.not_name, _uint64_type, SemanticTree.basic_function_type.ulnot);
+            make_unary_empty_operator(StringConstants.plus_name, _uint64_type, _uint64_type);
             //Опрерации сравнения.
-            _ulong_gr = make_binary_operator(compiler_string_consts.gr_name, _uint64_type, SemanticTree.basic_function_type.ulgr, _bool_type);
-            _ulong_greq = make_binary_operator(compiler_string_consts.greq_name, _uint64_type, SemanticTree.basic_function_type.ulgreq, _bool_type);
-            _ulong_sm = make_binary_operator(compiler_string_consts.sm_name, _uint64_type, SemanticTree.basic_function_type.ulsm, _bool_type);
-            _ulong_smeq = make_binary_operator(compiler_string_consts.smeq_name, _uint64_type, SemanticTree.basic_function_type.ulsmeq, _bool_type);
-            _ulong_eq = make_binary_operator(compiler_string_consts.eq_name, _uint64_type, SemanticTree.basic_function_type.uleq, _bool_type);
-            _ulong_noteq = make_binary_operator(compiler_string_consts.noteq_name, _uint64_type, SemanticTree.basic_function_type.ulnoteq, _bool_type);
+            _ulong_gr = make_binary_operator(StringConstants.gr_name, _uint64_type, SemanticTree.basic_function_type.ulgr, _bool_type);
+            _ulong_greq = make_binary_operator(StringConstants.greq_name, _uint64_type, SemanticTree.basic_function_type.ulgreq, _bool_type);
+            _ulong_sm = make_binary_operator(StringConstants.sm_name, _uint64_type, SemanticTree.basic_function_type.ulsm, _bool_type);
+            _ulong_smeq = make_binary_operator(StringConstants.smeq_name, _uint64_type, SemanticTree.basic_function_type.ulsmeq, _bool_type);
+            _ulong_eq = make_binary_operator(StringConstants.eq_name, _uint64_type, SemanticTree.basic_function_type.uleq, _bool_type);
+            _ulong_noteq = make_binary_operator(StringConstants.noteq_name, _uint64_type, SemanticTree.basic_function_type.ulnoteq, _bool_type);
             //Арифметические операции.
-            _ulong_add = make_common_binary_operation(compiler_string_consts.plus_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.uladd, _uint64_type);
-            _ulong_sub = make_common_binary_operation(compiler_string_consts.minus_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulsub, _uint64_type);
-            _ulong_mul = make_common_binary_operation(compiler_string_consts.mul_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulmul, _uint64_type);
-            _ulong_idiv = make_common_binary_operation(compiler_string_consts.idiv_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.uldiv, _uint64_type);
-            _ulong_mod = make_common_binary_operation(compiler_string_consts.mod_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulmod, _uint64_type);
+            _ulong_add = make_common_binary_operation(StringConstants.plus_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.uladd, _uint64_type);
+            _ulong_sub = make_common_binary_operation(StringConstants.minus_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulsub, _uint64_type);
+            _ulong_mul = make_common_binary_operation(StringConstants.mul_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulmul, _uint64_type);
+            _ulong_idiv = make_common_binary_operation(StringConstants.idiv_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.uldiv, _uint64_type);
+            _ulong_mod = make_common_binary_operation(StringConstants.mod_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulmod, _uint64_type);
             //Операция / для byte.
-            _ulong_div = make_common_binary_operation(compiler_string_consts.div_name, _uint64_type, _double_type, _double_type,
+            _ulong_div = make_common_binary_operation(StringConstants.div_name, _uint64_type, _double_type, _double_type,
                 SemanticTree.basic_function_type.ddiv, _double_type);
             //Логические опреции.
-            _ulong_and = make_common_binary_operation(compiler_string_consts.and_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.uland, _uint64_type);
-            _ulong_or = make_common_binary_operation(compiler_string_consts.or_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulor, _uint64_type);
-            _ulong_xor = make_common_binary_operation(compiler_string_consts.xor_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulxor, _uint64_type);
-            //add_funtion_to_type(compiler_string_consts.shl_name, _ulong_type, _int_shl);
-            //add_funtion_to_type(compiler_string_consts.shr_name, _ulong_type, _int_shr);
-            _ulong_shl = make_common_binary_operation(compiler_string_consts.shl_name, _uint64_type, _uint64_type, _integer_type, SemanticTree.basic_function_type.ulshl, _uint64_type);
-            _ulong_shr = make_common_binary_operation(compiler_string_consts.shr_name, _uint64_type, _uint64_type, _integer_type, SemanticTree.basic_function_type.ulshr, _uint64_type);
+            _ulong_and = make_common_binary_operation(StringConstants.and_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.uland, _uint64_type);
+            _ulong_or = make_common_binary_operation(StringConstants.or_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulor, _uint64_type);
+            _ulong_xor = make_common_binary_operation(StringConstants.xor_name, _uint64_type, _uint64_type, _uint64_type, SemanticTree.basic_function_type.ulxor, _uint64_type);
+            //add_funtion_to_type(StringConstants.shl_name, _ulong_type, _int_shl);
+            //add_funtion_to_type(StringConstants.shr_name, _ulong_type, _int_shr);
+            _ulong_shl = make_common_binary_operation(StringConstants.shl_name, _uint64_type, _uint64_type, _integer_type, SemanticTree.basic_function_type.ulshl, _uint64_type);
+            _ulong_shr = make_common_binary_operation(StringConstants.shr_name, _uint64_type, _uint64_type, _integer_type, SemanticTree.basic_function_type.ulshr, _uint64_type);
 
             /*make_function_comparison(_long_add, _ulong_add, function_compare.greater);
             make_function_comparison(_long_sub, _ulong_sub, function_compare.greater);
@@ -1834,43 +1834,43 @@ namespace PascalABCCompiler.SystemLibrary
             _double_to_int = make_type_conversion(_double_type, _integer_type, type_compare.greater_type, SemanticTree.basic_function_type.dtoi, false);
             _double_to_float = make_type_conversion(_double_type, _float_type, type_compare.greater_type, SemanticTree.basic_function_type.dtof);
             //Унарные операции.
-            _real_unmin = make_unary_operator(compiler_string_consts.minus_name, _double_type, SemanticTree.basic_function_type.dunmin);
-            //make_empty_operator(compiler_string_consts.plus_name, _real_type);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _double_type, _double_type);
+            _real_unmin = make_unary_operator(StringConstants.minus_name, _double_type, SemanticTree.basic_function_type.dunmin);
+            //make_empty_operator(StringConstants.plus_name, _real_type);
+            make_unary_empty_operator(StringConstants.plus_name, _double_type, _double_type);
             //Арифметические операции.
-            _real_add=make_binary_operator(compiler_string_consts.plus_name, _double_type, SemanticTree.basic_function_type.dadd);
-            _real_sub=make_binary_operator(compiler_string_consts.minus_name, _double_type, SemanticTree.basic_function_type.dsub);
-            _real_mul=make_binary_operator(compiler_string_consts.mul_name, _double_type, SemanticTree.basic_function_type.dmul);
-            _real_div=make_binary_operator(compiler_string_consts.div_name, _double_type, SemanticTree.basic_function_type.ddiv);
+            _real_add=make_binary_operator(StringConstants.plus_name, _double_type, SemanticTree.basic_function_type.dadd);
+            _real_sub=make_binary_operator(StringConstants.minus_name, _double_type, SemanticTree.basic_function_type.dsub);
+            _real_mul=make_binary_operator(StringConstants.mul_name, _double_type, SemanticTree.basic_function_type.dmul);
+            _real_div=make_binary_operator(StringConstants.div_name, _double_type, SemanticTree.basic_function_type.ddiv);
 
             //Опрерации сравнения.
-            _real_gr=make_binary_operator(compiler_string_consts.gr_name, _double_type, SemanticTree.basic_function_type.dgr, _bool_type);
-            _real_greq=make_binary_operator(compiler_string_consts.greq_name, _double_type, SemanticTree.basic_function_type.dgreq, _bool_type);
-            _real_sm=make_binary_operator(compiler_string_consts.sm_name, _double_type, SemanticTree.basic_function_type.dsm, _bool_type);
-            _real_smeq=make_binary_operator(compiler_string_consts.smeq_name, _double_type, SemanticTree.basic_function_type.dsmeq, _bool_type);
-            _real_eq=make_binary_operator(compiler_string_consts.eq_name, _double_type, SemanticTree.basic_function_type.deq, _bool_type);
-            _real_noteq=make_binary_operator(compiler_string_consts.noteq_name, _double_type, SemanticTree.basic_function_type.dnoteq, _bool_type);
+            _real_gr=make_binary_operator(StringConstants.gr_name, _double_type, SemanticTree.basic_function_type.dgr, _bool_type);
+            _real_greq=make_binary_operator(StringConstants.greq_name, _double_type, SemanticTree.basic_function_type.dgreq, _bool_type);
+            _real_sm=make_binary_operator(StringConstants.sm_name, _double_type, SemanticTree.basic_function_type.dsm, _bool_type);
+            _real_smeq=make_binary_operator(StringConstants.smeq_name, _double_type, SemanticTree.basic_function_type.dsmeq, _bool_type);
+            _real_eq=make_binary_operator(StringConstants.eq_name, _double_type, SemanticTree.basic_function_type.deq, _bool_type);
+            _real_noteq=make_binary_operator(StringConstants.noteq_name, _double_type, SemanticTree.basic_function_type.dnoteq, _bool_type);
 
             //float type
             _float_assign = make_assign_operator(_float_type, SemanticTree.basic_function_type.fassign);
             _float_to_double = make_type_conversion(_float_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.ftod);
             //Унарные операции.
-            _float_unmin = make_unary_operator(compiler_string_consts.minus_name, _float_type, SemanticTree.basic_function_type.funmin);
-            //make_empty_operator(compiler_string_consts.plus_name, _real_type);
-            make_unary_empty_operator(compiler_string_consts.plus_name, _float_type, _float_type);
+            _float_unmin = make_unary_operator(StringConstants.minus_name, _float_type, SemanticTree.basic_function_type.funmin);
+            //make_empty_operator(StringConstants.plus_name, _real_type);
+            make_unary_empty_operator(StringConstants.plus_name, _float_type, _float_type);
             //Арифметические операции.
-            _float_add = make_binary_operator(compiler_string_consts.plus_name, _float_type, SemanticTree.basic_function_type.fadd);
-            _float_sub = make_binary_operator(compiler_string_consts.minus_name, _float_type, SemanticTree.basic_function_type.fsub);
-            _float_mul = make_binary_operator(compiler_string_consts.mul_name, _float_type, SemanticTree.basic_function_type.fmul);
-            _float_div = make_binary_operator(compiler_string_consts.div_name, _float_type, SemanticTree.basic_function_type.fdiv);
+            _float_add = make_binary_operator(StringConstants.plus_name, _float_type, SemanticTree.basic_function_type.fadd);
+            _float_sub = make_binary_operator(StringConstants.minus_name, _float_type, SemanticTree.basic_function_type.fsub);
+            _float_mul = make_binary_operator(StringConstants.mul_name, _float_type, SemanticTree.basic_function_type.fmul);
+            _float_div = make_binary_operator(StringConstants.div_name, _float_type, SemanticTree.basic_function_type.fdiv);
 
             //Опрерации сравнения.
-            _float_gr = make_binary_operator(compiler_string_consts.gr_name, _float_type, SemanticTree.basic_function_type.fgr, _bool_type);
-            _float_greq = make_binary_operator(compiler_string_consts.greq_name, _float_type, SemanticTree.basic_function_type.fgreq, _bool_type);
-            _float_sm = make_binary_operator(compiler_string_consts.sm_name, _float_type, SemanticTree.basic_function_type.fsm, _bool_type);
-            _float_smeq = make_binary_operator(compiler_string_consts.smeq_name, _float_type, SemanticTree.basic_function_type.fsmeq, _bool_type);
-            _float_eq = make_binary_operator(compiler_string_consts.eq_name, _float_type, SemanticTree.basic_function_type.feq, _bool_type);
-            _float_noteq = make_binary_operator(compiler_string_consts.noteq_name, _float_type, SemanticTree.basic_function_type.fnoteq, _bool_type);
+            _float_gr = make_binary_operator(StringConstants.gr_name, _float_type, SemanticTree.basic_function_type.fgr, _bool_type);
+            _float_greq = make_binary_operator(StringConstants.greq_name, _float_type, SemanticTree.basic_function_type.fgreq, _bool_type);
+            _float_sm = make_binary_operator(StringConstants.sm_name, _float_type, SemanticTree.basic_function_type.fsm, _bool_type);
+            _float_smeq = make_binary_operator(StringConstants.smeq_name, _float_type, SemanticTree.basic_function_type.fsmeq, _bool_type);
+            _float_eq = make_binary_operator(StringConstants.eq_name, _float_type, SemanticTree.basic_function_type.feq, _bool_type);
+            _float_noteq = make_binary_operator(StringConstants.noteq_name, _float_type, SemanticTree.basic_function_type.fnoteq, _bool_type);
 
             make_function_comparison(_real_add, _float_add, function_compare.greater);
             make_function_comparison(_real_sub, _float_sub, function_compare.greater);
@@ -1897,12 +1897,12 @@ namespace PascalABCCompiler.SystemLibrary
             _char_to_float = make_type_conversion(_char_type, _float_type, type_compare.less_type, SemanticTree.basic_function_type.chartof, false);
             _char_to_double = make_type_conversion(_char_type, _double_type, type_compare.less_type, SemanticTree.basic_function_type.chartod, false);
             //Опрерации сравнения.
-            _char_gr = make_binary_operator(compiler_string_consts.gr_name, _char_type, SemanticTree.basic_function_type.chargr, _bool_type);
-            _char_greq = make_binary_operator(compiler_string_consts.greq_name, _char_type, SemanticTree.basic_function_type.chargreq, _bool_type);
-            _char_sm = make_binary_operator(compiler_string_consts.sm_name, _char_type, SemanticTree.basic_function_type.charsm, _bool_type);
-            _char_smeq = make_binary_operator(compiler_string_consts.smeq_name, _char_type, SemanticTree.basic_function_type.charsmeq, _bool_type);
-            _char_eq = make_binary_operator(compiler_string_consts.eq_name, _char_type, SemanticTree.basic_function_type.chareq, _bool_type);
-            _char_noteq = make_binary_operator(compiler_string_consts.noteq_name, _char_type, SemanticTree.basic_function_type.charnoteq, _bool_type);
+            _char_gr = make_binary_operator(StringConstants.gr_name, _char_type, SemanticTree.basic_function_type.chargr, _bool_type);
+            _char_greq = make_binary_operator(StringConstants.greq_name, _char_type, SemanticTree.basic_function_type.chargreq, _bool_type);
+            _char_sm = make_binary_operator(StringConstants.sm_name, _char_type, SemanticTree.basic_function_type.charsm, _bool_type);
+            _char_smeq = make_binary_operator(StringConstants.smeq_name, _char_type, SemanticTree.basic_function_type.charsmeq, _bool_type);
+            _char_eq = make_binary_operator(StringConstants.eq_name, _char_type, SemanticTree.basic_function_type.chareq, _bool_type);
+            _char_noteq = make_binary_operator(StringConstants.noteq_name, _char_type, SemanticTree.basic_function_type.charnoteq, _bool_type);
 
             
             //boolean type.
@@ -1911,20 +1911,20 @@ namespace PascalABCCompiler.SystemLibrary
 
             //Логические операции.
             //Унарные операции.
-            _bool_not=make_unary_operator(compiler_string_consts.not_name, _bool_type, SemanticTree.basic_function_type.boolnot);
+            _bool_not=make_unary_operator(StringConstants.not_name, _bool_type, SemanticTree.basic_function_type.boolnot);
 
             //Логическме операции.
-            _bool_and=make_binary_operator(compiler_string_consts.and_name, _bool_type, SemanticTree.basic_function_type.booland);
-            _bool_or=make_binary_operator(compiler_string_consts.or_name, _bool_type, SemanticTree.basic_function_type.boolor);
-            _bool_xor=make_binary_operator(compiler_string_consts.xor_name, _bool_type, SemanticTree.basic_function_type.boolxor);
+            _bool_and=make_binary_operator(StringConstants.and_name, _bool_type, SemanticTree.basic_function_type.booland);
+            _bool_or=make_binary_operator(StringConstants.or_name, _bool_type, SemanticTree.basic_function_type.boolor);
+            _bool_xor=make_binary_operator(StringConstants.xor_name, _bool_type, SemanticTree.basic_function_type.boolxor);
 
             //Опрерации сравнения.
-            _bool_gr=make_binary_operator(compiler_string_consts.gr_name, _bool_type, SemanticTree.basic_function_type.boolgr);
-            _bool_greq=make_binary_operator(compiler_string_consts.greq_name, _bool_type, SemanticTree.basic_function_type.boolgreq);
-            _bool_sm=make_binary_operator(compiler_string_consts.sm_name, _bool_type, SemanticTree.basic_function_type.boolsm);
-            _bool_smeq=make_binary_operator(compiler_string_consts.smeq_name, _bool_type, SemanticTree.basic_function_type.boolsmeq);
-            _bool_eq=make_binary_operator(compiler_string_consts.eq_name, _bool_type, SemanticTree.basic_function_type.booleq);
-            _bool_noteq=make_binary_operator(compiler_string_consts.noteq_name, _bool_type, SemanticTree.basic_function_type.boolnoteq);
+            _bool_gr=make_binary_operator(StringConstants.gr_name, _bool_type, SemanticTree.basic_function_type.boolgr);
+            _bool_greq=make_binary_operator(StringConstants.greq_name, _bool_type, SemanticTree.basic_function_type.boolgreq);
+            _bool_sm=make_binary_operator(StringConstants.sm_name, _bool_type, SemanticTree.basic_function_type.boolsm);
+            _bool_smeq=make_binary_operator(StringConstants.smeq_name, _bool_type, SemanticTree.basic_function_type.boolsmeq);
+            _bool_eq=make_binary_operator(StringConstants.eq_name, _bool_type, SemanticTree.basic_function_type.booleq);
+            _bool_noteq=make_binary_operator(StringConstants.noteq_name, _bool_type, SemanticTree.basic_function_type.boolnoteq);
 			_bool_to_int=make_type_conversion(_bool_type, _integer_type, type_compare.less_type, SemanticTree.basic_function_type.booltoi, false);
             _bool_to_byte = make_type_conversion(_bool_type, _byte_type, type_compare.greater_type, SemanticTree.basic_function_type.booltob, false);
             _bool_to_sbyte = make_type_conversion(_bool_type, _sbyte_type, type_compare.greater_type, SemanticTree.basic_function_type.booltosb, false);
@@ -1939,8 +1939,8 @@ namespace PascalABCCompiler.SystemLibrary
             //TODO: Закончить с инициализацией строк.
             make_assign_operator(_string_type, SemanticTree.basic_function_type.objassign);
 
-            _string_add = make_binary_compiled_operator(_string_type, compiler_string_consts.string_concat_method_name, compiler_string_consts.plus_name);
-            _char_add = make_binary_compiled_operator(_string_type, _char_type, compiler_string_consts.string_concat_method_name, compiler_string_consts.plus_name, _char_type);
+            _string_add = make_binary_compiled_operator(_string_type, StringConstants.string_concat_method_name, StringConstants.plus_name);
+            _char_add = make_binary_compiled_operator(_string_type, _char_type, StringConstants.string_concat_method_name, StringConstants.plus_name, _char_type);
             
             init_reference_type(_object_type);
             
@@ -1950,55 +1950,55 @@ namespace PascalABCCompiler.SystemLibrary
 
             
             //+= -= *= /=
-            _byte_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _byte_type);
-            _byte_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _byte_type);
-            _byte_multassign = make_binary_operator(compiler_string_consts.multassign_name, _byte_type);
-            _byte_divassign = make_binary_operator(compiler_string_consts.divassign_name, _byte_type);
+            _byte_plusassign = make_binary_operator(StringConstants.plusassign_name, _byte_type);
+            _byte_minusassign = make_binary_operator(StringConstants.minusassign_name, _byte_type);
+            _byte_multassign = make_binary_operator(StringConstants.multassign_name, _byte_type);
+            _byte_divassign = make_binary_operator(StringConstants.divassign_name, _byte_type);
 
-            _sbyte_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _sbyte_type);
-            _sbyte_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _sbyte_type);
-            _sbyte_multassign = make_binary_operator(compiler_string_consts.multassign_name, _sbyte_type);
-            _sbyte_divassign = make_binary_operator(compiler_string_consts.divassign_name, _sbyte_type);
+            _sbyte_plusassign = make_binary_operator(StringConstants.plusassign_name, _sbyte_type);
+            _sbyte_minusassign = make_binary_operator(StringConstants.minusassign_name, _sbyte_type);
+            _sbyte_multassign = make_binary_operator(StringConstants.multassign_name, _sbyte_type);
+            _sbyte_divassign = make_binary_operator(StringConstants.divassign_name, _sbyte_type);
 
-            _short_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _short_type);
-            _short_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _short_type);
-            _short_multassign = make_binary_operator(compiler_string_consts.multassign_name, _short_type);
-            _short_divassign = make_binary_operator(compiler_string_consts.divassign_name, _short_type);
+            _short_plusassign = make_binary_operator(StringConstants.plusassign_name, _short_type);
+            _short_minusassign = make_binary_operator(StringConstants.minusassign_name, _short_type);
+            _short_multassign = make_binary_operator(StringConstants.multassign_name, _short_type);
+            _short_divassign = make_binary_operator(StringConstants.divassign_name, _short_type);
 
-            _ushort_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _ushort_type);
-            _ushort_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _ushort_type);
-            _ushort_multassign = make_binary_operator(compiler_string_consts.multassign_name, _ushort_type);
-            _ushort_divassign = make_binary_operator(compiler_string_consts.divassign_name, _ushort_type);
+            _ushort_plusassign = make_binary_operator(StringConstants.plusassign_name, _ushort_type);
+            _ushort_minusassign = make_binary_operator(StringConstants.minusassign_name, _ushort_type);
+            _ushort_multassign = make_binary_operator(StringConstants.multassign_name, _ushort_type);
+            _ushort_divassign = make_binary_operator(StringConstants.divassign_name, _ushort_type);
 
-            _int_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _integer_type);
-            _int_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _integer_type);
-            _int_multassign = make_binary_operator(compiler_string_consts.multassign_name, _integer_type);
-            _int_divassign = make_binary_operator(compiler_string_consts.divassign_name, _integer_type);
+            _int_plusassign = make_binary_operator(StringConstants.plusassign_name, _integer_type);
+            _int_minusassign = make_binary_operator(StringConstants.minusassign_name, _integer_type);
+            _int_multassign = make_binary_operator(StringConstants.multassign_name, _integer_type);
+            _int_divassign = make_binary_operator(StringConstants.divassign_name, _integer_type);
 
-            _uint_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _uint_type);
-            _uint_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _uint_type);
-            _uint_multassign = make_binary_operator(compiler_string_consts.multassign_name, _uint_type);
-            _uint_divassign = make_binary_operator(compiler_string_consts.divassign_name, _uint_type);
+            _uint_plusassign = make_binary_operator(StringConstants.plusassign_name, _uint_type);
+            _uint_minusassign = make_binary_operator(StringConstants.minusassign_name, _uint_type);
+            _uint_multassign = make_binary_operator(StringConstants.multassign_name, _uint_type);
+            _uint_divassign = make_binary_operator(StringConstants.divassign_name, _uint_type);
 
-            _long_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _int64_type);
-            _long_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _int64_type);
-            _long_multassign = make_binary_operator(compiler_string_consts.multassign_name, _int64_type);
-            _long_divassign = make_binary_operator(compiler_string_consts.divassign_name, _int64_type);
+            _long_plusassign = make_binary_operator(StringConstants.plusassign_name, _int64_type);
+            _long_minusassign = make_binary_operator(StringConstants.minusassign_name, _int64_type);
+            _long_multassign = make_binary_operator(StringConstants.multassign_name, _int64_type);
+            _long_divassign = make_binary_operator(StringConstants.divassign_name, _int64_type);
 
-            _ulong_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _uint64_type);
-            _ulong_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _uint64_type);
-            _ulong_multassign = make_binary_operator(compiler_string_consts.multassign_name, _uint64_type);
-            _ulong_divassign = make_binary_operator(compiler_string_consts.divassign_name, _uint64_type);
+            _ulong_plusassign = make_binary_operator(StringConstants.plusassign_name, _uint64_type);
+            _ulong_minusassign = make_binary_operator(StringConstants.minusassign_name, _uint64_type);
+            _ulong_multassign = make_binary_operator(StringConstants.multassign_name, _uint64_type);
+            _ulong_divassign = make_binary_operator(StringConstants.divassign_name, _uint64_type);
 
-            _float_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _float_type);
-            _float_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _float_type);
-            _float_multassign = make_binary_operator(compiler_string_consts.multassign_name, _float_type);
-            _float_divassign = make_binary_operator(compiler_string_consts.divassign_name, _float_type);
+            _float_plusassign = make_binary_operator(StringConstants.plusassign_name, _float_type);
+            _float_minusassign = make_binary_operator(StringConstants.minusassign_name, _float_type);
+            _float_multassign = make_binary_operator(StringConstants.multassign_name, _float_type);
+            _float_divassign = make_binary_operator(StringConstants.divassign_name, _float_type);
 
-            _double_plusassign = make_binary_operator(compiler_string_consts.plusassign_name, _double_type);
-            _double_minusassign = make_binary_operator(compiler_string_consts.minusassign_name, _double_type);
-            _double_multassign = make_binary_operator(compiler_string_consts.multassign_name, _double_type);
-            _double_divassign = make_binary_operator(compiler_string_consts.divassign_name, _double_type);
+            _double_plusassign = make_binary_operator(StringConstants.plusassign_name, _double_type);
+            _double_minusassign = make_binary_operator(StringConstants.minusassign_name, _double_type);
+            _double_multassign = make_binary_operator(StringConstants.multassign_name, _double_type);
+            _double_divassign = make_binary_operator(StringConstants.divassign_name, _double_type);
 
 
 
@@ -2090,7 +2090,7 @@ namespace PascalABCCompiler.SystemLibrary
             wait_add_ref_list.Clear();
             
             _exception_base_type = compiled_type_node.get_type_node(typeof(System.Exception), symtab);
-            _exception_base_type.SetName(compiler_string_consts.base_exception_class_name);
+            _exception_base_type.SetName(StringConstants.base_exception_class_name);
             _int64_to_pointer = make_type_conversion(_int64_type, _pointer_type, type_compare.greater_type, SemanticTree.basic_function_type.ltop, false);
             _pointer_to_int64 = make_type_conversion(_pointer_type, _int64_type, type_compare.less_type, SemanticTree.basic_function_type.ptol, false);
         }
@@ -2123,7 +2123,7 @@ namespace PascalABCCompiler.SystemLibrary
             Type t = typeof(char);
             Type[] types = new Type[1];
             types[0] = typeof(char);
-            System.Reflection.MethodInfo mi = t.GetMethod(compiler_string_consts.to_string_method_name, types);
+            System.Reflection.MethodInfo mi = t.GetMethod(StringConstants.to_string_method_name, types);
             compiled_function_node cfn = compiled_function_node.get_compiled_method(mi);
 
             inter.another_to_this = new type_conversion(cfn);
@@ -2157,32 +2157,32 @@ namespace PascalABCCompiler.SystemLibrary
 
         /*public static void RestoreStandartNames()
         {
-            _bool_type.SetName(compiler_string_consts.bool_type_name);
-            _byte_type.SetName(compiler_string_consts.byte_type_name);
-            _sbyte_type.SetName(compiler_string_consts.sbyte_type_name);
-            _short_type.SetName(compiler_string_consts.short_type_name);
-            _ushort_type.SetName(compiler_string_consts.ushort_type_name);
-            _integer_type.SetName(compiler_string_consts.integer_type_name); ;
-            _uint_type.SetName(compiler_string_consts.uint_type_name);
-            _int64_type.SetName(compiler_string_consts.long_type_name);
-            _uint64_type.SetName(compiler_string_consts.ulong_type_name);
-            _double_type.SetName(compiler_string_consts.real_type_name);
-            _float_type.SetName(compiler_string_consts.float_type_name);
-            _char_type.SetName(compiler_string_consts.char_type_name);
-            _string_type.SetName(compiler_string_consts.string_type_name);
-            _object_type.SetName(compiler_string_consts.object_type_name);
-            _exception_base_type.SetName(compiler_string_consts.base_exception_class_name);
-            _array_base_type.SetName(compiler_string_consts.base_array_type_name);
-            _delegate_base_type.SetName(compiler_string_consts.base_delegate_type_name);
-            _enum_base_type.SetName(compiler_string_consts.base_enum_class_name);
-            _pointer_type.SetName(compiler_string_consts.pointer_type_name);
-            _void_type.SetName(compiler_string_consts.void_class_name);
+            _bool_type.SetName(StringConstants.bool_type_name);
+            _byte_type.SetName(StringConstants.byte_type_name);
+            _sbyte_type.SetName(StringConstants.sbyte_type_name);
+            _short_type.SetName(StringConstants.short_type_name);
+            _ushort_type.SetName(StringConstants.ushort_type_name);
+            _integer_type.SetName(StringConstants.integer_type_name); ;
+            _uint_type.SetName(StringConstants.uint_type_name);
+            _int64_type.SetName(StringConstants.long_type_name);
+            _uint64_type.SetName(StringConstants.ulong_type_name);
+            _double_type.SetName(StringConstants.real_type_name);
+            _float_type.SetName(StringConstants.float_type_name);
+            _char_type.SetName(StringConstants.char_type_name);
+            _string_type.SetName(StringConstants.string_type_name);
+            _object_type.SetName(StringConstants.object_type_name);
+            _exception_base_type.SetName(StringConstants.base_exception_class_name);
+            _array_base_type.SetName(StringConstants.base_array_type_name);
+            _delegate_base_type.SetName(StringConstants.base_delegate_type_name);
+            _enum_base_type.SetName(StringConstants.base_enum_class_name);
+            _pointer_type.SetName(StringConstants.pointer_type_name);
+            _void_type.SetName(StringConstants.void_class_name);
         }*/
 
         private static void make_methods()
         {
             _empty_method = new basic_function_node(SemanticTree.basic_function_type.none, null, true);
-            basic_parameter bp = new basic_parameter(compiler_string_consts.unary_param_name, null,
+            basic_parameter bp = new basic_parameter(StringConstants.unary_param_name, null,
                 SemanticTree.parameter_type.value, _empty_method);
             _empty_method.parameters.AddElement(bp);
             _empty_method.compile_time_executor = delegated_empty_method;
@@ -2212,9 +2212,9 @@ namespace PascalABCCompiler.SystemLibrary
             string name, type_node ret_type, SemanticTree.parameter_type first_parameter_type)
         {
             basic_function_node bfn = new basic_function_node(bas_ft, ret_type,true,name);
-            basic_parameter to = new basic_parameter(compiler_string_consts.left_param_name, ctn,
+            basic_parameter to = new basic_parameter(StringConstants.left_param_name, ctn,
                 first_parameter_type, bfn);
-            basic_parameter from = new basic_parameter(compiler_string_consts.right_param_name, ctn,
+            basic_parameter from = new basic_parameter(StringConstants.right_param_name, ctn,
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(to);
             bfn.parameters.AddElement(from);
@@ -2231,7 +2231,7 @@ namespace PascalABCCompiler.SystemLibrary
 
         public static basic_function_node make_assign_operator(type_node ctn,SemanticTree.basic_function_type assign_method)
         {
-            basic_function_node ret = make_object_operator(ctn, assign_method, compiler_string_consts.assign_name,
+            basic_function_node ret = make_object_operator(ctn, assign_method, StringConstants.assign_name,
                 ctn, SemanticTree.parameter_type.var);
             ret.operation_kind = special_operation_kind.assign;
             return ret;
@@ -2244,12 +2244,12 @@ namespace PascalABCCompiler.SystemLibrary
 
         public static basic_function_node make_equivalence_operator(type_node ctn)
         {
-            return make_object_operator(ctn, SemanticTree.basic_function_type.objeq, compiler_string_consts.eq_name, _bool_type);
+            return make_object_operator(ctn, SemanticTree.basic_function_type.objeq, StringConstants.eq_name, _bool_type);
         }
 
         public static basic_function_node make_not_equivalence_operator(type_node ctn)
         {
-            return make_object_operator(ctn, SemanticTree.basic_function_type.objnoteq, compiler_string_consts.noteq_name, _bool_type);
+            return make_object_operator(ctn, SemanticTree.basic_function_type.objnoteq, StringConstants.noteq_name, _bool_type);
         }
 
         public static void init_reference_type(type_node tn)

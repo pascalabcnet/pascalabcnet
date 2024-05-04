@@ -125,6 +125,10 @@
       <Project>{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}</Project>
       <Name>ParserTools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\StringConstants\StringConstants.csproj">
+      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
+      <Name>StringConstants</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
       <Name>SyntaxTree</Name>

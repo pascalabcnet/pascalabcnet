@@ -392,7 +392,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     /*if (si.sym_info.semantic_node_type == semantic_node_type.local_variable)
                     {
-                        if (!(idName == compiler_string_consts.self_word && si.scope is SymbolTable.ClassMethodScope && _classScope != null) && InLambdaContext)
+                        if (!(idName == PascalABCCompiler.StringConstants.self_word && si.scope is SymbolTable.ClassMethodScope && _classScope != null) && InLambdaContext)
                         {
                             _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                         }
@@ -402,7 +402,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         _visitor.AddError(new CannotCaptureNonValueParameters(_visitor.get_location(id)));
                     }
                     
-                    if (idName == compiler_string_consts.self_word && si.scope is SymbolTable.ClassMethodScope &&
+                    if (idName == PascalABCCompiler.StringConstants.self_word && si.scope is SymbolTable.ClassMethodScope &&
                         _classScope != null)
                     {
                         var selfField = _classScope.VariablesDefinedInScope.Find(var => var.SymbolInfo == si);

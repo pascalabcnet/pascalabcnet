@@ -9,7 +9,7 @@ namespace PascalABCCompiler.Errors
     {
         public static string Get(string Id)
         {
-            return PascalABCCompiler.StringResources.Get("PARSER_ERRORS_" + Id);
+            return StringResources.Get("PARSER_ERRORS_" + Id);
         }
     }
 

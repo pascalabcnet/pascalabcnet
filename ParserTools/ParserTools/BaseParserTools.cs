@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using QUT.Gppg;
+using PascalABCCompiler.Parsers;
+using PascalABCCompiler.ParserTools.Directives;
 
 namespace PascalABCCompiler.ParserTools
 {
@@ -36,6 +38,9 @@ namespace PascalABCCompiler.ParserTools
         public List<compiler_directive> compilerDirectives;
 
         public static Dictionary<string, string> tokenNum; // строки, соответствующие терминалам, для вывода ошибок - SSM
+
+        protected BaseParser parserCached;
+        protected abstract BaseParser ParserCached { get; }
 
         public SourceContext ToSourceContext(LexLocation loc)
         {
@@ -83,10 +88,94 @@ namespace PascalABCCompiler.ParserTools
             warnings.Add(new CommonWarning(res, currentFileName, loc.begin_position.line_num, loc.begin_position.column_num));
         }
 
-        public string ReplaceSpecialSymbols(string text)
+        protected string ReplaceSpecialSymbols(string text)
         {
             text = text.Replace("''", "'");
             return text;
+        }
+
+        /// <summary>
+        /// Удаление кавычек у параметра директивы
+        /// </summary>
+        protected string DeleteQuotesFromDirectiveParam(string param)
+        {
+            if (param.Length != 1 && param.StartsWith("'") && param.EndsWith("'"))
+                return param.Substring(1, param.Length - 2);
+           
+            return param;
+        }
+
+        /// <summary>
+        /// Проверка директивы с помощью проверок из Parser.ValidDirectives
+        /// </summary>
+        public void CheckDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
+        {
+            BaseParser parserNeeded = ParserCached;
+
+            // проверка имени директивы
+            if (!parserNeeded.ValidDirectives.ContainsKey(directiveName))
+            {
+                AddWarningFromResource("UNKNOWN_DIRECTIVE{0}", loc, directiveName); // предупреждение для совместимости с Delphi
+                return;
+            }
+
+            var directiveInfo = parserNeeded.ValidDirectives[directiveName];
+
+            // случай директивы, переданной без параметров
+            if (directiveParams.Count == 0)
+            {
+                // если задан формат параметров и не поддерживается 0 параметров
+                if (directiveInfo != null && directiveInfo.checkParamsNumNeeded && !directiveInfo.paramsNums.Contains(0))
+                {
+                    AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
+                }
+                return;
+            }
+
+            // проверка на добавление параметров директиве без параметров
+            if (directiveInfo == null)
+            {
+                AddErrorFromResource("UNNECESSARY_DIRECTIVE_PARAM{0}", loc, directiveName);
+                return;
+            }
+
+            // проверка кол-ва параметров директивы (учитывается случай, когда их может не быть)
+            if (directiveInfo.checkParamsNumNeeded && !directiveInfo.paramsNums.Contains(directiveParams.Count))
+            {
+                AddWrongNumberOfParamsError(directiveName, directiveParams, loc, directiveInfo);
+                return;
+            }
+
+            // проверки параметров по отдельности
+            if (!directiveInfo.ParamsValid(directiveParams, out int indexOfMismatch, out string specificErrorMessage))
+            {
+                AddErrorFromResource("INCORRECT_DIRECTIVE_PARAM{0}{1}{2}", loc, directiveName, directiveParams[indexOfMismatch], specificErrorMessage);
+            }
+        }
+
+        /// <summary>
+        /// Формирование ошибки неправильного кол-ва параметров директивы в зависимости от возможных количеств из DirectiveInfo
+        /// </summary>
+        private void AddWrongNumberOfParamsError(string directiveName, List<string> directiveParams, SourceContext loc, DirectiveInfo directiveInfo)
+        {
+            string paramsNumString = "";
+            int maxParamsNum = directiveInfo.paramsNums.Max();
+            
+            if (directiveInfo.paramsNums.Length > 1)
+            {
+                if (directiveParams.Count > maxParamsNum)
+                {
+                    string paramString = maxParamsNum > 1 ? GetFromStringResources("PARAM_MULTIPLE1") : GetFromStringResources("PARAM_SINGLE2");
+                    paramsNumString = GetFromStringResources("NOT_MORE_THAN") + " " + maxParamsNum + " " + paramString;
+                }
+            }
+            else
+            {
+                string paramString = directiveInfo.paramsNums[0] > 1 ? GetFromStringResources("PARAM_MULTIPLE2") : GetFromStringResources("PARAM_SINGLE1");
+                paramsNumString = GetFromStringResources("EXACTLY") + " " + directiveInfo.paramsNums[0] + " " + paramString;
+            }
+
+            AddErrorFromResource("DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}", loc, directiveName, paramsNumString);
         }
 
         public char_const create_char_const(string text, SourceContext sc)

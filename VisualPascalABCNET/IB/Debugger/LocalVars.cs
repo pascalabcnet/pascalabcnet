@@ -323,9 +323,9 @@ namespace VisualPascalABC
                         List<DebugType> types = new List<DebugType>();
                         try
                         {
-                            if (val.Type.FullName.Contains(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName))
+                            if (val.Type.FullName.Contains(PascalABCCompiler.StringConstants.ImplementationSectionNamespaceName))
                         	{
-                                string interf_name = val.Type.FullName.Substring(0, val.Type.FullName.IndexOf(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
+                                string interf_name = val.Type.FullName.Substring(0, val.Type.FullName.IndexOf(PascalABCCompiler.StringConstants.ImplementationSectionNamespaceName));
                         		Type t = AssemblyHelper.GetTypeForStatic(interf_name);
                         		DebugType dt = DebugUtils.GetDebugType(t);
                         		types.Add(dt);

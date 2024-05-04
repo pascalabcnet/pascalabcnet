@@ -153,8 +153,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                         var semClassField = pair.Value.Item2;
                         var pn = (common_property_node)pair.Value.Item3;
 
-                        var readFunction = _visitor.GenerateGetMethodForField(pn, compiler_string_consts.GetGetAccessorName(pn.name), semClassField, null);
-                        var writeFunction = _visitor.GenerateSetMethodForField(pn, compiler_string_consts.GetSetAccessorName(pn.name), semClassField, null);
+                        var readFunction = _visitor.GenerateGetMethodForField(pn, PascalABCCompiler.StringConstants.GetGetAccessorName(pn.name), semClassField, null);
+                        var writeFunction = _visitor.GenerateSetMethodForField(pn, PascalABCCompiler.StringConstants.GetSetAccessorName(pn.name), semClassField, null);
 
                         pn.internal_get_function = readFunction;
                         pn.internal_set_function = writeFunction;

@@ -117,7 +117,7 @@ namespace VisualPascalABC
                 doc.Replace(offset, unitName.name.Length, new_val);
                 doc.CommitUpdate();
             }
-            WorkbenchServiceFactory.CodeCompletionParserController.RunParseThread();
+            WorkbenchServiceFactory.CodeCompletionParserController.SwitchOnIntellisence();
             VisualPABCSingleton.MainForm.StartTimer();
         }
 

@@ -600,7 +600,7 @@ namespace VisualPascalABC
                 if (event_description != null)
                 {
                     MethodInfo mi = event_description.e.EventType.GetMethod(
-                        PascalABCCompiler.TreeConverter.compiler_string_consts.invoke_method_name);
+                        StringConstants.invoke_method_name);
                     ParameterInfo[] pinfos = mi.GetParameters();
                     bool handler_found = false;
 

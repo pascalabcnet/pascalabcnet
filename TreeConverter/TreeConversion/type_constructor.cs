@@ -67,7 +67,7 @@ namespace PascalABCCompiler.TreeConverter
 				{
 					ctn.add_internal_interface(aii);
 				}
-				ctn.SetName(compiler_string_consts.get_array_type_name(ctn.element_type.name,rank));
+				ctn.SetName(StringConstants.get_array_type_name(ctn.element_type.name,rank));
 				if (!types_unsized_arrays.TryGetValue(element_type,out ret))
 				{
 					ret = new List<type_node>();
@@ -86,7 +86,7 @@ namespace PascalABCCompiler.TreeConverter
 			}
 
 			common_type_node comtn = new common_type_node(SystemLibrary.SystemLibrary.array_base_type,
-			                                              compiler_string_consts.get_array_type_name(element_type.name,rank), SemanticTree.type_access_level.tal_public,
+			                                              StringConstants.get_array_type_name(element_type.name,rank), SemanticTree.type_access_level.tal_public,
 			                                              cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope,SystemLibrary.SystemLibrary.array_base_type.Scope), loc);
 			comtn.internal_type_special_kind = SemanticTree.type_special_kind.array_kind;
 			comtn.is_class = true;
@@ -199,9 +199,9 @@ namespace PascalABCCompiler.TreeConverter
 			el.AddElement(exprs[0]);
 			el.AddElement(cfc);
 
-			SymbolInfo si = exprs[0].type.find_first_in_type(compiler_string_consts.assign_name);
+			SymbolInfo si = exprs[0].type.find_first_in_type(StringConstants.assign_name);
             if (si == null && exprs[0].type.original_generic != null)
-                si = exprs[0].type.original_generic.find_first_in_type(compiler_string_consts.assign_name);
+                si = exprs[0].type.original_generic.find_first_in_type(StringConstants.assign_name);
             if (si == null)
 			{
 				throw new CompilerInternalError("Undefined delegate operation");
@@ -228,9 +228,9 @@ namespace PascalABCCompiler.TreeConverter
 			el.AddElement(exprs[0]);
 			el.AddElement(cfc);
 
-			SymbolInfo si = exprs[0].type.find_first_in_type(compiler_string_consts.assign_name);
+			SymbolInfo si = exprs[0].type.find_first_in_type(StringConstants.assign_name);
             if (si == null && exprs[0].type.original_generic != null)
-                si = exprs[0].type.original_generic.find_first_in_type(compiler_string_consts.assign_name);
+                si = exprs[0].type.original_generic.find_first_in_type(StringConstants.assign_name);
             if (si == null)
 			{
 				throw new CompilerInternalError("Undefined delegate operation");
@@ -270,18 +270,18 @@ namespace PascalABCCompiler.TreeConverter
 		public void init_delegate(common_type_node ctn, type_node return_value_type, parameter_list parameters,
 		                                        location loc)
 		{
-			common_method_node constructor=new common_method_node(compiler_string_consts.default_constructor_name,null,loc,ctn,SemanticTree.polymorphic_state.ps_common,
+			common_method_node constructor=new common_method_node(StringConstants.default_constructor_name,null,loc,ctn,SemanticTree.polymorphic_state.ps_common,
 			                                                      SemanticTree.field_access_level.fal_public,
 			                                                      convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
 			constructor.is_constructor = true;
 			constructor.return_value_type = ctn;
 			constructor.function_code=new runtime_statement(SemanticTree.runtime_statement_type.ctor_delegate,loc);
 
-			common_method_node invoke=new common_method_node(compiler_string_consts.invoke_method_name,
+			common_method_node invoke=new common_method_node(StringConstants.invoke_method_name,
 			                                                 return_value_type,loc,ctn,SemanticTree.polymorphic_state.ps_virtual,
 			                                                 SemanticTree.field_access_level.fal_public,
 			                                                 convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.invoke_method_name,new SymbolInfo(invoke));
+			ctn.add_name(StringConstants.invoke_method_name,new SymbolInfo(invoke));
 			for (int i=0; i<parameters.Count; i++)
 			{
 				if (parameters[i] is compiled_parameter)
@@ -293,28 +293,28 @@ namespace PascalABCCompiler.TreeConverter
 			invoke.parameters.AddRange(parameters);
 			invoke.function_code = new runtime_statement(SemanticTree.runtime_statement_type.invoke_delegate, loc);
 
-			common_method_node begin_invoke = new common_method_node(compiler_string_consts.begin_invoke_method_name,
+			common_method_node begin_invoke = new common_method_node(StringConstants.begin_invoke_method_name,
 			                                                         begin_invoke_result_type, loc, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public,
 			                                                         convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.begin_invoke_method_name,new SymbolInfo(begin_invoke));
+			ctn.add_name(StringConstants.begin_invoke_method_name,new SymbolInfo(begin_invoke));
 			parameter_list begin_invoke_params=new parameter_list();
 			begin_invoke_params.AddRange(parameters);
-			common_parameter cp=new common_parameter(compiler_string_consts.callback_string,begin_invoke_parameter_type,
+			common_parameter cp=new common_parameter(StringConstants.callback_string,begin_invoke_parameter_type,
 			                                         SemanticTree.parameter_type.value,begin_invoke,concrete_parameter_type.cpt_none,
 			                                         null,loc);
 			begin_invoke_params.AddElement(cp);
-			cp = new common_parameter(compiler_string_consts.object_in_par_string, SystemLibrary.SystemLibrary.object_type,
+			cp = new common_parameter(StringConstants.object_in_par_string, SystemLibrary.SystemLibrary.object_type,
 			                          SemanticTree.parameter_type.value,begin_invoke, concrete_parameter_type.cpt_none,
 			                          null, loc);
 			begin_invoke_params.AddElement(cp);
 			begin_invoke.parameters.AddRange(begin_invoke_params);
 			begin_invoke.function_code = new runtime_statement(SemanticTree.runtime_statement_type.begin_invoke_delegate, loc);
 
-			common_method_node end_invoke = new common_method_node(compiler_string_consts.end_invoke_method_name,
+			common_method_node end_invoke = new common_method_node(StringConstants.end_invoke_method_name,
 			                                                       return_value_type, loc, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public,
 			                                                       convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.end_invoke_method_name,new SymbolInfo(end_invoke));
-			cp = new common_parameter(compiler_string_consts.result_string, begin_invoke_result_type,
+			ctn.add_name(StringConstants.end_invoke_method_name,new SymbolInfo(end_invoke));
+			cp = new common_parameter(StringConstants.result_string, begin_invoke_result_type,
 			                          SemanticTree.parameter_type.value, end_invoke, concrete_parameter_type.cpt_none,
 			                          null, loc);
 			end_invoke.parameters.AddElement(cp);
@@ -338,49 +338,49 @@ namespace PascalABCCompiler.TreeConverter
 		public void AddOperatorsToDelegate(common_type_node ctn, location loc)
 		{
 			//+
-			common_method_node cmn_add = new common_method_node(compiler_string_consts.plus_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
+			common_method_node cmn_add = new common_method_node(StringConstants.plus_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
 			                                                    SemanticTree.field_access_level.fal_public, ctn.scope);
 			cmn_add.compile_time_executor = delegate_add_compile_time_executor;
 			ctn.scope.AddSymbol(cmn_add.name, new SymbolInfo(cmn_add));
-			common_parameter cp1 = new common_parameter(compiler_string_consts.left_param_name, ctn, SemanticTree.parameter_type.value,
+			common_parameter cp1 = new common_parameter(StringConstants.left_param_name, ctn, SemanticTree.parameter_type.value,
 			                                            cmn_add, concrete_parameter_type.cpt_none, null, loc);
-			common_parameter cp2 = new common_parameter(compiler_string_consts.right_param_name, ctn, SemanticTree.parameter_type.value,
+			common_parameter cp2 = new common_parameter(StringConstants.right_param_name, ctn, SemanticTree.parameter_type.value,
 			                                            cmn_add, concrete_parameter_type.cpt_none, null, loc);
 			cmn_add.parameters.AddElement(cp1);
 			cmn_add.parameters.AddElement(cp2);
 
 			//+=
-			common_method_node cmn_add_assign = new common_method_node(compiler_string_consts.plusassign_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
+			common_method_node cmn_add_assign = new common_method_node(StringConstants.plusassign_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
 			                                                           SemanticTree.field_access_level.fal_public, ctn.scope);
 			cmn_add_assign.compile_time_executor = delegate_add_assign_compile_time_executor;
 			ctn.scope.AddSymbol(cmn_add_assign.name, new SymbolInfo(cmn_add_assign));
-			common_parameter cp3 = new common_parameter(compiler_string_consts.left_param_name, ctn, SemanticTree.parameter_type.value,
+			common_parameter cp3 = new common_parameter(StringConstants.left_param_name, ctn, SemanticTree.parameter_type.value,
 			                                            cmn_add_assign, concrete_parameter_type.cpt_none, null, loc);
-			common_parameter cp4 = new common_parameter(compiler_string_consts.right_param_name, ctn, SemanticTree.parameter_type.value,
+			common_parameter cp4 = new common_parameter(StringConstants.right_param_name, ctn, SemanticTree.parameter_type.value,
 			                                            cmn_add_assign, concrete_parameter_type.cpt_none, null, loc);
 			cmn_add_assign.parameters.AddElement(cp3);
 			cmn_add_assign.parameters.AddElement(cp4);
 
 			//-
-			common_method_node cmn_sub = new common_method_node(compiler_string_consts.minus_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
+			common_method_node cmn_sub = new common_method_node(StringConstants.minus_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
 			                                                    SemanticTree.field_access_level.fal_public, ctn.scope);
 			cmn_sub.compile_time_executor = delegate_sub_compile_time_executor;
 			ctn.scope.AddSymbol(cmn_sub.name, new SymbolInfo(cmn_sub));
-			common_parameter cp12 = new common_parameter(compiler_string_consts.left_param_name, ctn, SemanticTree.parameter_type.value,
+			common_parameter cp12 = new common_parameter(StringConstants.left_param_name, ctn, SemanticTree.parameter_type.value,
 			                                             cmn_sub, concrete_parameter_type.cpt_none, null, loc);
-			common_parameter cp22 = new common_parameter(compiler_string_consts.right_param_name, ctn, SemanticTree.parameter_type.value,
+			common_parameter cp22 = new common_parameter(StringConstants.right_param_name, ctn, SemanticTree.parameter_type.value,
 			                                             cmn_sub, concrete_parameter_type.cpt_none, null, loc);
 			cmn_sub.parameters.AddElement(cp12);
 			cmn_sub.parameters.AddElement(cp22);
 
 			//-=
-			common_method_node cmn_sub_assign = new common_method_node(compiler_string_consts.minusassign_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
+			common_method_node cmn_sub_assign = new common_method_node(StringConstants.minusassign_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
 			                                                           SemanticTree.field_access_level.fal_public, ctn.scope);
 			cmn_sub_assign.compile_time_executor = delegate_sub_assign_compile_time_executor;
 			ctn.scope.AddSymbol(cmn_sub_assign.name, new SymbolInfo(cmn_sub_assign));
-			common_parameter cp32 = new common_parameter(compiler_string_consts.left_param_name, ctn, SemanticTree.parameter_type.value,
+			common_parameter cp32 = new common_parameter(StringConstants.left_param_name, ctn, SemanticTree.parameter_type.value,
 			                                             cmn_sub_assign, concrete_parameter_type.cpt_none, null, loc);
-			common_parameter cp42 = new common_parameter(compiler_string_consts.right_param_name, ctn, SemanticTree.parameter_type.value,
+			common_parameter cp42 = new common_parameter(StringConstants.right_param_name, ctn, SemanticTree.parameter_type.value,
 			                                             cmn_sub_assign, concrete_parameter_type.cpt_none, null, loc);
 			cmn_sub_assign.parameters.AddElement(cp32);
 			cmn_sub_assign.parameters.AddElement(cp42);
@@ -389,7 +389,7 @@ namespace PascalABCCompiler.TreeConverter
 		private string get_pascal_array_name()
 		{
 			pascal_arrays_num++;
-			return (compiler_string_consts.pascal_array_name + pascal_arrays_num.ToString());
+			return (StringConstants.pascal_array_name + pascal_arrays_num.ToString());
 		}
 
 		private type_node create_array_type(ordinal_type_interface oti_indexer, type_node element_type,common_namespace_node _cmn, location loc)
@@ -425,15 +425,15 @@ namespace PascalABCCompiler.TreeConverter
 			
 			//ctn.internal_is_value = true;
 
-			class_constant_definition cdn1 = new class_constant_definition(compiler_string_consts.lower_array_const_name,
+			class_constant_definition cdn1 = new class_constant_definition(StringConstants.lower_array_const_name,
 			                                                               oti_indexer.lower_value, loc, ctn, SemanticTree.field_access_level.fal_public);
 			ctn.scope.AddSymbol(cdn1.name, new SymbolInfo(cdn1));
 
-			class_constant_definition cdn2 = new class_constant_definition(compiler_string_consts.upper_array_const_name,
+			class_constant_definition cdn2 = new class_constant_definition(StringConstants.upper_array_const_name,
 			                                                               oti_indexer.upper_value, loc, ctn, SemanticTree.field_access_level.fal_public);
 			ctn.scope.AddSymbol(cdn2.name, new SymbolInfo(cdn2));
 
-			class_field int_arr = new class_field(compiler_string_consts.internal_array_name, sa, ctn,
+			class_field int_arr = new class_field(StringConstants.internal_array_name, sa, ctn,
 			                                      SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_public,loc);
 			ctn.scope.AddSymbol(int_arr.name, new SymbolInfo(int_arr));
 			ctn.fields.AddElement(int_arr);
@@ -443,10 +443,10 @@ namespace PascalABCCompiler.TreeConverter
 			ctn.const_defs.AddElement(cdn1);
 			ctn.const_defs.AddElement(cdn2);
 
-			common_method_node get_func = new common_method_node(compiler_string_consts.get_val_pascal_array_name,
+			common_method_node get_func = new common_method_node(StringConstants.get_val_pascal_array_name,
 			                                                     element_type, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc), ctn, SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_private,
 			                                                     convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope, "get " + name));
-			common_parameter get_param = new common_parameter(compiler_string_consts.unary_param_name,
+			common_parameter get_param = new common_parameter(StringConstants.unary_param_name,
 			                                                  oti_indexer.lower_value.type, SemanticTree.parameter_type.value, get_func, concrete_parameter_type.cpt_none,
 			                                                  null, loc);
 			get_func.parameters.AddElement(get_param);
@@ -468,14 +468,14 @@ namespace PascalABCCompiler.TreeConverter
 
 			get_func.function_code = sn;
 
-			common_method_node set_func = new common_method_node(compiler_string_consts.set_val_pascal_array_name,
+			common_method_node set_func = new common_method_node(StringConstants.set_val_pascal_array_name,
 			                                                     null, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc), ctn, SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_private,
 			                                                     convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope, "set " + name));
-			common_parameter set_ind = new common_parameter(compiler_string_consts.left_param_name,
+			common_parameter set_ind = new common_parameter(StringConstants.left_param_name,
 			                                                oti_indexer.lower_value.type, SemanticTree.parameter_type.value, set_func, concrete_parameter_type.cpt_none,
 			                                                null, loc);
 			set_func.parameters.AddElement(set_ind);
-			common_parameter set_val = new common_parameter(compiler_string_consts.right_param_name,
+			common_parameter set_val = new common_parameter(StringConstants.right_param_name,
 			                                                element_type, SemanticTree.parameter_type.value, set_func, concrete_parameter_type.cpt_none, null, loc);
 			set_func.parameters.AddElement(set_val);
 
@@ -490,7 +490,7 @@ namespace PascalABCCompiler.TreeConverter
 
 			expression_node index_expr2 = new simple_array_indexing(cfr2, sub_expr2, element_type,loc);
 
-			SymbolInfo si = element_type.find_first_in_type(compiler_string_consts.assign_name);
+			SymbolInfo si = element_type.find_first_in_type(StringConstants.assign_name);
 			if (si == null)
 			{
 				throw new NotSupportedError(loc);
@@ -512,10 +512,10 @@ namespace PascalABCCompiler.TreeConverter
 			ctn.methods.AddElement(get_func);
 			ctn.methods.AddElement(set_func);
 
-			common_property_node cpn = new common_property_node(compiler_string_consts.index_property_pascal_array_name,
+			common_property_node cpn = new common_property_node(StringConstants.index_property_pascal_array_name,
 			                                                    ctn, element_type, get_func, set_func, loc, SemanticTree.field_access_level.fal_public, SemanticTree.polymorphic_state.ps_common);
 
-			common_parameter prop_cp = new common_parameter(compiler_string_consts.unary_param_name, oti_indexer.lower_value.type,
+			common_parameter prop_cp = new common_parameter(StringConstants.unary_param_name, oti_indexer.lower_value.type,
 			                                                SemanticTree.parameter_type.value, null, concrete_parameter_type.cpt_none, null, loc);
 			cpn.parameters.AddElement(prop_cp);
 
@@ -534,10 +534,10 @@ namespace PascalABCCompiler.TreeConverter
 
             if (element_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper)
             {
-                ctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName)));
-                common_method_node en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumeratorInterfaceName)), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
+                ctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.IEnumerableInterfaceName)));
+                common_method_node en_cmn = new common_method_node(StringConstants.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.IEnumeratorInterfaceName)), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
 
-                compiled_function_node en_fnc = NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).FirstOrDefault().sym_info as compiled_function_node;
+                compiled_function_node en_fnc = NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(StringConstants.IEnumerableInterfaceName), StringConstants.GetEnumeratorMethodName).FirstOrDefault().sym_info as compiled_function_node;
                 statements_list sl = new statements_list(null);
                 sl.statements.AddElement(new return_node(
                     new compiled_function_call(en_fnc, new class_field_reference(int_arr, new this_node(ctn, null), null), null), null));
@@ -549,11 +549,11 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     List<type_node> generic_args = new List<type_node>();
                     generic_args.Add(element_type);
-                    type_node en_tn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumerableInterfaceName)).get_instance(generic_args);
+                    type_node en_tn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.IGenericEnumerableInterfaceName)).get_instance(generic_args);
                     ctn.ImplementingInterfaces.Add(en_tn);
 
-                    en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumeratorInterfaceName)).get_instance(generic_args), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
-                    //en_fnc = en_tn.find_in_type("GetEnumerator").sym_info as function_node;//NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).sym_info as compiled_function_node;
+                    en_cmn = new common_method_node(StringConstants.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.IGenericEnumeratorInterfaceName)).get_instance(generic_args), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
+                    //en_fnc = en_tn.find_in_type("GetEnumerator").sym_info as function_node;//NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(StringConstants.IGenericEnumerableInterfaceName), StringConstants.GetEnumeratorMethodName).sym_info as compiled_function_node;
                     List<SymbolInfo> en_sil = en_tn.find_in_type("GetEnumerator");
                     if (en_sil != null && en_sil.Count() > 1 && (en_sil[1].sym_info as function_node).return_value_type.is_generic_type_instance)
                         en_sil = en_sil.GetRange(1, en_sil.Count() - 1);
@@ -573,7 +573,7 @@ namespace PascalABCCompiler.TreeConverter
 			
 			//= operation
 			SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(ctn.scope, _cmn.scope, null, "= operator from " + ctn.scope);
-        	common_method_node cmn_eq = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
+        	common_method_node cmn_eq = new common_method_node(StringConstants.GetNETOperName(StringConstants.eq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn_eq.IsOperator = true;
         	common_parameter prm1 = new common_parameter("a",ctn,SemanticTree.parameter_type.value,cmn_eq,concrete_parameter_type.cpt_none,null,null);
@@ -592,7 +592,7 @@ namespace PascalABCCompiler.TreeConverter
         	while_stmt.body = while_body;
         	simple_array_indexing left_sar = new simple_array_indexing(new class_field_reference(int_arr, new common_parameter_reference(prm1,0,null), null),var_ref,element_type,null);
         	simple_array_indexing right_sar = new simple_array_indexing(new class_field_reference(int_arr, new common_parameter_reference(prm2,0,null), null),var_ref,element_type,null);
-        	expression_node cond2 = SystemLibrary.SystemLibrary.syn_visitor.find_operator(compiler_string_consts.noteq_name,
+        	expression_node cond2 = SystemLibrary.SystemLibrary.syn_visitor.find_operator(StringConstants.noteq_name,
         		                                                                            left_sar,right_sar,null);
         	if_node if_stmt = new if_node(cond2,new return_node(new bool_const_node(false,null),null),null,null);
         	while_body.statements.AddElement(if_stmt);
@@ -604,11 +604,11 @@ namespace PascalABCCompiler.TreeConverter
         	cmn_eq.function_code = body;
         	cmn_eq.is_overload = true;
         	ctn.methods.AddElement(cmn_eq);
-        	ctn.Scope.AddSymbol(compiler_string_consts.eq_name,new SymbolInfo(cmn_eq));
+        	ctn.Scope.AddSymbol(StringConstants.eq_name,new SymbolInfo(cmn_eq));
         	
         	//<> operation
 			scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(ctn.scope, _cmn.scope, null, "<> operator from " + ctn.scope);
-        	common_method_node cmn_noteq = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
+        	common_method_node cmn_noteq = new common_method_node(StringConstants.GetNETOperName(StringConstants.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn_noteq.IsOperator = true;
         	prm1 = new common_parameter("a",ctn,SemanticTree.parameter_type.value,cmn_noteq,concrete_parameter_type.cpt_none,null,null);
@@ -627,7 +627,7 @@ namespace PascalABCCompiler.TreeConverter
         	while_stmt.body = while_body;
         	left_sar = new simple_array_indexing(new class_field_reference(int_arr, new common_parameter_reference(prm1,0,null), null),var_ref,element_type,null);
         	right_sar = new simple_array_indexing(new class_field_reference(int_arr, new common_parameter_reference(prm2,0,null), null),var_ref,element_type,null);
-        	cond2 = SystemLibrary.SystemLibrary.syn_visitor.find_operator(compiler_string_consts.noteq_name,
+        	cond2 = SystemLibrary.SystemLibrary.syn_visitor.find_operator(StringConstants.noteq_name,
         		                                                                            left_sar,right_sar,null);
         	if_stmt = new if_node(cond2,new return_node(new bool_const_node(true,null),null),null,null);
         	while_body.statements.AddElement(if_stmt);
@@ -639,7 +639,7 @@ namespace PascalABCCompiler.TreeConverter
         	cmn_noteq.function_code = body;
         	cmn_noteq.is_overload = true;
         	ctn.methods.AddElement(cmn_noteq);
-        	ctn.Scope.AddSymbol(compiler_string_consts.noteq_name,new SymbolInfo(cmn_noteq));
+        	ctn.Scope.AddSymbol(StringConstants.noteq_name,new SymbolInfo(cmn_noteq));
         	
         	//Equals
         	/*scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope);
@@ -653,11 +653,11 @@ namespace PascalABCCompiler.TreeConverter
         	cmn_equals.var_definition_nodes_list.AddElement(vdn);
         	var_ref = new local_variable_reference(vdn,0,null);//this.convertion_data_and_alghoritms.syntax_tree_visitor.create_variable_reference(vdn,null);
         	as_node _as = new as_node(new common_parameter_reference(prm1,0,null),ctn,null);
-        	base_function_call ass_bfc = new basic_function_call(SystemLibrary.SystemLibrary.object_type.find(compiler_string_consts.assign_name).sym_info as basic_function_node,null);
+        	base_function_call ass_bfc = new basic_function_call(SystemLibrary.SystemLibrary.object_type.find(StringConstants.assign_name).sym_info as basic_function_node,null);
         	ass_bfc.parameters.AddElement(var_ref);
         	ass_bfc.parameters.AddElement(_as);
         	body.statements.AddElement(ass_bfc);
-        	common_static_method_call csmc = new common_static_method_call(ctn.find_in_type(compiler_string_consts.eq_name).sym_info as common_method_node,null);
+        	common_static_method_call csmc = new common_static_method_call(ctn.find_in_type(StringConstants.eq_name).sym_info as common_method_node,null);
         	csmc.parameters.AddElement(new this_node(ctn,null));
         	csmc.parameters.AddElement(var_ref);
         	body.statements.AddElement(new return_node(csmc,null));
@@ -684,23 +684,23 @@ namespace PascalABCCompiler.TreeConverter
 			type_node element_type = ctn.base_type;
 			if (element_type != SystemLibrary.SystemLibrary.char_type && element_type != SystemLibrary.SystemLibrary.bool_type)
 			{
-				//element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
-				/*element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.bassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sbassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.usassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.uiassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.lassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
+				//element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+				/*element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.bassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sbassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.usassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.uiassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.lassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.char_type)
-				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
+				element_type.add_generated_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
 			else if (element_type == SystemLibrary.SystemLibrary.bool_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
+                element_type.add_generated_name(StringConstants.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
 			else if (element_type.IsEnum)
 			{
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(StringConstants.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(StringConstants.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 			}
 			
 			if (element_type == SystemLibrary.SystemLibrary.integer_type)
@@ -729,28 +729,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartoi,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.byte_type)
 			{
@@ -778,28 +778,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.chartob,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.sbyte_type)
 			{
@@ -827,28 +827,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.chartosb,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.short_type)
 			{
@@ -876,28 +876,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartos,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.ushort_type)
 			{
@@ -925,28 +925,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartous,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.uint_type)
 			{
@@ -974,28 +974,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartoui,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.uint_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.uint_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.uint_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.uint_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.uint_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.uint_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.uint_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.uint_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.uint_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.uint_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.uint_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.uint_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.uint_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.uint_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.uint_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.uint_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.uint_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.uint_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.uint_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.uint_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.uint_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.uint_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.uint_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.uint_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.uint_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.uint_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.uint_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.uint_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.uint_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.uint_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.uint_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.uint_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.uint_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.uint_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.uint_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.uint_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.int64_type)
 			{
@@ -1023,28 +1023,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartol,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.long_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.long_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.long_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.long_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.long_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.long_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.long_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.long_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.long_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.long_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.long_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.long_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.long_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.long_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.long_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.long_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.long_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.long_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.long_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.long_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.long_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.long_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.long_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.long_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.long_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.long_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.long_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.long_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.long_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.long_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.long_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.long_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.long_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.long_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.long_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.long_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.uint64_type)
 			{
@@ -1073,28 +1073,28 @@ namespace PascalABCCompiler.TreeConverter
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartoul,false);
 				
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.ulong_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.ulong_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.ulong_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.ulong_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.ulong_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.ulong_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.ulong_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.ulong_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.ulong_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.ulong_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.ulong_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.ulong_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.ulong_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.ulong_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.ulong_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.ulong_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.ulong_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.ulong_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.ulong_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.ulong_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.ulong_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.ulong_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.ulong_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.ulong_idiv);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.ulong_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.ulong_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.ulong_xor);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.ulong_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.ulong_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.ulong_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.ulong_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.ulong_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.ulong_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.ulong_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.ulong_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.ulong_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.char_type)
 			{
@@ -1122,12 +1122,12 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.real_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.dtochar,false);
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartof,false);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.char_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.char_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.char_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.char_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.char_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.char_noteq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.char_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.char_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.char_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.char_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.char_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.char_noteq);
 			}
 			else if (element_type.IsEnum)
 			{
@@ -1187,7 +1187,7 @@ namespace PascalABCCompiler.TreeConverter
 			                                                            lower_value, upper_value, oti_old.value_to_int, oti_old.ordinal_type_to_int);
 			//type_table.add_type_conversion_from_defined(ctn,SystemLibrary.SystemLibrary.integer_type,new basic_function_node(PascalABCCompiler.SemanticTree.basic_function_type.none,ctn,true,"diaptoord"),type_compare.less_type,true);
 			//type_table.add_type_conversion_from_defined(SystemLibrary.SystemLibrary.integer_type,ctn,new basic_function_node(PascalABCCompiler.SemanticTree.basic_function_type.none,ctn,true,"ordtodiap"),type_compare.less_type,true);
-			//element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+			//element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 			//type_table.add_type_conversion_from_defined(ctn,SystemLibrary.SystemLibrary.byte_type,new basic_function_node(PascalABCCompiler.SemanticTree.basic_function_type.none,ctn,true,"diaptoord"),type_compare.less_type,true);
 			//type_table.add_type_conversion_from_defined(SystemLibrary.SystemLibrary.byte_type,ctn,new basic_function_node(PascalABCCompiler.SemanticTree.basic_function_type.none,ctn,true,"ordtodiap"),type_compare.less_type,true);
 			
@@ -1196,23 +1196,23 @@ namespace PascalABCCompiler.TreeConverter
 			
 			if (element_type != SystemLibrary.SystemLibrary.char_type && element_type != SystemLibrary.SystemLibrary.bool_type)
 			{
-				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
-				/*element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.bassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sbassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.usassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.uiassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.lassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
+				element_type.add_generated_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+				/*element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.bassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sbassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.usassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.uiassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.lassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.char_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
+                element_type.add_generated_name(StringConstants.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
 			else if (element_type == SystemLibrary.SystemLibrary.bool_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
+                element_type.add_generated_name(StringConstants.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
 			else if (element_type.IsEnum)
 			{
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(StringConstants.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(StringConstants.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 			}
 			if (element_type == SystemLibrary.SystemLibrary.integer_type)
 			{
@@ -1239,28 +1239,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartoi,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-                SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+                SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.byte_type)
 			{
@@ -1288,28 +1288,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.chartob,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.sbyte_type)
 			{
@@ -1337,28 +1337,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.chartosb,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.short_type)
 			{
@@ -1386,28 +1386,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartos,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.ushort_type)
 			{
@@ -1435,28 +1435,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartous,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.int_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.int_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.int_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.int_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.int_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.int_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.int_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.int_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.int_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.int_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.int_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.int_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.int_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.int_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.int_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.int_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.int_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.uint_type)
 			{
@@ -1484,28 +1484,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartoui,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.uint_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.uint_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.uint_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.uint_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.uint_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.uint_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.uint_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.uint_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.uint_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.uint_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.uint_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.uint_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.uint_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.uint_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.uint_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.uint_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.uint_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.uint_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.uint_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.uint_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.uint_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.uint_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.uint_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.uint_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.uint_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.uint_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.uint_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.uint_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.uint_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.uint_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.uint_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.uint_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.uint_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.uint_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.uint_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.uint_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.int64_type)
 			{
@@ -1533,28 +1533,28 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.itof,true);
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartol,false);
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.long_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.long_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.long_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.long_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.long_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.long_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.long_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.long_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.long_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.long_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.long_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.long_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.long_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.long_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.long_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.long_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.long_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.long_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.long_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.long_idiv);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.long_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.long_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.long_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.long_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.long_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.long_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.long_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.long_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.long_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.long_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.long_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.long_xor);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.long_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.long_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.long_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.long_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.uint64_type)
 			{
@@ -1583,28 +1583,28 @@ namespace PascalABCCompiler.TreeConverter
 				SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.char_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartoul,false);
 				
 				
-				//SystemLibrary.SystemLibrary.make_unary_empty_operator(compiler_string_consts.plus_name, ctn, ctn);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.not_name, ctn, SystemLibrary.SystemLibrary.ulong_not);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.ulong_unmin);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.ulong_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.ulong_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.ulong_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.ulong_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.ulong_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.ulong_noteq);
+				//SystemLibrary.SystemLibrary.make_unary_empty_operator(StringConstants.plus_name, ctn, ctn);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.not_name, ctn, SystemLibrary.SystemLibrary.ulong_not);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.ulong_unmin);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.ulong_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.ulong_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.ulong_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.ulong_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.ulong_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.ulong_noteq);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.plus_name, ctn, SystemLibrary.SystemLibrary.ulong_add);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.minus_name, ctn, SystemLibrary.SystemLibrary.ulong_sub);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mul_name, ctn, SystemLibrary.SystemLibrary.ulong_mul);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.idiv_name, ctn, SystemLibrary.SystemLibrary.ulong_idiv);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.plus_name, ctn, SystemLibrary.SystemLibrary.ulong_add);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.minus_name, ctn, SystemLibrary.SystemLibrary.ulong_sub);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mul_name, ctn, SystemLibrary.SystemLibrary.ulong_mul);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.idiv_name, ctn, SystemLibrary.SystemLibrary.ulong_idiv);
 
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.and_name, ctn, SystemLibrary.SystemLibrary.ulong_and);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.or_name, ctn, SystemLibrary.SystemLibrary.ulong_or);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.xor_name, ctn, SystemLibrary.SystemLibrary.ulong_xor);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.mod_name, ctn, SystemLibrary.SystemLibrary.ulong_mod);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.and_name, ctn, SystemLibrary.SystemLibrary.ulong_and);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.or_name, ctn, SystemLibrary.SystemLibrary.ulong_or);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.xor_name, ctn, SystemLibrary.SystemLibrary.ulong_xor);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.mod_name, ctn, SystemLibrary.SystemLibrary.ulong_mod);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shl_name, ctn, SystemLibrary.SystemLibrary.ulong_shl);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.shr_name, ctn, SystemLibrary.SystemLibrary.ulong_shr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shl_name, ctn, SystemLibrary.SystemLibrary.ulong_shl);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.shr_name, ctn, SystemLibrary.SystemLibrary.ulong_shr);
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.char_type)
 			{
@@ -1632,12 +1632,12 @@ namespace PascalABCCompiler.TreeConverter
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.real_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.dtochar,false);
 				//SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.float_type,ctn,type_compare.less_type,PascalABCCompiler.SemanticTree.basic_function_type.chartof,false);
 				
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.gr_name, ctn, SystemLibrary.SystemLibrary.char_gr);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.greq_name, ctn, SystemLibrary.SystemLibrary.char_greq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.sm_name, ctn, SystemLibrary.SystemLibrary.char_sm);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.smeq_name, ctn, SystemLibrary.SystemLibrary.char_smeq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.eq_name, ctn, SystemLibrary.SystemLibrary.char_eq);
-				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(compiler_string_consts.noteq_name, ctn, SystemLibrary.SystemLibrary.char_noteq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.gr_name, ctn, SystemLibrary.SystemLibrary.char_gr);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.greq_name, ctn, SystemLibrary.SystemLibrary.char_greq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.sm_name, ctn, SystemLibrary.SystemLibrary.char_sm);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.smeq_name, ctn, SystemLibrary.SystemLibrary.char_smeq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.eq_name, ctn, SystemLibrary.SystemLibrary.char_eq);
+				SystemLibrary.SystemLibrary.add_generated_funtion_to_type(StringConstants.noteq_name, ctn, SystemLibrary.SystemLibrary.char_noteq);
 			}
 			else if (element_type.IsEnum)
 			{
@@ -1714,7 +1714,7 @@ namespace PascalABCCompiler.TreeConverter
 			//this.convertion_data_and_alghoritms.syntax_tree_visitor.context.converted_namespace.functions.AddElement(cnfn);
 			// if (SystemLibrary.SystemLibrary.system_unit.namespaces.Count > 0)
 			// 	SystemLibrary.SystemLibrary.system_unit.namespaces[0].functions.AddElement(cnfn);
-			// (SystemLibrary.SystemLibrary.system_unit.scope.Find(PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_name).sym_info as common_namespace_node).functions.AddElement(cnfn);
+			// (SystemLibrary.SystemLibrary.system_unit.scope.Find(StringConstants.system_unit_name).sym_info as common_namespace_node).functions.AddElement(cnfn);
 			// else
 			// 	this.convertion_data_and_alghoritms.syntax_tree_visitor.context.converted_namespace.functions.AddElement(cnfn);
 			//            statements_list sl = new statements_list(null);
@@ -1783,19 +1783,19 @@ namespace PascalABCCompiler.TreeConverter
 //
 			//           SystemLibrary.SystemLibrary.system_unit.scope.AddSymbol("Dec",new SymbolInfo(cnfn));
 			// if (element_type == SystemLibrary.SystemLibrary.integer_type)
-			// element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+			// element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 			// else if (element_type == SystemLibrary.SystemLibrary.byte_type)
-			// element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.bassign)));
-			/*element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sbassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.usassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.uiassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.lassign)));
-            	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
+			// element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.bassign)));
+			/*element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sbassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.usassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.uiassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.lassign)));
+            	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
 			// else if (element_type == SystemLibrary.SystemLibrary.char_type)
-			// 	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
+			// 	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
 			// else if (element_type == SystemLibrary.SystemLibrary.bool_type)
-			// 	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
+			// 	element_type.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
 			
 			ctn.add_internal_interface(oti_new);
 			this.convertion_data_and_alghoritms.syntax_tree_visitor.context.converted_namespace.types.AddElement(ctn);
@@ -1949,7 +1949,7 @@ namespace PascalABCCompiler.TreeConverter
                 try
                 {
                     en = convertion_data_and_alghoritms.syntax_tree_visitor.find_operator(
-                        compiler_string_consts.eq_name, lower_value, upper_value, left_loc);
+                        StringConstants.eq_name, lower_value, upper_value, left_loc);
                 }
                 catch (NoFunctionWithSameArguments)
                 {

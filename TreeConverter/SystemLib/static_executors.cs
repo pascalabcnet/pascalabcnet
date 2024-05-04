@@ -413,7 +413,7 @@ namespace PascalABCCompiler.SystemLibrary
         {
             //return inline_assign_operator(SystemLibrary._byte_plusassign, SystemLibrary.byte_assign, SystemLibrary.int_add, call_location, parameters);
         	if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
-                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(compiler_string_consts.plusassign_name, parameters[0]));
+                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(StringConstants.plusassign_name, parameters[0]));
         	//basic_function_call operationc = new basic_function_call((basic_function_node)operation, call_location);
             base_function_call cnfc = null;
             if (SystemLibInitializer.SetUnionProcedure.sym_info is common_namespace_function_node)
@@ -423,7 +423,7 @@ namespace PascalABCCompiler.SystemLibrary
             cnfc.parameters.AddElement(parameters[0]);
         	cnfc.parameters.AddElement(parameters[1]);
             //operationc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(parameters[1], parameters[0].type));
-            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(compiler_string_consts.assign_name).sym_info as basic_function_node, call_location);
+            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(StringConstants.assign_name).sym_info as basic_function_node, call_location);
             assignc.parameters.AddElement(parameters[0]);
             assignc.parameters.AddElement(cnfc);
             //assignc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(operationc, parameters[0].type));
@@ -433,11 +433,11 @@ namespace PascalABCCompiler.SystemLibrary
         public static expression_node short_string_addassign_executor(location call_location, params expression_node[] parameters)
         {
         	if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
-                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(compiler_string_consts.plusassign_name, parameters[0]));
+                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(StringConstants.plusassign_name, parameters[0]));
         	compiled_static_method_call csmc = new compiled_static_method_call(SystemLibrary.string_add as compiled_function_node, call_location);
         	csmc.parameters.AddElement(parameters[0]);
         	csmc.parameters.AddElement(parameters[1]);
-        	basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(compiler_string_consts.assign_name).sym_info as basic_function_node, call_location);
+        	basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(StringConstants.assign_name).sym_info as basic_function_node, call_location);
         	assignc.parameters.AddElement(parameters[0]);
             base_function_call cnfc = null;
             if (SystemLibInitializer.ClipShortStringProcedure.sym_info is common_namespace_function_node)
@@ -454,7 +454,7 @@ namespace PascalABCCompiler.SystemLibrary
         {
             //return inline_assign_operator(SystemLibrary._byte_plusassign, SystemLibrary.byte_assign, SystemLibrary.int_add, call_location, parameters);
         	if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
-                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(compiler_string_consts.plusassign_name, parameters[0]));
+                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(StringConstants.plusassign_name, parameters[0]));
         	//basic_function_call operationc = new basic_function_call((basic_function_node)operation, call_location);
             base_function_call cnfc = null;
             if (SystemLibInitializer.SetSubtractProcedure.sym_info is common_namespace_function_node)
@@ -464,7 +464,7 @@ namespace PascalABCCompiler.SystemLibrary
             cnfc.parameters.AddElement(parameters[0]);
         	cnfc.parameters.AddElement(parameters[1]);
             //operationc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(parameters[1], parameters[0].type));
-            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(compiler_string_consts.assign_name).sym_info as basic_function_node, call_location);
+            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(StringConstants.assign_name).sym_info as basic_function_node, call_location);
             assignc.parameters.AddElement(parameters[0]);
             assignc.parameters.AddElement(cnfc);
             //assignc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(operationc, parameters[0].type));
@@ -475,7 +475,7 @@ namespace PascalABCCompiler.SystemLibrary
         {
             //return inline_assign_operator(SystemLibrary._byte_plusassign, SystemLibrary.byte_assign, SystemLibrary.int_add, call_location, parameters);
         	if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
-                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(compiler_string_consts.plusassign_name, parameters[0]));
+                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(StringConstants.plusassign_name, parameters[0]));
         	//basic_function_call operationc = new basic_function_call((basic_function_node)operation, call_location);
             base_function_call cnfc = null;
             if (SystemLibInitializer.SetIntersectProcedure.sym_info is common_namespace_function_node)
@@ -485,7 +485,7 @@ namespace PascalABCCompiler.SystemLibrary
             cnfc.parameters.AddElement(parameters[0]);
         	cnfc.parameters.AddElement(parameters[1]);
             //operationc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(parameters[1], parameters[0].type));
-            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(compiler_string_consts.assign_name).sym_info as basic_function_node, call_location);
+            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(StringConstants.assign_name).sym_info as basic_function_node, call_location);
             assignc.parameters.AddElement(parameters[0]);
             assignc.parameters.AddElement(cnfc);
             //assignc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(operationc, parameters[0].type));
