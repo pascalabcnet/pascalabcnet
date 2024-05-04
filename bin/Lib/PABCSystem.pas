@@ -4477,7 +4477,7 @@ type
           
           if not enmr_has_next then break;
         end;
-        res.Write( if is_set then ']' else ']' );
+        res.Write( if is_set then '}' else ']' );
         exit;
       end;
       
@@ -4550,10 +4550,10 @@ begin
     exit;
   end;
   
-  if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
+  if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
   begin
-    var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
-    if (typed<>nil) and (
+    var typed := t.GetInterfaces.Append(t).FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
+    if (t=typed) or (typed<>nil) and (
       // Выводим как sequence только классы, созданные yield функцией
       // "clyield#" это yield класс паскаля
       t.Name.StartsWith('clyield#') or
@@ -4590,9 +4590,12 @@ begin
   if t.IsSubclassOf(typeof(Delegate)) then
   begin
     var mi := t.GetMethod('Invoke');
-    if mi=nil then raise new NotImplementedException;
-    ObjectToStringUtils.MethodToString(mi, false, res);
-    exit;
+    // nil for System.MulticastDelegate
+    if mi<>nil then
+    begin
+      ObjectToStringUtils.MethodToString(mi, false, res);
+      exit;
+    end;
   end;
   
   // "Lst(0).GetEnumerator.GetType.DeclaringType" возвращает List<T>, а не List<integer>
