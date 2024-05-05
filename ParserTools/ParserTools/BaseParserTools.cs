@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using QUT.Gppg;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.ParserTools.Directives;
+using System.Text;
 
 namespace PascalABCCompiler.ParserTools
 {
@@ -106,18 +107,95 @@ namespace PascalABCCompiler.ParserTools
         }
 
         /// <summary>
-        /// Проверка директивы с помощью проверок из Parser.ValidDirectives
+        /// Обычный разбор параметров директивы (кавычки - не спецсимволы)
+        /// </summary>
+        protected List<string> SplitDirectiveParamsOrdinary(string parameters)
+        {
+            List<string> words;
+
+            words = parameters.Split(new char[] { ' ', '\t', '\v', '\f', '\u00A0' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            return words;
+        }
+
+        /// <summary>
+        /// Разбор параметров директивы, который воспринимает кавычки как спецсимволы (все символы внутри кавычек добавляются)
+        /// </summary>
+        protected List<string> SplitDirectiveParamsWithQuotesAsSpecialSymbols(string parameters)
+        {
+            List<string> words = new List<string>();
+
+            bool isInQuotes = false;
+            StringBuilder currentWord = new StringBuilder();
+
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                char c = parameters[i];
+
+                if (c == '\'' && !isInQuotes)
+                {
+                    isInQuotes = true;
+                }
+                else if (c == '\'' && isInQuotes)
+                {
+                    isInQuotes = false;
+                }
+                else if (char.IsWhiteSpace(c) && !isInQuotes)
+                {
+                    if (currentWord.Length != 0)
+                    {
+                        words.Add(currentWord.ToString());
+                        currentWord.Clear();
+                    }
+                }
+                else
+                {
+                    currentWord.Append(c);
+                }
+            }
+
+            if (isInQuotes)
+                currentWord.Insert(0, '\'');
+
+            if (currentWord.Length != 0)
+            {
+                words.Add(currentWord.ToString());
+            }
+
+            return words;
+        }
+
+        /// <summary>
+        /// Получение имени директивы из строки с именем и параметрами
+        /// </summary>
+        protected string GetDirectiveName(string directiveText)
+        {
+            string directiveTrimmed = directiveText.Trim();
+            string directiveName = "";
+
+            for (int i = 0; i < directiveTrimmed.Length; i++)
+            {
+                char c = directiveTrimmed[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    directiveName = directiveTrimmed.Substring(0, i);
+                    break;
+                }
+            }
+
+            if (directiveName == "")
+                directiveName = directiveTrimmed;
+
+            return directiveName;
+        }
+
+        /// <summary>
+        /// Проверка парамтеров директивы с помощью проверок из Parser.ValidDirectives
         /// </summary>
         public void CheckDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
         {
             BaseParser parserNeeded = ParserCached;
-
-            // проверка имени директивы
-            if (!parserNeeded.ValidDirectives.ContainsKey(directiveName))
-            {
-                AddWarningFromResource("UNKNOWN_DIRECTIVE{0}", loc, directiveName); // предупреждение для совместимости с Delphi
-                return;
-            }
 
             var directiveInfo = parserNeeded.ValidDirectives[directiveName];
 

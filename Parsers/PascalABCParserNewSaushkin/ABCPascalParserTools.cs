@@ -107,41 +107,35 @@ namespace PascalABCSavParser
         /// </summary>
         public void ParseDirective(string directive, QUT.Gppg.LexLocation location, out string directiveName, out List<string> directiveParams)
         {
-            directiveName = null;
+            // текст без спецсимволов {$}
+            string directiveText = directive.Substring(2, directive.Length - 3);
+            directiveName = GetDirectiveName(directiveText);
             directiveParams = new List<string>();
 
-            List<string> words = Regex.Split(directive, @"('.*?')|\s+").Where(word => word != "").ToList();
-
-            // подсоединяем } к последнему слову
-            if (words.Last() == "}")
-            {
-                words[words.Count - 2] += "}";
-                words.RemoveAt(words.Count - 1);
-            }
-
             // пустая директива - ошибка
-            if (words[0] == "{$}")
+            if (directiveName == "")
             {
                 AddErrorFromResource("EMPTY_DIRECTIVE", location);
                 return;
             }
-            
-            // подсоединяем первое слово к {$
-            if (words[0] == "{$")
+
+            // проверка имени директивы
+            if (!ParserCached.ValidDirectives.ContainsKey(directiveName))
             {
-                words[0] += words[1];
-                words.RemoveAt(1);
+                AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", location, directiveName);
+                return;
             }
 
-            if (words.Count == 1)
+            // подстрока с параметрами
+            string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
+            
+            if (ParserCached.ValidDirectives[directiveName].quotesAreSpecialSymbols)
             {
-                directiveName = words[0].Substring(2, words[0].Length - 3);
+                directiveParams = SplitDirectiveParamsWithQuotesAsSpecialSymbols(paramsString);
             }
             else
             {
-                directiveName = words[0].Substring(2, words[0].Length - 2);
-                words[words.Count - 1] = words[words.Count - 1].TrimEnd('}');
-                directiveParams = words.Skip(1).Select(word => DeleteQuotesFromDirectiveParam(word)).ToList();
+                directiveParams = SplitDirectiveParamsOrdinary(paramsString);
             }
         }
 

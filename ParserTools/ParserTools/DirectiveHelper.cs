@@ -16,11 +16,13 @@ namespace PascalABCCompiler.ParserTools.Directives
 
         public int[] paramsNums = new int[1] { 1 }; // по умолчанию один параметр
         public bool checkParamsNumNeeded;
+        public bool quotesAreSpecialSymbols;
 
         // по умолчанию никаких проверок параметров, но включена проверка их кол-ва
-        public DirectiveInfo(ParamChecksCollection paramChecks = null, bool checkParamsNumNeeded = true, int[] paramsNums = null)
+        public DirectiveInfo(ParamChecksCollection paramChecks = null, bool quotesAreSpecialSymbols = false, bool checkParamsNumNeeded = true, int[] paramsNums = null)
         {
             this.checks = paramChecks;
+            this.quotesAreSpecialSymbols = quotesAreSpecialSymbols;
             if (paramsNums != null)
                 this.paramsNums = paramsNums;
             this.checkParamsNumNeeded = checkParamsNumNeeded;
@@ -110,7 +112,7 @@ namespace PascalABCCompiler.ParserTools.Directives
 
         public override bool CheckParam(string param)
         {
-            return Regex.IsMatch(param, @"^[\p{L}_][\p{L}0-9_]*$");
+            return Regex.IsMatch(param, @"^[\p{L}_][\p{L}0-9_]*$", RegexOptions.Compiled);
         }
     }
 
@@ -215,6 +217,11 @@ namespace PascalABCCompiler.ParserTools.Directives
         public static ParamChecksCollection SingleIsValidIdCheck() 
         {
             return new ParamChecksCollection(new IsValidIdentifierCheck(1));
+        }
+
+        public static ParamChecksCollection IsValidVersionCheck()
+        {
+            return new ParamChecksCollection(new FuncCheck(s => Regex.IsMatch(s, @"^\d+\.\d+\.\d+$"), ParserErrorsStringResources.Get("INVALID_VERSION")));
         }
         #endregion
     }

@@ -1133,7 +1133,8 @@ namespace PascalABCCompiler
             InternalDebug = new CompilerInternalDebug();
 
             ParsersController.SourceFilesProvider = sourceFilesProvider;
-            
+            ParsersController.SendUnitCheckToParsers(CurrentUnitIsNotMainProgram);
+
             SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
             CodeGeneratorsController = new CodeGenerators.Controller();
 
@@ -4172,7 +4173,10 @@ namespace PascalABCCompiler
             }
             return SourceText;
         }
-
+        private bool CurrentUnitIsNotMainProgram()
+        {
+            return currentCompilationUnit != null;
+        }
         private Dictionary<SyntaxTree.syntax_tree_node, string> GenUnitDocumentation(CompilationUnit currentUnit, string SourceText)
         {
             Dictionary<SyntaxTree.syntax_tree_node, string> docs = null;

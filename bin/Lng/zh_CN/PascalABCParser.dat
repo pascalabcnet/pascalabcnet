@@ -86,3 +86,4 @@ NIL_IN_UNNAMED_OBJECT=匿名类字段不能被 nil 常量初始化
 YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY=yield 语句不能在 lambda 主体中使用
 SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5=多维数组切片仅适用于秩 < 5 的数组
 LEFT_SIDE_CANNOT_BE_ASSIGNED_TO=左侧不能分配给
+DIFF_DEFINE_NAME=指令'{0}'中的定義名稱'{2}'與相應的'ifdef'/'ifndef'中的定義名稱'{1}'不匹配
