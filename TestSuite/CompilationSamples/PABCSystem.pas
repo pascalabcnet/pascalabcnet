@@ -1506,17 +1506,18 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
-/// Для типа System.Type возвращает имя типа объекта
+/// Возвращает имя отражённого типа "t"
 function TypeToTypeName(t: System.Type): string;
-/// Для типа System.Type записывает в res имя типа объекта
+/// Добавляет в res имя отражённого типа "t"
 procedure TypeToTypeName(t: System.Type; res: StringBuilder);
-/// Для типа System.Type записывает в res имя типа объекта
+/// Записывает в res имя отражённого типа "t"
 procedure TypeToTypeName(t: System.Type; res: TextWriter);
-/// Возвращает имя типа объекта
+
+/// Возвращает имя типа объекта "o"
 function TypeName(o: object): string;
-/// Записывает в res имя типа объекта
+/// Добавляет в res имя типа объекта "o"
 procedure TypeName(o: object; res: StringBuilder);
-/// Записывает в res имя типа объекта
+/// Записывает в res имя типа объекта "o"
 procedure TypeName(o: object; res: TextWriter);
 
 ///-procedure New<T>(var p: ^T); 
@@ -2674,11 +2675,11 @@ function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
 
-/// Возвращает строку для вывода в write
+/// Возвращает строку для вывода подобного Write
 function _ObjectToString(o: object): string;
-/// Записывает в res строку для вывода в write
+/// Добавляет в res строку для вывода подобного Write
 procedure _ObjectToString(o: object; res: StringBuilder);
-/// Записывает в res строку для вывода в write
+/// Записывает в res строку для вывода подобного Write
 procedure _ObjectToString(o: object; res: TextWriter);
 
 function IsUnix: boolean;
@@ -4387,9 +4388,8 @@ type
         if a.Length=0 then
         begin
           // Алгоритм ниже не расчитан на пустые массив
-          // Правда для "new byte[1,0]" таким образом
-          // выведет "[]" вместо "[[]]"
-          res.Write('[]');
+          loop a.Rank do res.Write('[');
+          loop a.Rank do res.Write(']');
           exit;
         end;
         
@@ -4477,7 +4477,7 @@ type
           
           if not enmr_has_next then break;
         end;
-        res.Write( if is_set then ']' else ']' );
+        res.Write( if is_set then '}' else ']' );
         exit;
       end;
       
@@ -4550,15 +4550,15 @@ begin
     exit;
   end;
   
-  if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
+  if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
   begin
-    var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
-    if (typed<>nil) and (
+    var typed := t.GetInterfaces.Append(t).FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
+    if (t=typed) or (typed<>nil) and (
       // Выводим как sequence только классы, созданные yield функцией
       // "clyield#" это yield класс паскаля
       t.Name.StartsWith('clyield#') or
       // А все yield классы C# являются вложенными и скрытыми
-      (t.DeclaringType<>nil) and not t.IsPublic
+      t.IsNestedPrivate
     ) then
     begin
       res.Write('sequence of ');
@@ -4567,39 +4567,94 @@ begin
     end;
   end;
   
+  var gen_args := t.GetGenericArguments;
+  
+  //TODO t.IsClass, чтобы ValueTuple пока что не ловило
+  if t.GetInterfaces.Contains(typeof(System.Runtime.CompilerServices.ITuple)) and t.IsClass then
+  begin
+    res.Write('(');
+    var any_gen_arg := false;
+    foreach var arg in gen_args do
+    begin
+      if any_gen_arg then
+        res.Write(', ') else
+        any_gen_arg := true;
+      TypeToTypeName(arg, res);
+    end;
+    res.Write(')');
+    exit;
+  end;
+  
   var name := t.Name;
   
   if t.IsSubclassOf(typeof(Delegate)) then
   begin
     var mi := t.GetMethod('Invoke');
-    if mi=nil then raise new NotImplementedException;
-    ObjectToStringUtils.MethodToString(mi, false, res);
-    exit;
+    // nil for System.MulticastDelegate
+    if mi<>nil then
+    begin
+      ObjectToStringUtils.MethodToString(mi, false, res);
+      exit;
+    end;
   end;
   
-  // typeof(t1<T>) или typeof(t1<>)
-  // typeof(t1<>) можно проверить отдельно с .IsGenericTypeDefinition
-  // Но в данном случае это не нужно
-  if t.IsGenericType then
+  // "Lst(0).GetEnumerator.GetType.DeclaringType" возвращает List<T>, а не List<integer>
+  // При чём этот T.IsNested возвращает true, хотя это параметр а не вложенный тип
+  if t.IsNested and not t.IsGenericParameter then
   begin
-    res.Write( name.Remove(name.IndexOf('`')) );
-    res.Write('<');
-    var any_gen_par := false;
-    foreach var gen_par in t.GetGenericArguments do
+    var parent_def := t.DeclaringType;
+    var parent := parent_def;
+    if parent.IsGenericType then
     begin
-      if any_gen_par then
+      // Во вложенный тип копирует все типы шаблона из внешнего класса
+      // class Parent<T1> { class Nested<T2> }
+      // На практике вложенный тип будет Parent`1+Nested`1<T1,T2>
+      // Но тут писать в res будем только <T2>
+      
+      var t_def_args := t.GetGenericTypeDefinition.GetGenericArguments;
+      var parent_def_args := parent_def.GetGenericArguments;
+      for var i := 0 to parent_def_args.Length-1 do
+        if t_def_args[i].Name <> parent_def_args[i].Name then
+          // Ожидается что <T1> всегда будет перед <T2> в примере выше
+          raise new NotImplementedException;
+      
+      var parent_args := new System.Type[parent_def_args.Length];
+      &Array.ConstrainedCopy(gen_args,0, parent_args,0, parent_args.Length);
+      parent := parent_def.MakeGenericType(parent_args);
+      
+      var own_args := new System.Type[gen_args.Length-parent_def_args.Length];
+      &Array.ConstrainedCopy(gen_args,parent_args.Length, own_args,0, own_args.Length);
+      gen_args := own_args;
+      
+    end;
+    TypeToTypeName(parent, res);
+    res.Write('+');
+  end;
+  
+  if gen_args.Count<>0 then
+  begin
+    res.Write(name.Remove(name.LastIndexOf('`')));
+    res.Write('<');
+    var any_gen_arg := false;
+    foreach var arg in gen_args do
+    begin
+      if any_gen_arg then
         res.Write(', ') else
-        any_gen_par := true;
-      TypeToTypeName(gen_par, res);
+        any_gen_arg := true;
+      TypeToTypeName(arg, res);
     end;
     res.Write('>');
     exit;
   end;
   
+  if t.IsGenericParameter then
+    res.Write('[');
   res.Write(name);
+  if t.IsGenericParameter then
+    res.Write(']');
 end;
 procedure TypeToTypeName(t: System.Type; res: StringBuilder) :=
-TypeToTypeName(t, new StringWriter(res));
+  TypeToTypeName(t, new StringWriter(res));
 
 procedure TypeName(o: object; res: TextWriter);
 begin
@@ -4624,7 +4679,7 @@ begin
   TypeToTypeName(t, res);
 end;
 procedure TypeName(o: object; res: StringBuilder) :=
-TypeName(o, new StringWriter(res));
+  TypeName(o, new StringWriter(res));
 
 function TypeToTypeName(t: System.Type): string;
 begin
@@ -4641,9 +4696,9 @@ begin
 end;
 
 procedure _ObjectToString(o: object; res: TextWriter) :=
-ObjectToStringUtils.Append(o, new Stack<object>, res);
+  ObjectToStringUtils.Append(o, new Stack<object>, res);
 procedure _ObjectToString(o: object; res: StringBuilder) :=
-_ObjectToString(o, new StringWriter(res));
+  _ObjectToString(o, new StringWriter(res));
 function _ObjectToString(o: object): string;
 begin
   var res := new StringBuilder;
