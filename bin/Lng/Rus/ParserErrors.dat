@@ -14,6 +14,7 @@ BAD_SOURCEFILE{0}_EXT=Не могу выбрать подходящий парс
 COMPILATION_ERROR{0}{1}{2}={0}{1} Ошибка компиляции: {2}
 
 EXPECTED_IDENTIFIER=Ожидался идентификатор
+INVALID_VERSION=Формат версии должен соответствовать шаблону MAJOR.MINOR.PATCH
 AVAILABLE_PARAM_VARIANTS{0}=Допустимые значения: {0}
 AVAILABLE_EXT_VARIANTS{0}=Допустимые расширения файла: {0}
 SEE_THE_HELP_FOR_VARIANTS=Уточните допустимые значения в документации языка
