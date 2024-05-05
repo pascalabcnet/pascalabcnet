@@ -123,6 +123,14 @@ namespace PascalABCCompiler.Parsers
             parser.SourceFilesProvider = SourceFilesProvider;
             ParserConnected?.Invoke(parser);
         }
+        public void SendUnitCheckToParsers(Func<bool> callback)
+        {
+            foreach (IParser parser in Parsers)
+            {
+                if (parser is BaseParser baseParser)
+                    baseParser.CheckIfParsingUnit = callback;
+            }
+        }
 
         /// <summary>
         /// Возвращает подходящий для переданного расширения парсер из имеющихся 
