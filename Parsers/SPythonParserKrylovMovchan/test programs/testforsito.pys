@@ -1,9 +1,11 @@
 ﻿import time
-n = 100000000
-i = 1.
-sum = 0.
-start = time.ttime() * 1000
-while i<n:
+def calc_polynom(n:int)->float:
+  i = 1.
+  sum = 0.
+  while i<n:
     sum = sum + 1.0/i
     i = i + 1
-print(sum, time.ttime() * 1000 - start)
+  return sum
+start = time.ttime() * 1000
+s = calc_polynom(100000000)
+print(s, time.ttime() * 1000 - start)
