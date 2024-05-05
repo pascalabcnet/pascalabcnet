@@ -10,6 +10,7 @@ using GPPGParserScanner;
 using GPPGPreprocessor3;
 using PascalABCCompiler.ParserTools.Directives;
 using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
+using System.Text.RegularExpressions;
 
 namespace PascalABCCompiler.PascalABCNewParser
 {
@@ -129,8 +130,8 @@ namespace PascalABCCompiler.PascalABCNewParser
             ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.CurrentCultureIgnoreCase)
             {
                 [StringConstants.compiler_directive_apptype] = new DirectiveInfo(SingleAnyOfCheck("console", "windows", "dll", "pcu")),
-                [StringConstants.compiler_directive_reference] = new DirectiveInfo(), // нет параметров - никаких проверок
-                [StringConstants.compiler_directive_include_namespace] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_reference] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_include_namespace] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_savepcu] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
                 [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(SingleAnyOfCheck("on", "off"), paramsNums: new int[2] { 0, 1 }),
                 [StringConstants.compiler_directive_zerobasedstrings_ON] = null, // от null, скорее всего, придется избавиться, это не лучший подход  EVA
@@ -139,7 +140,7 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.compiler_directive_nullbasedstrings_OFF] = null,
                 [StringConstants.compiler_directive_initstring_as_empty_ON] = null,
                 [StringConstants.compiler_directive_initstring_as_empty_OFF] = null,
-                [StringConstants.compiler_directive_resource] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_resource] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(SingleAnyOfCheck("x86", "x64", "anycpu", "dotnet5win", "dotnet5linux", "dotnet5macos", "native")),
                 [StringConstants.compiler_directive_faststrings] = null,
                 [StringConstants.compiler_directive_gendoc] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
@@ -151,16 +152,16 @@ namespace PascalABCCompiler.PascalABCNewParser
                 [StringConstants.compiler_directive_else] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }),
                 [StringConstants.compiler_directive_undef] = new DirectiveInfo(SingleIsValidIdCheck()),
                 [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_include] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_include] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(),
                 [StringConstants.compiler_directive_hidden_idents] = null,
-                [StringConstants.compiler_directive_version_string] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_product_string] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_company_string] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_trademark_string] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_main_resource_string] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_title_string] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_description_string] = new DirectiveInfo(),
+                [StringConstants.compiler_directive_version_string] = new DirectiveInfo(IsValidVersionCheck()),
+                [StringConstants.compiler_directive_product_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_company_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_trademark_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_main_resource_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_title_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_description_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_omp] = new DirectiveInfo(SingleAnyOfCheck("critical", "parallel"), checkParamsNumNeeded: false)
             }; 
             #endregion
