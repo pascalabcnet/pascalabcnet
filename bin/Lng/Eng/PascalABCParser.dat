@@ -1,4 +1,4 @@
-//PascalABCParser.dll
+﻿//PascalABCParser.dll
 %PREFIX%=PASCALABCPARSER_
 
 FOUND{0}=Found {0} but 
