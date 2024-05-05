@@ -94,3 +94,4 @@ NIL_IN_UNNAMED_OBJECT=Поле анонимного класса не может
 YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY=Оператор yield нельзя использовать в теле лямбда-выражения
 SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5=Срезы многомерных массивов разрешены только для массивов размерности < 5
 LEFT_SIDE_CANNOT_BE_ASSIGNED_TO=Нельзя присвоить левой части
+DIFF_DEFINE_NAME=Имя определения '{2}' в директиве '{0}' не совпадает с именем определения '{1}' из соответствующего 'ifdef'/'ifndef'

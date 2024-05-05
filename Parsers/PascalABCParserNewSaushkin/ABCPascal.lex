@@ -2,7 +2,8 @@
     public PascalParserTools parserTools;
     Stack<BufferContext> buffStack = new Stack<BufferContext>();
     Stack<string> fNameStack = new Stack<string>();
-	Stack<int> IfStack = new Stack<int>(); // 0 - if, 1 - else
+	Stack<bool> IfDefInElseBranch = new Stack<bool>();
+	Stack<string> IfDefVar = new Stack<string>();
 	public List<string> Defines = new List<string>();
 	int IfExclude;
 	string Pars;
@@ -70,7 +71,8 @@ UNICODEARROW \x890
 		break;
 
   parserTools.ParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParams);
-
+  var orgDirectiveName = directiveName;
+  
   if (directiveName == null) // случай пустой директивы
     break;
 
@@ -88,7 +90,8 @@ UNICODEARROW \x890
 	}
 	else if (directiveName == "IFDEF")
 	{
-		IfStack.Push(0);
+		IfDefInElseBranch.Push(false);
+        IfDefVar.Push(directiveParams[0]);
 		if (!Defines.Contains(directiveParams[0]))
 		{
 			BEGIN(EXCLUDETEXT);
@@ -97,7 +100,8 @@ UNICODEARROW \x890
 	}
 	else if (directiveName == "IFNDEF")
 	{
-		IfStack.Push(0);
+		IfDefInElseBranch.Push(false);
+        IfDefVar.Push(directiveParams[0]);
 		if (Defines.Contains(directiveParams[0]))
 		{
 			BEGIN(EXCLUDETEXT);	    
@@ -106,20 +110,22 @@ UNICODEARROW \x890
 	}
 	else if (directiveName == "ELSE")
 	{
-		if (IfStack.Count==0)
+        if (directiveParams.Count!=0 && directiveParams[0]!=IfDefVar.Peek())
+            parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, IfDefVar.Peek(), directiveParams[0]);
+        if (IfDefInElseBranch.Count==0 || IfDefInElseBranch.Pop())
 			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
-		if (IfStack.Peek()==1) 
-			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
-		IfStack.Pop();	
-		IfStack.Push(1);
+		IfDefInElseBranch.Push(true);
 		BEGIN(EXCLUDETEXT);
 		IfExclude = 1;
 	}
 	else if (directiveName == "ENDIF")
 	{
-		if (IfStack.Count == 0)
+		if (IfDefInElseBranch.Count == 0)
 			parserTools.AddErrorFromResource("UNNECESSARY $endif",CurrentLexLocation);	   
-		IfStack.Pop();
+		IfDefInElseBranch.Pop();
+        var define_name = IfDefVar.Pop();
+        if (directiveParams.Count!=0 && directiveParams[0]!=define_name)
+            parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, define_name, directiveParams[0]);
 	}
 	else if (directiveName == "DEFINE")
 	{
@@ -140,6 +146,7 @@ UNICODEARROW \x890
 <EXCLUDETEXT>{DIRECTIVE} {
 	
   parserTools.ParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParams);
+  orgDirectiveName = directiveName;
 
   if (directiveName == null) // случай пустой директивы
     break;
@@ -150,29 +157,35 @@ UNICODEARROW \x890
 
   if (directiveName == "IFDEF")
 	{
-		IfStack.Push(0);
+		IfDefInElseBranch.Push(false);
+        IfDefVar.Push(directiveParams[0]);
 		IfExclude++;
 	}
 	else if (directiveName == "IFNDEF")
 	{
-		IfStack.Push(0);
+		IfDefInElseBranch.Push(false);
+        IfDefVar.Push(directiveParams[0]);
 		IfExclude++;
 	}
 	else if (directiveName == "ELSE")
 	{
-		if (IfStack.Peek() == 1) 
+        if (directiveParams.Count!=0 && directiveParams[0]!=IfDefVar.Peek())
+            parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, IfDefVar.Peek(), directiveParams[0]);
+        if (IfDefInElseBranch.Count==0 || IfDefInElseBranch.Pop())
 			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
-		IfStack.Pop();	
-		IfStack.Push(1);
+		IfDefInElseBranch.Push(true);
 		if (IfExclude == 1)
 			BEGIN(INITIAL);
 	}
 	else if (directiveName == "ENDIF")
 	{
-		if (IfStack.Count==0)
+		if (IfDefInElseBranch.Count == 0)
 			parserTools.AddErrorFromResource("UNNECESSARY $endif",CurrentLexLocation);	   
-		IfStack.Pop();
-		IfExclude--;
+		IfDefInElseBranch.Pop();
+        var define_name = IfDefVar.Pop();
+        if (directiveParams.Count!=0 && directiveParams[0]!=define_name)
+            parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, define_name, directiveParams[0]);
+        IfExclude--;
 		if (IfExclude == 0)
 			BEGIN(INITIAL); 		
 	}
@@ -563,7 +576,7 @@ UNICODEARROW \x890
   
     protected override bool yywrap()
     {
-	    if (IfStack.Count > 0)
+	    if (IfDefInElseBranch.Count != 0)
 		    parserTools.AddErrorFromResource("ENDIF_ABSENT",CurrentLexLocation);
 		BEGIN(INITIAL);	
         if (buffStack.Count == 0) 
