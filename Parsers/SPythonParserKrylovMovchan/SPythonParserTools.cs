@@ -68,11 +68,159 @@ namespace SPythonParser
 
         public List<var_def_statement> pascalABC_var_statements;
         public List<type_declaration> pascalABC_type_declarations;
+
+        public static Dictionary<string, string> tokenNames;
+        static SPythonParserTools()
+        {
+            tokenNames = new Dictionary<string, string>();
+            tokenNames["STATEMENT"] = StringResources.Get("STMT");
+            tokenNames["EXPRESSION"] = StringResources.Get("EXPR");
+            tokenNames["EOF"] = StringResources.Get("EOF1");
+            tokenNames["ID"] = StringResources.Get("IDENTIFIER");
+            tokenNames["INTNUM"] = StringResources.Get("INTNUM");
+            tokenNames["REALNUM"] = StringResources.Get("REALNUM");
+            tokenNames["STRINGNUM"] = StringResources.Get("STRINGNUM");
+            //tokenNames["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
+            tokenNames["ASSIGN"] = "=";
+            tokenNames["COLON"] = "':'";
+            tokenNames["DOT"] = "'.'";
+            tokenNames["LPAR"] = "'('";
+            tokenNames["RPAR"] = "')'";
+            tokenNames["SEMICOLON"] = "';'";
+            tokenNames["LBRACKET"] = "'['";
+            tokenNames["RBRACKET"] = "']'";
+            tokenNames["tkQuestion"] = "'?'";
+            tokenNames["COMMA"] = "','";
+            tokenNames["PERCENTAGE"] = "'%'";
+            tokenNames["DIVIDE"] = "'/'";
+            tokenNames["MINUS"] = "'-'";
+            tokenNames["PLUS"] = "'+'";
+            tokenNames["SLASHSLASH"] = "'//'";
+            tokenNames["STAR"] = "'*'";
+            tokenNames["EQUAL"] = "'=='";
+            tokenNames["NOTEQUAL"] = "'!='";
+            tokenNames["GREATER"] = "'>'";
+            tokenNames["GREATEREQUAL"] = "'>='";
+            tokenNames["LESS"] = "'<'";
+            tokenNames["LESSEQUAL"] = "'<='";
+            tokenNames["ARROW"] = "'->'";
+        }
         public SPythonParserTools()
         {
             NodesStack = new System.Collections.Stack();
             pascalABC_var_statements = new List<var_def_statement>();
             pascalABC_type_declarations = new List<type_declaration>();
+        }
+        public string ConvertToHumanName(string s)
+        {
+            var v = s;
+            if (tokenNames.ContainsKey(v))
+                v = tokenNames[v];
+            else
+                v = v.ToLower();
+
+            return v;
+        }
+
+        public int TokenPriority(string tok)
+        {
+            switch (tok)
+            {
+                case "SEMICOLON":
+                    return 120;
+                case "STATEMENT":
+                    return 100;
+                case "EXPRESSION":
+                    return 100;
+                case "EQUAL":
+                    return 90;
+                case "COLON":
+                    return 80;
+                case "ASSIGN":
+                    return 70;
+                case "ID":
+                    return 60;
+                //case "tkRoundClose":
+                //    return 50;
+                case "DOT":
+                    return 20;
+                case "RBRACKET":
+                    return 10;
+                case "GREATER":
+                    return 5;
+            }
+            return 0;
+        }
+
+        public string MaxToken(string[] args)
+        {
+            return args.Max();
+        }
+
+        public string CreateErrorString(string yytext, params object[] args)
+        {
+            string prefix = "";
+            if (yytext != "")
+                prefix = StringResources.Get("FOUND{0}");
+            else
+                prefix = StringResources.Get("FOUNDEOF");
+
+            /*if (this.build_tree_for_format_strings && prefix == StringResources.Get("FOUNDEOF"))
+            {
+                yytext = "}";
+                prefix = StringResources.Get("FOUND{0}");
+            }*/
+
+            // Преобразовали в список строк - хорошо
+            List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
+
+            // Исключаем, т.к. в реальных программах никогда не встретятся
+            //tokens = tokens.Except((new string[] { "tkParseModeExpression", "tkParseModeStatement", "tkDirectiveName" })).ToList();
+
+            // Это - временное решение, пока эти слова относятся к идентификаторам (что неправильно)
+            //if (tokens.Contains("ID"))
+            //    tokens = tokens.Except((new string[] { "tkAbstract", "tkOverload", "tkReintroduce", "tkOverride", "tkVirtual", "tkAt", "tkOn", "tkName", "tkForward", "tkRead", "tkWrite" })).ToList();
+
+            // Добавляем фиктивный токен, что означает, что далее могут идти несколько токенов, начинающих выражение
+            if (tokens.Contains("FOR") && tokens.Contains("IF") && tokens.Contains("WHILE"))
+            {
+                tokens.Clear();
+                tokens.Add("STATEMENT");
+            }
+
+            // Добавляем фиктивный токен, что означает, что далее могут идти несколько токенов, начинающих выражение
+            if (tokens.Contains("ID") && tokens.Contains("INTNUM") && tokens.Contains("REALNUM"))
+            {
+                tokens.Clear();
+                tokens.Add("EXPRESSION");
+            }
+
+            tokens = tokens.OrderByDescending(s => TokenPriority(s)).ToList();
+
+            /*if (args.Contains("EOF") && yytext!="")
+                return "Текст за концом программы недопустим";
+             if (args.Contains("tkIdentifier"))
+                 return string.Format(prefix + "ожидался идентификатор", "'" + yytext + "'");*/
+            /*if (tokens.Contains("tkProgram"))
+                return string.Format(prefix + StringResources.Get("EXPECTEDBEGIN"), "'" + yytext + "'");
+            */
+            var MaxTok = tokens.First();
+            //if (yytext != null && yytext.ToLower() == "record" && MaxTok == "tkSealed")
+            //    return StringResources.Get("WRONG_ATTRIBUTE_FOR_RECORD");
+
+            var ExpectedString = StringResources.Get("EXPECTED{1}");
+
+            if (MaxTok.Equals("STATEMENT") || MaxTok.Equals("ID"))
+                ExpectedString = StringResources.Get("EXPECTEDR{1}");
+            else if (MaxTok.Equals("STRINGNUM"))
+                ExpectedString = StringResources.Get("EXPECTEDF{1}");
+            if ((MaxTok == "EOF" || MaxTok == "EOF1" || MaxTok == "FOUNDEOF") && this.build_tree_for_format_strings)
+                MaxTok = "}";
+            var MaxTokHuman = ConvertToHumanName(MaxTok);
+
+            // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
+
+            return string.Format(prefix + ExpectedString, "'" + yytext + "'", MaxTokHuman);
         }
         public void AddErrorFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)
         {
@@ -316,29 +464,6 @@ namespace SPythonParser
         public void AddError(string message, LexLocation loc)
         {
             errors.Add(new SyntaxError(message, CurrentFileName, loc, null));
-        }
-        public string CreateErrorString(string yytext, LexLocation yyloc, params object[] args)
-        {
-            string prefix = "";
-            if (yytext != "")
-                prefix = StringResources.Get("FOUND{0}");
-            else
-                prefix = StringResources.Get("FOUNDEOF");
-
-            if (this.build_tree_for_format_strings && prefix == StringResources.Get("FOUNDEOF"))
-            {
-                yytext = "}";
-                prefix = StringResources.Get("FOUND{0}");
-            }
-
-            // Преобразовали в список строк - хорошо
-            string expected = String.Join(", ", args.Skip(1).Select(x => x.ToString()));
-
-            var ExpectedString = StringResources.Get("EXPECTED{1}");
-
-            // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
-
-            return string.Format(prefix + ExpectedString, "'" + yytext + "'", expected);
         }
         /* public string CreateErrorString(string yytext, LexLocation yyloc, params object[] args)
          {
