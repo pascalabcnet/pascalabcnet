@@ -1506,19 +1506,11 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
-/// Возвращает имя отражённого типа "t"
+/// Возвращает строку с именем данного типа
 function TypeToTypeName(t: System.Type): string;
-/// Добавляет в res имя отражённого типа "t"
-procedure TypeToTypeName(t: System.Type; res: StringBuilder);
-/// Записывает в res имя отражённого типа "t"
-procedure TypeToTypeName(t: System.Type; res: TextWriter);
 
-/// Возвращает имя типа объекта "o"
-function TypeName(o: object): string;
-/// Добавляет в res имя типа объекта "o"
-procedure TypeName(o: object; res: StringBuilder);
-/// Записывает в res имя типа объекта "o"
-procedure TypeName(o: object; res: TextWriter);
+/// Возвращает строку с именем типа объекта
+function TypeName(obj: object): string;
 
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
@@ -4178,6 +4170,8 @@ function operator implicit(s: string): StringBuilder; extensionmethod := new Str
 //              _ObjectToString
 //------------------------------------------------------------------------------
 
+procedure TypeToTypeNameHelper(t: System.Type; res: TextWriter); forward;
+
 type
   ObjectToStringUtils = static class
     
@@ -4219,7 +4213,7 @@ type
               res.Write( name );
             res.Write(': ');
           end;
-          TypeToTypeName(par.ParameterType, res);
+          TypeToTypeNameHelper(par.ParameterType, res);
         end;
         res.Write(')');
       end;
@@ -4227,14 +4221,15 @@ type
       if rt<>nil then
       begin
         res.Write(': ');
-        TypeToTypeName(rt, res);
+        TypeToTypeNameHelper(rt, res);
       end;
       
     end;
     
     private static empty_obj_arr := new object[0];
+    
     public static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
-      const val_sep = '; ';
+    const val_sep = '; ';
     begin
       res.Write('(');
       var any_vals := false;
@@ -4299,10 +4294,10 @@ type
       prev.Push(o);
       AppendImpl(o, prev, res);
       if prev.Pop<>o then raise new InvalidOperationException;
-      
     end;
+    
     public static procedure AppendImpl(o: Object; prev: Stack<object>; res: TextWriter);
-      const max_seq_len = 100;
+    const max_seq_len = 100;
     begin
       if o = nil then
       begin
@@ -4484,9 +4479,7 @@ type
       {$endregion IEnumerable}
       
       ContentsToString(o, prev, res);
-      
     end;
-    
   end;
   
 function TryWriteFromTypeCode(t: System.Type; res: TextWriter): boolean;
@@ -4522,7 +4515,7 @@ begin
   end;
 end;
 
-procedure TypeToTypeName(t: System.Type; res: TextWriter);
+procedure TypeToTypeNameHelper(t: System.Type; res: TextWriter);
 begin
   if t=nil then
   begin
@@ -4546,7 +4539,7 @@ begin
     if rank<1 then
       raise new NotImplementedException;
     res.Write(' of ');
-    TypeToTypeName(t.GetElementType, res);
+    TypeToTypeNameHelper(t.GetElementType, res);
     exit;
   end;
   
@@ -4562,7 +4555,7 @@ begin
     ) then
     begin
       res.Write('sequence of ');
-      TypeToTypeName(typed.GetGenericArguments.Single, res);
+      TypeToTypeNameHelper(typed.GetGenericArguments.Single, res);
       exit;
     end;
   end;
@@ -4579,7 +4572,7 @@ begin
       if any_gen_arg then
         res.Write(', ') else
         any_gen_arg := true;
-      TypeToTypeName(arg, res);
+      TypeToTypeNameHelper(arg, res);
     end;
     res.Write(')');
     exit;
@@ -4627,7 +4620,7 @@ begin
       gen_args := own_args;
       
     end;
-    TypeToTypeName(parent, res);
+    TypeToTypeNameHelper(parent, res);
     res.Write('+');
   end;
   
@@ -4641,7 +4634,7 @@ begin
       if any_gen_arg then
         res.Write(', ') else
         any_gen_arg := true;
-      TypeToTypeName(arg, res);
+      TypeToTypeNameHelper(arg, res);
     end;
     res.Write('>');
     exit;
@@ -4653,12 +4646,13 @@ begin
   if t.IsGenericParameter then
     res.Write(']');
 end;
-procedure TypeToTypeName(t: System.Type; res: StringBuilder) :=
-  TypeToTypeName(t, new StringWriter(res));
 
-procedure TypeName(o: object; res: TextWriter);
+procedure TypeToTypeNameHelper(t: System.Type; res: StringBuilder) :=
+  TypeToTypeNameHelper(t, new StringWriter(res));
+
+procedure TypeNameHelper(obj: object; res: TextWriter);
 begin
-  var t := o?.GetType;
+  var t := obj?.GetType;
   
   // Зачем? TypeName(@a) не работает
   // Можно сделать TypeName волшебной функцией, вызывая
@@ -4672,26 +4666,26 @@ begin
   var static_arr_field := t?.GetField('NullBasedArray');
   if static_arr_field<>nil then
   begin
-    TypeName(static_arr_field.GetValue(o), res);
+    TypeNameHelper(static_arr_field.GetValue(obj), res);
     exit;
   end;
   
-  TypeToTypeName(t, res);
+  TypeToTypeNameHelper(t, res);
 end;
-procedure TypeName(o: object; res: StringBuilder) :=
-  TypeName(o, new StringWriter(res));
+
+procedure TypeNameHelper(obj: object; res: StringBuilder) := TypeNameHelper(obj, new StringWriter(res));
+
+function TypeName(obj: object): string;
+begin
+  var res := new StringBuilder;
+  TypeNameHelper(obj, res);
+  Result := res.ToString;
+end;
 
 function TypeToTypeName(t: System.Type): string;
 begin
   var res := new StringBuilder;
-  TypeToTypeName(t, res);
-  Result := res.ToString;
-end;
-
-function TypeName(o: object): string;
-begin
-  var res := new StringBuilder;
-  TypeName(o, res);
+  TypeToTypeNameHelper(t, res);
   Result := res.ToString;
 end;
 

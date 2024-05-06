@@ -1267,22 +1267,10 @@
       <summary>Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги</summary>
     </member>
     <member name="M:TypeToTypeName(System.Type)">
-      <summary>Возвращает имя отражённого типа "t"</summary>
-    </member>
-    <member name="M:TypeToTypeName(System.Type,System.Text.StringBuilder)">
-      <summary>Добавляет в res имя отражённого типа "t"</summary>
-    </member>
-    <member name="M:TypeToTypeName(System.Type,System.IO.TextWriter)">
-      <summary>Записывает в res имя отражённого типа "t"</summary>
+      <summary>Возвращает строку с именем данного типа</summary>
     </member>
     <member name="M:TypeName(System.Object)">
-      <summary>Возвращает имя типа объекта "o"</summary>
-    </member>
-    <member name="M:TypeName(System.Object,System.Text.StringBuilder)">
-      <summary>Добавляет в res имя типа объекта "o"</summary>
-    </member>
-    <member name="M:TypeName(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res имя типа объекта "o"</summary>
+      <summary>Возвращает строку с именем типа объекта</summary>
     </member>
     <member name="M:ExtractFileName(System.String)">
       <summary>Выделяет имя файла из полного имени файла fileName</summary>
