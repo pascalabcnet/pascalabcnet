@@ -201,7 +201,6 @@ UNICODEARROW \x890
 		if (ind_to_remove != -1)
 			parserTools.compilerDirectives.RemoveAt(ind_to_remove);
 	}
-  parserTools.compilerDirectives.Add(new compiler_directive(new token_info(directiveName), new token_info(string.Join(" ", directiveParams)), CurrentLexLocation));
 }
 
 <EXCLUDETEXT>.|\n {
