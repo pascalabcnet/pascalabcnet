@@ -1141,19 +1141,19 @@
     <member name="M:TypedFileRead(PABCSystem.TypedFile)">
       <summary>--</summary>
     </member>
-    <member name="M:FilePos(PABCSystem.BinaryFile)">
+    <member name="M:FilePos(@file)">
       <summary>--</summary>
     </member>
-    <member name="M:FileSize(PABCSystem.BinaryFile)">
+    <member name="M:FileSize(@file)">
       <summary>--</summary>
     </member>
-    <member name="M:Seek(PABCSystem.BinaryFile,System.Int64)">
+    <member name="M:Seek(@file,System.Int64)">
       <summary>--</summary>
     </member>
-    <member name="M:BinaryFileInit(PABCSystem.BinaryFile@)">
+    <member name="M:BinaryFileInit(@file@)">
       <summary>--</summary>
     </member>
-    <member name="M:BinaryFileRead(PABCSystem.BinaryFile@,System.Type)">
+    <member name="M:BinaryFileRead(@file@,System.Type)">
       <summary>--</summary>
     </member>
     <member name="M:PascalABCVersion">
@@ -2626,14 +2626,8 @@
     <member name="M:GetRuntimeSize``1">
       <summary>Вычисление размера типа на этапе выполнения</summary>
     </member>
-    <member name="M:_ObjectToString(System.Object)">
-      <summary>Возвращает строку для вывода подобного Write</summary>
-    </member>
-    <member name="M:_ObjectToString(System.Object,System.Text.StringBuilder)">
-      <summary>Добавляет в res строку для вывода подобного Write</summary>
-    </member>
-    <member name="M:_ObjectToString(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res строку для вывода подобного Write</summary>
+    <member name="M:ObjectToString(System.Object)">
+      <summary>Преобразует объект в строковое представление</summary>
     </member>
     <member name="M:ExecuteAssemlyIsDll">
       <summary>--</summary>
