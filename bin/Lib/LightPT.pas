@@ -2910,7 +2910,7 @@ type
     begin
       if TestMode = tmNone then
         inherited write(obj);
-      OutputString += _ObjectToString(obj);
+      OutputString += ObjectToString(obj);
       OutputList += obj;
       CreateNewLineBeforeMessage := True;
     end;

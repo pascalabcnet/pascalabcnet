@@ -1,4 +1,4 @@
-%PREFIX%=PABCPreprocessor2_
+﻿%PREFIX%=PABCPreprocessor2_
 
 EXPECTED{0}=Expected '{0}'
 EXPECTED_{0}_BUT_FOUND_{1}=Expexted '{0}' but found '{1}'

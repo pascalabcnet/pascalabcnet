@@ -1,4 +1,4 @@
-//PascalABCParser.dll
+﻿//PascalABCParser.dll
 %PREFIX%=PASCALABCPARSER_
 
 FOUND{0}=找到 {0} 但

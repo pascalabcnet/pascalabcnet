@@ -1,4 +1,4 @@
-//PascalABCParser.dll
+﻿//PascalABCParser.dll
 %PREFIX%=PASCALABCPARSER_
 
 FOUND{0}=Found {0} but 
@@ -18,7 +18,7 @@ LEFT_SIDE_ASSIGN_MUST_BE_VARIABLE=Leftside assigment must be variable
 PROCEDURE_CANNOT_HAVE_RETURNED_VALUE=Procedure cannot have returned value
 EXPECTED_{0}_BUT_FOUND_{1}=Expected '{0}' but found '{1}'
 NONTERMINALTOKEN_{0}_RETURN_NULL=Syntax rule '{0}' is not supported by the current version of the compiler
-SEMICOLON_BEFORE_ELSE=����� else ������ ������� ����� � �������
+SEMICOLON_BEFORE_ELSE=Перед else нельзя ставить точку с запятой
 UNEXPECTED_SYMBOL{0}=Unexpected symbol '{0}'
 UNSUPPORTED_OLD_DIRECTIVES=Compiler directives began with # are not supported. Use directives {$ }
 UNKNOWN_DIRECTIVE{0}=Unknown directive '{0}'
