@@ -1,5 +1,4 @@
-unit u_set7;
-{$R+}
+﻿unit u_set7;
 
 var 
   b : byte:=1;

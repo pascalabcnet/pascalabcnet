@@ -1085,7 +1085,7 @@ namespace PascalABCCompiler.TreeConverter
                                 internal_interface ii = cmc.obj.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                                 if (ii != null)
                                 {
-                                    if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                                    if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                                     {
                                         bounded_array_interface bai = (bounded_array_interface)ii;
                                         class_field cf = bai.int_array;
@@ -1160,7 +1160,7 @@ namespace PascalABCCompiler.TreeConverter
                         expression_node to = new simple_array_indexing(tc.var_ref,//factparams[formalparams.Count - 1],
                             new int_const_node(i - formalparams.Count + 1, factparams[i].location), aii.element_type, factparams[i].location);
                         expression_node from = factparams[i];
-                        statement_node stat = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, to, from, factparams[i].location);
+                        statement_node stat = syntax_tree_visitor.find_operator(StringConstants.assign_name, to, from, factparams[i].location);
                         tc.snl.AddElement(stat);
                     }
 
@@ -1195,7 +1195,7 @@ namespace PascalABCCompiler.TreeConverter
                                 expression_node to = new simple_array_indexing(tc.var_ref,//factparams[formalparams.Count - 1],
                                     new int_const_node(i - formalparams.Count + 1, factparams[i].location), aii.element_type, factparams[i].location);
                                 expression_node from = factparams[i];
-                                statement_node stat = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, to, from, factparams[i].location);
+                                statement_node stat = syntax_tree_visitor.find_operator(StringConstants.assign_name, to, from, factparams[i].location);
                                 tc.snl.AddElement(stat);
                             }
 
@@ -1204,13 +1204,48 @@ namespace PascalABCCompiler.TreeConverter
 						{
                             //issue #2161 - SSM 12.03.2020
                             //issue #348
-                            if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
+                            if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) && factparams[i].type is delegated_methods)
                             {
                                 possible_type_convertions ptci = new possible_type_convertions();
                                 ptci.first = null;
                                 ptci.second = null;
+                                if (formal_param_type.instance_params != null && formal_param_type.instance_params.Count > 0)
+                                {
+                                    var fn = (factparams[i].type as delegated_methods).proper_methods[0].simple_function_node;
+                                    if (fn.is_generic_function)
+                                    {
+                                        var fn_instance = fn.get_instance(formal_param_type.instance_params, true, factparams[i].location);
+                                        delegated_methods dm = new delegated_methods();
+                                        if (fn is common_namespace_function_node)
+                                            dm.proper_methods.AddElement(new common_namespace_function_call(fn_instance as common_namespace_function_node, factparams[i].location));
+                                        else if (fn is common_method_node cmn && cmn.IsStatic)
+                                            dm.proper_methods.AddElement(new common_static_method_call(fn_instance as common_method_node, factparams[i].location));
+                                        else if (fn is common_method_node cmn2)
+                                            dm.proper_methods.AddElement(new common_method_call(fn_instance as common_method_node, ((factparams[i].type as delegated_methods).proper_methods[0] as common_method_call).obj, factparams[i].location));
+                                        factparams[i].type = dm;
+                                    }
+                                    else if (!is_alone_method_defined)
+                                        return null;
+                                }
+                                else if (!is_alone_method_defined && formal_param_type.IsDelegate)
+                                    return null;
                                 ptci.from = factparams[i].type;
                                 ptci.to = formal_param_type;
+                                if (formal_param_type.IsDelegate)
+                                {
+                                    var ttc = type_table.get_convertions(formal_param_type, factparams[i].type);
+                                    if (ttc.first == null)
+                                    {
+                                        if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                                        {
+                                            error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
+                                            return null;
+                                        }
+                                        else
+                                            return null;
+                                    }
+                                }
+                                
                                 tc.AddElement(ptci);
                                 factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
                                 //return tc;
@@ -1235,7 +1270,7 @@ namespace PascalABCCompiler.TreeConverter
                                 new int_const_node(i - formalparams.Count + 1, factparams[i].location), aii.element_type, factparams[i].location);
                             expression_node from = create_simple_function_call(ptc.first.convertion_method,
                                 factparams[i].location, factparams[i]);
-                            statement_node stat = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, to, from, factparams[i].location);
+                            statement_node stat = syntax_tree_visitor.find_operator(StringConstants.assign_name, to, from, factparams[i].location);
                             tc.snl.AddElement(stat);
                         }
 					}
@@ -2152,8 +2187,8 @@ namespace PascalABCCompiler.TreeConverter
 
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
-            bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
-            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null || first_function.name.ToLower() == "in";
+            bool _is_assigment = first_function.name == StringConstants.assign_name;
+            bool is_op = StringConstants.GetNETOperName(first_function.name) != null || first_function.name.ToLower() == "in";
             basic_function_node _tmp_bfn = functions.FirstOrDefault().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
@@ -2162,7 +2197,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (function.sym_info is compiled_function_node cfn0 &&
                     cfn0.comperehensive_type is compiled_type_node ctn0 &&
-                    (ctn0.compiled_type.Name == compiler_string_consts.pascalSystemUnitName + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == compiler_string_consts.pascalExtensionsUnitName + compiler_string_consts.ImplementationSectionNamespaceName)
+                    (ctn0.compiled_type.Name == StringConstants.pascalSystemUnitName + StringConstants.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == StringConstants.pascalExtensionsUnitName + StringConstants.ImplementationSectionNamespaceName)
                     && !ctn0.compiled_type.Assembly.FullName.StartsWith("PABCRtl")) // пропустить функции (методы расширения), определенные в сборке в ПИ PABCSystem, но не в PABCRtl.dll
                     continue;
                 // В режиме only_from_not_extensions пропускать все extensions
@@ -2223,20 +2258,31 @@ namespace PascalABCCompiler.TreeConverter
                     //TODO: Здесь нужно поправить, если создавать возможность вызова метода с параметрами по умолчанию из откомпилированной dll.
                     if (parameters.Count == fn.parameters.Count)
                     {
-                        function_node func = null;
-                        if ((func = is_exist_eq_method_in_list(fn, set_of_possible_functions)) != null)
+                        function_node fm = null;
+                        if ((fm = is_exist_eq_method_in_list(fn, set_of_possible_functions)) != null)
                         {
-                            if (!eq_type_nodes(fn.return_value_type, func.return_value_type))
+                            if (!eq_type_nodes(fn.return_value_type, fm.return_value_type))
                             {
-                                set_of_possible_functions[set_of_possible_functions.IndexOf(func)] = fn;
+                                set_of_possible_functions[set_of_possible_functions.IndexOf(fm)] = fn;
 
                             }
                             continue;
                         }
-                        else if ((func = find_eq_method_in_list(fn, set_of_possible_functions)) != null)
+                        else if ((fm = find_eq_method_in_list(fn, set_of_possible_functions)) != null)
                         {
-                            if (!(fn is compiled_function_node cfn && func is compiled_function_node cfn2 && (cfn.polymorphic_state == polymorphic_state.ps_static || cfn2.polymorphic_state == polymorphic_state.ps_static)))
-                                set_of_possible_functions.Add(fn);
+                            // SSM 29/04/24 - небольшой рефакторинг для большей понятности
+                            if (fn is compiled_function_node cfnfn && fm is compiled_function_node cfnfm && (cfnfn.polymorphic_state == polymorphic_state.ps_static || cfnfm.polymorphic_state == polymorphic_state.ps_static))
+                            {
+
+                            }
+                            // SSM 29/04/24 - добавил такое же условие что и в предыдущей ветке 
+                            else if (fn is compiled_function_node cfnfn1 && fm is compiled_function_node cfnfm1
+                                && ! (cfnfn1.comperehensive_type.IsInterface || cfnfm1.comperehensive_type.IsInterface)// для интерфейсов обрабатывается ниже
+                                && cfnfn1.comperehensive_type != cfnfm1.comperehensive_type)
+                            {
+                                // пропускается такая же функция, но из предка!
+                            }
+                            else set_of_possible_functions.Add(fn);
                         }
                         else   
                             set_of_possible_functions.Add(fn);
@@ -3139,7 +3185,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		private string get_return_variable_name(string function_name)
 		{
-			return (compiler_string_consts.function_return_value_prefix+function_name);
+			return (StringConstants.function_return_value_prefix+function_name);
 		}
 
         public void create_function_return_variable(common_function_node cfn, SymbolInfo ret_var)

@@ -1488,11 +1488,6 @@ function GetEXEFileName: string;
 /// Преобразует указатель к строковому представлению
 function PointerToString(p: pointer): string;
 
-/// Для типа System.Type возвращает имя типа объекта
-function TypeToTypeName(t: System.Type): string;
-/// Возвращает имя типа объекта
-function TypeName(o: Object): string;
-
 /// Запускает программу или документ с именем fileName 
 procedure Exec(fileName: string);
 /// Запускает программу или документ с именем fileName и параметрами командной строки args
@@ -1510,6 +1505,12 @@ function EnumerateAllFiles(path: string; searchPattern: string := '*.*'): sequen
 function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
+
+/// Возвращает строку с именем данного типа
+function TypeToTypeName(t: System.Type): string;
+
+/// Возвращает строку с именем типа объекта
+function TypeName(obj: object): string;
 
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
@@ -2665,8 +2666,13 @@ function RuntimeDetermineType(T: System.Type): byte;
 function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
-///Возвращает строку для вывода в write
+
+/// Возвращает строку для вывода подобного Write
 function _ObjectToString(o: object): string;
+/// Добавляет в res строку для вывода подобного Write
+procedure _ObjectToString(o: object; res: StringBuilder);
+/// Записывает в res строку для вывода подобного Write
+procedure _ObjectToString(o: object; res: TextWriter);
 
 function IsUnix: boolean;
 ///--
@@ -4032,169 +4038,6 @@ begin
   result := Counters.Keys.GetEnumerator; 
 end;
 
-//------------------------------------------------------------------------------
-//              StructuredObjectToString
-//------------------------------------------------------------------------------
-
-// Возвращает переопределенный в последнем потомке ToString или nil если ToString определен в Object
-function RedefinedToString(o: object): System.Reflection.MethodInfo;
-begin
-  var t := o.GetType;
-  var meth: System.Reflection.MethodInfo := nil;
-  while t <> typeof(Object) do
-  begin
-    meth := t.GetMethod('ToString', System.Reflection.BindingFlags.Public or
-                System.Reflection.BindingFlags.Instance or 
-                System.Reflection.BindingFlags.DeclaredOnly, nil, new System.Type[0], nil);
-    if meth <> nil then 
-      break;
-    t := t.BaseType;            
-  end;
-  if (t = typeof(Object)) or (t = typeof(System.ValueType)) then
-    Result := nil
-  else Result := meth;   
-end;
-
-function ArrNToString(a: System.Array; indexes: array of integer; i: integer): string; forward;
-
-function StructuredObjectToString(o: Object; n: integer := 0): string;
-const
-  nmax = 100;
-  nmax1 = 30;
-begin
-  if o = nil then
-    Result := 'nil' 
-  else if o is System.Reflection.Pointer then
-    Result := PointerToString(System.Reflection.Pointer.Unbox(o))
-  else if (o.GetType = typeof(real)) or (o.GetType = typeof(decimal)) or (o.GetType = typeof(single)) then
-    Result := FormatFloatNumber(o.ToString)
-  else if (o.GetType = typeof(Complex)) then 
-  begin
-    var c := Complex(o);
-    Result := '(' + StructuredObjectToString(c.Real) + ',' + StructuredObjectToString(c.Imaginary) + ')';
-  end
-  else if (o.GetType.IsPrimitive) or (o.GetType = typeof(string)) then
-    Result := o.ToString
-  else if o is System.Array then
-  begin
-    var a := o as System.Array;  
-    Result := ArrNToString(a, new integer[a.Rank], 0); 
-  end
-  else if ((o.GetType = typeof(IntRange)) or (o.GetType = typeof(CharRange)) or (o.GetType = typeof(RealRange))) then 
-  begin
-    Result := o.ToString
-  end
-  else if o is System.Collections.IEnumerable then
-  begin
-    var sb := new StringBuilder();
-    var g := (o as System.Collections.IEnumerable).GetEnumerator();
-    
-    var otype := o.GetType;
-    
-    //var isdictorset := otype.Name.Equals('Dictionary`2') or otype.Name.Equals('SortedDictionary`2') or otype.Name.Equals('HashSet`1') or otype.Name.Equals('SortedSet`1');
-    var isdictorset := o.GetType.IsGenericType and 
-      ((otype.GetGenericTypeDefinition = typeof(Dictionary<,>))
-      or (otype.GetGenericTypeDefinition = typeof(SortedDictionary<,>))
-      or (otype.GetGenericTypeDefinition = typeof(HashSet<>))
-      or (otype.GetGenericTypeDefinition = typeof(SortedSet<>)));
-    isdictorset := isdictorset or (otype = typeof(TypedSet));
-    
-    if isdictorset then
-      sb.Append('{')
-    else sb.Append('[');
-    if g.MoveNext() then
-    begin  
-      sb.Append(StructuredObjectToString(g.Current, n + 1));
-      var cnt := 1;  
-      while g.MoveNext() and (cnt < nmax) do 
-      begin
-        sb.Append(',');
-        sb.Append(StructuredObjectToString(g.Current, n + 1));
-        cnt += 1;
-      end;
-      if cnt >= nmax then 
-        sb.Append(',...');
-    end;    
-    
-    if isdictorset then
-      sb.Append('}')
-    else sb.Append(']');
-    Result := sb.ToString;
-  end
-  else if o.GetType.GetField('NullBasedArray') <> nil then
-  begin
-    var f := o.GetType.GetField('NullBasedArray');
-    Result := StructuredObjectToString(f.GetValue(o));
-  end
-  else
-  begin
-    var q := RedefinedToString(o);
-    var gg := o.GetType.FullName.StartsWith('System.Tuple');
-    var gg1 := o.GetType.Name.StartsWith('KeyValuePair');
-    if (q <> nil) and q.IsVirtual and not gg and not gg1 then
-      Result := o.ToString
-    else 
-    begin
-      var t := o.GetType;
-      var sb := new System.Text.StringBuilder();
-      sb.Append('(');
-      if n > nmax1 then
-        sb.Append('....')
-      else 
-        while t <> typeof(object) do
-        begin
-          var ff := t.GetFields(System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.DeclaredOnly);
-          var pp := t.GetProperties(System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.DeclaredOnly);
-          
-          for var i := ff.Length - 1 downto 0 do
-            sb.Insert(1, StructuredObjectToString(ff[i].GetValue(o), n + 1) + ',');
-          
-          for var i := pp.Length - 1 downto 0 do
-            if pp[i].GetIndexParameters.Length = 0 then
-              sb.Insert(1, StructuredObjectToString(pp[i].GetValue(o, nil), n + 1) + ',');
-          
-          t := t.BaseType;
-        end; 
-      if sb.Length > 1 then 
-        sb.Length := sb.Length - 1;
-      sb.Append(')');
-      Result := sb.ToString;
-    end;
-  end;
-end;
-
-function ArrNToString(a: System.Array; indexes: array of integer; i: integer): string;
-const
-  nmax = 100;
-begin
-  var sb := new StringBuilder;
-  if i = a.Rank then
-  begin
-    var indexes1 := new integer[indexes.Length];
-    for var j:=0 to indexes.Length-1 do
-      indexes1[j] := indexes[j] + a.GetLowerBound(j);
-    sb.Append(StructuredObjectToString(a.GetValue(indexes1)))
-  end  
-  else
-  begin
-    sb.Append('[');
-    for var k := 0 to a.GetLength(i) - 1 do
-    begin
-      indexes[i] := k;
-      sb.Append(ArrNToString(a, indexes, i + 1));
-      if (k >= nmax - 1) and (k < a.GetLength(i) - 1) then 
-      begin
-        sb.Append(',...');
-        break
-      end
-      else if k < a.GetLength(i) - 1 then
-        sb.Append(',');            
-    end;
-    sb.Append(']');
-  end;
-  Result := sb.ToString;
-end;
-
 function IntRange.GetEnumerator: IEnumerator<integer> := Range(l,h).GetEnumerator;
 function IntRange.Step(n: integer): sequence of integer := Range(l,h,n);
 function IntRange.Reverse: sequence of integer := Range(h,l, -1);
@@ -4322,6 +4165,540 @@ function string.operator in(substr: string; str: string) := str.Contains(substr)
 procedure operator+=(var left: StringBuilder; right: string); extensionmethod := left.Append(right);
 
 function operator implicit(s: string): StringBuilder; extensionmethod := new StringBuilder(s);
+
+//------------------------------------------------------------------------------
+//              _ObjectToString
+//------------------------------------------------------------------------------
+
+procedure TypeToTypeNameHelper(t: System.Type; res: TextWriter); forward;
+
+type
+  ObjectToStringUtils = static class
+    
+    public static procedure MethodToString(mi: System.Reflection.MethodInfo; write_sub_names: boolean; res: TextWriter);
+      const lambda_name='lambda';
+      const sugar_name_begin='<>';
+      const par_separator = ', ';
+    begin
+      var rt := mi.ReturnType;
+      if rt=typeof(Void) then rt := nil;
+      res.Write( if rt=nil then 'procedure' else 'function' );
+      
+      if write_sub_names then
+      begin
+        res.Write(' ');
+        var name := mi.Name;
+        if name.StartsWith(sugar_name_begin) then
+        begin
+          if name.IndexOf(lambda_name, sugar_name_begin.Length, lambda_name.Length)=-1 then
+            res.Write( name.Substring(sugar_name_begin.Length) ) else
+            res.Write( lambda_name );
+        end else
+          res.Write( name );
+      end;
+      
+      var pars := mi.GetParameters;
+      if pars.Length<>0 then
+      begin
+        res.Write('(');
+        for var i := 0 to pars.Length-1 do
+        begin
+          var par := pars[i];
+          if i<>0 then res.Write( par_separator );
+          if write_sub_names then
+          begin
+            var name := par.Name;
+            if name.StartsWith(sugar_name_begin) then
+              res.Write( name.SubString(sugar_name_begin.Length) ) else
+              res.Write( name );
+            res.Write(': ');
+          end;
+          TypeToTypeNameHelper(par.ParameterType, res);
+        end;
+        res.Write(')');
+      end;
+      
+      if rt<>nil then
+      begin
+        res.Write(': ');
+        TypeToTypeNameHelper(rt, res);
+      end;
+      
+    end;
+    
+    private static empty_obj_arr := new object[0];
+    
+    public static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
+    const val_sep = '; ';
+    begin
+      res.Write('(');
+      var any_vals := false;
+      
+      var inh_st := new Stack<System.Type>;
+      begin
+        var t := o.GetType;
+        repeat
+          inh_st.Push(t);
+          t := t.BaseType;
+        until t=nil;
+      end;
+      
+      var bind_flags :=
+        System.Reflection.BindingFlags.Public or
+        System.Reflection.BindingFlags.Instance or
+        System.Reflection.BindingFlags.DeclaredOnly;
+      
+      foreach var t in inh_st do
+        foreach var fi in t.GetFields(bind_flags) do
+        begin
+          if any_vals then
+            res.Write( val_sep ) else
+            any_vals := true;
+          res.Write( fi.Name );
+          res.Write('=');
+          Append(fi.GetValue(o), prev, res);
+        end;
+      
+      foreach var t in inh_st do
+        foreach var pi in t.GetProperties(bind_flags) do
+        begin
+          if pi.GetIndexParameters.Length<>0 then continue;
+          var mi := pi.GetGetMethod;
+          if mi=nil then continue;
+          if any_vals then
+            res.Write( val_sep ) else
+            any_vals := true;
+          res.Write( pi.Name );
+          res.Write('=');
+          var val: object;
+          try
+            val := mi.Invoke(o, empty_obj_arr);
+          except
+            on e: System.Reflection.TargetInvocationException do
+              val := e.InnerException.ToString;
+          end;
+          Append(val, prev, res);
+        end;
+      
+      res.Write(')');
+    end;
+    
+    public static procedure Append(o: Object; prev: Stack<object>; res: TextWriter);
+    begin
+      if prev.Contains(o) then
+      begin
+        res.Write( '(...)' );
+        exit;
+      end;
+      
+      prev.Push(o);
+      AppendImpl(o, prev, res);
+      if prev.Pop<>o then raise new InvalidOperationException;
+    end;
+    
+    public static procedure AppendImpl(o: Object; prev: Stack<object>; res: TextWriter);
+    const max_seq_len = 100;
+    begin
+      if o = nil then
+      begin
+        res.Write( 'nil' );
+        exit;
+      end;
+      var o_t := o.GetType;
+      
+      {$region Особые типы}
+      
+      if o is System.Reflection.Pointer then
+      begin
+        res.Write( PointerToString(System.Reflection.Pointer.Unbox(o)) );
+        exit;
+      end;
+      
+      if o is Complex then
+      begin
+        var c := Complex(o);
+        res.Write('(');
+        AppendImpl(c.Real, prev, res);
+        res.Write(' + i*');
+        AppendImpl(c.Imaginary, prev, res);
+        res.Write(')');
+        exit;
+      end;
+      
+      if o is Delegate then
+      begin
+        var d := Delegate(o);
+        if d.Target<>nil then
+        begin
+          Append(d.Target, prev, res);
+          res.Write(' => ');
+        end;
+        MethodToString(d.Method, true, res);
+        exit;
+      end;
+      
+      // Чтобы стандартный .ToString не срабатывал
+      if o_t.IsGenericType and (o_t.GetGenericTypeDefinition=typeof(KeyValuePair<,>)) then
+      begin
+        ContentsToString(o, prev, res);
+        exit;
+      end;
+      
+      begin
+        var f := o.GetType.GetField('NullBasedArray');
+        if f<>nil then
+        begin
+          AppendImpl(f.GetValue(o), prev, res);
+          exit;
+        end;
+      end;
+      
+      {$endregion Особые типы}
+      
+      {$region Переопределённый .ToString}
+      
+      if o is IFormattable then
+      begin
+        // Применение nfi к числам с плавающей точкой
+        res.Write( IFormattable(o).ToString(nil, nfi) );
+        exit;
+      end;
+      begin
+        var d: ()->string := o.ToString;
+        var decl_t := d.Method.DeclaringType;
+        if (decl_t<>typeof(object)) and (decl_t<>typeof(ValueType)) then
+        begin
+          res.Write( d() );
+          exit;
+        end;
+      end;
+      
+      {$endregion Переопределённый .ToString}
+      
+      {$region Array}
+      
+      if o is &Array then
+      begin
+        var a := &Array(o);
+        if a.Length=0 then
+        begin
+          // Алгоритм ниже не расчитан на пустые массив
+          loop a.Rank do res.Write('[');
+          loop a.Rank do res.Write(']');
+          exit;
+        end;
+        
+        var inds := new integer[a.Rank];
+        var trim_inds := new Nullable<integer>[inds.Length];
+        var last_r := inds.Length-1;
+        for var r := 0 to last_r do
+        begin
+          inds[r] := a.GetLowerBound(r);
+          var trim_ind := inds[r]+max_seq_len-1;
+          // Именно "<", не "<=", чтобы последний
+          // элемент никогда не заменяло на ...
+          if trim_ind<a.GetUpperBound(r) then
+            trim_inds[r] := trim_ind;
+        end;
+        
+        var stack_pos := -1;
+        while true do
+        begin
+          loop last_r-stack_pos do res.Write('[');
+          stack_pos := last_r;
+          
+          Append(a.GetValue(inds), prev, res);
+          
+          while true do
+          begin
+            inds[stack_pos] += 1;
+            
+            var need_pop := inds[stack_pos]>a.GetUpperBound(stack_pos);
+            if not need_pop and (inds[stack_pos]=trim_inds[stack_pos]) then
+            begin
+              res.Write(',...');
+              need_pop := true;
+            end;
+            
+            if need_pop then
+            begin
+              inds[stack_pos] := a.GetLowerBound(stack_pos);
+              res.Write(']');
+              stack_pos -= 1;
+              if stack_pos<0 then exit;
+            end else
+            begin
+              res.Write(',');
+              break;
+            end;
+            
+          end;
+          
+        end;
+        
+        // Должен сработать exit выше
+        raise new InvalidOperationException;
+      end;
+      
+      {$endregion Array}
+      
+      {$region IEnumerable}
+      
+      if o is System.Collections.IEnumerable then
+      begin
+        var s := System.Collections.IEnumerable(o);
+        
+        var is_set :=
+          (o is TypedSet) or
+          o.GetType.GetInterfaces.Contains(typeof(System.Collections.IDictionary)) or
+          o.GetType.GetInterfaces.Any(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(System.Collections.Generic.ISet<>)));
+        
+        res.Write( if is_set then '{' else '[' );
+        var enmr := s.GetEnumerator;
+        var len := 0;
+        if enmr.MoveNext then while true do
+        begin
+          var enmr_curr := enmr.Current;
+          var enmr_has_next := enmr.MoveNext;
+          if len<>0 then res.Write(',');
+          len += 1;
+          
+          if (len>max_seq_len) and enmr_has_next then
+          begin
+            res.Write( '...' );
+            enmr_has_next := false;
+          end else
+            Append(enmr_curr, prev, res);
+          
+          if not enmr_has_next then break;
+        end;
+        res.Write( if is_set then '}' else ']' );
+        exit;
+      end;
+      
+      {$endregion IEnumerable}
+      
+      ContentsToString(o, prev, res);
+    end;
+  end;
+  
+function TryWriteFromTypeCode(t: System.Type; res: TextWriter): boolean;
+begin
+  Result := not t.IsEnum;
+  if not Result then exit;
+  case &Type.GetTypeCode(t) of
+    
+    // int
+    TypeCode.SByte:   res.Write('shortint');
+    TypeCode.Byte:    res.Write('byte');
+    TypeCode.Boolean: res.Write('boolean');
+    
+    TypeCode.Int16:   res.Write('smallint');
+    TypeCode.UInt16:  res.Write('word');
+    TypeCode.Char:    res.Write('char');
+    
+    TypeCode.Int32:   res.Write('integer');
+    TypeCode.UInt32:  res.Write('longword');
+    
+    TypeCode.Int64:   res.Write('int64');
+    TypeCode.UInt64:  res.Write('uint64');
+    TypeCode.DateTime:res.Write('DateTime');
+    
+    // float
+    TypeCode.Single:  res.Write('single');
+    TypeCode.Double:  res.Write('real');
+    TypeCode.Decimal: res.Write('decimal');
+    
+    TypeCode.String:  res.Write('string');
+    
+    else Result := false;
+  end;
+end;
+
+procedure TypeToTypeNameHelper(t: System.Type; res: TextWriter);
+begin
+  if t=nil then
+  begin
+    res.Write( 'nil' );
+    exit;
+  end;
+  
+  if TryWriteFromTypeCode(t, res) then
+    exit;
+  
+  if t.IsArray then
+  begin
+    res.Write('array');
+    var rank := t.GetArrayRank;
+    if rank>1 then
+    begin
+      res.Write('[');
+      loop rank-1 do res.Write(',');
+      res.Write(']');
+    end else
+    if rank<1 then
+      raise new NotImplementedException;
+    res.Write(' of ');
+    TypeToTypeNameHelper(t.GetElementType, res);
+    exit;
+  end;
+  
+  if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
+  begin
+    var typed := t.GetInterfaces.Append(t).FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
+    if (t=typed) or (typed<>nil) and (
+      // Выводим как sequence только классы, созданные yield функцией
+      // "clyield#" это yield класс паскаля
+      t.Name.StartsWith('clyield#') or
+      // А все yield классы C# являются вложенными и скрытыми
+      t.IsNestedPrivate
+    ) then
+    begin
+      res.Write('sequence of ');
+      TypeToTypeNameHelper(typed.GetGenericArguments.Single, res);
+      exit;
+    end;
+  end;
+  
+  var gen_args := t.GetGenericArguments;
+  
+  //TODO t.IsClass, чтобы ValueTuple пока что не ловило
+  if t.GetInterfaces.Contains(typeof(System.Runtime.CompilerServices.ITuple)) and t.IsClass then
+  begin
+    res.Write('(');
+    var any_gen_arg := false;
+    foreach var arg in gen_args do
+    begin
+      if any_gen_arg then
+        res.Write(', ') else
+        any_gen_arg := true;
+      TypeToTypeNameHelper(arg, res);
+    end;
+    res.Write(')');
+    exit;
+  end;
+  
+  var name := t.Name;
+  
+  if t.IsSubclassOf(typeof(Delegate)) then
+  begin
+    var mi := t.GetMethod('Invoke');
+    // nil for System.MulticastDelegate
+    if mi<>nil then
+    begin
+      ObjectToStringUtils.MethodToString(mi, false, res);
+      exit;
+    end;
+  end;
+  
+  // "Lst(0).GetEnumerator.GetType.DeclaringType" возвращает List<T>, а не List<integer>
+  // При чём этот T.IsNested возвращает true, хотя это параметр а не вложенный тип
+  if t.IsNested and not t.IsGenericParameter then
+  begin
+    var parent_def := t.DeclaringType;
+    var parent := parent_def;
+    if parent.IsGenericType then
+    begin
+      // Во вложенный тип копирует все типы шаблона из внешнего класса
+      // class Parent<T1> { class Nested<T2> }
+      // На практике вложенный тип будет Parent`1+Nested`1<T1,T2>
+      // Но тут писать в res будем только <T2>
+      
+      var t_def_args := t.GetGenericTypeDefinition.GetGenericArguments;
+      var parent_def_args := parent_def.GetGenericArguments;
+      for var i := 0 to parent_def_args.Length-1 do
+        if t_def_args[i].Name <> parent_def_args[i].Name then
+          // Ожидается что <T1> всегда будет перед <T2> в примере выше
+          raise new NotImplementedException;
+      
+      var parent_args := new System.Type[parent_def_args.Length];
+      &Array.ConstrainedCopy(gen_args,0, parent_args,0, parent_args.Length);
+      parent := parent_def.MakeGenericType(parent_args);
+      
+      var own_args := new System.Type[gen_args.Length-parent_def_args.Length];
+      &Array.ConstrainedCopy(gen_args,parent_args.Length, own_args,0, own_args.Length);
+      gen_args := own_args;
+      
+    end;
+    TypeToTypeNameHelper(parent, res);
+    res.Write('+');
+  end;
+  
+  if gen_args.Count<>0 then
+  begin
+    res.Write(name.Remove(name.LastIndexOf('`')));
+    res.Write('<');
+    var any_gen_arg := false;
+    foreach var arg in gen_args do
+    begin
+      if any_gen_arg then
+        res.Write(', ') else
+        any_gen_arg := true;
+      TypeToTypeNameHelper(arg, res);
+    end;
+    res.Write('>');
+    exit;
+  end;
+  
+  if t.IsGenericParameter then
+    res.Write('[');
+  res.Write(name);
+  if t.IsGenericParameter then
+    res.Write(']');
+end;
+
+procedure TypeToTypeNameHelper(t: System.Type; res: StringBuilder) :=
+  TypeToTypeNameHelper(t, new StringWriter(res));
+
+procedure TypeNameHelper(obj: object; res: TextWriter);
+begin
+  var t := obj?.GetType;
+  
+  // Зачем? TypeName(@a) не работает
+  // Можно сделать TypeName волшебной функцией, вызывая
+  // System.Reflection.Pointer.Box, но сейчас это не происходит
+//  if t = typeof(System.Reflection.Pointer) then
+//  begin
+//    ...
+//    exit;
+//  end;
+  
+  var static_arr_field := t?.GetField('NullBasedArray');
+  if static_arr_field<>nil then
+  begin
+    TypeNameHelper(static_arr_field.GetValue(obj), res);
+    exit;
+  end;
+  
+  TypeToTypeNameHelper(t, res);
+end;
+
+procedure TypeNameHelper(obj: object; res: StringBuilder) := TypeNameHelper(obj, new StringWriter(res));
+
+function TypeName(obj: object): string;
+begin
+  var res := new StringBuilder;
+  TypeNameHelper(obj, res);
+  Result := res.ToString;
+end;
+
+function TypeToTypeName(t: System.Type): string;
+begin
+  var res := new StringBuilder;
+  TypeToTypeNameHelper(t, res);
+  Result := res.ToString;
+end;
+
+procedure _ObjectToString(o: object; res: TextWriter) :=
+  ObjectToStringUtils.Append(o, new Stack<object>, res);
+procedure _ObjectToString(o: object; res: StringBuilder) :=
+  _ObjectToString(o, new StringWriter(res));
+function _ObjectToString(o: object): string;
+begin
+  var res := new StringBuilder;
+  _ObjectToString(o, res);
+  Result := res.ToString;
+end;
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
@@ -5900,7 +6277,7 @@ procedure IOStandardSystem.write(obj: object);
 begin
   if not console_alloc then
     AllocConsole;
-  Console.Write(StructuredObjectToString(obj));  
+  Console.Write(_ObjectToString(obj));  
 end;
 
 procedure IOStandardSystem.write(p: pointer);
@@ -5914,11 +6291,6 @@ begin
     AllocConsole;
   Console.WriteLine;
   System.Diagnostics.Debug.WriteLine('');
-end;
-
-function _ObjectToString(o: object): string;
-begin
-  Result := StructuredObjectToString(o);
 end;
 
 // -----------------------------------------------------
@@ -7148,7 +7520,7 @@ begin
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
   
-  f.sw.Write(StructuredObjectToString(val));
+  f.sw.Write(_ObjectToString(val));
   {if val = nil then
   begin
   f.sw.Write('nil');
@@ -10548,7 +10920,37 @@ begin
     raise new System.ArgumentNullException('b');
   if c = nil then
     raise new System.ArgumentNullException('c');
-  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z)-> (p[0], p[1], z)).Zip(c, (p, z)-> (p[0], p[1], p[2], z));
+  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z)).Zip(c, (p, z) -> (p[0], p[1], p[2], z));
+end;
+
+/// Объединяет две последовательности в последовательность двухэлементных кортежей
+function Zip<T, T1>(Self: sequence of T; a: sequence of T1): sequence of (T, T1); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  Result := Self.Zip(a, (x, y) -> (x, y));
+end;
+
+/// Объединяет три последовательности в последовательность трехэлементных кортежей
+function Zip<T, T1, T2>(Self: sequence of T; a: sequence of T1; b: sequence of T2): sequence of (T, T1, T2); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  if b = nil then
+    raise new System.ArgumentNullException('b');
+  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z));
+end;
+
+/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
+function Zip<T, T1, T2, T3>(Self: sequence of T; a: sequence of T1; b: sequence of T2; c: sequence of T3): sequence of (T, T1, T2, T3); extensionmethod;
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+  if b = nil then
+    raise new System.ArgumentNullException('b');
+  if c = nil then
+    raise new System.ArgumentNullException('c');
+  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z)).Zip(c, (p, z) -> (p[0], p[1], p[2], z));
 end;
 
 /// Разъединяет последовательность двухэлементных кортежей на две последовательности. Реализуется двухпроходным алгоритмом
@@ -11343,7 +11745,7 @@ begin
     for var j := 0 to Self.ColCount - 1 do
     begin
       if PrintMatrixWithFormat then
-        Write(StructuredObjectToString(Self[i, j]).PadLeft(w))
+        Write(_ObjectToString(Self[i, j]).PadLeft(w))
       else Print(Self[i, j]);
     end;
     Writeln;  
@@ -13482,95 +13884,6 @@ begin
   Result := L.Select(i -> i - 1)
 end;
 
-/// Для типа System.Type возвращает имя типа объекта
-function TypeToTypeName(t: System.Type): string;
-begin
-  if t.IsPrimitive then 
-    case System.Type.GetTypeCode(t) of
-      TypeCode.Boolean: Result := 'boolean';
-      TypeCode.Char: Result := 'char';
-      TypeCode.Byte: Result := 'byte';
-      TypeCode.Int16: Result := 'smallint';
-      TypeCode.Int32: Result := 'integer';
-      TypeCode.Int64: Result := 'int64';
-      TypeCode.UInt16: Result := 'word';
-      TypeCode.UInt32: Result := 'longword';
-      TypeCode.UInt64: Result := 'uint64';
-      TypeCode.SByte: Result := 'shortint';
-      TypeCode.Double: Result := 'real';
-      TypeCode.Single: Result := 'single';
-      else Result := t.ToString;
-    end
-  else if t = typeof(string) then
-    Result := 'string'
-  else if t = typeof(decimal) then
-    Result := 'decimal'
-  else if t.IsArray then
-  begin
-    var ts := t.ToString;
-    var dims := ts.MatchValue('\[,*\]');
-    if dims = '[]' then 
-      dims := ''
-    else dims := dims + ' ';
-    Result := 'array ' + dims + 'of ' + TypeToTypeName(t.GetElementType);
-  end
-  else if t.IsGenericType then
-  begin  
-    var name := t.ToString.MatchValue('\w+(?=`)');
-    var ss := t.GetGenericArguments.Select(x->TypeToTypeName(x));
-    if name = 'Tuple' then 
-      Result := '('+ss.JoinToString(',')+')'
-    else if name = 'Func' then
-    begin
-      if ss.Count = 1 then
-        Result := '() -> '+ ss.Last
-      else if ss.Count = 2 then
-        Result := ss.First + ' -> '+ ss.Last
-      else  
-        Result := '('+ss.SkipLast.JoinToString(',')+') -> '+ ss.Last;
-    end
-    else if name = 'Action' then
-    begin
-      if ss.Count = 1 then
-        Result := ss.First + ' -> ()'
-      else  
-        Result := '('+ss.JoinToString(',')+') -> ()';
-    end
-    else Result := name + '<'+ss.JoinToString(',')+'>'
-  end
-  else
-  begin
-     //Всё остальное
-    var s := t.ToString;
-    if s = 'System.Action' then
-    begin
-      Result := 'procedure';
-      exit;
-    end;
-    var ind := s.LastIndexOf('.');
-    if ind >= 0 then
-      s := s.Substring(ind + 1);
-    Result := s;
-  end;
-end;
-
-/// Возвращает имя типа объекта
-function TypeName(o: Object): string;
-begin
-  if o = nil then
-    Result := 'nil'
-  else if o is System.Reflection.Pointer then
-    Result := 'pointer'
-  else if o.GetType.GetField('NullBasedArray') <> nil then
-  begin
-    // неточно для двумерных массивов
-    var fi := o.GetType.GetField('NullBasedArray');
-    var f := fi.GetValue(o).GetType;
-    Result := TypeToTypeName(f);
-  end
-  else Result := TypeToTypeName(o.GetType);
-end;
-
 ///-- 
 function CreateSliceFromStringInternal(Self: string; from, step, count: integer): string;
 begin
@@ -13714,11 +14027,11 @@ end;
 //>>     Методы расширения словарей # Extension methods for IDictionary
 // -----------------------------------------------------------------------------
 /// Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию
-function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key): Value; extensionmethod;
+function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key; V: Value := default(Value)): Value; extensionmethod;
 begin
   var b := Self.TryGetValue(K, Result);
   if not b then 
-    Result := default(Value);
+    Result := V;
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом
@@ -14207,7 +14520,7 @@ end;
 function FormatValue(value: object; NumOfChars: integer): string;
 begin
   if value <> nil then
-    Result := StructuredObjectToString(value)
+    Result := _ObjectToString(value)
   else
     Result := 'nil';
   Result := Result.PadLeft(NumOfChars);

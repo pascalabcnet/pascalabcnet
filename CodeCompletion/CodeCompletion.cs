@@ -335,7 +335,7 @@ namespace CodeCompletion
 
     public class CodeCompletionNameHelper
     {
-        public static readonly string system_unit_file_name = PascalABCCompiler.TreeConverter.compiler_string_consts.pascalSystemUnitName;
+        public static readonly string system_unit_file_name = PascalABCCompiler.StringConstants.pascalSystemUnitName;
         public static string system_unit_file_full_name;
         private static CodeCompletionNameHelper helper;
 

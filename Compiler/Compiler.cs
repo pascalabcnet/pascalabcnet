@@ -279,12 +279,6 @@ namespace PascalABCCompiler
         {
             this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
         }
-
-        public ResourceFileNotFound(string ResFileName)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_RESOURCEFILE_{0}_NOT_FOUND"), ResFileName), null)
-        {
-            //this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
-        }
     }
 
     public class IncludeNamespaceInUnitError : CompilerCompilationError
@@ -397,10 +391,28 @@ namespace PascalABCCompiler
 
     public class UnsupportedTargetFramework : CompilerCompilationError
     {
-        public UnsupportedTargetFramework(string FrameworkName, TreeRealization.location sl)
+        public UnsupportedTargetFramework(string FrameworkName, location sl)
             : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGETFRAMEWORK_{0}"), FrameworkName))
         {
             this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+        }
+    }
+
+    public class UnsupportedTargetPlatform : CompilerCompilationError
+    {
+        public UnsupportedTargetPlatform(string platformName, location loc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGET_PLATFORM{0}"), platformName))
+        {
+            sourceLocation = new SourceLocation(loc.doc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
+        }
+    }
+
+    public class UnsupportedOutputFileType : CompilerCompilationError
+    {
+        public UnsupportedOutputFileType(string outputFileType, location loc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_OUTPUT_FILE_TYPE{0}"), outputFileType))
+        {
+            sourceLocation = new SourceLocation(loc.doc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
         }
     }
 
@@ -423,7 +435,7 @@ namespace PascalABCCompiler
         //private SemanticTree.compilation_unitArrayList _interfaceUsedUnits=new SemanticTree.compilation_unitArrayList();
 
         // название языка модуля
-        public string languageName = TreeConverter.compiler_string_consts.pascalLanguageName;
+        public string languageName = StringConstants.pascalLanguageName;
 
         /// <summary>
         /// Только "реальные" юниты (не dll и namespace)
@@ -520,7 +532,7 @@ namespace PascalABCCompiler
         public bool Optimise = false;
         public bool SavePCUInThreadPull = false;
         public bool RunWithEnvironment = false;
-        public string CompiledUnitExtension = TreeConverter.compiler_string_consts.pascalCompiledUnitExtension;
+        public string CompiledUnitExtension = StringConstants.pascalCompiledUnitExtension;
         public bool ProjectCompiled = false;
         public IProjectInfo CurrentProject = null;
         public OutputType OutputFileType = OutputType.ConsoleApplicaton;
@@ -612,7 +624,7 @@ namespace PascalABCCompiler
         {
             public string name = null;
             public StandardModuleAddMethod addMethod = StandardModuleAddMethod.LeftToAll;
-            public string languageToAdd = TreeConverter.compiler_string_consts.pascalLanguageName;
+            public string languageToAdd = StringConstants.pascalLanguageName;
             
             public StandardModule(string Name, StandardModuleAddMethod addMethod)
             {
@@ -883,13 +895,6 @@ namespace PascalABCCompiler
 
         public List<var_definition_node> CompiledVariables = new List<var_definition_node>();
 
-        private Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives = null;
-
-        //public Hashtable CompilerDirectives
-        //{
-        //    get { return compiler_directives; }
-        //}
-
         private uint linesCompiled;
         public uint LinesCompiled
         {
@@ -1128,7 +1133,8 @@ namespace PascalABCCompiler
             InternalDebug = new CompilerInternalDebug();
 
             ParsersController.SourceFilesProvider = sourceFilesProvider;
-            
+            ParsersController.SendUnitCheckToParsers(CurrentUnitIsNotMainProgram);
+
             SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
             CodeGeneratorsController = new CodeGenerators.Controller();
 
@@ -1172,23 +1178,14 @@ namespace PascalABCCompiler
             }
         }
 
-        private static HashSet<string> knownDirectives = new HashSet<string>(new string[] { PascalABCCompiler.TreeConverter.compiler_string_consts.main_resource_string,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.trademark_string, PascalABCCompiler.TreeConverter.compiler_string_consts.copyright_string,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.company_string, PascalABCCompiler.TreeConverter.compiler_string_consts.product_string,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.version_string, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_apptype,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_reference, PascalABCCompiler.TreeConverter.compiler_string_consts.include_namespace_directive,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_savepcu, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_zerobasedstrings,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_zerobasedstrings_ON, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_zerobasedstrings_OFF,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_nullbasedstrings_ON, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_nullbasedstrings_OFF,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_initstring_as_empty_ON, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_initstring_as_empty_OFF,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_resource, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_platformtarget,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_targetframework, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_faststrings,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_gendoc, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_region, 
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_endregion, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_ifdef,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_endif, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_ifndef,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_define, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_else,
-                PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_undef, PascalABCCompiler.TreeConverter.compiler_string_consts.compiler_directive_include});
+        #region COMPILER DIRECTIVES
 
+        /// <summary>
+        /// Формирует словарь директив компилятора, собирая их из всех переданных модулей
+        /// </summary>
+        /// <param name="Units"></param>
+        /// <returns></returns>
+        /// <exception cref="DuplicateDirective"></exception>
         private Dictionary<string, List<compiler_directive>> GetCompilerDirectives(List<CompilationUnit> Units)
         {
             Dictionary<string, List<compiler_directive>> directives = new Dictionary<string, List<compiler_directive>>(StringComparer.CurrentCultureIgnoreCase);
@@ -1202,11 +1199,10 @@ namespace PascalABCCompiler
                     {
                         if (!directives.ContainsKey(cd.name))
                             directives.Add(cd.name, new List<compiler_directive>());
+                        // TODO: сделать проверку на дубликаты централизованной (в другом месте)  EVA
                         else if (cd.name.Equals("mainresource", StringComparison.CurrentCultureIgnoreCase))
                             throw new DuplicateDirective(cd.location.doc.file_name, "mainresource", cd.location);
                         directives[cd.name].Insert(0, cd);
-                        if (!knownDirectives.Contains(cd.name.ToLower()))
-                            warnings.Add(new Errors.CommonWarning(string.Format(StringResources.Get("WARNING_UNKNOWN_DIRECTIVE"), cd.name), cd.location.doc.file_name, cd.location.begin_line_num, cd.location.begin_column_num));
                     }
                 }
             }
@@ -1223,6 +1219,24 @@ namespace PascalABCCompiler
             return Directives;
         }
 
+        /// <summary>
+        /// преобразует в директивы семантического уровня | в TreeConverter такая же функция  EVA
+        /// </summary>
+        private List<compiler_directive> GetDirectivesAsSemanticNodes(List<SyntaxTree.compiler_directive> compilerDirectives, string unitFileName)
+        {
+            List<compiler_directive> list = new List<compiler_directive>();
+            foreach (SyntaxTree.compiler_directive directive in compilerDirectives)
+            {
+                list.Add(new compiler_directive(directive.Name.text,
+                    directive.Directive?.text ?? "",
+                    get_location_from_treenode(directive, unitFileName),
+                    unitFileName));
+            }
+            return list;
+        }
+
+        #endregion
+
         private TreeRealization.location get_location_from_treenode(SyntaxTree.syntax_tree_node tn, string FileName)
         {
             if (tn.source_context == null)
@@ -1231,22 +1245,6 @@ namespace PascalABCCompiler
             }
             return new TreeRealization.location(tn.source_context.begin_position.line_num, tn.source_context.begin_position.column_num,
                 tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, new TreeRealization.document(FileName));
-        }
-
-        /// <summary>
-        /// преобразует в директивы семантического уровня
-        /// </summary>
-        private List<compiler_directive> GetDirectivesAsSemanticNodes(List<SyntaxTree.compiler_directive> compilerDirectives, string unitFileName)
-        {
-            List<compiler_directive> list = new List<compiler_directive>();
-            foreach (SyntaxTree.compiler_directive directive in compilerDirectives)
-            {
-                list.Add(new compiler_directive(directive.Name.text, 
-                    directive.Directive?.text ?? "",
-                    get_location_from_treenode(directive, unitFileName), 
-                    unitFileName));
-            }
-            return list;
         }
 
         void syncStartCompile()
@@ -1824,7 +1822,7 @@ namespace PascalABCCompiler
 
             if (info != null && info.modules.Count > 0)
             {
-                comp_opt.ReferencedAssemblies.Add(Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName), PascalABCCompiler.TreeConverter.compiler_string_consts.pabc_rtl_dll_name));
+                comp_opt.ReferencedAssemblies.Add(Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName), StringConstants.pabc_rtl_dll_name));
                 string mod_file_name = FindFileWithExtensionInDirs("PABCRtl.dll", out _, Path.Combine(this.CompilerOptions.SystemDirectory, "Lib"));
                 File.Copy(mod_file_name, Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName), "PABCRtl.dll"), true);
                 /*foreach (string mod in info.modules)
@@ -1956,12 +1954,12 @@ namespace PascalABCCompiler
             }
         }
 
-        private void SetOutputFileTypeOption()
+        private void SetOutputFileTypeOption(Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives)
         {
-            if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_apptype))
+            if (compilerDirectives.ContainsKey(StringConstants.compiler_directive_apptype))
             {
-                string directive = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_apptype][0].directive.ToLower();
-                switch (directive)
+                string outputFileType = compilerDirectives[StringConstants.compiler_directive_apptype][0].directive.ToLower();
+                switch (outputFileType)
                 {
                     case "console":
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.ConsoleApplicaton;
@@ -1976,18 +1974,27 @@ namespace PascalABCCompiler
                         CompilerOptions.OutputFileType = CompilerOptions.OutputType.PascalCompiledUnit;
                         break;
                     default:
-                        throw new Exception("No possible OutputFileType!");
+                        ErrorsList.Add(new UnsupportedOutputFileType(outputFileType, compilerDirectives[StringConstants.compiler_directive_apptype][0].location));
+                        break;
                 }
+            }
+
+            // передача информации о типе выходного файла системному юниту
+            if (UnitsTopologicallySortedList.Count > 0)
+            {
+                bool isConsoleApplication = CompilerOptions.OutputFileType == CompilerOptions.OutputType.ConsoleApplicaton;
+                common_unit_node systemUnit = UnitsTopologicallySortedList[0].SemanticTree as common_unit_node;
+                systemUnit.IsConsoleApplicationVariable = isConsoleApplication;
             }
         }
 
-        private void SetOutputPlatformOption(NETGenerator.CompilerOptions compilerOptions)
+        private void SetOutputPlatformOption(NETGenerator.CompilerOptions compilerOptions, Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives)
         {
             List<compiler_directive> compilerDirectivesList = new List<compiler_directive>();
-            if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_platformtarget, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_platformtarget, out compilerDirectivesList))
             {
-                string plt = compilerDirectivesList[0].directive.ToLower();
-                switch (plt)
+                string platformName = compilerDirectivesList[0].directive.ToLower();
+                switch (platformName)
                 {
                     case "x86":
                         compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
@@ -2022,12 +2029,13 @@ namespace PascalABCCompiler
                         }
                         break;
                     default:
-                        throw new Exception("Unknown platform!");
+                        ErrorsList.Add(new UnsupportedTargetPlatform(platformName, compilerDirectivesList[0].location));
+                        break;
                 }
                 if (CompilerOptions.Only32Bit)
                     compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
             }
-            if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.compiler_directive_targetframework, out compilerDirectivesList))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_targetframework, out compilerDirectivesList))
             {
                 compilerOptions.TargetFramework = compilerDirectivesList[0].directive;
                 if (!(new string[] { "net40", "net403", "net45", "net451", "net452", "net46", "net461", "net462", "net47", "net471", "net472", "net48", "net481" })
@@ -2038,56 +2046,56 @@ namespace PascalABCCompiler
             }
         }
 
-        private void FillCompilerInfoOptions(NETGenerator.CompilerOptions compilerOptions)
+        private void FillCompilerInfoOptions(NETGenerator.CompilerOptions compilerOptions, Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives)
         {
-            var compilerDirectives = new List<compiler_directive>();
-
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.product_string, out compilerDirectives))
+            List<compiler_directive> compilerDirectivesList;
+            
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_product_string, out compilerDirectivesList))
             {
-                compilerOptions.Product = compilerDirectives[0].directive;
+                compilerOptions.Product = compilerDirectivesList[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.version_string, out compilerDirectives))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_version_string, out compilerDirectivesList))
             {
-                compilerOptions.ProductVersion = compilerDirectives[0].directive;
+                compilerOptions.ProductVersion = compilerDirectivesList[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.company_string, out compilerDirectives))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_company_string, out compilerDirectivesList))
             {
-                compilerOptions.Company = compilerDirectives[0].directive;
+                compilerOptions.Company = compilerDirectivesList[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.trademark_string, out compilerDirectives))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_trademark_string, out compilerDirectivesList))
             {
-                compilerOptions.TradeMark = compilerDirectives[0].directive;
+                compilerOptions.TradeMark = compilerDirectivesList[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.copyright_string, out compilerDirectives))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_copyright_string, out compilerDirectivesList))
             {
-                compilerOptions.Copyright = compilerDirectives[0].directive;
+                compilerOptions.Copyright = compilerDirectivesList[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.title_string, out compilerDirectives))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_title_string, out compilerDirectivesList))
             {
-                compilerOptions.Title = compilerDirectives[0].directive;
+                compilerOptions.Title = compilerDirectivesList[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.description_string, out compilerDirectives))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_description_string, out compilerDirectivesList))
             {
-                compilerOptions.Description = compilerDirectives[0].directive;
+                compilerOptions.Description = compilerDirectivesList[0].directive;
             }
-            if (this.compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.main_resource_string, out compilerDirectives))
+            if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_main_resource_string, out compilerDirectivesList))
             {
-                if (this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.product_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.version_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.company_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.trademark_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.title_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.description_string) ||
-                    this.compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.copyright_string))
+                if (compilerDirectives.ContainsKey(StringConstants.compiler_directive_product_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_version_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_company_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_trademark_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_title_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_description_string) ||
+                    compilerDirectives.ContainsKey(StringConstants.compiler_directive_copyright_string))
                 {
-                    ErrorsList.Add(new MainResourceNotAllowed(compilerDirectives[0].location));
+                    ErrorsList.Add(new MainResourceNotAllowed(compilerDirectivesList[0].location));
                 }
-                TryThrowInvalidPath(compilerDirectives[0].directive, compilerDirectives[0].location);
+                TryThrowInvalidPath(compilerDirectivesList[0].directive, compilerDirectivesList[0].location);
                 // Тут не обязательно нормализовывать путь
                 // И если он слишком длинный - File.Exists вернёт false
-                compilerOptions.MainResourceFileName = Path.Combine(Path.GetDirectoryName(compilerDirectives[0].source_file), compilerDirectives[0].directive);
+                compilerOptions.MainResourceFileName = Path.Combine(Path.GetDirectoryName(compilerDirectivesList[0].source_file), compilerDirectivesList[0].directive);
                 if (!File.Exists(compilerOptions.MainResourceFileName))
-                    ErrorsList.Add(new ResourceFileNotFound(compilerDirectives[0].directive, compilerDirectives[0].location));
+                    ErrorsList.Add(new ResourceFileNotFound(compilerDirectivesList[0].directive, compilerDirectivesList[0].location));
             }
 
         }
@@ -2120,7 +2128,7 @@ namespace PascalABCCompiler
                 if (project.ProjectType == ProjectType.WindowsApp)
                     compilerOptions.target = NETGenerator.TargetType.WinExe;
 
-                // возможно, требуется переименование   EVA 
+                // при использовании учесть удаление res_file из этой функции при кодогенерации  EVA
                 // CreateRCFile(compilerOptions);
             }
         }
@@ -2228,7 +2236,7 @@ namespace PascalABCCompiler
                     PrepareCompileOptionsForProject();
                 }
 
-                #region CONSTRUCTING SYNTAX AND SEMANTIC TREES STAGE
+                #region CONSTRUCTING SYNTAX AND SEMANTIC TREES
 
                 // компиляция всех юнитов произойдет рекурсивно (кроме отложенных)
                 CompileUnit(
@@ -2246,7 +2254,7 @@ namespace PascalABCCompiler
 
                 PrebuildMainSemanticTreeActions(out var compilerOptions, out var resourceFiles);
 
-                #region GENERATING CODE STAGE
+                #region GENERATING CODE
                 if (ErrorsList.Count == 0)
                 {
 
@@ -2325,6 +2333,12 @@ namespace PascalABCCompiler
             else return CompilerOptions.OutputFileName;
         }
 
+        /// <summary>
+        /// Сохраняет документацию для модулей;
+        /// Выясняет тип выходного файла, целевой фреймворк, платформу;
+        /// Заполняет опции компиляции согласно директивам и/или информации из проекта;
+        /// Находит ресурсные файлы из директив
+        /// </summary>
         private void PrebuildMainSemanticTreeActions(out NETGenerator.CompilerOptions compilerOptions, out List<string> resourceFiles)
         {
             if (CompilerOptions.SaveDocumentation)
@@ -2332,37 +2346,30 @@ namespace PascalABCCompiler
                 SaveDocumentationsForUnits();
             }
 
-            compilerDirectives = GetCompilerDirectives(UnitsTopologicallySortedList);
+            Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives = GetCompilerDirectives(UnitsTopologicallySortedList);
 
             // выяснение типа выходного файла по соотв. директиве компилятора
-            SetOutputFileTypeOption();
+            SetOutputFileTypeOption(compilerDirectives);
 
             // перемещаем PABCSystem в начало списка
-            MoveSystemUnitForwardInUnitsTopologicallySortedList();
-
-            // передача информации о типе выходного файла системному юниту
-            if (UnitsTopologicallySortedList.Count > 0)
-            {
-                bool isConsoleApplication = CompilerOptions.OutputFileType == CompilerOptions.OutputType.ConsoleApplicaton;
-                common_unit_node systemUnit = UnitsTopologicallySortedList[0].SemanticTree as common_unit_node;
-                systemUnit.IsConsoleApplicationVariable = isConsoleApplication;
-            }
+            // MoveSystemUnitForwardInUnitsTopologicallySortedList();
 
             compilerOptions = new NETGenerator.CompilerOptions();
 
             // выяснение TargetFramework и целевой платформы
-            SetOutputPlatformOption(compilerOptions);
+            SetOutputPlatformOption(compilerOptions, compilerDirectives);
 
-            // остальные директивы
-            FillCompilerInfoOptions(compilerOptions);
+            // заполнение опций компилятора из директив
+            FillCompilerInfoOptions(compilerOptions, compilerDirectives);
+
+            // получние путей к файлам ресурсов из директив
+            resourceFiles = GetResourceFilesFromCompilerDirectives(compilerDirectives);
 
             // заполнение опций компилятора из заголовка проекта
             FillCompilerOptionsFromProject(compilerOptions);
 
             // Устанавливает опции компилятора, связанные с типом выходного файла
             SetTargetTypeOption(compilerOptions);
-
-            resourceFiles = GetResourceFilesFromCompilerDirectives();
         }
 
         private program_node ConstructMainSemanticTree(NETGenerator.CompilerOptions compilerOptions)
@@ -2526,9 +2533,6 @@ namespace PascalABCCompiler
                     CodeGeneratorsController.EmitAssemblyRedirects(
                         assemblyResolveScope,
                         CompilerOptions.OutputFileName);
-
-                    if (compilerOptions.MainResourceFileName != null)
-                        File.Delete(compilerOptions.MainResourceFileName);
                 }
         }
 
@@ -2555,13 +2559,13 @@ namespace PascalABCCompiler
             }
         }
 
-        private List<string> GetResourceFilesFromCompilerDirectives()
+        private List<string> GetResourceFilesFromCompilerDirectives(Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives)
         {
             List<string> ResourceFiles = null;
-            if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_resource))
+            if (compilerDirectives.ContainsKey(StringConstants.compiler_directive_resource))
             {
                 ResourceFiles = new List<string>();
-                List<compiler_directive> ResourceDirectives = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_resource];
+                List<compiler_directive> ResourceDirectives = compilerDirectives[StringConstants.compiler_directive_resource];
 
                 foreach (compiler_directive cd in ResourceDirectives)
                 {
@@ -2913,7 +2917,7 @@ namespace PascalABCCompiler
 
             // Наверное, этот код MikhailoMMX лишний
             //MikhailoMMX PABCRtl.dll будем искать сначала в GAC, а потом в папке с программой
-            if (FileName == TreeConverter.compiler_string_consts.pabc_rtl_dll_name)
+            if (FileName == StringConstants.pabc_rtl_dll_name)
             {
 
                 string name = get_assembly_path(FileName, true);
@@ -3030,6 +3034,8 @@ namespace PascalABCCompiler
 
         public void AddStandardUnitsToInterfaceUsesSection(SyntaxTree.compilation_unit unitSyntaxTree)
         {
+            if (!(CompilerOptions.StandardModules.ContainsKey(currentCompilationUnit.languageName)))
+                return;
             if (CompilerOptions.StandardModules[currentCompilationUnit.languageName].Count == 0)
                 return;
 
@@ -3143,7 +3149,7 @@ namespace PascalABCCompiler
         {
             var directives = GetDirectivesAsSemanticNodes(unit.SyntaxTree.compiler_directives, unit.SyntaxTree.file_name);
 
-            return directives.Any(directive => directive.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive);
+            return directives.Any(directive => directive.name.ToLower() == StringConstants.compiler_directive_include_namespace);
         }
 
 
@@ -3282,7 +3288,7 @@ namespace PascalABCCompiler
             List<string> files = new List<string>();
             foreach (compiler_directive cd in directives)
             {
-                if (cd.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive)
+                if (cd.name.ToLower() == StringConstants.compiler_directive_include_namespace)
                 {
                     string directive = cd.directive.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
 
@@ -3355,12 +3361,8 @@ namespace PascalABCCompiler
             var referenceDirectives = new List<compiler_directive>();
             foreach (compiler_directive directive in directives)
             {
-                if (directive.name.ToLower() == TreeConverter.compiler_string_consts.compiler_directive_reference)
+                if (directive.name.ToLower() == StringConstants.compiler_directive_reference)
                 {
-                    #region SEMANTIC CHECKS : EMPTY REFERENCE
-                    if (string.IsNullOrEmpty(directive.directive))
-                        throw new TreeConverter.SimpleSemanticError(directive.location, "EXPECTED_ASSEMBLY_NAME"); // Семантическая ошибка
-                    #endregion
 
                     referenceDirectives.Add(directive);
                 }
@@ -3396,7 +3398,7 @@ namespace PascalABCCompiler
         {
             foreach (compiler_directive cd in directives)
             {
-                if (cd.name.ToLower() == TreeConverter.compiler_string_consts.compiler_directive_platformtarget
+                if (cd.name.ToLower() == StringConstants.compiler_directive_platformtarget
                     && !string.IsNullOrEmpty(cd.directive) && cd.directive.IndexOf("dotnet5") != -1)
                 {
                     CompilerOptions.UseDllForSystemUnits = false;
@@ -4165,7 +4167,10 @@ namespace PascalABCCompiler
             }
             return SourceText;
         }
-
+        private bool CurrentUnitIsNotMainProgram()
+        {
+            return currentCompilationUnit != null;
+        }
         private Dictionary<SyntaxTree.syntax_tree_node, string> GenUnitDocumentation(CompilationUnit currentUnit, string SourceText)
         {
             Dictionary<SyntaxTree.syntax_tree_node, string> docs = null;
@@ -4287,7 +4292,7 @@ namespace PascalABCCompiler
                     if (((SyntaxTree.unit_module)Unit.SyntaxTree).unit_name.HeaderKeyword == PascalABCCompiler.SyntaxTree.UnitHeaderKeyword.Library)
                         return;
                     foreach (SyntaxTree.compiler_directive cd in Unit.SyntaxTree.compiler_directives)
-                        if (cd.Name.text.ToLower() == TreeConverter.compiler_string_consts.compiler_savepcu)
+                        if (cd.Name.text.ToLower() == StringConstants.compiler_directive_savepcu)
                             if (!Convert.ToBoolean(cd.Directive.text))
                                 return;
                 }

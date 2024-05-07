@@ -384,6 +384,7 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return string.Format("{0} {1} {2}", to, OperatorServices.ToString(operator_type, LanguageId.PascalABCNET), from);
         }
+        public bool first_assignment_defines_type = false;
     }
 
     public partial class bin_expr

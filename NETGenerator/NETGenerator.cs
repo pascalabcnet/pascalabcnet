@@ -306,7 +306,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (fileOfAttributeConstructor != null) return fileOfAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.file_of_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.file_of_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 fileOfAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.ObjectType });
                 FieldBuilder fld = tb.DefineField("Type", TypeFactory.ObjectType, FieldAttributes.Public);
@@ -326,7 +326,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (setOfAttributeConstructor != null) return setOfAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.set_of_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.set_of_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 setOfAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.ObjectType });
                 FieldBuilder fld = tb.DefineField("Type", TypeFactory.ObjectType, FieldAttributes.Public);
@@ -347,7 +347,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (templateClassAttributeConstructor != null) return templateClassAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.template_class_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.template_class_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 templateClassAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.ByteType.MakeArrayType() });
                 FieldBuilder fld = tb.DefineField("Tree", TypeFactory.ByteType.MakeArrayType(), FieldAttributes.Public);
@@ -368,7 +368,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (typeSynonimAttributeConstructor != null) return typeSynonimAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.type_synonim_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.type_synonim_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 typeSynonimAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.ObjectType });
                 FieldBuilder fld = tb.DefineField("Type", TypeFactory.ObjectType, FieldAttributes.Public);
@@ -389,7 +389,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (shortStringAttributeConstructor != null) return shortStringAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.short_string_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.short_string_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 shortStringAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.Int32Type });
                 FieldBuilder fld = tb.DefineField("Length", TypeFactory.Int32Type, FieldAttributes.Public);
@@ -463,8 +463,8 @@ namespace PascalABCCompiler.NETGenerator
         bool IsDllAndSystemNamespace(string name, string DllFileName)
         {
             return comp_opt.target == TargetType.Dll && DllFileName != "PABCRtl.dll" &&
-                (name == compiler_string_consts.pascalSystemUnitName || name == compiler_string_consts.pascalExtensionsUnitName ||
-                 name.EndsWith(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
+                (name == StringConstants.pascalSystemUnitName || name == StringConstants.pascalExtensionsUnitName ||
+                 name.EndsWith(StringConstants.ImplementationSectionNamespaceName));
         }
 
         bool IsDotnet5()
@@ -5881,6 +5881,8 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_virtual_method_call = virtual_method_call;
             virtual_method_call = false;
             value.obj.visit(this);
+            if (value.obj is ICommonClassFieldReferenceNode)
+                is_field_reference = true;
             virtual_method_call = tmp_virtual_method_call;
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
@@ -7713,7 +7715,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (value.obj.type.is_generic_parameter)
                     il.Emit(OpCodes.Constrained, helper.GetTypeReference(value.obj.type).tp);
-                else if (value.obj.conversion_type != null && value.obj.conversion_type.is_generic_parameter && (!value.obj.type.IsInterface || value.obj.conversion_type.ImplementingInterfaces.Count > 0))
+                else if (value.obj.conversion_type != null && value.obj.conversion_type.is_generic_parameter && (!value.obj.type.IsInterface || value.obj.conversion_type.ImplementingInterfaces.Contains(value.obj.type)))
                     il.Emit(OpCodes.Constrained, helper.GetTypeReference(value.obj.conversion_type).tp);
                 il.EmitCall(OpCodes.Callvirt, mi, null);
             }
@@ -10184,9 +10186,9 @@ namespace PascalABCCompiler.NETGenerator
                             il.Emit(OpCodes.Stsfld, vi.fb);
                             il.Emit(OpCodes.Ldsfld, vi.fb);
                         }
-                        
+
                     }
-                         
+
                     copy_string = false;
                 }
                 il.Emit(OpCodes.Stloc, pin_lb);
@@ -10271,7 +10273,7 @@ namespace PascalABCCompiler.NETGenerator
                     get_meth = mb.GetArrayMethod(ti.tp, "Get", CallingConventions.HasThis, elem_type, lst.ToArray());
                     addr_meth = mb.GetArrayMethod(ti.tp, "Address", CallingConventions.HasThis, elem_type.MakeByRefType(), lst.ToArray());
                 }
-                
+
                 for (int i = 0; i < indices.Length; i++)
                     indices[i].visit(this);
             }
@@ -10288,42 +10290,53 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
                 if (temp_is_dot_expr)
+            {
+                if (elem_type.IsGenericParameter)
                 {
-                    if (elem_type.IsGenericParameter)
+                    if (value.array.type.element_type.is_generic_parameter && value.array.type.element_type.base_type != null && value.array.type.element_type.base_type.is_class && value.array.type.element_type.base_type.base_type != null)
                     {
-                        if (indices == null)
-                            il.Emit(OpCodes.Ldelema, elem_type);
-                        else
-                            il.Emit(OpCodes.Call, addr_meth);
-                }
-                    else if (elem_type.IsValueType == true)
-                    {
-                        if (indices == null)
-                            il.Emit(OpCodes.Ldelema, elem_type);
-                        else
-                            il.Emit(OpCodes.Call, addr_meth);
-                    }
-                    else if (elem_type.IsPointer)
-                    {
-                        if (indices == null)
-                            il.Emit(OpCodes.Ldelem_I);
-                        else
-                            il.Emit(OpCodes.Call, addr_meth);
-                    }
-                    else
                         if (indices == null)
                             il.Emit(OpCodes.Ldelem_Ref);
                         else
                             il.Emit(OpCodes.Call, get_meth);
-
+                    }
+                    else
+                    {
+                        if (indices == null)
+                            il.Emit(OpCodes.Ldelema, elem_type);
+                        else
+                            il.Emit(OpCodes.Call, addr_meth);
+                    }
+                        
                 }
-                else
+                else if (elem_type.IsValueType == true)
                 {
                     if (indices == null)
-                        NETGeneratorTools.PushLdelem(il, elem_type, true);
+                        il.Emit(OpCodes.Ldelema, elem_type);
                     else
-                        il.Emit(OpCodes.Call, get_meth);
+                        il.Emit(OpCodes.Call, addr_meth);
                 }
+                else if (elem_type.IsPointer)
+                {
+                    if (indices == null)
+                        il.Emit(OpCodes.Ldelem_I);
+                    else
+                        il.Emit(OpCodes.Call, addr_meth);
+                }
+                else
+                    if (indices == null)
+                    il.Emit(OpCodes.Ldelem_Ref);
+                else
+                    il.Emit(OpCodes.Call, get_meth);
+
+            }
+            else
+            {
+                if (indices == null)
+                    NETGeneratorTools.PushLdelem(il, elem_type, true);
+                else
+                    il.Emit(OpCodes.Call, get_meth);
+            }
             is_addr = temp_is_addr;
             is_dot_expr = temp_is_dot_expr;
             //if (pinned_handle != null)

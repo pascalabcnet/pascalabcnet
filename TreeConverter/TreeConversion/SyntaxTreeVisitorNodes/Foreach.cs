@@ -89,7 +89,14 @@ namespace PascalABCCompiler.TreeConverter
         {
             var t = ConvertSemanticTypeNodeToNETType(elem_type);
             if (t == null)
+            {
+                bool bb;
+                type_node tn = null;
+                if (FindIEnumerableElementType(elem_type, ref tn, out bb))
+                    return;
                 AddError(inwhatloc, "TUPLE_OR_SEQUENCE_EXPECTED_FOREACH");
+            }
+                
 
             var IsTuple = IsTupleType(t);
             var IsSequence = !IsTuple && IsSequenceType(t);

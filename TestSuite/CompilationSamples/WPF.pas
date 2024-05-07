@@ -19,7 +19,7 @@ type
 
   Panel = Panel;
   Grid = Grid;
-  Canvas = Canvas;
+  Canvas = System.Windows.Controls.Canvas;
   StackPanel = StackPanel;
   DockPanel = DockPanel;
   WrapPanel = WrapPanel;
@@ -45,7 +45,7 @@ type
 
   DrawingVisual = DrawingVisual;
   
-  Thickness = Thickness;
+  Thickness = System.Windows.Thickness;
   TThickness = Thickness;
   FontStyle = FontStyle;
   FontStyles = FontStyles;
@@ -212,8 +212,8 @@ begin
   Result := Self;
 end;  
 
-function &With(Self: StackPanel; Background: Brush := nil; 
-  Color: TColor := Colors.White): StackPanel; extensionmethod; 
+function &With<T>(Self: T; Background: Brush := nil; 
+  Color: TColor := Colors.White): T; extensionmethod; where T: Panel;
 begin
   if Background <> nil then
     Self.Background := Background
@@ -221,14 +221,14 @@ begin
   Result := Self;
 end;  
 
-function &With(Self: Canvas; Background: Brush := nil; 
+{function &With(Self: Canvas; Background: Brush := nil; 
   Color: TColor := Colors.White): Canvas; extensionmethod; 
 begin
   if Background <> nil then
     Self.Background := Background
   else Self.Background := GBrush(color);
   Result := Self;
-end;  
+end;}
 
 function AsMainContent<T>(Self: T): T; extensionmethod; where T: FrameworkElement;
 begin
@@ -264,26 +264,37 @@ begin
   DockPanel.SetDock(c,dock);
 end;
 
-procedure StackPanel.Add(c: FrameworkElement);
+{procedure StackPanel.Add(c: FrameworkElement);
 begin
   Self.Children.Add(c);
-end;
+end;}
 
-procedure StackPanel.AddElements(params aa: array of FrameworkElement);
+procedure Panel.AddElements(params aa: array of FrameworkElement);
 begin
   foreach var c in aa do
     Self.Children.Add(c);
 end;
 
-procedure StackPanel.AddButtons(buttons: array of Button; 
-  Width: real := real.NaN; Height: real := real.NaN; Padding: Thickness := 0; Margin: Thickness := 0);
+function ControlsList(params cc: array of Control) := Lst(cc);
+
+function ControlsList(cc: sequence of Control) := Lst(cc);
+
+procedure Panel.AddControls(controls: sequence of Control; 
+  Width: real := real.NaN; Height: real := real.NaN; Padding: Thickness := -1; Margin: Thickness := -1;
+  FontSize: real := real.NaN);
 begin
-  foreach var b in buttons do
+  foreach var b in controls do
   begin  
-    b.Margin := Margin;
-    b.Padding := Padding;
-    b.Width := Width;
-    b.Height := Height;
+    if Margin <> -1 then
+      b.Margin := Margin;
+    if Padding <> -1 then
+      b.Padding := Padding;
+    if not real.IsNaN(Width) then
+      b.Width := Width;
+    if not real.IsNaN(Height) then
+      b.Height := Height;
+    if not real.IsNaN(FontSize) then
+      b.FontSize := FontSize;
     Self.Add(b);
   end;  
 end;
@@ -303,22 +314,24 @@ function Init(Self: FrameworkElement; Width: real := real.NaN; Height: real := r
   Margin: Thickness := 0): FrameworkElement; extensionmethod;
 begin
   Self.Width := Width;
-  Self.Height := Height;
+  if not real.IsNaN(Height) then
+    Self.Height := Height;
   Self.Margin := Margin;
   Result := Self;
+end;
+
+function ParseXaml(s: string): object;
+begin
+  var context := new ParserContext();
+  context.XmlnsDictionary.Add('','http://schemas.microsoft.com/winfx/2006/xaml/presentation');
+  context.XmlnsDictionary.Add('x', 'http://schemas.microsoft.com/winfx/2006/xaml');
+  Result := System.Windows.Markup.XamlReader.Parse(s,context);
 end;
 
 function LoadFromXaml(fname: string): object;
 begin
   var s := ReadAllText(fname);
-  var context := new ParserContext();
-  context.XmlnsDictionary.Add('','http://schemas.microsoft.com/winfx/2006/xaml/presentation');
-  context.XmlnsDictionary.Add('x', 'http://schemas.microsoft.com/winfx/2006/xaml');
-  Result := System.Windows.Markup.XamlReader.Parse(ReadAllText(fname),nil);
-
-  //var s := new System.IO.FileStream(fname, System.IO.FileMode.Open);
-  //Result := System.Windows.Markup.XamlReader.Load(s);
-  //s.Close();
+  Result := ParseXaml(s);
 end;
 
 // Функции создания элементов управления
