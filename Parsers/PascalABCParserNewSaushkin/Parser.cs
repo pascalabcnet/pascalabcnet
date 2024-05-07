@@ -4,12 +4,11 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCSavParser;
 using PascalABCCompiler.Parsers;
 using GPPGParserScanner;
 using PascalABCCompiler.ParserTools.Directives;
 using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
-using System.Text.RegularExpressions;
+using PascalABCSavParser;
 
 namespace PascalABCCompiler.PascalABCNewParser
 {
@@ -210,26 +209,26 @@ namespace PascalABCCompiler.PascalABCNewParser
 #endif
 #endif
 
-            PT parsertools = new PT(); // контекст сканера и парсера
-            parsertools.errors = Errors;
-            parsertools.warnings = Warnings;
-            parsertools.compilerDirectives = CompilerDirectives;
-            parsertools.CurrentFileName = Path.GetFullPath(fileName);
+            PascalParserTools parserTools = new PascalParserTools(); // контекст сканера и парсера
+            parserTools.errors = Errors;
+            parserTools.warnings = Warnings;
+            parserTools.compilerDirectives = CompilerDirectives;
+            parserTools.currentFileName = Path.GetFullPath(fileName);
 
 
             Scanner scanner = new Scanner();
             scanner.SetSource(Text, 0);
-            scanner.parsertools = parsertools; // передали parsertools в объект сканера
+            scanner.parserTools = parserTools; // передали parserTools в объект сканера
             if (definesList != null)
                 scanner.Defines.AddRange(definesList);
 
             GPPGParser parser = new GPPGParser(scanner);
-            parsertools.build_tree_for_formatter = buildTreeForFormatter;
-            parser.parsertools = parsertools; // передали parsertools в объект парсера
+            parserTools.buildTreeForFormatter = buildTreeForFormatter;
+            parser.parserTools = parserTools; // передали parserTools в объект парсера
 
             if (!parser.Parse())
                 if (Errors.Count == 0)
-                    parsertools.AddError("Неопознанная синтаксическая ошибка!", null);
+                    parserTools.AddError("Неопознанная синтаксическая ошибка!", null);
 #if DEBUG
 #if _ERR
             sw.Close();

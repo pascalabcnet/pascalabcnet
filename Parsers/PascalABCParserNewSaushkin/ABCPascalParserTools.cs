@@ -135,6 +135,8 @@ namespace PascalABCSavParser
             {
                 directiveParams = SplitDirectiveParamsOrdinary(paramsString);
             }
+
+            CheckDirectiveParams(directiveName, directiveParams, location);
         }
 
         protected override string GetFromStringResources(string res)

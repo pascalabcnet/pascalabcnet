@@ -73,10 +73,8 @@ UNICODEARROW \x890
   parserTools.ParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParams);
   var orgDirectiveName = directiveName;
   
-  if (directiveName == null) // случай пустой директивы
+  if (directiveName == "") // случай пустой директивы
     break;
-
-  parserTools.CheckDirectiveParams(directiveName, directiveParams, CurrentLexLocation);
 
   directiveName = directiveName.ToUpper();
 
@@ -137,7 +135,7 @@ UNICODEARROW \x890
 		if (Defines.Contains(directiveParams[0]))
 			Defines.Remove(directiveParams[0]);
 	}
-  parsertools.compilerDirectives.Add(new compiler_directive(new token_info(directivename), new token_info(directiveparam), CurrentLexLocation));
+  parserTools.compilerDirectives.Add(new compiler_directive(new token_info(directiveName), new token_info(string.Join(" ", directiveParams)), CurrentLexLocation));
 }
 
 <EXCLUDETEXT>{OneLineCmnt} {
@@ -149,10 +147,8 @@ UNICODEARROW \x890
   parserTools.ParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParams);
   orgDirectiveName = directiveName;
 
-  if (directiveName == null) // случай пустой директивы
+  if (directiveName == "") // случай пустой директивы
     break;
-
-  parserTools.CheckDirectiveParams(directiveName, directiveParams, CurrentLexLocation);
 	
   directiveName = directiveName.ToUpper();
 
@@ -205,7 +201,7 @@ UNICODEARROW \x890
 		if (ind_to_remove != -1)
 			parserTools.compilerDirectives.RemoveAt(ind_to_remove);
 	}
-  parsertools.compilerDirectives.Add(new compiler_directive(new token_info(directivename), new token_info(directiveparam), CurrentLexLocation));
+  parserTools.compilerDirectives.Add(new compiler_directive(new token_info(directiveName), new token_info(string.Join(" ", directiveParams)), CurrentLexLocation));
 }
 
 <EXCLUDETEXT>.|\n {
