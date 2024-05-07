@@ -1601,7 +1601,7 @@ namespace PascalABCCompiler
 
         private Assembly IronPythonAssembly;
         private MethodInfo PythonCreateEngineMethod;
-        public string CompilePy()
+        /*public string CompilePy()
         {
             OnChangeCompilerState(this, CompilerState.CompilationStarting, CompilerOptions.SourceFileName);
             OnChangeCompilerState(this, CompilerState.BeginCompileFile, CompilerOptions.SourceFileName);
@@ -1630,7 +1630,7 @@ namespace PascalABCCompiler
             //if (errorsList.Count > 0)
             return null;
             //else return dlls.PathToAssembly;
-        }
+        }*/
 
         public string CompileCS()
         {
@@ -1704,7 +1704,7 @@ namespace PascalABCCompiler
                 return res.PathToAssembly;
         }
 
-        public string CompileVB()
+        /*public string CompileVB()
         {
             OnChangeCompilerState(this, CompilerState.CompilationStarting, CompilerOptions.SourceFileName);
             OnChangeCompilerState(this, CompilerState.BeginCompileFile, CompilerOptions.SourceFileName);
@@ -1825,12 +1825,12 @@ namespace PascalABCCompiler
                 comp_opt.ReferencedAssemblies.Add(Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName), StringConstants.pabc_rtl_dll_name));
                 string mod_file_name = FindFileWithExtensionInDirs("PABCRtl.dll", out _, Path.Combine(this.CompilerOptions.SystemDirectory, "Lib"));
                 File.Copy(mod_file_name, Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName), "PABCRtl.dll"), true);
-                /*foreach (string mod in info.modules)
+                *//*foreach (string mod in info.modules)
                 {
                     comp_opt.ReferencedAssemblies.Add(Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName),mod+".dll"));
                     string mod_file_name = FindSourceFileInDirectories(mod+".mod",Path.Combine(this.CompilerOptions.SystemDirectory,"lib"));
                     File.Copy(mod_file_name,Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName),mod+".dll"),true);
-                }*/
+                }*//*
             }
             sources.Add(redirect_fname);
             sources.Add(system_unit_name);
@@ -1839,7 +1839,7 @@ namespace PascalABCCompiler
             {
                 for (int i = 0; i < res.Errors.Count; i++)
                 {
-                    if (!res.Errors[i].IsWarning && errorsList.Count == 0 /*&& dlls.Errors[i].file_name != redirect_fname*/)
+                    if (!res.Errors[i].IsWarning && errorsList.Count == 0 *//*&& dlls.Errors[i].file_name != redirect_fname*//*)
                     {
                         if (File.Exists(res.Errors[i].FileName))
                             errorsList.Add(new Errors.CommonCompilerError(res.Errors[i].ErrorText, res.Errors[i].FileName, res.Errors[i].Line != 0 ? res.Errors[i].Line : 1, 1));
@@ -1869,7 +1869,7 @@ namespace PascalABCCompiler
                 return null;
             else
                 return res.PathToAssembly;
-        }
+        }*/
 
         private ProjectInfo project;
 
@@ -3017,6 +3017,10 @@ namespace PascalABCCompiler
                 // если приоритет папки исходника выше, то берем исходник
                 if (sourceFilePriority < pcuFilePriority)
                     pcuFileExists = false;
+                // проверка на правильность установки приоритета - для удобства
+                else if (sourceFilePriority == pcuFilePriority && Path.GetDirectoryName(sourceFileName) != Path.GetDirectoryName(pcuFileName))
+                    throw new InvalidOperationException("Не верно задан приоритет папок!");
+
 
                 // также если время модификации pcu раньше, то нужна перекомпиляция
                 if (File.GetLastWriteTime(pcuFileName) < File.GetLastWriteTime(sourceFileName))
@@ -3025,8 +3029,10 @@ namespace PascalABCCompiler
 
             if (pcuFileExists)
                 unitFileName = Path.Combine(currentPath, pcuFileName);
-            else
+            else if (sourceFileExists)
                 unitFileName = Path.Combine(currentPath, sourceFileName);
+            else
+                throw new InvalidOperationException("Сброшено значение pcuFileExists и sourceFileExists. Здесь такого быть не должно.");
 
             GetUnitFileNameCache[cacheKey] = unitFileName;
             return unitFileName;
@@ -3535,9 +3541,6 @@ namespace PascalABCCompiler
             return null;
         }
 
-        /// <summary>
-        /// получение списка using - legacy code !!!
-        /// </summary>
         public string GetSourceFileText(string FileName)
         {
             return (string)SourceFilesProvider(FileName, SourceFileOperation.GetText);
