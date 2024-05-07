@@ -2667,12 +2667,8 @@ function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
 
-/// Возвращает строку для вывода подобного Write
-function _ObjectToString(o: object): string;
-/// Добавляет в res строку для вывода подобного Write
-procedure _ObjectToString(o: object; res: StringBuilder);
-/// Записывает в res строку для вывода подобного Write
-procedure _ObjectToString(o: object; res: TextWriter);
+/// Преобразует объект в строковое представление
+function ObjectToString(obj: object): string;
 
 function IsUnix: boolean;
 ///--
@@ -4167,7 +4163,7 @@ procedure operator+=(var left: StringBuilder; right: string); extensionmethod :=
 function operator implicit(s: string): StringBuilder; extensionmethod := new StringBuilder(s);
 
 //------------------------------------------------------------------------------
-//              _ObjectToString
+//              ObjectToString
 //------------------------------------------------------------------------------
 
 procedure TypeToTypeNameHelper(t: System.Type; res: TextWriter); forward;
@@ -4689,14 +4685,16 @@ begin
   Result := res.ToString;
 end;
 
-procedure _ObjectToString(o: object; res: TextWriter) :=
+procedure _ObjectToStringHelper(o: object; res: TextWriter) :=
   ObjectToStringUtils.Append(o, new Stack<object>, res);
-procedure _ObjectToString(o: object; res: StringBuilder) :=
-  _ObjectToString(o, new StringWriter(res));
-function _ObjectToString(o: object): string;
+  
+procedure _ObjectToStringHelper(o: object; res: StringBuilder) :=
+  _ObjectToStringHelper(o, new StringWriter(res));
+  
+function ObjectToString(obj: object): string;
 begin
   var res := new StringBuilder;
-  _ObjectToString(o, res);
+  _ObjectToStringHelper(obj, res);
   Result := res.ToString;
 end;
 
@@ -6277,7 +6275,7 @@ procedure IOStandardSystem.write(obj: object);
 begin
   if not console_alloc then
     AllocConsole;
-  Console.Write(_ObjectToString(obj));  
+  Console.Write(ObjectToString(obj));  
 end;
 
 procedure IOStandardSystem.write(p: pointer);
@@ -7520,7 +7518,7 @@ begin
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
   
-  f.sw.Write(_ObjectToString(val));
+  f.sw.Write(ObjectToString(val));
   {if val = nil then
   begin
   f.sw.Write('nil');
@@ -11745,7 +11743,7 @@ begin
     for var j := 0 to Self.ColCount - 1 do
     begin
       if PrintMatrixWithFormat then
-        Write(_ObjectToString(Self[i, j]).PadLeft(w))
+        Write(ObjectToString(Self[i, j]).PadLeft(w))
       else Print(Self[i, j]);
     end;
     Writeln;  
@@ -14520,7 +14518,7 @@ end;
 function FormatValue(value: object; NumOfChars: integer): string;
 begin
   if value <> nil then
-    Result := _ObjectToString(value)
+    Result := ObjectToString(value)
   else
     Result := 'nil';
   Result := Result.PadLeft(NumOfChars);
