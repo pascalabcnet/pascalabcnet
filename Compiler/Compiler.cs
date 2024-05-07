@@ -2997,7 +2997,7 @@ namespace PascalABCCompiler
             bool sourceFileExists = sourceFileName != null;
             bool pcuFileExists = pcuFileName != null;
 
-            if (CompilerOptions.Rebuild)
+            if (CompilerOptions.Rebuild && sourceFileExists)
                 pcuFileExists = false;
 
             // если нет ни одного типа файла или нет исходника и режим Rebuild, то ошибка 
@@ -3020,10 +3020,8 @@ namespace PascalABCCompiler
                 // проверка на правильность установки приоритета - для удобства
                 else if (sourceFilePriority == pcuFilePriority && Path.GetDirectoryName(sourceFileName) != Path.GetDirectoryName(pcuFileName))
                     throw new InvalidOperationException("Не верно задан приоритет папок!");
-
-
-                // также если время модификации pcu раньше, то нужна перекомпиляция
-                if (File.GetLastWriteTime(pcuFileName) < File.GetLastWriteTime(sourceFileName))
+                // также если время модификации pcu раньше, чем исходника, то нужна перекомпиляция (при этом они должны быть в одной папке)
+                else if (sourceFilePriority == pcuFilePriority && File.GetLastWriteTime(pcuFileName) < File.GetLastWriteTime(sourceFileName))
                     pcuFileExists = false;
             }
 
@@ -3032,7 +3030,8 @@ namespace PascalABCCompiler
             else if (sourceFileExists)
                 unitFileName = Path.Combine(currentPath, sourceFileName);
             else
-                throw new InvalidOperationException("Сброшено значение pcuFileExists и sourceFileExists. Здесь такого быть не должно.");
+                // значит в предыдущем блоке кода ошибка - проверка для удобства
+                throw new InvalidOperationException("Сброшено значение pcuFileExists и sourceFileExists. Такого здесь быть не должно."); 
 
             GetUnitFileNameCache[cacheKey] = unitFileName;
             return unitFileName;
