@@ -67,13 +67,16 @@
     <Compile Include="FileReader.cs" />
     <Compile Include="ParsersController.cs" />
     <Compile Include="ParserTools\BaseParser.cs" />
+    <Compile Include="ParserTools\BaseParserTools.cs" />
+    <Compile Include="ParserTools\DirectiveHelper.cs" />
     <Compile Include="ParserTools\IParser.cs" />
     <Compile Include="ParserTools\CommentBinder.cs" />
     <Compile Include="ParserTools\DefaultLanguageInformation.cs" />
     <Compile Include="ParserTools\Errors.cs" />
     <Compile Include="ParserTools\KeyWord.cs" />
-    <Compile Include="ParserTools\LanguageInformation.cs" />
+    <Compile Include="ParserTools\ILanguageInformation.cs" />
     <Compile Include="ParserTools\ParserTools.cs" />
+    <Compile Include="ParserTools\ShiftReduceParserCode.cs" />
     <Compile Include="ParserTools\SourceContextMap.cs" />
     <Compile Include="SyntaxTreeVisitors\ConstantExpressionToConstantConvertor.cs" />
     <Compile Include="SyntaxTreeVisitors\SyntaxTreeComparer.cs" />

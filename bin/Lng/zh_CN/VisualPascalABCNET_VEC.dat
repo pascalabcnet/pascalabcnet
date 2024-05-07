@@ -1,4 +1,4 @@
-//VisualPascalABCNET.VisualEnvironmentCompiler
+﻿//VisualPascalABCNET.VisualEnvironmentCompiler
 
 %PREFIX%=VP_VEC_
 DIALOGS_FILTER_PART_{0}{1}|{1}|={0} 程序 ({1})|{1}|

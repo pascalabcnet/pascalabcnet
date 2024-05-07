@@ -51,7 +51,7 @@ namespace GPPGParserScanner
                 var err_stn = progBlock;
 			    if ((progBlock is block) && (progBlock as block).program_code != null && (progBlock as block).program_code.subnodes != null && (progBlock as block).program_code.subnodes.Count > 0)
                     err_stn = (progBlock as block).program_code.subnodes[(progBlock as block).program_code.subnodes.Count - 1];
-                parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.currentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             return progModule;
         }
@@ -93,7 +93,7 @@ namespace GPPGParserScanner
         {
             var naic = new typecast_node(constterm as addressed_value, tdef, typecastop, loc); 
 			if (!(constterm is addressed_value))
-                parsertools.errors.Add(new bad_operand_type(parsertools.CurrentFileName, constterm.source_context, naic));
+                parsertools.errors.Add(new bad_operand_type(parsertools.currentFileName, constterm.source_context, naic));
             return naic;
         }
 
@@ -299,7 +299,7 @@ namespace GPPGParserScanner
 				syntax_tree_node err_stn = stmt;
 				if (err_stn == null)
 					err_stn = expr;
-                parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKDO"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.currentFileName, StringResources.Get("TKDO"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
 			}
             return nws;
         }
@@ -313,7 +313,7 @@ namespace GPPGParserScanner
                 syntax_tree_node err_stn = stmt;
                 if (err_stn == null)
                     err_stn = expr2;
-                parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKDO"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.currentFileName, StringResources.Get("TKDO"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             if (!opt_var && for_stmt_decl_or_assign == null)
                 parsertools.AddWarningFromResource("USING_UNLOCAL_FOR_VARIABLE", identifier.source_context);
@@ -323,7 +323,7 @@ namespace GPPGParserScanner
         public typecast_node NewAsIsExpr(syntax_tree_node term, op_typecast typecast_op, type_definition simple_or_template_type_reference, LexLocation loc)
         {
             if (!(term is addressed_value))
-                parsertools.errors.Add(new bad_operand_type(parsertools.CurrentFileName, term.source_context, term));
+                parsertools.errors.Add(new bad_operand_type(parsertools.currentFileName, term.source_context, term));
             var naie = new typecast_node((addressed_value)term, simple_or_template_type_reference, typecast_op, loc); 
 			
             return naie;
@@ -397,16 +397,16 @@ namespace GPPGParserScanner
         
         public expression ParseExpression(string Text, int line, int col)
         {
-            PT parsertools = new PT(); // контекст сканера и парсера
+            PascalParserTools parsertools = new PascalParserTools(); // контекст сканера и парсера
             parsertools.errors = new List<Error>();
             parsertools.warnings = new List<CompilerWarning>();
-            parsertools.CurrentFileName = System.IO.Path.GetFullPath(this.parsertools.CurrentFileName);
-            parsertools.build_tree_for_format_strings = true;
+            parsertools.currentFileName = System.IO.Path.GetFullPath(this.parsertools.currentFileName);
+            parsertools.buildTreeForFormatterStrings = true;
             Scanner scanner = new Scanner();
             scanner.SetSource("<<expression>>"+Text, 0);
-            scanner.parsertools = parsertools;// передали parsertools в объект сканера
+            scanner.parserTools = parsertools;// передали parsertools в объект сканера
             GPPGParser parser = new GPPGParser(scanner);
-            parsertools.build_tree_for_formatter = false;
+            parsertools.buildTreeForFormatter = false;
             parser.lambdaHelper = this.lambdaHelper;
             parser.parsertools = parsertools;
             if (!parser.Parse())
@@ -454,7 +454,7 @@ namespace GPPGParserScanner
                     }
                     if (s.IndexOf("&]!") != -1 || s.IndexOf("![&") != -1)
                     {
-                        parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                        parsertools.errors.Add(new bad_format_string(parsertools.currentFileName, str.source_context, str));
                         return str;
                     }
                     vars.Add(s);
@@ -464,7 +464,7 @@ namespace GPPGParserScanner
                 }
                 if (vars.Count == 0 && val.IndexOf("![&") == -1 && val.IndexOf("{") != -1)
                 {
-                    parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                    parsertools.errors.Add(new bad_format_string(parsertools.currentFileName, str.source_context, str));
                     return str;
                 }
                     
@@ -473,7 +473,7 @@ namespace GPPGParserScanner
                 {
                     if (arr[i].IndexOf("{") != -1 || arr[i].IndexOf("}") != -1)
                     {
-                        parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                        parsertools.errors.Add(new bad_format_string(parsertools.currentFileName, str.source_context, str));
                         return str;
                     }
                     sb.Append(arr[i].Replace("![&", "{{").Replace("&]!", "}}"));
@@ -500,7 +500,7 @@ namespace GPPGParserScanner
                             cnt++;
                     if (cnt % 2 == 1)
                     {
-                        parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                        parsertools.errors.Add(new bad_format_string(parsertools.currentFileName, str.source_context, str));
                         return str;
                     }
                         
@@ -527,7 +527,7 @@ namespace GPPGParserScanner
             }
             catch (Exception ex)
             {
-                parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                parsertools.errors.Add(new bad_format_string(parsertools.currentFileName, str.source_context, str));
             }
             return str;
         }

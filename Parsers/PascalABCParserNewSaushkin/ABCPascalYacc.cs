@@ -2,9 +2,9 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 07.04.2024 21:51:17
+// DateTime: 07.05.2024 10:51:37
 // UserName: ?????????
-// Input file <ABCPascal.y>
+// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -60,19 +60,19 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from ABCPascal.y
+  // Verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
 // Э�?и об�?явления добавля�?�?ся в класс GPPGParser, п�?едс�?авля�?�?ий собой па�?се�?, гене�?и�?�?ем�?й сис�?емой gppg
     public syntax_tree_node root; // �?о�?невой �?зел син�?акси�?еского де�?ева 
 
     public List<Error> errors;
     public string current_file_name;
     public int max_errors = 10;
-    public PT parsertools;
+    public PascalParserTools parsertools;
     public List<compiler_directive> CompilerDirectives;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from ABCPascal.y
+  // End verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -3075,7 +3075,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 40: // uses_clause_one_or_empty -> uses_clause_one
 {
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new uses_closure(ValueStack[ValueStack.Depth-1].stn as uses_list,CurrentLocationSpan);
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
 		}
@@ -3087,7 +3087,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 42: // uses_clause -> uses_clause, uses_clause_one
 { 
-   			if (parsertools.build_tree_for_formatter)
+   			if (parsertools.buildTreeForFormatter)
    			{
 	        	if (ValueStack[ValueStack.Depth-2].stn == null)
                 {
@@ -3713,7 +3713,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                   tkSquareClose
 { 
     		var fe = ValueStack[ValueStack.Depth-2].ex as format_expr;
-            if (!parsertools.build_tree_for_formatter)
+            if (!parsertools.buildTreeForFormatter)
             {
                 if (fe.expr == null)
                     fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
@@ -3917,7 +3917,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 224: // simple_type_question -> simple_type, tkQuestion
 {
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
                 CurrentSemanticValue.td = ValueStack[ValueStack.Depth-2].td;
             }
@@ -3932,7 +3932,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 225: // simple_type_question -> template_type, tkQuestion
 {
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
                 CurrentSemanticValue.td = ValueStack[ValueStack.Depth-2].td;
             }
@@ -4022,7 +4022,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 243: // template_param -> simple_type, tkQuestion
 {
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
                 CurrentSemanticValue.td = ValueStack[ValueStack.Depth-2].td;
             }
@@ -4756,7 +4756,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	{
 				var id = NewId("#GetGen", LocationStack[LocationStack.Depth-2]);
                 procedure_definition pr = null;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                     pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-2].ex, id, LocationStack[LocationStack.Depth-2]);
 				CurrentSemanticValue.stn = NewPropertySpecifiersRead(ValueStack[ValueStack.Depth-3].id, id, pr, ValueStack[ValueStack.Depth-2].ex, ValueStack[ValueStack.Depth-1].stn as property_accessors, CurrentLocationSpan); // $2 пе�?еда�?�?ся для �?о�?ма�?и�?ования 
 			}
@@ -4778,9 +4778,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	{
 				var id = NewId("#SetGen", LocationStack[LocationStack.Depth-2]);
                 procedure_definition pr = null;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                     pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-2].stn as statement,id,LocationStack[LocationStack.Depth-2]);
-                if (parsertools.build_tree_for_formatter)
+                if (parsertools.buildTreeForFormatter)
 					CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-3].id, id, pr, ValueStack[ValueStack.Depth-2].stn as statement, ValueStack[ValueStack.Depth-1].stn as property_accessors, CurrentLocationSpan); // $2 пе�?еда�?�?ся для �?о�?ма�?и�?ования
 				else CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-3].id, id, pr, null, ValueStack[ValueStack.Depth-1].stn as property_accessors, CurrentLocationSpan); 	
 			}
@@ -4801,9 +4801,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	{
 				var id = NewId("#SetGen", LocationStack[LocationStack.Depth-1]);
                 procedure_definition pr = null;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                     pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-1].stn as statement,id,LocationStack[LocationStack.Depth-1]);
-                if (parsertools.build_tree_for_formatter)
+                if (parsertools.buildTreeForFormatter)
 					CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-2].id, id, pr, ValueStack[ValueStack.Depth-1].stn as statement, null, CurrentLocationSpan);
 				else CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-2].id, id, pr, null, null, CurrentLocationSpan);	
 			}
@@ -4819,7 +4819,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	{
 				var id = NewId("#GetGen", LocationStack[LocationStack.Depth-1]);
                 procedure_definition pr = null;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                     pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-1].ex,id,LocationStack[LocationStack.Depth-1]);
 				CurrentSemanticValue.stn = NewPropertySpecifiersRead(ValueStack[ValueStack.Depth-2].id, id, pr, ValueStack[ValueStack.Depth-1].ex, null, CurrentLocationSpan);
 			}
@@ -4849,7 +4849,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 410: // typed_var_init_expression -> const_simple_expr, tkDotDot, const_term
 { 
-		if (parsertools.build_tree_for_formatter)
+		if (parsertools.buildTreeForFormatter)
 			CurrentSemanticValue.ex = new diapason_expr(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
 		else 
 			CurrentSemanticValue.ex = new diapason_expr_new(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan); 
@@ -4911,7 +4911,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,false,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-6].Merge(LocationStack[LocationStack.Depth-2]));
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
@@ -4922,7 +4922,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,true,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-2]));
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
@@ -4938,7 +4938,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,false,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-6].Merge(LocationStack[LocationStack.Depth-2]));
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
@@ -4949,7 +4949,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,true,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-2]));
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
@@ -5086,7 +5086,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                                   tkSemiColon
 {
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-7].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-8].stn as method_name, ValueStack[ValueStack.Depth-5].td as type_definition, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-9].Merge(LocationStack[LocationStack.Depth-4]));
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
 		}
         break;
@@ -5095,7 +5095,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                                   expr_l1_func_decl_lambda, tkSemiColon
 {
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-6].stn as method_name, null, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
 		}
         break;
@@ -5104,7 +5104,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                                   unlabelled_stmt, tkSemiColon
 {
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortProcDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-6].stn as method_name, ValueStack[ValueStack.Depth-2].stn as statement, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
 		}
         break;
@@ -5674,7 +5674,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 569: // foreach_stmt -> tkForeach, tkVar, tkRoundOpen, ident_list, tkRoundClose, tkIn, 
                 //                 expr_l1, index_or_nothing, tkDo, unlabelled_stmt
 { 
-        	if (parsertools.build_tree_for_formatter)
+        	if (parsertools.buildTreeForFormatter)
         	{
         		var il = ValueStack[ValueStack.Depth-7].stn as ident_list;
         		il.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6]); // н�?жно для �?о�?ма�?и�?ования
@@ -5942,7 +5942,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                      expr_l1_for_new_question_expr, tkElse, 
                 //                      expr_l1_for_new_question_expr
 { 
-        	if (parsertools.build_tree_for_formatter)
+        	if (parsertools.buildTreeForFormatter)
         	{
         		CurrentSemanticValue.ex = new if_expr_new(ValueStack[ValueStack.Depth-5].ex, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
         	}
@@ -6059,7 +6059,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
             	}            	
             } 
 			if (name == null)
-				parsertools.errors.Add(new bad_anon_type(parsertools.CurrentFileName, LocationStack[LocationStack.Depth-1], null));	
+				parsertools.errors.Add(new bad_anon_type(parsertools.currentFileName, LocationStack[LocationStack.Depth-1], null));	
 			CurrentSemanticValue.ob = new name_assign_expr(name,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
 		}
         break;
@@ -6075,7 +6075,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			var nel = ValueStack[ValueStack.Depth-3].ob as name_assign_expr_list;
 			var ss = nel.name_expr.Select(ne=>ne.name.name).FirstOrDefault(x=>string.Compare(x,(ValueStack[ValueStack.Depth-1].ob as name_assign_expr).name.name,true)==0);
             if (ss != null)
-            	parsertools.errors.Add(new anon_type_duplicate_name(parsertools.CurrentFileName, LocationStack[LocationStack.Depth-1], null));
+            	parsertools.errors.Add(new anon_type_duplicate_name(parsertools.currentFileName, LocationStack[LocationStack.Depth-1], null));
 			nel.Add(ValueStack[ValueStack.Depth-1].ob as name_assign_expr);
 			CurrentSemanticValue.ob = ValueStack[ValueStack.Depth-3].ob;
 		}
@@ -6499,7 +6499,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 722: // relop -> tkNot, tkIn
 { 
-			if (parsertools.build_tree_for_formatter)
+			if (parsertools.buildTreeForFormatter)
 				CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op;
 			else
 			{
@@ -6513,7 +6513,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 724: // simple_expr -> simple_expr, tkDotDot, term1
 { 
-		if (parsertools.build_tree_for_formatter)
+		if (parsertools.buildTreeForFormatter)
 			CurrentSemanticValue.ex = new diapason_expr(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
 		else 
 			CurrentSemanticValue.ex = new diapason_expr_new(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan); 
@@ -6836,7 +6836,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 796: // variable -> tkRoundOpen, expr, tkRoundClose
 {
-		    if (!parsertools.build_tree_for_formatter) 
+		    if (!parsertools.buildTreeForFormatter) 
             {
                 ValueStack[ValueStack.Depth-2].ex.source_context = CurrentLocationSpan;
                 CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-2].ex;
@@ -6847,7 +6847,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 797: // variable -> tkRoundOpen, var_with_init_for_expr_with_let_list, expr, 
                 //             tkRoundClose
 {
-		    if (!parsertools.build_tree_for_formatter) 
+		    if (!parsertools.buildTreeForFormatter) 
             {
                 ValueStack[ValueStack.Depth-2].ex.source_context = CurrentLocationSpan;
                 CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-2].ex;
@@ -6875,7 +6875,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
-                if (!parsertools.build_tree_for_formatter)
+                if (!parsertools.buildTreeForFormatter)
                 {
                     if (fe.expr == null)
                         fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
@@ -6918,7 +6918,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //             tkSquareClose
 {
         	var fe = ValueStack[ValueStack.Depth-2].ex as format_expr; // SSM 9/01/17
-            if (!parsertools.build_tree_for_formatter)
+            if (!parsertools.buildTreeForFormatter)
             {
                 if (fe.expr == null)
                     fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
@@ -7005,7 +7005,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 822: // literal -> tkFormatStringLiteral
 {
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
                 CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].stn as string_const;
             }
@@ -7017,7 +7017,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 823: // literal -> tkMultilineStringLiteral
 {
-            if (parsertools.build_tree_for_formatter)
+            if (parsertools.buildTreeForFormatter)
    			{
    				var sc = ValueStack[ValueStack.Depth-1].stn as string_const;
    				sc.IsMultiline = true;

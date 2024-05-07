@@ -6,9 +6,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Errors;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -1017,7 +1015,7 @@ namespace PascalABCCompiler.Parsers
                 var strrank = rank > 1 ? "[" + new string(',', rank - 1) + "]" : "";
                 return $"array{strrank}" + " of " + GetShortTypeName(ctn.GetElementType());
             }
-            //if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
+            //if (ctn == Type.GetType("System.Void*")) return StringConstants.pointer_type_name;
             return ctn.Name;
 		}
 		
@@ -3954,7 +3952,7 @@ namespace PascalABCCompiler.Parsers
 				return sb.ToString();
 			}
 			//if (ctn.IsArray) return "array of "+GetTypeName(ctn.GetElementType());
-			//if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
+			//if (ctn == Type.GetType("System.Void*")) return StringConstants.pointer_type_name;
 			return ctn.Name;
 		}
 		

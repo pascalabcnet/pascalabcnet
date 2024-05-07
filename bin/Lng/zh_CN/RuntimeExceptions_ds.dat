@@ -1,4 +1,4 @@
-%PREFIX%=RUNTIME_EXCEPTION
+﻿%PREFIX%=RUNTIME_EXCEPTION
 Attempted to divide by zero.=试图除以零
 Process is terminated due to StackOverflowException.=进程因 StackOverflowException 而终止
 Index was outside the bounds of the array.=索引超出数组范围

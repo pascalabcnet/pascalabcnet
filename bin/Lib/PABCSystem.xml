@@ -1141,19 +1141,19 @@
     <member name="M:TypedFileRead(PABCSystem.TypedFile)">
       <summary>--</summary>
     </member>
-    <member name="M:FilePos(PABCSystem.BinaryFile)">
+    <member name="M:FilePos(@file)">
       <summary>--</summary>
     </member>
-    <member name="M:FileSize(PABCSystem.BinaryFile)">
+    <member name="M:FileSize(@file)">
       <summary>--</summary>
     </member>
-    <member name="M:Seek(PABCSystem.BinaryFile,System.Int64)">
+    <member name="M:Seek(@file,System.Int64)">
       <summary>--</summary>
     </member>
-    <member name="M:BinaryFileInit(PABCSystem.BinaryFile@)">
+    <member name="M:BinaryFileInit(@file@)">
       <summary>--</summary>
     </member>
-    <member name="M:BinaryFileRead(PABCSystem.BinaryFile@,System.Type)">
+    <member name="M:BinaryFileRead(@file@,System.Type)">
       <summary>--</summary>
     </member>
     <member name="M:PascalABCVersion">
@@ -1267,22 +1267,10 @@
       <summary>Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги</summary>
     </member>
     <member name="M:TypeToTypeName(System.Type)">
-      <summary>Для типа System.Type возвращает имя типа объекта</summary>
-    </member>
-    <member name="M:TypeToTypeName(System.Type,System.Text.StringBuilder)">
-      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
-    </member>
-    <member name="M:TypeToTypeName(System.Type,System.IO.TextWriter)">
-      <summary>Для типа System.Type записывает в res имя типа объекта</summary>
+      <summary>Возвращает строку с именем данного типа</summary>
     </member>
     <member name="M:TypeName(System.Object)">
-      <summary>Возвращает имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object,System.Text.StringBuilder)">
-      <summary>Записывает в res имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res имя типа объекта</summary>
+      <summary>Возвращает строку с именем типа объекта</summary>
     </member>
     <member name="M:ExtractFileName(System.String)">
       <summary>Выделяет имя файла из полного имени файла fileName</summary>
@@ -2638,14 +2626,8 @@
     <member name="M:GetRuntimeSize``1">
       <summary>Вычисление размера типа на этапе выполнения</summary>
     </member>
-    <member name="M:_ObjectToString(System.Object)">
-      <summary>Возвращает строку для вывода в write</summary>
-    </member>
-    <member name="M:_ObjectToString(System.Object,System.Text.StringBuilder)">
-      <summary>Записывает в res строку для вывода в write</summary>
-    </member>
-    <member name="M:_ObjectToString(System.Object,System.IO.TextWriter)">
-      <summary>Записывает в res строку для вывода в write</summary>
+    <member name="M:ObjectToString(System.Object)">
+      <summary>Преобразует объект в строковое представление</summary>
     </member>
     <member name="M:ExecuteAssemlyIsDll">
       <summary>--</summary>
