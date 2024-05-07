@@ -1,4 +1,4 @@
-%PREFIX%=PABCPreprocessor2_
+﻿%PREFIX%=PABCPreprocessor2_
 
 EXPECTED{0}=预期的 '{0}'
 EXPECTED_{0}_BUT_FOUND_{1}=预期的 '{0}' 但找到 '{1}'
