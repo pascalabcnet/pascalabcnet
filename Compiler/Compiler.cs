@@ -2735,35 +2735,14 @@ namespace PascalABCCompiler
 
             if (!PCUFileNamesDictionary.TryGetValue(cacheKey, out var fileNameWithPriority))
             {
-                string resultFileName = FindFileWithExtensionInDirs(fileName, out _, currentPath);
-
-                if (resultFileName != null)
-                {
-                    fileNameWithPriority = Tuple.Create(resultFileName, 1);
-                }
+                if (FindFileWithExtensionInDirs(fileName, out _, currentPath) is string resultFileName1)
+                    fileNameWithPriority = Tuple.Create(resultFileName1, 1);
+                else if (FindFileWithExtensionInDirs(Path.GetFileName(fileName), out _, CompilerOptions.OutputDirectory) is string resultFileName2)
+                    fileNameWithPriority = Tuple.Create(resultFileName2, 2);
+                else if (FindFileWithExtensionInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName3)
+                    fileNameWithPriority = Tuple.Create(resultFileName3, 3 + dirIndex);
                 else
-                {
-                    resultFileName = FindFileWithExtensionInDirs(Path.GetFileName(fileName), out _, CompilerOptions.OutputDirectory);
-
-                    if (resultFileName != null)
-                    {
-                        fileNameWithPriority = Tuple.Create(resultFileName, 2);
-                    }
-                    else
-                    {
-                        resultFileName = FindFileWithExtensionInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray());
-
-                        if (resultFileName != null)
-                        {
-                            fileNameWithPriority = Tuple.Create(resultFileName, 3 + dirIndex);
-                        }
-                        else
-                        {
-                            fileNameWithPriority = null;
-                        } 
-
-                    }
-                }
+                    fileNameWithPriority = null;
 
                 PCUFileNamesDictionary[cacheKey] = fileNameWithPriority;
             }
@@ -2778,18 +2757,12 @@ namespace PascalABCCompiler
 
             if (!SourceFileNamesDictionary.TryGetValue(cacheKey, out var fileNameWithPriority))
             {
-                string resultFileName = FindSourceFileNameInDirs(fileName, out _, currentPath);
-
-                if (resultFileName != null)
-                    fileNameWithPriority = Tuple.Create(resultFileName, 1);
+                if (FindSourceFileNameInDirs(fileName, out _, currentPath) is string resultFileName1)
+                    fileNameWithPriority = Tuple.Create(resultFileName1, 1);
+                else if (FindSourceFileNameInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName2)
+                    fileNameWithPriority = Tuple.Create(resultFileName2, 3 + dirIndex);
                 else
-                {
-                    resultFileName = FindSourceFileNameInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray());
-                    if (resultFileName != null)
-                        fileNameWithPriority = Tuple.Create(resultFileName, 3 + dirIndex);
-                    else
-                        fileNameWithPriority = null;
-                }
+                    fileNameWithPriority = null;
 
                 SourceFileNamesDictionary[cacheKey] = fileNameWithPriority;
             }
