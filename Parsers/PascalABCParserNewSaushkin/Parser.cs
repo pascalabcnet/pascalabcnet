@@ -70,7 +70,6 @@ namespace PascalABCCompiler.PascalABCNewParser
     }*/
 
 
-    // SSM: Наш основной парсер + препроцессор (реализует НАШ интерфейс IParser)
     public class PascalABCNewLanguageParser : BaseParser, IParser
     {
 
