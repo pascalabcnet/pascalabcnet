@@ -294,7 +294,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         public override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
         {
             Errors.Clear();
-            syntax_tree_node root = Parse(Text, FileName);
+            syntax_tree_node root = Parse(Text, FileName, true);
             return root;
         }
 
