@@ -271,7 +271,6 @@ namespace PascalABCCompiler.PascalABCNewParser
         {
             // LineCorrection = -1 не забыть
             Text = String.Concat("<<type>>", Environment.NewLine, Text);
-            // localparser.parsertools.LineCorrection = -1;
 
             syntax_tree_node root = Parse(Text, FileName);
             return root as expression;
@@ -280,7 +279,6 @@ namespace PascalABCCompiler.PascalABCNewParser
         public override syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)
         {
             Text = String.Concat("<<statement>>", Environment.NewLine, Text);
-            // localparser.parsertools.LineCorrection = -1;
 
             syntax_tree_node root = Parse(Text, FileName);
             return root as statement;
