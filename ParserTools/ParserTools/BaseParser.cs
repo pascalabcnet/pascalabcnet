@@ -218,11 +218,6 @@ namespace PascalABCCompiler.Parsers
             // если нужно - переопределяйте
         }        
 
-        public virtual IPreprocessor Preprocessor
-        {
-            get { return null; }
-        }
-
         public override string ToString()
         {
             return Name + " Language Parser v" + Version;

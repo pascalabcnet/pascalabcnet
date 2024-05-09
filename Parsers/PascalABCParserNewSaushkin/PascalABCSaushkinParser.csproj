@@ -107,9 +107,6 @@
     <Compile Include="Keywords.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserLambdaHelper.cs" />
-    <Compile Include="Preprocessor3.cs" />
-    <Compile Include="Preprocessor3Yacc.cs" />
-    <Compile Include="PreprocessorTools.cs" />
     <Compile Include="SemanticRules.cs" />
   </ItemGroup>
   <ItemGroup>

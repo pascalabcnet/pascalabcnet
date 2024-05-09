@@ -5,9 +5,7 @@ using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Linq;
 using PascalABCCompiler.ParserTools;
-using PascalABCCompiler.PascalABCNewParser;
 using PascalABCCompiler.Parsers;
-using System.Text.RegularExpressions;
 
 namespace PascalABCSavParser
 {
@@ -137,6 +135,8 @@ namespace PascalABCSavParser
             {
                 directiveParams = SplitDirectiveParamsOrdinary(paramsString);
             }
+
+            CheckDirectiveParams(directiveName, directiveParams, location);
         }
 
         protected override string GetFromStringResources(string res)

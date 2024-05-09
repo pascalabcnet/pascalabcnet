@@ -73,10 +73,8 @@ UNICODEARROW \x890
   parserTools.ParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParams);
   var orgDirectiveName = directiveName;
   
-  if (directiveName == null) // случай пустой директивы
+  if (directiveName == "") // случай пустой директивы
     break;
-
-  parserTools.CheckDirectiveParams(directiveName, directiveParams, CurrentLexLocation);
 
   directiveName = directiveName.ToUpper();
 
@@ -137,6 +135,7 @@ UNICODEARROW \x890
 		if (Defines.Contains(directiveParams[0]))
 			Defines.Remove(directiveParams[0]);
 	}
+  parserTools.compilerDirectives.Add(new compiler_directive(new token_info(directiveName), new token_info(string.Join(" ", directiveParams)), CurrentLexLocation));
 }
 
 <EXCLUDETEXT>{OneLineCmnt} {
@@ -148,12 +147,12 @@ UNICODEARROW \x890
   parserTools.ParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParams);
   orgDirectiveName = directiveName;
 
-  if (directiveName == null) // случай пустой директивы
+  if (directiveName == "") // случай пустой директивы
     break;
-
-  parserTools.CheckDirectiveParams(directiveName, directiveParams, CurrentLexLocation);
 	
   directiveName = directiveName.ToUpper();
+
+  bool addDirective = false;
 
   if (directiveName == "IFDEF")
 	{
@@ -175,7 +174,11 @@ UNICODEARROW \x890
 			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
 		IfDefInElseBranch.Push(true);
 		if (IfExclude == 1)
-			BEGIN(INITIAL);
+    {
+        BEGIN(INITIAL);
+        addDirective = true;
+    }
+			
 	}
 	else if (directiveName == "ENDIF")
 	{
@@ -187,24 +190,15 @@ UNICODEARROW \x890
             parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, define_name, directiveParams[0]);
         IfExclude--;
 		if (IfExclude == 0)
-			BEGIN(INITIAL); 		
+    {
+        BEGIN(INITIAL);
+        addDirective = true;
+    }
+			
 	}
-	else if (IfExclude > 0)
-	{
-		int ind_to_remove = -1;
-		for (int i=0; i<parserTools.compilerDirectives.Count; i++)
-		{
-			if (parserTools.compilerDirectives[i].source_context.begin_position.line_num == CurrentLexLocation.StartLine && 
-				parserTools.compilerDirectives[i].source_context.begin_position.column_num - 2 == CurrentLexLocation.StartColumn + 1)
-				{
-					ind_to_remove = i;
-					break;
-				}
-		}
-		if (ind_to_remove != -1)
-			parserTools.compilerDirectives.RemoveAt(ind_to_remove);
-	}
-	
+
+  if (addDirective)
+    parserTools.compilerDirectives.Add(new compiler_directive(new token_info(directiveName), new token_info(string.Join(" ", directiveParams)), CurrentLexLocation));
 }
 
 <EXCLUDETEXT>.|\n {
