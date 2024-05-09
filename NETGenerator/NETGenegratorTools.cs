@@ -479,7 +479,7 @@ namespace PascalABCCompiler.NETGenerator
                 //il.Emit(OpCodes.Ldarg_0);
                 il.Emit(OpCodes.Ldfld, fb);
             }
-            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Ldc_I4_0);
             il.Emit(OpCodes.Ceq);
             il.Emit(OpCodes.Brfalse, lbl);
             if (!fb.IsStatic)
@@ -496,7 +496,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             Label lbl = il.DefineLabel();
             il.Emit(OpCodes.Ldloc, lb);
-            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Ldc_I4_0);
             il.Emit(OpCodes.Ceq);
             il.Emit(OpCodes.Brfalse, lbl);
             il.Emit(OpCodes.Newobj, ti.def_cnstr);
