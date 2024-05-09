@@ -597,7 +597,7 @@ namespace PascalABCCompiler
 
         public List<string> ForceDefines = new List<string>();
 
-        public List<string> SearchDirectory;
+        public List<string> SearchDirectories;
 
         private bool useDllForSystemUnits = false;
 
@@ -726,7 +726,7 @@ namespace PascalABCCompiler
             StandardDirectories.Add("%PABCSYSTEM%", SystemDirectory);
 
             ParserSearchPaths = new string[] { Path.Combine(SystemDirectory, "Lib") };
-            SearchDirectory = ParserSearchPaths.ToList();
+            SearchDirectories = ParserSearchPaths.ToList();
         }
 
 
@@ -1410,7 +1410,7 @@ namespace PascalABCCompiler
                 }*/
                 else
                 {
-                    string source_file = FindFileInDirs(s + ".vb", out _, Path.GetDirectoryName(CompilerOptions.SourceFileName), Path.Combine(this.CompilerOptions.SystemDirectory, "lib"),
+                    string source_file = FindFileWithExtensionInDirs(s + ".vb", out _, Path.GetDirectoryName(CompilerOptions.SourceFileName), Path.Combine(this.CompilerOptions.SystemDirectory, "lib"),
                                                                      Path.Combine(this.CompilerOptions.SystemDirectory, "LibSource"));
                     if (!string.IsNullOrEmpty(source_file))
                     {
@@ -1601,7 +1601,7 @@ namespace PascalABCCompiler
 
         private Assembly IronPythonAssembly;
         private MethodInfo PythonCreateEngineMethod;
-        public string CompilePy()
+        /*public string CompilePy()
         {
             OnChangeCompilerState(this, CompilerState.CompilationStarting, CompilerOptions.SourceFileName);
             OnChangeCompilerState(this, CompilerState.BeginCompileFile, CompilerOptions.SourceFileName);
@@ -1630,7 +1630,7 @@ namespace PascalABCCompiler
             //if (errorsList.Count > 0)
             return null;
             //else return dlls.PathToAssembly;
-        }
+        }*/
 
         public string CompileCS()
         {
@@ -1704,7 +1704,7 @@ namespace PascalABCCompiler
                 return res.PathToAssembly;
         }
 
-        public string CompileVB()
+        /*public string CompileVB()
         {
             OnChangeCompilerState(this, CompilerState.CompilationStarting, CompilerOptions.SourceFileName);
             OnChangeCompilerState(this, CompilerState.BeginCompileFile, CompilerOptions.SourceFileName);
@@ -1730,8 +1730,8 @@ namespace PascalABCCompiler
             parser.Dispose();
             if (info != null)
                 sources.AddRange(info.addit_project_files);
-            string redirect_base_fname = FindFileInDirs("__RedirectIOMode.vb", out _, Path.Combine(this.CompilerOptions.SystemDirectory, "Lib"), Path.Combine(this.CompilerOptions.SystemDirectory, "LibSource"));
-            string system_unit_name = FindFileInDirs("VBSystem.vb", out _, Path.Combine(this.CompilerOptions.SystemDirectory, "lib"), Path.Combine(this.CompilerOptions.SystemDirectory, "LibSource"));
+            string redirect_base_fname = FindFileWithExtensionInDirs("__RedirectIOMode.vb", out _, Path.Combine(this.CompilerOptions.SystemDirectory, "Lib"), Path.Combine(this.CompilerOptions.SystemDirectory, "LibSource"));
+            string system_unit_name = FindFileWithExtensionInDirs("VBSystem.vb", out _, Path.Combine(this.CompilerOptions.SystemDirectory, "lib"), Path.Combine(this.CompilerOptions.SystemDirectory, "LibSource"));
             string redirect_fname = Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName), "_RedirectIOMode.vb");
             StreamReader sr = File.OpenText(redirect_base_fname);
             string redirect_module = sr.ReadToEnd();
@@ -1823,14 +1823,14 @@ namespace PascalABCCompiler
             if (info != null && info.modules.Count > 0)
             {
                 comp_opt.ReferencedAssemblies.Add(Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName), StringConstants.pabc_rtl_dll_name));
-                string mod_file_name = FindFileInDirs("PABCRtl.dll", out _, Path.Combine(this.CompilerOptions.SystemDirectory, "Lib"));
+                string mod_file_name = FindFileWithExtensionInDirs("PABCRtl.dll", out _, Path.Combine(this.CompilerOptions.SystemDirectory, "Lib"));
                 File.Copy(mod_file_name, Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName), "PABCRtl.dll"), true);
-                /*foreach (string mod in info.modules)
+                *//*foreach (string mod in info.modules)
                 {
                     comp_opt.ReferencedAssemblies.Add(Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName),mod+".dll"));
                     string mod_file_name = FindSourceFileInDirectories(mod+".mod",Path.Combine(this.CompilerOptions.SystemDirectory,"lib"));
                     File.Copy(mod_file_name,Path.Combine(Path.GetDirectoryName(CompilerOptions.SourceFileName),mod+".dll"),true);
-                }*/
+                }*//*
             }
             sources.Add(redirect_fname);
             sources.Add(system_unit_name);
@@ -1839,7 +1839,7 @@ namespace PascalABCCompiler
             {
                 for (int i = 0; i < res.Errors.Count; i++)
                 {
-                    if (!res.Errors[i].IsWarning && errorsList.Count == 0 /*&& dlls.Errors[i].file_name != redirect_fname*/)
+                    if (!res.Errors[i].IsWarning && errorsList.Count == 0 *//*&& dlls.Errors[i].file_name != redirect_fname*//*)
                     {
                         if (File.Exists(res.Errors[i].FileName))
                             errorsList.Add(new Errors.CommonCompilerError(res.Errors[i].ErrorText, res.Errors[i].FileName, res.Errors[i].Line != 0 ? res.Errors[i].Line : 1, 1));
@@ -1869,7 +1869,7 @@ namespace PascalABCCompiler
                 return null;
             else
                 return res.PathToAssembly;
-        }
+        }*/
 
         private ProjectInfo project;
 
@@ -2730,68 +2730,73 @@ namespace PascalABCCompiler
             return usesSection;
         }
 
-        public string FindPCUFileName(string fname, string curr_path, out int folder_priority)
+        public string FindPCUFileName(string fileName, string currentPath, out int folderPriority)
         {
-            if (string.IsNullOrEmpty(Path.GetExtension(fname)))
-                fname += CompilerOptions.CompiledUnitExtension;
-            var cache_key = Tuple.Create(fname.ToLower(), curr_path?.ToLower());
+            if (string.IsNullOrEmpty(Path.GetExtension(fileName)))
+                fileName += CompilerOptions.CompiledUnitExtension;
 
-            if (!PCUFileNamesDictionary.TryGetValue(cache_key, out var res))
+            var cacheKey = Tuple.Create(fileName.ToLower(), currentPath?.ToLower());
+
+            if (!PCUFileNamesDictionary.TryGetValue(cacheKey, out var fileNameWithPriority))
             {
-
-                if (FindFileInDirs(fname, out _, curr_path) is string res_s1)
-                    res = Tuple.Create(res_s1, 1);
-                else if (FindFileInDirs(Path.GetFileName(fname), out _, CompilerOptions.OutputDirectory) is string res_s2)
-                    res = Tuple.Create(res_s2, 2);
-                else if (FindFileInDirs(fname, out var dir_ind, CompilerOptions.SearchDirectory.ToArray()) is string res_s3)
-                    res = Tuple.Create(res_s3, 3 + dir_ind);
+                if (FindFileWithExtensionInDirs(fileName, out _, currentPath) is string resultFileName1)
+                    fileNameWithPriority = Tuple.Create(resultFileName1, 1);
+                else if (FindFileWithExtensionInDirs(Path.GetFileName(fileName), out _, CompilerOptions.OutputDirectory) is string resultFileName2)
+                    fileNameWithPriority = Tuple.Create(resultFileName2, 2);
+                else if (FindFileWithExtensionInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName3)
+                    fileNameWithPriority = Tuple.Create(resultFileName3, 3 + dirIndex);
                 else
-                    res = null;
+                    fileNameWithPriority = null;
 
-                PCUFileNamesDictionary[cache_key] = res;
+                PCUFileNamesDictionary[cacheKey] = fileNameWithPriority;
             }
 
-            folder_priority = res == null ? 0 : res.Item2;
-            return res?.Item1;
+            folderPriority = fileNameWithPriority?.Item2 ?? 0;
+            return fileNameWithPriority?.Item1;
         }
 
-        public string FindSourceFileName(string fname, string curr_path, out int folder_priority)
+        public string FindSourceFileName(string fileName, string currentPath, out int folderPriority)
         {
-            var cache_key = Tuple.Create(fname.ToLower(), curr_path?.ToLower());
+            var cacheKey = Tuple.Create(fileName.ToLower(), currentPath?.ToLower());
 
-            if (!SourceFileNamesDictionary.TryGetValue(cache_key, out var res))
+            if (!SourceFileNamesDictionary.TryGetValue(cacheKey, out var fileNameWithPriority))
             {
-
-                if (FindSourceFileNameInDirs(fname, out _, curr_path) is string res_s1)
-                    res = Tuple.Create(res_s1, 1);
-                else if (FindSourceFileNameInDirs(fname, out var dir_ind, CompilerOptions.SearchDirectory.ToArray()) is string res_s3)
-                    res = Tuple.Create(res_s3, 3 + dir_ind);
+                if (FindSourceFileNameInDirs(fileName, out _, currentPath) is string resultFileName1)
+                    fileNameWithPriority = Tuple.Create(resultFileName1, 1);
+                else if (FindSourceFileNameInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName2)
+                    fileNameWithPriority = Tuple.Create(resultFileName2, 3 + dirIndex);
                 else
-                    res = null;
+                    fileNameWithPriority = null;
 
-                SourceFileNamesDictionary[cache_key] = res;
+                SourceFileNamesDictionary[cacheKey] = fileNameWithPriority;
             }
 
-            folder_priority = res == null ? 0 : res.Item2;
-            return res?.Item1;
+            folderPriority = fileNameWithPriority?.Item2 ?? 0;
+            return fileNameWithPriority?.Item1;
         }
 
-        public string FindSourceFileNameInDirs(string fname, out int found_dir_ind, params string[] Dirs)
+        public string FindSourceFileNameInDirs(string fileName, out int foundDirIndex, params string[] Dirs)
         {
-            var fname_ext = Path.GetExtension(fname);
-            var need_ext = string.IsNullOrEmpty(fname_ext);
+            var fileNameExtension = Path.GetExtension(fileName);
+            var isExtensionEmpty = string.IsNullOrEmpty(fileNameExtension);
+
+            // TODO: ищем сперва для расширения текущего языка  EVA
 
             foreach (SupportedSourceFile sf in SupportedSourceFiles)
-                foreach (string ext in sf.Extensions)
-                    if (need_ext || fname_ext == ext)
+            {
+                foreach (string extension in sf.Extensions)
+                {
+                    if (isExtensionEmpty || fileNameExtension == extension)
                     {
-                        var res = FindFileInDirs(need_ext ? fname + ext : fname, out found_dir_ind, Dirs);
-                        //if (!(CompilerOptions.UseDllForSystemUnits && Path.GetDirectoryName(dlls) == CompilerOptions.SearchDirectory))
-                        if (res != null)
-                            return res;
+                        var resultFileName = FindFileWithExtensionInDirs(isExtensionEmpty ? fileName + extension : fileName, out foundDirIndex, Dirs);
+                        if (resultFileName != null)
+                            return resultFileName;
                     }
+                }  
+            }
+                
 
-            found_dir_ind = 0;
+            foundDirIndex = 0;
             return null;
         }
 
@@ -2857,34 +2862,33 @@ namespace PascalABCCompiler
             throw new InvalidOperationException($"Could not find path to \"{u2.UnitFileName}\" relative to \"{u1.UnitFileName}\"");
         }
 
-        private string FindFileInDirs(string FileName, out int found_dir_ind, params string[] Dirs)
+        private string FindFileWithExtensionInDirs(string fileName, out int foundDirIndex, params string[] dirs)
         {
-            if (Path.IsPathRooted(FileName))
+            if (Path.IsPathRooted(fileName))
             {
-                found_dir_ind = 0;
-                return File.Exists(FileName) ? FileName : null;
+                foundDirIndex = 0;
+                return File.Exists(fileName) ? fileName : null;
             }
 
-            for (int dir_i = 0; dir_i < Dirs.Length; ++dir_i)
+            for (int dirIndex = 0; dirIndex < dirs.Length; ++dirIndex)
+            {
                 try
                 {
-                    var Dir = Dirs[dir_i];
-                    var res = Path.Combine(Dir, FileName);
-                    if (File.Exists(res))
+                    var dir = dirs[dirIndex];
+                    var resultFileName = Path.Combine(dir, fileName);
+                    if (File.Exists(resultFileName))
                     {
-                        found_dir_ind = dir_i;
+                        foundDirIndex = dirIndex;
                         // Path.GetFullPath чтобы нормализовать
                         // File.Exists не может кинуть исключение или дать true
-                        // если путь слишком длинный или содержит нерпавильные знаки
-                        return Path.GetFullPath(res);
+                        // если путь слишком длинный или содержит неправильные знаки
+                        return Path.GetFullPath(resultFileName);
                     }
                 }
-                catch (PathTooLongException)
-                {
-                    continue;
-                }
+                catch (PathTooLongException) { }
+            }   
 
-            found_dir_ind = 0;
+            foundDirIndex = 0;
             return null;
         }
 
@@ -2964,78 +2968,73 @@ namespace PascalABCCompiler
 
             if (currentPath == null) throw new InvalidOperationException(unitNode.UsesPath());
 
-            var UnitName = unitNode.name.idents[0].name;
+            var unitName = unitNode.name.idents[0].name;
 
             if (unitNode is SyntaxTree.uses_unit_in uui)
             {
 
                 TryThrowInvalidPath(uui.in_file.Value, uui.in_file.source_context);
 
-                if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
-                    throw new UsesInWrongName(unitNode.source_context.FileName, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
+                if (unitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
+                    throw new UsesInWrongName(unitNode.source_context.FileName, unitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
             }
 
-            return GetUnitFileName(UnitName, unitNode.UsesPath(), currentPath, unitNode.source_context);
+            return GetUnitFileName(unitName, unitNode.UsesPath(), currentPath, unitNode.source_context);
         }
 
-        public string GetUnitFileName(string UnitName, string path, string curr_path, SyntaxTree.SourceContext source_context)
+        public string GetUnitFileName(string unitName, string usesPath, string currentPath, SyntaxTree.SourceContext sourceContext)
         {
-            var cache_key = Tuple.Create(path.ToLower(), curr_path?.ToLower());
-            string res;
-            if (GetUnitFileNameCache.TryGetValue(cache_key, out res))
-                return res;
+            var cacheKey = Tuple.Create(usesPath.ToLower(), currentPath?.ToLower());
+            
+            if (GetUnitFileNameCache.TryGetValue(cacheKey, out var unitFileName))
+                return unitFileName;
 
-            // число приоритета меньше = более важная папка
-            // может выглядеть задом-наперёд, но так должно быть проще в будущем добавлять папки...
-            var SourceFileName = FindSourceFileName(path, curr_path, out var SourceFilePriority);
-            var PCUFileName = FindPCUFileName(path, curr_path, out var PCUFilePriority);
+            // число приоритета меньше означает, что папка более важная
+            var sourceFileName = FindSourceFileName(usesPath, currentPath, out var sourceFilePriority);
+            var pcuFileName = FindPCUFileName(usesPath, currentPath, out var pcuFilePriority);
 
-            var SourceFileExists = SourceFileName != null;
-            //ToDo то есть Rebuild режим игнорирует .pcu, даже если нет .pas файла?
-            // а ещё ниже стоит ещё 1 проверка Rebuild...
-            var PCUFileExists = (!CompilerOptions.Rebuild || !SourceFileExists) && PCUFileName != null;
+            bool sourceFileExists = sourceFileName != null;
+            bool pcuFileExists = pcuFileName != null;
 
-            if (!PCUFileExists && !SourceFileExists)
-                if (UnitName == null)
+            if (CompilerOptions.Rebuild && sourceFileExists)
+                pcuFileExists = false;
+
+            // если нет ни одного типа файла или нет исходника и режим Rebuild, то ошибка 
+            if (!sourceFileExists && !pcuFileExists)
+            {
+                if (unitName == null)
                     // вызов с "unitFileName == null" должен быть только там, где уже известно что хотя бы какой то файл есть
                     // если где то ещё будет исопльзоваться unitFileName или source_context - надо будет добавить такую же проверку
-                    throw new InvalidOperationException(nameof(UnitName));
+                    throw new InvalidOperationException(nameof(unitName));
                 else
-                    throw new UnitNotFound(source_context.FileName, UnitName, source_context);
+                    throw new UnitNotFound(sourceContext.FileName, unitName, sourceContext);
+            }
+                
 
-            if (PCUFileExists && SourceFileExists)
+            if (pcuFileExists && sourceFileExists)
             {
-
-                //ToDo из за проверки Rebuild выше - тут всегда будет false
-                // но я не понимаю какая из этих 2 проверок правильная
-                if (CompilerOptions.Rebuild && !RecompileList.ContainsKey(PCUFileName))
-                    PCUFileExists = false;
-
-                else if (SourceFilePriority != PCUFilePriority)
-                {
-                    if (SourceFilePriority < PCUFilePriority)
-                        PCUFileExists = false;
-                    else
-                        SourceFileExists = false;
-                }
-                else if (Path.GetDirectoryName(SourceFileName) != Path.GetDirectoryName(PCUFileName))
-                    throw new InvalidOperationException("priority"); // не должно происходить, раз приоритет одинаковый
-
-                else if (File.GetLastWriteTime(PCUFileName) < File.GetLastWriteTime(SourceFileName))
-                    PCUFileExists = false;
-
+                // если приоритет папки исходника выше, то берем исходник
+                if (sourceFilePriority < pcuFilePriority)
+                    pcuFileExists = false;
+                // проверка на правильность установки приоритета - для удобства
+                else if (sourceFilePriority == pcuFilePriority && Path.GetDirectoryName(sourceFileName) != Path.GetDirectoryName(pcuFileName))
+                    throw new InvalidOperationException("Не верно задан приоритет папок!");
+                // также если время модификации pcu раньше, чем исходника, то нужна перекомпиляция (при этом они должны быть в одной папке)
+                else if (sourceFilePriority == pcuFilePriority && File.GetLastWriteTime(pcuFileName) < File.GetLastWriteTime(sourceFileName))
+                    pcuFileExists = false;
             }
 
-            if (PCUFileExists)
-                res = Path.Combine(curr_path, PCUFileName);
-            else if (SourceFileExists)
-                res = Path.Combine(curr_path, SourceFileName);
+            if (pcuFileExists)
+                unitFileName = Path.Combine(currentPath, pcuFileName);
+            else if (sourceFileExists)
+                unitFileName = Path.Combine(currentPath, sourceFileName);
             else
-                throw new InvalidOperationException(nameof(SourceFileExists)); // тело "if (PCUFileExists && SourceFileExists)" не должно присваивать false обоим переменным
+                // значит в предыдущем блоке кода ошибка - проверка для удобства
+                throw new InvalidOperationException("Сброшено значение pcuFileExists и sourceFileExists. Такого здесь быть не должно."); 
 
-            GetUnitFileNameCache[cache_key] = res;
-            return res;
+            GetUnitFileNameCache[cacheKey] = unitFileName;
+            return unitFileName;
         }
 
         public void AddStandardUnitsToInterfaceUsesSection(SyntaxTree.compilation_unit unitSyntaxTree)
@@ -3541,9 +3540,6 @@ namespace PascalABCCompiler
             return null;
         }
 
-        /// <summary>
-        /// получение списка using - legacy code !!!
-        /// </summary>
         public string GetSourceFileText(string FileName)
         {
             return (string)SourceFilesProvider(FileName, SourceFileOperation.GetText);
