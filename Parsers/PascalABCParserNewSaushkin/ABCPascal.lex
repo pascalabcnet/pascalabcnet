@@ -152,7 +152,7 @@ UNICODEARROW \x890
 	
   directiveName = directiveName.ToUpper();
 
-  bool addDirective = true;
+  bool addDirective = false;
 
   if (directiveName == "IFDEF")
 	{
@@ -174,7 +174,11 @@ UNICODEARROW \x890
 			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
 		IfDefInElseBranch.Push(true);
 		if (IfExclude == 1)
-			BEGIN(INITIAL);
+    {
+        BEGIN(INITIAL);
+        addDirective = true;
+    }
+			
 	}
 	else if (directiveName == "ENDIF")
 	{
@@ -186,10 +190,12 @@ UNICODEARROW \x890
             parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, define_name, directiveParams[0]);
         IfExclude--;
 		if (IfExclude == 0)
-			BEGIN(INITIAL);
+    {
+        BEGIN(INITIAL);
+        addDirective = true;
+    }
+			
 	}
-  else
-    addDirective = false;
 
   if (addDirective)
     parserTools.compilerDirectives.Add(new compiler_directive(new token_info(directiveName), new token_info(string.Join(" ", directiveParams)), CurrentLexLocation));
