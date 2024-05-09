@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-V3E9T2U
-// DateTime: 07.05.2024 23:18:59
-// UserName: alex
-// Input file <ABCPascal.y>
+// Machine:  DESKTOP-G8V08V4
+// DateTime: 08.05.2024 9:59:54
+// UserName: ?????????
+// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
 // options: no-lines gplex
 
