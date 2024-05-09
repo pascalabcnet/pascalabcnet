@@ -2744,7 +2744,7 @@ namespace PascalABCCompiler
 
                 else if (FindFileWithExtensionInDirs(fileName, out _, currentPath) is string resultFileName1)
                     fileNameWithPriority = Tuple.Create(resultFileName1, 1);
-                else if (CompilerOptions.OutputDirectory != project.Path && FindFileWithExtensionInDirs(Path.GetFileName(fileName), out _, CompilerOptions.OutputDirectory) is string resultFileName2)
+                else if (CompilerOptions.OutputDirectory != CompilerOptions.SourceFileDirectory && FindFileWithExtensionInDirs(Path.GetFileName(fileName), out _, CompilerOptions.OutputDirectory) is string resultFileName2)
                     fileNameWithPriority = Tuple.Create(resultFileName2, 2);
                 else if (FindFileWithExtensionInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName3)
                     fileNameWithPriority = Tuple.Create(resultFileName3, 3 + dirIndex);
