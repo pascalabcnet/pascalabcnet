@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
@@ -1420,7 +1420,7 @@ namespace PascalABCCompiler.NETGenerator
             else if (cnst is IEnumConstNode)
                 PushIntConst((cnst as IEnumConstNode).constant_value);
             else if (cnst is INullConstantNode)
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(cnst.type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
         }
 
         private void ConvertConstantDefWithInitCall(IConstantDefinitionNode cnst, string name, ITypeNode type, IConstantNode constant_value)
@@ -3244,8 +3244,8 @@ namespace PascalABCCompiler.NETGenerator
                     AddInitCall(lb, ti.init_meth, var.inital_value as IConstantNode, var.type);
             if (ti.is_set && var.type.type_special_kind == type_special_kind.set_type && var.inital_value == null)
             {
-                il.Emit(OpCodes.Ldc_I4_0);
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Newobj, ti.def_cnstr);
                 il.Emit(OpCodes.Stloc, lb);
             }
@@ -3938,7 +3938,7 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     Label label1 = il.DefineLabel();
                     il.Emit(OpCodes.Ldelem_Ref);
-                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ldnull);
                     il.Emit(OpCodes.Ceq);
                     il.Emit(OpCodes.Brfalse, label1);
                     il.Emit(OpCodes.Ldloc, tmp);
@@ -3956,8 +3956,8 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            il.Emit(OpCodes.Ldc_I4_0);
-                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ldnull);
+                            il.Emit(OpCodes.Ldnull);
                         }
                     }
                     else if (ti.is_typed_file)
@@ -4049,7 +4049,7 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     Label label1 = il.DefineLabel();
                     il.Emit(OpCodes.Call, get_meth);
-                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ldnull);
                     il.Emit(OpCodes.Ceq);
                     il.Emit(OpCodes.Brfalse, label1);
                     il.Emit(OpCodes.Ldloc, tmp);
@@ -4070,8 +4070,8 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            il.Emit(OpCodes.Ldc_I4_0);
-                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ldnull);
+                            il.Emit(OpCodes.Ldnull);
                         }
                     }
                     else if (ti.is_typed_file)
@@ -4164,7 +4164,7 @@ namespace PascalABCCompiler.NETGenerator
                         Label lb1 = il.DefineLabel();
                         Label lb2 = il.DefineLabel();
                         il.Emit(OpCodes.Ldelem_Ref);
-                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(OpCodes.Ldnull);
                         il.Emit(OpCodes.Beq, lb2);
                         arr.visit(this);
                         il.Emit(OpCodes.Ldloc, clb);
@@ -4184,7 +4184,7 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     Label label1 = il.DefineLabel();
                     il.Emit(OpCodes.Ldelem_Ref);
-                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ldnull);
                     il.Emit(OpCodes.Ceq);
                     il.Emit(OpCodes.Brfalse, label1);
                     arr.visit(this);
@@ -4202,8 +4202,8 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            il.Emit(OpCodes.Ldc_I4_0);
-                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ldnull);
+                            il.Emit(OpCodes.Ldnull);
                         }
                     }
                     else if (ti.is_typed_file)
@@ -4259,7 +4259,7 @@ namespace PascalABCCompiler.NETGenerator
                         Label lb1 = il.DefineLabel();
                         Label lb2 = il.DefineLabel();
                         il.Emit(OpCodes.Ldelem_Ref);
-                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(OpCodes.Ldnull);
                         il.Emit(OpCodes.Beq, lb2);
                         arr.visit(this);
                         il.Emit(OpCodes.Ldloc, clb);
@@ -4279,7 +4279,7 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     Label label1 = il.DefineLabel();
                     il.Emit(OpCodes.Ldelem_Ref);
-                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ldnull);
                     il.Emit(OpCodes.Ceq);
                     il.Emit(OpCodes.Brfalse, label1);
                     arr.visit(this);
@@ -4297,8 +4297,8 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            il.Emit(OpCodes.Ldc_I4_0);
-                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ldnull);
+                            il.Emit(OpCodes.Ldnull);
                         }
                     }
                     else if (ti.is_typed_file)
@@ -4589,8 +4589,8 @@ namespace PascalABCCompiler.NETGenerator
                             }
                             else
                             {
-                                il.Emit(OpCodes.Ldc_I4_0);
-                                il.Emit(OpCodes.Ldc_I4_0);
+                                il.Emit(OpCodes.Ldnull);
+                                il.Emit(OpCodes.Ldnull);
                             }
                             il.Emit(OpCodes.Newobj, ti.def_cnstr);
                             il.Emit(OpCodes.Stelem_Ref);
@@ -4913,8 +4913,8 @@ namespace PascalABCCompiler.NETGenerator
                     AddInitCall(il, fb, ti.init_meth, var.inital_value as IConstantNode);
             if (ti.is_set && var.type.type_special_kind == type_special_kind.set_type && var.inital_value == null)
             {
-                il.Emit(OpCodes.Ldc_I4_0);
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Newobj, ti.def_cnstr);
                 il.Emit(OpCodes.Stsfld, fb);
             }
@@ -5107,8 +5107,8 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            cb_il.Emit(OpCodes.Ldc_I4_0);
-                            cb_il.Emit(OpCodes.Ldc_I4_0);
+                            cb_il.Emit(OpCodes.Ldnull);
+                            cb_il.Emit(OpCodes.Ldnull);
                         }
                         cb_il.Emit(OpCodes.Newobj, elem_ti.def_cnstr);
                         cb_il.Emit(OpCodes.Stelem_Ref);
@@ -6650,7 +6650,7 @@ namespace PascalABCCompiler.NETGenerator
                 if (save_debug_info)
                     MarkSequencePoint(il, 0xFFFFFF, 0, 0xFFFFFF, 0);
                 if (value.polymorphic_state == polymorphic_state.ps_static)
-                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ldnull);
                 else
                     il.Emit(OpCodes.Ldarg_0);
                 IParameterNode[] parameters = value.parameters;
@@ -7408,7 +7408,7 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Stloc, start_index_lb);
                 Label lbl = il.DefineLabel();
                 real_parameters[0].visit(this);
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Beq, lbl);
                 real_parameters[0].visit(this);
                 il.Emit(OpCodes.Ldlen);
@@ -8040,8 +8040,8 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            il.Emit(OpCodes.Ldc_I4_0);
-                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ldnull);
+                            il.Emit(OpCodes.Ldnull);
                         }
                         il.Emit(OpCodes.Newobj, ti.def_cnstr);
                         il.Emit(OpCodes.Stind_Ref);
@@ -9546,13 +9546,13 @@ namespace PascalABCCompiler.NETGenerator
                     { 
                         real_parameters[0].visit(this);
                         il.Emit(OpCodes.Box, helper.GetTypeReference(real_parameters[0].type).tp);
-                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(real_parameters[1].type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
                         EmitOperator(value);
                         return;
                     }
                     else if (real_parameters[1].type.is_generic_parameter && real_parameters[0] is INullConstantNode)
                     {
-                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(real_parameters[0].type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
                         real_parameters[1].visit(this);
                         il.Emit(OpCodes.Box, helper.GetTypeReference(real_parameters[1].type).tp);
                         EmitOperator(value);
@@ -10398,7 +10398,7 @@ namespace PascalABCCompiler.NETGenerator
             SemanticTree.ICommonNamespaceFunctionCallNode cncall = ifc as SemanticTree.ICommonNamespaceFunctionCallNode;
             if (cncall != null)
             {
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Ldnull);
                 return;
             }
             SemanticTree.ICommonMethodCallNode cmcall = ifc as SemanticTree.ICommonMethodCallNode;
@@ -10418,7 +10418,7 @@ namespace PascalABCCompiler.NETGenerator
             SemanticTree.ICommonStaticMethodCallNode csmcall = ifc as SemanticTree.ICommonStaticMethodCallNode;
             if (csmcall != null)
             {
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Ldnull);
                 return;
             }
             SemanticTree.ICompiledMethodCallNode cmccall = ifc as SemanticTree.ICompiledMethodCallNode;
@@ -10438,7 +10438,7 @@ namespace PascalABCCompiler.NETGenerator
             SemanticTree.ICompiledStaticMethodCallNode csmcall2 = ifc as SemanticTree.ICompiledStaticMethodCallNode;
             if (csmcall2 != null)
             {
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Ldnull);
                 return;
             }
             SemanticTree.ICommonNestedInFunctionFunctionCallNode cnffcall = ifc as SemanticTree.ICommonNestedInFunctionFunctionCallNode;
@@ -10934,7 +10934,7 @@ namespace PascalABCCompiler.NETGenerator
         //перевод конструкции null
         public override void visit(INullConstantNode value)
         {
-            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(value.type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
         }
 
         struct TmpForCase
@@ -11041,7 +11041,7 @@ namespace PascalABCCompiler.NETGenerator
                 eq.real_parameters[0].visit(this);
                 il.Emit(OpCodes.Stloc, funcptr_lb);
                 il.Emit(OpCodes.Ldloc, funcptr_lb);
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Ceq);
                 if (value.ret_if_false is ICommonConstructorCall)
                     helper.LinkExpressionToLocalBuilder((value.condition as IBasicFunctionCallNode).real_parameters[0], funcptr_lb);
@@ -11108,7 +11108,7 @@ namespace PascalABCCompiler.NETGenerator
                 eq.real_parameters[0].visit(this);
                 il.Emit(OpCodes.Stloc, tmp_lb);
                 il.Emit(OpCodes.Ldloc, tmp_lb);
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Ceq);
                 
             }
@@ -11136,7 +11136,7 @@ namespace PascalABCCompiler.NETGenerator
                     tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
                     il.Emit(OpCodes.Stloc, tmp_lb);
                     il.Emit(OpCodes.Ldloc, tmp_lb);
-                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ldnull);
                     il.Emit(OpCodes.Ceq);
                 }
                 
@@ -11375,7 +11375,7 @@ namespace PascalABCCompiler.NETGenerator
             is_dot_expr = idexpr;
             Type right = helper.GetTypeReference(value.right).tp;
             il.Emit(OpCodes.Isinst, right);
-            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Ldnull);
             il.Emit(OpCodes.Cgt_Un);
             if (is_dot_expr)
                 NETGeneratorTools.CreateLocalAndLoad(il, TypeFactory.BoolType);
