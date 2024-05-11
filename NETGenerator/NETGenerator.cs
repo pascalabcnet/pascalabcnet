@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
@@ -1420,7 +1420,7 @@ namespace PascalABCCompiler.NETGenerator
             else if (cnst is IEnumConstNode)
                 PushIntConst((cnst as IEnumConstNode).constant_value);
             else if (cnst is INullConstantNode)
-                il.Emit(OpCodes.Ldnull);
+                il.Emit(cnst.type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
         }
 
         private void ConvertConstantDefWithInitCall(IConstantDefinitionNode cnst, string name, ITypeNode type, IConstantNode constant_value)
@@ -7950,7 +7950,7 @@ namespace PascalABCCompiler.NETGenerator
                     il.Emit(OpCodes.Ldind_I);
                     il.Emit(OpCodes.Call, typeof(Marshal).GetMethod("FreeHGlobal", new Type[1] { typeof(IntPtr) }));
                     il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Ldnull);
+                    il.Emit(OpCodes.Ldc_I4_0);
                     il.Emit(OpCodes.Stind_I);
                     il.Emit(OpCodes.Ret);
                     mi = helper.AddMethod(func, methodb);
@@ -9546,13 +9546,13 @@ namespace PascalABCCompiler.NETGenerator
                     { 
                         real_parameters[0].visit(this);
                         il.Emit(OpCodes.Box, helper.GetTypeReference(real_parameters[0].type).tp);
-                        il.Emit(OpCodes.Ldnull);
+                        il.Emit(real_parameters[1].type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
                         EmitOperator(value);
                         return;
                     }
                     else if (real_parameters[1].type.is_generic_parameter && real_parameters[0] is INullConstantNode)
                     {
-                        il.Emit(OpCodes.Ldnull);
+                        il.Emit(real_parameters[0].type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
                         real_parameters[1].visit(this);
                         il.Emit(OpCodes.Box, helper.GetTypeReference(real_parameters[1].type).tp);
                         EmitOperator(value);
@@ -10934,7 +10934,7 @@ namespace PascalABCCompiler.NETGenerator
         //перевод конструкции null
         public override void visit(INullConstantNode value)
         {
-            il.Emit(OpCodes.Ldnull);
+            il.Emit(value.type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
         }
 
         struct TmpForCase
