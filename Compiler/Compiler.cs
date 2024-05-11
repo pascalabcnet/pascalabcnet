@@ -3291,7 +3291,7 @@ namespace PascalABCCompiler
 
         private void SemanticCheckNoIncludeDirectivesInPascalUnit(CompilationUnit compilationUnit)
         {
-            if (HasIncludeNamespaceDirective(compilationUnit) && compilationUnit.SyntaxTree is SyntaxTree.unit_module unitModule
+            if (compilationUnit.SyntaxTree is SyntaxTree.unit_module unitModule && HasIncludeNamespaceDirective(compilationUnit)
                 && unitModule.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library)
             {
                 throw new IncludeNamespaceInUnitError(currentCompilationUnit.SyntaxTree.file_name, currentCompilationUnit.SyntaxTree.source_context);
@@ -3584,15 +3584,19 @@ namespace PascalABCCompiler
         /// </summary>
         public static bool IsDll(SyntaxTree.compilation_unit unitSyntaxTree, out SyntaxTree.compiler_directive dllDirective)
         {
-            foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
+            if (unitSyntaxTree != null)
             {
-                if (string.Equals(directive.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase)
-                                    && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
+                foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
                 {
-                    dllDirective = directive;
-                    return true;
+                    if (string.Equals(directive.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase)
+                                        && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        dllDirective = directive;
+                        return true;
+                    }
                 }
             }
+            
             dllDirective = null;
             return false;
         }
@@ -4049,6 +4053,9 @@ namespace PascalABCCompiler
             MatchErrorsToBadNodes(currentUnit);
 
             CheckErrorsAndThrowTheFirstOne();
+
+            // запоминание названия языка (если SyntaxTree будет null, то это будет связано с ошибкой, выброшенной выше, поэтому NullReferenceException не возникнет)  EVA
+            currentUnit.languageName = currentUnit.SyntaxTree.Language;
 
             UnitTable[UnitId] = currentUnit;
 
