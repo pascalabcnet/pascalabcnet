@@ -6,7 +6,7 @@
 {$reference CompilerTools.dll}
 {$reference Localization.dll}
 {$reference System.Windows.Forms.dll}
-{$reference ParserTools.dll}
+{$reference LanguageIntegrator.dll}
 
 uses PascalABCCompiler, System.IO, System.Diagnostics;
 
@@ -404,7 +404,7 @@ end;
 begin
   //DeletePABCSystemPCU;
   try
-    PascalABCCompiler.Parsers.Controller.Instance.LoadStandardParsers();
+    LanguageIntegration.LanguageIntegrator.LoadStandardLanguages();
     
     TestSuiteDir := GetTestSuiteDir;
     System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
