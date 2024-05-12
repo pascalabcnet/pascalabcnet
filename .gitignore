@@ -48,7 +48,7 @@
 **/Languages.dll
 **/StringConstants.dll
 **/ParserTools.dll
-**/PascalABCParser.dll
+**/PascalABCLanguage.dll
 **/PluginsSupport.dll
 **/PluginsSupportLinux.dll
 **/Properties.Resources.Designer.cs.dll

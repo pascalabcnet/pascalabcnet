@@ -8,8 +8,8 @@
     <ProjectGuid>{1443F539-DCC7-4491-B4FD-B716C739DB3C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NewPascalParser</RootNamespace>
-    <AssemblyName>PascalABCParser</AssemblyName>
+    <RootNamespace>Languages.Pascal</RootNamespace>
+    <AssemblyName>PascalABCLanguage</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>
@@ -102,8 +102,8 @@
   <ItemGroup>
     <Compile Include="MainParser\ABCPascal.cs" />
     <Compile Include="MainParser\ABCPascalParserTools.cs" />
-    <Compile Include="MainParser\ABCPascalYacc.cs" />
     <Compile Include="DocTagsParser\Parser.cs" />
+    <Compile Include="MainParser\ABCPascalYacc.cs" />
     <Compile Include="MainParser\Errors1.cs" />
     <Compile Include="MainParser\Keywords.cs" />
     <Compile Include="MainParser\Parser.cs" />

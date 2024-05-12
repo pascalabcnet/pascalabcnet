@@ -10,23 +10,22 @@
     public PascalParserTools parserTools;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
-    public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
+    public GPPGParser(AbstractScanner<Languages.Pascal.PascalABCNewParser.Union, LexLocation> scanner) : base(scanner) { }
 %} 
 
 %output=ABCPascalYacc.cs 
 %partial
 %parsertype GPPGParser
 
-%using PascalABCCompiler.SyntaxTree;
-%using PascalABCSavParser;
-%using PascalABCCompiler.ParserTools;
-%using PascalABCCompiler.Errors;
 %using System.Linq;
-%using SyntaxVisitors;
+%using PascalABCCompiler.SyntaxTree;
+%using PascalABCCompiler.Errors;
+%using Languages.Pascal.Errors;
+%using Languages.Pascal.PascalABCNewParser;
 
 %namespace GPPGParserScanner
 
-%YYSTYPE PascalABCSavParser.Union
+%YYSTYPE Languages.Pascal.PascalABCNewParser.Union
 
 %start parse_goal
 

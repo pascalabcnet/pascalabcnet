@@ -50,7 +50,7 @@ namespace Languages
                 
                 foreach (var dll in dllFiles)
                 {
-                    if (dll.Name.EndsWith("Parser.dll"))
+                    if (dll.Name.EndsWith("Language.dll"))
                     {
                         IntegrateLanguageFromAssembly(dll);
                     }
@@ -73,7 +73,7 @@ namespace Languages
 
             DirectoryInfo directory = new DirectoryInfo(directoryName);
 
-            FileInfo[] dllfiles = directory.GetFiles("*Parser.dll");
+            FileInfo[] dllfiles = directory.GetFiles("*Language.dll");
 
             foreach (FileInfo languageFile in dllfiles)
             {

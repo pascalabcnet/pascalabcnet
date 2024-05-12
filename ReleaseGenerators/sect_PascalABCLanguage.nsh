@@ -1,13 +1,13 @@
-﻿  Section $(DESC_PascalABCNET_Language) PascalABCParser
+﻿  Section $(DESC_PascalABCNET_Language) PascalABCLanguage
     SectionIn 1 2 RO
     SetOutPath "$INSTDIR"
-    File "..\bin\PascalABCParser.dll"
-	${AddFile} "PascalABCParser.dll"
+    File "..\bin\PascalABCLanguage.dll"
+	${AddFile} "PascalABCLanguage.dll"
 ;    File "..\bin\PascalABCPartParser.dll"
     SetOutPath "$INSTDIR\Highlighting"
     File "..\bin\Highlighting\PascalABCNET.xshd"
 	${AddFile} "PascalABCNET.xshd"
-    Push "PascalABCParser.dll"
+    Push "PascalABCLanguage.dll"
     Call NGEN
 ;    Push "PascalABCPartParser.dll"
 ;    Call NGEN

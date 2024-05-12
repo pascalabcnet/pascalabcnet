@@ -3,14 +3,14 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using GPPGParserScanner;
 using PascalABCCompiler.ParserTools.Directives;
 using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
-using PascalABCSavParser;
 
-namespace PascalABCCompiler.PascalABCNewParser
+namespace Languages.Pascal.PascalABCNewParser
 {
     // SSM: класс, являющийся обёрткой над GPPG парсером
     /*public class GPPGParserHelper
