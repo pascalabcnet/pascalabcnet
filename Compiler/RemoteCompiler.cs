@@ -526,14 +526,6 @@ namespace PascalABCCompiler
             }
         }
 
-        public PascalABCCompiler.Parsers.Controller ParsersController
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-
         public PascalABCCompiler.SemanticTree.IProgramNode SemanticTree
         {
             get
