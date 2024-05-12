@@ -87,6 +87,10 @@
       <Project>{44A01F9E-DCE7-470C-AAE5-C3DE0CCBEE3B}</Project>
       <Name>Errors</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
+      <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
+      <Name>LanguageIntegrator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ParserTools\ParserTools.csproj">
       <Project>{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}</Project>
       <Name>ParserTools</Name>
@@ -94,6 +98,10 @@
     <ProjectReference Include="..\SemanticTree\SemanticTree.csproj">
       <Project>{613E0DDA-AA8A-437C-AC45-507B47429FF9}</Project>
       <Name>SemanticTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
+      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
+      <Name>StringConstants</Name>
     </ProjectReference>
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>

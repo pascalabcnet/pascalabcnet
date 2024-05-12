@@ -275,6 +275,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                     dn = new dot_node(getClassIdent(classField.cont_type),
                         new ident(id.name, id.source_context), id.source_context);
                 }
+                else if (si.sym_info is common_property_node cpn && cpn.polymorphic_state == polymorphic_state.ps_static)
+                {
+                    dn = new dot_node(getClassIdent(cpn.common_comprehensive_type),
+                        new ident(id.name, id.source_context), id.source_context);
+                }
                 else if (si.sym_info is class_constant_definition ccd)
                 {
                     dn = new dot_node(getClassIdent(ccd.comperehensive_type),
@@ -387,7 +392,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     /*if (si.sym_info.semantic_node_type == semantic_node_type.local_variable)
                     {
-                        if (!(idName == compiler_string_consts.self_word && si.scope is SymbolTable.ClassMethodScope && _classScope != null) && InLambdaContext)
+                        if (!(idName == PascalABCCompiler.StringConstants.self_word && si.scope is SymbolTable.ClassMethodScope && _classScope != null) && InLambdaContext)
                         {
                             _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                         }
@@ -397,7 +402,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         _visitor.AddError(new CannotCaptureNonValueParameters(_visitor.get_location(id)));
                     }
                     
-                    if (idName == compiler_string_consts.self_word && si.scope is SymbolTable.ClassMethodScope &&
+                    if (idName == PascalABCCompiler.StringConstants.self_word && si.scope is SymbolTable.ClassMethodScope &&
                         _classScope != null)
                     {
                         var selfField = _classScope.VariablesDefinedInScope.Find(var => var.SymbolInfo == si);

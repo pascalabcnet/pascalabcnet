@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (04.11.2023)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (24.03.2024)
 unit School;
 
 interface
@@ -218,13 +218,24 @@ function PrimeDivisorsCount(n: integer): integer;
 /// Возвращает целочисленный список расширенного представления
 /// десятичного числа n по основанию base.
 /// По умолчанию base=10 и возвращается список десятичных цифр числа n.
-/// Обратное действие выполняет функция Refold. 
+/// Обратное действие выполняет функция DigitsToInt64. 
 function Digits(n: int64; base: integer := 10): List<integer>;
+
+/// Возвращает целочисленный список расширенного представления
+/// десятичного числа n по основанию base.
+/// По умолчанию base=10 и возвращается список десятичных цифр числа n.
+/// Обратное действие выполняют функции DigitsToInt64 и DigitsToBigInteger. 
+function Digits(n: BigInteger; base: integer := 10): List<integer>;
 
 /// Возвращает целое десятичное число на основе его расширенного представления
 /// по основанию base (по умолчанию base=10).
 /// Функция выполняет действие, обратное функции Digits,
 function DigitsToInt64(ext: List<integer>; base: integer := 10): int64;
+
+/// Возвращает целое десятичное число на основе его расширенного представления
+/// по основанию base (по умолчанию base=10).
+/// Функция выполняет действие, обратное функции Digits,
+function DigitsToBigInteger(ext: List<integer>; base: integer := 10): BigInteger;
 
 /// Возвращает список делителей натурального числа n
 function Divisors(n: integer): List<integer>;
@@ -763,6 +774,7 @@ begin
       if prime > n then break;
       if prime >= m then Result.Add(prime)
     end;
+    if Result.Count = 0 then exit;
     m := Result[^1] + 1;
     if m >= n then exit
   end;  
@@ -843,11 +855,11 @@ function PrimeDivisorsCount(Self: integer): integer; extensionmethod := PrimeDiv
 /// Возвращает целочисленный список расширенного представления
 /// десятичного числа n по основанию base.
 /// По умолчанию base=10 и возвращается список десятичных цифр числа n.
-/// Обратное действие выполняет функция Refold.
+/// Обратное действие выполняет функция DigitsToInt64.
 function Digits(n: int64; base: integer): List<integer>;
 begin
   Result := new List<integer>;
-  if (n < 0) or (base < 2) then exit;
+  if (n < 0) or (base < 2) or (base > integer.MaxValue) then exit;
   if n = 0 then Result := Lst(0)
   else
     while n > 0 do
@@ -865,6 +877,28 @@ function Digits(Self: integer; base: integer := 10): List<integer>;
 function Digits(Self: int64; base: integer := 10): List<integer>;
     extensionmethod := Digits(Self, base);
     
+/// Возвращает целочисленный список расширенного представления
+/// десятичного числа n по основанию base.
+/// По умолчанию base=10 и возвращается список десятичных цифр числа n.
+/// Обратное действие выполняют функции DigitsToInt64 и DigitsToBigInteger. 
+function Digits(n: BigInteger; base: integer): List<integer>;
+begin
+  Result := new List<integer>;
+  if (n < 0) or (base < 2) or (base > integer.MaxValue) then exit;
+  if n = 0 then Result := Lst(0)
+  else
+    while n > 0 do
+    begin
+      var rem := integer(n mod base);
+      Result.Add(rem);
+      n := n div base
+    end;
+    Result.Reverse
+end;
+
+function Digits(Self: Biginteger; base: integer := 10): List<integer>;
+    extensionmethod := Digits(Self, base);
+
 /// Возвращает целое десятичное число на основе его расширенного представления
 /// по основанию base (по умолчанию base=10).
 /// Функция выполняет действие, обратное функции Digits
@@ -880,7 +914,24 @@ begin
 end;
 
 function DigitsToInt64(Self: List<integer>; base: integer := 10): int64;
-    extensionmethod := DigitsToInt64(Self, base);    
+    extensionmethod := DigitsToInt64(Self, base); 
+    
+/// Возвращает целое десятичное число на основе его расширенного представления
+/// по основанию base (по умолчанию base=10).
+/// Функция выполняет действие, обратное функции Digits,
+function DigitsToBigInteger(ext: List<integer>; base: integer): BigInteger;
+begin
+  Result := BigInteger.Zero;
+  var p := BigInteger.One;
+  for var i := ext.Count -1 downto 0 do
+  begin  
+    Result += ext[i] * p;
+    p *= base
+  end
+end;
+
+function DigitsToBigInteger(Self: List<integer>; base: integer := 10): BigInteger;
+    extensionmethod := DigitsToBigInteger(Self, base);
 
 {$endregion}
 
@@ -1440,7 +1491,7 @@ function CalcIP.GenAddr: sequence of Addr32;
 begin
   var n := n_hosts;
   if n > 0 then
-    for var i := 0 to n_hosts - 1 do
+    for var i := 1 to n_hosts do
       yield network32 + i
   else yield sequence Seq&<Addr32>;
 end;

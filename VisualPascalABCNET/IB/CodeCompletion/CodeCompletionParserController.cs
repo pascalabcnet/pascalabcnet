@@ -2,12 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
 
 namespace VisualPascalABC
 {
@@ -116,7 +110,10 @@ namespace VisualPascalABC
             }
         }
 
-        public void RunParseThread()
+        /// <summary>
+        /// Запуск потока с Intellisence
+        /// </summary>
+        public void SwitchOnIntellisence()
         {
             th = new System.Threading.Thread(InternalParsing);
             th.Priority = System.Threading.ThreadPriority.BelowNormal;

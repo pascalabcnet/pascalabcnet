@@ -520,7 +520,7 @@ namespace VisualPascalABC
                 VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName,
                 existing_text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
-                Warnings);
+                Warnings, PascalABCCompiler.Parsers.ParseMode.Normal);
             PascalABCCompiler.SyntaxTree.unit_module um = sn as PascalABCCompiler.SyntaxTree.unit_module;
             bool good_syntax = um != null;
             PascalABCCompiler.SyntaxTree.type_declaration form_decl = null;
@@ -593,7 +593,7 @@ namespace VisualPascalABC
                 if (event_description != null)
                 {
                     MethodInfo mi = event_description.e.EventType.GetMethod(
-                        PascalABCCompiler.TreeConverter.compiler_string_consts.invoke_method_name);
+                        PascalABCCompiler.StringConstants.invoke_method_name);
                     ParameterInfo[] pinfos = mi.GetParameters();
                     bool handler_found = false;
 

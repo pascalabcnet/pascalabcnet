@@ -1,4 +1,4 @@
-//InternalErrorReport Plugin
+﻿//InternalErrorReport Plugin
 
 %PREFIX%=VPP_IER_
 NAME=Report a bug

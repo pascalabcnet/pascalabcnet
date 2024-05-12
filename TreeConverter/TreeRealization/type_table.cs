@@ -957,7 +957,7 @@ namespace PascalABCCompiler.TreeRealization
                 null_const_node ncn = new null_const_node(_to, call_location);
                 null_const_node ncn2 = new null_const_node(_to, call_location);
 
-                PascalABCCompiler.TreeConverter.SymbolInfo si = pr.type.find_first_in_type(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name);
+                PascalABCCompiler.TreeConverter.SymbolInfo si = pr.type.find_first_in_type(StringConstants.eq_name);
 
                 basic_function_node fn = si.sym_info as basic_function_node;
                 expression_node condition = null;
@@ -1137,6 +1137,20 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         //ms100 error fixed (DS)
                         bool eq = TreeConverter.convertion_data_and_alghoritms.function_eq_params_and_result(dii.invoke_method, to_dii.invoke_method);
+                        if (eq)
+                        {
+                            delegate_to_delegate_type_converter dtdtc = new delegate_to_delegate_type_converter(to);
+                            add_conversion(ret, new convert_types_function_node(dtdtc.convert_delegates_to_delegates, false), from, to);
+                        }
+                    }
+                }
+                else if (to is delegated_methods && (to as delegated_methods).proper_methods.Count > 0)
+                {
+                    var proper_meth = (to as delegated_methods).proper_methods[0].simple_function_node;
+                    if (dii.parameters.Count == proper_meth.parameters.Count)
+                    {
+                        //ms100 error fixed (DS)
+                        bool eq = TreeConverter.convertion_data_and_alghoritms.function_eq_params_and_result(dii.invoke_method, proper_meth);
                         if (eq)
                         {
                             delegate_to_delegate_type_converter dtdtc = new delegate_to_delegate_type_converter(to);

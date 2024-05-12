@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 
 namespace PascalABCCompiler
@@ -1110,7 +1111,7 @@ namespace PascalABCCompiler
         private void VisitCommonNamespaceFunctionCall(common_namespace_function_call en)
         {
             CheckInfiniteRecursion(en);
-            if ((en.function_node.name == "Reset" || en.function_node.name == "Rewrite" || en.function_node.name == "Assign") && en.function_node.comprehensive_namespace.namespace_name == "PABCSystem")
+            if ((en.function_node.name == "Reset" || en.function_node.name == "Rewrite" || en.function_node.name == "Assign") && en.function_node.comprehensive_namespace.namespace_name == StringConstants.pascalSystemUnitName)
             {
                 expression_node p = en.parameters[0];
                 switch (p.semantic_node_type)

@@ -1,4 +1,4 @@
-//Parser errors in PascalABCCompiler.Errors
+﻿// UNIVERSAL PARSER ERRORS
 %PREFIX%=PARSER_ERRORS_
 
 BAD_FLOAT=Too big (small) number
@@ -8,5 +8,12 @@ UNEXPECTED_SYMBOL{0}=Unexpected symbol '{0}'
 BAD_EXPR=Bad exprssion
 EXPECTED{0}={0} expected
 BIG_CHAR_NUMBER=Too big char const
+LOAD_ERROR{0}=Parser {0} loading error
 BAD_SOURCEFILE{0}_EXT=Can not choose parser for file '{0}'
 COMPILATION_ERROR{0}{1}{2}={0}{1} Compilation error: {2}
+
+EXPECTED_IDENTIFIER=Expected identifier
+INVALID_VERSION=The version format should be MAJOR.MINOR.PATCH
+AVAILABLE_PARAM_VARIANTS{0}=Possible values are: {0}
+AVAILABLE_EXT_VARIANTS{0}=Possible file extensions: {0}
+SEE_THE_HELP_FOR_VARIANTS=You can find the possible values in the language documentation

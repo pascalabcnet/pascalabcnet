@@ -1,4 +1,4 @@
-//PascalABCParser.dll
+п»ї//PascalABCParser.dll
 %PREFIX%=PASCALABCPARSER_
 
 FOUND{0}=Found {0} but 
@@ -18,16 +18,30 @@ LEFT_SIDE_ASSIGN_MUST_BE_VARIABLE=Leftside assigment must be variable
 PROCEDURE_CANNOT_HAVE_RETURNED_VALUE=Procedure cannot have returned value
 EXPECTED_{0}_BUT_FOUND_{1}=Expected '{0}' but found '{1}'
 NONTERMINALTOKEN_{0}_RETURN_NULL=Syntax rule '{0}' is not supported by the current version of the compiler
-SEMICOLON_BEFORE_ELSE=Перед else нельзя ставить точку с запятой
+SEMICOLON_BEFORE_ELSE=РџРµСЂРµРґ else РЅРµР»СЊР·СЏ СЃС‚Р°РІРёС‚СЊ С‚РѕС‡РєСѓ СЃ Р·Р°РїСЏС‚РѕР№
 UNEXPECTED_SYMBOL{0}=Unexpected symbol '{0}'
 UNSUPPORTED_OLD_DIRECTIVES=Compiler directives began with # are not supported. Use directives {$ }
-INCLUDE_COULDNT_OPEN_FILE{0}=Compiler directive $include: can't open file '{0}'
-INCLUDE_EMPTY_FILE=Compiler directive $include: file name is absent
-RECUR_INCLUDE=Compiler directive $include: recursive include
-UNNECESSARY $endif=Extra $endif
-ENDIF_ABSENT=Not closed directive $ifdef or $ifndef - $endif is absent
-UNNECESSARY $else=Extra $else
+UNKNOWN_DIRECTIVE{0}=Unknown directive '{0}'
+MISSING_DIRECTIVE_PARAM{0}=Directive '{0}' requires a parameter
+UNNECESSARY_DIRECTIVE_PARAM{0}=Directive '{0}' is used without parameters
+INCORRECT_DIRECTIVE_PARAM{0}{1}{2}=Invalid parameter '{0}' passed to directive '{1}'. {2}
+EMPTY_DIRECTIVE=Empty directive is not allowed
+DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}=Directive '{0}' must have {1}
+INCLUDE_COULDNT_OPEN_FILE{0}=Compiler directive 'include': can't open file '{0}'
+RECUR_INCLUDE=Compiler directive 'include': recursive include
+UNNECESSARY $endif=Extra 'endif'
+ENDIF_ABSENT=Not closed directive 'ifdef' or 'ifndef' - 'endif' is absent
+UNNECESSARY $else=Extra 'else'
 TYPE_NAME_EXPECTED=Type expected
+MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS=Multiline string contains inconsistent indents
+NON_WHITESPACE_CHARACTERS_BEFORE_CLOSING_QUOTES_OF_MULTILINE_STRING=There should be no non-whitespace characters before the closing quotes of the multiline string
+
+PARAM_SINGLE1=parameter
+PARAM_SINGLE2=parameter
+PARAM_MULTIPLE1=parameters
+PARAM_MULTIPLE2=parameters
+NOT_MORE_THAN=no more than
+EXACTLY=exactly
 
 EOF1=end of file
 EOF=(end of file)
@@ -80,3 +94,4 @@ NIL_IN_UNNAMED_OBJECT=Anonymous class field cannot be initialized by nil constan
 YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY=yield statement cannot be used in lambda body
 SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5=Slices of multidimensional arrays are allowed only for arrays with rank < 5
 LEFT_SIDE_CANNOT_BE_ASSIGNED_TO=Left side cannot be assigned to
+DIFF_DEFINE_NAME=The define name '{2}' in directive '{0}' does not match define name '{1}' from the corresponding 'ifdef'/'ifndef'

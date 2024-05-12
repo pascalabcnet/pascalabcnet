@@ -143,6 +143,10 @@
       <Project>{613E0DDA-AA8A-437C-AC45-507B47429FF9}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
+    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
+      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
+      <Name>StringConstants</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
       <Project>{f10a5330-dcf4-4533-877c-7b1b1be23884}</Project>
       <Name>SyntaxTreeConverters</Name>
@@ -182,9 +186,6 @@
     <Compile Include="PCU\PCUWrappers.cs" />
     <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
       <Link>Config\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="string_constants.cs">
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs" />
   </ItemGroup>

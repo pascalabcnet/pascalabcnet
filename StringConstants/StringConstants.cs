@@ -1,18 +1,14 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//Строковые константы.
-using System;
-using System.Collections;
+
 using System.Collections.Generic;
 using System.Text;
-using PascalABCCompiler.TreeRealization;
+using System;
 
-namespace PascalABCCompiler.TreeConverter
+namespace PascalABCCompiler
 {
-
-    public static class compiler_string_consts
+    public static class StringConstants
     {
-
         public static Dictionary<string, string> oper_names = new Dictionary<string, string>();
 
         static int tvnc = 0;
@@ -21,7 +17,7 @@ namespace PascalABCCompiler.TreeConverter
             return "$TV" + (tvnc++).ToString() + "$";
         }
 
-        static compiler_string_consts()
+        static StringConstants()
         {
             oper_names[plus_name] = "op_Addition";
             oper_names[minus_name] = "op_Subtraction";
@@ -65,7 +61,7 @@ namespace PascalABCCompiler.TreeConverter
                 return null;
             }
             string rez = name;
-            int ind = name.IndexOf(compiler_string_consts.generic_params_infix);
+            int ind = name.IndexOf(generic_params_infix);
             if (ind > 0)
             {
                 rez = name.Substring(0, ind);
@@ -85,8 +81,22 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 
+        #region INTERNAL FUNCTION NAMES
         public static string ImplementationSectionNamespaceName = "_implementation______";
+        public static readonly string main_function_name = "Main";
+        public static readonly string c_main_function_name = "main";
+        public static readonly string temp_main_function_name = "$Main";
+        public static readonly string initialization_function_name = "$Initialization";
+        public static readonly string finalization_function_name = "$Finalization";
+        public static readonly string function_return_value_prefix = "$rv_";
+        public static readonly string empty_function_name = "empty_function"; 
+        #endregion
 
+        public static string CommandLineArgsVariableName = "CommandLineArgs";
+        public static string MainArgsParamName = "args";
+        public static string IsConsoleApplicationVariableName = "IsConsoleApplication";
+
+        #region TYPE NAMES
         public static readonly string bool_type_name = "boolean";
         public static readonly string byte_type_name = "byte";
         public static readonly string sbyte_type_name = "shortint";
@@ -112,7 +122,9 @@ namespace PascalABCCompiler.TreeConverter
         public static readonly string void_class_name = "void";
         public static string value = "value";
         public static readonly string object_equals_name = "Equals";
+        #endregion
 
+        #region OPERATORS
         public static readonly string plus_name = "+";
         public static readonly string minus_name = "-";
         public static readonly string mul_name = "*";
@@ -121,11 +133,6 @@ namespace PascalABCCompiler.TreeConverter
         public static readonly string mod_name = "mod";
         public static readonly string explicit_operator_name = "op_Explicit";
         public static readonly string implicit_operator_name = "op_Implicit";
-
-        //public static string CommandLineArgsVariableName = "CommandLineArgs";
-        public static string MainArgsParamName = "args";
-        public static string IsConsoleApplicationVariableName = "IsConsoleApplication";
-
         public static readonly string plusassign_name = "+=";
         public static readonly string minusassign_name = "-=";
         public static readonly string multassign_name = "*=";
@@ -150,19 +157,11 @@ namespace PascalABCCompiler.TreeConverter
         public static readonly string shr_name = "shr";
 
         public static readonly string assign_name = ":=";
+        #endregion
 
         public static readonly string unary_param_name = "param";
         public static readonly string left_param_name = "left";
         public static readonly string right_param_name = "right";
-
-        public static readonly string main_function_name = "Main";
-        public static readonly string c_main_function_name = "main";
-        public static readonly string temp_main_function_name = "$Main";
-        public static readonly string initialization_function_name = "$Initialization";
-        public static readonly string finalization_function_name = "$Finalization";
-
-        public static readonly string function_return_value_prefix = "$rv_";
-        public static readonly string empty_function_name = "empty_function";
 
         public static readonly string break_procedure_name = "break";
         public static readonly string continue_procedure_name = "continue";
@@ -182,8 +181,6 @@ namespace PascalABCCompiler.TreeConverter
         public static readonly string get_val_pascal_array_name = "get_val";
         public static readonly string set_val_pascal_array_name = "set_val";
         public static readonly string index_property_pascal_array_name = "index";
-
-        public static readonly string system_unit_name = "PascalABCSystem";
 
         public static readonly string delegate_type_name_template = "$delegate";
 
@@ -319,11 +316,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public static string default_constructor_name = "create";
 
-        // SSM - Константы директив компилятора. Вообще разбросаны по коду. Пусть будут здесь (3.1.2011)
+        #region PASCAL COMPILER DIRECTIVES
         public static string compiler_directive_apptype = "apptype";
         public static string compiler_directive_reference = "reference";
-        public static string include_namespace_directive = "includenamespace";
-        public static string compiler_savepcu = "savepcu";
+        public static string compiler_directive_include_namespace = "includenamespace";
+        public static string compiler_directive_savepcu = "savepcu";
         public static string compiler_directive_zerobasedstrings = "zerobasedstrings";
         public static string compiler_directive_zerobasedstrings_ON = "string_zerobased+";
         public static string compiler_directive_zerobasedstrings_OFF = "string_zerobased-";
@@ -345,20 +342,34 @@ namespace PascalABCCompiler.TreeConverter
         public static string compiler_directive_define = "define";
         public static string compiler_directive_include = "include";
         public static string compiler_directive_targetframework = "targetframework";
+        public static string compiler_directive_hidden_idents = "hiddenidents";
+        public static string compiler_directive_omp = "omp";
+        public const string compiler_directive_version_string = "version";
+        public const string compiler_directive_product_string = "product";
+        public const string compiler_directive_company_string = "company";
+        public const string compiler_directive_copyright_string = "copyright";
+        public const string compiler_directive_trademark_string = "trademark";
+        public const string compiler_directive_main_resource_string = "mainresource";
+        public const string compiler_directive_title_string = "title";
+        public const string compiler_directive_description_string = "description";
+        #endregion
 
-        // SSM (3.1.2011) Перенес эти константы сюда. 
-        public static string version_string = "version";
-        public static string product_string = "product";
-        public static string company_string = "company";
-        public static string copyright_string = "copyright";
-        public static string trademark_string = "trademark";
-        public static string main_resource_string = "mainresource";
-        public static string title_string = "title";
-        public static string description_string = "description";
-
+        // SSM (3.1.2011) Перенес эти константы сюда.
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
-        public static string system_unit_file_name = "PABCSystem";
-        public static string extensions_unit_file_name = "PABCExtensions";
+        
+        #region PASCAL LANGUAGE BASIC NAMES
+        public const string pascalLanguageName = "PascalABC.NET";
+        public const string pascalSourceFileExtension = ".pas";
+        public const string pascalCompiledUnitExtension = ".pcu";
+        public const string pascalSystemUnitName = "PABCSystem";
+        public const string pascalSystemUnitNamespaceName = "PascalABCSystem";
+        public const string pascalExtensionsUnitName = "PABCExtensions";
+        public static readonly string[] pascalDefaultStandardModules = new string[]
+        {
+            pascalSystemUnitName,
+            pascalExtensionsUnitName
+        };
+        #endregion
 
         public static string get_array_type_name(string type_name, int rank)
         {
@@ -404,7 +415,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (name.IndexOf(".") != -1)
             {
-                return string.Format("{0}get_{1}", name.Substring(0, name.LastIndexOf('.') + 1), name.Substring(name.LastIndexOf('.')+1));
+                return string.Format("{0}get_{1}", name.Substring(0, name.LastIndexOf('.') + 1), name.Substring(name.LastIndexOf('.') + 1));
             }
             return GetAccessorName("get_{0}", name);
         }
@@ -458,5 +469,4 @@ namespace PascalABCCompiler.TreeConverter
         public static string StringType = "string";
         public static string config_variable_name = "__CONFIG__";
     }
-
 }

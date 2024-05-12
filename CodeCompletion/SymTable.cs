@@ -10,6 +10,8 @@ using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using System.Linq;
+using PascalABCCompiler;
+using PascalABCCompiler.TreeConverter;
 
 namespace CodeCompletion
 {
@@ -73,19 +75,19 @@ namespace CodeCompletion
             if (!ctn.IsEnum)
                 switch (tc)
                 {
-                    case TypeCode.Int32: return PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name;
-                    case TypeCode.Double: return PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name;
-                    case TypeCode.Boolean: return PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name;
-                    case TypeCode.String: return PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name;
-                    case TypeCode.Char: return PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name;
-                    case TypeCode.Byte: return PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name;
-                    case TypeCode.SByte: return PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name;
-                    case TypeCode.Int16: return PascalABCCompiler.TreeConverter.compiler_string_consts.short_type_name;
-                    case TypeCode.Int64: return PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name;
-                    case TypeCode.UInt16: return PascalABCCompiler.TreeConverter.compiler_string_consts.ushort_type_name;
-                    case TypeCode.UInt32: return PascalABCCompiler.TreeConverter.compiler_string_consts.uint_type_name;
-                    case TypeCode.UInt64: return PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name;
-                    case TypeCode.Single: return PascalABCCompiler.TreeConverter.compiler_string_consts.float_type_name;
+                    case TypeCode.Int32: return StringConstants.integer_type_name;
+                    case TypeCode.Double: return StringConstants.real_type_name;
+                    case TypeCode.Boolean: return StringConstants.bool_type_name;
+                    case TypeCode.String: return StringConstants.string_type_name;
+                    case TypeCode.Char: return StringConstants.char_type_name;
+                    case TypeCode.Byte: return StringConstants.byte_type_name;
+                    case TypeCode.SByte: return StringConstants.sbyte_type_name;
+                    case TypeCode.Int16: return StringConstants.short_type_name;
+                    case TypeCode.Int64: return StringConstants.long_type_name;
+                    case TypeCode.UInt16: return StringConstants.ushort_type_name;
+                    case TypeCode.UInt32: return StringConstants.uint_type_name;
+                    case TypeCode.UInt64: return StringConstants.ulong_type_name;
+                    case TypeCode.Single: return StringConstants.float_type_name;
                 }
             else return ctn.FullName;
 
@@ -106,7 +108,7 @@ namespace CodeCompletion
                 return sb.ToString();
             }
             if (ctn.IsArray) return "array of " + GetTypeName(ctn.GetElementType());
-            if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
+            if (ctn == Type.GetType("System.Void*")) return StringConstants.pointer_type_name;
             return ctn.FullName;
         }
 
@@ -135,14 +137,14 @@ namespace CodeCompletion
                 return sb.ToString();
             }
             //if (ctn.IsArray) return "array of "+GetTypeName(ctn.GetElementType());
-            //if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
+            //if (ctn == Type.GetType("System.Void*")) return StringConstants.pointer_type_name;
             return ctn.Name;
         }
 
         public static string GetTopScopeName(SymScope sc)
         {
             if (sc == null || sc.si == null) return "";
-            if (sc.si.name == "" || sc.si.name.Contains("$") || sc.si.name == PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name) return "";
+            if (sc.si.name == "" || sc.si.name.Contains("$") || sc.si.name == StringConstants.pascalSystemUnitName) return "";
             if (sc is ProcScope) return "";
             return sc.si.name + ".";
         }
@@ -493,7 +495,7 @@ namespace CodeCompletion
         
         private bool hasUsesCycle(SymScope unit, int deep=0)
         {
-            if (unit.Name == "PABCSystem")
+            if (unit.Name == StringConstants.pascalSystemUnitName)
                 return true;
             if (deep > 100)
                 return true;
@@ -523,7 +525,7 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            if (this.si.name != "PABCSystem" || unit is NamespaceScope)
+            if (this.si.name != StringConstants.pascalSystemUnitName || unit is NamespaceScope)
                 used_units.Add(unit);
         }
 
@@ -5334,8 +5336,8 @@ namespace CodeCompletion
             else
             {
                 Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(full_name);
-                if (t == null) t = PascalABCCompiler.NetHelper.NetHelper.FindType(full_name + PascalABCCompiler.TreeConverter.compiler_string_consts.generic_params_infix + "1");
-                if (t == null) t = PascalABCCompiler.NetHelper.NetHelper.FindType(full_name + PascalABCCompiler.TreeConverter.compiler_string_consts.generic_params_infix + "2");
+                if (t == null) t = PascalABCCompiler.NetHelper.NetHelper.FindType(full_name + StringConstants.generic_params_infix + "1");
+                if (t == null) t = PascalABCCompiler.NetHelper.NetHelper.FindType(full_name + StringConstants.generic_params_infix + "2");
                 if (t != null)
                 {
                     return TypeTable.get_compiled_type(new SymInfo(s, SymbolKind.Type, full_name), t);

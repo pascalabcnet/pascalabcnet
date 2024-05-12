@@ -4,7 +4,6 @@ using System;
 using PascalABCCompiler.Errors;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace PascalABCCompiler
@@ -96,7 +95,7 @@ namespace PascalABCCompiler
                         Console.WriteLine($"SearchDir \"{value}\" not found relative to \"{Environment.CurrentDirectory}\"");
                         return false;
                     }
-                    co.SearchDirectory.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
+                    co.SearchDirectories.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
                     return true;
 
                 case "locale":
@@ -152,6 +151,9 @@ namespace PascalABCCompiler
 
             DateTime ldt = DateTime.Now;
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+
+            // загрузка всех парсеров и других составляющих языков  EVA
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
             Compiler.InternalDebug.SkipPCUErrors = false;

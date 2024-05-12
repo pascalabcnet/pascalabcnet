@@ -1242,12 +1242,6 @@
     <member name="M:PointerToString(System.Void*)">
       <summary>Преобразует указатель к строковому представлению</summary>
     </member>
-    <member name="M:TypeToTypeName(System.Type)">
-      <summary>Для типа System.Type возвращает имя типа объекта</summary>
-    </member>
-    <member name="M:TypeName(System.Object)">
-      <summary>Возвращает имя типа объекта</summary>
-    </member>
     <member name="M:Exec(System.String)">
       <summary>Запускает программу или документ с именем fileName</summary>
     </member>
@@ -1271,6 +1265,12 @@
     </member>
     <member name="M:EnumerateAllDirectories(System.String)">
       <summary>Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги</summary>
+    </member>
+    <member name="M:TypeToTypeName(System.Type)">
+      <summary>Возвращает строку с именем данного типа</summary>
+    </member>
+    <member name="M:TypeName(System.Object)">
+      <summary>Возвращает строку с именем типа объекта</summary>
     </member>
     <member name="M:ExtractFileName(System.String)">
       <summary>Выделяет имя файла из полного имени файла fileName</summary>
@@ -2127,6 +2127,9 @@
     <member name="M:Sort``1(``0[])">
       <summary>Сортирует динамический массив по возрастанию</summary>
     </member>
+    <member name="M:Sort(System.String[])">
+      <summary>Сортирует динамический массив по возрастанию</summary>
+    </member>
     <member name="M:Sort``1(``0[],System.Func{``0,``0,System.Int32})">
       <summary>Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp</summary>
     </member>
@@ -2136,7 +2139,13 @@
     <member name="M:Sort``2(``0[],System.Func{``0,``1})">
       <summary>Сортирует динамический массив по ключу</summary>
     </member>
+    <member name="M:Sort``1(``0[],System.Func{``0,System.String})">
+      <summary>Сортирует динамический массив по ключу</summary>
+    </member>
     <member name="M:Sort``1(System.Collections.Generic.List{``0})">
+      <summary>Сортирует список по возрастанию</summary>
+    </member>
+    <member name="M:Sort(System.Collections.Generic.List{System.String}@)">
       <summary>Сортирует список по возрастанию</summary>
     </member>
     <member name="M:Sort``1(System.Collections.Generic.List{``0},System.Func{``0,``0,System.Int32})">
@@ -2148,16 +2157,31 @@
     <member name="M:Sort``2(System.Collections.Generic.List{``0}@,System.Func{``0,``1})">
       <summary>Сортирует список по возрастанию по ключу</summary>
     </member>
+    <member name="M:Sort``1(System.Collections.Generic.List{``0}@,System.Func{``0,System.String})">
+      <summary>Сортирует список по возрастанию по ключу</summary>
+    </member>
     <member name="M:SortDescending``1(``0[])">
+      <summary>Сортирует динамический массив по убыванию</summary>
+    </member>
+    <member name="M:SortDescending(System.String[])">
       <summary>Сортирует динамический массив по убыванию</summary>
     </member>
     <member name="M:SortDescending``2(``0[]@,System.Func{``0,``1})">
       <summary>Сортирует динамический массив по убыванию по ключу</summary>
     </member>
+    <member name="M:SortDescending``1(``0[]@,System.Func{``0,System.String})">
+      <summary>Сортирует динамический массив по убыванию по ключу</summary>
+    </member>
     <member name="M:SortDescending``1(System.Collections.Generic.List{``0})">
       <summary>Сортирует список по убыванию</summary>
     </member>
+    <member name="M:SortDescending(System.Collections.Generic.List{System.String}@)">
+      <summary>Сортирует список по убыванию</summary>
+    </member>
     <member name="M:SortDescending``2(System.Collections.Generic.List{``0}@,System.Func{``0,``1})">
+      <summary>Сортирует список по убыванию по ключу</summary>
+    </member>
+    <member name="M:SortDescending``1(System.Collections.Generic.List{``0}@,System.Func{``0,System.String})">
       <summary>Сортирует список по убыванию по ключу</summary>
     </member>
     <member name="M:Reverse``1(``0[])">
@@ -2602,8 +2626,8 @@
     <member name="M:GetRuntimeSize``1">
       <summary>Вычисление размера типа на этапе выполнения</summary>
     </member>
-    <member name="M:_ObjectToString(System.Object)">
-      <summary>Возвращает строку для вывода в write</summary>
+    <member name="M:ObjectToString(System.Object)">
+      <summary>Преобразует объект в строковое представление</summary>
     </member>
     <member name="M:ExecuteAssemlyIsDll">
       <summary>--</summary>
@@ -3077,6 +3101,22 @@
     <member name="M:PartialSum(System.Collections.Generic.IEnumerable{System.Numerics.BigInteger})">
       <summary>Возвращает последовательность частичных сумм элементов последовательности</summary>
     </member>
+    <member name="M:&lt;yield_helper_error_checkerr&gt;Scan``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,``0})">
+      <summary>Возвращает последовательность, в которой первый элемент равен первому элементу исходной последовательности, а каждый следующий - 
+результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной</summary>
+    </member>
+    <member name="M:Scan``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,``0})">
+      <summary>Возвращает последовательность, в которой первый элемент равен первому элементу исходной последовательности, а каждый следующий - 
+результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной</summary>
+    </member>
+    <member name="M:&lt;yield_helper_error_checkerr&gt;Scan``2(System.Collections.Generic.IEnumerable{``0},``1,System.Func{``1,``0,``1})">
+      <summary>Возвращает последовательность, в которой первый элемент равен first, а каждый следующий - 
+результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной</summary>
+    </member>
+    <member name="M:Scan``2(System.Collections.Generic.IEnumerable{``0},``1,System.Func{``1,``0,``1})">
+      <summary>Возвращает последовательность, в которой первый элемент равен first, а каждый следующий - 
+результат применения функции func к предыдущему элементу новой последовательности и текущему элементу исходной</summary>
+    </member>
     <member name="M:Sum(System.Collections.Generic.IEnumerable{System.Numerics.BigInteger})">
       <summary>Возвращает сумму элементов последовательности</summary>
     </member>
@@ -3096,6 +3136,12 @@
       <summary>Возвращает отсортированную по возрастанию последовательность</summary>
     </member>
     <member name="M:OrderDescending``1(System.Collections.Generic.IEnumerable{``0})">
+      <summary>Возвращает отсортированную по убыванию последовательность</summary>
+    </member>
+    <member name="M:Order(System.Collections.Generic.IEnumerable{System.String})">
+      <summary>Возвращает отсортированную по возрастанию последовательность</summary>
+    </member>
+    <member name="M:OrderDescending(System.Collections.Generic.IEnumerable{System.String})">
       <summary>Возвращает отсортированную по убыванию последовательность</summary>
     </member>
     <member name="M:ToHashSet``1(System.Collections.Generic.IEnumerable{``0})">
@@ -3153,6 +3199,15 @@
       <summary>Объединяет три последовательности в последовательность трехэлементных кортежей</summary>
     </member>
     <member name="M:ZipTuple``4(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Collections.Generic.IEnumerable{``2},System.Collections.Generic.IEnumerable{``3})">
+      <summary>Объединяет четыре последовательности в последовательность четырехэлементных кортежей</summary>
+    </member>
+    <member name="M:Zip``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1})">
+      <summary>Объединяет две последовательности в последовательность двухэлементных кортежей</summary>
+    </member>
+    <member name="M:Zip``3(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Collections.Generic.IEnumerable{``2})">
+      <summary>Объединяет три последовательности в последовательность трехэлементных кортежей</summary>
+    </member>
+    <member name="M:Zip``4(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Collections.Generic.IEnumerable{``2},System.Collections.Generic.IEnumerable{``3})">
       <summary>Объединяет четыре последовательности в последовательность четырехэлементных кортежей</summary>
     </member>
     <member name="M:UnZipTuple``2(System.Collections.Generic.IEnumerable{System.Tuple{``0,``1}})">
@@ -3642,7 +3697,13 @@
     <member name="M:Sort``1(``0[])">
       <summary>Сортирует массив по возрастанию</summary>
     </member>
+    <member name="M:Sort(System.String[])">
+      <summary>Сортирует массив по возрастанию</summary>
+    </member>
     <member name="M:SortDescending``1(``0[])">
+      <summary>Сортирует массив по убыванию</summary>
+    </member>
+    <member name="M:SortDescending(System.String[])">
       <summary>Сортирует массив по убыванию</summary>
     </member>
     <member name="M:Sort``1(``0[],System.Func{``0,``0,System.Int32})">
@@ -3651,7 +3712,13 @@
     <member name="M:Sort``2(``0[],System.Func{``0,``1})">
       <summary>Сортирует массив по возрастанию по ключу</summary>
     </member>
+    <member name="M:Sort``1(``0[],System.Func{``0,System.String})">
+      <summary>Сортирует массив по возрастанию по ключу</summary>
+    </member>
     <member name="M:SortDescending``2(``0[],System.Func{``0,``1})">
+      <summary>Сортирует массив по убыванию по ключу</summary>
+    </member>
+    <member name="M:SortDescending``1(``0[],System.Func{``0,System.String})">
       <summary>Сортирует массив по убыванию по ключу</summary>
     </member>
     <member name="M:High(System.Array)">
@@ -4072,7 +4139,7 @@
     <member name="M:Conjugate(System.Numerics.Complex)">
       <summary>Возвращает комплексно сопряженное значение</summary>
     </member>
-    <member name="M:Get``2(System.Collections.Generic.IDictionary{``0,``1},``0)">
+    <member name="M:Get``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
       <summary>Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию</summary>
     </member>
     <member name="M:EachCount``2(System.Collections.Generic.IEnumerable{System.Linq.IGrouping{``0,``1}})">
