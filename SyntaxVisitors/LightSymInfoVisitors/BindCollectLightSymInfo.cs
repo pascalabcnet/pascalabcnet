@@ -18,7 +18,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public BindResult bind(ident node)
         {
-            Current = null;
+         
             ///Console.WriteLine("searching " + node.ToString());
             Current = null;
             syntax_tree_node cur_node = node;

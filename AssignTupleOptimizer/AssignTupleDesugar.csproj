@@ -66,15 +66,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="dot_node_tests\dot_node_test2.pas" />
+    <None Include="indexer_tests\array_test2.pas" />
+    <None Include="indexer_tests\array_tests.pas" />
+    <None Include="dot_node_tests\dot_node_test.pas" />
     <None Include="PABCSystem.pas" />
+    <None Include="pointer_test.pas" />
     <None Include="simple_test.pas" />
-    <None Include="symInfo.pas" />
-    <None Include="test.pas" />
-    <None Include="test2.pas" />
-    <None Include="test3.pas" />
-    <None Include="test4.pas" />
-    <None Include="test5.pas" />
-    <None Include="test_units.pas" />
+    <None Include="symInfoTests\symInfo.pas" />
+    <None Include="symInfoTests\test.pas" />
+    <None Include="symInfoTests\test2.pas" />
+    <None Include="symInfoTests\test3.pas" />
+    <None Include="symInfoTests\test4.pas" />
+    <None Include="symInfoTests\test5.pas" />
+    <None Include="symInfoTests\test_units.pas" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

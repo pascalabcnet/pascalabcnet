@@ -89,6 +89,10 @@ namespace AssignTupleDesugarAlgorithm
         {
             List<Edge> assignOrder = new List<Edge>();
             assignOrder.AddRange(assignFirst);
+
+            if (vertexes.Count == 0)
+                return assignOrder;
+
             var s = vertexes.First();
 
             if (!EnsureThatEveryVertexHasOneOrZeroInEdge()) throw new Exception("Invalid assign graph!");
@@ -101,7 +105,7 @@ namespace AssignTupleDesugarAlgorithm
                 Edge edge_to_cut = GetInEdgesForVertex(cut_place).First();
 
                 SymbolNode temp_assign_from = edge_to_cut.from;
-                SymbolNode temp_vertex = new TempSymbolNode(new TempSymbol(temp_assign_from.label));
+                SymbolNode temp_vertex = new TempSymbolNode(new TempSymbol());
 
                 assignOrder.Add(new Edge(temp_assign_from, temp_vertex));
                 assignLast.Add(new Edge(temp_vertex, cut_place));
@@ -130,6 +134,11 @@ namespace AssignTupleDesugarAlgorithm
         public AssignGraph(List<Edge> edges, List<SymbolNode> vertexes) : this(edges)
         {
             foreach (SymbolNode vert in vertexes) this.vertexes.Add(vert);
+        }
+
+        public AssignGraph()
+        {
+
         }
 
         public AssignGraph(List<Edge> e)

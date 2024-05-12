@@ -1,4 +1,20 @@
-﻿
+﻿var A := 3;
+var B := 2;
+var C := 4;
+var D := 5;
+
+function test2() : Integer;
+var a := 3;
+procedure p(var b :Integer);
+begin
+   
+  (a, b) := (b, D);
+  Print(b);
+  Print(a);
+end;
+begin
+  p(a);
+end;
 
 procedure test();
 begin
@@ -14,6 +30,8 @@ begin
 	(A, b) := (c, d);
 
 	(A, b) := (B, a);
+
+	(a, B, c, D) := (c, A, D, b);
 end;
 
 begin 

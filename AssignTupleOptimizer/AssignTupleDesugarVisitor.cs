@@ -15,74 +15,47 @@ namespace AssignTupleDesugar
             this.binder = binder; 
         }
 
+        
+        // (a[i], a[j], a[k]) = (a[j], a[k], a[i])
+        //temp = a[i]
+        //temp = a[j]
+        //a[j] = a[k]
+        //a[k] = temp
+        //a[i] = temp
+        List<statement> desugar(tuple_node tn, addressed_value_list vars)
+        {
+
+            var order = Assign.getAssignOrder(tn, vars, binder);
+            var assigns = new List<statement>();
+            foreach (var a in order)
+            {
+                //parents?
+                if (a.to is TempSymbol ts)
+                {
+                    var cur = new var_def_statement(ts.node as ident, a.from.node, tn.Parent.source_context);
+                    assigns.Add(new var_statement(cur));
+                }
+                else
+                {
+                    var cur = new assign(a.to.node as addressed_value, a.from.node, tn.Parent.source_context);
+                    assigns.Add(cur);
+                }
+            }
+            return assigns;
+        }
+
+        //a[i]
+        //(a[i], a[j]) = (a[j], a[i])
+        //(a, a[i]) = (b, b[j])
+        //indexer, dot_node
+        //get_address, roof_dereference
         public override void visit(assign_tuple node)
         {
             if (node.expr is tuple_node tn)
             {
-                List<Symbol> left = new List<Symbol>();
-                List<Symbol> right = new List<Symbol>();
-                
-                foreach (var sym in node.vars.variables)
-                {
-                    if (sym is ident id)
-                    {
-                        var s = binder.bind(id);
-                        if (s != null)
-                            System.Console.WriteLine(id.name + " -> " + s);
-                        else        
-                            System.Console.WriteLine(id.name +" -> not found");
-
-                        left.Add(new Symbol(id.name) { fromOuterScope = isFromOuterScope(s.symInfo) });
-                    } 
-                    else
-                        left.Add( new Symbol("$expr") { isExpr = true  });
-                    
-                }
-
-                foreach (var sym in tn.el.expressions)
-                {
-                    if (sym is ident id)
-                    {
-                        var s = binder.bind(id);
-                        if (s != null)  
-                            System.Console.WriteLine(id.name + " -> " + s);         
-                        else  
-                            System.Console.WriteLine(id.name + " -> not found");
-
-                        right.Add(new Symbol(s.symInfo.Id.name) { fromOuterScope = isFromOuterScope(s.symInfo) });
-                    }
-                    else
-                        right.Add(new Symbol("$expr") { isExpr = true });
-                    
-                }
-
-                var order = Assign.getAssignOrder(left: left, right: right);
-                var assigns = new List<statement>();
-                foreach(var a in order)
-                {
-                    if (a.to is TempSymbol ts)
-                    {
-                        var cur = new var_def_statement(new ident(ts.name), new ident(a.from.name));
-                        assigns.Add(new var_statement(cur));
-                    }
-                    else
-                    {
-                        var cur = new assign(new ident(a.to.name), new ident(a.from.name), node.source_context);
-                        assigns.Add(cur);
-                    }
-                }
+                var assigns = desugar(tn, node.vars);
                 ReplaceStatementUsingParent(node, assigns);
             }
-        }
-
-        static bool isFromOuterScope(SymInfoSyntax symbol)
-        {
-            if (symbol == null)
-                return true;
-
-            if (symbol.SK == SymKind.var && symbol.Attr.HasFlag(SymbolAttributes.varparam_attr))
-                return true;
-            return true;
         }
     }
 }

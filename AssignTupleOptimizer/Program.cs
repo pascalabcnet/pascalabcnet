@@ -19,17 +19,22 @@ namespace AssignTupleDesugar
             var root = parser.BuildTree(filename, text, ParseMode.Normal);
             root.FillParentsInAllChilds();
            
-            var binder = new BindCollectLightSymInfo(root as compilation_unit);
-            binder.ProcessNode(root);
+           var binder = new BindCollectLightSymInfo(root as compilation_unit);
+           binder.ProcessNode(root);
 
             var visitor = new BindTestVisitor(binder);
-            visitor.ProcessNode(root);
+            // visitor.ProcessNode(root);
+            var assign_visitor = new AssignTupleDesugarVisitor(binder);
+            assign_visitor.ProcessNode(root);
+
+            var pp_visitor = new SyntaxVisitors.SimplePrettyPrinterVisitor();
+            pp_visitor.ProcessNode(root);
         }
  
         public static void Main()
         {
             
-            string name = "../../test2.pas";
+            string name = "../../dot_node_tests/dot_node_test2.pas";
             var parser = new PascalABCNewLanguageParser();
 
             testFile(name, parser);
@@ -66,7 +71,7 @@ namespace AssignTupleDesugar
                 var info = res.symInfo;
                 var p = res.path;
                 Console.WriteLine("(" + id.source_context.ToString() + ")" + " found: " +  info.ToString() + ", kind: " + info.SK.ToString() + ", (" + info.Id.source_context.ToString() + ")");
-                Console.WriteLine("Path:");
+                Console.Write("Path: ");
                 foreach (var s in p)
                 {
                     Console.Write(s.ToString() +"->");
