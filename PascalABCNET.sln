@@ -61,9 +61,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimizer", "Optimizer\Opti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCompletion", "CodeCompletion\CodeCompletion.csproj", "{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parsers", "Parsers", "{BB6973BA-B3A2-4B31-A986-7CB008F22C4F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StandardLanguages", "StandardLanguages", "{BB6973BA-B3A2-4B31-A986-7CB008F22C4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBNETParser", "Parsers\VBNETParser\VBNETParser.csproj", "{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBNETParser", "StandardLanguages\VBNETParser\VBNETParser.csproj", "{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Trees", "Trees", "{94EED2FF-0641-4562-8167-CBC280A733AF}"
 EndProject
@@ -105,7 +105,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeacherControlPlugin", "Vis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "StandardLanguages\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Languages", "Languages\Languages.csproj", "{A48D9069-D569-4110-9252-A10F139B669B}"
 EndProject
