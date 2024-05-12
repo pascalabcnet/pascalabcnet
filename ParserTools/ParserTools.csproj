@@ -65,7 +65,6 @@
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="DocumentationConstructor.cs" />
     <Compile Include="FileReader.cs" />
-    <Compile Include="ParsersController.cs" />
     <Compile Include="ParserTools\BaseParser.cs" />
     <Compile Include="ParserTools\BaseParserTools.cs" />
     <Compile Include="ParserTools\DirectiveHelper.cs" />
