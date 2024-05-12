@@ -14,7 +14,7 @@ namespace Languages
 
         private const string languageKitsDirectoryName = "LanguageKits";
 
-        public static event Action<ILanguage> LanguageConnected;
+        public static event Action<ILanguage> LanguageLoaded;
         public static event Action<string> LanguageLoadErrorOccured;
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Languages
                         throw new Exception("Language class wasn't found in language assembly. (To be found it should contain 'Language' in it's name)");
                     }
 
-                    LanguageConnected?.Invoke(languageFound);
+                    LanguageLoaded?.Invoke(languageFound);
                 }
             }
             catch (ReflectionTypeLoadException e)

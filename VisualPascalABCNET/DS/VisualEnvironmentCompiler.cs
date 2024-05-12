@@ -95,7 +95,7 @@ namespace VisualPascalABC
             this.UserOptions = UserOptions;
             this.OpenDocuments = OpenDocuments;
             
-            LanguageIntegrator.LanguageConnected += OnLanguageConnected;
+            LanguageIntegrator.LanguageLoaded += OnLanguageLoaded;
             LanguageIntegrator.LanguageLoadErrorOccured += OnLanguageLoadErrorOccured;
         }
 
@@ -320,7 +320,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Выводит сообщения о подключенных языках
         /// </summary>
-        private void OnLanguageConnected(ILanguage language)
+        private void OnLanguageLoaded(ILanguage language)
         {
             string languageConnectedMessage = string.Format(VECStringResources.Get("LANGUAGE_LOADED{0}{1}"), language.Name, Path.GetFileName(language.GetType().Assembly.Location));
             languageConnectedMessage += Environment.NewLine;
