@@ -1,7 +1,7 @@
 ﻿!include sect_Core.nsh
 
 SectionGroup $(DESC_InputLanguages) Languages
-  !include sect_PascalABCParser.nsh
+  !include sect_PascalABCLanguage.nsh
 SectionGroupEnd
 
 SectionGroup $(DESC_Envr) Envr
