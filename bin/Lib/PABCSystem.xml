@@ -3336,6 +3336,15 @@
     <member name="M:CountOf``1(System.Collections.Generic.IEnumerable{``0},``0)">
       <summary>Возвращает количество элементов, равных указанному значению</summary>
     </member>
+    <member name="M:&lt;yield_helper_error_checkerr&gt;DistinctBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IEqualityComparer{``1})">
+      <summary>Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор comp</summary>
+    </member>
+    <member name="M:DistinctBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IEqualityComparer{``1})">
+      <summary>Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор comp</summary>
+    </member>
+    <member name="M:DistinctBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
+      <summary>Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор по-умолчанию</summary>
+    </member>
     <member name="M:RandomElement``1(System.Collections.Generic.List{``0})">
       <summary>Возвращает случайный элемент списка</summary>
     </member>
