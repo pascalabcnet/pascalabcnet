@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  LAPTOP-MPBGOA9N
-// DateTime: 06.05.2024 18:41:48
+// DateTime: 07.05.2024 13:51:09
 // UserName: krylo
 // Input file <SPythonParser.y>
 

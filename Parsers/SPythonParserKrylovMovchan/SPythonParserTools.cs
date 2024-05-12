@@ -86,7 +86,12 @@ namespace SPythonParser
             tokenNames["DOT"] = "'.'";
             tokenNames["LPAR"] = "'('";
             tokenNames["RPAR"] = "')'";
-            tokenNames["SEMICOLON"] = "';'";
+            tokenNames[";"] = StringResources.Get("EOL");
+            tokenNames["SEMICOLON"] = StringResources.Get("EOL");
+            tokenNames["#{"] = StringResources.Get("#{");
+            tokenNames["INDENT"] = StringResources.Get("#{");
+            tokenNames["#}"] = StringResources.Get("#}");
+            tokenNames["UNINDENT"] = StringResources.Get("#}");
             tokenNames["LBRACKET"] = "'['";
             tokenNames["RBRACKET"] = "']'";
             tokenNames["tkQuestion"] = "'?'";
@@ -140,8 +145,10 @@ namespace SPythonParser
                     return 70;
                 case "ID":
                     return 60;
-                //case "tkRoundClose":
-                //    return 50;
+                case "LPAR":
+                    return 100;
+                case "RPAR":
+                    return 100;
                 case "DOT":
                     return 20;
                 case "RBRACKET":
@@ -182,14 +189,14 @@ namespace SPythonParser
             //    tokens = tokens.Except((new string[] { "tkAbstract", "tkOverload", "tkReintroduce", "tkOverride", "tkVirtual", "tkAt", "tkOn", "tkName", "tkForward", "tkRead", "tkWrite" })).ToList();
 
             // Добавляем фиктивный токен, что означает, что далее могут идти несколько токенов, начинающих выражение
-            if (tokens.Contains("FOR") && tokens.Contains("IF") && tokens.Contains("WHILE"))
+            if (tokens.Contains("FOR") && tokens.Contains("IF") && tokens.Contains("WHILE") && tokens.Contains("DEF"))
             {
                 tokens.Clear();
                 tokens.Add("STATEMENT");
             }
 
             // Добавляем фиктивный токен, что означает, что далее могут идти несколько токенов, начинающих выражение
-            if (tokens.Contains("ID") && tokens.Contains("INTNUM") && tokens.Contains("REALNUM"))
+            if (tokens.Contains("ID") && tokens.Contains("INTNUM") && tokens.Contains("REALNUM") && tokens.Contains("STRINGNUM"))
             {
                 tokens.Clear();
                 tokens.Add("EXPRESSION");
@@ -210,7 +217,7 @@ namespace SPythonParser
 
             var ExpectedString = StringResources.Get("EXPECTED{1}");
 
-            if (MaxTok.Equals("STATEMENT") || MaxTok.Equals("ID"))
+            if (MaxTok.Equals("STATEMENT") || MaxTok.Equals("ID") || MaxTok.Equals("INDENT") || MaxTok.Equals("UNINDENT"))
                 ExpectedString = StringResources.Get("EXPECTEDR{1}");
             else if (MaxTok.Equals("STRINGNUM"))
                 ExpectedString = StringResources.Get("EXPECTEDF{1}");
@@ -218,8 +225,15 @@ namespace SPythonParser
                 MaxTok = "}";
             var MaxTokHuman = ConvertToHumanName(MaxTok);
 
-            // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
+            if (yytext == ";" || yytext == "#{" || yytext == "#}")
+            {
+                prefix = StringResources.Get("FOUNDM{0}");
+                yytext = ConvertToHumanName(yytext);
+                return string.Format(prefix + ExpectedString, yytext, MaxTokHuman);
+            }
 
+            // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
+       
             return string.Format(prefix + ExpectedString, "'" + yytext + "'", MaxTokHuman);
         }
         public void AddErrorFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)
