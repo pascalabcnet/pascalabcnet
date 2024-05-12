@@ -15,6 +15,7 @@ using Debugger;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using System.Runtime.ExceptionServices;
+using LanguageIntegration;
 
 namespace VisualPascalABC
 {
@@ -488,7 +489,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = CodeCompletion.CodeCompletionController.ParsersController.SelectParser(Path.GetExtension(FullFileName).ToLower());
+            this.parser = LanguageProvider.Instance.SelectLanguageByExtension(FullFileName).Parser;
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
             //dbg.ProcessStarted += debugProcessStarted;
@@ -512,7 +513,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = CodeCompletion.CodeCompletionController.ParsersController.SelectParser(Path.GetExtension(FullFileName).ToLower());
+            this.parser = LanguageProvider.Instance.SelectLanguageByExtension(FullFileName).Parser;
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
 

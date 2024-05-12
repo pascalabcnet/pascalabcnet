@@ -29,21 +29,11 @@ namespace PascalABCCompiler
         {
             get;
         }
-        
-        Parsers.Controller ParsersController
-        {
-            get;
-        }
 
         SemanticTree.IProgramNode SemanticTree
         {
             get;
         }
-
-        /*SyntaxTree.syntax_tree_node SyntaxTree
-        {
-            get;
-        }*/
 
         uint LinesCompiled
         {

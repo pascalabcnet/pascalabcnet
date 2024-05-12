@@ -9,25 +9,6 @@ namespace PascalABCCompiler.Parsers
 {
     public abstract class BaseParser : IParser
     {
-        // SSM: класс, являющийся обёрткой над GPPG парсером
-        public abstract class BaseGPPGParserHelper
-        {
-            protected List<Error> errors;
-            protected List<CompilerWarning> warnings;
-            protected string fileName;
-            public bool buildTreeForFormatter = false;
-            public List<string> definesList = null;
-
-            public BaseGPPGParserHelper(List<Error> Errs, List<CompilerWarning> Warnings, string FileName)
-            {
-                this.errors = Errs;
-                this.warnings = Warnings;
-                this.fileName = FileName;
-            }
-
-            public abstract syntax_tree_node Parse(string Text, List<compiler_directive> compilerDirectives = null);
-        }
-
 
         public BaseParser(string name, string version, string copyright, string[] systemUnitNames, 
             bool caseSensitive, string[] filesExtensions)
@@ -138,6 +119,71 @@ namespace PascalABCCompiler.Parsers
                     languageInformation = new DefaultLanguageInformation(this);
                 return languageInformation;
             }
+        }
+
+        /// <summary>
+        /// Возвращеает синтаксическое дерево модуля
+        /// </summary>
+        public SyntaxTree.compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null)
+        {
+            return GetSyntaxTree<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, parseMode, DefinesList);
+        }
+
+        public SyntaxTree.compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
+        {
+            try // SSM 06.09.18
+            {
+                return GetSyntaxTree<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
+            }
+            catch (ParserBadFileExtension e)
+            {
+                Errors.Add(e);
+                return null;
+                // Погасить исключение если оно не погашено ранее
+            }
+        }
+
+        public SyntaxTree.expression GetExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
+        {
+            try // SSM 06.09.18
+            {
+                return GetSyntaxTree<SyntaxTree.expression>(FileName, Text, Errors, Warnings, ParseMode.Expression);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public SyntaxTree.expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
+        {
+            return GetSyntaxTree<SyntaxTree.expression>(FileName, Text, Errors, Warnings, ParseMode.TypeAsExpression);
+        }
+
+        public SyntaxTree.statement GetStatement(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
+        {
+            return GetSyntaxTree<SyntaxTree.statement>(FileName, Text, Errors, Warnings, ParseMode.Statement);
+        }
+
+        /// <summary>
+        /// Обобщенная функция для получения различных синтаксических узлов
+        /// </summary>
+        private T GetSyntaxTree<T>(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null) where T : SyntaxTree.syntax_tree_node
+        {
+            this.Errors = Errors;
+            this.Warnings = Warnings;
+
+            syntax_tree_node unitNode = BuildTree(FileName, Text, parseMode, DefinesList);
+
+            if (unitNode == null)
+                return null;
+
+            if (unitNode is T)
+                return unitNode as T;
+
+            Errors.Add(new UnexpectedNodeType(FileName, unitNode.source_context, null));
+
+            return null;
         }
 
         public virtual PascalABCCompiler.SyntaxTree.syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)

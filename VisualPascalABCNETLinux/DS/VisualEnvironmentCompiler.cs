@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using VisualPascalABCPlugins;
+using LanguageIntegration;
 
 namespace VisualPascalABC
 {
@@ -93,8 +94,8 @@ namespace VisualPascalABC
             this.UserOptions = UserOptions;
             this.OpenDocuments = OpenDocuments;
 
-            PascalABCCompiler.Parsers.Controller.Instance.ParserConnected += OnParserConnected;
-            PascalABCCompiler.Parsers.Controller.Instance.ParserLoadErrorOccured += OnParserLoadErrorOccured;
+            LanguageIntegrator.LanguageConnected += OnLanguageConnected;
+            LanguageIntegrator.LanguageLoadErrorOccured += OnLanguageLoadErrorOccured;
         }
 
         void RunnerManager_Exited(string fileName)
@@ -143,7 +144,6 @@ namespace VisualPascalABC
             	CodeCompletion.CodeCompletionController.comp.CompilerOptions.CurrentProject = ProjectFactory.Instance.CurrentProject;
             	ProjectFactory.Instance.Dirty = true;
             }
-            CodeCompletion.CodeCompletionController.ParsersController = standartCompiler.ParsersController;
             CodeCompletion.CodeCompletionController.StandartDirectories = StandartDirectories;
 
             this.CodeCompletionParserController.Init();
@@ -317,19 +317,19 @@ namespace VisualPascalABC
         List<string> ParsedFiles = new List<string>();
 
         /// <summary>
-        /// Выводит сообщения о подключенных парсерах
+        /// Выводит сообщения о подключенных языках
         /// </summary>
-        private void OnParserConnected(PascalABCCompiler.Parsers.IParser parser)
+        private void OnLanguageConnected(ILanguage language)
         {
-            string parserConnectedMessage = string.Format(VECStringResources.Get("PARSER_CONNECTED{0}{1}"), parser, Path.GetFileName(parser.GetType().Assembly.Location));
-            parserConnectedMessage += Environment.NewLine;
-            AddTextToCompilerMessages(parserConnectedMessage);
+            string languageConnectedMessage = string.Format(VECStringResources.Get("PARSER_CONNECTED{0}{1}"), language.Name, Path.GetFileName(language.GetType().Assembly.Location));
+            languageConnectedMessage += Environment.NewLine;
+            AddTextToCompilerMessages(languageConnectedMessage);
         }
 
         /// <summary>
-        /// Выводит сообщения об ошибках, возникших при загрузке парсеров
+        /// Выводит сообщения об ошибках, возникших при загрузке языков
         /// </summary>
-        private void OnParserLoadErrorOccured(string errorMessage)
+        private void OnLanguageLoadErrorOccured(string errorMessage)
         {
             AddTextToCompilerMessages(errorMessage);
         }

@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.IO;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.SyntaxTree;
@@ -98,7 +98,7 @@ namespace PascalABCCompiler.VBNETParser
             documentation_comment_section dcs = new documentation_comment_section();
             text = Regex.Replace(text, @"\r\n(\s)*'''", "\r\n", RegexOptions.Compiled);
             text = Regex.Replace(text, @"(\s)*'''", "", RegexOptions.Compiled);
-            /*foreach (string section_name in sectionNames)
+            *//*foreach (string section_name in sectionNames)
             {
                 string pattern = "<" + section_name + @"(\w+='\w+')*>" + "(.|\r\n)*" + "</" + section_name + ">";
                 MatchCollection mc = Regex.Matches(text, pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -111,14 +111,14 @@ namespace PascalABCCompiler.VBNETParser
                     dt.text = res.Substring(i + 1, res.IndexOf("</" + section_name) - i - 1);
                     dcs.tags.Add(dt);
                 }
-            }*/
+            }
             dcs.text = text;
             return dcs;
-        }
-        public syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
-        {
-            MatchCollection mc = Regex.Matches(Text, @"(([\f\t\v\x85\p{Z}])*///.*\r\n)*([\f\t\v\x85\p{Z}])*'''.*", RegexOptions.Compiled);
-            syntax_tree_node cu = null;
+        }*/
+        //public syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
+        //{
+        //    MatchCollection mc = Regex.Matches(Text, @"(([\f\t\v\x85\p{Z}])*///.*\r\n)*([\f\t\v\x85\p{Z}])*'''.*", RegexOptions.Compiled);
+/*            syntax_tree_node cu = null;
             documentation_comment_list dcl = new documentation_comment_list();
             if (mc.Count > 0)
             {
@@ -218,4 +218,4 @@ namespace PascalABCCompiler.VBNETParser
 
 
 }
-
+*/

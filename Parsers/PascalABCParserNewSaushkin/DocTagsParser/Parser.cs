@@ -17,7 +17,7 @@ namespace PascalABCCompiler.DocTagsParser
         public DocTagsLanguageParser()
 		{
             filesExtensions = new string[1];
-            filesExtensions[0] = ".pasdt" + Parsers.Controller.HideParserExtensionPostfixChar;
+            filesExtensions[0] = ".pasdt" + StringConstants.hideParserExtensionPostfixChar;
             sectionNames.Add("summary");
             sectionNames.Add("returns");
 		}

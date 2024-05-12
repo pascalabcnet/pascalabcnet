@@ -1,20 +1,24 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using PascalABCCompiler.Errors;
 using PascalABCCompiler.Parsers;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace LanguageIntegration
 {
     public static class LanguageIntegrator
     {
 
-        public static Controller ParsersController = Controller.Instance;
+        public static LanguageProvider LanguageProvider = LanguageProvider.Instance;
 
         private const string languageKitsDirectoryName = "LanguageKits";
+
+        public static event Action<ILanguage> LanguageConnected;
+        public static event Action<string> LanguageLoadErrorOccured;
 
         /// <summary>
         /// Возвращает директорию, содержащую комплекты языков (если ее нет, то вернется null)
@@ -46,9 +50,9 @@ namespace LanguageIntegration
                 
                 foreach (var dll in dllFiles)
                 {
-                    if (Regex.IsMatch(dll.Name, @".*Parser\.dll"))
+                    if (dll.Name.EndsWith("Parser.dll"))
                     {
-                        ParsersController.IntegrateParsersFromAssembly(dll);
+                        IntegrateLanguageFromAssembly(dll);
                     }
                 }
             }
@@ -59,25 +63,41 @@ namespace LanguageIntegration
         /// </summary>
         public static void LoadAllLanguages()
         {
-            ParsersController.LoadStandardParsers();
-
+            LoadStandardLanguages();
             LoadAllLanguageKits();
         }
 
         /// <summary>
         /// Перезагружает парсеры всех языков
         /// </summary>
-        public static void ReloadAllParsers()
+        /*public static void ReloadAllParsers()
         {
             ParsersController.Parsers.Clear();
             ParsersController.LoadStandardParsers();
             LoadParsersFromLanguageKits();
+        }*/
+
+        public static void LoadStandardLanguages()
+        {
+            string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+
+            DirectoryInfo directory = new DirectoryInfo(directoryName);
+
+            FileInfo[] dllfiles = directory.GetFiles("*Parser.dll");
+
+            foreach (FileInfo languageFile in dllfiles)
+            {
+                if (Path.GetFileName(languageFile.FullName) == "VBNETParser.dll" || Path.GetFileName(languageFile.FullName) == "PascalABCPartParser.dll")
+                    continue;
+
+                IntegrateLanguageFromAssembly(languageFile);
+            }
         }
 
         /// <summary>
         /// Загружает все парсеры из языковых комплектов
         /// </summary>
-        public static void LoadParsersFromLanguageKits()
+        /*public static void LoadParsersFromLanguageKits()
         {
             DirectoryInfo languageKitsDirectory = GetLanguageKitsDirectory();
 
@@ -89,6 +109,87 @@ namespace LanguageIntegration
             {
                 if (parserDll != null)
                     ParsersController.IntegrateParsersFromAssembly(parserDll);
+            }
+        }*/
+
+        public static void IntegrateLanguageFromAssembly(FileInfo languageFile)
+        {
+            Assembly assembly = Assembly.LoadFile(languageFile.FullName);
+            try
+            {
+                Type[] types = assembly.GetTypes();
+                if (assembly != null)
+                {
+                    ILanguage languageFound = null;
+                    foreach (Type type in types)
+                    {
+                        if (type.Name.IndexOf("Language") >= 0)
+                        {
+                            object obj = Activator.CreateInstance(type);
+                            if (obj is ILanguage language)
+                            {
+                                languageFound = language;
+                                LanguageProvider.Instance.Languages.Add(language);
+                            }
+                        }
+                    }
+
+                    if (languageFound == null)
+                    {
+                        throw new Exception("Language class wasn't found in language assembly. (To be found it should contain 'Language' in it's name)");
+                    }
+
+                    foreach (Type type in types)
+                    {
+                        if (type.Name.EndsWith("LanguageParser"))
+                        {
+                            object obj = Activator.CreateInstance(type);
+                            if (obj is BaseParser parser)
+                            {
+                                languageFound.Parser = parser;
+                                parser.SourceFilesProvider = LanguageProvider.SourceFilesProvider;
+                                parser.Reset();
+                            }
+                            else if (obj is IParser docParser)
+                            {
+                                languageFound.DocParser = docParser;
+                                docParser.SourceFilesProvider = LanguageProvider.SourceFilesProvider;
+                                docParser.Reset();
+                            }
+                        }
+                        else if (type.Name.EndsWith("PostProcessor"))
+                        {
+                            object obj = Activator.CreateInstance(type);
+                            if (obj is PascalABCCompiler.SyntaxTree.IVisitor postProcessor)
+                            {
+                                languageFound.SyntaxTreePostProcessors.Insert(languageFound.PostProcessorsOrder[postProcessor.GetType()] - 1, postProcessor);
+                            }
+                            
+                        }
+                    }
+
+                    LanguageConnected?.Invoke(languageFound);
+                }
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+#if DEBUG
+                string errorMessage = e + Environment.NewLine;
+                errorMessage += "<Loader exceptions>:" + Environment.NewLine;
+                errorMessage += string.Join(Environment.NewLine, e.LoaderExceptions.Select(error => error.ToString())) + Environment.NewLine;
+                File.AppendAllText("log.txt", errorMessage);
+#endif
+                string errorLocalized = string.Format(ParserErrorsStringResources.Get("LOAD_ERROR{0}"), Path.GetFileName(languageFile.FullName));
+                LanguageLoadErrorOccured?.Invoke(errorLocalized + Environment.NewLine);
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                string errorMessage = e + Environment.NewLine;
+                File.AppendAllText("log.txt", errorMessage);
+#endif
+                string errorLocalized = string.Format(ParserErrorsStringResources.Get("LOAD_ERROR{0}"), Path.GetFileName(languageFile.FullName));
+                LanguageLoadErrorOccured?.Invoke(errorLocalized + Environment.NewLine);
             }
         }
 

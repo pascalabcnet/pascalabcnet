@@ -7,6 +7,8 @@ using System.Text;
 using Debugger;
 using VisualPascalABCPlugins;
 using System.Runtime.ExceptionServices;
+using LanguageIntegration;
+using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
 {
@@ -268,17 +270,20 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
             syntax_tree_node e = null;
+
+            BaseParser parser = LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
+
             if (for_immediate)
             {
-                e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, Warnings);
+                e = parser.GetExpression(fileName, expr, Errors, Warnings);
                 if (e == null)
                 {
                     Errors.Clear();
-                    e = vec.StandartCompiler.ParsersController.GetStatement(fileName, expr, Errors, Warnings);
+                    e = parser.GetStatement(fileName, expr, Errors, Warnings);
                 }
             }
             else
-                e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, Warnings);
+                e = parser.GetExpression(fileName, expr, Errors, Warnings);
             RetValue res = new RetValue(); res.syn_err = false;
            
             try
@@ -363,7 +368,7 @@ namespace VisualPascalABC
             names.Clear();
             string fileName = "test" + System.IO.Path.GetExtension(this.FileName);
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-            expression e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+            expression e = LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             RetValue res = new RetValue(); res.syn_err = false;
             try
             {

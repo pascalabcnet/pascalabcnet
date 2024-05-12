@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.TextEditor.Document;
+using LanguageIntegration;
 
 namespace VisualPascalABC
 {
@@ -62,7 +63,7 @@ namespace VisualPascalABC
 
         public void Init()
         {
-            CodeCompletion.CodeCompletionController.ParsersController.SourceFilesProvider = visualEnvironmentCompiler.SourceFilesProvider;
+            LanguageProvider.Instance.SourceFilesProvider = visualEnvironmentCompiler.SourceFilesProvider;
             CodeCompletion.CodeCompletionController.currentLanguageISO = PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO;
         }
 

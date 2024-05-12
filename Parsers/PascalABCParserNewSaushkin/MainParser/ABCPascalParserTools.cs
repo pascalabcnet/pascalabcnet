@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Parsers;
+using PascalABCCompiler;
 
 namespace PascalABCSavParser
 {
@@ -45,7 +46,7 @@ namespace PascalABCSavParser
             get
             {
                 if (parserCached == null)
-                    parserCached = Controller.Instance.SelectParser(".pas") as BaseParser;
+                    parserCached = LanguageIntegration.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
                 return parserCached;
             }
         }

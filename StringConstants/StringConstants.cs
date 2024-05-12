@@ -371,6 +371,10 @@ namespace PascalABCCompiler
         };
         #endregion
 
+        #region PARSERS
+        public const char hideParserExtensionPostfixChar = '_';
+        #endregion
+
         public static string get_array_type_name(string type_name, int rank)
         {
             if (rank == 1)

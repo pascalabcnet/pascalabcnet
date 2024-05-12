@@ -40,13 +40,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ILanguage.cs" />
     <Compile Include="LanguageIntegrator.cs" />
+    <Compile Include="LanguageProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Errors\Errors.csproj">
+      <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
+      <Name>Errors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ParserTools\ParserTools.csproj">
       <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
       <Name>ParserTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
+      <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
+      <Name>SyntaxTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
+      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
+      <Name>SyntaxVisitors</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
