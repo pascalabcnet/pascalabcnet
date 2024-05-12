@@ -6,16 +6,16 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace Languages.Pascal
 {
-    internal class PascalLanguage : ILanguage
+    public class PascalLanguage : ILanguage
     {
-        public string Name => StringConstants.pascalLanguageName;
-
         private readonly BaseParser parser = new PascalABCNewParser.PascalABCNewLanguageParser();
         
         private readonly IParser docParser = new DocTagsParser.PascalDocTagsLanguageParser();
 
         private readonly string[] filesExtensions = new string[] { StringConstants.pascalSourceFileExtension };
 
+
+        public string Name => StringConstants.pascalLanguageName;
 
         public BaseParser Parser => parser;
 

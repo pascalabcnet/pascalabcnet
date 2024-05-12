@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using PascalABCCompiler.Errors;
-using PascalABCCompiler.Parsers;
 using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace Languages
@@ -140,8 +137,7 @@ namespace Languages
                 errorMessage += string.Join(Environment.NewLine, e.LoaderExceptions.Select(error => error.ToString())) + Environment.NewLine;
                 File.AppendAllText("log.txt", errorMessage);
 #endif
-                string errorLocalized = string.Format(ParserErrorsStringResources.Get("LOAD_ERROR{0}"), Path.GetFileName(languageFile.FullName));
-                LanguageLoadErrorOccured?.Invoke(errorLocalized + Environment.NewLine);
+                LanguageLoadErrorOccured?.Invoke(languageFile.Name);
             }
             catch (Exception e)
             {
@@ -149,8 +145,7 @@ namespace Languages
                 string errorMessage = e + Environment.NewLine;
                 File.AppendAllText("log.txt", errorMessage);
 #endif
-                string errorLocalized = string.Format(ParserErrorsStringResources.Get("LOAD_ERROR{0}"), Path.GetFileName(languageFile.FullName));
-                LanguageLoadErrorOccured?.Invoke(errorLocalized + Environment.NewLine);
+                LanguageLoadErrorOccured?.Invoke(languageFile.Name);
             }
         }
 

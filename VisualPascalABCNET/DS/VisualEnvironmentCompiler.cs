@@ -322,7 +322,7 @@ namespace VisualPascalABC
         /// </summary>
         private void OnLanguageConnected(ILanguage language)
         {
-            string languageConnectedMessage = string.Format(VECStringResources.Get("PARSER_CONNECTED{0}{1}"), language.Name, Path.GetFileName(language.GetType().Assembly.Location));
+            string languageConnectedMessage = string.Format(VECStringResources.Get("LANGUAGE_LOADED{0}{1}"), language.Name, Path.GetFileName(language.GetType().Assembly.Location));
             languageConnectedMessage += Environment.NewLine;
             AddTextToCompilerMessages(languageConnectedMessage);
         }
@@ -330,9 +330,11 @@ namespace VisualPascalABC
         /// <summary>
         /// Выводит сообщения об ошибках, возникших при загрузке языков
         /// </summary>
-        private void OnLanguageLoadErrorOccured(string errorMessage)
+        private void OnLanguageLoadErrorOccured(string languageFileName)
         {
-            AddTextToCompilerMessages(errorMessage);
+            string languageLoadErrorMessage = string.Format(VECStringResources.Get("LANGUAGE_LOAD_ERROR{0}"), Path.GetFileName(languageFileName));
+            languageLoadErrorMessage += Environment.NewLine;
+            AddTextToCompilerMessages(languageLoadErrorMessage);
         }
 
         private void OnChangeCompilerStateEx(PascalABCCompiler.ICompiler sender, PascalABCCompiler.CompilerState State, string FullFileName)
