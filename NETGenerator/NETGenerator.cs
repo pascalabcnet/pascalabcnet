@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
@@ -306,7 +306,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (fileOfAttributeConstructor != null) return fileOfAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.file_of_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.file_of_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 fileOfAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.ObjectType });
                 FieldBuilder fld = tb.DefineField("Type", TypeFactory.ObjectType, FieldAttributes.Public);
@@ -326,7 +326,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (setOfAttributeConstructor != null) return setOfAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.set_of_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.set_of_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 setOfAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.ObjectType });
                 FieldBuilder fld = tb.DefineField("Type", TypeFactory.ObjectType, FieldAttributes.Public);
@@ -347,7 +347,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (templateClassAttributeConstructor != null) return templateClassAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.template_class_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.template_class_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 templateClassAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.ByteType.MakeArrayType() });
                 FieldBuilder fld = tb.DefineField("Tree", TypeFactory.ByteType.MakeArrayType(), FieldAttributes.Public);
@@ -368,7 +368,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (typeSynonimAttributeConstructor != null) return typeSynonimAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.type_synonim_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.type_synonim_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 typeSynonimAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.ObjectType });
                 FieldBuilder fld = tb.DefineField("Type", TypeFactory.ObjectType, FieldAttributes.Public);
@@ -389,7 +389,7 @@ namespace PascalABCCompiler.NETGenerator
             get
             {
                 if (shortStringAttributeConstructor != null) return shortStringAttributeConstructor;
-                TypeBuilder tb = mb.DefineType(PascalABCCompiler.TreeConverter.compiler_string_consts.short_string_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                TypeBuilder tb = mb.DefineType(StringConstants.short_string_attr_name, TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                 types.Add(tb);
                 shortStringAttributeConstructor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[1] { TypeFactory.Int32Type });
                 FieldBuilder fld = tb.DefineField("Length", TypeFactory.Int32Type, FieldAttributes.Public);
@@ -463,8 +463,8 @@ namespace PascalABCCompiler.NETGenerator
         bool IsDllAndSystemNamespace(string name, string DllFileName)
         {
             return comp_opt.target == TargetType.Dll && DllFileName != "PABCRtl.dll" &&
-                (name == compiler_string_consts.pascalSystemUnitName || name == compiler_string_consts.pascalExtensionsUnitName ||
-                 name.EndsWith(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
+                (name == StringConstants.pascalSystemUnitName || name == StringConstants.pascalExtensionsUnitName ||
+                 name.EndsWith(StringConstants.ImplementationSectionNamespaceName));
         }
 
         bool IsDotnet5()
@@ -1420,7 +1420,7 @@ namespace PascalABCCompiler.NETGenerator
             else if (cnst is IEnumConstNode)
                 PushIntConst((cnst as IEnumConstNode).constant_value);
             else if (cnst is INullConstantNode)
-                il.Emit(OpCodes.Ldnull);
+                il.Emit(cnst.type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
         }
 
         private void ConvertConstantDefWithInitCall(IConstantDefinitionNode cnst, string name, ITypeNode type, IConstantNode constant_value)
@@ -7950,7 +7950,7 @@ namespace PascalABCCompiler.NETGenerator
                     il.Emit(OpCodes.Ldind_I);
                     il.Emit(OpCodes.Call, typeof(Marshal).GetMethod("FreeHGlobal", new Type[1] { typeof(IntPtr) }));
                     il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Ldnull);
+                    il.Emit(OpCodes.Ldc_I4_0);
                     il.Emit(OpCodes.Stind_I);
                     il.Emit(OpCodes.Ret);
                     mi = helper.AddMethod(func, methodb);
@@ -9546,13 +9546,13 @@ namespace PascalABCCompiler.NETGenerator
                     { 
                         real_parameters[0].visit(this);
                         il.Emit(OpCodes.Box, helper.GetTypeReference(real_parameters[0].type).tp);
-                        il.Emit(OpCodes.Ldnull);
+                        il.Emit(real_parameters[1].type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
                         EmitOperator(value);
                         return;
                     }
                     else if (real_parameters[1].type.is_generic_parameter && real_parameters[0] is INullConstantNode)
                     {
-                        il.Emit(OpCodes.Ldnull);
+                        il.Emit(real_parameters[0].type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
                         real_parameters[1].visit(this);
                         il.Emit(OpCodes.Box, helper.GetTypeReference(real_parameters[1].type).tp);
                         EmitOperator(value);
@@ -10934,7 +10934,7 @@ namespace PascalABCCompiler.NETGenerator
         //перевод конструкции null
         public override void visit(INullConstantNode value)
         {
-            il.Emit(OpCodes.Ldnull);
+            il.Emit(value.type is IRefTypeNode ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
         }
 
         struct TmpForCase

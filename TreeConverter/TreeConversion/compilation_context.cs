@@ -477,27 +477,27 @@ namespace PascalABCCompiler.TreeConverter
         {
         	if (instance.TypedSets.ContainsKey(tctn.element_type)) return instance.TypedSets[tctn.element_type];
         	instance.TypedSets.Add(tctn.element_type,tctn);
-        	tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-        	tctn.scope.AddSymbol(compiler_string_consts.plus_name, SystemLibrary.SystemLibInitializer.SetUnionProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.mul_name, SystemLibrary.SystemLibInitializer.SetIntersectProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.in_name, SystemLibrary.SystemLibInitializer.InSetProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.minus_name, SystemLibrary.SystemLibInitializer.SetSubtractProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.eq_name, SystemLibrary.SystemLibInitializer.CompareSetEquals.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.sm_name, SystemLibrary.SystemLibInitializer.CompareSetLess.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.smeq_name, SystemLibrary.SystemLibInitializer.CompareSetLessEqual.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.gr_name, SystemLibrary.SystemLibInitializer.CompareSetGreater.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.greq_name, SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.plusassign_name,new SymbolInfo(make_set_plus_assign(tctn)));
-            tctn.scope.AddSymbol(compiler_string_consts.minusassign_name,new SymbolInfo(make_set_minus_assign(tctn)));
-            tctn.scope.AddSymbol(compiler_string_consts.multassign_name,new SymbolInfo(make_set_mult_assign(tctn)));
+        	tctn.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
+        	tctn.scope.AddSymbol(StringConstants.plus_name, SystemLibrary.SystemLibInitializer.SetUnionProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.mul_name, SystemLibrary.SystemLibInitializer.SetIntersectProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.in_name, SystemLibrary.SystemLibInitializer.InSetProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.minus_name, SystemLibrary.SystemLibInitializer.SetSubtractProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.eq_name, SystemLibrary.SystemLibInitializer.CompareSetEquals.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.sm_name, SystemLibrary.SystemLibInitializer.CompareSetLess.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.smeq_name, SystemLibrary.SystemLibInitializer.CompareSetLessEqual.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.gr_name, SystemLibrary.SystemLibInitializer.CompareSetGreater.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.greq_name, SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.plusassign_name,new SymbolInfo(make_set_plus_assign(tctn)));
+            tctn.scope.AddSymbol(StringConstants.minusassign_name,new SymbolInfo(make_set_minus_assign(tctn)));
+            tctn.scope.AddSymbol(StringConstants.multassign_name,new SymbolInfo(make_set_mult_assign(tctn)));
             return tctn;
         }
         
         public static void AddTypeToShortStringTypeList(type_node tn)
         {
         	instance.ShortStringTypes.Add((tn as short_string_type_node).Length,tn as short_string_type_node);
-        	tn.add_name(compiler_string_consts.plus_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_add));
+        	tn.add_name(StringConstants.plus_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_add));
         }
         
         public void pop_top_function()
@@ -850,6 +850,11 @@ namespace PascalABCCompiler.TreeConverter
             for (int i = 1; i < names.names.Count - 1; i++)
             {
                 List<SymbolInfo> sil = null;
+                if (di is common_unit_node)
+                {
+                    sil = (di as common_unit_node).find_only_in_namespace(names.names[i].name); // SSM 23.04.24 fix #3086
+                }
+                else
                 if (di is namespace_node)
                 {
                     sil = (di as namespace_node).find(names.names[i].name);
@@ -921,9 +926,9 @@ namespace PascalABCCompiler.TreeConverter
                 var ntr = new SyntaxTree.named_type_reference();
                 for (var i = 0; i < meth_name.ln.Count; i++)
                     ntr.Add(meth_name.ln[i]);
-                if (num_template_args>0 && ! ntr.names[meth_name.ln.Count-1].name.Contains(compiler_string_consts.generic_params_infix))
+                if (num_template_args>0 && ! ntr.names[meth_name.ln.Count-1].name.Contains(StringConstants.generic_params_infix))
                 {
-                     ntr.names[meth_name.ln.Count-1].name += compiler_string_consts.generic_params_infix + num_template_args;
+                     ntr.names[meth_name.ln.Count-1].name += StringConstants.generic_params_infix + num_template_args;
                 }
                 sil = find_definition_node(ntr, loc);
                 // если не нашли, то ошибка будет неправильной с неправильным именем - надо исправить
@@ -932,11 +937,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (num_template_args != 0)
                 {
-                    string template_type_name = type_name + compiler_string_consts.generic_params_infix + num_template_args.ToString();
+                    string template_type_name = type_name + StringConstants.generic_params_infix + num_template_args.ToString();
                     sil = find(template_type_name);
                     /*if (si == null || si.sym_info.general_node_type != general_node_type.template_type)
                     {
-                        type_name = type_name + compiler_string_consts.generic_params_infix + num_template_args.ToString();
+                        type_name = type_name + StringConstants.generic_params_infix + num_template_args.ToString();
                         si = null;
                     }*/
                 }
@@ -1037,7 +1042,7 @@ namespace PascalABCCompiler.TreeConverter
         
         internal void add_notequal_operator_if_need(bool not_add_body= false)
         {
-            List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.noteq_name);
+            List<SymbolInfo> si_list = _ctn.find_in_type(StringConstants.noteq_name);
             common_method_node cmn = null;
             common_parameter prm1 = null;
             common_parameter prm2 = null;
@@ -1054,7 +1059,7 @@ namespace PascalABCCompiler.TreeConverter
             SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
             if (cmn == null)
             {
-                cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name), SystemLibrary.SystemLibrary.bool_type, null, _ctn,
+                cmn = new common_method_node(StringConstants.GetNETOperName(StringConstants.noteq_name), SystemLibrary.SystemLibrary.bool_type, null, _ctn,
                                                             SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_public, scope);
                 cmn.IsOperator = true;
                 prm1 = new common_parameter("a", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
@@ -1063,7 +1068,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(prm2);
                 cmn.is_overload = true;
                 _ctn.methods.AddElement(cmn);
-                _ctn.Scope.AddSymbol(compiler_string_consts.noteq_name, new SymbolInfo(cmn));
+                _ctn.Scope.AddSymbol(StringConstants.noteq_name, new SymbolInfo(cmn));
             }
             else
             {
@@ -1079,7 +1084,7 @@ namespace PascalABCCompiler.TreeConverter
                     continue;
                 expression_node left = new class_field_reference(cf,new common_parameter_reference(prm1,0,null),null);
         		expression_node right = new class_field_reference(cf,new common_parameter_reference(prm2,0,null),null);
-        		expression_node cond = SystemLibrary.SystemLibrary.syn_visitor.find_operator(compiler_string_consts.noteq_name,
+        		expression_node cond = SystemLibrary.SystemLibrary.syn_visitor.find_operator(StringConstants.noteq_name,
         		                                                                            left,right,null);
         		//basic_function_call bfc = new basic_function_call(SystemLibrary.SystemLibrary.bool_not as basic_function_node,null);
         		//bfc.parameters.AddElement(cond);
@@ -1093,7 +1098,7 @@ namespace PascalABCCompiler.TreeConverter
         
         internal void add_equal_operator_if_need(bool not_add_body=false)
         {
-        	List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.eq_name);
+        	List<SymbolInfo> si_list = _ctn.find_in_type(StringConstants.eq_name);
             common_method_node cmn = null;
             common_parameter prm1 = null;
             common_parameter prm2 = null;
@@ -1110,7 +1115,7 @@ namespace PascalABCCompiler.TreeConverter
             SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
             if (cmn == null)
             {
-                cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name), SystemLibrary.SystemLibrary.bool_type, null, _ctn,
+                cmn = new common_method_node(StringConstants.GetNETOperName(StringConstants.eq_name), SystemLibrary.SystemLibrary.bool_type, null, _ctn,
                                                             SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_public, scope);
                 cmn.IsOperator = true;
                 prm1 = new common_parameter("a", _ctn, SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null, null);
@@ -1119,7 +1124,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(prm2);
                 cmn.is_overload = true;
                 _ctn.methods.AddElement(cmn);
-                _ctn.Scope.AddSymbol(compiler_string_consts.eq_name, new SymbolInfo(cmn));
+                _ctn.Scope.AddSymbol(StringConstants.eq_name, new SymbolInfo(cmn));
             }
         	else
             {
@@ -1135,7 +1140,7 @@ namespace PascalABCCompiler.TreeConverter
                     continue;
         		expression_node left = new class_field_reference(cf,new common_parameter_reference(prm1,0,null),null);
         		expression_node right = new class_field_reference(cf,new common_parameter_reference(prm2,0,null),null);
-        		expression_node cond = SystemLibrary.SystemLibrary.syn_visitor.find_operator(compiler_string_consts.eq_name,
+        		expression_node cond = SystemLibrary.SystemLibrary.syn_visitor.find_operator(StringConstants.eq_name,
         		                                                                            left,right,null);
         		basic_function_call bfc = new basic_function_call(SystemLibrary.SystemLibrary.bool_not as basic_function_node,null);
         		bfc.parameters.AddElement(cond);
@@ -1170,7 +1175,7 @@ namespace PascalABCCompiler.TreeConverter
         public SymbolInfo create_special_names()
         {
             SymbolInfo si= new SymbolInfo(top_function.return_variable);
-            top_function.scope.AddSymbol(compiler_string_consts.result_variable_name, si);
+            top_function.scope.AddSymbol(StringConstants.result_variable_name, si);
             return si;
         }
         
@@ -1332,7 +1337,7 @@ namespace PascalABCCompiler.TreeConverter
 				}
                 case block_type.compiled_type_block:
                 {
-                    //string cname = compiler_string_consts.GetConnectedFunctionName(_compiled_tn.name, name);
+                    //string cname = StringConstants.GetConnectedFunctionName(_compiled_tn.name, name);
                     common_namespace_function_node cnfnn;
                     SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_compiled_tn.scope, _cmn.scope, null, name);
                     cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
@@ -1470,7 +1475,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (TypedFiles.ContainsKey(elem_type))
                 return TypedFiles[elem_type];
-            string name = compiler_string_consts.GetTypedFileTypeName(elem_type.name);
+            string name = StringConstants.GetTypedFileTypeName(elem_type.name);
             type_node base_type = SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node;
             //check_name_free(name, def_loc);
             SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, name);
@@ -1494,7 +1499,7 @@ namespace PascalABCCompiler.TreeConverter
         {
         	if (TypedSets.ContainsKey(elem_type))
                 return TypedSets[elem_type];
-            string name = compiler_string_consts.GetSetTypeName(elem_type.name);
+            string name = StringConstants.GetSetTypeName(elem_type.name);
             type_node base_type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
             //check_name_free(name, def_loc);
             SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, "set_type " + name);
@@ -1507,21 +1512,21 @@ namespace PascalABCCompiler.TreeConverter
             tctn.internal_is_value = base_type.is_value;
             tctn.is_class = base_type.is_class;
             tctn.SetBaseType(base_type);
-            tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-            tctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName)));
-            tctn.scope.AddSymbol(compiler_string_consts.plus_name, SystemLibrary.SystemLibInitializer.SetUnionProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.mul_name, SystemLibrary.SystemLibInitializer.SetIntersectProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.in_name, SystemLibrary.SystemLibInitializer.InSetProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.minus_name, SystemLibrary.SystemLibInitializer.SetSubtractProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.eq_name, SystemLibrary.SystemLibInitializer.CompareSetEquals.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.sm_name, SystemLibrary.SystemLibInitializer.CompareSetLess.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.smeq_name, SystemLibrary.SystemLibInitializer.CompareSetLessEqual.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.gr_name, SystemLibrary.SystemLibInitializer.CompareSetGreater.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.greq_name, SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.plusassign_name,new SymbolInfo(make_set_plus_assign(tctn)));
-            tctn.scope.AddSymbol(compiler_string_consts.minusassign_name,new SymbolInfo(make_set_minus_assign(tctn)));
-            tctn.scope.AddSymbol(compiler_string_consts.multassign_name,new SymbolInfo(make_set_mult_assign(tctn)));
+            tctn.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
+            tctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.IEnumerableInterfaceName)));
+            tctn.scope.AddSymbol(StringConstants.plus_name, SystemLibrary.SystemLibInitializer.SetUnionProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.mul_name, SystemLibrary.SystemLibInitializer.SetIntersectProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.in_name, SystemLibrary.SystemLibInitializer.InSetProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.minus_name, SystemLibrary.SystemLibInitializer.SetSubtractProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.eq_name, SystemLibrary.SystemLibInitializer.CompareSetEquals.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.sm_name, SystemLibrary.SystemLibInitializer.CompareSetLess.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.smeq_name, SystemLibrary.SystemLibInitializer.CompareSetLessEqual.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.gr_name, SystemLibrary.SystemLibInitializer.CompareSetGreater.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.greq_name, SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.plusassign_name,new SymbolInfo(make_set_plus_assign(tctn)));
+            tctn.scope.AddSymbol(StringConstants.minusassign_name,new SymbolInfo(make_set_minus_assign(tctn)));
+            tctn.scope.AddSymbol(StringConstants.multassign_name,new SymbolInfo(make_set_mult_assign(tctn)));
             converted_namespace.types.AddElement(tctn);
             TypedSets.Add(elem_type, tctn);
             return tctn;            
@@ -1530,7 +1535,7 @@ namespace PascalABCCompiler.TreeConverter
         private static basic_function_node make_set_plus_assign(common_type_node ctn)
         {
         	//basic_function_node bfn = new basic_function_node(SemanticTree.basic_function_type.objassign,ctn,false);
-        	basic_function_node bfn = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.plusassign_name,ctn,SemanticTree.basic_function_type.objassign);
+        	basic_function_node bfn = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.plusassign_name,ctn,SemanticTree.basic_function_type.objassign);
         	bfn.compile_time_executor = SystemLibrary.static_executors.set_plusassign_executor;
         	return bfn;
         }
@@ -1538,7 +1543,7 @@ namespace PascalABCCompiler.TreeConverter
         private static basic_function_node make_set_minus_assign(common_type_node ctn)
         {
         	//basic_function_node bfn = new basic_function_node(SemanticTree.basic_function_type.objassign,ctn,false);
-        	basic_function_node bfn = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.minusassign_name,ctn,SemanticTree.basic_function_type.objassign);
+        	basic_function_node bfn = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.minusassign_name,ctn,SemanticTree.basic_function_type.objassign);
         	bfn.compile_time_executor = SystemLibrary.static_executors.set_subassign_executor;
         	return bfn;
         }
@@ -1546,14 +1551,14 @@ namespace PascalABCCompiler.TreeConverter
         private static basic_function_node make_set_mult_assign(common_type_node ctn)
         {
         	//basic_function_node bfn = new basic_function_node(SemanticTree.basic_function_type.objassign,ctn,false);
-        	basic_function_node bfn = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.multassign_name,ctn,SemanticTree.basic_function_type.objassign);
+        	basic_function_node bfn = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.multassign_name,ctn,SemanticTree.basic_function_type.objassign);
         	bfn.compile_time_executor = SystemLibrary.static_executors.set_multassign_executor;
         	return bfn;
         }
         
         private static basic_function_node make_short_string_plus_assign(short_string_type_node ctn)
         {
-        	basic_function_node bfn = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.plusassign_name,ctn,SemanticTree.basic_function_type.objassign);
+        	basic_function_node bfn = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.plusassign_name,ctn,SemanticTree.basic_function_type.objassign);
         	bfn.compile_time_executor = SystemLibrary.static_executors.short_string_addassign_executor;
         	return bfn;
         }
@@ -1586,9 +1591,9 @@ namespace PascalABCCompiler.TreeConverter
             SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, SystemLibrary.SystemLibrary.string_type.Scope, "short_string_type");
             short_string_type_node tctn = new short_string_type_node(//SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc, length);
-            tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-            tctn.add_name(compiler_string_consts.plus_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_add));
-            tctn.scope.AddSymbol(compiler_string_consts.plusassign_name,new SymbolInfo(make_short_string_plus_assign(tctn)));
+            tctn.add_name(StringConstants.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
+            tctn.add_name(StringConstants.plus_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_add));
+            tctn.scope.AddSymbol(StringConstants.plusassign_name,new SymbolInfo(make_short_string_plus_assign(tctn)));
             type_intersection_node inter = new type_intersection_node(type_compare.greater_type);
             inter.another_to_this = new type_conversion(SystemLibrary.SystemLibrary.char_to_string);
             tctn.add_intersection_node(SystemLibrary.SystemLibrary.char_type, inter,false);
@@ -1623,7 +1628,7 @@ namespace PascalABCCompiler.TreeConverter
         public void create_generic_indicator(common_type_node generic)
         {
             generic_indicator gi = new generic_indicator(generic);
-            int pos = generic.name.LastIndexOf(compiler_string_consts.generic_params_infix);
+            int pos = generic.name.LastIndexOf(StringConstants.generic_params_infix);
             string name = generic.name.Substring(0, pos);
             _cmn.scope.AddSymbol(name, new SymbolInfo(gi, access_level.al_public, symbol_kind.sk_none));
         }
@@ -1693,7 +1698,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             namespace_variable nv = new namespace_variable(name + "$", tn, converted_namespace, loc);
             common_namespace_event cne = new common_namespace_event(name, tn, converted_namespace, null, null, null, loc);
-            common_namespace_function_node add_func = new common_namespace_function_node(compiler_string_consts.GetAddHandler(name),
+            common_namespace_function_node add_func = new common_namespace_function_node(StringConstants.GetAddHandler(name),
                 null, this.converted_namespace, null);
             common_parameter cp = new common_parameter("value", tn, SemanticTree.parameter_type.value, add_func, concrete_parameter_type.cpt_none, null, null);
             add_func.parameters.AddElement(cp);
@@ -1701,18 +1706,18 @@ namespace PascalABCCompiler.TreeConverter
             fld_ref = new namespace_variable_reference(nv, null);
             expression_node en = this.syntax_tree_visitor.convertion_data_and_alghoritms.type_constructor.delegate_add_assign_compile_time_executor
                 (null, new expression_node[2] { fld_ref, new common_parameter_reference(cp, 0, null) });
-            //en = this.syntax_tree_visitor.convertion_data_and_alghoritms.create_simple_function_call(tn.find_in_type(compiler_string_consts.assign_name).sym_info as function_node,null,
+            //en = this.syntax_tree_visitor.convertion_data_and_alghoritms.create_simple_function_call(tn.find_in_type(StringConstants.assign_name).sym_info as function_node,null,
             //                                                                                    fld_ref,en);
             add_func.function_code = new statements_list(null);
             (add_func.function_code as statements_list).statements.AddElement(en);
             //remove
-            common_namespace_function_node remove_func = new common_namespace_function_node(compiler_string_consts.GetRemoveHandler(name), null, this.converted_namespace, null);
+            common_namespace_function_node remove_func = new common_namespace_function_node(StringConstants.GetRemoveHandler(name), null, this.converted_namespace, null);
 
             cp = new common_parameter("value", tn, SemanticTree.parameter_type.value, add_func, concrete_parameter_type.cpt_none, null, null);
             remove_func.parameters.AddElement(cp);
             en = this.syntax_tree_visitor.convertion_data_and_alghoritms.type_constructor.delegate_sub_assign_compile_time_executor
                 (null, new expression_node[2] { fld_ref, new common_parameter_reference(cp, 0, null) });
-            //en = this.syntax_tree_visitor.convertion_data_and_alghoritms.create_simple_function_call(tn.find_in_type(compiler_string_consts.assign_name).sym_info as function_node,null,
+            //en = this.syntax_tree_visitor.convertion_data_and_alghoritms.create_simple_function_call(tn.find_in_type(StringConstants.assign_name).sym_info as function_node,null,
             //                                                                                    fld_ref,en);
             remove_func.function_code = new statements_list(null);
             (remove_func.function_code as statements_list).statements.AddElement(en);
@@ -1732,7 +1737,7 @@ namespace PascalABCCompiler.TreeConverter
             class_field cf = new class_field(name + "$", tn, converted_type, ps, _fal, loc);
             common_event ce = new common_event(name, tn, converted_type, null, null, null, _fal, ps, loc);
             //add
-            common_method_node add_meth = new common_method_node(compiler_string_consts.GetAddHandler(name), null, this.converted_type,
+            common_method_node add_meth = new common_method_node(StringConstants.GetAddHandler(name), null, this.converted_type,
                                                                  ps, SemanticTree.field_access_level.fal_public, null);
             common_parameter cp = new common_parameter("value", tn, SemanticTree.parameter_type.value, add_meth, concrete_parameter_type.cpt_none, null, null);
             add_meth.parameters.AddElement(cp);
@@ -1749,7 +1754,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             converted_type.scope.AddSymbol(add_meth.name, new SymbolInfo(add_meth));
             //remove
-            common_method_node remove_meth = new common_method_node(compiler_string_consts.GetRemoveHandler(name), null, this.converted_type,
+            common_method_node remove_meth = new common_method_node(StringConstants.GetRemoveHandler(name), null, this.converted_type,
                                                                  ps, SemanticTree.field_access_level.fal_public, null);
 
             cp = new common_parameter("value", tn, SemanticTree.parameter_type.value, add_meth, concrete_parameter_type.cpt_none, null, null);
@@ -1944,13 +1949,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public string get_delegate_type_name()
         {
-            return (compiler_string_consts.delegate_type_name_template + _num_for_delegates++);
+            return (StringConstants.delegate_type_name_template + _num_for_delegates++);
         }
 
 		public var_definition_node create_for_temp_variable(type_node type,location loc)
 		{
 			num_of_for_cycles=num_of_for_cycles+1;
-			string name=compiler_string_consts.temp_for_variable_name+num_of_for_cycles.ToString();
+			string name=StringConstants.temp_for_variable_name+num_of_for_cycles.ToString();
 			//return create_temp_variable(name,type,loc);
             return add_var_definition(name, loc, type,  SemanticTree.polymorphic_state.ps_common);
 		}
@@ -2043,10 +2048,10 @@ namespace PascalABCCompiler.TreeConverter
 		
 		public static void add_convertions_to_enum_type(common_type_node tctn)
 		{
-			SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.gr_name,tctn,SemanticTree.basic_function_type.enumgr,SystemLibrary.SystemLibrary.bool_type);
-            SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.greq_name,tctn,SemanticTree.basic_function_type.enumgreq,SystemLibrary.SystemLibrary.bool_type);
-            SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.sm_name,tctn,SemanticTree.basic_function_type.enumsm,SystemLibrary.SystemLibrary.bool_type);
-            SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.smeq_name,tctn,SemanticTree.basic_function_type.enumsmeq,SystemLibrary.SystemLibrary.bool_type);
+			SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.gr_name,tctn,SemanticTree.basic_function_type.enumgr,SystemLibrary.SystemLibrary.bool_type);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.greq_name,tctn,SemanticTree.basic_function_type.enumgreq,SystemLibrary.SystemLibrary.bool_type);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.sm_name,tctn,SemanticTree.basic_function_type.enumsm,SystemLibrary.SystemLibrary.bool_type);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.smeq_name,tctn,SemanticTree.basic_function_type.enumsmeq,SystemLibrary.SystemLibrary.bool_type);
             
 			SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.byte_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itob,false);
             SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.sbyte_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itosb,false);
@@ -2158,12 +2163,12 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             for (int i = 0; i < arr.element_values.Count; i++)
                             {
-                                //arr.element_values[i] = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, arr.element_values[i], null);
+                                //arr.element_values[i] = syntax_tree_visitor.find_operator(StringConstants.assign_name, varref2, arr.element_values[i], null);
                                 arr.element_values[i] = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, null, convertion_data_and_alghoritms.convert_type(arr.element_values[i], SystemLibrary.SystemLibrary.string_type), new int_const_node((vdn.type.element_type as short_string_type_node).Length, null));
                             }
                         }
                     }
-                    CurrentStatementList.statements.AddElement(syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, expr, userInitalValue, lid));
+                    CurrentStatementList.statements.AddElement(syntax_tree_visitor.find_operator(StringConstants.assign_name, expr, userInitalValue, lid));
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
                 	{
                  		expr.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
@@ -2179,7 +2184,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.short_string)
                 	{
 						expression_node varref2 = convertion_data_and_alghoritms.CreateVariableReference(vdn, null);
-						userInitalValue = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, userInitalValue, null);
+						userInitalValue = syntax_tree_visitor.find_operator(StringConstants.assign_name, varref2, userInitalValue, null);
                 	}
                 	return userInitalValue;
                 }
@@ -2191,7 +2196,7 @@ namespace PascalABCCompiler.TreeConverter
                 		expression_node varref2 = convertion_data_and_alghoritms.CreateVariableReference(vdn, null);
                 		for (int i=0; i<arr.element_values.Count; i++)
                 		{
-                			//arr.element_values[i] = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, arr.element_values[i], null);
+                			//arr.element_values[i] = syntax_tree_visitor.find_operator(StringConstants.assign_name, varref2, arr.element_values[i], null);
                 			arr.element_values[i] = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node,null,convertion_data_and_alghoritms.convert_type(arr.element_values[i],SystemLibrary.SystemLibrary.string_type),new int_const_node((vdn.type.element_type as short_string_type_node).Length,null));
                 		}
                 	}
@@ -2208,7 +2213,7 @@ namespace PascalABCCompiler.TreeConverter
 					expression_node cmc = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node,null,convertion_data_and_alghoritms.convert_type(userInitalValue,SystemLibrary.SystemLibrary.string_type),new int_const_node((vdn.type as short_string_type_node).Length,null));
         			userInitalValue = cmc;
                 }
-                userInitalValue = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref, userInitalValue, userInitalValue.location);
+                userInitalValue = syntax_tree_visitor.find_operator(StringConstants.assign_name, varref, userInitalValue, userInitalValue.location);
                 if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
                 {
                  	varref.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
@@ -2216,7 +2221,7 @@ namespace PascalABCCompiler.TreeConverter
                 return userInitalValue;
             }
             type_node tp = vdn.type;
-            if (syntax_tree_visitor.SystemUnitAssigned && SystemLibrary.SystemLibInitializer.TextFileType.Found && tp.name == compiler_string_consts.text_file_name_type_name)
+            if (syntax_tree_visitor.SystemUnitAssigned && SystemLibrary.SystemLibInitializer.TextFileType.Found && tp.name == StringConstants.text_file_name_type_name)
                 if (tp == SystemLibrary.SystemLibInitializer.TextFileType.TypeNode)
                     SystemLibrary.SystemLibInitializer.TextFileType.TypeNode.type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.text_file;
             //(ssyy) Вставил switch и обработку BinaryFile
@@ -2379,7 +2384,7 @@ namespace PascalABCCompiler.TreeConverter
                     check_predefinition_defined();
                     if (_ctn.is_generic_type_definition && !_ctn.IsInterface && _ctn.static_constr == null)
                     {
-                        _ctn.static_constr = new common_method_node(PascalABCCompiler.TreeConverter.compiler_string_consts.static_ctor_prefix + "Create", null, _ctn, SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_private, null);
+                        _ctn.static_constr = new common_method_node(StringConstants.static_ctor_prefix + "Create", null, _ctn, SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_private, null);
                         _ctn.static_constr.is_constructor = true;
                         statements_list st = new statements_list(null); 
                         st.statements.AddElement(new return_node(new null_const_node(SystemLibrary.SystemLibrary.object_type, null), null));
@@ -2457,7 +2462,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             if (stl.statements.Count == 0) return;
-            string stat_ctor_name = compiler_string_consts.static_ctor_prefix + compiler_string_consts.default_constructor_name;
+            string stat_ctor_name = StringConstants.static_ctor_prefix + StringConstants.default_constructor_name;
             List<SymbolInfo> sil = generic_def.scope.FindOnlyInScope(stat_ctor_name);
             common_method_node stat_ctor;
             if (sil == null)
@@ -3277,7 +3282,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         if (convertion_data_and_alghoritms.function_eq_params(fn, compar, false) && fn.is_extension_method == compar.is_extension_method)
                         {
-                            if (fn.IsOperator && (fn.name == compiler_string_consts.explicit_operator_name || fn.name == compiler_string_consts.implicit_operator_name))
+                            if (fn.IsOperator && (fn.name == StringConstants.explicit_operator_name || fn.name == StringConstants.implicit_operator_name))
                             {
                                 if (convertion_data_and_alghoritms.function_eq_params_and_result(fn, compar))
                                     AddError(new FunctionDuplicateDefinition(compar, fn));
@@ -3390,7 +3395,7 @@ namespace PascalABCCompiler.TreeConverter
                     common_method_node cmnode = compar as common_method_node;
                     if (cmnode != null)
                     {
-                        List<SymbolInfo> si_local = cfn11.scope.FindOnlyInScope(compiler_string_consts.self_word);
+                        List<SymbolInfo> si_local = cfn11.scope.FindOnlyInScope(StringConstants.self_word);
                         if (si_local != null)
                         {
                             si_local.FirstOrDefault().sym_info = cmnode.self_variable;
@@ -3572,7 +3577,7 @@ namespace PascalABCCompiler.TreeConverter
 				    }
 				    if (convertion_data_and_alghoritms.function_eq_params(fn,compar,false))
 				    {
-					    if (fn.IsOperator && (fn.name == compiler_string_consts.explicit_operator_name || fn.name == compiler_string_consts.implicit_operator_name))
+					    if (fn.IsOperator && (fn.name == StringConstants.explicit_operator_name || fn.name == StringConstants.implicit_operator_name))
                         {
                     	    if (convertion_data_and_alghoritms.function_eq_params_and_result(fn,compar))
                     		    AddError(new FunctionDuplicateDefinition(compar, fn));

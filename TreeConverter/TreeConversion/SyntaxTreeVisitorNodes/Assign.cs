@@ -90,7 +90,7 @@ namespace PascalABCCompiler.TreeConverter
                         expr,
                         ind_expr,
                         new int_const_node((expr.type as short_string_type_node).Length, null), from);
-                    return_value(find_operator(compiler_string_consts.assign_name, expr, ind_expr, get_location(_assign)));
+                    return_value(find_operator(StringConstants.assign_name, expr, ind_expr, get_location(_assign)));
                     return true;
                 }
                 if (to.type.type_special_kind == type_special_kind.short_string)
@@ -103,7 +103,7 @@ namespace PascalABCCompiler.TreeConverter
                         convertion_data_and_alghoritms.convert_type(from, SystemLibrary.SystemLibrary.string_type),
                         new int_const_node((to.type as short_string_type_node).Length,
                             null));
-                    statement_node en = find_operator(compiler_string_consts.assign_name, to, clip_expr, get_location(_assign));
+                    statement_node en = find_operator(StringConstants.assign_name, to, clip_expr, get_location(_assign));
                     return_value(en);
                     return true;
                 }
@@ -129,7 +129,7 @@ namespace PascalABCCompiler.TreeConverter
                  {
                       var sc = context.CurrentScope;
                       var ttt = sc.Find((_assign.to as ident).name); // всегда в этом случае должно быть простое имя
-                      (ttt[0].sym_info as namespace_variable).type = from0.type;
+                      (ttt[0].sym_info as var_definition_node).type = from0.type;
                  }
             }
 

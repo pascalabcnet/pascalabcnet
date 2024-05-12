@@ -70,10 +70,6 @@ namespace PascalABCCompiler.Parsers
 
         void Reset();
 
-        IPreprocessor Preprocessor
-        {
-            get;
-        }
     }
 
     

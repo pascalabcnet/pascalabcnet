@@ -1,4 +1,4 @@
-//PascalABCParser.dll
+﻿//PascalABCParser.dll
 %PREFIX%=PASCALABCPARSER_
 
 FOUND{0}=找到 {0} 但
@@ -21,6 +21,12 @@ NONTERMINALTOKEN_{0}_RETURN_NULL=当前版本的编译器不支持语法规则 '
 SEMICOLON_BEFORE_ELSE=不要在 else 之前加分号
 UNEXPECTED_SYMBOL{0}=意外的符号 '{0}'
 UNSUPPORTED_OLD_DIRECTIVES=不支持以 # 开头的编译器指令。 使用指令 {$ }
+UNKNOWN_DIRECTIVE{0}=未知指令 '{0}'
+MISSING_DIRECTIVE_PARAM{0}='{0}' 指令需要一个参数
+UNNECESSARY_DIRECTIVE_PARAM{0}='{0}' 该指令的使用不带参数
+INCORRECT_DIRECTIVE_PARAM{0}{1}=向 '{0}' 指令传递了一个无效参数 '{1}'
+EMPTY_DIRECTIVE=空指令
+DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}='{0}' 指令必须有以下参数数：{1}
 INCLUDE_COULDNT_OPEN_FILE{0}=编译器指令 $include：无法打开文件 '{0}'
 INCLUDE_EMPTY_FILE=编译器指令 $include: 文件名不存在
 RECUR_INCLUDE=编译器指令 $include: 递归包含
@@ -80,3 +86,4 @@ NIL_IN_UNNAMED_OBJECT=匿名类字段不能被 nil 常量初始化
 YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY=yield 语句不能在 lambda 主体中使用
 SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5=多维数组切片仅适用于秩 < 5 的数组
 LEFT_SIDE_CANNOT_BE_ASSIGNED_TO=左侧不能分配给
+DIFF_DEFINE_NAME=指令'{0}'中的定義名稱'{2}'與相應的'ifdef'/'ifndef'中的定義名稱'{1}'不匹配

@@ -38,11 +38,19 @@ namespace PascalABCCompiler.TreeConverter
         }
     }*/
 
-    public partial class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
+    public partial class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew, TreeConversion.ISyntaxTreeVisitor // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
     // Порядок обхода не важен поскольку все узлы visit переопределяются
     // SSM 02.01.17 Использование ReplaceStatement из BaseChangeVisitor плохо изучено - что-то не работает
     // Поэтому используется явный Parent и ReplaceStatement из узла statement_list
     {
+        private string[] filesExtensions = { ".pas" };
+        public virtual string[] FilesExtensions
+        {
+            get
+            {
+                return filesExtensions;
+            }
+        }
         public SymbolTable.PrimaryScope MainScope
         {
             get
@@ -315,93 +323,93 @@ namespace PascalABCCompiler.TreeConverter
         
         public static void init_system_module(common_unit_node psystem_unit)
         {
-        	SystemLibrary.SystemLibInitializer.format_function = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.format_procedure_name);
-            SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.read_procedure_name);
-            SystemLibrary.SystemLibInitializer.write_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.write_procedure_name);
-            SystemLibrary.SystemLibInitializer.writeln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.writeln_procedure_name);
-            SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.readln_procedure_name);
-            SystemLibrary.SystemLibInitializer.TextFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.text_file_name_type_name);
-            SystemLibrary.SystemLibInitializer.TextFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TextFileInitProcedureName);
-            SystemLibrary.SystemLibInitializer.BinaryFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.BinaryFileTypeName);
-            SystemLibrary.SystemLibInitializer.AbstractBinaryFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AbstractBinaryFileTypeName);
-            SystemLibrary.SystemLibInitializer.PointerOutputType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PointerOutputTypeName);
-            SystemLibrary.SystemLibInitializer.BinaryFileReadProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.BinaryFileReadProcedureName);
-            SystemLibrary.SystemLibInitializer.BinaryFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.BinaryFileInitProcedureName);
-            SystemLibrary.SystemLibInitializer.StringDefaultPropertySetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StringDefaultPropertySetProcedureName);
-            SystemLibrary.SystemLibInitializer.TypedFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedFileTypeName);
-            SystemLibrary.SystemLibInitializer.TypedFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedFileInitProcedureName);
-            SystemLibrary.SystemLibInitializer.TypedFileReadProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedFileReadProcedureName);
-            SystemLibrary.SystemLibInitializer.ClipShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipShortString);
-            SystemLibrary.SystemLibInitializer.GetCharInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetCharInShortString);
-            SystemLibrary.SystemLibInitializer.SetCharInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.SetCharInShortString);
-            //SystemLibrary.SystemLibInitializer.ShortStringType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ShortStringTypeName);
-            //SystemLibrary.SystemLibInitializer.ShortStringTypeInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ShortStringTypeInitProcedure);
-            SystemLibrary.SystemLibInitializer.TypedSetType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.set_name);
-            SystemLibrary.SystemLibInitializer.TypedSetInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedSetInitProcedure);
-            SystemLibrary.SystemLibInitializer.SetUnionProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.union_of_set);
-            SystemLibrary.SystemLibInitializer.SetIntersectProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.intersect_of_set);
-            SystemLibrary.SystemLibInitializer.SetSubtractProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.subtract_of_set);
-            SystemLibrary.SystemLibInitializer.InSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.in_set);
-            SystemLibrary.SystemLibInitializer.CreateSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CreateSetProcedure);
-            SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.IncludeProcedure);
-            SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ExcludeProcedure);
-            SystemLibrary.SystemLibInitializer.DiapasonType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.DiapasonType);
-            SystemLibrary.SystemLibInitializer.CreateDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CreateDiapason);
-            SystemLibrary.SystemLibInitializer.CreateObjDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CreateObjDiapason);
-            SystemLibrary.SystemLibInitializer.CompareSetEquals = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetEquals);
-            SystemLibrary.SystemLibInitializer.CompareSetInEquals = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetInEquals);
-            SystemLibrary.SystemLibInitializer.CompareSetLess = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetLess);
-            SystemLibrary.SystemLibInitializer.CompareSetLessEqual = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetLessEqual);
-            SystemLibrary.SystemLibInitializer.CompareSetGreater = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetGreater);
-            SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetGreaterEqual);
-            SystemLibrary.SystemLibInitializer.IncProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.IncProcedure);
-            SystemLibrary.SystemLibInitializer.DecProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.DecProcedure);
-            SystemLibrary.SystemLibInitializer.SuccFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.SuccFunction);
-			SystemLibrary.SystemLibInitializer.PredFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PredFunction);            
-			SystemLibrary.SystemLibInitializer.OrdFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.OrdFunction);
-			SystemLibrary.SystemLibInitializer.TypedSetInitProcedureWithBounds = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedSetInitProcedureWithBounds);
-			SystemLibrary.SystemLibInitializer.TypedSetInitWithShortString = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedSetInitWithShortString);
-			SystemLibrary.SystemLibInitializer.AssignSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssignSetProcedure);
-			SystemLibrary.SystemLibInitializer.AssignSetProcedureWithBounds = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssignSetProcedureWithBounds);
-			SystemLibrary.SystemLibInitializer.ClipProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipProcedure);
-			SystemLibrary.SystemLibInitializer.ClipFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipFunction);
-			SystemLibrary.SystemLibInitializer.ClipShortStringInSetFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipShortStringInSetFunction);
-			SystemLibrary.SystemLibInitializer.ClipShortStringInSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipShortStringInSetProcedure);
-			SystemLibrary.SystemLibInitializer.SetLengthForShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.set_length_for_short_string);
-			SystemLibrary.SystemLibInitializer.SetLengthProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.set_length_procedure_name);
-			SystemLibrary.SystemLibInitializer.read_short_string_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.read_short_string);
-            SystemLibrary.SystemLibInitializer.read_short_string_from_file_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.read_short_string_from_file);
-            SystemLibrary.SystemLibInitializer.InsertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit,compiler_string_consts.Insert);
-            SystemLibrary.SystemLibInitializer.InsertInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit,compiler_string_consts.InsertInShortString);
-            SystemLibrary.SystemLibInitializer.DeleteProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit,compiler_string_consts.Delete);
-			SystemLibrary.SystemLibInitializer.LowFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit,compiler_string_consts.Low);
-            SystemLibrary.SystemLibInitializer.HighFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit,compiler_string_consts.High);
-            SystemLibrary.SystemLibInitializer.CheckCanUsePointerOnTypeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CheckCanUsePointerOnType_proc_name);
-            SystemLibrary.SystemLibInitializer.CheckCanUseTypeForBinaryFilesProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CheckCanUseTypeForBinaryFiles_proc_name);
-            SystemLibrary.SystemLibInitializer.CheckCanUseTypeForTypedFilesProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CheckCanUseTypeForTypedFiles_proc_name);
-            SystemLibrary.SystemLibInitializer.RuntimeDetermineTypeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.RuntimeDetermineType_func_name);
-            SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.RuntimeInitializeFunction_func_name);
-            SystemLibrary.SystemLibInitializer.PointerToStringFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PointerToStringFunction_func_name);
-            SystemLibrary.SystemLibInitializer.GetRuntimeSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetRuntimeSizeFunction_func_name);
-            SystemLibrary.SystemLibInitializer.StrProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StrProcedure_func_name);
-            SystemLibrary.SystemLibInitializer.PascalABCVersion = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PascalABCVersion_func_name);
-            SystemLibrary.SystemLibInitializer.ChrUnicodeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ChrUnicodeFunction_func_name);
-            SystemLibrary.SystemLibInitializer.AssertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssertProcedure);
-            SystemLibrary.SystemLibInitializer.CheckRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.check_in_range);
-            SystemLibrary.SystemLibInitializer.CheckCharRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.check_in_range_char);
-            SystemLibrary.SystemLibInitializer.CopyWithSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CopyWithSizeFunction);
-            SystemLibrary.SystemLibInitializer.ArrayCopyFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ArrayCopyFunction);
-            SystemLibrary.SystemLibInitializer.ConfigVariable = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.config_variable_name);
+        	SystemLibrary.SystemLibInitializer.format_function = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.format_procedure_name);
+            SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.read_procedure_name);
+            SystemLibrary.SystemLibInitializer.write_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.write_procedure_name);
+            SystemLibrary.SystemLibInitializer.writeln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.writeln_procedure_name);
+            SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.readln_procedure_name);
+            SystemLibrary.SystemLibInitializer.TextFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.text_file_name_type_name);
+            SystemLibrary.SystemLibInitializer.TextFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TextFileInitProcedureName);
+            SystemLibrary.SystemLibInitializer.BinaryFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.BinaryFileTypeName);
+            SystemLibrary.SystemLibInitializer.AbstractBinaryFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.AbstractBinaryFileTypeName);
+            SystemLibrary.SystemLibInitializer.PointerOutputType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.PointerOutputTypeName);
+            SystemLibrary.SystemLibInitializer.BinaryFileReadProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.BinaryFileReadProcedureName);
+            SystemLibrary.SystemLibInitializer.BinaryFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.BinaryFileInitProcedureName);
+            SystemLibrary.SystemLibInitializer.StringDefaultPropertySetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.StringDefaultPropertySetProcedureName);
+            SystemLibrary.SystemLibInitializer.TypedFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedFileTypeName);
+            SystemLibrary.SystemLibInitializer.TypedFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedFileInitProcedureName);
+            SystemLibrary.SystemLibInitializer.TypedFileReadProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedFileReadProcedureName);
+            SystemLibrary.SystemLibInitializer.ClipShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipShortString);
+            SystemLibrary.SystemLibInitializer.GetCharInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.GetCharInShortString);
+            SystemLibrary.SystemLibInitializer.SetCharInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.SetCharInShortString);
+            //SystemLibrary.SystemLibInitializer.ShortStringType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ShortStringTypeName);
+            //SystemLibrary.SystemLibInitializer.ShortStringTypeInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ShortStringTypeInitProcedure);
+            SystemLibrary.SystemLibInitializer.TypedSetType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.set_name);
+            SystemLibrary.SystemLibInitializer.TypedSetInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedSetInitProcedure);
+            SystemLibrary.SystemLibInitializer.SetUnionProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.union_of_set);
+            SystemLibrary.SystemLibInitializer.SetIntersectProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.intersect_of_set);
+            SystemLibrary.SystemLibInitializer.SetSubtractProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.subtract_of_set);
+            SystemLibrary.SystemLibInitializer.InSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.in_set);
+            SystemLibrary.SystemLibInitializer.CreateSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateSetProcedure);
+            SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
+            SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
+            SystemLibrary.SystemLibInitializer.DiapasonType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.DiapasonType);
+            SystemLibrary.SystemLibInitializer.CreateDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateDiapason);
+            SystemLibrary.SystemLibInitializer.CreateObjDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateObjDiapason);
+            SystemLibrary.SystemLibInitializer.CompareSetEquals = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetEquals);
+            SystemLibrary.SystemLibInitializer.CompareSetInEquals = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetInEquals);
+            SystemLibrary.SystemLibInitializer.CompareSetLess = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetLess);
+            SystemLibrary.SystemLibInitializer.CompareSetLessEqual = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetLessEqual);
+            SystemLibrary.SystemLibInitializer.CompareSetGreater = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetGreater);
+            SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetGreaterEqual);
+            SystemLibrary.SystemLibInitializer.IncProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncProcedure);
+            SystemLibrary.SystemLibInitializer.DecProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.DecProcedure);
+            SystemLibrary.SystemLibInitializer.SuccFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.SuccFunction);
+			SystemLibrary.SystemLibInitializer.PredFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.PredFunction);            
+			SystemLibrary.SystemLibInitializer.OrdFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.OrdFunction);
+			SystemLibrary.SystemLibInitializer.TypedSetInitProcedureWithBounds = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedSetInitProcedureWithBounds);
+			SystemLibrary.SystemLibInitializer.TypedSetInitWithShortString = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedSetInitWithShortString);
+			SystemLibrary.SystemLibInitializer.AssignSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.AssignSetProcedure);
+			SystemLibrary.SystemLibInitializer.AssignSetProcedureWithBounds = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.AssignSetProcedureWithBounds);
+			SystemLibrary.SystemLibInitializer.ClipProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipProcedure);
+			SystemLibrary.SystemLibInitializer.ClipFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipFunction);
+			SystemLibrary.SystemLibInitializer.ClipShortStringInSetFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipShortStringInSetFunction);
+			SystemLibrary.SystemLibInitializer.ClipShortStringInSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipShortStringInSetProcedure);
+			SystemLibrary.SystemLibInitializer.SetLengthForShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.set_length_for_short_string);
+			SystemLibrary.SystemLibInitializer.SetLengthProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.set_length_procedure_name);
+			SystemLibrary.SystemLibInitializer.read_short_string_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.read_short_string);
+            SystemLibrary.SystemLibInitializer.read_short_string_from_file_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.read_short_string_from_file);
+            SystemLibrary.SystemLibInitializer.InsertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit,StringConstants.Insert);
+            SystemLibrary.SystemLibInitializer.InsertInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit,StringConstants.InsertInShortString);
+            SystemLibrary.SystemLibInitializer.DeleteProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit,StringConstants.Delete);
+			SystemLibrary.SystemLibInitializer.LowFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit,StringConstants.Low);
+            SystemLibrary.SystemLibInitializer.HighFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit,StringConstants.High);
+            SystemLibrary.SystemLibInitializer.CheckCanUsePointerOnTypeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CheckCanUsePointerOnType_proc_name);
+            SystemLibrary.SystemLibInitializer.CheckCanUseTypeForBinaryFilesProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CheckCanUseTypeForBinaryFiles_proc_name);
+            SystemLibrary.SystemLibInitializer.CheckCanUseTypeForTypedFilesProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CheckCanUseTypeForTypedFiles_proc_name);
+            SystemLibrary.SystemLibInitializer.RuntimeDetermineTypeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.RuntimeDetermineType_func_name);
+            SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.RuntimeInitializeFunction_func_name);
+            SystemLibrary.SystemLibInitializer.PointerToStringFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.PointerToStringFunction_func_name);
+            SystemLibrary.SystemLibInitializer.GetRuntimeSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.GetRuntimeSizeFunction_func_name);
+            SystemLibrary.SystemLibInitializer.StrProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.StrProcedure_func_name);
+            SystemLibrary.SystemLibInitializer.PascalABCVersion = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.PascalABCVersion_func_name);
+            SystemLibrary.SystemLibInitializer.ChrUnicodeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ChrUnicodeFunction_func_name);
+            SystemLibrary.SystemLibInitializer.AssertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.AssertProcedure);
+            SystemLibrary.SystemLibInitializer.CheckRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.check_in_range);
+            SystemLibrary.SystemLibInitializer.CheckCharRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.check_in_range_char);
+            SystemLibrary.SystemLibInitializer.CopyWithSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CopyWithSizeFunction);
+            SystemLibrary.SystemLibInitializer.ArrayCopyFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ArrayCopyFunction);
+            SystemLibrary.SystemLibInitializer.ConfigVariable = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.config_variable_name);
             //SystemLibrary.SystemLibrary.make_type_conversion(SystemLibrary.SystemLibInitializer.ShortStringType.sym_info as type_node,SystemLibrary.SystemLibrary.string_type,type_compare.less_type,SemanticTree.basic_function_type.none,true);
             //SystemLibrary.SystemLibrary.make_type_conversion(SystemLibrary.SystemLibrary.string_type,SystemLibrary.SystemLibInitializer.ShortStringType.sym_info as type_node,type_compare.greater_type,SemanticTree.basic_function_type.none,true);
             if (SystemLibrary.SystemLibInitializer.TextFileType.Found)
                 SystemLibrary.SystemLibInitializer.TextFileType.TypeNode.type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.text_file;
             if (SemanticRules.GenerateNativeCode)
             {
-                SystemLibrary.SystemLibInitializer.ObjectType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ObjectType);
+                SystemLibrary.SystemLibInitializer.ObjectType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ObjectType);
                 if (SystemLibrary.SystemLibInitializer.ObjectType.Found)
                     SemanticRules.ClassBaseType = SystemLibrary.SystemLibInitializer.ObjectType.sym_info as TreeRealization.type_node;
-                SystemLibrary.SystemLibInitializer.StringType = new PascalABCCompiler.SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StringType);
+                SystemLibrary.SystemLibInitializer.StringType = new PascalABCCompiler.SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.StringType);
                 if (SystemLibrary.SystemLibInitializer.StringType.Found)
                     SemanticRules.StringType = SystemLibrary.SystemLibInitializer.StringType.sym_info as TreeRealization.type_node;
             }
@@ -409,83 +417,83 @@ namespace PascalABCCompiler.TreeConverter
 
         public static void init_system_module_from_dll(dot_net_unit_node psystem_unit)
         {
-            SystemLibrary.SystemLibInitializer.format_function = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.format_procedure_name);
-            SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.read_procedure_name);
-            SystemLibrary.SystemLibInitializer.write_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.write_procedure_name);
-            SystemLibrary.SystemLibInitializer.writeln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.writeln_procedure_name);
-            SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.readln_procedure_name);
-            SystemLibrary.SystemLibInitializer.TextFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.text_file_name_type_name);
-            SystemLibrary.SystemLibInitializer.TextFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TextFileInitProcedureName);
-            SystemLibrary.SystemLibInitializer.BinaryFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.BinaryFileTypeName);
-            SystemLibrary.SystemLibInitializer.AbstractBinaryFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AbstractBinaryFileTypeName);
-            SystemLibrary.SystemLibInitializer.PointerOutputType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PointerOutputTypeName);
-            SystemLibrary.SystemLibInitializer.BinaryFileReadProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.BinaryFileReadProcedureName);
-            SystemLibrary.SystemLibInitializer.BinaryFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.BinaryFileInitProcedureName);
-            SystemLibrary.SystemLibInitializer.StringDefaultPropertySetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StringDefaultPropertySetProcedureName);
-            SystemLibrary.SystemLibInitializer.TypedFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedFileTypeName);
-            SystemLibrary.SystemLibInitializer.TypedFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedFileInitProcedureName);
-            SystemLibrary.SystemLibInitializer.TypedFileReadProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedFileReadProcedureName);
-            SystemLibrary.SystemLibInitializer.ClipShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipShortString);
-            SystemLibrary.SystemLibInitializer.GetCharInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetCharInShortString);
-            SystemLibrary.SystemLibInitializer.SetCharInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.SetCharInShortString);
-            //SystemLibrary.SystemLibInitializer.ShortStringType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ShortStringTypeName);
-            //SystemLibrary.SystemLibInitializer.ShortStringTypeInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ShortStringTypeInitProcedure);
-            SystemLibrary.SystemLibInitializer.TypedSetType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.set_name);
-            SystemLibrary.SystemLibInitializer.TypedSetInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedSetInitProcedure);
-            SystemLibrary.SystemLibInitializer.SetUnionProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.union_of_set);
-            SystemLibrary.SystemLibInitializer.SetIntersectProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.intersect_of_set);
-            SystemLibrary.SystemLibInitializer.SetSubtractProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.subtract_of_set);
-            SystemLibrary.SystemLibInitializer.InSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.in_set);
-            SystemLibrary.SystemLibInitializer.CreateSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CreateSetProcedure);
-            SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.IncludeProcedure);
-            SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ExcludeProcedure);
-            SystemLibrary.SystemLibInitializer.DiapasonType = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.DiapasonType);
-            SystemLibrary.SystemLibInitializer.CreateDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CreateDiapason);
-            SystemLibrary.SystemLibInitializer.CreateObjDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CreateObjDiapason);
-            SystemLibrary.SystemLibInitializer.CompareSetEquals = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetEquals);
-            SystemLibrary.SystemLibInitializer.CompareSetInEquals = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetInEquals);
-            SystemLibrary.SystemLibInitializer.CompareSetLess = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetLess);
-            SystemLibrary.SystemLibInitializer.CompareSetLessEqual = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetLessEqual);
-            SystemLibrary.SystemLibInitializer.CompareSetGreater = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetGreater);
-            SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CompareSetGreaterEqual);
-            SystemLibrary.SystemLibInitializer.IncProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.IncProcedure);
-            SystemLibrary.SystemLibInitializer.DecProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.DecProcedure);
-            SystemLibrary.SystemLibInitializer.SuccFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.SuccFunction);
-            SystemLibrary.SystemLibInitializer.PredFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PredFunction);
-            SystemLibrary.SystemLibInitializer.OrdFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.OrdFunction);
-            SystemLibrary.SystemLibInitializer.TypedSetInitProcedureWithBounds = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedSetInitProcedureWithBounds);
-            SystemLibrary.SystemLibInitializer.TypedSetInitWithShortString = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.TypedSetInitWithShortString);
-            SystemLibrary.SystemLibInitializer.AssignSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssignSetProcedure);
-            SystemLibrary.SystemLibInitializer.AssignSetProcedureWithBounds = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssignSetProcedureWithBounds);
-            SystemLibrary.SystemLibInitializer.ClipProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipProcedure);
-            SystemLibrary.SystemLibInitializer.ClipFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipFunction);
-            SystemLibrary.SystemLibInitializer.ClipShortStringInSetFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipShortStringInSetFunction);
-            SystemLibrary.SystemLibInitializer.ClipShortStringInSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ClipShortStringInSetProcedure);
-            SystemLibrary.SystemLibInitializer.SetLengthForShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.set_length_for_short_string);
-            SystemLibrary.SystemLibInitializer.SetLengthProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.set_length_procedure_name);
-            SystemLibrary.SystemLibInitializer.read_short_string_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.read_short_string);
-            SystemLibrary.SystemLibInitializer.read_short_string_from_file_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.read_short_string_from_file);
-            SystemLibrary.SystemLibInitializer.InsertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.Insert);
-            SystemLibrary.SystemLibInitializer.InsertInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.InsertInShortString);
-            SystemLibrary.SystemLibInitializer.DeleteProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.Delete);
-            SystemLibrary.SystemLibInitializer.LowFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.Low);
-            SystemLibrary.SystemLibInitializer.HighFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.High);
-            SystemLibrary.SystemLibInitializer.CheckCanUsePointerOnTypeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CheckCanUsePointerOnType_proc_name);
-            SystemLibrary.SystemLibInitializer.CheckCanUseTypeForBinaryFilesProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CheckCanUseTypeForBinaryFiles_proc_name);
-            SystemLibrary.SystemLibInitializer.CheckCanUseTypeForTypedFilesProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CheckCanUseTypeForTypedFiles_proc_name);
-            SystemLibrary.SystemLibInitializer.RuntimeDetermineTypeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.RuntimeDetermineType_func_name);
-            SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.RuntimeInitializeFunction_func_name);
-            SystemLibrary.SystemLibInitializer.PointerToStringFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PointerToStringFunction_func_name);
-            SystemLibrary.SystemLibInitializer.GetRuntimeSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetRuntimeSizeFunction_func_name);
-            SystemLibrary.SystemLibInitializer.StrProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StrProcedure_func_name);
-            SystemLibrary.SystemLibInitializer.PascalABCVersion = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PascalABCVersion_func_name);
-            SystemLibrary.SystemLibInitializer.ChrUnicodeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ChrUnicodeFunction_func_name);
-            SystemLibrary.SystemLibInitializer.AssertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssertProcedure);
-            SystemLibrary.SystemLibInitializer.CheckRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.check_in_range);
-            SystemLibrary.SystemLibInitializer.CheckCharRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.check_in_range_char);
-            SystemLibrary.SystemLibInitializer.CopyWithSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CopyWithSizeFunction);
-            SystemLibrary.SystemLibInitializer.ArrayCopyFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ArrayCopyFunction);
-            SystemLibrary.SystemLibInitializer.ConfigVariable = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.config_variable_name);
+            SystemLibrary.SystemLibInitializer.format_function = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.format_procedure_name);
+            SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.read_procedure_name);
+            SystemLibrary.SystemLibInitializer.write_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.write_procedure_name);
+            SystemLibrary.SystemLibInitializer.writeln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.writeln_procedure_name);
+            SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.readln_procedure_name);
+            SystemLibrary.SystemLibInitializer.TextFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.text_file_name_type_name);
+            SystemLibrary.SystemLibInitializer.TextFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TextFileInitProcedureName);
+            SystemLibrary.SystemLibInitializer.BinaryFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.BinaryFileTypeName);
+            SystemLibrary.SystemLibInitializer.AbstractBinaryFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.AbstractBinaryFileTypeName);
+            SystemLibrary.SystemLibInitializer.PointerOutputType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.PointerOutputTypeName);
+            SystemLibrary.SystemLibInitializer.BinaryFileReadProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.BinaryFileReadProcedureName);
+            SystemLibrary.SystemLibInitializer.BinaryFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.BinaryFileInitProcedureName);
+            SystemLibrary.SystemLibInitializer.StringDefaultPropertySetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.StringDefaultPropertySetProcedureName);
+            SystemLibrary.SystemLibInitializer.TypedFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedFileTypeName);
+            SystemLibrary.SystemLibInitializer.TypedFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedFileInitProcedureName);
+            SystemLibrary.SystemLibInitializer.TypedFileReadProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedFileReadProcedureName);
+            SystemLibrary.SystemLibInitializer.ClipShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipShortString);
+            SystemLibrary.SystemLibInitializer.GetCharInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.GetCharInShortString);
+            SystemLibrary.SystemLibInitializer.SetCharInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.SetCharInShortString);
+            //SystemLibrary.SystemLibInitializer.ShortStringType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ShortStringTypeName);
+            //SystemLibrary.SystemLibInitializer.ShortStringTypeInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ShortStringTypeInitProcedure);
+            SystemLibrary.SystemLibInitializer.TypedSetType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.set_name);
+            SystemLibrary.SystemLibInitializer.TypedSetInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedSetInitProcedure);
+            SystemLibrary.SystemLibInitializer.SetUnionProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.union_of_set);
+            SystemLibrary.SystemLibInitializer.SetIntersectProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.intersect_of_set);
+            SystemLibrary.SystemLibInitializer.SetSubtractProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.subtract_of_set);
+            SystemLibrary.SystemLibInitializer.InSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.in_set);
+            SystemLibrary.SystemLibInitializer.CreateSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateSetProcedure);
+            SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
+            SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
+            SystemLibrary.SystemLibInitializer.DiapasonType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.DiapasonType);
+            SystemLibrary.SystemLibInitializer.CreateDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateDiapason);
+            SystemLibrary.SystemLibInitializer.CreateObjDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateObjDiapason);
+            SystemLibrary.SystemLibInitializer.CompareSetEquals = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetEquals);
+            SystemLibrary.SystemLibInitializer.CompareSetInEquals = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetInEquals);
+            SystemLibrary.SystemLibInitializer.CompareSetLess = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetLess);
+            SystemLibrary.SystemLibInitializer.CompareSetLessEqual = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetLessEqual);
+            SystemLibrary.SystemLibInitializer.CompareSetGreater = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetGreater);
+            SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CompareSetGreaterEqual);
+            SystemLibrary.SystemLibInitializer.IncProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncProcedure);
+            SystemLibrary.SystemLibInitializer.DecProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.DecProcedure);
+            SystemLibrary.SystemLibInitializer.SuccFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.SuccFunction);
+            SystemLibrary.SystemLibInitializer.PredFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.PredFunction);
+            SystemLibrary.SystemLibInitializer.OrdFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.OrdFunction);
+            SystemLibrary.SystemLibInitializer.TypedSetInitProcedureWithBounds = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedSetInitProcedureWithBounds);
+            SystemLibrary.SystemLibInitializer.TypedSetInitWithShortString = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TypedSetInitWithShortString);
+            SystemLibrary.SystemLibInitializer.AssignSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.AssignSetProcedure);
+            SystemLibrary.SystemLibInitializer.AssignSetProcedureWithBounds = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.AssignSetProcedureWithBounds);
+            SystemLibrary.SystemLibInitializer.ClipProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipProcedure);
+            SystemLibrary.SystemLibInitializer.ClipFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipFunction);
+            SystemLibrary.SystemLibInitializer.ClipShortStringInSetFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipShortStringInSetFunction);
+            SystemLibrary.SystemLibInitializer.ClipShortStringInSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ClipShortStringInSetProcedure);
+            SystemLibrary.SystemLibInitializer.SetLengthForShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.set_length_for_short_string);
+            SystemLibrary.SystemLibInitializer.SetLengthProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.set_length_procedure_name);
+            SystemLibrary.SystemLibInitializer.read_short_string_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.read_short_string);
+            SystemLibrary.SystemLibInitializer.read_short_string_from_file_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.read_short_string_from_file);
+            SystemLibrary.SystemLibInitializer.InsertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.Insert);
+            SystemLibrary.SystemLibInitializer.InsertInShortStringProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.InsertInShortString);
+            SystemLibrary.SystemLibInitializer.DeleteProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.Delete);
+            SystemLibrary.SystemLibInitializer.LowFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.Low);
+            SystemLibrary.SystemLibInitializer.HighFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.High);
+            SystemLibrary.SystemLibInitializer.CheckCanUsePointerOnTypeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CheckCanUsePointerOnType_proc_name);
+            SystemLibrary.SystemLibInitializer.CheckCanUseTypeForBinaryFilesProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CheckCanUseTypeForBinaryFiles_proc_name);
+            SystemLibrary.SystemLibInitializer.CheckCanUseTypeForTypedFilesProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CheckCanUseTypeForTypedFiles_proc_name);
+            SystemLibrary.SystemLibInitializer.RuntimeDetermineTypeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.RuntimeDetermineType_func_name);
+            SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.RuntimeInitializeFunction_func_name);
+            SystemLibrary.SystemLibInitializer.PointerToStringFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.PointerToStringFunction_func_name);
+            SystemLibrary.SystemLibInitializer.GetRuntimeSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.GetRuntimeSizeFunction_func_name);
+            SystemLibrary.SystemLibInitializer.StrProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.StrProcedure_func_name);
+            SystemLibrary.SystemLibInitializer.PascalABCVersion = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.PascalABCVersion_func_name);
+            SystemLibrary.SystemLibInitializer.ChrUnicodeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ChrUnicodeFunction_func_name);
+            SystemLibrary.SystemLibInitializer.AssertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.AssertProcedure);
+            SystemLibrary.SystemLibInitializer.CheckRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.check_in_range);
+            SystemLibrary.SystemLibInitializer.CheckCharRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.check_in_range_char);
+            SystemLibrary.SystemLibInitializer.CopyWithSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CopyWithSizeFunction);
+            SystemLibrary.SystemLibInitializer.ArrayCopyFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ArrayCopyFunction);
+            SystemLibrary.SystemLibInitializer.ConfigVariable = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.config_variable_name);
             //AddSpecialOperatorsToSetType();
             //SystemLibrary.SystemLibrary.make_type_conversion(SystemLibrary.SystemLibInitializer.ShortStringType.sym_info as type_node,SystemLibrary.SystemLibrary.string_type,type_compare.less_type,SemanticTree.basic_function_type.none,true);
             //SystemLibrary.SystemLibrary.make_type_conversion(SystemLibrary.SystemLibrary.string_type,SystemLibrary.SystemLibInitializer.ShortStringType.sym_info as type_node,type_compare.greater_type,SemanticTree.basic_function_type.none,true);
@@ -531,21 +539,21 @@ namespace PascalABCCompiler.TreeConverter
                 return;
             common_type_node tctn = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as common_type_node;
             tctn.type_special_kind = SemanticTree.type_special_kind.base_set_type;
-            tctn.scope.AddSymbol(compiler_string_consts.plus_name, SystemLibrary.SystemLibInitializer.SetUnionProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.mul_name, SystemLibrary.SystemLibInitializer.SetIntersectProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.in_name, SystemLibrary.SystemLibInitializer.InSetProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.minus_name, SystemLibrary.SystemLibInitializer.SetSubtractProcedure.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.gr_name, SystemLibrary.SystemLibInitializer.CompareSetGreater.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.greq_name, SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.sm_name, SystemLibrary.SystemLibInitializer.CompareSetLess.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.smeq_name, SystemLibrary.SystemLibInitializer.CompareSetLessEqual.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.eq_name, SystemLibrary.SystemLibInitializer.CompareSetEquals.SymbolInfo.FirstOrDefault());
-            tctn.scope.AddSymbol(compiler_string_consts.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.plus_name, SystemLibrary.SystemLibInitializer.SetUnionProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.mul_name, SystemLibrary.SystemLibInitializer.SetIntersectProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.in_name, SystemLibrary.SystemLibInitializer.InSetProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.minus_name, SystemLibrary.SystemLibInitializer.SetSubtractProcedure.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.gr_name, SystemLibrary.SystemLibInitializer.CompareSetGreater.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.greq_name, SystemLibrary.SystemLibInitializer.CompareSetGreaterEqual.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.sm_name, SystemLibrary.SystemLibInitializer.CompareSetLess.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.smeq_name, SystemLibrary.SystemLibInitializer.CompareSetLessEqual.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.eq_name, SystemLibrary.SystemLibInitializer.CompareSetEquals.SymbolInfo.FirstOrDefault());
+            tctn.scope.AddSymbol(StringConstants.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
         }
 
         private void CreateSpecialFields(common_unit_node psystem_unit)
         {
-            List<SymbolInfo> sil = psystem_unit.scope.Find(compiler_string_consts.IsConsoleApplicationVariableName);
+            List<SymbolInfo> sil = psystem_unit.scope.Find(StringConstants.IsConsoleApplicationVariableName);
             if (sil != null && sil.FirstOrDefault().sym_info is namespace_variable)
             {
                 namespace_variable_reference nvr = new namespace_variable_reference(sil.FirstOrDefault().sym_info as namespace_variable, null);
@@ -557,13 +565,15 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (!from_pabc_dll)
             {
-                SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(unit, compiler_string_consts.read_procedure_name);
-                SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(unit, compiler_string_consts.readln_procedure_name);
+                SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(unit, StringConstants.read_procedure_name);
+                var si = SystemLibrary.SystemLibInitializer.read_procedure.SymbolInfo;
+                SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(unit, StringConstants.readln_procedure_name);
+                si = SystemLibrary.SystemLibInitializer.readln_procedure.SymbolInfo;
             }
             else
             {
-                //SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(unit, compiler_string_consts.read_procedure_name);
-                //SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(unit, compiler_string_consts.readln_procedure_name);
+                //SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(unit, StringConstants.read_procedure_name);
+                //SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(unit, StringConstants.readln_procedure_name);
             }
         }
 
@@ -803,7 +813,7 @@ namespace PascalABCCompiler.TreeConverter
 
             //st = prepare_statement(st);
             statement_node sn = null;
-            //try
+            try
             {
                 sn = ret.visit(st);
                 // SSM 19/01/17 закомментировал две следующие строчки
@@ -819,14 +829,16 @@ namespace PascalABCCompiler.TreeConverter
                     ErrorsList.Add(e);
                     return new empty_statement(null);
                 }
-            }
+            }*/
             catch (Exception e)
             {
-                if (ThrowCompilationError)
+                var s = e.StackTrace;
+                var runMethodInfo = e.TargetSite;
+                //if (ThrowCompilationError)
                     throw e;
-                else
-                    return new empty_statement(null);
-            }*/
+                //else
+                //    return new empty_statement(null);
+            }
             //sn.loc=get_location(st);
 
             #region MikhailoMMX, обработка критических секций OpenMP
@@ -1078,11 +1090,11 @@ namespace PascalABCCompiler.TreeConverter
         
         internal bool one_way_operation(string name)
         {
-        	if (name == compiler_string_consts.plusassign_name) return true;
-        	if (name == compiler_string_consts.minusassign_name) return true;
-        	if (name == compiler_string_consts.multassign_name) return true;
-            if (name == compiler_string_consts.assign_name) return true;
-            if (name == compiler_string_consts.divassign_name) return true;
+        	if (name == StringConstants.plusassign_name) return true;
+        	if (name == StringConstants.minusassign_name) return true;
+        	if (name == StringConstants.multassign_name) return true;
+            if (name == StringConstants.assign_name) return true;
+            if (name == StringConstants.divassign_name) return true;
         	return false;
         }
         
@@ -1134,12 +1146,12 @@ namespace PascalABCCompiler.TreeConverter
             if (right_type.semantic_node_type == semantic_node_type.delegated_method && !left_type.IsDelegate && left_type.semantic_node_type != semantic_node_type.delegated_method)
             {
                 try_convert_typed_expression_to_function_call(ref right);
-                if (name != compiler_string_consts.plusassign_name && name != compiler_string_consts.minusassign_name)
+                if (name != StringConstants.plusassign_name && name != StringConstants.minusassign_name)
                     try_convert_typed_expression_to_function_call(ref left);
 
                 right_type = right.type;
             }
-            if (right_type.semantic_node_type == semantic_node_type.delegated_method && name != compiler_string_consts.plusassign_name && name != compiler_string_consts.minusassign_name)
+            if (right_type.semantic_node_type == semantic_node_type.delegated_method && name != StringConstants.plusassign_name && name != StringConstants.minusassign_name)
             {
                 delegated_methods dm2 = (delegated_methods)right_type;
                 if (dm2.empty_param_method != null)
@@ -1371,7 +1383,7 @@ namespace PascalABCCompiler.TreeConverter
             if (added_symbols != -1 && sil != null && added_symbols < sil.Count())
                 sil.RemoveRange(added_symbols + 1, sil.Count() - 1 - added_symbols);
             
-            if (SystemUnitAssigned && in_check_range_region() && name == compiler_string_consts.assign_name && is_range_checkable(left.type) && is_range_checkable(right.type))
+            if (SystemUnitAssigned && in_check_range_region() && name == StringConstants.assign_name && is_range_checkable(left.type) && is_range_checkable(right.type))
             {
             	ordinal_type_interface oti = left.type.get_internal_interface(internal_interface_kind.ordinal_interface) as ordinal_type_interface;
             	if (left.type != SystemLibrary.SystemLibrary.char_type && left.type != SystemLibrary.SystemLibrary.uint64_type && !(oti.lower_value is ulong_const_node))
@@ -1743,7 +1755,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             string tmp = names.names[names.names.Count - 1].name;
             int num;
-            string generic_name = compiler_string_consts.GetGenericTypeInformation(tmp, out num);
+            string generic_name = StringConstants.GetGenericTypeInformation(tmp, out num);
             List<int> counts;
             bool found = NetHelper.NetHelper.generics_names.TryGetValue(generic_name.ToLower(), out counts);
             if (found)
@@ -1751,7 +1763,7 @@ namespace PascalABCCompiler.TreeConverter
                 foreach (int k in counts)
                 {
                     names.names[names.names.Count - 1].name = generic_name +
-                        compiler_string_consts.generic_params_infix + k.ToString();
+                        StringConstants.generic_params_infix + k.ToString();
                     List<SymbolInfo> sinfo = context.find_definition_node(names, loc);
                     if (sinfo != null)
                     {
@@ -1858,7 +1870,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
             }
             if (!TreeConverter.SemanticRules.EnableExitProcedure)
-                AddError(new TreeConverter.UndefinedNameReference(TreeConverter.compiler_string_consts.exit_procedure_name, call_location));
+                AddError(new TreeConverter.UndefinedNameReference(StringConstants.exit_procedure_name, call_location));
             return new exit_procedure(call_location);
         }
 
@@ -1946,7 +1958,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-            	type_node filter_type = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.ExceptionName));
+            	type_node filter_type = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.ExceptionName));
             	expression_node current_catch_excep = create_constructor_call(filter_type, new expressions_list(), null);
                 local_block_variable_reference lvr = null;
                 local_block_variable tmp_var = context.add_var_definition(context.BuildName("$try_temp" + UniqueNumStr()), null, SystemLibrary.SystemLibrary.bool_type, null) as local_block_variable;
@@ -2218,7 +2230,7 @@ namespace PascalABCCompiler.TreeConverter
         		common_type_node ctn = tn as common_type_node;
         		if (ctn.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
         		{
-        			int len = ((ctn.find_first_in_type(compiler_string_consts.internal_array_name).sym_info as class_field).type as simple_array).length;
+        			int len = ((ctn.find_first_in_type(StringConstants.internal_array_name).sym_info as class_field).type as simple_array).length;
         			return len*get_short_string_size(ctn.element_type);
         		}
         		else if (ctn.type_special_kind == SemanticTree.type_special_kind.record)
@@ -2244,7 +2256,7 @@ namespace PascalABCCompiler.TreeConverter
             expressions_list exl = new expressions_list();
             exl.AddElement(new typeof_operator(element_type, loc));
             base_function_call bfc = create_constructor_call(vdn.type, exl, loc);
-            expression_node expr = find_operator(compiler_string_consts.assign_name, var_ref, bfc, loc);
+            expression_node expr = find_operator(StringConstants.assign_name, var_ref, bfc, loc);
             */
 
             type_node tn = vdn.type;
@@ -2320,7 +2332,7 @@ namespace PascalABCCompiler.TreeConverter
             expressions_list exl = new expressions_list();
             exl.AddElement(new typeof_operator(element_type, loc));
             base_function_call bfc = create_constructor_call(vdn.type, exl, loc);
-            expression_node expr = find_operator(compiler_string_consts.assign_name, var_ref, bfc, loc);
+            expression_node expr = find_operator(StringConstants.assign_name, var_ref, bfc, loc);
             */
 
             type_node tn = vdn.type;
@@ -2388,7 +2400,7 @@ namespace PascalABCCompiler.TreeConverter
             expressions_list exl = new expressions_list();
             exl.AddElement(new typeof_operator(element_type, loc));
             base_function_call bfc = create_constructor_call(vdn.type, exl, loc);
-            expression_node expr = find_operator(compiler_string_consts.assign_name, var_ref, bfc, loc);
+            expression_node expr = find_operator(StringConstants.assign_name, var_ref, bfc, loc);
             */
 
             type_node tn = vdn.type;
@@ -2428,11 +2440,11 @@ namespace PascalABCCompiler.TreeConverter
             function_node fn = null;
             if (exl.Count > 1)
             {
-                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(compiler_string_consts.default_constructor_name), loc);
+                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(StringConstants.default_constructor_name), loc);
             }
             else
             {
-                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(compiler_string_consts.default_constructor_name), loc);
+                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(StringConstants.default_constructor_name), loc);
             }
             //expression_node expr = convertion_data_and_alghoritms.create_simple_function_call(fn, null, exl.ToArray());
             expression_node expr = create_static_method_call_with_params(fn, loc, tn, false, exl);
@@ -2767,7 +2779,7 @@ namespace PascalABCCompiler.TreeConverter
                             //Пытаемся добавить вызов .ctor() предка...
                             //Для начала проверим, есть ли у предка таковой.
                             bool not_found = true;
-                            List<SymbolInfo> sym = context.converted_type.base_type.find_in_type(compiler_string_consts.default_constructor_name, context.CurrentScope);
+                            List<SymbolInfo> sym = context.converted_type.base_type.find_in_type(StringConstants.default_constructor_name, context.CurrentScope);
                             if (sym != null)
                             {
                                 foreach (SymbolInfo sym_unit in sym)
@@ -2803,7 +2815,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 //Генерируем вызов .ctor() предка
                                 SyntaxTree.inherited_ident ii = new SyntaxTree.inherited_ident();
-                                ii.name = compiler_string_consts.default_constructor_name;
+                                ii.name = StringConstants.default_constructor_name;
                                 _block.program_code.subnodes.Insert(0, new SyntaxTree.procedure_call(ii));
                                 //context.allow_inherited_ctor_call = false;
                             }
@@ -3052,7 +3064,7 @@ namespace PascalABCCompiler.TreeConverter
                 loc = get_location(_unit_module.unit_name);
             }
 
-            common_namespace_node cnsn = context.create_namespace(_unit_module.unit_name.idunit_name.name + compiler_string_consts.ImplementationSectionNamespaceName,
+            common_namespace_node cnsn = context.create_namespace(_unit_module.unit_name.idunit_name.name + StringConstants.ImplementationSectionNamespaceName,
                 _compiled_unit, _compiled_unit.implementation_scope, loc);
 
             //cnsn.scope=_compiled_unit.implementation_scope;
@@ -3074,7 +3086,7 @@ namespace PascalABCCompiler.TreeConverter
                 context.check_labels(context.converted_namespace.labels);
                 //(ssyy) Блокируем поставленные метки, чтобы не допустить переход из finalization-секции
                 //context.block_defined_labels(context.converted_namespace.labels);
-                initialization_function = new common_namespace_function_node(compiler_string_consts.initialization_function_name,
+                initialization_function = new common_namespace_function_node(StringConstants.initialization_function_name,
                     null, init_statements.location, context.converted_namespace, convertion_data_and_alghoritms.symbol_table.CreateScope(context.converted_namespace.scope));
                 initialization_function.function_code = init_statements;
                 cnsn.functions.AddElement(initialization_function);
@@ -3090,7 +3102,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 context.check_labels(context.converted_namespace.labels);
                 
-                finalization_function = new common_namespace_function_node(compiler_string_consts.finalization_function_name,
+                finalization_function = new common_namespace_function_node(StringConstants.finalization_function_name,
                     null, final_statements.location, context.converted_namespace, convertion_data_and_alghoritms.symbol_table.CreateScope(context.converted_namespace.scope));
                 finalization_function.function_code = final_statements;
                 cnsn.functions.AddElement(finalization_function);
@@ -3157,9 +3169,9 @@ namespace PascalABCCompiler.TreeConverter
             if (!SemanticRules.IsAsForPointers && (tp.IsPointer || en.type.IsPointer))
             {
                 if (node.cast_op == PascalABCCompiler.SyntaxTree.op_typecast.is_op)
-                    AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.is_name);
+                    AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", StringConstants.is_name);
                 else
-                    AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.as_name);
+                    AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", StringConstants.as_name);
             }
             else
             	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) 
@@ -3247,13 +3259,13 @@ namespace PascalABCCompiler.TreeConverter
 
             if (_constructor.name == null)
             {
-                SyntaxTree.ident name = new SyntaxTree.ident(compiler_string_consts.default_constructor_name);
+                SyntaxTree.ident name = new SyntaxTree.ident(StringConstants.default_constructor_name);
                 _constructor.name = new PascalABCCompiler.SyntaxTree.method_name(null, null, name, null);
                 _constructor.name.source_context = _constructor.name.meth_name.source_context = _constructor.source_context;
             }
 
-            if (_constructor.name.meth_name.name.ToLower() != compiler_string_consts.default_constructor_name)
-                AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", compiler_string_consts.default_constructor_name);
+            if (_constructor.name.meth_name.name.ToLower() != StringConstants.default_constructor_name)
+                AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", StringConstants.default_constructor_name);
             if ((_constructor.name.class_name == null) && (context.converting_block() != block_type.type_block))
             {
                 AddError(get_location(_constructor.name), "ONLY_CONSTRUCTOR_OF_TYPE_ALLOWED");
@@ -3289,7 +3301,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         AddError(get_location(_constructor.name), "STATIC_CONSTRUCTOR_MUST_BE_PARAMETERLESS");
                     }
-                    _constructor.name.meth_name.name = compiler_string_consts.static_ctor_prefix + _constructor.name.meth_name.name;
+                    _constructor.name.meth_name.name = StringConstants.static_ctor_prefix + _constructor.name.meth_name.name;
                     visit_procedure_header(_constructor);
                     if (context.top_function != null)
                     {
@@ -4162,14 +4174,14 @@ namespace PascalABCCompiler.TreeConverter
                                 self_type = cmn.cont_type.get_instance(cmn.cont_type.generic_params.ConvertAll<type_node>(o => (type_node)o));// new generic_instance_type_node(self_type, self_type.generic_params.ConvertAll<type_node>(o => (type_node)o), self_type.base_type, self_type.name, self_type.type_access_level, self_type.comprehensive_namespace, self_type.loc);
                             if (!(cmn.is_constructor && cmn.cont_type.name.StartsWith("<>local_variables_class")))
                             {
-                                local_variable lv = new local_variable(compiler_string_consts.self_word, self_type, cmn, null);
-                                cmn.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(lv));
+                                local_variable lv = new local_variable(StringConstants.self_word, self_type, cmn, null);
+                                cmn.scope.AddSymbol(StringConstants.self_word, new SymbolInfo(lv));
                                 cmn.self_variable = lv;
                             }
                     		else
                             {
-                                local_variable lv = new local_variable(compiler_string_consts.self_word+"$", self_type, cmn, null);
-                                cmn.scope.AddSymbol(compiler_string_consts.self_word+"$", new SymbolInfo(lv));
+                                local_variable lv = new local_variable(StringConstants.self_word+"$", self_type, cmn, null);
+                                cmn.scope.AddSymbol(StringConstants.self_word+"$", new SymbolInfo(lv));
                                 cmn.self_variable = lv;
                             }
                 		}
@@ -4251,7 +4263,7 @@ namespace PascalABCCompiler.TreeConverter
             SyntaxTree.procedure_attributes_list pal = new PascalABCCompiler.SyntaxTree.procedure_attributes_list();
             //pal.proc_attributes.Add(new PascalABCCompiler.SyntaxTree.procedure_attribute(SyntaxTree.proc_attribute.attr_overload)); attr_overload - убрал отовсюду! ССМ
             SyntaxTree.constructor constr = new PascalABCCompiler.SyntaxTree.constructor();
-            constr.name = new SyntaxTree.method_name(null, null, new PascalABCCompiler.SyntaxTree.ident(compiler_string_consts.default_constructor_name), null);
+            constr.name = new SyntaxTree.method_name(null, null, new PascalABCCompiler.SyntaxTree.ident(StringConstants.default_constructor_name), null);
             constr.proc_attributes = pal;
             SyntaxTree.block bl = new SyntaxTree.block();
             bl.program_code = new SyntaxTree.statement_list();
@@ -4334,7 +4346,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.simple_property _simple_property)
         {
             if (_simple_property.accessors == null)
-                AddError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", compiler_string_consts.PascalReadAccessorName, compiler_string_consts.PascalWriteAccessorName);
+                AddError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", StringConstants.PascalReadAccessorName, StringConstants.PascalWriteAccessorName);
             if (_simple_property.property_type == null)
                 AddError(get_location(_simple_property.property_name), "TYPE_NAME_EXPECTED");
             string name = _simple_property.property_name.name;
@@ -4571,7 +4583,7 @@ namespace PascalABCCompiler.TreeConverter
                         		AddError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
                     		if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                                 AddError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
-                            read_accessor = GenerateGetMethodForField(pn, compiler_string_consts.GetGetAccessorName(pn.name), cfield, loc1);
+                            read_accessor = GenerateGetMethodForField(pn, StringConstants.GetGetAccessorName(pn.name), cfield, loc1);
                         }
                        
                         //Вот здесь уже можем добавить акцессор для чтения.
@@ -4711,7 +4723,7 @@ namespace PascalABCCompiler.TreeConverter
                         		AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
                     		if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
                         		AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
-                            write_accessor = GenerateSetMethodForField(pn, compiler_string_consts.GetSetAccessorName(pn.name), cfield, loc2);
+                            write_accessor = GenerateSetMethodForField(pn, StringConstants.GetSetAccessorName(pn.name), cfield, loc2);
                         }
                         //Вот здесь уже можем добавить акцессор для чтения.
                         pn.internal_set_function = write_accessor;
@@ -4850,7 +4862,7 @@ namespace PascalABCCompiler.TreeConverter
                 cpn.polymorphic_state, context.get_field_access_level(), null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             common_parameter cp = new common_parameter(
-                compiler_string_consts.value, cf.type, SemanticTree.parameter_type.value,
+                StringConstants.value, cf.type, SemanticTree.parameter_type.value,
                 cmn, concrete_parameter_type.cpt_none, null, loc);
             cmn.parameters.AddElement(cp);
             cmn.is_overload = true;
@@ -4864,14 +4876,14 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var_ref = new static_class_field_reference(cf, loc);
             }
-            cmn.function_code = find_operator(compiler_string_consts.assign_name, var_ref, cpr, loc);
+            cmn.function_code = find_operator(StringConstants.assign_name, var_ref, cpr, loc);
             cf.cont_type.Scope.AddSymbol(AcessorName, new SymbolInfo(cmn));
             return cmn;
         }
 
         internal expression_node make_assign_operator(addressed_expression left, expression_node right, location loc)
         {
-            return find_operator(compiler_string_consts.assign_name, left, right, loc);
+            return find_operator(StringConstants.assign_name, left, right, loc);
         }
 
         internal function_node GenerateGetMethodForField(common_property_node cpn, string AcessorName, class_field cf, location loc)
@@ -4915,8 +4927,8 @@ namespace PascalABCCompiler.TreeConverter
         {
 
             string AcessorName = (get_meth) ?
-                compiler_string_consts.GetGetAccessorName(pn.name) :
-                compiler_string_consts.GetSetAccessorName(pn.name);
+                StringConstants.GetGetAccessorName(pn.name) :
+                StringConstants.GetSetAccessorName(pn.name);
             List<SymbolInfo> exist_sil = context.find_only_in_namespace(AcessorName);
             if (exist_sil != null && exist_sil.FirstOrDefault().sym_info.general_node_type != general_node_type.function_node)
             {
@@ -4945,7 +4957,7 @@ namespace PascalABCCompiler.TreeConverter
                 //{
                 //    if (par.name == 
                 //}
-                common_parameter accp = new common_parameter(compiler_string_consts.value_in_accessor_name,
+                common_parameter accp = new common_parameter(StringConstants.value_in_accessor_name,
                     SemanticTree.parameter_type.value, cmn, concrete_parameter_type.cpt_none, null);
                 accp.type = pn.internal_property_type;
                 cmn.parameters.AddElement(accp);
@@ -5442,7 +5454,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (templ_args_count != 0)
                     {
                         //Ищем generics
-                        sil = context.find(id.name + compiler_string_consts.generic_params_infix + templ_args_count.ToString());
+                        sil = context.find(id.name + StringConstants.generic_params_infix + templ_args_count.ToString());
                         if (sil != null)
                         { 
                             sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
@@ -6040,7 +6052,7 @@ namespace PascalABCCompiler.TreeConverter
                                     if (templ_args_count != 0)
                                     {
                                         //Ищем generics
-                                        sil = context.find(id_right.name + compiler_string_consts.generic_params_infix + templ_args_count.ToString());
+                                        sil = context.find(id_right.name + StringConstants.generic_params_infix + templ_args_count.ToString());
                                         if (sil != null)
                                         {
                                             sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
@@ -6059,7 +6071,7 @@ namespace PascalABCCompiler.TreeConverter
                                             sil = nsn.findOnlyInNamespace(id_right.name);
                                             if (templ_args_count != 0)
                                             {
-                                                sil = nsn.find(id_right.name + compiler_string_consts.generic_params_infix + templ_args_count.ToString());
+                                                sil = nsn.find(id_right.name + StringConstants.generic_params_infix + templ_args_count.ToString());
                                                 if (sil != null)
                                                 {
                                                     sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
@@ -6846,7 +6858,7 @@ namespace PascalABCCompiler.TreeConverter
                                 expression_node en = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.CopyWithSizeFunction.sym_info as function_node, loc, param0, cnfc);
                                 function_node fn = convertion_data_and_alghoritms.get_empty_conversion(en.type, retv.type, false);
                                 en = convertion_data_and_alghoritms.create_simple_function_call(fn, loc, en);
-                                basic_function_call bfc = new basic_function_call(tn.find(compiler_string_consts.assign_name).FirstOrDefault().sym_info as basic_function_node, loc, param0, en);
+                                basic_function_call bfc = new basic_function_call(tn.find(StringConstants.assign_name).FirstOrDefault().sym_info as basic_function_node, loc, param0, en);
                                 return_value(bfc);
                                 return;
                             }
@@ -7825,7 +7837,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (SystemLibrary.SystemLibInitializer.PointerOutputConstructor == null)
                     {
-                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as common_type_node).find_in_type(compiler_string_consts.default_constructor_name);
+                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as common_type_node).find_in_type(StringConstants.default_constructor_name);
                         common_method_node cnode = null;
                         int cur_si_ind = 0;
                         do
@@ -7858,7 +7870,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (SystemLibrary.SystemLibInitializer.PointerOutputConstructor == null)
                     {
-                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as compiled_type_node).find_in_type(compiler_string_consts.default_constructor_name);
+                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as compiled_type_node).find_in_type(StringConstants.default_constructor_name);
                         compiled_constructor_node cnode = null;
                         int cur_si_index = 0;
                         do
@@ -8001,7 +8013,7 @@ namespace PascalABCCompiler.TreeConverter
                         internal_interface ii = cmc.obj.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                         if (ii != null)
                         {
-                            if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                            if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                             {
                                 bounded_array_interface bai = (bounded_array_interface)ii;
                                 class_field cf = bai.int_array;
@@ -8059,7 +8071,7 @@ namespace PascalABCCompiler.TreeConverter
                         internal_interface ii = cmc.obj.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                         if (ii != null)
                         {
-                            if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                            if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                             {
                                 bounded_array_interface bai = (bounded_array_interface)ii;
                                 class_field cf = bai.int_array;
@@ -8344,7 +8356,7 @@ namespace PascalABCCompiler.TreeConverter
                         internal_interface ii = cmc.obj.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                         if (ii != null)
                         {
-                            if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                            if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                             {
                                 bounded_array_interface bai = (bounded_array_interface)ii;
                                 class_field cf = bai.int_array;
@@ -8577,7 +8589,7 @@ namespace PascalABCCompiler.TreeConverter
                         internal_interface ii = cmc.obj.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                         if (ii != null)
                         {
-                            if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                            if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                             {
                                 bounded_array_interface bai = (bounded_array_interface)ii;
                                 class_field cf = bai.int_array;
@@ -8912,7 +8924,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (is_char_getter)
                             expr = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.StringDefaultPropertySetProcedure.sym_info as function_node, loc, (en as simple_array_indexing).simple_arr_expr, (en as simple_array_indexing).ind_expr, expr);
                         else
-                            expr = find_operator(compiler_string_consts.assign_name, en, expr, loc);
+                            expr = find_operator(StringConstants.assign_name, en, expr, loc);
                         last_call = expr;
                     }
                     else if (read_from_binary_file)
@@ -8927,7 +8939,7 @@ namespace PascalABCCompiler.TreeConverter
                         function_node fn = convertion_data_and_alghoritms.select_function(exl,SystemLibrary.SystemLibInitializer.BinaryFileReadProcedure.SymbolInfo, loc);
                         expression_node expr = convertion_data_and_alghoritms.create_simple_function_call(fn, get_location(ex), exl.ToArray());
                         expr = convertion_data_and_alghoritms.explicit_convert_type(expr, en.type);
-                        expr = find_operator(compiler_string_consts.assign_name, en, expr, loc);
+                        expr = find_operator(StringConstants.assign_name, en, expr, loc);
                         last_call = expr;
                     }
                     else
@@ -9057,7 +9069,7 @@ namespace PascalABCCompiler.TreeConverter
 				case semantic_node_type.compiled_constructor_call:
 				case semantic_node_type.common_constructor_call:
 				case semantic_node_type.compiled_static_method_call:
-					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(compiler_string_consts.GetTempVariableName(), sl, expr.type, expr), sl);
+					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(StringConstants.GetTempVariableName(), sl, expr.type, expr), sl);
 				case semantic_node_type.class_field_reference:
 					(expr as class_field_reference).obj = create_with_expression((expr as class_field_reference).obj);
 					return expr;
@@ -9073,9 +9085,9 @@ namespace PascalABCCompiler.TreeConverter
 					(expr as dereference_node).deref_expr = create_with_expression((expr as dereference_node).deref_expr);
 					return expr;
 				case semantic_node_type.basic_function_call:
-					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(compiler_string_consts.GetTempVariableName(), sl, expr.type, expr), sl);
+					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(StringConstants.GetTempVariableName(), sl, expr.type, expr), sl);
 				case semantic_node_type.as_node:
-					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(compiler_string_consts.GetTempVariableName(), sl, expr.type, expr), sl);
+					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(StringConstants.GetTempVariableName(), sl, expr.type, expr), sl);
 			}
 			return expr;
 		}
@@ -9114,7 +9126,7 @@ namespace PascalABCCompiler.TreeConverter
                 	{
                     	location sl = get_location(s_expr);
                     	if (expr.type.type_special_kind != SemanticTree.type_special_kind.record)
-                    	vr = convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(compiler_string_consts.GetTempVariableName(), sl, expr.type, expr), sl);
+                    	vr = convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(StringConstants.GetTempVariableName(), sl, expr.type, expr), sl);
                     	else
                     		expr = create_with_expression(expr);
                 	}
@@ -11277,7 +11289,7 @@ namespace PascalABCCompiler.TreeConverter
             // end frninja
 
             
-            common_namespace_function_node main_function = new common_namespace_function_node(compiler_string_consts.temp_main_function_name,
+            common_namespace_function_node main_function = new common_namespace_function_node(StringConstants.temp_main_function_name,
                 null, null, cnsn, null);
             main_function.function_code = context.code;
             context.apply_special_local_vars(main_function);
@@ -11992,7 +12004,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (SemanticRules.RuntimeInitVariablesOfGenericParameters && !ctn.IsInterface && !ctn.IsDelegate)
                 {
                     class_field cf = new class_field(
-                        compiler_string_consts.generic_param_kind_prefix + id.name,
+                        StringConstants.generic_param_kind_prefix + id.name,
                         SystemLibrary.SystemLibrary.byte_type,
                         ctn, PascalABCCompiler.SemanticTree.polymorphic_state.ps_static,
                         SemanticTree.field_access_level.fal_public, null);
@@ -12109,7 +12121,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         AddError(loc, "GENERIC_DELEGATE_INNER_FUNCTION");
                     }
-                    del_name += compiler_string_consts.generic_params_infix + ttn.template_args.idents.Count;
+                    del_name += StringConstants.generic_params_infix + ttn.template_args.idents.Count;
                 }
                 context.check_name_free(del_name, loc);
                 common_type_node del_type = convertion_data_and_alghoritms.type_constructor.create_delegate_without_init(
@@ -12280,7 +12292,7 @@ namespace PascalABCCompiler.TreeConverter
             bool predefined_generic = false;
             if (is_generic)
             {
-                List<SymbolInfo> sil = context.find_only_in_namespace(_type_declaration.type_name.name + compiler_string_consts.generic_params_infix +
+                List<SymbolInfo> sil = context.find_only_in_namespace(_type_declaration.type_name.name + StringConstants.generic_params_infix +
                         cl_def.template_args.idents.Count.ToString());
                 if (!(sil != null && sil.FirstOrDefault().sym_info is common_type_node && ((sil.FirstOrDefault().sym_info as common_type_node).IsPartial || context.types_predefined.IndexOf(sil.FirstOrDefault().sym_info as common_type_node) != -1)))
                 {
@@ -12288,7 +12300,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                     predefined_generic = true;
-                _type_declaration.type_name.name += compiler_string_consts.generic_params_infix +
+                _type_declaration.type_name.name += StringConstants.generic_params_infix +
                         cl_def.template_args.idents.Count.ToString();
             }
             if (cl_def.keyword == SyntaxTree.class_keyword.Record)
@@ -13230,7 +13242,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                 }
-                if (cmmn != null && (cmmn.name == compiler_string_consts.implicit_operator_name || cmmn.name == compiler_string_consts.explicit_operator_name))
+                if (cmmn != null && (cmmn.name == StringConstants.implicit_operator_name || cmmn.name == StringConstants.explicit_operator_name))
                 if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.comperehensive_type as type_node) && !convertion_data_and_alghoritms.eq_type_nodes(cmmn.comperehensive_type as type_node, cmmn.parameters[0].type))
                 {
                     AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
@@ -13252,10 +13264,10 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 if (!has_extensionmethod_attr(_function_header.proc_attributes.proc_attributes))
                 {
-                    common_parameter cp = new common_parameter(compiler_string_consts.self_word, (context.top_function as common_namespace_function_node).ConnectedToType, pt,
+                    common_parameter cp = new common_parameter(StringConstants.self_word, (context.top_function as common_namespace_function_node).ConnectedToType, pt,
                                                                                     context.top_function, cpt, null, null);
                     context.top_function.parameters.AddElementFirst(cp);
-                    context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
+                    context.top_function.scope.AddSymbol(StringConstants.self_word, new SymbolInfo(cp));
                 }
             }
             CheckOverrideOrReintroduceExpectedWarning(get_location(_function_header));
@@ -13407,7 +13419,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (context.top_function != null &&
                 context.top_function is common_namespace_function_node commonNode &&
-                commonNode.name.ToLower() == compiler_string_consts.deconstruct_method_name)
+                commonNode.name.ToLower() == StringConstants.deconstruct_method_name)
             {
                 var deconstructor = commonNode;
                 
@@ -13427,7 +13439,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (context.top_function != null &&
                 context.top_function is common_method_node methodNode &&
-                methodNode.name.ToLower() == compiler_string_consts.deconstruct_method_name)
+                methodNode.name.ToLower() == StringConstants.deconstruct_method_name)
             {
                 var deconstructor = methodNode;
 
@@ -13507,14 +13519,14 @@ namespace PascalABCCompiler.TreeConverter
 
                         if (cmn != null && !cmn.IsStatic)
                         {
-                            //if (cmn.find_only_in_namespace(compiler_string_consts.self_word) == null)
+                            //if (cmn.find_only_in_namespace(StringConstants.self_word) == null)
                             //self variable
                             //добавляем self, обращение к ней заменяется на this_node
                             type_node self_type = cmn.cont_type;
                             if (cmn.cont_type.is_generic_type_definition)
                                 self_type = cmn.cont_type.get_instance(cmn.cont_type.generic_params.ConvertAll<type_node>(o => (type_node)o));
-                            local_variable lv = new local_variable(compiler_string_consts.self_word, self_type, cmn, null);
-                            cmn.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(lv));
+                            local_variable lv = new local_variable(StringConstants.self_word, self_type, cmn, null);
+                            cmn.scope.AddSymbol(StringConstants.self_word, new SymbolInfo(lv));
                             cmn.self_variable = lv;
                         }
                         if (_procedure_definition.proc_body != null)
@@ -13678,7 +13690,7 @@ namespace PascalABCCompiler.TreeConverter
                         cmc.parameters.AddElement(new int_const_node((prm.type as short_string_type_node).Length, null));
                         concrete_parameter_type tmp_cpt = prm.concrete_parameter_type;
                         prm.concrete_parameter_type = concrete_parameter_type.cpt_none;
-                        sl.statements.AddElementFirst(find_operator(compiler_string_consts.assign_name, new common_parameter_reference(prm, 0, null), cmc, null));
+                        sl.statements.AddElementFirst(find_operator(StringConstants.assign_name, new common_parameter_reference(prm, 0, null), cmc, null));
                         prm.concrete_parameter_type = tmp_cpt;
                     }
                     else
@@ -13700,7 +13712,7 @@ namespace PascalABCCompiler.TreeConverter
                         cmc.parameters.AddElement(new simple_array_indexing(cpr, new local_variable_reference(var, 0, null), prm.type.element_type, null));
                         cmc.parameters.AddElement(new int_const_node((prm.type.element_type as short_string_type_node).Length, null));
 
-                        body.statements.AddElement(find_operator(compiler_string_consts.assign_name, new simple_array_indexing(cpr, new local_variable_reference(var, 0, null), prm.type.element_type, null), cmc, null));
+                        body.statements.AddElement(find_operator(StringConstants.assign_name, new simple_array_indexing(cpr, new local_variable_reference(var, 0, null), prm.type.element_type, null), cmc, null));
                         body.statements.AddElement(new basic_function_call(SystemLibrary.SystemLibrary.int_assign as basic_function_node, null, new local_variable_reference(var, 0, null),
                                                                            new basic_function_call(SystemLibrary.SystemLibrary.int_add as basic_function_node, null, new local_variable_reference(var, 0, null), new int_const_node(1, null))));
 
@@ -13805,7 +13817,7 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                     }
 
-                    if ((cmmn.name == compiler_string_consts.implicit_operator_name || cmmn.name == compiler_string_consts.explicit_operator_name))
+                    if ((cmmn.name == StringConstants.implicit_operator_name || cmmn.name == StringConstants.explicit_operator_name))
                     {
                         if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.comperehensive_type as type_node) && !convertion_data_and_alghoritms.eq_type_nodes(cmmn.comperehensive_type as type_node, cmmn.parameters[0].type))
                         {
@@ -13853,7 +13865,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     common_namespace_function_node cnfn = context.top_function as common_namespace_function_node;
 
-                    if ((cnfn.name == compiler_string_consts.implicit_operator_name || cnfn.name == compiler_string_consts.explicit_operator_name))
+                    if ((cnfn.name == StringConstants.implicit_operator_name || cnfn.name == StringConstants.explicit_operator_name))
                     {
                         if (cnfn.parameters.Count != 1)
                             AddError(new SimpleSemanticError(cnfn.loc,"EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER"));
@@ -13921,10 +13933,10 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 if (!has_extensionmethod_attr(_function_header.proc_attributes.proc_attributes))
                 {
-                    common_parameter cp = new common_parameter(compiler_string_consts.self_word, self_type, pt,
+                    common_parameter cp = new common_parameter(StringConstants.self_word, self_type, pt,
                                                                                 context.top_function, cpt, null, null);
                     context.top_function.parameters.AddElementFirst(cp);
-                    context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
+                    context.top_function.scope.AddSymbol(StringConstants.self_word, new SymbolInfo(cp));
                 }
             }
             CheckOverrideOrReintroduceExpectedWarning(get_location(_function_header));
@@ -14087,11 +14099,11 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 if (!has_extensionmethod_attr(_procedure_header.proc_attributes.proc_attributes))
                 {
-                    common_parameter cp = new common_parameter(compiler_string_consts.self_word, self_type, pt,
+                    common_parameter cp = new common_parameter(StringConstants.self_word, self_type, pt,
                                                                                 context.top_function, cpt, null, null);
 
                     context.top_function.parameters.AddElementFirst(cp);
-                    context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
+                    context.top_function.scope.AddSymbol(StringConstants.self_word, new SymbolInfo(cp));
                 }
             }
 
@@ -14471,7 +14483,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value
                                 && !(context.top_function.parameters[0].type is compiled_type_node ctn && ctn.compiled_type == typeof(string)))
                                 AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
-                            if (!context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
+                            if (!context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != StringConstants.self_word)
                                 AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
                             
                             common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
@@ -14499,7 +14511,7 @@ namespace PascalABCCompiler.TreeConverter
                                 (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             if (top_function.ConnectedToType.IsDelegate && context.top_function.IsOperator && (context.top_function.name == "+" || context.top_function.name == "-" || context.top_function.name == "+=" || context.top_function.name == "-="))
                                 AddError(get_location(_procedure_attributes_list), "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
-                            if (context.top_function.IsOperator && (context.top_function.name == compiler_string_consts.implicit_operator_name || context.top_function.name == compiler_string_consts.explicit_operator_name) && context.top_function.parameters.Count == 1 && context.top_function.return_value_type != null)
+                            if (context.top_function.IsOperator && (context.top_function.name == StringConstants.implicit_operator_name || context.top_function.name == StringConstants.explicit_operator_name) && context.top_function.parameters.Count == 1 && context.top_function.return_value_type != null)
                             {
                                 if (!(context.top_function.return_value_type is compiled_type_node) && !(context.top_function.return_value_type is compiled_generic_instance_type_node) || !(context.top_function.parameters[0].type is compiled_type_node) && !(context.top_function.parameters[0].type is compiled_generic_instance_type_node))
                                     ;//AddError(get_location(_procedure_attributes_list), "IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED");
@@ -14552,7 +14564,7 @@ namespace PascalABCCompiler.TreeConverter
             if (cnode != null && cnode.IsOperator)
             {
                 
-                if (cnode.name != compiler_string_consts.implicit_operator_name && cnode.name != compiler_string_consts.explicit_operator_name)
+                if (cnode.name != StringConstants.implicit_operator_name && cnode.name != StringConstants.explicit_operator_name)
                 {
                     bool all_types_mismatch = true;
                     foreach (parameter par in pars)
@@ -14580,7 +14592,7 @@ namespace PascalABCCompiler.TreeConverter
                 int pcount = name_reflector.get_params_count(context.top_function.name);
                 if (pcount != pars.Count)
                 {
-                    if (context.top_function.name != compiler_string_consts.minus_name && context.top_function.name != compiler_string_consts.plus_name)
+                    if (context.top_function.name != StringConstants.minus_name && context.top_function.name != StringConstants.plus_name)
                         AddError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
                     else
                     if (pars.Count != 1 && pars.Count != 2)
@@ -14971,7 +14983,7 @@ namespace PascalABCCompiler.TreeConverter
             var cnf = exp as common_namespace_function_call;
             if (cnf != null)
             {
-                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals(StringConstants.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
             return convert_strong_to_constant_node(exp, exp.type, is_const_section && is_userdefined, is_const_section);
         }
@@ -15095,7 +15107,7 @@ namespace PascalABCCompiler.TreeConverter
             var cnf = exp as common_namespace_function_call;
             if (cnf != null)
             {
-                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(compiler_string_consts.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(StringConstants.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
 
             return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
@@ -16249,7 +16261,7 @@ namespace PascalABCCompiler.TreeConverter
                                 internal_interface ii = cmc.obj.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                                 if (ii != null)
                                 {
-                                    if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                                    if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                                     {
                                         bounded_array_interface bai = (bounded_array_interface)ii;
                                         class_field cf = bai.int_array;
@@ -16304,7 +16316,7 @@ namespace PascalABCCompiler.TreeConverter
                     internal_interface ii = cmc.expression.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                     if (ii != null)
                     {
-                        //if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                        //if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                         {
                             bounded_array_interface bai = (bounded_array_interface)ii;
                             class_field cf = bai.int_array;
@@ -16325,7 +16337,7 @@ namespace PascalABCCompiler.TreeConverter
                     internal_interface ii = cmc.obj.type.get_internal_interface(internal_interface_kind.bounded_array_interface);
                     if (ii != null)
                     {
-                        //if (cmc.function_node.name == compiler_string_consts.get_val_pascal_array_name)
+                        //if (cmc.function_node.name == StringConstants.get_val_pascal_array_name)
                         {
                             bounded_array_interface bai = (bounded_array_interface)ii;
                             class_field cf = bai.int_array;
@@ -17447,7 +17459,7 @@ namespace PascalABCCompiler.TreeConverter
            
             List<SymbolInfo> sil = null;
             if (cmn.is_constructor)
-            	sil = context.converted_type.base_type.find_in_type(compiler_string_consts.default_constructor_name, context.CurrentScope);
+            	sil = context.converted_type.base_type.find_in_type(StringConstants.default_constructor_name, context.CurrentScope);
             else
             	sil = context.converted_type.base_type.find_in_type(cmn.name, context.CurrentScope);
             if (sil != null)
@@ -18008,9 +18020,9 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(new EventNameExpected(get_location(_assign.to)));
             string format;
             if (_assign.operator_type == PascalABCCompiler.SyntaxTree.Operators.AssignmentSubtraction)
-                format = compiler_string_consts.event_remove_method_nameformat;
+                format = StringConstants.event_remove_method_nameformat;
             else
-                format = compiler_string_consts.event_add_method_nameformat;
+                format = StringConstants.event_add_method_nameformat;
             SyntaxTree.ident add_name = new SyntaxTree.ident(string.Format(format, event_name.name));
             add_name.source_context = event_name.source_context;
             if (dot != null)
@@ -18389,7 +18401,7 @@ namespace PascalABCCompiler.TreeConverter
         private bool IsGetEnumerator(type_node tn, ref type_node elem_type)
         {
             if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null) return false;
-            compiled_type_node ctn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName));
+            compiled_type_node ctn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.IEnumerableInterfaceName));
             if (tn == ctn)
                 return true;
             foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces)
@@ -18399,7 +18411,7 @@ namespace PascalABCCompiler.TreeConverter
                     elem_type = tn.element_type;
                     if (elem_type != null) return true;
                     function_node get_enumerator_func = null;
-                    List<SymbolInfo> sil = ctn.find_in_type(compiler_string_consts.GetEnumeratorMethodName);
+                    List<SymbolInfo> sil = ctn.find_in_type(StringConstants.GetEnumeratorMethodName);
                     if(sil != null)
                         foreach(SymbolInfo si in sil)
                         {
@@ -18410,7 +18422,7 @@ namespace PascalABCCompiler.TreeConverter
                                 break;
                             get_enumerator_func = null;
                         }
-                    elem_type = (get_enumerator_func.return_value_type.find_first_in_type(compiler_string_consts.CurrentPropertyName).sym_info as property_node).get_function.return_value_type;
+                    elem_type = (get_enumerator_func.return_value_type.find_first_in_type(StringConstants.CurrentPropertyName).sym_info as property_node).get_function.return_value_type;
                     return true;
                 }
             }
@@ -18930,8 +18942,8 @@ namespace PascalABCCompiler.TreeConverter
             //Обрабатываем generic-типы
             int tcount = _template_type_reference.params_list.params_list.Count;
             string temp_name = _template_type_reference.name.names[last_num - 1].name;
-            if (!_template_type_reference.name.names[last_num - 1].name.Contains(compiler_string_consts.generic_params_infix)) // SSM 26.03.14
-                _template_type_reference.name.names[last_num - 1].name += compiler_string_consts.generic_params_infix + tcount;
+            if (!_template_type_reference.name.names[last_num - 1].name.Contains(StringConstants.generic_params_infix)) // SSM 26.03.14
+                _template_type_reference.name.names[last_num - 1].name += StringConstants.generic_params_infix + tcount;
             sil = context.find_definition_node(_template_type_reference.name, loc);
             if (sil != null)
             {
@@ -19174,7 +19186,7 @@ namespace PascalABCCompiler.TreeConverter
                 type_synonym_instancing = false;
                 foreach (type_definition td in saved_sc_dict.Keys)
                     td.source_context = saved_sc_dict[td];
-                ctn.fields.AddElement(new class_field(compiler_string_consts.synonym_value_name,
+                ctn.fields.AddElement(new class_field(StringConstants.synonym_value_name,
                     synonym_value, ctn, PascalABCCompiler.SemanticTree.polymorphic_state.ps_static,
                     PascalABCCompiler.SemanticTree.field_access_level.fal_public, null));
             }
@@ -19281,7 +19293,7 @@ namespace PascalABCCompiler.TreeConverter
             {
             	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
             }
-            List<SymbolInfo> sil = tn.find_in_type(TreeConverter.compiler_string_consts.default_constructor_name, context.CurrentScope); //tn.Scope); 
+            List<SymbolInfo> sil = tn.find_in_type(StringConstants.default_constructor_name, context.CurrentScope); //tn.Scope); 
             delete_inherited_constructors(ref sil, tn);
             if (sil == null)
                 AddError(loc, "CONSTRUCTOR_NOT_FOUND");
@@ -19757,56 +19769,53 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.compiler_directive node)
         {
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_faststrings)
+            if (node.Name.text.ToLower() == StringConstants.compiler_directive_faststrings)
             {
                 SemanticRules.FastStrings = true;
                 return;
             }
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_zerobasedstrings)
+            if (node.Name.text.ToLower() == StringConstants.compiler_directive_zerobasedstrings)
             {
                 var paramOnOff = node.Directive.text.ToLower();
                 if (paramOnOff == "on" || paramOnOff == "")
                     SemanticRules.ZeroBasedStrings = true;
                 else if (paramOnOff == "off")
                     SemanticRules.ZeroBasedStrings = false;
-                //SemanticRules.ZeroBasedStrings = node.Directive.text.ToLower() == compiler_string_consts.true_const_name;
                 return;
             }
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_zerobasedstrings_ON)
+            if (node.Name.text.ToLower() == StringConstants.compiler_directive_zerobasedstrings_ON)
             {
                 SemanticRules.ZeroBasedStrings = true;
                 return;
             }
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_zerobasedstrings_OFF)
+            if (node.Name.text.ToLower() == StringConstants.compiler_directive_zerobasedstrings_OFF)
             {
                 SemanticRules.ZeroBasedStrings = false;
                 return;
             }
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_nullbasedstrings_ON)
+            if (node.Name.text.ToLower() == StringConstants.compiler_directive_nullbasedstrings_ON)
             {
                 SemanticRules.ZeroBasedStrings = true;
                 return;
             }
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_nullbasedstrings_OFF)
+            if (node.Name.text.ToLower() == StringConstants.compiler_directive_nullbasedstrings_OFF)
             {
                 SemanticRules.ZeroBasedStrings = false;
                 return;
             }
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_initstring_as_empty_ON)
+            if (node.Name.text.ToLower() == StringConstants.compiler_directive_initstring_as_empty_ON)
             {
                 SemanticRules.InitStringAsEmptyString = true;
                 return;
             }
-            if (node.Name.text.ToLower() == compiler_string_consts.compiler_directive_initstring_as_empty_OFF)
+            if (node.Name.text.ToLower() == StringConstants.compiler_directive_initstring_as_empty_OFF)
             {
                 SemanticRules.InitStringAsEmptyString = false;
                 return;
             }
-            if (node.Name.text == "platform" && node.Directive.text.ToLower() == "native")
+            if (node.Name.text == StringConstants.compiler_directive_platformtarget && node.Directive.text.ToLower() == "native")
             {
                 SemanticRules.GenerateNativeCode = true;
-                
-                
                 return;
             }
         }
@@ -19885,7 +19894,7 @@ namespace PascalABCCompiler.TreeConverter
                 return;
 
             {
-                var fn = _ctn.base_type.find_in_type(compiler_string_consts.default_constructor_name, _ctn.base_type.Scope)
+                var fn = _ctn.base_type.find_in_type(StringConstants.default_constructor_name, _ctn.base_type.Scope)
                     ?.Select(si => si.sym_info).OfType<function_node>()
                     .FirstOrDefault(_fn => _fn.parameters.Count == 0);
                 var base_constructor_call = make_base_constructor_call(fn, out _, out _);
@@ -19919,7 +19928,7 @@ namespace PascalABCCompiler.TreeConverter
                 return;
             }
             //Получили список процедур предка, имеющих имя Create
-            List<SymbolInfo> sil = _ctn.base_type.find_in_type(compiler_string_consts.default_constructor_name, _ctn.base_type.Scope);
+            List<SymbolInfo> sil = _ctn.base_type.find_in_type(StringConstants.default_constructor_name, _ctn.base_type.Scope);
             delete_inherited_constructors(ref sil, _ctn.base_type);
             if (sil != null)
             {
@@ -19949,12 +19958,12 @@ namespace PascalABCCompiler.TreeConverter
 
                         // Иначе partial классам генерирует кучу копий дефолтных конструкторов
                         if (_ctn.methods.Any(m =>
-                            m.is_constructor && m.name == compiler_string_consts.default_constructor_name &&
+                            m.is_constructor && m.name == StringConstants.default_constructor_name &&
                             m.parameters.Count == fn.parameters.Count &&
                             m.parameters.Zip(fn.parameters, (par1, par2) => par1.type == par2.type).All(b => b)
                         )) continue;
 
-                        var gen_constr = context.create_function(compiler_string_consts.default_constructor_name, loc) as common_method_node;
+                        var gen_constr = context.create_function(StringConstants.default_constructor_name, loc) as common_method_node;
                         gen_constr.polymorphic_state = ps;
                         gen_constr.is_overload = true;
                         gen_constr.is_constructor = true;
@@ -20025,8 +20034,8 @@ namespace PascalABCCompiler.TreeConverter
                 gen_func.parameters.AddElement(c_p);
             }
 
-            local_variable lv = new local_variable(compiler_string_consts.self_word, gen_func.cont_type, gen_func, null);
-            gen_func.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(lv));
+            local_variable lv = new local_variable(StringConstants.self_word, gen_func.cont_type, gen_func, null);
+            gen_func.scope.AddSymbol(StringConstants.self_word, new SymbolInfo(lv));
             gen_func.self_variable = lv;
 
             base_function_call bfc;
@@ -20200,7 +20209,7 @@ namespace PascalABCCompiler.TreeConverter
             //context.check_labels(context.converted_namespace.labels);
 
             //TODO: Доделать.
-            //common_namespace_function_node main_function = new common_namespace_function_node(compiler_string_consts.temp_main_function_name,
+            //common_namespace_function_node main_function = new common_namespace_function_node(StringConstants.temp_main_function_name,
             //    null, null, cnsn, null);
             //main_function.function_code = context.code;
             //cnsn.functions.AddElement(main_function);
@@ -20210,7 +20219,7 @@ namespace PascalABCCompiler.TreeConverter
             bool main_not_found = true;
             foreach (function_node fn in cnsn.functions)
             {
-                if (fn.name == compiler_string_consts.c_main_function_name)
+                if (fn.name == StringConstants.c_main_function_name)
                 {
                     _compiled_unit.main_function = fn as common_namespace_function_node;
                     //context.apply_special_local_vars(_compiled_unit.main_function);
@@ -20359,7 +20368,7 @@ namespace PascalABCCompiler.TreeConverter
             int par_count = _ident_with_templateparams.template_params.params_list.Count;
             if (id_ex != null)
             {
-                SymbolInfo type_si = context.find_first(id_ex.name + compiler_string_consts.generic_params_infix + par_count.ToString());
+                SymbolInfo type_si = context.find_first(id_ex.name + StringConstants.generic_params_infix + par_count.ToString());
                 if (type_si != null)
                 {
                     return_value(get_generic_instance(type_si, _ident_with_templateparams.template_params.params_list));
@@ -20393,15 +20402,15 @@ namespace PascalABCCompiler.TreeConverter
                 List<SymbolInfo> type_sil = null;
                 if (tn != null)
                 {
-                    type_sil = tn.find_in_type(id_ex.name + compiler_string_consts.generic_params_infix + par_count.ToString());
+                    type_sil = tn.find_in_type(id_ex.name + StringConstants.generic_params_infix + par_count.ToString());
                 }
                 else if (nn != null)
                 {
-                    type_sil = nn.find(id_ex.name + compiler_string_consts.generic_params_infix + par_count.ToString());
+                    type_sil = nn.find(id_ex.name + StringConstants.generic_params_infix + par_count.ToString());
                 }
                 else if (un != null)
                 {
-                    type_sil = un.find_only_in_namespace(id_ex.name + compiler_string_consts.generic_params_infix + par_count.ToString());
+                    type_sil = un.find_only_in_namespace(id_ex.name + StringConstants.generic_params_infix + par_count.ToString());
                 }
                 if (type_sil != null)
                 {
@@ -20944,7 +20953,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                 }
-                if (cmmn != null && (cmmn.name == compiler_string_consts.implicit_operator_name || cmmn.name == compiler_string_consts.explicit_operator_name))
+                if (cmmn != null && (cmmn.name == StringConstants.implicit_operator_name || cmmn.name == StringConstants.explicit_operator_name))
                     if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.comperehensive_type as type_node) && !convertion_data_and_alghoritms.eq_type_nodes(cmmn.comperehensive_type as type_node, cmmn.parameters[0].type))
                     {
                         AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
@@ -20964,10 +20973,10 @@ namespace PascalABCCompiler.TreeConverter
                     cpt = concrete_parameter_type.cpt_var;
                     pt = PascalABCCompiler.SemanticTree.parameter_type.var;
                 }
-                common_parameter cp = new common_parameter(compiler_string_consts.self_word, (context.top_function as common_namespace_function_node).ConnectedToType, pt,
+                common_parameter cp = new common_parameter(StringConstants.self_word, (context.top_function as common_namespace_function_node).ConnectedToType, pt,
                                                                                 context.top_function, cpt, null, null);
                 context.top_function.parameters.AddElementFirst(cp);
-                context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
+                context.top_function.scope.AddSymbol(StringConstants.self_word, new SymbolInfo(cp));
             }
             CheckOverrideOrReintroduceExpectedWarning(get_location(_function_header));
 
@@ -21581,7 +21590,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public method_call ToNullable(expression e)
         {
-            var dn = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("DQNToNullable"));
+            var dn = new dot_node(new ident(StringConstants.pascalSystemUnitName), new ident("DQNToNullable"));
             return new method_call(dn, new expression_list(e), e.source_context);
         }
 
@@ -21604,7 +21613,7 @@ namespace PascalABCCompiler.TreeConverter
                 try_convert_typed_expression_to_function_call(ref av_cs);
                 if (!type_table.is_with_nil_allowed(av_cs.type))
                 {
-                    var dn = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("DQNToNullable"));
+                    var dn = new dot_node(new ident(StringConstants.pascalSystemUnitName), new ident("DQNToNullable"));
                     (av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false
                      = new method_call(dn, new expression_list((av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false), av.source_context);
 

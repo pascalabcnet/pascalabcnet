@@ -112,6 +112,7 @@
     <Compile Include="LambdaExpressions\LambdaSearcher.cs" />
     <Compile Include="NetWrappers\AssemblyResolveScope.cs" />
     <Compile Include="TreeConversion\HasCapturedLambdaParameterInInternalLambdaBody.cs" />
+    <Compile Include="TreeConversion\ISyntaxTreeVisitor.cs" />
     <Compile Include="TreeConversion\LambdaHelper.cs" />
     <Compile Include="SymbolTable\DSST\AreaArrayTable.cs">
       <SubType>Code</SubType>
@@ -139,9 +140,6 @@
     </Compile>
     <Compile Include="TreeConversion\Collections.cs" />
     <Compile Include="TreeConversion\CompilationErrors.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TreeConversion\compiler_string_consts.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TreeConversion\convertion_data_and_alghoritms.cs">
@@ -172,6 +170,7 @@
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Foreach.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\ForLoop.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Patterns.cs" />
+    <Compile Include="TreeConversion\SyntaxTreeVisitorsController.cs" />
     <Compile Include="TreeConversion\syntax_tree_visitor.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -252,6 +251,10 @@
       <Name>SemanticTree</Name>
       <Project>{613E0DDA-AA8A-437C-AC45-507B47429FF9}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
+      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
+      <Name>StringConstants</Name>
     </ProjectReference>
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Name>SyntaxTree</Name>

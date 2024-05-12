@@ -34,46 +34,46 @@ namespace PascalABCCompiler.NETGenerator {
         
         static OperatorsNameConvertor()
         {
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name]="op_Addition";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name]="op_Subtraction";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name]="op_Multiply";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.div_name]="op_Division";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.and_name]="op_BitwiseAnd";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.or_name]="op_BitwiseOr";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name]="op_Equality";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name]="op_GreaterThan";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name]="op_GreaterThanOrEqual";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name]="op_LessThan";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name]="op_LessThanOrEqual";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name]="op_Modulus";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.not_name]="op_LogicalNot";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name]="op_Inequality";
+            names[StringConstants.plus_name]="op_Addition";
+            names[StringConstants.minus_name]="op_Subtraction";
+            names[StringConstants.mul_name]="op_Multiply";
+            names[StringConstants.div_name]="op_Division";
+            names[StringConstants.and_name]="op_BitwiseAnd";
+            names[StringConstants.or_name]="op_BitwiseOr";
+            names[StringConstants.eq_name]="op_Equality";
+            names[StringConstants.gr_name]="op_GreaterThan";
+            names[StringConstants.greq_name]="op_GreaterThanOrEqual";
+            names[StringConstants.sm_name]="op_LessThan";
+            names[StringConstants.smeq_name]="op_LessThanOrEqual";
+            names[StringConstants.mod_name]="op_Modulus";
+            names[StringConstants.not_name]="op_LogicalNot";
+            names[StringConstants.noteq_name]="op_Inequality";
             
             //op_Implicit
             //op_Explicit
 
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name]="op_ExclusiveOr";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.and_name]="op_LogicalAnd";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.or_name]="op_LogicalOr";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.assign_name]="op_Assign";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name]="op_LeftShift";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name]="op_RightShift";
-            //names["op_SignedRightShift"]=PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name;
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name]="op_UnsignedRightShift";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name]="op_Equality";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.multassign_name]="op_MultiplicationAssignment";
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.minusassign_name]="op_SubtractionAssignment";
-            //names[PascalABCCompiler.TreeConverter.compiler_string_consts.minusassign_name]="op_ExclusiveOrAssignment";
+            names[StringConstants.xor_name]="op_ExclusiveOr";
+            names[StringConstants.and_name]="op_LogicalAnd";
+            names[StringConstants.or_name]="op_LogicalOr";
+            names[StringConstants.assign_name]="op_Assign";
+            names[StringConstants.shl_name]="op_LeftShift";
+            names[StringConstants.shr_name]="op_RightShift";
+            //names["op_SignedRightShift"]=StringConstants.shr_name;
+            names[StringConstants.shr_name]="op_UnsignedRightShift";
+            names[StringConstants.eq_name]="op_Equality";
+            names[StringConstants.multassign_name]="op_MultiplicationAssignment";
+            names[StringConstants.minusassign_name]="op_SubtractionAssignment";
+            //names[StringConstants.minusassign_name]="op_ExclusiveOrAssignment";
             //op_LeftShiftAssignment
             //op_ModulusAssignment
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.plusassign_name]="op_AdditionAssignment";
+            names[StringConstants.plusassign_name]="op_AdditionAssignment";
             //op_BitwiseAndAssignment
             //op_BitwiseOrAssignment
             //op_Comma
-            names[PascalABCCompiler.TreeConverter.compiler_string_consts.divassign_name]="op_DivisionAssignment";
+            names[StringConstants.divassign_name]="op_DivisionAssignment";
             //op_Decrement
             //op_Increment
-            //names[PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name] ="op_UnaryNegation";
+            //names[StringConstants.minus_name] ="op_UnaryNegation";
             //op_UnaryPlus
             //op_OnesComplement
 
