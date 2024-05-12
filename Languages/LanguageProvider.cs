@@ -39,7 +39,7 @@ namespace Languages
         }
 
 
-        SourceFilesProviderDelegate sourceFilesProvider = SourceFilesProviders.DefaultSourceFilesProvider;
+        /*SourceFilesProviderDelegate sourceFilesProvider = SourceFilesProviders.DefaultSourceFilesProvider;
 
         public SourceFilesProviderDelegate SourceFilesProvider
         {
@@ -58,7 +58,7 @@ namespace Languages
                 }
                 
             }
-        }
+        }*/
 
     }
 }

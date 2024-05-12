@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
@@ -16,6 +15,10 @@ namespace Languages.Pascal
 
 
         public string Name => StringConstants.pascalLanguageName;
+
+        public string Version => "1.2";
+
+        public string Copyright => "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich";
 
         public BaseParser Parser => parser;
 

@@ -8,6 +8,10 @@ namespace Languages
     {
         string Name { get; }
 
+        string Version { get; }
+
+        string Copyright { get; }
+
         BaseParser Parser { get; }
 
         IParser DocParser { get; }

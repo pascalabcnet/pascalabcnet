@@ -795,14 +795,14 @@ namespace PascalABCCompiler
         {
             this.extensions = extensions; languageName = lname;
         }
-        public static SupportedSourceFile Make(Parsers.IParser parser)
+        public static SupportedSourceFile Make(ILanguage language)
         {
             List<string> ext = new List<string>();
-            foreach (string ex in parser.FilesExtensions)
+            foreach (string ex in language.FilesExtensions)
                 if (ex[ex.Length - 1] != StringConstants.hideParserExtensionPostfixChar)
                     ext.Add(ex);
             if (ext.Count > 0)
-                return new SupportedSourceFile(ext.ToArray(), parser.Name);
+                return new SupportedSourceFile(ext.ToArray(), language.Name);
             return null;
         }
         public override string ToString()
@@ -924,7 +924,7 @@ namespace PascalABCCompiler
             List<SupportedSourceFile> supportedSourceFilesList = new List<SupportedSourceFile>();
             for (int i = 0; i < LanguageProvider.Languages.Count; i++)
             {
-                SupportedSourceFile sf = SupportedSourceFile.Make(LanguageProvider.Languages[i].Parser);
+                SupportedSourceFile sf = SupportedSourceFile.Make(LanguageProvider.Languages[i]);
                 if (sf != null)
                     supportedSourceFilesList.Add(sf);
             }

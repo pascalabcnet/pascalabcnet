@@ -74,13 +74,6 @@ namespace Languages.Pascal.PascalABCNewParser
     {
 
         public PascalABCNewLanguageParser()
-            : base(
-                  name: "PascalABC.NET",
-                  version: "1.2",
-                  copyright: "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich",
-                  systemUnitNames: new string[] { "PABCSystem", "PABCExtensions" },
-                  caseSensitive: false,
-                  filesExtensions: new string[] { ".pas" })
         {
             InitializeValidDirectives();
         }
@@ -136,18 +129,6 @@ namespace Languages.Pascal.PascalABCNewParser
                 [StringConstants.compiler_directive_omp] = new DirectiveInfo(SingleAnyOfCheck("critical", "parallel"), checkParamsNumNeeded: false)
             }; 
             #endregion
-        }
-
-        public override SourceFilesProviderDelegate SourceFilesProvider
-        {
-            get
-            {
-                return sourceFilesProvider;
-            }
-            set
-            {
-                sourceFilesProvider = value;
-            }
         }
 
         public override void PreBuildTree(string FileName)

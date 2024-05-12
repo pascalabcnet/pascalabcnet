@@ -447,15 +447,15 @@ namespace VisualPascalABC
                     }
                 }
 
-                BaseParser parser = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
+                ILanguage currentLanguage = LanguageProvider.Instance.SelectLanguageByExtension(FileName);
 
                 if ((!ctrl_space || inside_dot_pattern) && expr != null)
                 {
-                    e = parser.GetTypeAsExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                    e = currentLanguage.Parser.GetTypeAsExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                     if (e == null)
                     {
                         Errors.Clear();
-                        e = parser.GetExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                        e = currentLanguage.Parser.GetExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                     }
                     if ((e == null || Errors.Count > 0) && !new_space) return null;
                 }
@@ -515,7 +515,7 @@ namespace VisualPascalABC
 
                 }
                 Hashtable cache = null;
-                if (!CodeCompletion.CodeCompletionController.CurrentParser.CaseSensitive)
+                if (!currentLanguage.CaseSensitive)
                     cache = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
                 else
                     cache = new Hashtable();

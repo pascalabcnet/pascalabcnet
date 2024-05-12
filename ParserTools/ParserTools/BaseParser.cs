@@ -10,17 +10,6 @@ namespace PascalABCCompiler.Parsers
     public abstract class BaseParser : IParser
     {
 
-        public BaseParser(string name, string version, string copyright, string[] systemUnitNames, 
-            bool caseSensitive, string[] filesExtensions)
-        {
-            this.name = name;
-            this.version = version;
-            this.copyright = copyright;
-            this.SystemUnitNames = systemUnitNames;
-            this.caseSensitive = caseSensitive;
-            this.filesExtensions = filesExtensions;
-        }
-
         List<Error> errors = new List<Error>();
         public virtual List<Error> Errors
         {
@@ -59,45 +48,12 @@ namespace PascalABCCompiler.Parsers
             	compilerDirectives = value;
             }
         }
-         
-
-        private bool caseSensitive;
-        public virtual bool CaseSensitive
-        {
-            get { return caseSensitive; }
-        }
-
-        string[] filesExtensions;
-        public string[] FilesExtensions
-        {
-            get { return filesExtensions; }
-        }
-
-        string name;
-        public string Name
-        {
-            get { return name; }
-        }
-
-        string version;
-        public string Version
-        {
-            get { return version; }
-        }
-
-        string copyright;
-        public string Copyright
-        {
-            get { return copyright; }
-        }
-
-        public string[] SystemUnitNames { get; }
 
         public Func<bool> CheckIfParsingUnit { get; set; }
 
         public Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; protected set; } 
 
-        public SourceFilesProviderDelegate sourceFilesProvider = null;
+        /*public SourceFilesProviderDelegate sourceFilesProvider = null;
         public virtual SourceFilesProviderDelegate SourceFilesProvider
         {
             get
@@ -108,7 +64,7 @@ namespace PascalABCCompiler.Parsers
             {
                 sourceFilesProvider = value;
             }
-        }
+        }*/
 
         private ILanguageInformation languageInformation;
         public virtual ILanguageInformation LanguageInformation
@@ -264,10 +220,10 @@ namespace PascalABCCompiler.Parsers
             // если нужно - переопределяйте
         }        
 
-        public override string ToString()
+        /*public override string ToString()
         {
             return Name + " Language Parser v" + Version;
-        }
+        }*/
 
     }
 }
