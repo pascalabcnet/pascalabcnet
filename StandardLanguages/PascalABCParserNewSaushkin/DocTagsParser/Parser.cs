@@ -5,16 +5,17 @@ using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using PascalABCCompiler;
 
 
-namespace PascalABCCompiler.DocTagsParser
+namespace Languages.Pascal.DocTagsParser
 {
 	
-	public class DocTagsLanguageParser : IParser
+	public class PascalDocTagsLanguageParser : IParser
 	{
         List<string> sectionNames = new List<string>();
 
-        public DocTagsLanguageParser()
+        public PascalDocTagsLanguageParser()
 		{
             filesExtensions = new string[1];
             filesExtensions[0] = ".pasdt" + StringConstants.hideParserExtensionPostfixChar;

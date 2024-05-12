@@ -129,35 +129,6 @@ namespace Languages
                         throw new Exception("Language class wasn't found in language assembly. (To be found it should contain 'Language' in it's name)");
                     }
 
-                    foreach (Type type in types)
-                    {
-                        if (type.Name.EndsWith("LanguageParser"))
-                        {
-                            object obj = Activator.CreateInstance(type);
-                            if (obj is BaseParser parser)
-                            {
-                                languageFound.Parser = parser;
-                                parser.SourceFilesProvider = LanguageProvider.SourceFilesProvider;
-                                parser.Reset();
-                            }
-                            else if (obj is IParser docParser)
-                            {
-                                languageFound.DocParser = docParser;
-                                docParser.SourceFilesProvider = LanguageProvider.SourceFilesProvider;
-                                docParser.Reset();
-                            }
-                        }
-                        else if (type.Name.EndsWith("PostProcessor"))
-                        {
-                            object obj = Activator.CreateInstance(type);
-                            if (obj is PascalABCCompiler.SyntaxTree.IVisitor postProcessor)
-                            {
-                                languageFound.SyntaxTreePostProcessors.Insert(languageFound.PostProcessorsOrder[postProcessor.GetType()] - 1, postProcessor);
-                            }
-                            
-                        }
-                    }
-
                     LanguageConnected?.Invoke(languageFound);
                 }
             }

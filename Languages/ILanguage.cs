@@ -8,13 +8,11 @@ namespace Languages
     {
         string Name { get; }
 
-        BaseParser Parser { get; set; }
+        BaseParser Parser { get; }
 
-        IParser DocParser { get; set; }
+        IParser DocParser { get; }
 
         List<IVisitor> SyntaxTreePostProcessors { get; set; }
-
-        Dictionary<System.Type, int> PostProcessorsOrder { get; }
 
         string[] FilesExtensions { get; }
 

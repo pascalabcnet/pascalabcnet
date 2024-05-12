@@ -10,15 +10,18 @@ namespace Languages.Pascal
     {
         public string Name => StringConstants.pascalLanguageName;
 
-        public BaseParser Parser { get; set; }
+        private readonly BaseParser parser = new PascalABCNewParser.PascalABCNewLanguageParser();
+        
+        private readonly IParser docParser = new DocTagsParser.PascalDocTagsLanguageParser();
 
-        public IParser DocParser { get; set; }
+        private readonly string[] filesExtensions = new string[] { StringConstants.pascalSourceFileExtension };
+
+
+        public BaseParser Parser => parser;
+
+        public IParser DocParser => docParser;
 
         public List<IVisitor> SyntaxTreePostProcessors { get; set; }
-
-        public Dictionary<Type, int> PostProcessorsOrder { get; }
-        
-        private readonly string[] filesExtensions = new string[] { StringConstants.pascalSourceFileExtension };
 
         public string[] FilesExtensions
         {
