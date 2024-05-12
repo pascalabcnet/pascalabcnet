@@ -15,7 +15,7 @@ using Debugger;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using System.Runtime.ExceptionServices;
-using LanguageIntegration;
+using Languages;
 
 namespace VisualPascalABC
 {

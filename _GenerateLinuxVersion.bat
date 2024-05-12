@@ -29,7 +29,7 @@ copy bin\mono_pabcIDE.bat Release\PascalABCNETLinux\mono_pabcIDE.bat
 copy bin\mono_pabcnetc.bat Release\PascalABCNETLinux\mono_pabcnetc.bat
 copy bin\NETGenerator.dll Release\PascalABCNETLinux\NETGenerator.dll
 copy bin\OptimizerConversion.dll Release\PascalABCNETLinux\OptimizerConversion.dll
-copy bin\LanguageIntegrator.dll Release\PascalABCNETLinux\LanguageIntegrator.dll
+copy bin\LanguageIntegrator.dll Release\PascalABCNETLinux\Languages.dll
 copy bin\StringConstants.dll Release\PascalABCNETLinux\StringConstants.dll
 
 copy bin\pabcnetc.exe Release\PascalABCNETLinux\pabcnetc.exe

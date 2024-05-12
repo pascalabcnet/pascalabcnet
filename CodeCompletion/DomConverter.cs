@@ -11,7 +11,7 @@ using PascalABCCompiler;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.Parsers;
-using LanguageIntegration;
+using Languages;
 
 namespace CodeCompletion
 {

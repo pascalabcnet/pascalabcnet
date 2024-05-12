@@ -46,7 +46,7 @@ namespace PascalABCSavParser
             get
             {
                 if (parserCached == null)
-                    parserCached = LanguageIntegration.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
+                    parserCached = Languages.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
                 return parserCached;
             }
         }

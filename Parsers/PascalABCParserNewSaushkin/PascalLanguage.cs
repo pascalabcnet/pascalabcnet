@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using LanguageIntegration;
+using Languages;
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;

@@ -107,7 +107,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageIntegrator", "LanguageIntegrator\LanguageIntegrator.csproj", "{A48D9069-D569-4110-9252-A10F139B669B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Languages", "Languages\Languages.csproj", "{A48D9069-D569-4110-9252-A10F139B669B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringConstants", "StringConstants\StringConstants.csproj", "{E8AEFBF9-0113-4FA4-BE45-6CDA555498B7}"
 EndProject

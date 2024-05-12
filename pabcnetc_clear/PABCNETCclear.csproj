@@ -153,9 +153,9 @@
       <Project>{1e42361a-eda3-4872-88af-a3aaf600d36d}</Project>
       <Name>Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
+    <ProjectReference Include="..\Languages\Languages.csproj">
       <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
-      <Name>LanguageIntegrator</Name>
+      <Name>Languages</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
