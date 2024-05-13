@@ -50,6 +50,7 @@
     <Compile Include="LightSymInfoVisitors\CollectLightSymInfoVisitor.cs" />
     <Compile Include="LightSymInfoVisitors\LightScopeCreator.cs" />
     <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
+    <Compile Include="SPythonRetainUsedGlobalVariablesVisitor.cs" />
     <Compile Include="SugarVisitors\CacheFunctionVisitor.cs" />
     <Compile Include="SugarVisitors\LetExprVisitor.cs" />
     <Compile Include="SugarVisitors\TestAssignIsDefVisitor.cs" />

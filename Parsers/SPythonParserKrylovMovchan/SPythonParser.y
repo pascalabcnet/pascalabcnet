@@ -66,8 +66,9 @@
 %type <stn> decl_or_stmt decl_and_stmt_list expr_list
 %type <stn> stmt_list block
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
-%type <td> proc_func_header form_param_type simple_type_identifier
+%type <td> proc_func_header form_param_type simple_type_identifier optional_type
 %type <stn> import_clause import_clause_one
+%type <ti> optional_semicolon
 
 %start program
 
@@ -88,7 +89,7 @@ act		= actual
 
 %%
 program
-	: import_clause decl_and_stmt_list
+	: import_clause decl_and_stmt_list optional_semicolon
 		{
 			// main program
 			if (!is_unit_to_be_parsed) {
@@ -172,7 +173,7 @@ decl
 		}
 	;
 
-decl_and_stmt_list
+decl_and_stmt_list 
 	: decl_or_stmt
 		{
 			if ($1 is statement st)
@@ -203,8 +204,8 @@ stmt_list
 stmt
 	: assign_stmt
 		{ $$ = $1; }
-	| block
-		{ $$ = $1; }
+	//| block
+	//	{ $$ = $1; }
 	| if_stmt
 		{ $$ = $1; }
 	| proc_func_call_stmt
@@ -273,40 +274,52 @@ dotted_ident_list
     ;
 
 assign_stmt
-	: variable ASSIGN expr
+	: variable optional_type ASSIGN expr
 		{
 			if ($1 is ident id) {
 				// объявление
-				if (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name))) {
+				if ($2 != null || (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name)))) {
 
 					// объявление глобальной переменной
 					if (symbolTable.OuterScope == null) {
-						// var vds = new var_def_statement(new ident_list(id, @1), new same_type_node($3), null, definition_attribute.None, false, @$);
-						var vds = new var_def_statement(new ident_list(id, @1), new named_type_reference(new ident("integer")), null, definition_attribute.None, false, @$);
+						var ass = new assign(id as addressed_value, $4, $3.type, @$);
 						globalVariables.Add(id.name);
-						decl.Add(new variable_definitions(vds, @$), @$);
-						//decl.AddFirst(new variable_definitions(vds, @$));
 
-						var ass = new assign(id as addressed_value, $3, $2.type, @$);
-						ass.first_assignment_defines_type = true;
+						named_type_reference ntr;
+
+						if ($2 == null) {
+							ntr = new named_type_reference(new ident("integer"));
+							ass.first_assignment_defines_type = true;
+						}
+						else ntr = $2 as named_type_reference;
+
+						var vds = new var_def_statement(new ident_list(id, @1), ntr, null, definition_attribute.None, false, @$);
+						decl.Add(new variable_definitions(vds, @$), @$);
 						$$ = ass;
 					}
 					// объявление локальной переменной
 					else {
-						var vds = new var_def_statement(new ident_list(id, @1), null, $3, definition_attribute.None, false, @$);
+						var vds = new var_def_statement(new ident_list(id, @1), $2, $4, definition_attribute.None, false, @$);
 						symbolTable.Add(id.name);
 						$$ = new var_statement(vds, @$);
 					}
 				}
 				// присваивание
 				else {
-					$$ = new assign(id as addressed_value, $3, $2.type, @$);
+					$$ = new assign(id as addressed_value, $4, $3.type, @$);
 				}
 			}
 			else {
-				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+				$$ = new assign($1 as addressed_value, $4, $3.type, @$);
 			}
 		}
+	;
+
+optional_type
+	: COLON simple_type_identifier
+		{ $$ = $2; }
+	|
+		{ $$ = null; }
 	;
 
 expr
@@ -628,7 +641,32 @@ proc_func_header
 proc_func_call
 	: variable LPAR optional_act_param_list RPAR
 		{
-			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
+			if ($3 is expression_list exprl) {
+				expression_list args = new expression_list();
+				expression_list kvargs = new expression_list();
+
+				foreach (var expr in exprl.expressions) {
+					if (expr is name_assign_expr) {
+						kvargs.Add(expr);
+						kvargs.source_context = new SourceContext(kvargs.source_context, expr.source_context);
+					}
+					else if (kvargs.expressions.Count() == 0) {
+						args.Add(expr);
+						args.source_context = new SourceContext(args.source_context, expr.source_context);
+					}
+					else parsertools.AddErrorFromResource("Arg after Kvarg", @$);
+				}
+
+				if (kvargs.expressions.Count() == 0)
+					$$ = new method_call($1 as addressed_value, args, @$);
+				else {
+					method_call mc = new method_call(new ident("`" + ($1 as ident).name + ".Get"), kvargs, @$);
+					dot_node dn = new dot_node(mc as addressed_value, $1 as addressed_value, @$);
+					$$ = new method_call(dn as addressed_value, args, @$);
+				}
+			}
+			else
+				$$ = new method_call($1 as addressed_value, null, @$);
 		}
 	;
 
@@ -739,6 +777,13 @@ optional_act_param_list
 			$$ = null;
 		}
     ;
+
+optional_semicolon
+	: SEMICOLON
+		{ $$ = null; }
+	|
+		{ $$ = null; }
+	;
 
 %%
 

@@ -1,0 +1,16 @@
+﻿a = 1
+
+def f():
+    a = 0
+    
+b = a + 10
+
+def g():
+    global b
+    b = 100
+
+c = b + a + 100
+
+def h(a: int):
+    a = 2
+    print(c)

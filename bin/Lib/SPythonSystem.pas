@@ -1,4 +1,5 @@
-﻿unit SPythonSystem;
+﻿{$HiddenIdents}
+unit SPythonSystem;
 
 interface
 
@@ -8,17 +9,27 @@ uses PABCSystem;
 
 function input(): string;
 
-procedure print(sep:string := ' '; &end: string := #10);
-procedure print(e1: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2, e3: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2, e3, e4: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2, e3, e4, e5: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2, e3, e4, e5, e6: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2, e3, e4, e5, e6, e7: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2, e3, e4, e5, e6, e7, e8: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2, e3, e4, e5, e6, e7, e8, e9: object; sep:string := ' '; &end: string := #10);
-procedure print(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10: object; sep:string := ' '; &end: string := #10);
+type 
+    `Print = record
+    public
+        sep: string;
+        &end:string;
+        static function Get(sep:string := ' '; &end: string := #10): `Print;
+        begin
+          Result.sep := sep;
+          Result.&end := &end;
+        end;
+        procedure Print(params args: array of object);
+        begin
+          for var i := 0 to args.length - 2 do
+            Write(args[i], sep);
+          if args.length <> 0 then 
+            Write(args[^1]);
+          Write(&end);
+        end;
+    end;
+
+procedure Print(params args: array of object);
 
 // Basic type conversion methods
 
@@ -69,39 +80,11 @@ begin
   PABCSystem.Print();
   Result := PABCSystem.ReadlnString();
 end;
-
-procedure print(sep:string; &end: string);
-begin PABCSystem.Write(&end); end;
-
-procedure print(e1: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, &end); end;
-
-procedure print(e1, e2: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, &end); end;
-
-procedure print(e1, e2, e3: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, sep, e3, &end); end;
-
-procedure print(e1, e2, e3, e4: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, &end); end;
-
-procedure print(e1, e2, e3, e4, e5: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, &end); end;
-
-procedure print(e1, e2, e3, e4, e5, e6: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, &end); end;
-
-procedure print(e1, e2, e3, e4, e5, e6, e7: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, sep, e7, &end); end;
-
-procedure print(e1, e2, e3, e4, e5, e6, e7, e8: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, sep, e7, sep, e8, &end); end;
-
-procedure print(e1, e2, e3, e4, e5, e6, e7, e8, e9: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, sep, e7, sep, e8, sep, e9, &end); end;
-
-procedure print(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10: object; sep:string; &end: string);
-begin PABCSystem.Write(e1, sep, e2, sep, e3, sep, e4, sep, e5, sep, e6, sep, e7, sep, e8, sep, e9, sep, e10, &end); end;
+  
+procedure Print(params args: array of object);
+begin
+  `Print.Get().Print(args);
+end;
 
 function int(val: string): integer := integer.Parse(val);
 

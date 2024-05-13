@@ -35,7 +35,7 @@ namespace SPythonParser
             sourceText = String.Join("\n", programLines);
 
             // создание файла с полученным текстом для дебага
-            // File.WriteAllText(CreatedFilePath, sourceText);
+            //File.WriteAllText("./processed_file.txt", sourceText);
         }
 
         private void EraseComments(ref string[] programLines)
@@ -109,7 +109,7 @@ namespace SPythonParser
                 if (currentLineSpaceCounter == previosSpaceCounter)
                 {
                     if (lastNotEmptyLine != -1)
-                        programLines[lastNotEmptyLine] += ";";
+                        AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
                 }
                 // текущий отступ соответствует увеличению
                 else if (currentLineSpaceCounter > previosSpaceCounter)
@@ -140,7 +140,10 @@ namespace SPythonParser
                         // поэтому ставить ; в конце не надо (она будет после блока elif/else)
                         bool isEndOfStatement = !IsFirstTokenElseOrElif(line);
 
-                        programLines[lastNotEmptyLine] +=
+                        unindentCounter--;
+                        AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
+
+                        programLines[lastNotEmptyLine] += unindentToken +
                             string.Concat(Enumerable.Repeat(";" + unindentToken, unindentCounter))
                             + (isEndOfStatement ? ";" : "");
                     }
@@ -157,13 +160,20 @@ namespace SPythonParser
             }
 
 
-            if (lastNotEmptyLine != -1)
+            if (lastNotEmptyLine != -1 && indentStack.Count() > 1)
             {
                 // закрытие всех отступов в конце файла
-                // (заменить "currentLineIndentLevel + 1" на "currentLineIndentLevel" если есть блок оборачивающий всю программу)
-                programLines[lastNotEmptyLine] +=
-                    string.Concat(Enumerable.Repeat(";" + unindentToken, indentStack.Count() - 1));
+                AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
+                programLines[lastNotEmptyLine] += unindentToken +
+                    string.Concat(Enumerable.Repeat(";" + unindentToken, indentStack.Count() - 2));
             }
+        }
+
+        private void AddSemicolonIfNeeded(ref string s)
+        {
+            int i = s.Length - 1;
+            while (i > -1 && Char.IsWhiteSpace(s[i])) --i;
+            if (i == -1 || s[i] != ';') s += ";";
         }
     }
 }

@@ -3581,6 +3581,11 @@ namespace PascalABCCompiler
                     pABCCodeHealth = stat.CalcHealth(out int neg, out int pos);
                 }
             }
+
+            // temp for SPython | Movchan
+            var sfvugv = new SyntaxVisitors.SPythonRetainUsedGlobalVariablesVisitor();
+            sfvugv.ProcessNode(unitSyntaxTree);
+
             return unitSyntaxTree;
         }
 
