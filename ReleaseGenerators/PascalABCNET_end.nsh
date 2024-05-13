@@ -162,7 +162,7 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${Plugins} $(DESC_IDEPlugins)
     !insertmacro MUI_DESCRIPTION_TEXT ${Localization} $(DESC_Localization_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${Core} $(DESC_Core_Desc)
-    !insertmacro MUI_DESCRIPTION_TEXT ${PascalABCLanguage} $(DESC_PABCParser_Desc)
+    !insertmacro MUI_DESCRIPTION_TEXT ${PascalABCParser} $(DESC_PABCParser_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${VisualPABCNET} $(DESC_Envr_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${PABCNETC} $(DESC_ConsoleCompiler_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${InternalErrorReport} $(DESC_INTERNAL_ERROR_REPORT_Desc)
