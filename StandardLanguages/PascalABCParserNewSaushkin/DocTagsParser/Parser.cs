@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using PascalABCCompiler;
 
 
-namespace Languages.Pascal.DocTagsParser
+namespace Languages.Pascal.Frontend.Documentation
 {
 	
 	public class PascalDocTagsLanguageParser : IParser

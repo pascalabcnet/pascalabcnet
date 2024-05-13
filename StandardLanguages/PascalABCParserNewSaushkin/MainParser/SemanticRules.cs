@@ -2,16 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 using QUT.Gppg;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCSavParser;
-using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
+using Languages.Pascal.Frontend.Errors;
 using System.Text.RegularExpressions;
 
-namespace GPPGParserScanner
+namespace Languages.Pascal.Frontend.Core
 {
     public class NameExprPair
     {

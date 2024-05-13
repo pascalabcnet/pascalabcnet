@@ -5,12 +5,12 @@ using System.IO;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
-using GPPGParserScanner;
+using PascalABCCompiler;
+using Languages.Pascal.Frontend.Core;
 using PascalABCCompiler.ParserTools.Directives;
 using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
-using PascalABCSavParser;
 
-namespace PascalABCCompiler.PascalABCNewParser
+namespace Languages.Pascal.Frontend.Wrapping
 {
     // SSM: класс, являющийся обёрткой над GPPG парсером
     /*public class GPPGParserHelper

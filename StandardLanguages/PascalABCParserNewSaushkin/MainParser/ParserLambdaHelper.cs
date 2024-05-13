@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 
-namespace PascalABCSavParser
+namespace Languages.Pascal.Frontend.Core
 {
     public class ParserLambdaHelper
     {

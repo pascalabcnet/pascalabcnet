@@ -2,34 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
-using System;
 using System.Linq;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler;
 
-namespace PascalABCSavParser
+namespace Languages.Pascal.Frontend.Core
 {
-    public class Union
-    {   
-	    public expression ex;
-	    public ident id;                
-        public Object ob;  
-        public op_type_node op;  
-        public syntax_tree_node stn;
-        public token_info ti;
-        public type_definition td;
-    }
-
-    public static class StringResources
-    {
-        private static string prefix = "PASCALABCPARSER_";
-        public static string Get(string id)
-        {
-            return BaseStringResources.Get(id, prefix);
-        }
-    }
-
     // Класс глобальных описаний и статических методов
     // для использования различными подсистемами парсера и сканера
     public class PascalParserTools : BaseParserTools

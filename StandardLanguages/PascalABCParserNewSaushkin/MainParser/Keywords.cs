@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GPPGParserScanner
+namespace Languages.Pascal.Frontend.Core
 {
     // Статический класс, определяющий ключевые слова языка
     public static class Keywords
