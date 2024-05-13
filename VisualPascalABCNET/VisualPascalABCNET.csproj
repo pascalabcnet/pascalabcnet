@@ -814,7 +814,7 @@
     </ProjectReference>
     <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
       <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
-      <Name>Languages</Name>
+      <Name>LanguageIntegrator</Name>
     </ProjectReference>
     <ProjectReference Include="..\ParserTools\ParserTools.csproj">
       <Project>{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}</Project>
