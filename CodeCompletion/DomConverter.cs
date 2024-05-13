@@ -8,10 +8,8 @@ using System.IO;
 using PascalABCCompiler.SyntaxTree;
 using System.Reflection;
 using PascalABCCompiler;
-using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.Parsers;
-using LanguageIntegration;
 
 namespace CodeCompletion
 {
@@ -976,7 +974,7 @@ namespace CodeCompletion
             {
                 List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                 List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
-                expr = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, Warnings);
+                expr = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, Warnings);
                 if (expr == null || Errors.Count > 0)
                     return null;
             }

@@ -141,8 +141,6 @@
 
 #define DEBUG
 
-using ICSharpCode.NRefactory;
-using LanguageIntegration;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 
@@ -159,6 +157,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+
+using Languages.Facade;
 
 namespace PascalABCCompiler
 {
@@ -676,7 +676,7 @@ namespace PascalABCCompiler
         /// </summary>
         private void LoadStandardModules()
         {
-            foreach (ILanguage language in LanguageIntegration.LanguageProvider.Instance.Languages)
+            foreach (ILanguage language in LanguageProvider.Instance.Languages)
             {
                 standardModules[language.Name] = language.SystemUnitNames.Select(unitName => new StandardModule(unitName, language.Name)).ToList();
             }

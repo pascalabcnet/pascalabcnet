@@ -25,7 +25,7 @@ namespace Languages.Pascal.Frontend.Core
             get
             {
                 if (parserCached == null)
-                    parserCached = LanguageIntegration.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
+                    parserCached = Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
                 return parserCached;
             }
         }

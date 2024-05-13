@@ -4,8 +4,9 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Languages.Facade;
 
-namespace LanguageIntegration
+namespace Languages.Integration
 {
     public static class LanguageIntegrator
     {

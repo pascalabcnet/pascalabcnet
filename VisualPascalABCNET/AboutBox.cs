@@ -4,7 +4,7 @@ using System;
 using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
-using LanguageIntegration;
+using Languages.Integration;
 using System.Linq;
 
 namespace VisualPascalABC
@@ -130,7 +130,7 @@ namespace VisualPascalABC
             {
                 Assembly a = Assembly.GetAssembly(comp.GetType());
                 dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich"));
-                foreach (ILanguage language in LanguageProvider.Instance.Languages)
+                foreach (Languages.Facade.ILanguage language in Languages.Facade.LanguageProvider.Instance.Languages)
                     dgvModules.Items.Add(MakeItem("Language",language.Name, language.Version, language.Copyright));
                 foreach (PascalABCCompiler.SemanticTreeConverters.ISemanticTreeConverter conv in comp.SemanticTreeConvertersController.SemanticTreeConverters)
                     dgvModules.Items.Add(MakeItem("Converter", conv.Name, conv.Version, conv.Copyright));

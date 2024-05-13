@@ -3,19 +3,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
-using System.Threading;
 using System.Text;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Gui.InsightWindow;
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
-using LanguageIntegration;
 
 namespace VisualPascalABC
 {
@@ -604,7 +598,7 @@ namespace VisualPascalABC
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
-                LanguageProvider.Instance.SelectLanguageByExtension(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName).Parser.GetCompilationUnitForFormatter(
+                Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName).Parser.GetCompilationUnitForFormatter(
                 VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
                text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,

@@ -1,19 +1,9 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using System.IO;
-using System.Threading;
 
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Gui.InsightWindow;
-using LanguageIntegration;
 
 namespace VisualPascalABC
 {
@@ -74,7 +64,7 @@ namespace VisualPascalABC
 
                 string expr = FindExpression(off, Text, line, col);
                 List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-                PascalABCCompiler.SyntaxTree.expression e = LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression("test.pas", expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                PascalABCCompiler.SyntaxTree.expression e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression("test.pas", expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                 if (e == null || Errors.Count > 0) return;
                 CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
                 string fname = fileName;

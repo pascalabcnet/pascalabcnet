@@ -4,13 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using LanguageIntegration;
 using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
@@ -37,7 +34,7 @@ namespace VisualPascalABC
                 return null;
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
 
-            BaseParser parser = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
+            BaseParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
 
             PascalABCCompiler.SyntaxTree.expression tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             bool header = false;

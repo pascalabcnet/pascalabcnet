@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using VisualPascalABCPlugins;
-using LanguageIntegration;
+using Languages.Integration;
 
 namespace VisualPascalABC
 {
@@ -319,7 +319,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Выводит сообщения о подключенных языках
         /// </summary>
-        private void OnLanguageLoaded(ILanguage language)
+        private void OnLanguageLoaded(Languages.Facade.ILanguage language)
         {
             string languageConnectedMessage = string.Format(VECStringResources.Get("LANGUAGE_LOADED{0}{1}"), language.Name, Path.GetFileName(language.GetType().Assembly.Location));
             languageConnectedMessage += Environment.NewLine;

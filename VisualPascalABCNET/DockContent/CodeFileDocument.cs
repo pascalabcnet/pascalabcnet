@@ -2,10 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using WeifenLuo.WinFormsUI.Docking;
@@ -14,10 +11,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using ICSharpCode.FormsDesigner.Services; 
 using ICSharpCode.FormsDesigner;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using LanguageIntegration;
 
 namespace VisualPascalABC
 {
@@ -517,7 +510,7 @@ namespace VisualPascalABC
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             PascalABCCompiler.SyntaxTree.compilation_unit sn =
-                LanguageProvider.Instance.SelectLanguageByExtension(VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName).Parser.GetCompilationUnit(
+                Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName).Parser.GetCompilationUnit(
                 VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName,
                 existing_text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,

@@ -7,9 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
 using PascalABCCompiler.Parsers;
-using LanguageIntegration;
 
 namespace VisualPascalABC
 {
@@ -107,7 +105,7 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression e = null;
             List<PascalABCCompiler.Parsers.Position> loc = null;
 
-            BaseParser parser = LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
+            BaseParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
 
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
                 e = parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
@@ -192,7 +190,7 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression e = null;
             List<PascalABCCompiler.Parsers.Position> loc = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
-                e = LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (e == null /*|| Errors.Count > 0*/) return loc;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
             if (dconv == null) return loc;
@@ -234,7 +232,7 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             PascalABCCompiler.SyntaxTree.expression e = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
-                e = LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (e == null) return new List<SymbolsViewerSymbol>();
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
             if (dconv == null) return new List<SymbolsViewerSymbol>();
@@ -447,7 +445,7 @@ namespace VisualPascalABC
                     }
                 }
 
-                ILanguage currentLanguage = LanguageProvider.Instance.SelectLanguageByExtension(FileName);
+                Languages.Facade.ILanguage currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName);
 
                 if ((!ctrl_space || inside_dot_pattern) && expr != null)
                 {

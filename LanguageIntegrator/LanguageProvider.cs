@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using PascalABCCompiler;
 using PascalABCCompiler.Errors;
-using PascalABCCompiler.Parsers;
 
-namespace LanguageIntegration
+namespace Languages.Facade
 {
     public class LanguageProvider
     {

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
@@ -9,7 +8,7 @@ using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
 using PascalABCCompiler;
-using LanguageIntegration;
+using Languages.Facade;
 //using ICSharpCode.SharpDevelop.Dom;
 
 namespace CodeCompletion

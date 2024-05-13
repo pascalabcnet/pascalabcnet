@@ -7,10 +7,8 @@ using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
 using PascalABCCompiler.Parsers;
-using LanguageIntegration;
-using ICSharpCode.Core;
+using Languages.Facade;
 
 namespace VisualPascalABC
 {

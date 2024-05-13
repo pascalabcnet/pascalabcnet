@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using PascalABCCompiler.Errors;
 using System.IO;
-using LanguageIntegration;
+using Languages.Facade;
 
 namespace VisualPascalABCPlugins
 {
