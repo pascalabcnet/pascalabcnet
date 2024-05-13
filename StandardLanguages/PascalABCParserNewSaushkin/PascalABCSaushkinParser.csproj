@@ -8,7 +8,7 @@
     <ProjectGuid>{1443F539-DCC7-4491-B4FD-B716C739DB3C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NewPascalParser</RootNamespace>
+    <RootNamespace>Languages.Pascal.Frontend</RootNamespace>
     <AssemblyName>PascalABCParser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -109,6 +109,8 @@
     <Compile Include="MainParser\Parser.cs" />
     <Compile Include="MainParser\ParserLambdaHelper.cs" />
     <Compile Include="MainParser\SemanticRules.cs" />
+    <Compile Include="MainParser\StringResources.cs" />
+    <Compile Include="MainParser\UnionStruct.cs" />
     <Compile Include="PascalLanguage.cs" />
   </ItemGroup>
   <ItemGroup>

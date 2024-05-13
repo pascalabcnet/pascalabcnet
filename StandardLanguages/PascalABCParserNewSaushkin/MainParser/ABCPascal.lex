@@ -12,11 +12,9 @@
 	bool ExprMode = false;
 %}
 
-%namespace GPPGParserScanner
+%namespace Languages.Pascal.Frontend.Core
 
-%using PascalABCSavParser;
 %using PascalABCCompiler.SyntaxTree;
-%using PascalABCCompiler.ParserTools;
 %using QUT.Gppg;
 
 Letter [[:IsLetter:]_]
