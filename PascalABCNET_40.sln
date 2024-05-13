@@ -99,7 +99,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringConstants", "StringCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Languages", "Languages\Languages.csproj", "{A48D9069-D569-4110-9252-A10F139B669B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCLanguage", "StandardLanguages\PascalABCParserNewSaushkin\PascalABCLanguage.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "StandardLanguages\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBNETParser", "StandardLanguages\VBNETParser\VBNETParser.csproj", "{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE}"
 EndProject

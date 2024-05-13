@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-V3E9T2U
-// DateTime: 12.05.2024 17:43:09
-// UserName: alex
-// Input file <ABCPascal.y>
+// Machine:  DESKTOP-G8V08V4
+// DateTime: 08.05.2024 9:59:54
+// UserName: ?????????
+// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -13,11 +13,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using QUT.Gppg;
-using System.Linq;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCSavParser;
+using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
-using Languages.Pascal.Errors;
-using Languages.Pascal.PascalABCNewParser;
+using System.Linq;
+using SyntaxVisitors;
 
 namespace GPPGParserScanner
 {
@@ -51,13 +52,13 @@ public enum Tokens {
     tkFloat=157,tkHex=158,tkUnknown=159,tkStep=160};
 
 // Abstract base class for GPLEX scanners
-public abstract class ScanBase : AbstractScanner<Languages.Pascal.PascalABCNewParser.Union,LexLocation> {
+public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLocation> {
   private LexLocation __yylloc = new LexLocation();
   public override LexLocation yylloc { get { return __yylloc; } set { __yylloc = value; } }
   protected virtual bool yywrap() { return true; }
 }
 
-public partial class GPPGParser: ShiftReduceParser<Languages.Pascal.PascalABCNewParser.Union, LexLocation>
+public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
   // Verbatim content from ABCPascal.y
 // Э�?и об�?явления добавля�?�?ся в класс GPPGParser, п�?едс�?авля�?�?ий собой па�?се�?, гене�?и�?�?ем�?й сис�?емой gppg
@@ -67,7 +68,7 @@ public partial class GPPGParser: ShiftReduceParser<Languages.Pascal.PascalABCNew
     public PascalParserTools parserTools;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
-    public GPPGParser(AbstractScanner<Languages.Pascal.PascalABCNewParser.Union, LexLocation> scanner) : base(scanner) { }
+    public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
   // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649

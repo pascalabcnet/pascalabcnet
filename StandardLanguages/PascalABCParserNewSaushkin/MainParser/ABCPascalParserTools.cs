@@ -8,7 +8,7 @@ using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler;
 
-namespace Languages.Pascal.PascalABCNewParser
+namespace PascalABCSavParser
 {
     public class Union
     {   

@@ -14,8 +14,9 @@
 
 %namespace GPPGParserScanner
 
+%using PascalABCSavParser;
 %using PascalABCCompiler.SyntaxTree;
-%using Languages.Pascal.PascalABCNewParser;
+%using PascalABCCompiler.ParserTools;
 %using QUT.Gppg;
 
 Letter [[:IsLetter:]_]
