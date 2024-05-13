@@ -930,7 +930,7 @@
       <Project>{2DE2842F-0912-4251-BC0F-480854C44A13}</Project>
       <Name>Localization</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Languages\Languages.csproj">
+    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
       <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
       <Name>Languages</Name>
     </ProjectReference>

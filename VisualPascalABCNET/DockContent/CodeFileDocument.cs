@@ -17,7 +17,7 @@ using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using Languages;
+using LanguageIntegration;
 
 namespace VisualPascalABC
 {

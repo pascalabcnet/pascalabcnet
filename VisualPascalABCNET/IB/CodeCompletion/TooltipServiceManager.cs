@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using Languages;
+using LanguageIntegration;
 using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC

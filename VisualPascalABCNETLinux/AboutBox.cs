@@ -4,7 +4,7 @@ using System;
 using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
-using Languages;
+using LanguageIntegration;
 using System.Linq;
 
 namespace VisualPascalABC

@@ -2,7 +2,7 @@
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
 
-namespace Languages
+namespace LanguageIntegration
 {
     public interface ILanguage
     {

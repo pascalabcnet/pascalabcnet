@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using PascalABCCompiler.Errors;
 using System.IO;
-using Languages;
+using LanguageIntegration;
 
 namespace VisualPascalABCPlugins
 {

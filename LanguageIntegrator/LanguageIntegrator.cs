@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Languages
+namespace LanguageIntegration
 {
     public static class LanguageIntegrator
     {
@@ -63,6 +63,16 @@ namespace Languages
             LoadStandardLanguages();
             LoadAllLanguageKits();
         }
+
+        /// <summary>
+        /// Перезагружает парсеры всех языков
+        /// </summary>
+        /*public static void ReloadAllParsers()
+        {
+            ParsersController.Parsers.Clear();
+            ParsersController.LoadStandardParsers();
+            LoadParsersFromLanguageKits();
+        }*/
 
         public static void LoadStandardLanguages()
         {

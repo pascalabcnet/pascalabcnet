@@ -7,7 +7,7 @@ using System.Text;
 using Debugger;
 using VisualPascalABCPlugins;
 using System.Runtime.ExceptionServices;
-using Languages;
+using LanguageIntegration;
 using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC

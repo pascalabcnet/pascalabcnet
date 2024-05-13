@@ -681,7 +681,7 @@ namespace VisualPascalABC
                 this.WindowState = FormWindowState.Maximized;
 
             // загрузка всех парсеров и других составляющих языков  EVA
-            Languages.LanguageIntegrator.LoadAllLanguages();
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
 
             ChangedSelectedTab();
             VisualEnvironmentCompiler.ChangeVisualEnvironmentState += new ChangeVisualEnvironmentStateDelegate(VisualEnvironmentCompiler_ChangeVisualEnvironmentState);

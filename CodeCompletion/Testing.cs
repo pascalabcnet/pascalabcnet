@@ -9,7 +9,7 @@ using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
 using PascalABCCompiler;
-using Languages;
+using LanguageIntegration;
 //using ICSharpCode.SharpDevelop.Dom;
 
 namespace CodeCompletion

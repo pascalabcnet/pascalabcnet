@@ -6,7 +6,7 @@ using PascalABCCompiler;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.Parsers;
 
-namespace Languages
+namespace LanguageIntegration
 {
     public class LanguageProvider
     {

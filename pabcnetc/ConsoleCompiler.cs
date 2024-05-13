@@ -440,7 +440,7 @@ namespace PascalABCCompiler
             Console.Title = StringResourcesGet("STARTING");
 
             // загрузка всех парсеров и других составляющих языков  EVA
-            Languages.LanguageIntegrator.LoadAllLanguages();
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
             
             Reset();
             Console.Title = Compiler.Banner;

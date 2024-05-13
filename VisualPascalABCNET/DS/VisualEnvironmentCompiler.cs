@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using VisualPascalABCPlugins;
 using System.Threading;
-using Languages;
+using LanguageIntegration;
 
 namespace VisualPascalABC
 {

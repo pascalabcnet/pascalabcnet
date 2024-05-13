@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LanguageIntegration;
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;

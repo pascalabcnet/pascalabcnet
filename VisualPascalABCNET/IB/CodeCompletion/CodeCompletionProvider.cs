@@ -9,7 +9,7 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.TextEditor.Document;
 using PascalABCCompiler.Parsers;
-using Languages;
+using LanguageIntegration;
 using ICSharpCode.Core;
 
 namespace VisualPascalABC

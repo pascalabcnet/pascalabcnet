@@ -270,7 +270,7 @@ namespace PascalABCCompiler
             Console.InputEncoding = System.Text.Encoding.UTF8;
 
             // загрузка всех парсеров и других составляющих языков  EVA
-            Languages.LanguageIntegrator.LoadAllLanguages();
+            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
 
             LoadCompiler();
             do
