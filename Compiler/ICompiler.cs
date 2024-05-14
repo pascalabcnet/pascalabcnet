@@ -21,10 +21,10 @@ namespace PascalABCCompiler
             get;
         }
 
-        SyntaxTreeConvertersController SyntaxTreeConvertersController
+        /*SyntaxTreeConvertersController SyntaxTreeConvertersController
         {
             get; 
-        }
+        }*/
         SemanticTreeConvertersController SemanticTreeConvertersController
         {
             get;

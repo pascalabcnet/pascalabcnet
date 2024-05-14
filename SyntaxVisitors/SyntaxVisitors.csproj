@@ -45,6 +45,7 @@
     <Compile Include="AllVarsInProcYieldsProba.cs" />
     <Compile Include="BaseVisitors\CollectNamespaces.cs" />
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
+    <Compile Include="ISyntaxTreeConverter.cs" />
     <Compile Include="LightSymInfoVisitors\BindCollectLightSymInfo.cs" />
     <Compile Include="LightSymInfoVisitors\CollectFullLightSymInfoVisitor.cs" />
     <Compile Include="LightSymInfoVisitors\CollectLightSymInfoVisitor.cs" />

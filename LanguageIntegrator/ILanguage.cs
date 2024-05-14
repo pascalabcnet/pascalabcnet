@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace Languages.Facade
 {
@@ -16,7 +17,9 @@ namespace Languages.Facade
 
         IParser DocParser { get; }
 
-        List<IVisitor> SyntaxTreePostProcessors { get; set; }
+        List<IVisitor> SyntaxTreePostProcessors { get; }
+
+        List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
 
         string[] FilesExtensions { get; }
 

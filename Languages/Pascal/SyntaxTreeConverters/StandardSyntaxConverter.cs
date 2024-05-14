@@ -1,18 +1,15 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors;
 using SyntaxVisitors.SugarVisitors;
 using SyntaxVisitors.CheckingVisitors;
 using SyntaxVisitors.PatternsVisitors;
+using PascalABCCompiler.SyntaxTreeConverters;
 
-namespace PascalABCCompiler.SyntaxTreeConverters
+namespace Languages.Pascal.Frontend.Converters
 {
-    public class StandardSyntaxTreeConverter: ISyntaxTreeConverter
+    public class StandardSyntaxTreeConverter : ISyntaxTreeConverter
     {
         public string Name { get; } = "Standard";
         public syntax_tree_node Convert(syntax_tree_node root)
