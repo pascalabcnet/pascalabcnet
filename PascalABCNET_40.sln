@@ -107,6 +107,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualBasic", "VisualBasic"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBNETParser", "Languages\VisualBasic\VBNETParser\VBNETParser.csproj", "{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalLanguage", "Languages\Pascal\PascalLanguage\PascalLanguage.csproj", "{BD902586-E0D5-407A-904A-32249B8B709E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -481,6 +483,18 @@ Global
 		{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE}.Release|x86.ActiveCfg = Release|Any CPU
 		{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE}.Release|x86.Build.0 = Release|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD902586-E0D5-407A-904A-32249B8B709E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -526,6 +540,7 @@ Global
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C} = {2C15CC70-9793-4E37-B2B9-6EF0E10ED954}
 		{9169D94E-A787-4919-B42E-E56302253F7B} = {BB6973BA-B3A2-4B31-A986-7CB008F22C4F}
 		{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE} = {9169D94E-A787-4919-B42E-E56302253F7B}
+		{BD902586-E0D5-407A-904A-32249B8B709E} = {2C15CC70-9793-4E37-B2B9-6EF0E10ED954}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {97A10B06-9161-4E2B-9C6F-10EEF45013EC}
