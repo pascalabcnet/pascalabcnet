@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
+using System;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -26,6 +27,10 @@ namespace PascalABCCompiler.Parsers
             get;
         }
 
+        Func<bool> CheckIfParsingUnit { get; set; }
+
+        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
+
         /*SourceFilesProviderDelegate SourceFilesProvider
         {
             get;
@@ -36,6 +41,17 @@ namespace PascalABCCompiler.Parsers
         {
         	get;
         }
+
+        compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null);
+
+        compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
+
+        expression GetExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
+
+        statement GetStatement(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
+
+        expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
+
         syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null);
 
         void Reset();

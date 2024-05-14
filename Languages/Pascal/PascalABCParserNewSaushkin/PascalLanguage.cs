@@ -8,7 +8,7 @@ namespace Languages.Pascal
 {
     public class PascalLanguage : ILanguage
     {
-        private readonly BaseParser parser = new Frontend.Wrapping.PascalABCNewLanguageParser();
+        private readonly IParser parser = new Frontend.Wrapping.PascalABCNewLanguageParser();
         
         private readonly IParser docParser = new Frontend.Documentation.PascalDocTagsLanguageParser();
 
@@ -21,7 +21,7 @@ namespace Languages.Pascal
 
         public string Copyright => "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich";
 
-        public BaseParser Parser => parser;
+        public IParser Parser => parser;
 
         public IParser DocParser => docParser;
 

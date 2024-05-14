@@ -20,7 +20,7 @@ namespace Languages.Pascal.Frontend.Core
         public List<var_def_statement> pascalABCVarStatements;
         public List<type_declaration> pascalABCTypeDeclarations;
 
-        protected override BaseParser ParserCached 
+        protected override IParser ParserCached 
         { 
             get
             {

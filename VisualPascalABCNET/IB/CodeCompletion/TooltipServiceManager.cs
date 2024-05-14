@@ -38,7 +38,7 @@ namespace VisualPascalABC
                 return null;
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
 
-            BaseParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
+            IParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
 
             PascalABCCompiler.SyntaxTree.expression tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             bool header = false;

@@ -12,7 +12,7 @@ namespace Languages.Facade
 
         string Copyright { get; }
 
-        BaseParser Parser { get; }
+        IParser Parser { get; }
 
         IParser DocParser { get; }
 

@@ -270,7 +270,7 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
             syntax_tree_node e = null;
 
-            BaseParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
+            IParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
 
             if (for_immediate)
             {

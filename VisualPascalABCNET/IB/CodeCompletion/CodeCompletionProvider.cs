@@ -106,7 +106,7 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression e = null;
             List<PascalABCCompiler.Parsers.Position> loc = null;
 
-            BaseParser parser = LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
+            IParser parser = LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
 
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
                 e = parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());

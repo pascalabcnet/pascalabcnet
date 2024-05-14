@@ -37,7 +37,7 @@ namespace CodeCompletion
             {
                 var FileName = files[i];
 
-                BaseParser parser = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
+                IParser parser = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
 
                 var content = File.ReadAllText(FileName);
                 var dc = controller.Compile(FileName, content);
@@ -110,7 +110,7 @@ namespace CodeCompletion
             {
                 var FileName = files[i];
 
-                BaseParser parser = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
+                IParser parser = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
 
                 var content = File.ReadAllText(FileName);
                 var dc = controller.Compile(FileName, content);
@@ -234,7 +234,7 @@ namespace CodeCompletion
             return -1;
         }
 
-        public static string GetDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, BaseParser parser)
+        public static string GetDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, IParser parser)
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
@@ -248,7 +248,7 @@ namespace CodeCompletion
             return desc;
         }
 
-        public static string GetIndexDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, BaseParser parser)
+        public static string GetIndexDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, IParser parser)
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
@@ -265,7 +265,7 @@ namespace CodeCompletion
         }
 
         public static string GetMethodDescription(int pos, string content, int line, int col, string FileName, DomConverter dc,
-                                                int num_param, int cur_param_num, BaseParser parser)
+                                                int num_param, int cur_param_num, IParser parser)
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
@@ -1107,7 +1107,7 @@ namespace CodeCompletion
                 List<Error> Errors = new List<Error>();
                 List<CompilerWarning> Warnings = new List<CompilerWarning>();
 
-                BaseParser parser = LanguageProvider.Instance.SelectLanguageByExtension(s).Parser;
+                IParser parser = LanguageProvider.Instance.SelectLanguageByExtension(s).Parser;
 
                 compilation_unit cu = parser.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
                 if (Errors.Count == 0)

@@ -6,6 +6,7 @@ using PascalABCCompiler.Errors;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using PascalABCCompiler;
+using System;
 
 
 namespace Languages.Pascal.Frontend.Documentation
@@ -32,6 +33,8 @@ namespace Languages.Pascal.Frontend.Documentation
             }
         }
 		
+        public Func<bool> CheckIfParsingUnit {  get; set; }
+
         public ILanguageInformation LanguageInformation {
 			get {
 				return null;
@@ -91,6 +94,30 @@ namespace Languages.Pascal.Frontend.Documentation
                 errors = value;
             }
         }
+
+        List<CompilerWarning> warnings = new List<CompilerWarning>();
+
+        public List<CompilerWarning> Warnings
+        {
+            get
+            {
+                return warnings;
+            }
+
+            set
+            {
+                warnings = value;
+            }
+        }
+
+        public Dictionary<string, PascalABCCompiler.ParserTools.Directives.DirectiveInfo> ValidDirectives 
+        { 
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         documentation_comment_section parse_section(string text)
         {
             documentation_comment_section dcs = new documentation_comment_section();
@@ -115,6 +142,7 @@ namespace Languages.Pascal.Frontend.Documentation
             dcs.text = text;
             return dcs;
         }
+
         public syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
         {
             MatchCollection mc = Regex.Matches(Text, @"(([\f\t\v\x85\p{Z}])*///.*\r\n)*([\f\t\v\x85\p{Z}])*///.*", RegexOptions.Compiled);
@@ -198,19 +226,29 @@ namespace Languages.Pascal.Frontend.Documentation
             return "Documentation Comments Tag Parser v" + Version;
         }
 
-        List<CompilerWarning> warnings = new List<CompilerWarning>();
-
-        public List<CompilerWarning> Warnings
+        public compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null)
         {
-            get
-            {
-                return warnings;
-            }
+            throw new NotImplementedException();
+        }
 
-            set
-            {
-                warnings = value;
-            }
+        public compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public expression GetExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public statement GetStatement(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
+        {
+            throw new NotImplementedException();
         }
     }
 

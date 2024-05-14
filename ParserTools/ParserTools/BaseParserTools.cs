@@ -40,8 +40,8 @@ namespace PascalABCCompiler.ParserTools
 
         public static Dictionary<string, string> tokenNum; // строки, соответствующие терминалам, для вывода ошибок - SSM
 
-        protected BaseParser parserCached;
-        protected abstract BaseParser ParserCached { get; }
+        protected IParser parserCached;
+        protected abstract IParser ParserCached { get; }
 
         public SourceContext ToSourceContext(LexLocation loc)
         {
@@ -195,7 +195,7 @@ namespace PascalABCCompiler.ParserTools
         /// </summary>
         public void CheckDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
         {
-            BaseParser parserNeeded = ParserCached;
+            IParser parserNeeded = ParserCached;
 
             var directiveInfo = parserNeeded.ValidDirectives[directiveName];
 
