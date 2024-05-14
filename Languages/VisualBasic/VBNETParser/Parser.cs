@@ -1,4 +1,4 @@
-﻿
+﻿/*
 using System;
 using System.IO;
 using PascalABCCompiler.ParserTools;
@@ -229,3 +229,4 @@ namespace PascalABCCompiler.VBNETParser
         }
 	}
 }
+*/

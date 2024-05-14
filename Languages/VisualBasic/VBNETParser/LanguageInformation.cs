@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.IO;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.SyntaxTree;
@@ -154,7 +154,7 @@ namespace PascalABCCompiler.VBNETParser
             keywords.Add("TryCast", "TryCast"); keys.Add("TryCast"); ignored_keywords.Add("TryCast", "TryCast");
             keywords.Add("Of", "Of"); keys.Add("Of");
             keywords.Add("Partial", "Partial"); keys.Add("Partial");
-            /*keywords.Add("type", "type"); keys.Add("type"); keyword_kinds.Add("type", KeywordKind.Type);
+            *//*keywords.Add("type", "type"); keys.Add("type"); keyword_kinds.Add("type", KeywordKind.Type);
             keywords.Add("array", "array"); keys.Add("array"); type_keys.Add("array");
             keywords.Add("of", "of"); keys.Add("of"); keyword_kinds.Add("of", KeywordKind.Of);
             keywords.Add("private", "private"); keys.Add("private");
@@ -194,7 +194,7 @@ namespace PascalABCCompiler.VBNETParser
             keywords.Add("raise", "raise"); keys.Add("raise"); keyword_kinds.Add("raise", KeywordKind.Raise);
             keywords.Add("program", "program"); keys.Add("program"); keyword_kinds.Add("program", KeywordKind.Program);
             keywords.Add("new", "new"); keys.Add("new"); keyword_kinds.Add("new", KeywordKind.New);
-            keywords.Add("nil", "nil"); keys.Add("nil");*/
+            keywords.Add("nil", "nil"); keys.Add("nil");*//*
             keywords_array = keys.ToArray();
             type_keywords_array = type_keys.ToArray();
         }
@@ -726,14 +726,14 @@ namespace PascalABCCompiler.VBNETParser
                 sb.Append(ctn.Name.Substring(0, ctn.Name.IndexOf('`')));
                 sb.Append('(');
                 sb.Append(')');
-                /*sb.Append('<');
+                *//*sb.Append('<');
                 for (int i=0; i<len; i++)
                 {
                     sb.Append('T');
                     if (i<len-1)
                     sb.Append(',');
                 }
-                sb.Append('>');*/
+                sb.Append('>');*//*
                 return sb.ToString();
             }
             //if (ctn.IsArray) return "array of "+GetTypeName(ctn.GetElementType());
@@ -921,10 +921,10 @@ namespace PascalABCCompiler.VBNETParser
                     }
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
-                /*else if (ch == '\n')
+                *//*else if (ch == '\n')
                 {
                     return sb.ToString();
-                }*/
+                }*//*
                 else if (ch == '.')
                 {
                     if (ch == '.' && i >= 1 && Text[i - 1] == '.') end = true; else sb.Insert(0, ch);
@@ -974,10 +974,10 @@ namespace PascalABCCompiler.VBNETParser
                                     if (ch == '(')
                                     {
                                         int tmp = i--;
-                                        /*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                                        *//*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
                                         {
                                             i--;
-                                        }*/
+                                        }*//*
                                         while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i])))
                                         {
                                             i--;
@@ -1146,10 +1146,10 @@ namespace PascalABCCompiler.VBNETParser
                                         if (ch == '(')
                                         {
                                             int tmp = i--;
-                                            /*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                                            *//*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
                                             {
                                                 i--;
-                                            }*/
+                                            }*//*
                                             while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i])) && Text[i] != '\n')
                                             {
                                                 i--;
@@ -1374,4 +1374,4 @@ namespace PascalABCCompiler.VBNETParser
         }
     }
 	
-}
+}*/
