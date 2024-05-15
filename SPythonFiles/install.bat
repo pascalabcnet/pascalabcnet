@@ -19,3 +19,4 @@ copy *.pcu %path_to_pas%\Lib
 
 
 copy *.xshd %path_to_pas%\Highlighting
+copy *.dat %path_to_pas%\Lng\Rus

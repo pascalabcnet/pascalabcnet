@@ -1,0 +1,3 @@
+%PREFIX%=SPYTHONSEMANTIC_
+NOT_ALLOWED_{0}_DIFF_TYPES_{1}_{2}=Operation {0} can not be applied to types {1} and {2}
+FUNCTION_{0}_NO_RETURN=Function {0} does not return value
