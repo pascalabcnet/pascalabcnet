@@ -55,7 +55,6 @@ copy bin\TreeConverter.dll Release\PascalABCNETLinux\TreeConverter.dll
 copy bin\WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll Release\PascalABCNETLinux\WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll
 copy bin\WeifenLuo.WinFormsUI.DockingLinux.dll Release\PascalABCNETLinux\WeifenLuo.WinFormsUI.DockingLinux.dll
 copy bin\YieldHelpers.dll Release\PascalABCNETLinux\YieldHelpers.dll
-copy bin\LambdaAnySynToSemConverter.dll Release\PascalABCNETLinux\LambdaAnySynToSemConverter.dll
 copy bin\TeacherControlPlugin.dll Release\PascalABCNETLinux\TeacherControlPlugin.dll
 copy bin\Highlighting\PascalABCNET.xshd Release\PascalABCNETLinux\Highlighting\PascalABCNET.xshd
 
