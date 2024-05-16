@@ -364,7 +364,6 @@ namespace VisualPascalABC
                 case PascalABCCompiler.CompilerState.SemanticTreeConversion: RusName = VECStringResources.Get("STATE_SEMANTICTREECONVERSION{0}"); break;
                 case PascalABCCompiler.CompilerState.SemanticTreeConverterConnected: RusName = VECStringResources.Get("STATE_SEMANTICTREECONVERTERCONNECTED{0}"); break;
                 case PascalABCCompiler.CompilerState.SyntaxTreeConversion: RusName = VECStringResources.Get("STATE_SYNTAXTREECONVERSION{0}"); break;
-                case PascalABCCompiler.CompilerState.SyntaxTreeConverterConnected: RusName = VECStringResources.Get("STATE_SYNTAXTREECONVERTERCONNECTED{0}"); break;
                 case PascalABCCompiler.CompilerState.Ready:
                     RusName = VECStringResources.Get("STATE_READY");
                     if (!StartingCompleted)
