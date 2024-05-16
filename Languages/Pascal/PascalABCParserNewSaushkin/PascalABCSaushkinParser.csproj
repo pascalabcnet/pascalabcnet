@@ -107,7 +107,7 @@
     <Compile Include="Keywords.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserLambdaHelper.cs" />
-    <Compile Include="SemanticRules.cs" />
+    <Compile Include="SemanticRulesForYacc.cs" />
     <Compile Include="StringResources.cs" />
     <Compile Include="UnionStruct.cs" />
   </ItemGroup>
