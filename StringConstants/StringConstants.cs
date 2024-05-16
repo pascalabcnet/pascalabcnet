@@ -369,6 +369,7 @@ namespace PascalABCCompiler
             pascalSystemUnitName,
             pascalExtensionsUnitName
         };
+        public const string pascalLanguageDllName = "PascalLanguage.dll";
         #endregion
 
         #region PARSERS

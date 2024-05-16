@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Languages.Facade;
 
@@ -48,7 +49,7 @@ namespace Languages.Integration
                 
                 foreach (var dll in dllFiles)
                 {
-                    if (dll.Name.EndsWith("Parser.dll"))
+                    if (dll.Name.EndsWith("Language.dll"))
                     {
                         IntegrateLanguageFromAssembly(dll);
                     }
@@ -81,13 +82,10 @@ namespace Languages.Integration
 
             DirectoryInfo directory = new DirectoryInfo(directoryName);
 
-            FileInfo[] dllfiles = directory.GetFiles("*Parser.dll");
+            FileInfo[] dllFiles = directory.GetFiles("*Language.dll");
 
-            foreach (FileInfo languageFile in dllfiles)
+            foreach (FileInfo languageFile in dllFiles)
             {
-                if (Path.GetFileName(languageFile.FullName) == "VBNETParser.dll" || Path.GetFileName(languageFile.FullName) == "PascalABCPartParser.dll")
-                    continue;
-
                 IntegrateLanguageFromAssembly(languageFile);
             }
         }
@@ -121,7 +119,7 @@ namespace Languages.Integration
                     ILanguage languageFound = null;
                     foreach (Type type in types)
                     {
-                        if (type.Name.IndexOf("Language") >= 0)
+                        if (type.Name.EndsWith("Language") && type.IsClass)
                         {
                             object obj = Activator.CreateInstance(type);
                             if (obj is ILanguage language)
