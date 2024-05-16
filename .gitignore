@@ -39,6 +39,7 @@
 **/Errors.dll
 **/HelpBuilder.dll
 **/InternalErrorReport.dll
+**/LambdaAnySynToSemConverter.dll
 **/LanguageConverter.dll
 **/Localization.dll
 **/NETGenerator.dll
