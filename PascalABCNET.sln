@@ -113,7 +113,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBNETParser", "Languages\Vi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalLanguage", "Languages\Pascal\PascalLanguage\PascalLanguage.csproj", "{BD902586-E0D5-407A-904A-32249B8B709E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeConverters", "Languages\Pascal\SyntaxTreeConverters\SyntaxTreeConverters.csproj", "{F10A5330-DCF4-4533-877C-7B1B1BE23884}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TreeConverters", "TreeConverters", "{BE2CCDAD-74BE-401F-A92A-81CEF4725E96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeConverters", "Languages\Pascal\TreeConverters\SyntaxTreeConverters\SyntaxTreeConverters.csproj", "{F10A5330-DCF4-4533-877C-7B1B1BE23884}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "Languages\Pascal\TreeConverters\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -535,6 +539,18 @@ Global
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884}.Release|x86.ActiveCfg = Release|Any CPU
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884}.Release|x86.Build.0 = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Debug|x86.Build.0 = Debug|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.ActiveCfg = Release|Any CPU
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -583,7 +599,9 @@ Global
 		{1443F539-DCC7-4491-B4FD-B716C739DB3C} = {17A1159B-4039-451E-BBEF-F4643A39F1E6}
 		{1D51D03C-FB74-4AB2-84B4-09EB077BEAFE} = {0CD99885-0BBF-431E-A83C-21CFFB506FF0}
 		{BD902586-E0D5-407A-904A-32249B8B709E} = {17A1159B-4039-451E-BBEF-F4643A39F1E6}
-		{F10A5330-DCF4-4533-877C-7B1B1BE23884} = {17A1159B-4039-451E-BBEF-F4643A39F1E6}
+		{BE2CCDAD-74BE-401F-A92A-81CEF4725E96} = {17A1159B-4039-451E-BBEF-F4643A39F1E6}
+		{F10A5330-DCF4-4533-877C-7B1B1BE23884} = {BE2CCDAD-74BE-401F-A92A-81CEF4725E96}
+		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98} = {BE2CCDAD-74BE-401F-A92A-81CEF4725E96}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68E993E6-EE86-4DDF-B0A1-4FE884F8AC39}

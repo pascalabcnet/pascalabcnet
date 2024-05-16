@@ -72,7 +72,11 @@
       <Project>{1443f539-dcc7-4491-b4fd-b716c739db3c}</Project>
       <Name>PascalABCSaushkinParser</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
+    <ProjectReference Include="..\TreeConverters\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj">
+      <Project>{27d9800e-2689-4aa1-a2d6-128e4a9bae98}</Project>
+      <Name>LambdaAnySynToSemConverter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TreeConverters\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
       <Project>{f10a5330-dcf4-4533-877c-7b1b1be23884}</Project>
       <Name>SyntaxTreeConverters</Name>
     </ProjectReference>

@@ -1,4 +1,5 @@
 ﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.SyntaxTreeConverters;
 
 /// <summary>
@@ -28,7 +29,7 @@ namespace Languages.Pascal.Frontend.Converters
         public override void visit(lambda_inferred_type lit)
         {
             if (lit.real_type is lambda_any_type_node_syntax)
-                lit.real_type = new PascalABCCompiler.TreeRealization.lambda_any_type_node(); // семантический
+                lit.real_type = new lambda_any_type_node(); // семантический
         }
     }
 }
