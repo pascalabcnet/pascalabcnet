@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using PascalABCCompiler.Errors;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler.TreeConverter.TreeConversion;
 
 namespace Languages.Facade
 {
@@ -21,10 +23,17 @@ namespace Languages.Facade
 
         List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
 
+        ISyntaxTreeVisitor SyntaxTreeToSemanticTreeConverter { get; }
+
         string[] FilesExtensions { get; }
 
         bool CaseSensitive { get; }
 
         string[] SystemUnitNames { get; }
+
+        void SetSemanticRules();
+
+        void RefreshSyntaxTreeToSemanticTreeConverter();
+
     }
 }
