@@ -1326,7 +1326,7 @@ namespace PascalABCCompiler.TreeConverter
                         SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, name);
                         cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                         //_cmn.functions.AddElement(cnfnn);
-                        syntax_tree_visitor.compiled_unit.namespaces[0].functions.AddElement(cnfnn);
+                        syntax_tree_visitor.CompiledUnit.namespaces[0].functions.AddElement(cnfnn);
                         cnfnn.ConnectedToType = _ctn;
                         _last_created_function = new SymbolInfo(cnfnn);
                         if (add_symbol_info)
@@ -1342,7 +1342,7 @@ namespace PascalABCCompiler.TreeConverter
                     SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_compiled_tn.scope, _cmn.scope, null, name);
                     cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                     //_cmn.functions.AddElement(cnfnn);
-                    syntax_tree_visitor.compiled_unit.namespaces[0].functions.AddElement(cnfnn);
+                    syntax_tree_visitor.CompiledUnit.namespaces[0].functions.AddElement(cnfnn);
                     cnfnn.ConnectedToType = _compiled_tn;
                     _last_created_function = new SymbolInfo(cnfnn);
                     if (add_symbol_info)
@@ -3427,8 +3427,8 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         case block_type.compiled_type_block:
                             {
-                                if (syntax_tree_visitor.compiled_unit.namespaces[0].functions.Contains((common_namespace_function_node)fn))
-                                    syntax_tree_visitor.compiled_unit.namespaces[0].functions.remove((common_namespace_function_node)fn);
+                                if (syntax_tree_visitor.CompiledUnit.namespaces[0].functions.Contains((common_namespace_function_node)fn))
+                                    syntax_tree_visitor.CompiledUnit.namespaces[0].functions.remove((common_namespace_function_node)fn);
                                 siint = _compiled_tn.find_in_type(fn.name);
                                 break;
                             }

@@ -163,14 +163,10 @@
     <Compile Include="TreeConversion\SemanticRules.cs" />
     <Compile Include="TreeConversion\semantic_checks_for_sugar.cs" />
     <Compile Include="TreeConversion\SubtreeCreator.cs" />
-    <Compile Include="TreeConversion\SyntaxTreeToSemanticTreeConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Assign.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Foreach.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\ForLoop.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Patterns.cs" />
-    <Compile Include="TreeConversion\SyntaxTreeVisitorsController.cs" />
     <Compile Include="TreeConversion\syntax_tree_visitor.cs">
       <SubType>Code</SubType>
     </Compile>

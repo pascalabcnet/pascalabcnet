@@ -672,7 +672,7 @@ namespace PascalABCCompiler.NetHelper
                                     attr_t = o as Type;
                                 else
                                     attr_t = _assembly.GetType(o as string, false);
-                                if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.compiled_unit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
+                                if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
                                 {
                                     type_node tn = CreatePascalType(attr_t);
                                     if (tn != null)
@@ -696,7 +696,7 @@ namespace PascalABCCompiler.NetHelper
                                     attr_t = t.Assembly.GetType(o as string, false);
 
                                 }
-                                if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.compiled_unit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
+                                if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
                                 {
                                     type_node tn = CreatePascalType(attr_t);
                                     if (tn != null)
@@ -713,7 +713,7 @@ namespace PascalABCCompiler.NetHelper
                             else if (attr_t.FullName == StringConstants.short_string_attr_name)
                             {
                                 int len = (int)attr_t.GetField("Length", BindingFlags.Public | BindingFlags.Instance).GetValue(attrs[0]);
-                                if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.compiled_unit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
+                                if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
                                 {
                                     type_node tn = PascalABCCompiler.TreeConverter.compilation_context.instance.create_short_string_type(len, null);
                                     compiled_pascal_types[t.Namespace + "." + t.Name.Substring(1)] = tn;
@@ -1637,7 +1637,7 @@ namespace PascalABCCompiler.NetHelper
 			{
 				if (cpn.type is compiled_type_node)
 				return cpn;
-				if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.compiled_unit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
+				if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
 				{
 					if (cpn.type.type_special_kind == type_special_kind.typed_file &&
 				    (!PascalABCCompiler.TreeConverter.compilation_context.instance.TypedFiles.ContainsKey(cpn.type.element_type) || PascalABCCompiler.TreeConverter.compilation_context.instance.TypedFiles[cpn.type.element_type] != cpn.type))
@@ -1661,7 +1661,7 @@ namespace PascalABCCompiler.NetHelper
 			}
 			cpn = new compiled_variable_definition(pi);
 			
-			if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.compiled_unit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
+			if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
 			{
 				object[] attrs = pi.GetCustomAttributes(false);
 				for (int i=0; i<attrs.Length; i++)
@@ -1901,7 +1901,7 @@ namespace PascalABCCompiler.NetHelper
             if (o != null)
             {
                 template_class tc = o as template_class;
-                if (tc == null && PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.compiled_unit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
+                if (tc == null && PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
                 {
                     Type t = o as Type;
                     if (t != null)
@@ -1923,7 +1923,7 @@ namespace PascalABCCompiler.NetHelper
             if (o != null)
             {
                 type_node tn = o as type_node;
-                if (tn == null && PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.compiled_unit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
+                if (tn == null && PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
                 {
                     Type t = o as Type;
                     if (t != null)
@@ -1939,7 +1939,7 @@ namespace PascalABCCompiler.NetHelper
                 }
                 else
                 {
-                    if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.compiled_unit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
+                    if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
                     {
                         if (tn.type_special_kind == type_special_kind.typed_file &&
                         (!PascalABCCompiler.TreeConverter.compilation_context.instance.TypedFiles.ContainsKey(tn.element_type) || PascalABCCompiler.TreeConverter.compilation_context.instance.TypedFiles[tn.element_type] != tn))

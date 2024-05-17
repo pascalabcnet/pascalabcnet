@@ -98,12 +98,12 @@ namespace PascalABCCompiler.TreeConverter
 		internal bool debug=true;
 		internal bool debugging=false;
         public bool for_intellisense = false;
-        public List<var_definition_node> CompiledVariables = new List<var_definition_node>();
+        private List<var_definition_node> compiledVariables = new List<var_definition_node>();
         internal List<Errors.Error> ErrorsList;
         internal List<Errors.CompilerWarning> WarningsList;
 		internal Dictionary<SyntaxTree.syntax_tree_node,string> docs;
         public bool for_native_code = false;
-        internal Dictionary<SyntaxTree.syntax_tree_node, SyntaxTree.compiler_directive> DirectivesToNodesLinks;
+        public Dictionary<SyntaxTree.syntax_tree_node, SyntaxTree.compiler_directive> DirectivesToNodesLinks;
         public bool ThrowCompilationError = true;
         public bool MustVisitBody = true;
         public LambdaProcessingState lambdaProcessingState = LambdaProcessingState.None; //lroman
@@ -113,6 +113,76 @@ namespace PascalABCCompiler.TreeConverter
         #endregion
 
         private int num = 0;
+
+        public void InitializeForCompilingInterface(Errors.SyntaxError parser_error,
+            Hashtable bad_nodes, TreeRealization.unit_node_list usedUnits,
+            TreeRealization.using_namespace_list namespaces, compilation_unit syntaxUnit,
+            List<Errors.Error> errorsList, List<Errors.CompilerWarning> warningsList,
+            Dictionary<syntax_tree_node, string> docs, bool debug, bool debugging, bool for_intellisense)
+        {
+            //convertion_data_and_alghoritms.__i = 0;
+            Initialize(parser_error, bad_nodes, usedUnits, syntaxUnit, errorsList, warningsList, docs, debug, debugging, for_intellisense);
+            //comp_units=UsedUnits;
+            //visit(SyntaxUnit
+            //SyntaxTreeToSemanticTreeConverter.interface_using_list = namespaces;
+            interface_using_list.Clear();
+            using_list.AddRange(namespaces);
+        }
+
+        public void InitializeForCompilingImplementation(Errors.SyntaxError parser_error,
+            Hashtable bad_nodes, TreeRealization.unit_node_list usedUnits,
+            TreeRealization.using_namespace_list interfaceNamespaces, TreeRealization.using_namespace_list implementationNamespaces, compilation_unit syntaxUnit, TreeRealization.common_unit_node semanticUnit,
+            List<Errors.Error> errorsList, List<Errors.CompilerWarning> warningsList,
+            Dictionary<syntax_tree_node, string> docs, bool debug, bool debugging, bool for_intellisense)
+        {
+            Initialize(parser_error, bad_nodes, usedUnits, syntaxUnit, errorsList, warningsList, docs, debug, debugging, for_intellisense);
+
+            using_list.AddRange(interfaceNamespaces);
+            interface_using_list.AddRange(interfaceNamespaces);
+            using_list.AddRange(implementationNamespaces);
+
+            SyntaxTree.unit_module umod = syntaxUnit as SyntaxTree.unit_module;
+            if (umod == null)
+            {
+                throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Program has not implementation part");
+            }
+
+            CompiledUnit = semanticUnit;
+        }
+
+        private void Initialize(Errors.SyntaxError parser_error,
+            Hashtable bad_nodes, TreeRealization.unit_node_list usedUnits,
+            compilation_unit syntaxUnit,
+            List<Errors.Error> errorsList, List<Errors.CompilerWarning> warningsList,
+            Dictionary<syntax_tree_node, string> docs, bool debug, bool debugging, bool for_intellisense)
+        {
+            ParserError = parser_error;
+            BadNodesInSyntaxTree = bad_nodes;
+            ReferencedUnits = usedUnits;
+
+            using_list.Clear();
+
+            current_document = new document(syntaxUnit.file_name);
+
+            ErrorsList = errorsList;
+            WarningsList = warningsList;
+
+            SymbolTable.CaseSensitive = SemanticRules.SymbolTableCaseSensitive;
+
+            if (docs != null)
+                this.docs = docs;
+            this.debug = debug;
+            this.debugging = debugging;
+            this.for_intellisense = for_intellisense;
+            SystemLibrary.SystemLibrary.syn_visitor = this;
+        }
+
+        public void ProcessNode<T>(T cd) where T : syntax_tree_node
+        {
+            base.ProcessNode(cd);
+        }
+
+        public List<TreeRealization.var_definition_node> CompiledVariables => compiledVariables;
 
         public string UniqueNumStr()
         {
@@ -577,7 +647,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        public void reset()
+        public void Reset()
         {
             _system_unit = null;
             SystemLibrary.SystemLibrary.system_unit = null;
@@ -613,7 +683,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        public PascalABCCompiler.Errors.SyntaxError parser_error
+        public PascalABCCompiler.Errors.SyntaxError ParserError
         {
             get
             {
@@ -624,7 +694,7 @@ namespace PascalABCCompiler.TreeConverter
                 convertion_data_and_alghoritms.parser_error = value;
             }
         }
-        public System.Collections.Hashtable bad_nodes_in_syntax_tree
+        public System.Collections.Hashtable BadNodesInSyntaxTree
         {
             get
             {
@@ -695,7 +765,7 @@ namespace PascalABCCompiler.TreeConverter
                 tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, d);
         }
 
-        public common_unit_node compiled_unit
+        public common_unit_node CompiledUnit
         {
             get
             {
@@ -708,7 +778,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        public PascalABCCompiler.TreeRealization.unit_node_list referenced_units
+        public PascalABCCompiler.TreeRealization.unit_node_list ReferencedUnits
         {
             get
             {
@@ -3053,7 +3123,7 @@ namespace PascalABCCompiler.TreeConverter
                 weak_node_test_and_visit(_unit_module.implementation_part.using_namespaces);
             }*/
 
-            SymbolTable.Scope[] used_units = build_referenced_units(referenced_units,false);            
+            SymbolTable.Scope[] used_units = build_referenced_units(ReferencedUnits,false);            
 
             _compiled_unit.implementation_scope =
                 convertion_data_and_alghoritms.symbol_table.CreateUnitImplementationScope(_compiled_unit.scope, used_units);
@@ -11265,7 +11335,7 @@ namespace PascalABCCompiler.TreeConverter
             _compiled_unit.compiler_directives = ConvertDirectives(_program_module);
 
 
-            SymbolTable.Scope[] used_units = build_referenced_units(referenced_units,true);
+            SymbolTable.Scope[] used_units = build_referenced_units(ReferencedUnits,true);
 
             _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units, namespace_name == ""? System.IO.Path.GetFileName(CurrentDocument.file_name) : namespace_name);
 
@@ -11348,7 +11418,7 @@ namespace PascalABCCompiler.TreeConverter
             assign_doc_info(_compiled_unit,_unit_module.unit_name);
             _compiled_unit.compiler_directives = ConvertDirectives(_unit_module);
 
-            SymbolTable.Scope[] used_units = build_referenced_units(referenced_units,true);
+            SymbolTable.Scope[] used_units = build_referenced_units(ReferencedUnits,true);
 
             _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units, "unit " + namespace_name);
 
@@ -11390,7 +11460,7 @@ namespace PascalABCCompiler.TreeConverter
             Dictionary<syntax_namespace_node, common_namespace_node> dict = new Dictionary<syntax_namespace_node, common_namespace_node>();
             foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
             {
-                _syntax_namespace_node.referenced_units.AddRange(referenced_units);
+                _syntax_namespace_node.referenced_units.AddRange(ReferencedUnits);
                 var names = _syntax_namespace_node.name.Split('.');
                 SymTable.Scope scope = null;
                 SymTable.Scope parent_scope = context.CurrentScope;
@@ -20191,7 +20261,7 @@ namespace PascalABCCompiler.TreeConverter
             //compiled_main_unit=new unit_node();
             //SymbolTable.Scope[] used_units=new SymbolTable.Scope[used_assemblyes.Count+1];
 
-            SymbolTable.Scope[] used_units = build_referenced_units(referenced_units,true);
+            SymbolTable.Scope[] used_units = build_referenced_units(ReferencedUnits,true);
 
             _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units, namespace_name);
 

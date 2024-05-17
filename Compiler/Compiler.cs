@@ -3802,6 +3802,7 @@ namespace PascalABCCompiler
                     TreeConverter.SemanticRules.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
 
                     SyntaxTreeToSemanticTreeConverter.CompileImplementation(
+                        currentUnit.Language,
                         (common_unit_node)currentUnit.SemanticTree,
                         currentUnit.SyntaxTree,
                         buildImplementationUsesList(currentUnit),
@@ -3895,6 +3896,7 @@ namespace PascalABCCompiler
                     OnChangeCompilerState(this, CompilerState.CompileInterface, UnitFileName);
                     TreeConverter.SemanticRules.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
                     currentUnit.SemanticTree = SyntaxTreeToSemanticTreeConverter.CompileInterface(
+                        currentUnit.Language,
                         currentUnit.SyntaxTree,
                         currentUnit.InterfaceUsedUnits,
                         ErrorsList, Warnings,
