@@ -70,7 +70,7 @@ namespace Languages.Pascal.Frontend.Wrapping
     }*/
 
 
-    public class PascalABCNewLanguageParser : BaseParser, IParser
+    public class PascalABCNewLanguageParser : BaseParser
     {
 
         public PascalABCNewLanguageParser()
@@ -131,51 +131,9 @@ namespace Languages.Pascal.Frontend.Wrapping
             #endregion
         }
 
-        public override void PreBuildTree(string FileName)
+        protected override void PreBuildTree(string FileName)
         {
             CompilerDirectives = new List<compiler_directive>();
-        }
-
-        public override syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
-        {
-            syntax_tree_node root = null;
-
-            PreBuildTree(FileName);
-            switch (ParseMode)
-            {
-                case ParseMode.Normal:
-                    root = BuildTreeInNormalMode(FileName, Text, DefinesList);
-                    break;
-                case ParseMode.Expression:
-                    root = BuildTreeInExprMode(FileName, Text);
-                    break;
-                case ParseMode.TypeAsExpression:
-                    root = BuildTreeInTypeExprMode(FileName, Text);
-                    break;
-                case ParseMode.Special:
-                    root = BuildTreeInSpecialMode(FileName, Text);
-                    break;
-                case ParseMode.ForFormatter:
-                    root = BuildTreeInFormatterMode(FileName, Text);
-                    break;
-                case ParseMode.Statement:
-                    root = BuildTreeInStatementMode(FileName, Text);
-                    break;
-                default:
-                    break;
-            }
-
-            if (root != null && root is compilation_unit compilationUnit)
-            {
-                compilationUnit.file_name = FileName;
-                compilationUnit.compiler_directives = CompilerDirectives;
-
-                if (root is unit_module unitModule)
-                    if (unitModule.unit_name.HeaderKeyword == UnitHeaderKeyword.Library)
-                        unitModule.compiler_directives.Add(new compiler_directive(new token_info("apptype"), new token_info("dll")));
-            }
-
-            return root;
         }
 
         private syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, List<string> definesList = null)
@@ -217,7 +175,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             return parser.root;
         }
 
-        public override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
+        protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
         {
             Errors.Clear();
             Warnings.Clear();
@@ -229,7 +187,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             return root;
         }
 
-        public override syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
+        protected override syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
         {
             if (Text == string.Empty)
                 return null;
@@ -247,7 +205,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             return root as expression;
         }
 
-        public override syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text)
+        protected override syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text)
         {
             // LineCorrection = -1 не забыть
             Text = String.Concat("<<type>>", Environment.NewLine, Text);
@@ -256,7 +214,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             return root as expression;
         }
 
-        public override syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)
+        protected override syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)
         {
             Text = String.Concat("<<statement>>", Environment.NewLine, Text);
 
@@ -264,14 +222,14 @@ namespace Languages.Pascal.Frontend.Wrapping
             return root as statement;
         }
 
-        public override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
+        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
         {
             Errors.Clear();
             syntax_tree_node root = Parse(Text, FileName);
             return root;
         }
 
-        public override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
+        protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
         {
             Errors.Clear();
             syntax_tree_node root = Parse(Text, FileName, true);

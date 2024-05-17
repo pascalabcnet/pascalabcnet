@@ -52,8 +52,6 @@ namespace PascalABCCompiler.Parsers
 
         expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
 
-        syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null);
-
         void Reset();
 
     }

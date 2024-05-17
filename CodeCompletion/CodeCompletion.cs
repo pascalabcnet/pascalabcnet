@@ -109,7 +109,7 @@ namespace CodeCompletion
             {
                 cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings);
                 ErrorsList.Clear();
-                PascalABCCompiler.SyntaxTree.documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(FileName, Text, ParseMode.Normal) as documentation_comment_list;
+                documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(Text);
                 PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
                 if (cu != null)
                     docs = docconst.Construct(cu, dt);
@@ -146,7 +146,7 @@ namespace CodeCompletion
                             cu = get_fictive_unit(Text, FileName);
                     }
                     ErrorsList.Clear();
-                    PascalABCCompiler.SyntaxTree.documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(FileName, Text, ParseMode.Normal) as documentation_comment_list;
+                    documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(Text);
                     PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
                     if (cu != null)
                         docs = docconst.Construct(cu, dt);
@@ -219,7 +219,7 @@ namespace CodeCompletion
             Parser = language.Parser;
             compilation_unit cu = language.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal);
             ErrorsList.Clear();
-            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = language.DocParser.BuildTree(FileName, Text, ParseMode.Normal) as documentation_comment_list;
+            documentation_comment_list dt = language.DocParser.BuildTree(Text);
             PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
             if (cu != null)
                 docs = docconst.Construct(cu, dt);
@@ -248,7 +248,7 @@ namespace CodeCompletion
                 }
                 ErrorsList.Clear();
                 Warnings.Clear();
-                dt = language.DocParser.BuildTree(FileName, Text, ParseMode.Normal) as documentation_comment_list;
+                dt = language.DocParser.BuildTree(Text);
                 //PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
                 if (cu != null)
                     docs = docconst.Construct(cu, dt);
@@ -286,7 +286,7 @@ namespace CodeCompletion
             }
             ErrorsList.Clear();
             Warnings.Clear();
-            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = language.DocParser.BuildTree(FileName, Text, ParseMode.Normal) as documentation_comment_list;
+            documentation_comment_list dt = language.DocParser.BuildTree(Text);
             PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
             if (cu != null)
                 docs = docconst.Construct(cu, dt);
@@ -316,7 +316,7 @@ namespace CodeCompletion
                 }
                 ErrorsList.Clear();
                 Warnings.Clear();
-                dt = language.DocParser.BuildTree(FileName, Text, ParseMode.Normal) as documentation_comment_list;
+                dt = language.DocParser.BuildTree(Text);
                 if (cu != null)
                     docs = docconst.Construct(cu, dt);
                 if (CodeCompletionTools.XmlDoc.LookupLocalizedXmlDocForUnitWithSources(FileName, CodeCompletionController.currentLanguageISO) != null)

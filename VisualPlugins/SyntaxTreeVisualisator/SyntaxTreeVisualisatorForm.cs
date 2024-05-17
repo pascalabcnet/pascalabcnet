@@ -239,11 +239,11 @@ namespace VisualPascalABCPlugins
             return LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser.GetCompilationUnit(FileName, FileText, Errors, new List<CompilerWarning>(), PascalABCCompiler.Parsers.ParseMode.Normal);
         }
 
-        PascalABCCompiler.SyntaxTree.syntax_tree_node ParseCurrentDocs()
+        PascalABCCompiler.SyntaxTree.documentation_comment_list ParseCurrentDocs()
         {
             string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
             string FileText = (string)VisualEnvironmentCompiler.StandartCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
-            return LanguageProvider.Instance.SelectLanguageByExtension(FileName).DocParser.BuildTree(FileName + "dt_", FileText, PascalABCCompiler.Parsers.ParseMode.Normal);
+            return LanguageProvider.Instance.SelectLanguageByExtension(FileName).DocParser.BuildTree(FileText);
         }
 
         private void toolStripButton1_Click_1(object sender, EventArgs e)
@@ -267,7 +267,7 @@ namespace VisualPascalABCPlugins
         {
             List<Error> Errors = new List<Error>();
             PascalABCCompiler.SyntaxTree.syntax_tree_node sn = ParseCurrent(Errors);
-            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParseCurrentDocs() as PascalABCCompiler.SyntaxTree.documentation_comment_list;
+            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParseCurrentDocs();
             PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
             Dictionary<PascalABCCompiler.SyntaxTree.syntax_tree_node, string> documentation = docconst.Construct(sn, dt);
         }

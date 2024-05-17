@@ -2,119 +2,32 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
-using PascalABCCompiler.Errors;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using PascalABCCompiler;
-using System;
 
 
 namespace Languages.Pascal.Frontend.Documentation
 {
-	
-	public class PascalDocTagsLanguageParser : IParser
-	{
+
+    public class PascalDocTagsLanguageParser : IDocParser
+    {
         List<string> sectionNames = new List<string>();
 
         public PascalDocTagsLanguageParser()
-		{
+        {
             filesExtensions = new string[1];
             filesExtensions[0] = ".pasdt" + StringConstants.hideParserExtensionPostfixChar;
             sectionNames.Add("summary");
             sectionNames.Add("returns");
-		}
+        }
 
         string[] filesExtensions;
         public string[] FilesExtensions
         {
-            get 
+            get
             {
                 return filesExtensions;
-            }
-        }
-		
-        public Func<bool> CheckIfParsingUnit {  get; set; }
-
-        public ILanguageInformation LanguageInformation {
-			get {
-				return null;
-			}
-		}
-        
-        public Keyword[] Keywords
-        {
-            get
-            {
-                return new Keyword[0];
-            }
-        }
-
-        public void Reset()
-        {
-        }
-
-        public bool CaseSensitive
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        SourceFilesProviderDelegate sourceFilesProvider = null;
-        public SourceFilesProviderDelegate SourceFilesProvider
-        {
-            get
-            {
-                return sourceFilesProvider;
-            }
-            set
-            {
-                sourceFilesProvider = value;
-            }
-        }
-        
-        public List<compiler_directive> CompilerDirectives
-        {
-            get
-            {
-                return new List<compiler_directive>();
-            }
-        }
-
-        List<Error> errors = new List<Error>();
-        public List<Error> Errors
-        {
-            get
-            {
-                return errors;
-            }
-            set
-            {
-                errors = value;
-            }
-        }
-
-        List<CompilerWarning> warnings = new List<CompilerWarning>();
-
-        public List<CompilerWarning> Warnings
-        {
-            get
-            {
-                return warnings;
-            }
-
-            set
-            {
-                warnings = value;
-            }
-        }
-
-        public Dictionary<string, PascalABCCompiler.ParserTools.Directives.DirectiveInfo> ValidDirectives 
-        { 
-            get
-            {
-                throw new NotImplementedException();
             }
         }
 
@@ -143,10 +56,9 @@ namespace Languages.Pascal.Frontend.Documentation
             return dcs;
         }
 
-        public syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
+        public documentation_comment_list BuildTree(string Text)
         {
             MatchCollection mc = Regex.Matches(Text, @"(([\f\t\v\x85\p{Z}])*///.*\r\n)*([\f\t\v\x85\p{Z}])*///.*", RegexOptions.Compiled);
-            syntax_tree_node cu = null;
             documentation_comment_list dcl = new documentation_comment_list();
             if (mc.Count > 0)
             {
@@ -154,7 +66,7 @@ namespace Languages.Pascal.Frontend.Documentation
                 int mci = 0, curmindex = mc[0].Index;
                 int line_num = 1;
                 int col = 1;
-                documentation_comment_section dcs=null;
+                documentation_comment_section dcs = null;
                 int dcs_count = 0;
                 int dcs_length = 0;
                 while (true)
@@ -163,9 +75,9 @@ namespace Languages.Pascal.Frontend.Documentation
                     {
                         line_num++;
                     }
-                    if (dcs!=null && dcs_count == dcs_length)
+                    if (dcs != null && dcs_count == dcs_length)
                     {
-                        dcs.source_context = new SourceContext(dcs.source_context.begin_position.line_num, dcs.source_context.begin_position.column_num, line_num-1, col);
+                        dcs.source_context = new SourceContext(dcs.source_context.begin_position.line_num, dcs.source_context.begin_position.column_num, line_num - 1, col);
                         dcs = null;
                     }
                     if (Text[i] == '\n')
@@ -175,7 +87,7 @@ namespace Languages.Pascal.Frontend.Documentation
                     if (curmindex == i)
                     {
                         dcs = parse_section(mc[mci].Value);
-                        if (dcs.tags.Count > 0 || dcs.text!=null)
+                        if (dcs.tags.Count > 0 || dcs.text != null)
                         {
                             dcs.source_context = new SourceContext(line_num, col, -1, -1);
                             dcl.sections.Add(dcs);
@@ -192,7 +104,7 @@ namespace Languages.Pascal.Frontend.Documentation
                     col++;
                     if (dcs != null)
                         dcs_count++;
-                    if(i==Text.Length || (curmindex==-1 && dcs==null))
+                    if (i == Text.Length || (curmindex == -1 && dcs == null))
                         break;
                 }
             }
@@ -213,45 +125,11 @@ namespace Languages.Pascal.Frontend.Documentation
                 return "0.9";
             }
         }
-        public string Copyright
-        {
-            get
-            {
-                return "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich";
-            }
-        }
 
         public override string ToString()
         {
             return "Documentation Comments Tag Parser v" + Version;
         }
 
-        public compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
-        {
-            throw new NotImplementedException();
-        }
-
-        public expression GetExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
-        {
-            throw new NotImplementedException();
-        }
-
-        public statement GetStatement(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
-        {
-            throw new NotImplementedException();
-        }
-
-        public expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
-        {
-            throw new NotImplementedException();
-        }
     }
-
-
-
 }

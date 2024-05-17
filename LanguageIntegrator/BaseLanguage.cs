@@ -10,7 +10,7 @@ namespace Languages.Facade
     public abstract class BaseLanguage : ILanguage
     {
 
-        public BaseLanguage(string name, string version, string copyright, IParser parser, IParser docParser,
+        public BaseLanguage(string name, string version, string copyright, IParser parser, IDocParser docParser,
             List<ISyntaxTreeConverter> syntaxTreeConverters, ISyntaxToSemanticTreeConverter syntaxTreeToSemanticTreeConverter,
             string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
         {
@@ -36,7 +36,7 @@ namespace Languages.Facade
 
         public virtual IParser Parser { get; protected set; }
 
-        public virtual IParser DocParser { get; protected set; }
+        public virtual IDocParser DocParser { get; protected set; }
 
         public virtual List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
 

@@ -142,7 +142,7 @@ namespace PascalABCCompiler.Parsers
             return null;
         }
 
-        public virtual PascalABCCompiler.SyntaxTree.syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
+        protected virtual syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
         {
             syntax_tree_node root = null;
 
@@ -150,10 +150,13 @@ namespace PascalABCCompiler.Parsers
             switch (ParseMode)
             {
                 case ParseMode.Normal:
-                    root = BuildTreeInNormalMode(FileName, Text);
+                    root = BuildTreeInNormalMode(FileName, Text, DefinesList);
                     break;
                 case ParseMode.Expression:
                     root = BuildTreeInExprMode(FileName, Text);
+                    break;
+                case ParseMode.TypeAsExpression:
+                    root = BuildTreeInTypeExprMode(FileName, Text);
                     break;
                 case ParseMode.Special:
                     root = BuildTreeInSpecialMode(FileName, Text);
@@ -168,62 +171,37 @@ namespace PascalABCCompiler.Parsers
                     break;
             }
 
-            if (root != null && root is compilation_unit)
+            if (root != null && root is compilation_unit compilationUnit)
             {
-                (root as compilation_unit).file_name = FileName;
-                (root as compilation_unit).compiler_directives = CompilerDirectives;
-                if (root is unit_module)
-                    if ((root as unit_module).unit_name.HeaderKeyword == UnitHeaderKeyword.Library)
-                        (root as compilation_unit).compiler_directives.Add(new compiler_directive(new token_info("apptype"), new token_info("dll")));
+                compilationUnit.file_name = FileName;
+                compilationUnit.compiler_directives = CompilerDirectives;
+
+                if (root is unit_module unitModule)
+                    if (unitModule.unit_name.HeaderKeyword == UnitHeaderKeyword.Library)
+                        unitModule.compiler_directives.Add(new compiler_directive(new token_info("apptype"), new token_info("dll")));
             }
 
             return root;
         }
 
-        public virtual void PreBuildTree(string FileName)
-        {
+        protected abstract void PreBuildTree(string FileName);
 
-        }
+        protected abstract syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null);
 
-        public virtual syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
-        {
-            return null;
-        }
+        protected abstract syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text);
 
-        public virtual syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text)
-        {
-            return null;
-        }
+        protected abstract syntax_tree_node BuildTreeInExprMode(string FileName, string Text);
 
-        public virtual syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
-        {
-            return null;
-        }
+        protected abstract syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text);
 
-        public virtual syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
-        {
-            return null;
-        }
+        protected abstract syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text);
 
-        public virtual syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
-        {
-            return null;
-        }
-
-        public virtual syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)
-        {
-            return null;
-        }
+        protected abstract syntax_tree_node BuildTreeInStatementMode(string FileName, string Text);
 
         public virtual void Reset()
         {
             // если нужно - переопределяйте
         }        
-
-        /*public override string ToString()
-        {
-            return Name + " Language Parser v" + Version;
-        }*/
 
     }
 }

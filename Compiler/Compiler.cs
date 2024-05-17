@@ -4236,9 +4236,7 @@ namespace PascalABCCompiler
 
         private Dictionary<SyntaxTree.syntax_tree_node, string> AddDocumentationToNodes(CompilationUnit currentUnit, string text)
         {
-            SyntaxTree.documentation_comment_list docCommentList = currentUnit.Language.DocParser.BuildTree(currentUnit.SyntaxTree.file_name, text, Parsers.ParseMode.Normal) as SyntaxTree.documentation_comment_list;
-            
-            if (currentUnit.Language.DocParser.Errors.Count > 0) return null;
+            SyntaxTree.documentation_comment_list docCommentList = currentUnit.Language.DocParser.BuildTree(text);
             
             return new DocumentationConstructor().Construct(currentUnit.SyntaxTree, docCommentList);
         }

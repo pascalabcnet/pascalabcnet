@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using PascalABCCompiler.Errors;
 using PascalABCCompiler.Parsers;
-using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeConverter.TreeConversion;
 
@@ -17,7 +15,7 @@ namespace Languages.Facade
 
         IParser Parser { get; }
 
-        IParser DocParser { get; }
+        IDocParser DocParser { get; }
 
         List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
 
