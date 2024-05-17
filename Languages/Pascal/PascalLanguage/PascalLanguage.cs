@@ -14,11 +14,11 @@ namespace Languages.Pascal
             name: StringConstants.pascalLanguageName,
             version: "1.2",
             copyright: "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich",
-            
+
             parser: new Frontend.Wrapping.PascalABCNewLanguageParser(),
             docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
-            
-            syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new Frontend.Converters.LambdaAnyConverter() },
+
+            syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() },
             syntaxTreeToSemanticTreeConverter: new syntax_tree_visitor(),
             
             filesExtensions: new string[] { StringConstants.pascalSourceFileExtension },

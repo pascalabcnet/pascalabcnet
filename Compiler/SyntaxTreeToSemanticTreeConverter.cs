@@ -19,7 +19,7 @@ namespace PascalABCCompiler.TreeConverter
     public class SyntaxTreeToSemanticTreeConverter
     {
 
-        private ISyntaxTreeVisitor syntaxTreeVisitor;
+        private ISyntaxToSemanticTreeConverter syntaxTreeVisitor;
 
         public SyntaxTreeToSemanticTreeConverter()
         {

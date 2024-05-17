@@ -8,7 +8,7 @@ using PascalABCCompiler.SyntaxTreeConverters;
 /// Это - единственное место, которое делало зависимость синтаксиса от семантики и этот визитор ее убирает
 /// Мы вызываем этот визитор в компиляторе сразу после всех синтаксических визиторов
 /// </summary>
-namespace Languages.Pascal.Frontend.Converters
+namespace SyntaxSemanticVisitors
 {
     public class LambdaAnyConverter : ISyntaxTreeConverter
     {

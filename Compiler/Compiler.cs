@@ -3521,53 +3521,45 @@ namespace PascalABCCompiler
         public SyntaxTree.compilation_unit ParseText(string fileName, string text, List<Error> errorList, List<CompilerWarning> warnings)
         {
             Reset();
+            ILanguage language = LanguageProvider.SelectLanguageByExtension(fileName);
+            
             OnChangeCompilerState(this, CompilerState.CompilationStarting, fileName);
-            SyntaxTree.compilation_unit cu = InternalParseText(fileName, text, ErrorsList, warnings);
+            SyntaxTree.compilation_unit cu = InternalParseText(language, fileName, text, ErrorsList, warnings, null, false);
             OnChangeCompilerState(this, CompilerState.Ready, fileName);
+            
             return cu;
         }
 
-        private SyntaxTree.compilation_unit InternalParseText(string fileName, string text, List<Error> errorList, List<CompilerWarning> warnings, List<string> definesList = null)
+        private void CalculateLinesCompiled(List<Error> errorList, SyntaxTree.compilation_unit unitSyntaxTree)
         {
-            OnChangeCompilerState(this, CompilerState.BeginParsingFile, fileName);
-            ILanguage language = LanguageProvider.SelectLanguageByExtension(fileName);
-            SyntaxTree.compilation_unit unitSyntaxTree = language.Parser.GetCompilationUnit(fileName, text, ErrorsList, warnings, Parsers.ParseMode.Normal, definesList);
-            OnChangeCompilerState(this, CompilerState.EndParsingFile, fileName);
-
-            //Вычисляем сколько строк скомпилировали
             if (errorList.Count == 0 && unitSyntaxTree != null && unitSyntaxTree.source_context != null)
             {
                 linesCompiled += (uint)(unitSyntaxTree.source_context.end_position.line_num - unitSyntaxTree.source_context.begin_position.line_num + 1);
-                // 500 - это наибольшая программа для начинающих. БОльшая программа - здоровье кода только по кнопке (чтобы не замедлять)
-                if (linesCompiled <= 500)
-                {
-                    // Это только для локального компилятора?
-                    var stat = new SyntaxVisitors.ABCStatisticsVisitor();
-                    stat.ProcessNode(unitSyntaxTree);
-                    pABCCodeHealth = stat.CalcHealth(out int neg, out int pos);
-                }
             }
-            return unitSyntaxTree;
         }
 
-        private SyntaxTree.compilation_unit InternalParseText(ILanguage language, string fileName, string text, List<Error> errorList, List<CompilerWarning> warnings, List<string> definesList = null)
+        private void CalculatePascalProgramHealth(SyntaxTree.compilation_unit unitSyntaxTree)
+        {
+            // Это только для локального компилятора?
+            var stat = new SyntaxVisitors.ABCStatisticsVisitor();
+            stat.ProcessNode(unitSyntaxTree);
+            pABCCodeHealth = stat.CalcHealth(out int _, out int _);
+        }
+
+        private SyntaxTree.compilation_unit InternalParseText(ILanguage language, string fileName, string text, List<Error> errorList, List<CompilerWarning> warnings, List<string> definesList = null, bool calculateHealth = true)
         {
             OnChangeCompilerState(this, CompilerState.BeginParsingFile, fileName);
             SyntaxTree.compilation_unit unitSyntaxTree = language.Parser.GetCompilationUnit(fileName, text, ErrorsList, warnings, Parsers.ParseMode.Normal, definesList);
             OnChangeCompilerState(this, CompilerState.EndParsingFile, fileName);
 
-            //Вычисляем сколько строк скомпилировали
-            if (errorList.Count == 0 && unitSyntaxTree != null && unitSyntaxTree.source_context != null)
+            // Вычисляем сколько строк скомпилировали
+            CalculateLinesCompiled(errorList, unitSyntaxTree);
+            
+            // 500 - это наибольшая программа для начинающих. БОльшая программа - здоровье кода только по кнопке (чтобы не замедлять)
+            if (calculateHealth && language.Name == StringConstants.pascalLanguageName && linesCompiled <= 500)
             {
-                linesCompiled += (uint)(unitSyntaxTree.source_context.end_position.line_num - unitSyntaxTree.source_context.begin_position.line_num + 1);
-                // 500 - это наибольшая программа для начинающих. БОльшая программа - здоровье кода только по кнопке (чтобы не замедлять)
-                if (linesCompiled <= 500)
-                {
-                    // Это только для локального компилятора?
-                    var stat = new SyntaxVisitors.ABCStatisticsVisitor();
-                    stat.ProcessNode(unitSyntaxTree);
-                    pABCCodeHealth = stat.CalcHealth(out int neg, out int pos);
-                }
+                // TODO: при подсчете здоровья программы на других языках необходимо вынести StatisticsVisitor в интерфейс ILanguage  EVA
+                CalculatePascalProgramHealth(unitSyntaxTree);
             }
             return unitSyntaxTree;
         }

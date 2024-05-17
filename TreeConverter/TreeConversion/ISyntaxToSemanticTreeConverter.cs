@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace PascalABCCompiler.TreeConverter.TreeConversion
 {
-    public interface ISyntaxTreeVisitor : IVisitor
+    public interface ISyntaxToSemanticTreeConverter : IVisitor
     {
         string[] FilesExtensions { get; }
 

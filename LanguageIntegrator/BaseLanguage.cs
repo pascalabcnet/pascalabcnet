@@ -1,10 +1,8 @@
 ﻿using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Errors;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 using System.Collections.Generic;
 using PascalABCCompiler.TreeConverter.TreeConversion;
+using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeConverter;
 
 namespace Languages.Facade
@@ -13,7 +11,7 @@ namespace Languages.Facade
     {
 
         public BaseLanguage(string name, string version, string copyright, IParser parser, IParser docParser,
-            List<ISyntaxTreeConverter> syntaxTreeConverters, ISyntaxTreeVisitor syntaxTreeToSemanticTreeConverter,
+            List<ISyntaxTreeConverter> syntaxTreeConverters, ISyntaxToSemanticTreeConverter syntaxTreeToSemanticTreeConverter,
             string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
         {
             this.Name = name;
@@ -40,11 +38,9 @@ namespace Languages.Facade
 
         public virtual IParser DocParser { get; protected set; }
 
-        public List<IVisitor> SyntaxTreePostProcessors => throw new NotImplementedException();
-
         public virtual List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
 
-        public virtual ISyntaxTreeVisitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
+        public virtual ISyntaxToSemanticTreeConverter SyntaxTreeToSemanticTreeConverter { get; protected set; }
 
         public virtual string[] FilesExtensions { get; protected set; }
 

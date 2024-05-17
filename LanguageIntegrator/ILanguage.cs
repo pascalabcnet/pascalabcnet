@@ -19,11 +19,9 @@ namespace Languages.Facade
 
         IParser DocParser { get; }
 
-        List<IVisitor> SyntaxTreePostProcessors { get; }
-
         List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
 
-        ISyntaxTreeVisitor SyntaxTreeToSemanticTreeConverter { get; }
+        ISyntaxToSemanticTreeConverter SyntaxTreeToSemanticTreeConverter { get; }
 
         string[] FilesExtensions { get; }
 
