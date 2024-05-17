@@ -45,19 +45,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\SemanticTree\SemanticTree.csproj">
+    <ProjectReference Include="..\SemanticTree\SemanticTree.csproj">
       <Project>{613e0dda-aa8a-437c-ac45-507b47429ff9}</Project>
       <Name>SemanticTree</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\SyntaxTree\SyntaxTree.csproj">
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\SyntaxVisitors\SyntaxVisitors.csproj">
+    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
       <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
       <Name>SyntaxVisitors</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\TreeConverter\TreeConverter.csproj">
+    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
       <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>
       <Name>TreeConverter</Name>
     </ProjectReference>

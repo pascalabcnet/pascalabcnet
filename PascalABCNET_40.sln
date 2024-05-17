@@ -105,11 +105,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBNETParser", "Languages\Vi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalLanguage", "Languages\Pascal\PascalLanguage\PascalLanguage.csproj", "{BD902586-E0D5-407A-904A-32249B8B709E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TreeConverters", "TreeConverters", "{7B2FFEB8-783B-4280-BB5F-3F069DCEF554}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyntaxTreeConverters", "SyntaxTreeConverters", "{7B2FFEB8-783B-4280-BB5F-3F069DCEF554}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeConverters", "Languages\Pascal\TreeConverters\SyntaxTreeConverters\SyntaxTreeConverters.csproj", "{F10A5330-DCF4-4533-877C-7B1B1BE23884}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeConverters", "Languages\Pascal\SyntaxTreeConverters\SyntaxTreeConverters\SyntaxTreeConverters.csproj", "{F10A5330-DCF4-4533-877C-7B1B1BE23884}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "Languages\Pascal\TreeConverters\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
