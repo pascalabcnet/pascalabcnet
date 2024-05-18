@@ -10,7 +10,6 @@
 
 using System.Collections.Generic;
 using Languages.Facade;
-using PascalABCCompiler.Errors;
 using PascalABCCompiler.TreeConverter.TreeConversion;
 using System.Linq;
 
@@ -45,22 +44,21 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //TODO: Исправить коллекцию модулей.
-        public TreeRealization.common_unit_node CompileInterface(ILanguage language, SyntaxTree.compilation_unit SyntaxUnit,
-            TreeRealization.unit_node_list UsedUnits, List<Error> ErrorsList, List<CompilerWarning> WarningsList, SyntaxError parser_error,
-            System.Collections.Hashtable bad_nodes, PascalABCCompiler.TreeRealization.using_namespace_list namespaces, Dictionary<SyntaxTree.syntax_tree_node, string> docs, bool debug, bool debugging, bool for_intellisense, List<PascalABCCompiler.TreeRealization.var_definition_node> CompiledVariables)
+        public TreeRealization.common_unit_node CompileInterface(ILanguage language, InitializationDataForCompilingInterface initializationData, List<TreeRealization.var_definition_node> CompiledVariables)
         {
             syntaxTreeVisitor = language.SyntaxTreeToSemanticTreeConverter;
 
-            syntaxTreeVisitor.InitializeForCompilingInterface(parser_error, bad_nodes, UsedUnits, namespaces, SyntaxUnit, ErrorsList, WarningsList, docs, debug, debugging, for_intellisense);
+            syntaxTreeVisitor.InitializeForCompilingInterface(initializationData);
 
             language.SetSemanticRules();
 
-            foreach (SyntaxTree.compiler_directive cd in SyntaxUnit.compiler_directives)
+            foreach (SyntaxTree.compiler_directive cd in initializationData.syntaxUnit.compiler_directives)
                 syntaxTreeVisitor.ProcessNode(cd);
 
-            (syntaxTreeVisitor as syntax_tree_visitor).DirectivesToNodesLinks = CompilerDirectivesToSyntaxTreeNodesLinker.BuildLinks(SyntaxUnit, ErrorsList);  //MikhailoMMX добавил передачу списка ошибок (02.10.10)
+            // TODO: избавиться от преобразования типа  EVA
+            (syntaxTreeVisitor as syntax_tree_visitor).DirectivesToNodesLinks = CompilerDirectivesToSyntaxTreeNodesLinker.BuildLinks(initializationData.syntaxUnit, initializationData.errorsList);  //MikhailoMMX добавил передачу списка ошибок (02.10.10)
 
-            syntaxTreeVisitor.ProcessNode(SyntaxUnit);
+            syntaxTreeVisitor.ProcessNode(initializationData.syntaxUnit);
 
             CompiledVariables.AddRange(syntaxTreeVisitor.CompiledVariables);
             /*SyntaxTree.program_module pmod = SyntaxUnit as SyntaxTree.program_module;
@@ -82,23 +80,21 @@ namespace PascalABCCompiler.TreeConverter
             return syntaxTreeVisitor.CompiledUnit;
         }
 
-        public void CompileImplementation(ILanguage language, TreeRealization.common_unit_node SemanticUnit,
-            SyntaxTree.compilation_unit SyntaxUnit, TreeRealization.unit_node_list UsedUnits, List<Error> ErrorsList, List<CompilerWarning> WarningsList,
-            SyntaxError parser_error, System.Collections.Hashtable bad_nodes, PascalABCCompiler.TreeRealization.using_namespace_list interface_namespaces, TreeRealization.using_namespace_list imlementation_namespaces,
-           Dictionary<SyntaxTree.syntax_tree_node, string> docs, bool debug, bool debugging, bool for_intellisense, List<TreeRealization.var_definition_node> CompiledVariables)
+        public void CompileImplementation(ILanguage language, InitializationDataForCompilingImplementation initializationData, List<TreeRealization.var_definition_node> CompiledVariables)
         {
             //if (ErrorsList.Count>0) throw ErrorsList[0];
 
             syntaxTreeVisitor = language.SyntaxTreeToSemanticTreeConverter;
 
-            syntaxTreeVisitor.InitializeForCompilingImplementation(parser_error, bad_nodes, UsedUnits, interface_namespaces, imlementation_namespaces, SyntaxUnit, SemanticUnit, ErrorsList, WarningsList, docs, debug, debugging, for_intellisense);
+            syntaxTreeVisitor.InitializeForCompilingImplementation(initializationData);
 
             language.SetSemanticRules();
 
-            foreach (SyntaxTree.compiler_directive cd in SyntaxUnit.compiler_directives)
+            foreach (SyntaxTree.compiler_directive cd in initializationData.syntaxUnit.compiler_directives)
                 cd.visit(syntaxTreeVisitor);
 
-            (syntaxTreeVisitor as syntax_tree_visitor).visit_implementation(SyntaxUnit as SyntaxTree.unit_module);
+            // TODO: избавиться от преобразования типа  EVA
+            (syntaxTreeVisitor as syntax_tree_visitor).visit_implementation(initializationData.syntaxUnit as SyntaxTree.unit_module);
             CompiledVariables.AddRange(syntaxTreeVisitor.CompiledVariables);
             //stv.visit(SyntaxUnit);
             //return stv.compiled_unit;

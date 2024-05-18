@@ -3793,22 +3793,22 @@ namespace PascalABCCompiler
 
                     TreeConverter.SemanticRules.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
 
-                    SyntaxTreeToSemanticTreeConverter.CompileImplementation(
-                        currentUnit.Language,
-                        (common_unit_node)currentUnit.SemanticTree,
-                        currentUnit.SyntaxTree,
-                        buildImplementationUsesList(currentUnit),
-                        ErrorsList, Warnings,
+                    var data = new TreeConverter.TreeConversion.InitializationDataForCompilingImplementation(
                         currentUnit.syntax_error,
                         BadNodesInSyntaxTree,
+                        buildImplementationUsesList(currentUnit),
                         currentUnit.InterfaceUsingNamespaceList,
                         currentUnit.ImplementationUsingNamespaceList,
+                        currentUnit.SyntaxTree,
+                        (common_unit_node)currentUnit.SemanticTree,
+                        ErrorsList, Warnings,
                         docs,
                         CompilerOptions.Debug,
                         CompilerOptions.ForDebugging,
-                        CompilerOptions.ForIntellisense,
-                        CompiledVariables
+                        CompilerOptions.ForIntellisense
                         );
+
+                    SyntaxTreeToSemanticTreeConverter.CompileImplementation(currentUnit.Language, data, CompiledVariables);
                     CheckErrorsAndThrowTheFirstOne();
                 }
             }
@@ -3887,20 +3887,22 @@ namespace PascalABCCompiler
                 {
                     OnChangeCompilerState(this, CompilerState.CompileInterface, UnitFileName);
                     TreeConverter.SemanticRules.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
-                    currentUnit.SemanticTree = SyntaxTreeToSemanticTreeConverter.CompileInterface(
-                        currentUnit.Language,
-                        currentUnit.SyntaxTree,
-                        currentUnit.InterfaceUsedUnits,
-                        ErrorsList, Warnings,
+
+                    var data = new TreeConverter.TreeConversion.InitializationDataForCompilingInterface(
                         currentUnit.syntax_error,
                         BadNodesInSyntaxTree,
+                        currentUnit.InterfaceUsedUnits,
                         currentUnit.InterfaceUsingNamespaceList,
+                        currentUnit.SyntaxTree,
+                        ErrorsList, Warnings,
                         docs,
                         CompilerOptions.Debug,
                         CompilerOptions.ForDebugging,
-                        CompilerOptions.ForIntellisense,
-                        CompiledVariables
+                        CompilerOptions.ForIntellisense
                         );
+                    
+                    currentUnit.SemanticTree = SyntaxTreeToSemanticTreeConverter.CompileInterface(currentUnit.Language, data, CompiledVariables);
+                    
                     CheckErrorsAndThrowTheFirstOne();
                 }
             }

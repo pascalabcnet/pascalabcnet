@@ -12,7 +12,7 @@ namespace Languages.Integration
     public static class LanguageIntegrator
     {
 
-        public static LanguageProvider LanguageProvider = LanguageProvider.Instance;
+        private static LanguageProvider LanguageProvider = LanguageProvider.Instance;
 
         private const string languageKitsDirectoryName = "LanguageKits";
 
@@ -52,6 +52,7 @@ namespace Languages.Integration
                     if (dll.Name.EndsWith("Language.dll"))
                     {
                         IntegrateLanguageFromAssembly(dll);
+                        break;
                     }
                 }
             }
@@ -125,7 +126,7 @@ namespace Languages.Integration
                             if (obj is ILanguage language)
                             {
                                 languageFound = language;
-                                LanguageProvider.Instance.Languages.Add(language);
+                                LanguageProvider.Languages.Add(language);
                             }
                         }
                     }

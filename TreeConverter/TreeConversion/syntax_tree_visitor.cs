@@ -24,6 +24,7 @@ using typeof_operator = PascalABCCompiler.TreeRealization.typeof_operator;
 using while_node = PascalABCCompiler.TreeRealization.while_node;
 using TreeConverter.LambdaExpressions.Closure;
 using TreeConverter.LambdaExpressions;
+using PascalABCCompiler.TreeConverter.TreeConversion;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -43,14 +44,6 @@ namespace PascalABCCompiler.TreeConverter
     // SSM 02.01.17 Использование ReplaceStatement из BaseChangeVisitor плохо изучено - что-то не работает
     // Поэтому используется явный Parent и ReplaceStatement из узла statement_list
     {
-        private string[] filesExtensions = { ".pas" };
-        public virtual string[] FilesExtensions
-        {
-            get
-            {
-                return filesExtensions;
-            }
-        }
         public SymbolTable.PrimaryScope MainScope
         {
             get
@@ -114,66 +107,54 @@ namespace PascalABCCompiler.TreeConverter
 
         private int num = 0;
 
-        public void InitializeForCompilingInterface(Errors.SyntaxError parser_error,
-            Hashtable bad_nodes, TreeRealization.unit_node_list usedUnits,
-            TreeRealization.using_namespace_list namespaces, compilation_unit syntaxUnit,
-            List<Errors.Error> errorsList, List<Errors.CompilerWarning> warningsList,
-            Dictionary<syntax_tree_node, string> docs, bool debug, bool debugging, bool for_intellisense)
+        public void InitializeForCompilingInterface(InitializationDataForCompilingInterface initializationData)
         {
             //convertion_data_and_alghoritms.__i = 0;
-            Initialize(parser_error, bad_nodes, usedUnits, syntaxUnit, errorsList, warningsList, docs, debug, debugging, for_intellisense);
+            Initialize(initializationData);
             //comp_units=UsedUnits;
             //visit(SyntaxUnit
             //SyntaxTreeToSemanticTreeConverter.interface_using_list = namespaces;
             interface_using_list.Clear();
-            using_list.AddRange(namespaces);
+            using_list.AddRange(initializationData.interfaceNamespaces);
         }
 
-        public void InitializeForCompilingImplementation(Errors.SyntaxError parser_error,
-            Hashtable bad_nodes, TreeRealization.unit_node_list usedUnits,
-            TreeRealization.using_namespace_list interfaceNamespaces, TreeRealization.using_namespace_list implementationNamespaces, compilation_unit syntaxUnit, TreeRealization.common_unit_node semanticUnit,
-            List<Errors.Error> errorsList, List<Errors.CompilerWarning> warningsList,
-            Dictionary<syntax_tree_node, string> docs, bool debug, bool debugging, bool for_intellisense)
+        public void InitializeForCompilingImplementation(InitializationDataForCompilingImplementation initializationData)
         {
-            Initialize(parser_error, bad_nodes, usedUnits, syntaxUnit, errorsList, warningsList, docs, debug, debugging, for_intellisense);
+            Initialize(initializationData);
 
-            using_list.AddRange(interfaceNamespaces);
-            interface_using_list.AddRange(interfaceNamespaces);
-            using_list.AddRange(implementationNamespaces);
+            using_list.AddRange(initializationData.interfaceNamespaces);
+            interface_using_list.AddRange(initializationData.interfaceNamespaces);
+            using_list.AddRange(initializationData.implementationNamespaces);
 
-            SyntaxTree.unit_module umod = syntaxUnit as SyntaxTree.unit_module;
+            unit_module umod = initializationData.syntaxUnit as unit_module;
             if (umod == null)
             {
-                throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Program has not implementation part");
+                throw new CompilerInternalError("Program has not implementation part");
             }
 
-            CompiledUnit = semanticUnit;
+            CompiledUnit = initializationData.semanticUnit;
         }
 
-        private void Initialize(Errors.SyntaxError parser_error,
-            Hashtable bad_nodes, TreeRealization.unit_node_list usedUnits,
-            compilation_unit syntaxUnit,
-            List<Errors.Error> errorsList, List<Errors.CompilerWarning> warningsList,
-            Dictionary<syntax_tree_node, string> docs, bool debug, bool debugging, bool for_intellisense)
+        private void Initialize(InitializationDataForCompilingInterface initializationData)
         {
-            ParserError = parser_error;
-            BadNodesInSyntaxTree = bad_nodes;
-            ReferencedUnits = usedUnits;
+            ParserError = initializationData.parserError;
+            BadNodesInSyntaxTree = initializationData.badNodes;
+            ReferencedUnits = initializationData.usedUnits;
 
             using_list.Clear();
 
-            current_document = new document(syntaxUnit.file_name);
+            current_document = new document(initializationData.syntaxUnit.file_name);
 
-            ErrorsList = errorsList;
-            WarningsList = warningsList;
+            ErrorsList = initializationData.errorsList;
+            WarningsList = initializationData.warningsList;
 
             SymbolTable.CaseSensitive = SemanticRules.SymbolTableCaseSensitive;
 
             if (docs != null)
-                this.docs = docs;
-            this.debug = debug;
-            this.debugging = debugging;
-            this.for_intellisense = for_intellisense;
+                this.docs = initializationData.docs;
+            this.debug = initializationData.debug;
+            this.debugging = initializationData.debugging;
+            this.for_intellisense = initializationData.forIntellisense;
             SystemLibrary.SystemLibrary.syn_visitor = this;
         }
 
