@@ -1,12 +1,16 @@
-﻿using PascalABCCompiler.Parsers;
-using PascalABCCompiler.SyntaxTree;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using PascalABCCompiler.Parsers;
 using System.Collections.Generic;
 using PascalABCCompiler.TreeConverter.TreeConversion;
 using PascalABCCompiler.SyntaxTreeConverters;
-using PascalABCCompiler.TreeConverter;
 
 namespace Languages.Facade
 {
+    /// <summary>
+    /// Базовый класс языка программирования, поддерживаемого платформой
+    /// </summary>
     public abstract class BaseLanguage : ILanguage
     {
 
@@ -24,8 +28,6 @@ namespace Languages.Facade
             this.FilesExtensions = filesExtensions;
             this.CaseSensitive = caseSensitive;
             this.SystemUnitNames = systemUnitNames;
-
-            PascalABCCompiler.SystemLibrary.SystemLibrary.syn_visitor = SyntaxTreeToSemanticTreeConverter as syntax_tree_visitor; // TODO: избавиться от этого   EVA
         }
 
         public virtual string Name { get; protected set; }

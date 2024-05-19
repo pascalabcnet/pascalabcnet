@@ -69,7 +69,9 @@ namespace Languages.Pascal.Frontend.Wrapping
         }
     }*/
 
-
+    /// <summary>
+    /// Основной парсер языка PascalABC.NET. Реализован Саушкиным Романом.
+    /// </summary>
     public class PascalABCNewLanguageParser : BaseParser
     {
 

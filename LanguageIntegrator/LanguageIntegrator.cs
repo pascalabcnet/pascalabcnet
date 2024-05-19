@@ -3,20 +3,32 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using Languages.Facade;
 
 namespace Languages.Integration
 {
+    /// <summary>
+    /// Модуль с функциями загрузки поддерживаемых языков программирования
+    /// </summary>
     public static class LanguageIntegrator
     {
 
-        private static LanguageProvider LanguageProvider = LanguageProvider.Instance;
+        private static readonly LanguageProvider LanguageProvider = LanguageProvider.Instance;
 
+        /// <summary>
+        /// Имя директории, содержащей установленные плагины языков программирования
+        /// </summary>
         private const string languageKitsDirectoryName = "LanguageKits";
 
+        /// <summary>
+        /// Событие, информирующее об успешной загрузке плагина языка
+        /// </summary>
         public static event Action<ILanguage> LanguageLoaded;
+
+        /// <summary>
+        /// Событие, информирующее об ошибке загрузки плагина языка
+        /// </summary>
         public static event Action<string> LanguageLoadErrorOccured;
 
         /// <summary>
@@ -34,7 +46,7 @@ namespace Languages.Integration
         }
 
         /// <summary>
-        /// Загружает все языковые комплекты для использования
+        /// Загружает все языковые комплекты для использования (имя "главной" dll должно заканчиваться на Language)
         /// </summary>
         public static void LoadAllLanguageKits()
         {
@@ -68,15 +80,8 @@ namespace Languages.Integration
         }
 
         /// <summary>
-        /// Перезагружает парсеры всех языков
+        /// Загружает стандартные языки платформы из папки bin
         /// </summary>
-        /*public static void ReloadAllParsers()
-        {
-            ParsersController.Parsers.Clear();
-            ParsersController.LoadStandardParsers();
-            LoadParsersFromLanguageKits();
-        }*/
-
         public static void LoadStandardLanguages()
         {
             string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
@@ -92,52 +97,22 @@ namespace Languages.Integration
         }
 
         /// <summary>
-        /// Загружает все парсеры из языковых комплектов
+        /// Загружает плагин языка из dll, содержащей класс, представляющий язык 
+        /// (класс должен реализовывать интерфейс ILanguage и его имя должно заканчиваться на Language)
         /// </summary>
-        /*public static void LoadParsersFromLanguageKits()
+        /// <param name="languageFile">dll, содержащая язык</param>
+        private static void IntegrateLanguageFromAssembly(FileInfo languageFile)
         {
-            DirectoryInfo languageKitsDirectory = GetLanguageKitsDirectory();
-
-            if (languageKitsDirectory == null)
-                return;
-
-            foreach (var parserDll in languageKitsDirectory.GetDirectories()
-                .SelectMany(directory => directory.GetFiles("*Parser.dll")))
-            {
-                if (parserDll != null)
-                    ParsersController.IntegrateParsersFromAssembly(parserDll);
-            }
-        }*/
-
-        public static void IntegrateLanguageFromAssembly(FileInfo languageFile)
-        {
-            Assembly assembly = Assembly.LoadFile(languageFile.FullName);
             try
             {
-                Type[] types = assembly.GetTypes();
-                if (assembly != null)
+                ILanguage languageFound = InstantiateLanguageAndAddToLanguagesList(languageFile);
+
+                if (languageFound == null)
                 {
-                    ILanguage languageFound = null;
-                    foreach (Type type in types)
-                    {
-                        if (type.Name.EndsWith("Language") && type.IsClass)
-                        {
-                            object obj = Activator.CreateInstance(type);
-                            if (obj is ILanguage language)
-                            {
-                                languageFound = language;
-                                LanguageProvider.Languages.Add(language);
-                            }
-                        }
-                    }
-
-                    if (languageFound == null)
-                    {
-                        throw new Exception("Language class wasn't found in language assembly. (To be found it should contain 'Language' in it's name)");
-                    }
-
-                    LanguageLoaded?.Invoke(languageFound);
+                    throw new Exception("Language class wasn't found in language assembly. (To be found it should contain 'Language' in it's name)");
                 }
+
+                LanguageLoaded?.Invoke(languageFound);
             }
             catch (ReflectionTypeLoadException e)
             {
@@ -159,5 +134,33 @@ namespace Languages.Integration
             }
         }
 
+        /// <summary>
+        /// Конструирует объект языка и добавляет его в список языков в LanguageProvider
+        /// </summary>
+        /// <param name="languageFile"></param>
+        /// <returns></returns>
+        private static ILanguage InstantiateLanguageAndAddToLanguagesList(FileInfo languageFile)
+        {
+            Assembly assembly = Assembly.LoadFile(languageFile.FullName);
+
+            Type[] types = assembly.GetTypes();
+
+            ILanguage languageFound = null;
+            foreach (Type type in types)
+            {
+                if (type.Name.EndsWith("Language") && type.IsClass)
+                {
+                    object obj = Activator.CreateInstance(type);
+                    if (obj is ILanguage language)
+                    {
+                        languageFound = language;
+                        LanguageProvider.Languages.Add(language);
+                    }
+                    break;
+                }
+            }
+
+            return languageFound;
+        }
     }
 }
