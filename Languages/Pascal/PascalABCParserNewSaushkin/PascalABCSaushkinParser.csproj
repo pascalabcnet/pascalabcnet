@@ -109,7 +109,6 @@
     <Compile Include="ParserLambdaHelper.cs" />
     <Compile Include="SemanticRulesForYacc.cs" />
     <Compile Include="StringResources.cs" />
-    <Compile Include="UnionStruct.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Errors\Errors.csproj">

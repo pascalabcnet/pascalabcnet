@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-V3E9T2U
-// DateTime: 13.05.2024 23:07:48
+// DateTime: 19.05.2024 23:53:53
 // UserName: alex
 // Input file <ABCPascal.y>
 
@@ -15,6 +15,7 @@ using System.Text;
 using QUT.Gppg;
 using PascalABCCompiler.SyntaxTree;
 using Languages.Pascal.Frontend.Errors;
+using PascalABCCompiler.ParserTools;
 using System.Linq;
 
 namespace Languages.Pascal.Frontend.Core
@@ -49,13 +50,13 @@ public enum Tokens {
     tkFloat=157,tkHex=158,tkUnknown=159,tkStep=160};
 
 // Abstract base class for GPLEX scanners
-public abstract class ScanBase : AbstractScanner<Union,LexLocation> {
+public abstract class ScanBase : AbstractScanner<PascalABCCompiler.ParserTools.Union,LexLocation> {
   private LexLocation __yylloc = new LexLocation();
   public override LexLocation yylloc { get { return __yylloc; } set { __yylloc = value; } }
   protected virtual bool yywrap() { return true; }
 }
 
-public partial class GPPGParser: ShiftReduceParser<Union, LexLocation>
+public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools.Union, LexLocation>
 {
   // Verbatim content from ABCPascal.y
 // Э�?и об�?явления добавля�?�?ся в класс GPPGParser, п�?едс�?авля�?�?ий собой па�?се�?, гене�?и�?�?ем�?й сис�?емой gppg
@@ -65,7 +66,7 @@ public partial class GPPGParser: ShiftReduceParser<Union, LexLocation>
     public PascalParserTools parserTools;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
-    public GPPGParser(AbstractScanner<Union, LexLocation> scanner) : base(scanner) { }
+    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner) : base(scanner) { }
   // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649

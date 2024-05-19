@@ -3,8 +3,12 @@
 
 using PascalABCCompiler.SyntaxTree;
 
-namespace Languages.Pascal.Frontend.Core
+namespace PascalABCCompiler.ParserTools
 {
+    /// <summary>
+    /// Структура данных, хранящая узел синтаксического дерева в одном из полей.
+    /// Используется GPPG парсером.
+    /// </summary>
     public class Union
     {
         public expression ex;

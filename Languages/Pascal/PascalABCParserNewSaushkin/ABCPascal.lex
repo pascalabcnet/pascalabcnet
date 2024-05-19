@@ -15,6 +15,7 @@
 %namespace Languages.Pascal.Frontend.Core
 
 %using PascalABCCompiler.SyntaxTree;
+%using PascalABCCompiler.ParserTools;
 %using QUT.Gppg;
 
 Letter [[:IsLetter:]_]

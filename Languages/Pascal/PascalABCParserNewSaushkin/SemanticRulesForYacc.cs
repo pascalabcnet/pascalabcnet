@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace Languages.Pascal.Frontend.Core
 {
-    public class NameExprPair
+    /*public class NameExprPair
     {
         public ident id;
         public expression ex;
@@ -20,8 +20,11 @@ namespace Languages.Pascal.Frontend.Core
             this.id = id;
             this.ex = ex;
         }
-    }
+    }*/
 
+    /// <summary>
+    /// Helper для правил грамматики
+    /// </summary>
     public partial class GPPGParser
     {
         public declarations GlobalDecls = null;

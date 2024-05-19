@@ -5,6 +5,9 @@ using PascalABCCompiler.ParserTools;
 
 namespace Languages.Pascal.Frontend
 {
+    /// <summary>
+    /// Строковые ресурсы парсера PascalABC.NET
+    /// </summary>
     internal static class StringResources
     {
         private const string prefix = "PASCALABCPARSER_";
