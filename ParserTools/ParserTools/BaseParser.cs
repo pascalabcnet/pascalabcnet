@@ -9,49 +9,15 @@ namespace PascalABCCompiler.Parsers
 {
     public abstract class BaseParser : IParser
     {
+        public List<Error> Errors { get; protected set; } = new List<Error>();
 
-        List<Error> errors = new List<Error>();
-        public virtual List<Error> Errors
-        {
-            get
-            {
-                return errors;
-            }
-            set
-            {
-                errors = value;
-            }
-        }
+        public List<CompilerWarning> Warnings { get; protected set; } = new List<CompilerWarning>();
 
-        List<CompilerWarning> warnings = new List<CompilerWarning>();
-        public virtual List<CompilerWarning> Warnings
-        {
-            get
-            {
-                return warnings;
-            }
-            set
-            {
-                warnings = value;
-            }
-        }
-
-        List<compiler_directive> compilerDirectives = new List<compiler_directive>();
-        public virtual List<compiler_directive> CompilerDirectives
-        {
-            get
-            {
-                return compilerDirectives;
-            }
-            set
-            {
-            	compilerDirectives = value;
-            }
-        }
+        public List<compiler_directive> CompilerDirectives { get; protected set; } = new List<compiler_directive>();
 
         public Func<bool> CheckIfParsingUnit { get; set; }
 
-        public Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; protected set; } 
+        public Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; protected set; }
 
         /*public SourceFilesProviderDelegate sourceFilesProvider = null;
         public virtual SourceFilesProviderDelegate SourceFilesProvider
@@ -87,16 +53,7 @@ namespace PascalABCCompiler.Parsers
 
         public SyntaxTree.compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
-            try // SSM 06.09.18
-            {
-                return GetSyntaxTree<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
-            }
-            catch (ParserBadFileExtension e)
-            {
-                Errors.Add(e);
-                return null;
-                // Погасить исключение если оно не погашено ранее
-            }
+            return GetSyntaxTree<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
         }
 
         public SyntaxTree.expression GetExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)

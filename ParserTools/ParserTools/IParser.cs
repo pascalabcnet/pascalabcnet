@@ -10,25 +10,23 @@ namespace PascalABCCompiler.Parsers
     public enum ParseMode { Normal, Expression, Statement, Special, ForFormatter, TypeAsExpression };
     public interface IParser
     {
-        List<Error> Errors
-        {
-            get;
-            set;
-        }
+        List<Error> Errors { get; }
 
-        List<CompilerWarning> Warnings
-        {
-            get;
-            set;
-        }
+        List<CompilerWarning> Warnings { get; }
 
         List<compiler_directive> CompilerDirectives
         {
             get;
         }
 
+        /// <summary>
+        /// Callback для проверки, парсим ли мы сейчас модуль или нет (для языков без ключевых слов у модуля)
+        /// </summary>
         Func<bool> CheckIfParsingUnit { get; set; }
 
+        /// <summary>
+        /// Данные о всех поддерживаемых директивах компилятора
+        /// </summary>
         Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
 
         /*SourceFilesProviderDelegate SourceFilesProvider

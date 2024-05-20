@@ -25,12 +25,23 @@ namespace Languages.Facade
 
 
         /// <summary>
-        /// Выбор языка по расширению файла
+        /// Выбор языка по расширению файла - бросает ошибку некорректного расширения
         /// </summary>
         /// <param name="fileName">Имя файла</param>
         /// <returns></returns>
         /// <exception cref="ParserBadFileExtension"></exception>
         public ILanguage SelectLanguageByExtension(string fileName)
+        {
+            return SelectLanguageByExtensionSafe(fileName) ?? throw new ParserBadFileExtension(fileName);
+        }
+
+
+        /// <summary>
+        /// Выбор языка по расширению файла - возвращает null, если расширение не то
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public ILanguage SelectLanguageByExtensionSafe(string fileName)
         {
             string extension = Path.GetExtension(fileName).ToLower();
 
@@ -39,7 +50,7 @@ namespace Languages.Facade
                     if (langExtension == extension)
                         return language;
 
-            throw new ParserBadFileExtension(fileName);
+            return null;
         }
 
         /// <summary>

@@ -1,19 +1,23 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.TreeConverter.TreeConversion
 {
+    /// <summary>
+    /// Интерфейс преобразователя синтаксического дерева в семантическое
+    /// </summary>
     public interface ISyntaxToSemanticTreeConverter : IVisitor
     {
-        Errors.SyntaxError ParserError { get; set; }
-
-        Hashtable BadNodesInSyntaxTree { get; set; }
-
-        TreeRealization.unit_node_list ReferencedUnits { get; set; }
-
+        /// <summary>
+        /// Метод инициализации конвертера перед компиляцией секции интерфейса (модуля)
+        /// </summary>
+        /// <param name="initializationData"></param>
         void InitializeForCompilingInterface(InitializationDataForCompilingInterface initializationData);
 
+        /// <summary>
+        /// Метод инициализации конвертера перед компиляцией секции реализации (модуля)
+        /// </summary>
+        /// <param name="initializationData"></param>
         void InitializeForCompilingImplementation(InitializationDataForCompilingImplementation initializationData);
 
         // требуется другая архитектура, чтобы этого не было здесь  EVA
@@ -25,6 +29,9 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
 
         SymbolTable.TreeConverterSymbolTable SymbolTable { get; }
 
+        /// <summary>
+        /// Метод для очистки переменных перед новым запуском компиляции
+        /// </summary>
         void Reset();
     }
 }
