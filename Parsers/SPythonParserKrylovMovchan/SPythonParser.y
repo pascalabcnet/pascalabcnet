@@ -46,7 +46,7 @@
 %token <ex> INTNUM REALNUM TRUE FALSE
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
-%token <op> ASSIGN
+%token <op> ASSIGN PLUSEQUAL MINUSEQUAL STAREQUAL DIVEQUAL
 %token <op> PLUS MINUS STAR DIVIDE SLASHSLASH PERCENTAGE
 %token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
@@ -68,7 +68,8 @@
 %type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <td> proc_func_header form_param_type simple_type_identifier optional_type
 %type <stn> import_clause import_clause_one
-%type <ti> optional_semicolon
+%type <ob> optional_semicolon
+%type <op> assign_type
 
 %start program
 
@@ -95,9 +96,12 @@ program
 			if (!is_unit_to_be_parsed) {
 				var ul = $1 as uses_list;
 				var stl = $2 as statement_list;
+				stl.left_logical_bracket = new token_info("");
+				stl.right_logical_bracket = new token_info("");
+				var bl = new block(decl, stl, @2);
 				decl.AddFirst(decl_forward.defs);
-				root = $$ = NewProgramModule(null, null, ul, new block(decl, stl, @2), new token_info(""), @$);
-				$$.source_context = @$;
+				root = $$ = NewProgramModule(null, null, ul, bl, $3, @$);
+				root.source_context = bl.source_context;
 			}
 			// unit
 			else {
@@ -282,20 +286,26 @@ assign_stmt
 
 					// объявление глобальной переменной
 					if (symbolTable.OuterScope == null) {
-						var ass = new assign(id as addressed_value, $4, $3.type, @$);
-						globalVariables.Add(id.name);
-
-						named_type_reference ntr;
-
-						if ($2 == null) {
-							ntr = new named_type_reference(new ident("integer"));
-							ass.first_assignment_defines_type = true;
+						if (globalVariables.Contains(id.name)) {
+							parsertools.AddErrorFromResource("This variable is declared before", @$);
 						}
-						else ntr = $2 as named_type_reference;
+						else {
+							var ass = new assign(id as addressed_value, $4, $3.type, @$);
+							globalVariables.Add(id.name);
 
-						var vds = new var_def_statement(new ident_list(id, @1), ntr, null, definition_attribute.None, false, @$);
-						decl.Add(new variable_definitions(vds, @$), @$);
-						$$ = ass;
+							type_definition ntr;
+
+							if ($2 == null) {
+								// ntr = new named_type_reference(new ident("integer"));
+								ntr = (new same_type_node($4) as type_definition);
+								ass.first_assignment_defines_type = true;
+							}
+							else ntr = $2 as type_definition;
+
+							var vds = new var_def_statement(new ident_list(id, @1), ntr, null, definition_attribute.None, false, @$);
+							decl.Add(new variable_definitions(vds, @$), @$);
+							$$ = ass;
+						}
 					}
 					// объявление локальной переменной
 					else {
@@ -313,7 +323,24 @@ assign_stmt
 				$$ = new assign($1 as addressed_value, $4, $3.type, @$);
 			}
 		}
+	| variable assign_type expr
+		{
+			if (!($1 is addressed_value))
+        		parsertools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",@$);
+			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+		}
 	;
+
+assign_type
+	: PLUSEQUAL
+		{ $$ = $1; }
+    | MINUSEQUAL
+		{ $$ = $1; }
+    | STAREQUAL
+		{ $$ = $1; }
+    | DIVEQUAL
+		{ $$ = $1; }
+    ;
 
 optional_type
 	: COLON simple_type_identifier
@@ -580,8 +607,8 @@ block
 		{
 			$$ = $3 as statement_list;
 			($$ as statement_list).left_logical_bracket = $2;
-			($$ as statement_list).right_logical_bracket = $5;
-			$$.source_context = @$;
+			($$ as statement_list).right_logical_bracket = $4;
+			$$.source_context = LexLocation.MergeAll(@2,@3,@4);
 		}
 	;
 
@@ -780,7 +807,7 @@ optional_act_param_list
 
 optional_semicolon
 	: SEMICOLON
-		{ $$ = null; }
+		{ $$ = $1; }
 	|
 		{ $$ = null; }
 	;
@@ -797,7 +824,7 @@ optional_semicolon
                 var err_stn = progBlock;
 			    if ((progBlock is block) && (progBlock as block).program_code != null && (progBlock as block).program_code.subnodes != null && (progBlock as block).program_code.subnodes.Count > 0)
                     err_stn = (progBlock as block).program_code.subnodes[(progBlock as block).program_code.subnodes.Count - 1];
-                parsertools.errors.Add(new SPythonUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                //parsertools.errors.Add(new SPythonUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             return progModule;
         }
