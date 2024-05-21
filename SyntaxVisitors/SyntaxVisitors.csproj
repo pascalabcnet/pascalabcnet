@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllVarsInProcYieldsProba.cs" />
+    <Compile Include="BaseSyntaxTreeConverter.cs" />
     <Compile Include="BaseVisitors\CollectNamespaces.cs" />
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
     <Compile Include="ISyntaxTreeConverter.cs" />

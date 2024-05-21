@@ -509,8 +509,14 @@ namespace VisualPascalABC
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
+
+            var language = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName);
+
+            if (language == null)
+                return null;
+
             PascalABCCompiler.SyntaxTree.compilation_unit sn =
-                Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName).Parser.GetCompilationUnit(
+                language.Parser.GetCompilationUnit(
                 VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName,
                 existing_text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,

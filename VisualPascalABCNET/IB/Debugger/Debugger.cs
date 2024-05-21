@@ -465,7 +465,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FullFileName).Parser;
+            this.parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(FullFileName)?.Parser;
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
         	dbg.ProcessStarted += debugProcessStarted;

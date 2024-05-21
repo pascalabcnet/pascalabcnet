@@ -79,17 +79,22 @@ namespace CodeCompletion
 
         internal compilation_unit ParsersControllerGetCompilationUnit(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings)
         {
-            Parser = LanguageProvider.SelectLanguageByExtension(FileName).Parser;
+            ILanguage language = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
+            if (language == null)
+                return null;
+            Parser = language.Parser;
             parsers[Path.GetExtension(FileName)] = Parser;
             compilation_unit cu = null;
-            cu = (Parser as BaseParser).GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal);
+            cu = Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal);
             //ParsersController.GetExpression("test.pas", "a+b", new List<PascalABCCompiler.Errors.Error>());
             return cu;
         }
 		
         internal compilation_unit ParsersControllerGetCompilationUnitSpecial(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings)
         {
-            Parser = LanguageProvider.SelectLanguageByExtension(FileName).Parser;
+            ILanguage language = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
+            if (language == null)
+                return null;
             parsers[Path.GetExtension(FileName)] = Parser;
             compilation_unit cu = null;
             cu = (Parser as BaseParser).GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special);
@@ -215,7 +220,9 @@ namespace CodeCompletion
             string ext = Path.GetExtension(FileName);
             List<PascalABCCompiler.Errors.Error> ErrorsList = new List<PascalABCCompiler.Errors.Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
-            ILanguage language = LanguageProvider.SelectLanguageByExtension(FileName);
+            ILanguage language = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
+            if (language == null)
+                return dconv;
             Parser = language.Parser;
             compilation_unit cu = language.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal);
             ErrorsList.Clear();
@@ -278,7 +285,11 @@ namespace CodeCompletion
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             PascalABCCompiler.SyntaxTree.compilation_unit cu = null;
 
-            ILanguage language = LanguageProvider.SelectLanguageByExtension(FileName);
+            DomConverter dconv = new DomConverter(this);
+
+            ILanguage language = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
+            if (language == null)
+                return dconv;
             Parser = language.Parser;
             if (Text != null)
             {
@@ -290,7 +301,7 @@ namespace CodeCompletion
             PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
             if (cu != null)
                 docs = docconst.Construct(cu, dt);
-            DomConverter dconv = new DomConverter(this);
+            
             dconv.visitor.parse_only_interface = parse_only_interface;
             if (CodeCompletionTools.XmlDoc.LookupLocalizedXmlDocForUnitWithSources(FileName, CodeCompletionController.currentLanguageISO) != null)
             {

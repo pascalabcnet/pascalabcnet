@@ -7,8 +7,8 @@ using System.Text;
 using Debugger;
 using VisualPascalABCPlugins;
 using System.Runtime.ExceptionServices;
+using Languages.Facade;
 using PascalABCCompiler.Parsers;
-using Languages.Integration;
 
 namespace VisualPascalABC
 {
@@ -253,7 +253,15 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
             syntax_tree_node e = null;
 
-            IParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
+            ILanguage language = LanguageProvider.Instance.SelectLanguageByExtensionSafe(fileName);
+            
+            if (language == null)
+            {
+                if (eval_stack.Count > 0) eval_stack.Clear();
+                return new RetValue();
+            }
+
+            IParser parser = language.Parser;
 
             if (for_immediate)
             {
@@ -354,7 +362,16 @@ namespace VisualPascalABC
             names.Clear();
             string fileName = "test" + System.IO.Path.GetExtension(this.FileName);
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-            expression e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+
+            ILanguage language = LanguageProvider.Instance.SelectLanguageByExtensionSafe(fileName);
+
+            if (language == null)
+            {
+                if (eval_stack.Count > 0) eval_stack.Clear();
+                return new RetValue();
+            }
+
+            expression e = language.Parser.GetExpression(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             RetValue res = new RetValue(); res.syn_err = false;
             try
             {

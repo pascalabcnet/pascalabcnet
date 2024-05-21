@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using Languages.Facade;
 using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
@@ -105,15 +106,18 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression e = null;
             List<PascalABCCompiler.Parsers.Position> loc = null;
 
-            IParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser;
+            ILanguage language = LanguageProvider.Instance.SelectLanguageByExtension(fileName);
+
+            if (language == null)
+                return null;
 
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
-                e = parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                e = language.Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (e is PascalABCCompiler.SyntaxTree.bin_expr && expr.Contains("<"))
             {
                 expr = expr.Replace("<","&<");
                 Errors.Clear();
-                e = parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                e = language.Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             }
             if (e == null)
                 return loc;
@@ -190,7 +194,7 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression e = null;
             List<PascalABCCompiler.Parsers.Position> loc = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
-                e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(fileName)?.Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (e == null /*|| Errors.Count > 0*/) return loc;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
             if (dconv == null) return loc;
@@ -232,7 +236,7 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             PascalABCCompiler.SyntaxTree.expression e = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
-                e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(fileName).Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(fileName)?.Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (e == null) return new List<SymbolsViewerSymbol>();
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
             if (dconv == null) return new List<SymbolsViewerSymbol>();
@@ -445,7 +449,10 @@ namespace VisualPascalABC
                     }
                 }
 
-                Languages.Facade.ILanguage currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName);
+                ILanguage currentLanguage = LanguageProvider.Instance.SelectLanguageByExtensionSafe(FileName);
+
+                if (currentLanguage == null)
+                    return null;
 
                 if ((!ctrl_space || inside_dot_pattern) && expr != null)
                 {
