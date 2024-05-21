@@ -161,7 +161,7 @@
     <Compile Include="TreeConversion\returner.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TreeConversion\SemanticRules.cs" />
+    <Compile Include="TreeConversion\SemanticRulesConstants.cs" />
     <Compile Include="TreeConversion\semantic_checks_for_sugar.cs" />
     <Compile Include="TreeConversion\SubtreeCreator.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Assign.cs" />
