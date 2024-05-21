@@ -103,14 +103,14 @@ namespace PascalABCCompiler.TreeConverter
             right = finishValue;
             if (right is typed_expression)
                 right = convert_typed_expression_to_function_call(right as typed_expression);
-            res = find_operator(compiler_string_consts.assign_name, left, right, finishValueLocation);
+            res = find_operator(StringConstants.assign_name, left, right, finishValueLocation);
             head_stmts.statements.AddElement(res);
 
             if (!early_init_loop_variable) // SSM 25/05/16 - for var i := f1() to f2() do без этой правки дважды вызывал f1()
             {
                 left = create_variable_reference(vdn, loopVariableLocation);
                 right = initialValue;
-                res = find_operator(compiler_string_consts.assign_name, left, right, loopVariableLocation);
+                res = find_operator(StringConstants.assign_name, left, right, loopVariableLocation);
                 head_stmts.statements.AddElement(res);
             }
 

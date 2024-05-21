@@ -282,7 +282,7 @@ namespace PascalABCCompiler.PCU
 
                 //TODO сохранить в PCU
                 cun.scope.CaseSensitive = false;
-                if (string.Compare(unit_name, compiler_string_consts.pascalSystemUnitName, true)==0)
+                if (string.Compare(unit_name, StringConstants.pascalSystemUnitName, true)==0)
                 	PascalABCCompiler.TreeConverter.syntax_tree_visitor.init_system_module(cun);
                 //ssyy
                 //Создаём область видимости для implementation - части
@@ -1764,9 +1764,9 @@ namespace PascalABCCompiler.PCU
                 cmn.function_code = GetCode(br.ReadInt32());
             cmn.cont_type.methods.AddElement(cmn);
             if (cmn.name == "op_Equality")
-                cmn.cont_type.scope.AddSymbol(compiler_string_consts.eq_name, new SymbolInfo(cmn));
+                cmn.cont_type.scope.AddSymbol(StringConstants.eq_name, new SymbolInfo(cmn));
             else if (cmn.name == "op_Inequality")
-                cmn.cont_type.scope.AddSymbol(compiler_string_consts.noteq_name, new SymbolInfo(cmn));
+                cmn.cont_type.scope.AddSymbol(StringConstants.noteq_name, new SymbolInfo(cmn));
             return cmn;
         }
 
@@ -1999,10 +1999,10 @@ namespace PascalABCCompiler.PCU
 
         private void AddEnumOperators(common_type_node tctn)
         {
-        	/*basic_function_node enum_gr = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.gr_name,tctn,SemanticTree.basic_function_type.enumgr,SystemLibrary.SystemLibrary.bool_type);
-            basic_function_node enum_greq = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.greq_name,tctn,SemanticTree.basic_function_type.enumgreq,SystemLibrary.SystemLibrary.bool_type);
-            basic_function_node enum_sm = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.sm_name,tctn,SemanticTree.basic_function_type.enumsm,SystemLibrary.SystemLibrary.bool_type);
-            basic_function_node enum_smeq = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.smeq_name,tctn,SemanticTree.basic_function_type.enumsmeq,SystemLibrary.SystemLibrary.bool_type);*/
+        	/*basic_function_node enum_gr = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.gr_name,tctn,SemanticTree.basic_function_type.enumgr,SystemLibrary.SystemLibrary.bool_type);
+            basic_function_node enum_greq = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.greq_name,tctn,SemanticTree.basic_function_type.enumgreq,SystemLibrary.SystemLibrary.bool_type);
+            basic_function_node enum_sm = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.sm_name,tctn,SemanticTree.basic_function_type.enumsm,SystemLibrary.SystemLibrary.bool_type);
+            basic_function_node enum_smeq = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.smeq_name,tctn,SemanticTree.basic_function_type.enumsmeq,SystemLibrary.SystemLibrary.bool_type);*/
             compilation_context.add_convertions_to_enum_type(tctn);
         }
 
@@ -2256,9 +2256,9 @@ namespace PascalABCCompiler.PCU
 
             if (type_is_delegate)
             {
-                SymbolInfo sim = ctn.find_first_in_type(compiler_string_consts.invoke_method_name);
+                SymbolInfo sim = ctn.find_first_in_type(StringConstants.invoke_method_name);
                 common_method_node invoke_method = sim.sym_info as common_method_node;
-                sim = ctn.find_first_in_type(compiler_string_consts.default_constructor_name);
+                sim = ctn.find_first_in_type(StringConstants.default_constructor_name);
                 common_method_node constructor = sim.sym_info as common_method_node;
                 delegate_internal_interface dii = new delegate_internal_interface(invoke_method.return_value_type, invoke_method, constructor);
                 dii.parameters.AddRange(invoke_method.parameters);
@@ -2277,7 +2277,7 @@ namespace PascalABCCompiler.PCU
             {
                 foreach (common_type_node par in ctn.generic_params)
                 {
-                    SymbolInfo tsi = ctn.find_first_in_type(compiler_string_consts.generic_param_kind_prefix + par.name);
+                    SymbolInfo tsi = ctn.find_first_in_type(StringConstants.generic_param_kind_prefix + par.name);
                     if (tsi != null)
                     {
                         par.runtime_initialization_marker = tsi.sym_info as class_field;
@@ -2516,8 +2516,8 @@ namespace PascalABCCompiler.PCU
             {
                 if (ctn.fields[0].type is simple_array)
                 {
-                    ctn.find(TreeConverter.compiler_string_consts.upper_array_const_name);
-                    ctn.find(TreeConverter.compiler_string_consts.lower_array_const_name);
+                    ctn.find(StringConstants.upper_array_const_name);
+                    ctn.find(StringConstants.lower_array_const_name);
                     constant_node lower_bound = ctn.const_defs[1].const_value;
                     constant_node upper_bound = ctn.const_defs[0].const_value;
 

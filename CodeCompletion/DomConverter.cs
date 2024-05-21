@@ -56,7 +56,7 @@ namespace CodeCompletion
                 foreach (string s in files)
                 {
                     string fname = Path.GetFileNameWithoutExtension(s);
-                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == compiler_string_consts.pascalExtensionsUnitName)
+                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == StringConstants.pascalExtensionsUnitName)
                         continue;
                     SymInfo si = new SymInfo(Path.GetFileNameWithoutExtension(s), SymbolKind.Namespace, null);
                     si.IsUnitNamespace = true;
@@ -117,7 +117,7 @@ namespace CodeCompletion
                 CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
             visitor.Convert(cu);
             is_compiled = true;
-            cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();
+            cur_used_assemblies = visitor.cur_used_assemblies;
             return;
         }
 

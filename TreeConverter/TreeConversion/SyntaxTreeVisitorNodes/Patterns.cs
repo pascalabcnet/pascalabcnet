@@ -32,7 +32,7 @@ namespace PascalABCCompiler.TreeConverter
             var parameterTypes = variableDefinitions.Select(x => x.vars_type == null ? null : convert_strong(x.vars_type)).ToArray();
             List<function_node> candidates = new List<function_node>();
             List<type_node[]> deducedParametersList = new List<type_node[]>();
-            var allDeconstructs = patternInstance.type.find_in_type(compiler_string_consts.deconstruct_method_name, context.CurrentScope);
+            var allDeconstructs = patternInstance.type.find_in_type(StringConstants.deconstruct_method_name, context.CurrentScope);
             if (allDeconstructs == null)
             {
                 AddError(get_location(deconstruction), "NO_DECONSTRUCT_FOUND");
@@ -158,7 +158,7 @@ namespace PascalABCCompiler.TreeConverter
             type2 != null &&
             convertion_data_and_alghoritms.possible_equal_types(type1, type2);
 
-        private bool IsSelfParameter(parameter parameter) => parameter.name.ToLower() == compiler_string_consts.self_word;
+        private bool IsSelfParameter(parameter parameter) => parameter.name.ToLower() == StringConstants.self_word;
 
         private void RemoveDefaultDeconstruct(List<function_node> candidates)
         {

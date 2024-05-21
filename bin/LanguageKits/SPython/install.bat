@@ -15,8 +15,9 @@ copy *.dll %path_to_pas%
 %path_to_pas%\pabcnetc.exe SpythonHidden.pas
 
 copy *.pas %path_to_pas%\LibSource
-copy *.pcu %path_to_pas%\Lib
+move *.pcu %path_to_pas%\Lib
 
 
 copy *.xshd %path_to_pas%\Highlighting
-copy *.dat %path_to_pas%\Lng\Rus
+copy Lng\Rus\*.dat %path_to_pas%\Lng\Rus
+copy Lng\Eng\*.dat %path_to_pas%\Lng\Rus

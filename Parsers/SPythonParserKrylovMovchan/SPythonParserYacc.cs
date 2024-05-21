@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-56159VE
-// DateTime: 18.05.2024 19:22:05
-// UserName: ????
+// Machine:  LAPTOP-MPBGOA9N
+// DateTime: 21.05.2024 16:56:52
+// UserName: krylo
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
