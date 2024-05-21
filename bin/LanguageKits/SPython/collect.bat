@@ -1,12 +1,12 @@
 @echo off
 
 copy ..\..\Lib\SPythonSystem.pas .\
-copy ..\..\Lib\SPythonHidden.pas .\
+copy ..\..\Lib\SpythonHidden.pas .\
 
 copy ..\..\Highlighting\SPython.xshd .\
 copy ..\..\Highlighting\PythonABC.xshd .\
 
-call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\Parsers\SPythonParserKrylovMovchan.sln
+call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\Parsers\SPythonParserKrylovMovchan\SPythonParser.csproj
 call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj
 
 copy ..\..\SPythonLanguageParser.dll .\
