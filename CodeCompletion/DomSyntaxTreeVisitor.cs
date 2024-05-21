@@ -8,7 +8,6 @@ using System.IO;
 using PascalABCCompiler.SyntaxTree;
 using System.Reflection;
 using PascalABCCompiler;
-using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.Parsers;
 
@@ -43,8 +42,9 @@ namespace CodeCompletion
         public static bool use_semantic_for_intellisense;
         private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
         public SemanticOptions semantic_options = new SemanticOptions();
-		
-		public DomSyntaxTreeVisitor(DomConverter converter)
+        public Hashtable cur_used_assemblies;
+
+        public DomSyntaxTreeVisitor(DomConverter converter)
 		{
 			//tcst = new TreeConverterSymbolTable(false);
 			this.converter = converter;
@@ -70,6 +70,7 @@ namespace CodeCompletion
                 //throw e;
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
+            cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();
             if (use_semantic_for_intellisense && !parse_only_interface)
             try
             {
@@ -315,6 +316,7 @@ namespace CodeCompletion
                 compiler = new Compiler();
             compiler.CompilerOptions = co;
             compiler.ClearAfterCompilation = false;
+            compiler.ParsersController.LastParser = compiler.ParsersController.SelectParser(Path.GetExtension(cu.source_context.FileName).ToLower());
             compiler.Compile();
             foreach (var lv in compiler.CompiledVariables)
                 CorrectVariableType(lv);
@@ -610,7 +612,7 @@ namespace CodeCompletion
                         case Operators.BitwiseNOT:
                             ev.EvalNot(); break;
                         case Operators.LogicalNOT:
-                            ev.EvalNot(); returned_scope = entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name); break;
+                            ev.EvalNot(); returned_scope = entry_scope.FindName(StringConstants.bool_type_name); break;
                         case Operators.Minus:
                             ev.EvalUnmin(); break;
                     }
@@ -650,19 +652,19 @@ namespace CodeCompletion
 
         public override void visit(bool_const _bool_const)
         {
-            returned_scope = TypeTable.bool_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name);
+            returned_scope = TypeTable.bool_type;//entry_scope.FindName(StringConstants.bool_type_name);
             cnst_val.prim_val = _bool_const.val;
         }
 
         public override void visit(int32_const _int32_const)
         {
-        	returned_scope = TypeTable.int_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name);
+        	returned_scope = TypeTable.int_type;//entry_scope.FindName(StringConstants.integer_type_name);
         	cnst_val.prim_val = _int32_const.val;
         }
 
         public override void visit(double_const _double_const)
         {
-            returned_scope = TypeTable.real_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name);
+            returned_scope = TypeTable.real_type;//entry_scope.FindName(StringConstants.real_type_name);
             cnst_val.prim_val = _double_const.val;
         }
 
@@ -923,7 +925,7 @@ namespace CodeCompletion
 
         public override void visit(string_const _string_const)
         {
-            returned_scope = TypeTable.string_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name);
+            returned_scope = TypeTable.string_type;//entry_scope.FindName(StringConstants.string_type_name);
             //cnst_val.prim_val = "'"+_string_const.Value+"'";
         	cnst_val.prim_val = this.converter.controller.Parser.LanguageInformation.GetStringForString(_string_const.Value);
         }
@@ -1220,7 +1222,7 @@ namespace CodeCompletion
             			indexes.Add(null);
             	}
             }
-            else indexes.Add((TypeScope)entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name));
+            else indexes.Add((TypeScope)entry_scope.FindName(StringConstants.integer_type_name));
             TypeScope ts = of_type as TypeScope;
             if (of_type is ProcScope)
                 ts = new ProcType(of_type as ProcScope);
@@ -2633,7 +2635,7 @@ namespace CodeCompletion
                 is_system_unit = true;
                 add_standart_types(entry_scope);
             }
-            if (_unit_module.unit_name.idunit_name.name == PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName)
+            if (_unit_module.unit_name.idunit_name.name == StringConstants.pascalExtensionsUnitName)
             {
                 is_extensions_unit = true;
             }
@@ -2705,9 +2707,9 @@ namespace CodeCompletion
         PascalABCCompiler.TreeRealization.using_namespace_list unl = new PascalABCCompiler.TreeRealization.using_namespace_list();
 		public SymScope cur_scope;
 
-        public string FindPCUFileName(string UnitName)
+        public static string FindPCUFileName(string UnitName, string curr_path)
         {
-        	return CodeCompletionController.comp.FindPCUFileName(UnitName,System.IO.Path.GetDirectoryName(doc.file_name), out _);
+        	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _);
         }
         
 		private void add_system_unit()
@@ -2729,7 +2731,7 @@ namespace CodeCompletion
                  		entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                  		add_standart_types(dc.visitor.entry_scope);
                  		//get_standart_types(dc.stv);
-                 		entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalSystemUnitName,dc.visitor.entry_scope);
+                 		entry_scope.AddName(StringConstants.pascalSystemUnitName,dc.visitor.entry_scope);
                  	}
                  	CodeCompletionController.comp_modules[unit_name] = dc;
                  	
@@ -2739,14 +2741,14 @@ namespace CodeCompletion
                  	dc.visitor.entry_scope.InitAssemblies();
                  	entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                  	//get_standart_types(dc.stv);
-                 	entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalSystemUnitName,dc.visitor.entry_scope);
+                 	entry_scope.AddName(StringConstants.pascalSystemUnitName,dc.visitor.entry_scope);
                  }
             }
 		}
 
         private void add_extensions_unit()
         {
-            string unit_name = CodeCompletionNameHelper.FindSourceFileName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, out _);
+            string unit_name = CodeCompletionNameHelper.FindSourceFileName(StringConstants.pascalExtensionsUnitName, out _);
 
             if (unit_name != null)
             {
@@ -2759,7 +2761,7 @@ namespace CodeCompletion
                     {
                         dc.visitor.entry_scope.InitAssemblies();
                         entry_scope.AddUsedUnit(dc.visitor.entry_scope);
-                        entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, dc.visitor.entry_scope);
+                        entry_scope.AddName(StringConstants.pascalExtensionsUnitName, dc.visitor.entry_scope);
                     }
                     CodeCompletionController.comp_modules[unit_name] = dc;
                 }
@@ -2767,8 +2769,123 @@ namespace CodeCompletion
                 {
                     dc.visitor.entry_scope.InitAssemblies();
                     entry_scope.AddUsedUnit(dc.visitor.entry_scope);
-                    entry_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, dc.visitor.entry_scope);
+                    entry_scope.AddName(StringConstants.pascalExtensionsUnitName, dc.visitor.entry_scope);
                 }
+            }
+        }
+
+        private static void add_unit_ref(unit_or_namespace s, string curr_path,
+            SymScope cur_scope, Hashtable ns_cache, bool allow_import_types,
+            ref bool has_system_unit, ref bool has_extensions_unit,
+            using_namespace_list unl)
+        {
+
+            try
+            {
+                if (s is uses_unit_in uui)
+                {
+                    string unit_name = CodeCompletionNameHelper.FindSourceFileName(uui.in_file.Value, out _, curr_path);
+                    if (unit_name==null) throw new InvalidOperationException($"uses '{uui.in_file.Value}';");
+
+                    DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
+                    if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
+                    {
+                        dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
+                    }
+                    if (dc.visitor != null)
+                    {
+                        dc.visitor.entry_scope.InitAssemblies();
+                        cur_scope.AddUsedUnit(dc.visitor.entry_scope);
+                        cur_scope.AddName(Path.GetFileNameWithoutExtension(unit_name), dc.visitor.entry_scope);
+                    }
+
+                }
+                else
+                {
+                    string str = "";
+                    for (int i = 0; i < s.name.idents.Count; i++)
+                    {
+                        str += s.name.idents[i].name;
+                        NamespaceScope ns_scope = null;
+                        if (i == 0)
+                        {
+                            string pcu_unit_name = FindPCUFileName(str, curr_path);
+                            string unit_name = CodeCompletionNameHelper.FindSourceFileName(str, out _, curr_path);
+
+                            /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
+                                unit_name = null;*/
+                            if (unit_name != null)
+                            {
+                                DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
+                                if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
+                                {
+                                    dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
+                                }
+                                if (dc.visitor != null)
+                                {
+                                    dc.visitor.entry_scope.InitAssemblies();
+                                    cur_scope.AddUsedUnit(dc.visitor.entry_scope);
+                                    cur_scope.AddName(str, dc.visitor.entry_scope);
+                                }
+                            }
+                            else
+                            {
+                                //unit_name = FindPCUFileName(str);
+                                unit_name = pcu_unit_name;
+                                if (unit_name != null)
+                                {
+                                    IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
+                                    SymScope ss = pcu_rdr.GetUnit(unit_name);
+                                    UnitDocCache.Load(ss, unit_name);
+                                    cur_scope.AddUsedUnit(ss);
+                                    cur_scope.AddName(str, ss);
+                                }
+                                else
+                                {
+                                    if (CodeCompletion.CodeCompletionController.pabcNamespaces.ContainsKey(str.ToLower()))
+                                    {
+                                        InterfaceUnitScope un_scope = CodeCompletion.CodeCompletionController.pabcNamespaces[str.ToLower()];
+                                        cur_scope.AddUsedUnit(un_scope);
+                                        cur_scope.AddName(str, un_scope);
+                                    }
+                                    else if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
+                                    {
+                                        ns_scope = new NamespaceScope(str);
+                                        ns_cache[str] = str;
+                                        cur_scope.AddName(str, ns_scope);
+                                        if (s.name.idents.Count == 1)
+                                            cur_scope.AddUsedUnit(ns_scope);
+                                    }
+                                    else if (PascalABCCompiler.NetHelper.NetHelper.IsType(str) && allow_import_types)
+                                    {
+                                        Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(str);
+                                        cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
+                                    }
+
+                                }
+                                //unit_name = System.IO.Path.GetDirectoryName(_program_module.file_name)+"\\"+str+System.IO.Path.GetExtension(_program_module.file_name);
+                            }
+                        }
+                        if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
+                            //possible_namespaces.Add(str);
+                            cur_scope.AddUsedUnit(new NamespaceScope(str));
+                        if (i < s.name.idents.Count - 1)
+                            str += ".";
+
+                    }
+                    if (string.Compare(str, StringConstants.pascalSystemUnitNamespaceName, true) == 0)
+                        has_system_unit = true;
+                    if (string.Compare(str, StringConstants.pascalExtensionsUnitName, true) == 0)
+                        has_extensions_unit = true;
+                    unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
             }
         }
 
@@ -2896,93 +3013,9 @@ namespace CodeCompletion
                 for (int j = _program_module.used_units.units.Count - 1; j >= 0; j--)
                 {
                     unit_or_namespace s = _program_module.used_units.units[j];
-
-                    try
-                    {
-                        string str = "";
-                        for (int i = 0; i < s.name.idents.Count; i++)
-                        {
-                            str += s.name.idents[i].name;
-                            NamespaceScope ns_scope = null;
-                            if (i == 0)
-                            {
-                                string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(_program_module.file_name));
-
-                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
-                                    && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;*/
-                                if (unit_name != null)
-                                {
-                                    DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
-                                    if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
-                                    {
-                                        dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
-                                    }
-                                    if (dc.visitor != null)
-                                    {
-                                        dc.visitor.entry_scope.InitAssemblies();
-                                        cur_scope.AddUsedUnit(dc.visitor.entry_scope);
-                                        cur_scope.AddName(str, dc.visitor.entry_scope);
-                                    }
-                                }
-                                else
-                                {
-                                    //unit_name = FindPCUFileName(str);
-                                    unit_name = pcu_unit_name;
-                                    if (unit_name != null)
-                                    {
-                                        IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
-                                        SymScope ss = pcu_rdr.GetUnit(unit_name);
-                                        UnitDocCache.Load(ss, unit_name);
-                                        cur_scope.AddUsedUnit(ss);
-                                        cur_scope.AddName(str, ss);
-                                    }
-                                    else
-                                    {
-                                        if (CodeCompletion.CodeCompletionController.pabcNamespaces.ContainsKey(str.ToLower()))
-                                        {
-                                            InterfaceUnitScope un_scope = CodeCompletion.CodeCompletionController.pabcNamespaces[str.ToLower()];
-                                            cur_scope.AddUsedUnit(un_scope);
-                                            cur_scope.AddName(str, un_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
-                                        {
-                                            ns_scope = new NamespaceScope(str);
-                                            ns_cache[str] = str;
-                                            cur_scope.AddName(str, ns_scope);
-                                            if (s.name.idents.Count == 1)
-                                                cur_scope.AddUsedUnit(ns_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsType(str) && semantic_options.allow_import_types)
-                                        {
-                                            Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(str);
-                                            cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
-                                        }
-                                        
-                                    }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.file_name)+"\\"+str+System.IO.Path.GetExtension(_program_module.file_name);
-                                }
-                            }
-                            if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
-                                //possible_namespaces.Add(str);
-                                cur_scope.AddUsedUnit(new NamespaceScope(str));
-                            if (i < s.name.idents.Count - 1)
-                                str += ".";
-
-                        }
-                        if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_name, true) == 0)
-                            has_system_unit = true;
-                        if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, true) == 0)
-                            has_extensions_unit = true;
-                        unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
-                    }
-                    catch (Exception e)
-                    {
-#if DEBUG
-                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
-#endif
-                    }
+                    add_unit_ref(s, Path.GetDirectoryName(_program_module.file_name),
+                        cur_scope, ns_cache, semantic_options.allow_import_types,
+                        ref has_system_unit, ref has_extensions_unit, unl);
                 }
 
             }
@@ -3042,138 +3075,138 @@ namespace CodeCompletion
         private void add_standart_types(SymScope cur_scope)
         {
         	string type_name = null;
-        	//obj_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.object_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.object_type_name),typeof(object));
-        	cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.object_type_name,TypeTable.obj_type);
-        	//int_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name),typeof(int));
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name, int_type);
+        	//obj_type = new CompiledScope(new SymInfo(StringConstants.object_type_name, SymbolKind.Type,StringConstants.object_type_name),typeof(object));
+        	cur_scope.AddName(StringConstants.object_type_name,TypeTable.obj_type);
+        	//int_type = new CompiledScope(new SymInfo(StringConstants.integer_type_name, SymbolKind.Type,StringConstants.integer_type_name),typeof(int));
+        	//cur_scope.AddName(StringConstants.integer_type_name, int_type);
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.IntType);
         	if (type_name != null) cur_scope.AddName(type_name, TypeTable.int_type);
-        	//real_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name),typeof(double));
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name,real_type);
+        	//real_type = new CompiledScope(new SymInfo(StringConstants.real_type_name, SymbolKind.Type,StringConstants.real_type_name),typeof(double));
+        	//cur_scope.AddName(StringConstants.real_type_name,real_type);
             type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.DoubleType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.real_type);
-        	//string_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name, SymbolKind.Class,PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name),typeof(string));
-        	cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name,TypeTable.string_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name,
-        	//new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.ShortStringTypeName),typeof(string)));
-        	//char_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name),typeof(char));
+        	//string_type = new CompiledScope(new SymInfo(StringConstants.string_type_name, SymbolKind.Class,StringConstants.string_type_name),typeof(string));
+        	cur_scope.AddName(StringConstants.string_type_name,TypeTable.string_type);
+        	//cur_scope.AddName(StringConstants.string_type_name,
+        	//new CompiledScope(new SymInfo(StringConstants.string_type_name, SymbolKind.Type,StringConstants.ShortStringTypeName),typeof(string)));
+        	//char_type = new CompiledScope(new SymInfo(StringConstants.char_type_name, SymbolKind.Type,StringConstants.char_type_name),typeof(char));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.CharType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.char_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name,char_type);
-        	//bool_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name),typeof(bool));
+        	//cur_scope.AddName(StringConstants.char_type_name,char_type);
+        	//bool_type = new CompiledScope(new SymInfo(StringConstants.bool_type_name, SymbolKind.Type,StringConstants.bool_type_name),typeof(bool));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.BoolType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.bool_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name,bool_type);
-        	//byte_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name),typeof(byte));
+        	//cur_scope.AddName(StringConstants.bool_type_name,bool_type);
+        	//byte_type = new CompiledScope(new SymInfo(StringConstants.byte_type_name, SymbolKind.Type,StringConstants.byte_type_name),typeof(byte));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.ByteType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.byte_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name,byte_type);
-        	//int16_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.short_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.short_type_name),typeof(short));
+        	//cur_scope.AddName(StringConstants.byte_type_name,byte_type);
+        	//int16_type = new CompiledScope(new SymInfo(StringConstants.short_type_name, SymbolKind.Type,StringConstants.short_type_name),typeof(short));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.ShortType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.int16_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.short_type_name,int16_type);
-        	//sbyte_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name),typeof(sbyte));
+        	//cur_scope.AddName(StringConstants.short_type_name,int16_type);
+        	//sbyte_type = new CompiledScope(new SymInfo(StringConstants.sbyte_type_name, SymbolKind.Type,StringConstants.sbyte_type_name),typeof(sbyte));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.SByteType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.sbyte_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name,sbyte_type);
-        	//uint16_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.ushort_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.ushort_type_name),typeof(ushort));
+        	//cur_scope.AddName(StringConstants.sbyte_type_name,sbyte_type);
+        	//uint16_type = new CompiledScope(new SymInfo(StringConstants.ushort_type_name, SymbolKind.Type,StringConstants.ushort_type_name),typeof(ushort));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.UShortType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.uint16_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.ushort_type_name,uint16_type);
-        	//uint32_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.uint_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.uint_type_name),typeof(uint));
+        	//cur_scope.AddName(StringConstants.ushort_type_name,uint16_type);
+        	//uint32_type = new CompiledScope(new SymInfo(StringConstants.uint_type_name, SymbolKind.Type,StringConstants.uint_type_name),typeof(uint));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.UIntType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.uint32_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.uint_type_name,uint32_type);
-        	//int64_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name),typeof(long));
+        	//cur_scope.AddName(StringConstants.uint_type_name,uint32_type);
+        	//int64_type = new CompiledScope(new SymInfo(StringConstants.long_type_name, SymbolKind.Type,StringConstants.long_type_name),typeof(long));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.Int64Type);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.int64_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name,int64_type);
-        	//uint64_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name),typeof(ulong));
+        	//cur_scope.AddName(StringConstants.long_type_name,int64_type);
+        	//uint64_type = new CompiledScope(new SymInfo(StringConstants.ulong_type_name, SymbolKind.Type,StringConstants.ulong_type_name),typeof(ulong));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.UInt64Type);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.uint64_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name,uint64_type);
-        	//float_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.float_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.float_type_name),typeof(float));
+        	//cur_scope.AddName(StringConstants.ulong_type_name,uint64_type);
+        	//float_type = new CompiledScope(new SymInfo(StringConstants.float_type_name, SymbolKind.Type,StringConstants.float_type_name),typeof(float));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.FloatType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.float_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.float_type_name,float_type);
-        	//ptr_type = new CompiledScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name),Type.GetType("System.Void*"));
+        	//cur_scope.AddName(StringConstants.float_type_name,float_type);
+        	//ptr_type = new CompiledScope(new SymInfo(StringConstants.pointer_type_name, SymbolKind.Type,StringConstants.pointer_type_name),Type.GetType("System.Void*"));
         	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.PointerType);
             if (type_name != null) cur_scope.AddName(type_name, TypeTable.ptr_type);
-        	//cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name,ptr_type);
-        	ProcScope ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.set_length_procedure_name,null);
+        	//cur_scope.AddName(StringConstants.pointer_type_name,ptr_type);
+        	ProcScope ps = new ProcScope(StringConstants.set_length_procedure_name,null);
         	ps.AddParameter(new ElementScope(new SymInfo("arr", SymbolKind.Parameter,"arr"),new ArrayScope(),null,ps));
         	ps.parameters[0].param_kind = parametr_kind.var_parametr;
         	ps.AddParameter(new ElementScope(new SymInfo("length", SymbolKind.Parameter,"length"),TypeTable.int_type,null,ps));
         	ps.Complete();
-        	cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.set_length_procedure_name,ps);
-        	cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.true_const_name,new ElementScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.true_const_name, SymbolKind.Constant,PascalABCCompiler.TreeConverter.compiler_string_consts.true_const_name),TypeTable.bool_type,true,null));
-        	cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.false_const_name,new ElementScope(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.false_const_name, SymbolKind.Constant,PascalABCCompiler.TreeConverter.compiler_string_consts.false_const_name),TypeTable.bool_type,false,null));
-       		ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.new_procedure_name,null);
+        	cur_scope.AddName(StringConstants.set_length_procedure_name,ps);
+        	cur_scope.AddName(StringConstants.true_const_name,new ElementScope(new SymInfo(StringConstants.true_const_name, SymbolKind.Constant,StringConstants.true_const_name),TypeTable.bool_type,true,null));
+        	cur_scope.AddName(StringConstants.false_const_name,new ElementScope(new SymInfo(StringConstants.false_const_name, SymbolKind.Constant,StringConstants.false_const_name),TypeTable.bool_type,false,null));
+       		ps = new ProcScope(StringConstants.new_procedure_name,null);
        		ElementScope prm = new ElementScope(new SymInfo("p", SymbolKind.Parameter,"p"),TypeTable.ptr_type,null,ps);
        		prm.param_kind = parametr_kind.var_parametr;
        		ps.AddParameter(prm);
        		ps.Complete();
-       		cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.new_procedure_name,ps);
-       		ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.dispose_procedure_name,null);
+       		cur_scope.AddName(StringConstants.new_procedure_name,ps);
+       		ps = new ProcScope(StringConstants.dispose_procedure_name,null);
        		prm = new ElementScope(new SymInfo("p", SymbolKind.Parameter,"p"),TypeTable.ptr_type,null,ps);
        		prm.param_kind = parametr_kind.var_parametr;
        		ps.AddParameter(prm);
        		ps.Complete();
-       		cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.dispose_procedure_name,ps);
+       		cur_scope.AddName(StringConstants.dispose_procedure_name,ps);
 
-            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int16_type, null, ps);
             prm.param_kind = parametr_kind.var_parametr;
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+            cur_scope.AddName(StringConstants.IncProcedure, ps);
 
-            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint16_type, null, ps);
             prm.param_kind = parametr_kind.var_parametr;
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+            cur_scope.AddName(StringConstants.IncProcedure, ps);
 
-            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.sbyte_type, null, ps);
             prm.param_kind = parametr_kind.var_parametr;
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+            cur_scope.AddName(StringConstants.IncProcedure, ps);
 
-            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int64_type, null, ps);
             prm.param_kind = parametr_kind.var_parametr;
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+            cur_scope.AddName(StringConstants.IncProcedure, ps);
 
-            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint64_type, null, ps);
             prm.param_kind = parametr_kind.var_parametr;
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+            cur_scope.AddName(StringConstants.IncProcedure, ps);
 
-            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, null);
+            ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint32_type, null, ps);
             prm.param_kind = parametr_kind.var_parametr;
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.IncProcedure, ps);
+            cur_scope.AddName(StringConstants.IncProcedure, ps);
         }
 
         public override void visit(hex_constant _hex_constant)
         {
             //throw new Exception("The method or operation is not implemented.");
-            returned_scope = TypeTable.uint64_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name);
+            returned_scope = TypeTable.uint64_type;//entry_scope.FindName(StringConstants.ulong_type_name);
             cnst_val.prim_val = _hex_constant.val;
         }
 
@@ -3805,7 +3838,7 @@ namespace CodeCompletion
             if (element_type != null)
                 returned_scope = new SetScope(element_type);
             else
-                returned_scope = cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.set_name);
+                returned_scope = cur_scope.FindName(StringConstants.set_name);
             cnst_val.prim_val = null;
         }
 
@@ -4299,7 +4332,7 @@ namespace CodeCompletion
                 foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
                 {
                     var name = (en.name as named_type_reference).FirstIdent.name;
-                    ElementScope ss = new ElementScope(new SymInfo(name, SymbolKind.Constant, name),/*cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name)*/enum_scope, cur_scope);
+                    ElementScope ss = new ElementScope(new SymInfo(name, SymbolKind.Constant, name),/*cur_scope.FindName(StringConstants.integer_type_name)*/enum_scope, cur_scope);
                     ss.is_static = true;
                     ss.cnst_val = name;
                     elems.Add(ss);
@@ -4317,7 +4350,7 @@ namespace CodeCompletion
 
         public override void visit(char_const _char_const)
         {
-            returned_scope = TypeTable.char_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name);
+            returned_scope = TypeTable.char_type;//entry_scope.FindName(StringConstants.char_type_name);
             if (in_kav)
             	cnst_val.prim_val = this.converter.controller.Parser.LanguageInformation.GetStringForChar(_char_const.cconst);
             //cnst_val.prim_val = "'"+_char_const.cconst.ToString()+"'";
@@ -4331,14 +4364,14 @@ namespace CodeCompletion
 
         public override void visit(sharp_char_const _sharp_char_const)
         {
-            returned_scope = TypeTable.char_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name);
+            returned_scope = TypeTable.char_type;//entry_scope.FindName(StringConstants.char_type_name);
             cnst_val.prim_val = this.converter.controller.Parser.LanguageInformation.GetStringForSharpChar(_sharp_char_const.char_num);
         }
 		
         private bool in_kav=true;
         public override void visit(literal_const_line _literal_const_line)
         {
-            //entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name);
+            //entry_scope.FindName(StringConstants.string_type_name);
             StringBuilder sb = new StringBuilder();
             in_kav = false;
             for (int i = 0; i < _literal_const_line.literals.Count; i++)
@@ -4365,7 +4398,7 @@ namespace CodeCompletion
             {
             	
             }
-            returned_scope = new ShortStringScope(TypeTable.string_type,cnst_val.prim_val);//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name);
+            returned_scope = new ShortStringScope(TypeTable.string_type,cnst_val.prim_val);//entry_scope.FindName(StringConstants.string_type_name);
             returned_scope.topScope = cur_scope;
             returned_scope.loc = get_location(_string_num_definition);
         }
@@ -4718,92 +4751,12 @@ namespace CodeCompletion
                 for (int j = _interface_node.uses_modules.units.Count - 1; j >= 0; j--)
                 {
                     unit_or_namespace s = _interface_node.uses_modules.units[j];
-                    string str = "";
-                    for (int i = 0; i < s.name.idents.Count; i++)
-                    {
-                        str += s.name.idents[i].name;
-                        NamespaceScope ns_scope = null;
-                        if (i == 0)
-                        {
-                            try
-                            {
-                                string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
-
-                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
-                                    && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;*/
-                                if (unit_name != null)
-                                {
-                                    DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
-                                    if (dc == null)
-                                    {
-                                        dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
-                                    }
-                                    if (dc.visitor != null)
-                                    {
-                                        dc.visitor.entry_scope.InitAssemblies();
-                                        cur_scope.AddUsedUnit(dc.visitor.entry_scope);
-                                        cur_scope.AddName(str, dc.visitor.entry_scope);
-                                    }
-                                }
-                                else
-                                {
-                                    //unit_name = FindPCUFileName(str);
-                                    unit_name = pcu_unit_name;
-                                    if (unit_name != null)
-                                    {
-                                        IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
-                                        SymScope ss = pcu_rdr.GetUnit(unit_name);
-                                        UnitDocCache.Load(ss, unit_name);
-                                        cur_scope.AddUsedUnit(ss);
-                                        cur_scope.AddName(str, ss);
-                                    }
-                                    else
-                                    {
-                                    	if (CodeCompletion.CodeCompletionController.pabcNamespaces.ContainsKey(str.ToLower()))
-                                        {
-                                            InterfaceUnitScope un_scope = CodeCompletion.CodeCompletionController.pabcNamespaces[str.ToLower()];
-                                            cur_scope.AddUsedUnit(un_scope);
-                                            cur_scope.AddName(str, un_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
-                                        {
-                                            ns_scope = new NamespaceScope(str);
-                                            ns_cache[str] = str;
-                                            cur_scope.AddName(str, ns_scope);
-                                            if (s.name.idents.Count == 1)
-                                                cur_scope.AddUsedUnit(ns_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsType(str) && semantic_options.allow_import_types)
-                                        {
-                                            Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(str);
-                                            cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
-                                        }
-                                    }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.file_name)+"\\"+str+System.IO.Path.GetExtension(_program_module.file_name);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-#if DEBUG
-                                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
-#endif
-                            }
-                        }
-                        if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
-                            cur_scope.AddUsedUnit(new NamespaceScope(str));
-                        if (i < s.name.idents.Count - 1) str += ".";
-
-                    }
-                    if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_name, true) == 0)
-                        has_system_unit = true;
-                    if (string.Compare(str, PascalABCCompiler.TreeConverter.compiler_string_consts.pascalExtensionsUnitName, true) == 0)
-                        has_extensions_unit = true;
-                    unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
+                    add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
+                        cur_scope, ns_cache, semantic_options.allow_import_types,
+                        ref has_system_unit, ref has_extensions_unit, unl);
                 }
             }
-            //if (_interface_node.unit_name.idunit_name.name != PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name)
+            //if (_interface_node.unit_name.idunit_name.name != StringConstants.system_unit_file_name)
             if (!is_system_unit && !has_system_unit)
                 add_system_unit();
             if (!is_system_unit && !is_extensions_unit && !has_extensions_unit)
@@ -4840,79 +4793,10 @@ namespace CodeCompletion
                 for (int j = _implementation_node.uses_modules.units.Count - 1; j >= 0; j--)
                 {
                     unit_or_namespace s = _implementation_node.uses_modules.units[j];
-                    string str = "";
-                    for (int i = 0; i < s.name.idents.Count; i++)
-                    {
-                        str += s.name.idents[i].name;
-                        NamespaceScope ns_scope = null;
-                        if (i == 0)
-                        {
-                            try
-                            {
-                                string pcu_unit_name = FindPCUFileName(str);
-                                string unit_name = CodeCompletionNameHelper.FindSourceFileName(s is uses_unit_in uui ? uui.in_file.Value : str, out _, Path.GetDirectoryName(this.cur_unit_file_name));
-
-                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
-                                       && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;*/
-                                if (unit_name != null)
-                                {
-                                    DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
-                                    if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
-                                    {
-                                        dc = new CodeCompletionController().CompileAllIfNeed(unit_name, true);
-                                    }
-                                    if (dc.visitor != null)
-                                    {
-                                        dc.visitor.entry_scope.InitAssemblies();
-                                        cur_scope.AddUsedUnit(dc.visitor.entry_scope);
-                                        cur_scope.AddName(str, dc.visitor.entry_scope);
-                                    }
-                                }
-                                else
-                                {
-                                    //unit_name = FindPCUFileName(str);
-                                    unit_name = pcu_unit_name;
-                                    if (unit_name != null)
-                                    {
-                                        IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
-                                        SymScope ss = pcu_rdr.GetUnit(unit_name);
-                                        UnitDocCache.Load(ss, unit_name);
-                                        cur_scope.AddUsedUnit(ss);
-                                        cur_scope.AddName(str, ss);
-                                    }
-                                    else
-                                    {
-                                        if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
-                                        {
-                                            ns_scope = new NamespaceScope(str);
-                                            cur_scope.AddName(str, ns_scope);
-                                            if (s.name.idents.Count == 1)
-                                                cur_scope.AddUsedUnit(ns_scope);
-                                        }
-                                        else if (PascalABCCompiler.NetHelper.NetHelper.IsType(str) && semantic_options.allow_import_types)
-                                        {
-                                            Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(str);
-                                            cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
-                                        }
-                                    }
-                                    //unit_name = System.IO.Path.GetDirectoryName(_program_module.file_name)+"\\"+str+System.IO.Path.GetExtension(_program_module.file_name);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-#if DEBUG
-                                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
-#endif
-                            }
-                        }
-                        if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
-                            cur_scope.AddUsedUnit(new NamespaceScope(str));
-                        if (i < s.name.idents.Count - 1)
-                            str += ".";
-                    }
-
-                    unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
+                    bool has_system_unit = false, has_extensions_unit = false;
+                    add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
+                        cur_scope, ns_cache, semantic_options.allow_import_types,
+                        ref has_system_unit, ref has_extensions_unit, unl);
                 }
             }
             impl_scope = cur_scope;
@@ -5268,13 +5152,13 @@ namespace CodeCompletion
         public override void visit(int64_const _int64_const)
         {
             //throw new Exception("The method or operation is not implemented.");
-            returned_scope = TypeTable.int64_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name);
+            returned_scope = TypeTable.int64_type;//entry_scope.FindName(StringConstants.long_type_name);
         	cnst_val.prim_val = _int64_const.val;
         }
 
         public override void visit(uint64_const _uint64_const)
         {
-            returned_scope = TypeTable.uint64_type;//entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name);
+            returned_scope = TypeTable.uint64_type;//entry_scope.FindName(StringConstants.ulong_type_name);
            cnst_val.prim_val = _uint64_const.val;
         }
 
@@ -5348,30 +5232,30 @@ namespace CodeCompletion
         {
         	switch(op)
         	{
-        		case Operators.Plus : return PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name;
-        		case Operators.Minus : return PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name;
-        		case Operators.Division : return PascalABCCompiler.TreeConverter.compiler_string_consts.div_name;
-                case Operators.IntegerDivision: return PascalABCCompiler.TreeConverter.compiler_string_consts.div_name;
-                case Operators.Multiplication : return PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name;
-        		case Operators.ModulusRemainder : return PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name;
-        		case Operators.Less : return PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name;
-        		case Operators.LessEqual : return PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name;
-        		case Operators.Greater : return PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name;
-        		case Operators.GreaterEqual : return PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name;
-        		case Operators.Equal : return PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name;
-        		case Operators.NotEqual : return PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name;
-        		case Operators.AssignmentAddition : return PascalABCCompiler.TreeConverter.compiler_string_consts.plusassign_name;
-        		case Operators.AssignmentMultiplication : return PascalABCCompiler.TreeConverter.compiler_string_consts.multassign_name;
-        		case Operators.AssignmentSubtraction : return PascalABCCompiler.TreeConverter.compiler_string_consts.minusassign_name;
-        		case Operators.AssignmentDivision : return PascalABCCompiler.TreeConverter.compiler_string_consts.divassign_name;
+        		case Operators.Plus : return StringConstants.plus_name;
+        		case Operators.Minus : return StringConstants.minus_name;
+        		case Operators.Division : return StringConstants.div_name;
+                case Operators.IntegerDivision: return StringConstants.div_name;
+                case Operators.Multiplication : return StringConstants.mul_name;
+        		case Operators.ModulusRemainder : return StringConstants.mod_name;
+        		case Operators.Less : return StringConstants.sm_name;
+        		case Operators.LessEqual : return StringConstants.smeq_name;
+        		case Operators.Greater : return StringConstants.gr_name;
+        		case Operators.GreaterEqual : return StringConstants.greq_name;
+        		case Operators.Equal : return StringConstants.eq_name;
+        		case Operators.NotEqual : return StringConstants.noteq_name;
+        		case Operators.AssignmentAddition : return StringConstants.plusassign_name;
+        		case Operators.AssignmentMultiplication : return StringConstants.multassign_name;
+        		case Operators.AssignmentSubtraction : return StringConstants.minusassign_name;
+        		case Operators.AssignmentDivision : return StringConstants.divassign_name;
         		case Operators.Implicit : return "implicit";
         		case Operators.Explicit : return "explicit";
-                case Operators.In: return PascalABCCompiler.TreeConverter.compiler_string_consts.in_name;
-                case Operators.Power: return PascalABCCompiler.TreeConverter.compiler_string_consts.power_name;
-                case Operators.LogicalOR: return PascalABCCompiler.TreeConverter.compiler_string_consts.or_name;
-                case Operators.LogicalAND: return PascalABCCompiler.TreeConverter.compiler_string_consts.and_name;
-                case Operators.BitwiseXOR: return PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name;
-                case Operators.LogicalNOT: return PascalABCCompiler.TreeConverter.compiler_string_consts.not_name;
+                case Operators.In: return StringConstants.in_name;
+                case Operators.Power: return StringConstants.power_name;
+                case Operators.LogicalOR: return StringConstants.or_name;
+                case Operators.LogicalAND: return StringConstants.and_name;
+                case Operators.BitwiseXOR: return StringConstants.xor_name;
+                case Operators.LogicalNOT: return StringConstants.not_name;
             }
         	return "";
         }
@@ -5937,7 +5821,7 @@ namespace CodeCompletion
         {
             method_call mc = new method_call();
             mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right });
-            mc.dereferencing_value = new dot_node(new ident(compiler_string_consts.pascalSystemUnitName), new ident("InternalRange"));
+            mc.dereferencing_value = new dot_node(new ident(StringConstants.pascalSystemUnitName), new ident("InternalRange"));
             mc.visit(this);
         }
 

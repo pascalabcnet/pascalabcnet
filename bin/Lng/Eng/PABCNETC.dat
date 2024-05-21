@@ -1,4 +1,4 @@
-//PABCNETC
+﻿//PABCNETC
 %PREFIX%=PABCNETC_
 
 ERROR_INVALID_DIRECTORY=Error: Invalid directory
