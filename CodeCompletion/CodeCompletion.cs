@@ -97,7 +97,7 @@ namespace CodeCompletion
                 return null;
             parsers[Path.GetExtension(FileName)] = Parser;
             compilation_unit cu = null;
-            cu = (Parser as BaseParser).GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special);
+            cu = Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special);
             //ParsersController.GetExpression("test.pas","a+b",new List<PascalABCCompiler.Errors.Error>());
             return cu;
         }

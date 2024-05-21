@@ -35,19 +35,19 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         public SyntaxTree.compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null)
         {
-            return GetSyntaxTree<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, parseMode, DefinesList);
+            return GetSyntaxTreeChecked<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, parseMode, DefinesList);
         }
 
         public SyntaxTree.compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
-            return GetSyntaxTree<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
+            return GetSyntaxTreeChecked<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
         }
 
         public SyntaxTree.expression GetExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
             try // SSM 06.09.18
             {
-                return GetSyntaxTree<SyntaxTree.expression>(FileName, Text, Errors, Warnings, ParseMode.Expression);
+                return GetSyntaxTreeChecked<SyntaxTree.expression>(FileName, Text, Errors, Warnings, ParseMode.Expression);
             }
             catch
             {
@@ -57,23 +57,20 @@ namespace PascalABCCompiler.Parsers
 
         public SyntaxTree.expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
-            return GetSyntaxTree<SyntaxTree.expression>(FileName, Text, Errors, Warnings, ParseMode.TypeAsExpression);
+            return GetSyntaxTreeChecked<SyntaxTree.expression>(FileName, Text, Errors, Warnings, ParseMode.TypeAsExpression);
         }
 
         public SyntaxTree.statement GetStatement(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
-            return GetSyntaxTree<SyntaxTree.statement>(FileName, Text, Errors, Warnings, ParseMode.Statement);
+            return GetSyntaxTreeChecked<SyntaxTree.statement>(FileName, Text, Errors, Warnings, ParseMode.Statement);
         }
 
         /// <summary>
-        /// Обобщенная функция для получения различных синтаксических узлов
+        /// Обобщенная функция для получения различных синтаксических узлов c проверкой, что узел того типа, который ожидался
         /// </summary>
-        private T GetSyntaxTree<T>(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null) where T : SyntaxTree.syntax_tree_node
+        private T GetSyntaxTreeChecked<T>(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null) where T : SyntaxTree.syntax_tree_node
         {
-            this.Errors = Errors;
-            this.Warnings = Warnings;
-
-            syntax_tree_node unitNode = BuildTree(FileName, Text, parseMode, DefinesList);
+            syntax_tree_node unitNode = BuildTree(FileName, Text, Errors, Warnings, parseMode, DefinesList);
 
             if (unitNode == null)
                 return null;
@@ -86,8 +83,16 @@ namespace PascalABCCompiler.Parsers
             return null;
         }
 
-        protected virtual syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
+        private void InitializeBeforeParsing(List<Error> Errors, List<CompilerWarning> Warnings)
         {
+            this.Errors = Errors;
+            this.Warnings = Warnings;
+        }
+
+        protected virtual syntax_tree_node BuildTree(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode ParseMode, List<string> DefinesList = null)
+        {
+            InitializeBeforeParsing(Errors, Warnings);
+            
             syntax_tree_node root = null;
 
             PreBuildTree(FileName);
