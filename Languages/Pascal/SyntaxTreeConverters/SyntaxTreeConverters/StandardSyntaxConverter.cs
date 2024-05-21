@@ -9,15 +9,12 @@ using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace Languages.Pascal.Frontend.Converters
 {
-    public class StandardSyntaxTreeConverter : ISyntaxTreeConverter
+    public class StandardSyntaxTreeConverter : BaseSyntaxTreeConverter
     {
-        public string Name { get; } = "Standard";
-        public syntax_tree_node Convert(syntax_tree_node root)
+        public override string Name { get; } = "Standard";
+        
+        protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root)
         {
-            // Прошивание ссылками на Parent nodes. Должно идти первым
-            // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
-            //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
-            root.FillParentsInAllChilds();
 
 #if DEBUG
             //            var stat = new ABCStatisticsVisitor();
