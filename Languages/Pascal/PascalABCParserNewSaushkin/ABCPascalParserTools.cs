@@ -107,7 +107,8 @@ namespace Languages.Pascal.Frontend.Core
             // подстрока с параметрами
             string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
             
-            if (ParserCached.ValidDirectives[directiveName].quotesAreSpecialSymbols)
+            // если кавычки используются как специальные символы (для объединения нескольких слов в одно)
+            if (ParserCached.ValidDirectives[directiveName] != null && ParserCached.ValidDirectives[directiveName].quotesAreSpecialSymbols)
             {
                 directiveParams = SplitDirectiveParamsWithQuotesAsSpecialSymbols(paramsString);
             }
