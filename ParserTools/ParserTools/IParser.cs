@@ -29,12 +29,6 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
 
-        /*SourceFilesProviderDelegate SourceFilesProvider
-        {
-            get;
-            set;
-        }*/
-
         ILanguageInformation LanguageInformation
         {
         	get;

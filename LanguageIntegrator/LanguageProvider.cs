@@ -67,27 +67,5 @@ namespace Languages.Facade
             return null;
         }
 
-
-        /*SourceFilesProviderDelegate sourceFilesProvider = SourceFilesProviders.DefaultSourceFilesProvider;
-
-        public SourceFilesProviderDelegate SourceFilesProvider
-        {
-            get
-            {
-                return sourceFilesProvider;
-            }
-            set
-            {
-                sourceFilesProvider = value;
-                foreach (Tuple<BaseParser, IParser> parsers in Languages.Select(language => Tuple.Create(language.Parser, language.DocParser)))
-                {
-                    parsers.Item1.SourceFilesProvider = value;
-                    if (parsers.Item2 != null)
-                        parsers.Item2.SourceFilesProvider = value;
-                }
-                
-            }
-        }*/
-
     }
 }

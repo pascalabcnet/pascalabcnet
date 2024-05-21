@@ -19,19 +19,6 @@ namespace PascalABCCompiler.Parsers
 
         public Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; protected set; }
 
-        /*public SourceFilesProviderDelegate sourceFilesProvider = null;
-        public virtual SourceFilesProviderDelegate SourceFilesProvider
-        {
-            get
-            {
-                return sourceFilesProvider;
-            }
-            set
-            {
-                sourceFilesProvider = value;
-            }
-        }*/
-
         private ILanguageInformation languageInformation;
         public virtual ILanguageInformation LanguageInformation
         {
