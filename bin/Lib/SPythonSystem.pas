@@ -10,11 +10,11 @@ uses PABCSystem;
 function input(): string;
 
 type 
-    `Print = record
+    !Print = record
     public
         sep: string;
         &end:string;
-        static function Get(sep:string := ' '; &end: string := #10): `Print;
+        static function Get(sep:string := ' '; &end: string := #10): !Print;
         begin
           Result.sep := sep;
           Result.&end := &end;
@@ -83,7 +83,7 @@ end;
   
 procedure Print(params args: array of object);
 begin
-  `Print.Get().Print(args);
+  !Print.Get().Print(args);
 end;
 
 function int(val: string): integer := integer.Parse(val);
