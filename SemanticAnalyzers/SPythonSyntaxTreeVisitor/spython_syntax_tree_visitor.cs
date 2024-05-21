@@ -121,7 +121,7 @@ namespace SPythonSyntaxTreeVisitor
                         var exprlist = new expression_list(); exprlist.source_context = _bin_expr.source_context;
                         exprlist.Add(new semantic_addr_value(left, left.location));
                         exprlist.Add(new semantic_addr_value(right, right.location));
-                        var floornode = new method_call(new ident("`FloorDiv"), exprlist, _bin_expr.source_context);
+                        var floornode = new method_call(new ident("!FloorDiv"), exprlist, _bin_expr.source_context);
                         visit(floornode);
                         return;
                     }
@@ -135,7 +135,7 @@ namespace SPythonSyntaxTreeVisitor
                         var exprlist = new expression_list(); exprlist.source_context = _bin_expr.source_context;
                         exprlist.Add(new semantic_addr_value(left, left.location));
                         exprlist.Add(new semantic_addr_value(right, right.location));
-                        var modnode = new method_call(new ident("`FloorMod"), exprlist, _bin_expr.source_context);
+                        var modnode = new method_call(new ident("!FloorMod"), exprlist, _bin_expr.source_context);
                         visit(modnode);
                         return;
                     }
