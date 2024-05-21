@@ -3,8 +3,8 @@
 
 using PascalABCCompiler.Parsers;
 using System.Collections.Generic;
-using PascalABCCompiler.TreeConverter.TreeConversion;
 using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler.TreeConverter;
 
 namespace Languages.Facade
 {
@@ -15,7 +15,7 @@ namespace Languages.Facade
     {
 
         public BaseLanguage(string name, string version, string copyright, IParser parser, IDocParser docParser,
-            List<ISyntaxTreeConverter> syntaxTreeConverters, ISyntaxToSemanticTreeConverter syntaxTreeToSemanticTreeConverter,
+            List<ISyntaxTreeConverter> syntaxTreeConverters, syntax_tree_visitor syntaxTreeToSemanticTreeConverter,
             string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
         {
             this.Name = name;
@@ -42,7 +42,7 @@ namespace Languages.Facade
 
         public virtual List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
 
-        public virtual ISyntaxToSemanticTreeConverter SyntaxTreeToSemanticTreeConverter { get; protected set; }
+        public virtual syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
 
         public virtual string[] FilesExtensions { get; protected set; }
 

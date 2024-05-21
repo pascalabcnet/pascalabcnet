@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTreeConverters;
-using PascalABCCompiler.TreeConverter.TreeConversion;
+using PascalABCCompiler.TreeConverter;
 
 namespace Languages.Facade
 {
@@ -46,7 +46,7 @@ namespace Languages.Facade
         /// <summary>
         /// Преобразователь из синтаксического дерева в семантическое
         /// </summary>
-        ISyntaxToSemanticTreeConverter SyntaxTreeToSemanticTreeConverter { get; }
+        syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; }
 
         /// <summary>
         /// Расширения файлов, относящиеся к языку
