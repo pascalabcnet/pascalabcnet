@@ -84,8 +84,4 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
   </PropertyGroup>
-  <Target Name="AfterBuild">
-	<Copy SourceFiles="$(TargetPath)"
-		  DestinationFolder="$(SolutionDir)\SPythonFiles"/>
-  </Target>
 </Project>
