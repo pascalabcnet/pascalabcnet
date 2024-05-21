@@ -133,7 +133,7 @@ namespace PascalABCCompiler.Parsers
             return root;
         }
 
-        protected abstract void PreBuildTree(string FileName);
+        protected virtual void PreBuildTree(string FileName) { }
 
         protected abstract syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null);
 
