@@ -5,7 +5,7 @@ namespace PascalABCCompiler.TreeConverter
 {
     public enum VariableInitializationParams { ConstantOnly, ConstructorCall, Expression }
     public enum PoinerRealization { VoidStar, IntPtr}
-    public static class SemanticRules
+    public static class SemanticRulesConstants
     {
         /// <summary>
         /// Определять методы в константных записях

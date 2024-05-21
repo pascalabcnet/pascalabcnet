@@ -24,7 +24,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             foreach (var language in LanguageProvider.Instance.Languages)
             {
-                language.RefreshSyntaxTreeToSemanticTreeConverter();
+                language.SetSyntaxTreeToSemanticTreeConverter();
                 // пока что берем стандартный визитор вначале  EVA
                 if (language.Name == StringConstants.pascalLanguageName)
                     syntaxTreeVisitor = language.SyntaxTreeToSemanticTreeConverter;
@@ -50,7 +50,7 @@ namespace PascalABCCompiler.TreeConverter
 
             syntaxTreeVisitor.InitializeForCompilingInterface(initializationData);
 
-            language.SetSemanticRules();
+            language.SetSemanticConstants();
 
             foreach (SyntaxTree.compiler_directive cd in initializationData.syntaxUnit.compiler_directives)
                 syntaxTreeVisitor.ProcessNode(cd);
@@ -88,7 +88,7 @@ namespace PascalABCCompiler.TreeConverter
 
             syntaxTreeVisitor.InitializeForCompilingImplementation(initializationData);
 
-            language.SetSemanticRules();
+            language.SetSemanticConstants();
 
             foreach (SyntaxTree.compiler_directive cd in initializationData.syntaxUnit.compiler_directives)
                 cd.visit(syntaxTreeVisitor);

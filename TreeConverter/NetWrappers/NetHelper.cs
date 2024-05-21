@@ -204,7 +204,7 @@ namespace PascalABCCompiler.NetHelper
                             }
                         }
                     }
-                    if (SemanticRules.AllowGlobalVisibilityForPABCDll && entry_type != null)
+                    if (SemanticRulesConstants.AllowGlobalVisibilityForPABCDll && entry_type != null)
                     {
                         t = NetHelper.FindType(entry_type.Namespace + "." + name);
                         if (t != null) sil = new List<SymbolInfo> { new SymbolInfo(compiled_type_node.get_type_node(t)) };
@@ -1042,7 +1042,7 @@ namespace PascalABCCompiler.NetHelper
         {
             get
             {
-                if(SemanticRules.PoinerRealization == PoinerRealization.IntPtr)
+                if(SemanticRulesConstants.PoinerRealization == PoinerRealization.IntPtr)
                     return FindTypeOrCreate(StringConstants.pointer_net_type_name_intptr);
                 return FindTypeOrCreate(StringConstants.pointer_net_type_name_void);
             }

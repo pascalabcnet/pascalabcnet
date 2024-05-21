@@ -3791,7 +3791,7 @@ namespace PascalABCCompiler
                 {
                     OnChangeCompilerState(this, CompilerState.CompileImplementation, UnitFileName);
 
-                    TreeConverter.SemanticRules.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
+                    TreeConverter.SemanticRulesConstants.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
 
                     var data = new TreeConverter.TreeConversion.InitializationDataForCompilingImplementation(
                         currentUnit.syntax_error,
@@ -3886,7 +3886,7 @@ namespace PascalABCCompiler
                 if (currentUnit.State != UnitState.InterfaceCompiled)
                 {
                     OnChangeCompilerState(this, CompilerState.CompileInterface, UnitFileName);
-                    TreeConverter.SemanticRules.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
+                    TreeConverter.SemanticRulesConstants.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
 
                     var data = new TreeConverter.TreeConversion.InitializationDataForCompilingInterface(
                         currentUnit.syntax_error,

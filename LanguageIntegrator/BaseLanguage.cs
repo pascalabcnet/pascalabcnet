@@ -50,8 +50,8 @@ namespace Languages.Facade
 
         public virtual string[] SystemUnitNames { get; protected set; }
 
-        public abstract void SetSemanticRules();
+        public abstract void SetSemanticConstants();
 
-        public abstract void RefreshSyntaxTreeToSemanticTreeConverter();
+        public abstract void SetSyntaxTreeToSemanticTreeConverter();
     }
 }

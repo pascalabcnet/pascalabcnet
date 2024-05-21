@@ -30,26 +30,26 @@ namespace Languages.Pascal
             ) { }
 
 
-        public override void SetSemanticRules()
+        public override void SetSemanticConstants()
         {
-            SemanticRules.ClassBaseType = SystemLibrary.object_type;
-            SemanticRules.StructBaseType = SystemLibrary.value_type;
-            SemanticRules.AddResultVariable = true;
-            SemanticRules.ZeroBasedStrings = false;
-            SemanticRules.FastStrings = false;
-            SemanticRules.InitStringAsEmptyString = true;
-            SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes = false;
-            SemanticRules.ManyVariablesOneInitializator = false;
-            SemanticRules.OrderIndependedMethodNames = true;
-            SemanticRules.OrderIndependedFunctionNames = false;
-            SemanticRules.OrderIndependedTypeNames = false;
-            SemanticRules.EnableExitProcedure = true;
-            SemanticRules.StrongPointersTypeCheckForDotNet = true;
-            SemanticRules.AllowChangeLoopVariable = false;
-            SemanticRules.AllowGlobalVisibilityForPABCDll = true;
+            SemanticRulesConstants.ClassBaseType = SystemLibrary.object_type;
+            SemanticRulesConstants.StructBaseType = SystemLibrary.value_type;
+            SemanticRulesConstants.AddResultVariable = true;
+            SemanticRulesConstants.ZeroBasedStrings = false;
+            SemanticRulesConstants.FastStrings = false;
+            SemanticRulesConstants.InitStringAsEmptyString = true;
+            SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes = false;
+            SemanticRulesConstants.ManyVariablesOneInitializator = false;
+            SemanticRulesConstants.OrderIndependedMethodNames = true;
+            SemanticRulesConstants.OrderIndependedFunctionNames = false;
+            SemanticRulesConstants.OrderIndependedTypeNames = false;
+            SemanticRulesConstants.EnableExitProcedure = true;
+            SemanticRulesConstants.StrongPointersTypeCheckForDotNet = true;
+            SemanticRulesConstants.AllowChangeLoopVariable = false;
+            SemanticRulesConstants.AllowGlobalVisibilityForPABCDll = true;
         }
 
-        public override void RefreshSyntaxTreeToSemanticTreeConverter()
+        public override void SetSyntaxTreeToSemanticTreeConverter()
         {
             SyntaxTreeToSemanticTreeConverter = new syntax_tree_visitor();
         }

@@ -66,13 +66,13 @@ namespace Languages.Facade
         /// <summary>
         /// Задание семантических правил (поля класса SemanticRules)
         /// </summary>
-        void SetSemanticRules();
+        void SetSemanticConstants();
 
         /// <summary>
         /// Обновление SyntaxTreeToSemanticTreeConverter (нужно при обновлении компилятора)
         /// </summary>
         // TODO: Возможно, стоит переделать логику обновления, чтобы не приходилось создавать новый объект каждый раз  EVA
-        void RefreshSyntaxTreeToSemanticTreeConverter();
+        void SetSyntaxTreeToSemanticTreeConverter();
 
     }
 }

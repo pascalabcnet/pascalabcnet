@@ -1614,7 +1614,7 @@ namespace PascalABCCompiler.TreeConverter
             if (top_function != null)
                 tctn.defined_in_scope = top_function.scope;
             set_field_access_level(SemanticTree.field_access_level.fal_public);
-            tctn.SetBaseType(SemanticRules.StructBaseType);
+            tctn.SetBaseType(SemanticRulesConstants.StructBaseType);
             if (_ctn != null) type_stack.Push(_ctn);
             add_type(name, tctn, def_loc);
             _ctn = tctn;
@@ -1796,7 +1796,7 @@ namespace PascalABCCompiler.TreeConverter
 			var_definition_node vdn=null;
             if (CurrentScope is SymbolTable.BlockScope)
             {
-                if (SemanticRules.DisabledDefinitionBlockVariablesWithSameNameThatInAboveScope)
+                if (SemanticRulesConstants.DisabledDefinitionBlockVariablesWithSameNameThatInAboveScope)
                 {
                     SymbolTable.Scope cs = CurrentScope;
                     while (cs.TopScope != null /*(cs.TopScope is SymbolTable.BlockScope || cs.TopScope is SymbolTable.UnitPartScope)*/)
@@ -2243,7 +2243,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (tp is short_string_type_node)
                         userInitalValue = SystemLibrary.SystemLibrary.empty_string;//syntax_tree_visitor.get_init_call_for_short_string(vdn);
                     else
-                        if (tp == SystemLibrary.SystemLibrary.string_type && SemanticRules.InitStringAsEmptyString)
+                        if (tp == SystemLibrary.SystemLibrary.string_type && SemanticRulesConstants.InitStringAsEmptyString)
                             userInitalValue = SystemLibrary.SystemLibrary.empty_string;
                     break;
             }
@@ -2444,7 +2444,7 @@ namespace PascalABCCompiler.TreeConverter
                         stl.statements.AddElement(CreateTypeCheckCall(SystemLibrary.SystemLibInitializer.CheckCanUseTypeForTypedFilesProcedure.sym_info, param));
                     }
                 }
-                if (SemanticRules.RuntimeInitVariablesOfGenericParameters)
+                if (SemanticRulesConstants.RuntimeInitVariablesOfGenericParameters)
                 {
                     basic_function_call bfc = new basic_function_call(
                         SystemLibrary.SystemLibrary.byte_assign as basic_function_node, null);
