@@ -1,13 +1,16 @@
 ﻿import time
-def count_primes(bound:int)->int:
-  primes = 0
-  for i in range(2, bound):
-    divisors = i-1
-    while i % divisors != 0:
-      divisors = divisors - 1
-    if divisors == 1:
-      primes = primes + 1
-  return primes
+primes = 0
+n = int(input())
 start = time.ttime()
-cnt = count_primes(100000)  
-print(cnt, time.ttime() - start)
+divisors = 0
+for i in range(2, n):
+  divisors = i-1
+  while i % divisors != 0:
+    divisors = divisors - 1
+  if divisors == 1:
+    primes = primes + 1
+print(primes, time.ttime() - start)
+
+
+#def f():
+#    print(primes, n, start, divisors)

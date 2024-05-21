@@ -65,6 +65,11 @@ ID {Alpha}{AlphaDigit}*
   return res;
 }
 
+"+=" { yylval.op = new op_type_node(Operators.AssignmentAddition); return (int)Tokens.PLUSEQUAL; }
+"-=" { yylval.op = new op_type_node(Operators.AssignmentSubtraction); return (int)Tokens.MINUSEQUAL; }
+"*=" { yylval.op = new op_type_node(Operators.AssignmentMultiplication); return (int)Tokens.STAREQUAL; }
+"/=" { yylval.op = new op_type_node(Operators.AssignmentDivision); return (int)Tokens.DIVEQUAL; }
+
 "+"  { yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.PLUS; }
 "-"  { yylval.op = new op_type_node(Operators.Minus); return (int)Tokens.MINUS; }
 "*"  { yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.STAR; }

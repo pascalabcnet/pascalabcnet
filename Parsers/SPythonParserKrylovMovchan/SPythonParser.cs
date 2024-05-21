@@ -114,6 +114,10 @@ namespace SPythonParser
         public override void PreBuildTree(string FileName)
         {
             CompilerDirectives = new List<compiler_directive>();
+
+            // чтобы строки во всех программах индексировались с нуля | Movchan 18.05.24
+            CompilerDirectives.Add(new compiler_directive(new token_info("zerobasedstrings"), new token_info("")));
+
             //preprocessor2 = new Preprocessor2.Preprocessor2(SourceFilesProvider);
         }
 

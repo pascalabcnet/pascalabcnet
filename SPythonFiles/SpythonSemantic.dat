@@ -1,0 +1,3 @@
+﻿%PREFIX%=SPYTHONSEMANTIC_
+NOT_ALLOWED_{0}_DIFF_TYPES_{1}_{2}=Операция {0} неприменима к типам {1} и {2}
+FUNCTION_{0}_NO_RETURN=Функция {0} не возвращает значение
