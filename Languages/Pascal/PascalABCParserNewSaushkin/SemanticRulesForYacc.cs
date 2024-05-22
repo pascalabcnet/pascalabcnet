@@ -398,7 +398,7 @@ namespace Languages.Pascal.Frontend.Core
         
         public expression ParseExpression(string Text, int line, int col)
         {
-            PascalParserTools parserTools = new PascalParserTools(); // контекст сканера и парсера
+            PascalParserTools parserTools = new PascalParserTools(this.parserTools.ParserRef); // контекст сканера и парсера
             parserTools.errors = new List<Error>();
             parserTools.warnings = new List<CompilerWarning>();
             parserTools.currentFileName = System.IO.Path.GetFullPath(this.parserTools.currentFileName);

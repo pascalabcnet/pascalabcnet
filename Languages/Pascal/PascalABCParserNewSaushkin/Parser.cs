@@ -149,7 +149,7 @@ namespace Languages.Pascal.Frontend.Wrapping
 #endif
 #endif
 
-            PascalParserTools parserTools = new PascalParserTools(); // контекст сканера и парсера
+            PascalParserTools parserTools = new PascalParserTools(this); // контекст сканера и парсера
             parserTools.errors = Errors;
             parserTools.warnings = Warnings;
             parserTools.compilerDirectives = CompilerDirectives;

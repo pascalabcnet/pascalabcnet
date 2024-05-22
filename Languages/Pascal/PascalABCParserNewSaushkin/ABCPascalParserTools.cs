@@ -20,16 +20,6 @@ namespace Languages.Pascal.Frontend.Core
         public List<var_def_statement> pascalABCVarStatements;
         public List<type_declaration> pascalABCTypeDeclarations;
 
-        protected override IParser ParserCached 
-        { 
-            get
-            {
-                if (parserCached == null)
-                    parserCached = Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
-                return parserCached;
-            }
-        }
-
         static PascalParserTools()
         {
             tokenNum = new Dictionary<string, string>();
@@ -72,7 +62,7 @@ namespace Languages.Pascal.Frontend.Core
             tokenNum["tkStarStar"]="'**'";
         }
 
-        public PascalParserTools()
+        public PascalParserTools(IParser parserRef) : base(parserRef)
         {
             NodesStack = new System.Collections.Stack();
             pascalABCLambdaDefinitions = new List<function_lambda_definition>();
@@ -98,7 +88,7 @@ namespace Languages.Pascal.Frontend.Core
             }
 
             // проверка имени директивы
-            if (!ParserCached.ValidDirectives.ContainsKey(directiveName))
+            if (!ParserRef.ValidDirectives.ContainsKey(directiveName))
             {
                 AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", location, directiveName);
                 return;
@@ -108,7 +98,7 @@ namespace Languages.Pascal.Frontend.Core
             string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
             
             // если кавычки используются как специальные символы (для объединения нескольких слов в одно)
-            if (ParserCached.ValidDirectives[directiveName] != null && ParserCached.ValidDirectives[directiveName].quotesAreSpecialSymbols)
+            if (ParserRef.ValidDirectives[directiveName] != null && ParserRef.ValidDirectives[directiveName].quotesAreSpecialSymbols)
             {
                 directiveParams = SplitDirectiveParamsWithQuotesAsSpecialSymbols(paramsString);
             }
