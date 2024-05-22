@@ -21,4 +21,4 @@ copy ..\..\Lng\Rus\SPythonSemantic.dat .\Lng\Rus\
 copy ..\..\Lng\Eng\SPythonParser.dat .\Lng\Eng\
 copy ..\..\Lng\Eng\SPythonSemantic.dat .\Lng\Eng\
 
-powershell Compress-Archive . SPython.zip
+powershell Compress-Archive -Force . SPython.zip
