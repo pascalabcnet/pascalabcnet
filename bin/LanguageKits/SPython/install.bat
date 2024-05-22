@@ -12,7 +12,7 @@ if not exist "%path_to_pas%" (
 	exit
 )
 
-copy *.dll %path_to_pas%
+copy *.dll "%path_to_pas%"
 
 call "%path_to_pas%\pabcnetc.exe" SpythonSystem.pas
 call "%path_to_pas%\pabcnetc.exe" SpythonHidden.pas
