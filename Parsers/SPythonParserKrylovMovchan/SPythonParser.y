@@ -177,7 +177,7 @@ decl
 		}
 	;
 
-decl_and_stmt_list 
+decl_and_stmt_list
 	: decl_or_stmt
 		{
 			if ($1 is statement st)
@@ -529,7 +529,7 @@ complex_variable
 	| LBRACKET expr_list RBRACKET
 		{
 
-			var acn = new array_const_new($2 as expression_list, @$); 
+			var acn = new array_const_new($2 as expression_list, @$);
 			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
 		}
@@ -552,15 +552,15 @@ complex_variable
 			// [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
 			if ($7 != null) {
 				string ident_name = $4.name;
-				idList = new ident_list(new ident(ident_name), @4); 
+				idList = new ident_list(new ident(ident_name), @4);
 				formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
 
 				dn = new dot_node($6 as addressed_value, (new ident("Where")) as addressed_value, @$);
-			
+
 				sl = new statement_list(new assign("result",$7,@8),@8);
 				sl.expr_lambda_body = true;
 				lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars, 
+				lambdaHelper.CreateLambdaName(), formalPars,
 				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
 
 				mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
@@ -570,15 +570,15 @@ complex_variable
 			else
 				dn = new dot_node($6 as addressed_value, (new ident("Select")) as addressed_value, @$);
 
-			
-			idList = new ident_list($4, @4); 
+
+			idList = new ident_list($4, @4);
 			formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
-			
+
 			sl = new statement_list(new assign("result",$2,@2),@2);
 			sl.expr_lambda_body = true;
 
 			lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars, 
+				lambdaHelper.CreateLambdaName(), formalPars,
 				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
 
 
@@ -589,7 +589,7 @@ complex_variable
 	;
 
 optional_condition
-	: 
+	:
 		{ $$ = null; }
 	| IF expr
 		{ $$ = $2; }
@@ -687,7 +687,7 @@ proc_func_call
 				if (kvargs.expressions.Count() == 0)
 					$$ = new method_call($1 as addressed_value, args, @$);
 				else {
-					method_call mc = new method_call(new ident("`" + ($1 as ident).name + ".Get"), kvargs, @$);
+					method_call mc = new method_call(new ident("!" + ($1 as ident).name + ".Get"), kvargs, @$);
 					dot_node dn = new dot_node(mc as addressed_value, $1 as addressed_value, @$);
 					$$ = new method_call(dn as addressed_value, args, @$);
 				}
@@ -784,11 +784,11 @@ act_param
 act_param_list
 	: act_param
 		{
-			$$ = new expression_list($1, @$); 
+			$$ = new expression_list($1, @$);
 		}
 	| act_param_list COMMA act_param
 		{
-			$$ = ($1 as expression_list).Add($3, @$); 
+			$$ = ($1 as expression_list).Add($3, @$);
 		}
 	;
 
