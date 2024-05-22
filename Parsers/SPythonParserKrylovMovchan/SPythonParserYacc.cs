@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  LAPTOP-MPBGOA9N
-// DateTime: 22.05.2024 11:28:36
-// UserName: krylo
+// Machine:  DESKTOP-56159VE
+// DateTime: 22.05.2024 22:34:03
+// UserName: ????
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -606,8 +606,8 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 							type_definition ntr;
 
 							if (ValueStack[ValueStack.Depth-3].td == null) {
-								// ntr = new named_type_reference(new ident("integer"));
-								ntr = (new same_type_node(ValueStack[ValueStack.Depth-1].ex) as type_definition);
+								ntr = new named_type_reference(new ident("integer"));
+								// ntr = (new same_type_node($4) as type_definition);
 								ass.first_assignment_defines_type = true;
 							}
 							else ntr = ValueStack[ValueStack.Depth-3].td as type_definition;

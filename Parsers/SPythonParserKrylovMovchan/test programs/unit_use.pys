@@ -1,4 +1,4 @@
-﻿from unit import *
+﻿import unit
 b = 5
 
 def f():

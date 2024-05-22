@@ -296,8 +296,8 @@ assign_stmt
 							type_definition ntr;
 
 							if ($2 == null) {
-								// ntr = new named_type_reference(new ident("integer"));
-								ntr = (new same_type_node($4) as type_definition);
+								ntr = new named_type_reference(new ident("integer"));
+								// ntr = (new same_type_node($4) as type_definition);
 								ass.first_assignment_defines_type = true;
 							}
 							else ntr = $2 as type_definition;
