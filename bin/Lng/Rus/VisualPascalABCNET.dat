@@ -274,6 +274,9 @@ FILE_NOT_EXIST_MESSAGE=Файл отсутствует на диске. Оста
 INVALID_SOURCE_FILE_NAME=Недопустимые символы в имени файла
 INVALID_SOURCE_FILE_EXTENSION=Недопустимое расширение файла
 CANNOT_EXCLUDE_MAIN_FILE=Нельзя исключать основной файл из проекта 
+
+PABCHEALTH_NOT_SUPPORTED=Анализ здоровья кода не поддерживается для данного языка
+
 M_NEW_PROJECT=Новый проект
 M_OPEN_PROJECT=Открыть проект...
 M_CLOSE_PROJECT=Закрыть проект

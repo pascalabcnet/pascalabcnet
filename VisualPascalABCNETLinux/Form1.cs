@@ -1745,6 +1745,13 @@ namespace VisualPascalABC
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
+            // Пока что такая временная мера для всех языков, кроме Паскаля  EVA
+            if (Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(CurrentSourceFileName)?.Name != PascalABCCompiler.StringConstants.pascalLanguageName)
+            {
+                ErrorsListWindow.ShowErrorsSync(new List<PascalABCCompiler.Errors.Error>() { new PascalABCCompiler.Errors.Error(Form1StringResources.Get("PABCHEALTH_NOT_SUPPORTED")) }, true);
+                return;
+            }
+
             if (ABCHealthForm == null)
             {
                 ABCHealthForm = new ABCHealth();
