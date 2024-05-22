@@ -816,7 +816,6 @@ namespace PascalABCCompiler
 
     public class Compiler : MarshalByRefObject, ICompiler
     {
-        //public ISyntaxTreeChanger SyntaxTreeChanger = null; // SSM 17/08/15 - для операций над синтаксическим деревом после его построения
         int pABCCodeHealth = 0;
         public int PABCCodeHealth { get { return pABCCodeHealth; } }
 
@@ -1105,15 +1104,11 @@ namespace PascalABCCompiler
 
             pABCCodeHealth = 0;
 
-            //А это что?
-            type_node tn = SystemLibrary.SystemLibrary.void_type;
-
             ClearAll();
             errorsList.Clear();
             Warnings.Clear();
             InternalDebug = new CompilerInternalDebug();
 
-            //ParsersController.SourceFilesProvider = sourceFilesProvider;
             SaveUnitCheckInParsers();
 
             SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
@@ -1129,6 +1124,10 @@ namespace PascalABCCompiler
             OnChangeCompilerState(this, CompilerState.Ready, null);
         }
 
+        /// <summary>
+        /// Передаем парсерам возможность проверить, компилируется ли в данный момент модуль 
+        /// (нужно, если нет ключевого слова unit или подобного в языке)
+        /// </summary>
         private void SaveUnitCheckInParsers()
         {
             foreach (var parser in LanguageProvider.Languages.Select(language => language.Parser))
@@ -4170,10 +4169,17 @@ namespace PascalABCCompiler
             }
             return SourceText;
         }
+
+        /// <summary>
+        /// Возвращает true, если текущий компилируемый модуль не является основной программой (program_module)
+        /// 
+        /// </summary>
         private bool CurrentUnitIsNotMainProgram()
         {
-            return currentCompilationUnit != null;
+            return currentCompilationUnit != firstCompilationUnit;
         }
+
+
         private Dictionary<SyntaxTree.syntax_tree_node, string> GenUnitDocumentation(CompilationUnit currentUnit, string SourceText)
         {
             Dictionary<SyntaxTree.syntax_tree_node, string> docs = null;

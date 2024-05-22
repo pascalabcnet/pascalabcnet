@@ -64,7 +64,7 @@ namespace Languages.Facade
         string[] SystemUnitNames { get; }
 
         /// <summary>
-        /// Задание семантических правил (поля класса SemanticRules)
+        /// Задание семантических констант, частично задающих семантические правила языка (поля класса SemanticRules)
         /// </summary>
         void SetSemanticConstants();
 
