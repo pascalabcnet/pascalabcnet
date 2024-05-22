@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  LAPTOP-MPBGOA9N
-// DateTime: 21.05.2024 16:56:52
+// DateTime: 22.05.2024 11:28:36
 // UserName: krylo
 // Input file <SPythonParser.y>
 
@@ -837,7 +837,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 82: // complex_variable -> LBRACKET, expr_list, RBRACKET
 {
 
-			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan); 
+			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
 			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, CurrentLocationSpan);
 			CurrentSemanticValue.ex = new method_call(dn as addressed_value, null, CurrentLocationSpan);
 		}
@@ -861,15 +861,15 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			// [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
 			if (ValueStack[ValueStack.Depth-2].ex != null) {
 				string ident_name = ValueStack[ValueStack.Depth-5].id.name;
-				idList = new ident_list(new ident(ident_name), LocationStack[LocationStack.Depth-5]); 
+				idList = new ident_list(new ident(ident_name), LocationStack[LocationStack.Depth-5]);
 				formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), LocationStack[LocationStack.Depth-5]), parametr_kind.none, null, LocationStack[LocationStack.Depth-5]), LocationStack[LocationStack.Depth-5]);
 
 				dn = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, (new ident("Where")) as addressed_value, CurrentLocationSpan);
-			
+
 				sl = new statement_list(new assign("result",ValueStack[ValueStack.Depth-2].ex,LocationStack[LocationStack.Depth-1]),LocationStack[LocationStack.Depth-1]);
 				sl.expr_lambda_body = true;
 				lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars, 
+				lambdaHelper.CreateLambdaName(), formalPars,
 				new lambda_inferred_type(new lambda_any_type_node_syntax(), LocationStack[LocationStack.Depth-5]), sl, CurrentLocationSpan);
 
 				mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), CurrentLocationSpan);
@@ -879,15 +879,15 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			else
 				dn = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, (new ident("Select")) as addressed_value, CurrentLocationSpan);
 
-			
-			idList = new ident_list(ValueStack[ValueStack.Depth-5].id, LocationStack[LocationStack.Depth-5]); 
+
+			idList = new ident_list(ValueStack[ValueStack.Depth-5].id, LocationStack[LocationStack.Depth-5]);
 			formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), LocationStack[LocationStack.Depth-5]), parametr_kind.none, null, LocationStack[LocationStack.Depth-5]), LocationStack[LocationStack.Depth-5]);
-			
+
 			sl = new statement_list(new assign("result",ValueStack[ValueStack.Depth-7].ex,LocationStack[LocationStack.Depth-7]),LocationStack[LocationStack.Depth-7]);
 			sl.expr_lambda_body = true;
 
 			lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars, 
+				lambdaHelper.CreateLambdaName(), formalPars,
 				new lambda_inferred_type(new lambda_any_type_node_syntax(), LocationStack[LocationStack.Depth-5]), sl, CurrentLocationSpan);
 
 
@@ -983,7 +983,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 				if (kvargs.expressions.Count() == 0)
 					CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].ex as addressed_value, args, CurrentLocationSpan);
 				else {
-					method_call mc = new method_call(new ident("`" + (ValueStack[ValueStack.Depth-4].ex as ident).name + ".Get"), kvargs, CurrentLocationSpan);
+					method_call mc = new method_call(new ident("!" + (ValueStack[ValueStack.Depth-4].ex as ident).name + ".Get"), kvargs, CurrentLocationSpan);
 					dot_node dn = new dot_node(mc as addressed_value, ValueStack[ValueStack.Depth-4].ex as addressed_value, CurrentLocationSpan);
 					CurrentSemanticValue.ex = new method_call(dn as addressed_value, args, CurrentLocationSpan);
 				}
@@ -1067,12 +1067,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 108: // act_param_list -> act_param
 {
-			CurrentSemanticValue.stn = new expression_list(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan); 
+			CurrentSemanticValue.stn = new expression_list(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 		}
         break;
       case 109: // act_param_list -> act_param_list, COMMA, act_param
 {
-			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as expression_list).Add(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan); 
+			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as expression_list).Add(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 		}
         break;
       case 110: // optional_act_param_list -> act_param_list

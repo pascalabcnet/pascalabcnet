@@ -6,6 +6,9 @@ copy ..\..\Lib\SpythonHidden.pas .\
 copy ..\..\Highlighting\SPython.xshd .\
 copy ..\..\Highlighting\PythonABC.xshd .\
 
+call ..\..\..\Parsers\SPythonParserKrylovMovchan\Gplex.exe /unicode ..\..\..\Parsers\SPythonParserKrylovMovchan\SPythonLexer.lex
+call ..\..\..\Parsers\SPythonParserKrylovMovchan\Gppg.exe /no-lines /gplex ..\..\..\Parsers\SPythonParserKrylovMovchan\SPythonParser.y
+
 call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\Parsers\SPythonParserKrylovMovchan\SPythonParser.csproj
 call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj
 
