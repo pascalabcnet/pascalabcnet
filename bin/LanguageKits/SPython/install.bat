@@ -1,5 +1,7 @@
 @echo off
 
+cd /d "%~dp0"
+
 if "%~1"=="" (
     set "path_to_pas=C:\Program Files (x86)\PascalABC.NET"
 ) else (

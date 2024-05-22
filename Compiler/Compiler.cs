@@ -3574,6 +3574,10 @@ namespace PascalABCCompiler
                     pABCCodeHealth = stat.CalcHealth(out int neg, out int pos);
                 }
             }
+
+            var sfvugv = new SyntaxVisitors.SPythonRetainUsedGlobalVariablesVisitor();
+            sfvugv.ProcessNode(unitSyntaxTree);
+
             return unitSyntaxTree;
         }
 
