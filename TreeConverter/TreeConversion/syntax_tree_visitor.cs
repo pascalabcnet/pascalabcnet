@@ -184,7 +184,7 @@ namespace PascalABCCompiler.TreeConverter
             ErrorsList.RemoveAt(ErrorsList.Count - 1);
         }
 
-        internal void AddError(Errors.Error err, bool shouldReturn=false)
+        public virtual void AddError(Errors.Error err, bool shouldReturn=false)
         {
             if (!for_intellisense && (ThrowCompilationError || !shouldReturn) /*|| err.MustThrow && !shouldReturn*/)
             {
@@ -196,7 +196,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        internal void AddError(location loc, string ErrResourceString, params object[] values)
+        public virtual void AddError(location loc, string ErrResourceString, params object[] values)
         {
             Errors.Error err = new SimpleSemanticError(loc, ErrResourceString, values);
             if ((ThrowCompilationError && !for_intellisense) || ErrResourceString == "FORWARD_DECLARATION_{0}_AS_BASE_TYPE")
@@ -209,7 +209,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        internal void AddWarning(Errors.CompilerWarning err)
+        public void AddWarning(Errors.CompilerWarning err)
         {
             WarningsList.Add(err);
         }
@@ -838,7 +838,7 @@ namespace PascalABCCompiler.TreeConverter
             return ret.visit(tn);
         }
 
-        internal statement_node convert_strong(SyntaxTree.statement st)
+        public statement_node convert_strong(SyntaxTree.statement st)
         {
 #if (DEBUG)
             if (st == null)
@@ -900,7 +900,7 @@ namespace PascalABCCompiler.TreeConverter
             return sn;
         }
 
-        internal expression_node convert_strong(SyntaxTree.expression expr)
+        public expression_node convert_strong(SyntaxTree.expression expr)
         {
 #if DEBUG
             //var s = expr + "\n";
@@ -934,7 +934,7 @@ namespace PascalABCCompiler.TreeConverter
             return en;
         }
 
-        internal type_node convert_strong(SyntaxTree.type_definition type_def)
+        public type_node convert_strong(SyntaxTree.type_definition type_def)
         {
 #if (DEBUG)
             if (type_def == null)
