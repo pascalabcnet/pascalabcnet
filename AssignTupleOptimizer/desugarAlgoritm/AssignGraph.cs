@@ -91,7 +91,11 @@ namespace AssignTupleDesugarAlgorithm
             assignOrder.AddRange(assignFirst);
 
             if (vertexes.Count == 0)
-                return assignOrder;
+            {
+                assignOrder.AddRange(assignLast);
+                this.assignOrder = assignOrder;
+                return this.assignOrder;
+            }
 
             var s = vertexes.First();
 

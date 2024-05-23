@@ -52,7 +52,7 @@ namespace AssignTupleDesugarAlgorithm
         }
 
 
-        class SynonymsGraph {
+        private class SynonymsGraph {
 
             public enum  Type { SAME_NAME, INDEXER}
 
@@ -87,25 +87,39 @@ namespace AssignTupleDesugarAlgorithm
         {
             if (right.Count < left.Count) throw new Exception("AAAA");
 
+         
             List<SymbolNode> v_left = new List<SymbolNode>();
             List<SymbolNode> v_right = new List<SymbolNode>();
             List<Symbol> left_visited = new List<Symbol>();
             List<Edge> assign_first = new List<Edge>();
             List<Edge> assign_last = new List<Edge>();
-            //handle expressions and var params
-            for (int i = 0; i < left.Count(); i++)
+
+            void addTemp(int i, bool toFirst)
             {
-                if (right[i].type == Symbol.Type.EXPR || right[i].type == Symbol.Type.VAR_PARAM)
+                if(toFirst)
                 {
                     var temp_symbol = new TempSymbol();
                     assign_first.Add(new Edge(new SymbolNode(right[i]), new TempSymbolNode(temp_symbol)));
                     right[i] = temp_symbol;
                 }
-                if (left[i].type == Symbol.Type.VAR_PARAM)
+                else
                 {
                     var temp_s = new TempSymbol();
                     assign_last.Add(new Edge(new TempSymbolNode(temp_s), new SymbolNode(left[i])));
                     left[i] = temp_s;
+                }
+            }
+
+            //handle expressions and var params
+            for (int i = 0; i < left.Count(); i++)
+            {
+                if (right[i].type == Symbol.Type.EXPR || right[i].type == Symbol.Type.VAR_PARAM)
+                {
+                    addTemp(i, true);
+                }
+                if (left[i].type == Symbol.Type.VAR_PARAM)
+                {
+                    addTemp(i, false);
                 }
             }
 
@@ -167,41 +181,130 @@ namespace AssignTupleDesugarAlgorithm
             var graphs = new List<SynonymsGraph>();
             graphs.AddRange(nameToGraph.Values);
             graphs.Add(indexerGraph);
-
-            foreach(var g in graphs)
-            {
-                Console.WriteLine(g);
-            }
-
+            var moved_first = new List<Edge>();
+            var moved_last = new LinkedList<Edge>();
             var movedAssigns = new HashSet<int>();
+
+
+            void moveAssign(int i, bool toFirst )
+            {
+                Edge assign = new Edge(new SymbolNode(right[i]), new SymbolNode(left[i]));
+                if (toFirst)
+                    moved_first.Add(assign);
+                else
+                    moved_last.AddFirst(assign);
+                movedAssigns.Add(i);
+            }
 
             void resolveGraph(SynonymsGraph sGraph)
             {
+          
+                foreach (var i in sGraph.left)
+                {
+                    var type = right[i].type;
+                    if (type == Symbol.Type.LOCAL)
+                    {
+                        if (!leftSet.Contains(right[i]))
+                            moveAssign(i, false);
+                    }
+                    else if (type == Symbol.Type.FROM_OUTER_SCOPE)
+                    {
+                        if (!(leftSet.Contains(right[i]) || nameToGraph[right[i].last_name].left.Count() != 0))
+                            moveAssign(i, false);
+                    }
+                    else if (type == Symbol.Type.DOT_NODE)
+                    {
+                        if (nameToGraph[right[i].last_name].left.Count() == 0)
+                            moveAssign(i, false);
+                    }
+                    else if (type == Symbol.Type.INDEXER)
+                    {
+                        if (indexerGraph.left.Count() == 0)
+                            moveAssign(i, false);
+                    }
+                }
+
+                foreach (var i in sGraph.right)
+                {
+                    var type = left[i].type;
+                    if (type == Symbol.Type.LOCAL)
+                    {
+                        if (!right.Contains(left[i]))
+                           moveAssign(i, true);
+                    }
+                    else if (type == Symbol.Type.FROM_OUTER_SCOPE)
+                    {
+                        if (!(rightSet.Contains(left[i]) || nameToGraph[left[i].last_name].right.Count() != 0))
+                            moveAssign(i, true);
+                    }
+                    else if (type == Symbol.Type.DOT_NODE)
+                    {
+                        if (nameToGraph[left[i].last_name].right.Count() == 0)
+                            moveAssign(i, true);
+                    }
+                    else if (type == Symbol.Type.INDEXER)
+                    {
+                        if (indexerGraph.right.Count() == 0)
+                            moveAssign(i, true);
+                    }
+                }
+                foreach(int i in movedAssigns)
+                {
+                    sGraph.left.Remove(i);
+                    sGraph.right.Remove(i);
+                }
+
                 var l_size = sGraph.left.Count;
                 var r_size = sGraph.right.Count;
                 if (r_size == 0 || l_size == 0)
                     return;
 
-
-                if(l_size < r_size) 
+                Edge movedFromThisGraph = null;
+                if (l_size < r_size)
                 {
-                    foreach(var i in sGraph.left)
+                    foreach (var i in sGraph.left)
                     {
-                        var temp_s = new TempSymbol();
-                        assign_last.Add(new Edge(new TempSymbolNode(temp_s), new SymbolNode(left[i])));
-                        left[i] = temp_s;
+                        if (sGraph.right.Contains(i))
+                        {
+                            if (movedFromThisGraph == null)
+                            {
+                                movedFromThisGraph = new Edge(new SymbolNode(right[i]), new SymbolNode(left[i]));
+                                movedAssigns.Add(i);
+                            }
+                            else
+                                addTemp(i, false);
+
+                        }
+                        else
+                            addTemp(i, false);
                     }
+                    if (movedFromThisGraph != null)
+                        moved_last.AddFirst(movedFromThisGraph);
+                    sGraph.left.Clear();
                 }
                 else
                 {
-                    foreach(var i in sGraph.right)
+                    foreach (var i in sGraph.right)
                     {
-                        var temp_symbol = new TempSymbol();
-                        assign_first.Add(new Edge(new SymbolNode(right[i]), new TempSymbolNode(temp_symbol)));
-                        right[i] = temp_symbol;
-                    }
-                }
+                        if (sGraph.left.Contains(i))
+                        {
 
+                            if (movedFromThisGraph == null)
+                            {
+                                movedFromThisGraph = new Edge(new SymbolNode(right[i]), new SymbolNode(left[i]));
+                                movedAssigns.Add(i);
+                            }
+                            else
+                                addTemp(i, true);
+                        }
+                        else
+                            addTemp(i, true);
+                        
+                    }
+                    if (movedFromThisGraph != null)
+                        moved_first.Add(movedFromThisGraph);
+                    sGraph.right.Clear();
+                }
             }
             
 
@@ -210,7 +313,6 @@ namespace AssignTupleDesugarAlgorithm
                 resolveGraph(g);
 
             Console.WriteLine("graphs resolved");
-
             for (int i = left.Count - 1; i >= 0; i--)
             {
                 if (movedAssigns.Contains(i))
@@ -242,6 +344,12 @@ namespace AssignTupleDesugarAlgorithm
 
             for (int i = 0; i < v_left.Count; i++) assigns.Add(new Edge(v_right[i], v_left[i], i));
 
+
+            assign_first.AddRange(moved_first);
+            foreach(var assign in assign_last)
+                moved_last.AddLast(assign);
+            
+            assign_last = moved_last.ToList();
 
             var graph = new AssignGraph(assigns);
             graph.assignFirst = assign_first;

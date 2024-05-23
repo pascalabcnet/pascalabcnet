@@ -14,7 +14,11 @@
 	end;
 
 begin
+var a : array [1..2] of integer := (0, 1);
+	var b : array [1..2] of integer := (4, 3);
 
+	(a[0], a[1]) := (a[1], a[0]);
+	var j := 3;
 	var i := 3;
 	var aa := new A();
 	var bb := new B();
@@ -29,6 +33,6 @@ begin
 	bb.f1 := aa;
 	cc.f2 := bb;
 
-	(aa.p, cc.f2.f1.q, aa.q, aa1.p) := (bb.f1.p, aa1.p, cc.f2.f1.q, i);
+	(aa.p, cc.f2.f1.q, aa.q, aa1.p, a[0], a[1]) := (bb.f1.p, aa1.p, cc.f2.f1.q, i, a[1], j);
 
 end.
