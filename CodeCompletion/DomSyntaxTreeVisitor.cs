@@ -316,6 +316,7 @@ namespace CodeCompletion
                 compiler = new Compiler();
             compiler.CompilerOptions = co;
             compiler.ClearAfterCompilation = false;
+            compiler.ParsersController.LastParser = compiler.ParsersController.SelectParser(Path.GetExtension(cu.source_context.FileName).ToLower());
             compiler.Compile();
             foreach (var lv in compiler.CompiledVariables)
                 CorrectVariableType(lv);

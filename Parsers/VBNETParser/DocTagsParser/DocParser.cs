@@ -198,14 +198,6 @@ namespace PascalABCCompiler.VBNETParser
         {
             return "Documentation Comments Tag Parser v" + Version;
         }
-        
-        public IPreprocessor Preprocessor
-        {
-            get
-            {
-                return null;
-            }
-        }
 
         List<CompilerWarning> warnings = new List<CompilerWarning>();
 

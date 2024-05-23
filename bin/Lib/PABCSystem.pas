@@ -1506,19 +1506,11 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
-/// Возвращает имя отражённого типа "t"
+/// Возвращает строку с именем данного типа
 function TypeToTypeName(t: System.Type): string;
-/// Добавляет в res имя отражённого типа "t"
-procedure TypeToTypeName(t: System.Type; res: StringBuilder);
-/// Записывает в res имя отражённого типа "t"
-procedure TypeToTypeName(t: System.Type; res: TextWriter);
 
-/// Возвращает имя типа объекта "o"
-function TypeName(o: object): string;
-/// Добавляет в res имя типа объекта "o"
-procedure TypeName(o: object; res: StringBuilder);
-/// Записывает в res имя типа объекта "o"
-procedure TypeName(o: object; res: TextWriter);
+/// Возвращает строку с именем типа объекта
+function TypeName(obj: object): string;
 
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
@@ -2675,12 +2667,8 @@ function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
 
-/// Возвращает строку для вывода подобного Write
-function _ObjectToString(o: object): string;
-/// Добавляет в res строку для вывода подобного Write
-procedure _ObjectToString(o: object; res: StringBuilder);
-/// Записывает в res строку для вывода подобного Write
-procedure _ObjectToString(o: object; res: TextWriter);
+/// Преобразует объект в строковое представление
+function ObjectToString(obj: object): string;
 
 function IsUnix: boolean;
 ///--
@@ -4175,8 +4163,10 @@ procedure operator+=(var left: StringBuilder; right: string); extensionmethod :=
 function operator implicit(s: string): StringBuilder; extensionmethod := new StringBuilder(s);
 
 //------------------------------------------------------------------------------
-//              _ObjectToString
+//              ObjectToString
 //------------------------------------------------------------------------------
+
+procedure TypeToTypeNameHelper(t: System.Type; res: TextWriter); forward;
 
 type
   ObjectToStringUtils = static class
@@ -4219,7 +4209,7 @@ type
               res.Write( name );
             res.Write(': ');
           end;
-          TypeToTypeName(par.ParameterType, res);
+          TypeToTypeNameHelper(par.ParameterType, res);
         end;
         res.Write(')');
       end;
@@ -4227,14 +4217,15 @@ type
       if rt<>nil then
       begin
         res.Write(': ');
-        TypeToTypeName(rt, res);
+        TypeToTypeNameHelper(rt, res);
       end;
       
     end;
     
     private static empty_obj_arr := new object[0];
+    
     public static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
-      const val_sep = '; ';
+    const val_sep = ',';
     begin
       res.Write('(');
       var any_vals := false;
@@ -4259,8 +4250,8 @@ type
           if any_vals then
             res.Write( val_sep ) else
             any_vals := true;
-          res.Write( fi.Name );
-          res.Write('=');
+          //res.Write( fi.Name );
+          //res.Write('=');
           Append(fi.GetValue(o), prev, res);
         end;
       
@@ -4273,8 +4264,8 @@ type
           if any_vals then
             res.Write( val_sep ) else
             any_vals := true;
-          res.Write( pi.Name );
-          res.Write('=');
+          //res.Write( pi.Name );
+          //res.Write('=');
           var val: object;
           try
             val := mi.Invoke(o, empty_obj_arr);
@@ -4299,10 +4290,10 @@ type
       prev.Push(o);
       AppendImpl(o, prev, res);
       if prev.Pop<>o then raise new InvalidOperationException;
-      
     end;
+    
     public static procedure AppendImpl(o: Object; prev: Stack<object>; res: TextWriter);
-      const max_seq_len = 100;
+    const max_seq_len = 100;
     begin
       if o = nil then
       begin
@@ -4319,7 +4310,8 @@ type
         exit;
       end;
       
-      if o is Complex then
+      // Исправить это форматирование
+      {if o is Complex then
       begin
         var c := Complex(o);
         res.Write('(');
@@ -4327,6 +4319,18 @@ type
         res.Write(' + i*');
         AppendImpl(c.Imaginary, prev, res);
         res.Write(')');
+        exit;
+      end;}
+      
+      if o is Complex then
+      begin
+        var c := Complex(o);
+        //res.Write('(');
+        AppendImpl(c.Real, prev, res);
+        if c.Imaginary >= 0 then
+          res.Write('+');
+        AppendImpl(c.Imaginary, prev, res);
+        res.Write('i');
         exit;
       end;
       
@@ -4342,8 +4346,10 @@ type
         exit;
       end;
       
-      // Чтобы стандартный .ToString не срабатывал
-      if o_t.IsGenericType and (o_t.GetGenericTypeDefinition=typeof(KeyValuePair<,>)) then
+      // Без пробела при выводе полей
+      if o_t.IsGenericType and ((o_t.GetGenericTypeDefinition=typeof(KeyValuePair<,>)) 
+        or (o_t.FullName.StartsWith('System.Tuple`')))
+        then
       begin
         ContentsToString(o, prev, res);
         exit;
@@ -4387,7 +4393,7 @@ type
         var a := &Array(o);
         if a.Length=0 then
         begin
-          // Алгоритм ниже не расчитан на пустые массив
+          // Алгоритм ниже не расчитан на пустые массивы
           loop a.Rank do res.Write('[');
           loop a.Rank do res.Write(']');
           exit;
@@ -4477,16 +4483,14 @@ type
           
           if not enmr_has_next then break;
         end;
-        res.Write( if is_set then ']' else ']' );
+        res.Write( if is_set then '}' else ']' );
         exit;
       end;
       
       {$endregion IEnumerable}
       
       ContentsToString(o, prev, res);
-      
     end;
-    
   end;
   
 function TryWriteFromTypeCode(t: System.Type; res: TextWriter): boolean;
@@ -4522,7 +4526,7 @@ begin
   end;
 end;
 
-procedure TypeToTypeName(t: System.Type; res: TextWriter);
+procedure TypeToTypeNameHelper(t: System.Type; res: TextWriter);
 begin
   if t=nil then
   begin
@@ -4546,14 +4550,14 @@ begin
     if rank<1 then
       raise new NotImplementedException;
     res.Write(' of ');
-    TypeToTypeName(t.GetElementType, res);
+    TypeToTypeNameHelper(t.GetElementType, res);
     exit;
   end;
   
-  if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
+  if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
   begin
-    var typed := t.GetInterfaces.FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
-    if (typed<>nil) and (
+    var typed := t.GetInterfaces.Append(t).FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
+    if (t=typed) or (typed<>nil) and (
       // Выводим как sequence только классы, созданные yield функцией
       // "clyield#" это yield класс паскаля
       t.Name.StartsWith('clyield#') or
@@ -4562,7 +4566,7 @@ begin
     ) then
     begin
       res.Write('sequence of ');
-      TypeToTypeName(typed.GetGenericArguments.Single, res);
+      TypeToTypeNameHelper(typed.GetGenericArguments.Single, res);
       exit;
     end;
   end;
@@ -4579,7 +4583,7 @@ begin
       if any_gen_arg then
         res.Write(', ') else
         any_gen_arg := true;
-      TypeToTypeName(arg, res);
+      TypeToTypeNameHelper(arg, res);
     end;
     res.Write(')');
     exit;
@@ -4590,9 +4594,12 @@ begin
   if t.IsSubclassOf(typeof(Delegate)) then
   begin
     var mi := t.GetMethod('Invoke');
-    if mi=nil then raise new NotImplementedException;
-    ObjectToStringUtils.MethodToString(mi, false, res);
-    exit;
+    // nil for System.MulticastDelegate
+    if mi<>nil then
+    begin
+      ObjectToStringUtils.MethodToString(mi, false, res);
+      exit;
+    end;
   end;
   
   // "Lst(0).GetEnumerator.GetType.DeclaringType" возвращает List<T>, а не List<integer>
@@ -4624,7 +4631,7 @@ begin
       gen_args := own_args;
       
     end;
-    TypeToTypeName(parent, res);
+    TypeToTypeNameHelper(parent, res);
     res.Write('+');
   end;
   
@@ -4638,7 +4645,7 @@ begin
       if any_gen_arg then
         res.Write(', ') else
         any_gen_arg := true;
-      TypeToTypeName(arg, res);
+      TypeToTypeNameHelper(arg, res);
     end;
     res.Write('>');
     exit;
@@ -4650,12 +4657,13 @@ begin
   if t.IsGenericParameter then
     res.Write(']');
 end;
-procedure TypeToTypeName(t: System.Type; res: StringBuilder) :=
-  TypeToTypeName(t, new StringWriter(res));
 
-procedure TypeName(o: object; res: TextWriter);
+procedure TypeToTypeNameHelper(t: System.Type; res: StringBuilder) :=
+  TypeToTypeNameHelper(t, new StringWriter(res));
+
+procedure TypeNameHelper(obj: object; res: TextWriter);
 begin
-  var t := o?.GetType;
+  var t := obj?.GetType;
   
   // Зачем? TypeName(@a) не работает
   // Можно сделать TypeName волшебной функцией, вызывая
@@ -4669,37 +4677,39 @@ begin
   var static_arr_field := t?.GetField('NullBasedArray');
   if static_arr_field<>nil then
   begin
-    TypeName(static_arr_field.GetValue(o), res);
+    TypeNameHelper(static_arr_field.GetValue(obj), res);
     exit;
   end;
   
-  TypeToTypeName(t, res);
+  TypeToTypeNameHelper(t, res);
 end;
-procedure TypeName(o: object; res: StringBuilder) :=
-  TypeName(o, new StringWriter(res));
+
+procedure TypeNameHelper(obj: object; res: StringBuilder) := TypeNameHelper(obj, new StringWriter(res));
+
+function TypeName(obj: object): string;
+begin
+  var res := new StringBuilder;
+  TypeNameHelper(obj, res);
+  Result := res.ToString;
+end;
 
 function TypeToTypeName(t: System.Type): string;
 begin
   var res := new StringBuilder;
-  TypeToTypeName(t, res);
+  TypeToTypeNameHelper(t, res);
   Result := res.ToString;
 end;
 
-function TypeName(o: object): string;
-begin
-  var res := new StringBuilder;
-  TypeName(o, res);
-  Result := res.ToString;
-end;
-
-procedure _ObjectToString(o: object; res: TextWriter) :=
+procedure _ObjectToStringHelper(o: object; res: TextWriter) :=
   ObjectToStringUtils.Append(o, new Stack<object>, res);
-procedure _ObjectToString(o: object; res: StringBuilder) :=
-  _ObjectToString(o, new StringWriter(res));
-function _ObjectToString(o: object): string;
+  
+procedure _ObjectToStringHelper(o: object; res: StringBuilder) :=
+  _ObjectToStringHelper(o, new StringWriter(res));
+  
+function ObjectToString(obj: object): string;
 begin
   var res := new StringBuilder;
-  _ObjectToString(o, res);
+  _ObjectToStringHelper(obj, res);
   Result := res.ToString;
 end;
 
@@ -6280,7 +6290,7 @@ procedure IOStandardSystem.write(obj: object);
 begin
   if not console_alloc then
     AllocConsole;
-  Console.Write(_ObjectToString(obj));  
+  Console.Write(ObjectToString(obj));  
 end;
 
 procedure IOStandardSystem.write(p: pointer);
@@ -7523,7 +7533,7 @@ begin
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
   
-  f.sw.Write(_ObjectToString(val));
+  f.sw.Write(ObjectToString(val));
   {if val = nil then
   begin
   f.sw.Write('nil');
@@ -11748,7 +11758,7 @@ begin
     for var j := 0 to Self.ColCount - 1 do
     begin
       if PrintMatrixWithFormat then
-        Write(_ObjectToString(Self[i, j]).PadLeft(w))
+        Write(ObjectToString(Self[i, j]).PadLeft(w))
       else Print(Self[i, j]);
     end;
     Writeln;  
@@ -14523,7 +14533,7 @@ end;
 function FormatValue(value: object; NumOfChars: integer): string;
 begin
   if value <> nil then
-    Result := _ObjectToString(value)
+    Result := ObjectToString(value)
   else
     Result := 'nil';
   Result := Result.PadLeft(NumOfChars);

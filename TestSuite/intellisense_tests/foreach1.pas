@@ -1,4 +1,4 @@
-begin
+﻿begin
   var d := new Dictionary<real,byte>;
   foreach var b{@var b: real;@} in d.Keys do;
   var l := new List<integer>;

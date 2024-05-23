@@ -1,4 +1,4 @@
-%PREFIX%=SEMANTICERROR_
+﻿%PREFIX%=SEMANTICERROR_
 UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE=Unable to convert functional type to procedural type
 ILLEGAL_PARAMETERS_IN_LAMBDA=Wrong types of parameters in lambda expression
 ILLEGAL_LAMBDA_VARIABLE_TYPE=Wrong type of variable lambda expression is assigned to

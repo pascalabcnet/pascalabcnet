@@ -1399,7 +1399,7 @@ procedure IOGraphABCSystem.write(obj: object);
   end;
 
 begin
-  var s := _ObjectToString(obj);
+  var s := ObjectToString(obj);
   lock f do
   begin
         //var fnt := GraphABC.Font.NETFont;

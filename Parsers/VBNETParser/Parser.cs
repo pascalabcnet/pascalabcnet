@@ -181,11 +181,6 @@ namespace PascalABCCompiler.VBNETParser
 			}
 		}
 		
-		public IPreprocessor Preprocessor {
-			get {
-				return null;
-			}
-		}
 
         public List<CompilerWarning> Warnings
         {

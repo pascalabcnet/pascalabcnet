@@ -380,7 +380,7 @@ namespace CodeCompletion
             List<string> Dirs = new List<string>();
             Dirs.AddRange(ddirs);
             if (CodeCompletionController.comp != null)
-                Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectory);
+                Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectories);
             if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent))
                 Dirs.Add((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
             return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, Dirs.ToArray());

@@ -1,12 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
-using System.IO;
-using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
-using System.Resources;
-using System.Reflection;
 using PascalABCCompiler.Errors;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -15,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace PascalABCCompiler.DocTagsParser
 {
 	
-	public class DocTagsLanguageParser:IParser
+	public class DocTagsLanguageParser : IParser
 	{
         List<string> sectionNames = new List<string>();
 
@@ -200,13 +195,6 @@ namespace PascalABCCompiler.DocTagsParser
         public override string ToString()
         {
             return "Documentation Comments Tag Parser v" + Version;
-        }
-        public IPreprocessor Preprocessor
-        {
-            get
-            {
-                return null;
-            }
         }
 
         List<CompilerWarning> warnings = new List<CompilerWarning>();

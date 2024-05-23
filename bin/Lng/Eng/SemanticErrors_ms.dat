@@ -1,4 +1,4 @@
-%PREFIX%=SEMANTICERROR_
+﻿%PREFIX%=SEMANTICERROR_
 CAN_NOT_READ=Can not read data of this type
 TUPLE_EXPECTED=Tuple expected
 TUPLE_OR_SEQUENCE_EXPECTED=Tuple or sequence expected

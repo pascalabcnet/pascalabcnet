@@ -1,6 +1,4 @@
-{$R+}
-
-var 
+﻿var 
   b : byte:=1;
   sh : shortint:=2;
   sm : smallint:=3;

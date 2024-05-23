@@ -1,4 +1,4 @@
-// Syntax tree conversion errors
+﻿// Syntax tree conversion errors
 %PREFIX%=SYNTAXTREEVISITORSERROR_
 
 YIELD_FUNC_MUST_RETURN_SEQUENCE=带有 yield 的函数必须返回序列

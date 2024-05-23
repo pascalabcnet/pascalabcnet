@@ -1,10 +1,17 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
+<<<<<<< HEAD
 // Machine:  SUN-DESKTOP
 // DateTime: 04-05-2024 19:45:16
 // UserName: SunMachine
 // Input file <ABCPascal.y>
+=======
+// Machine:  DESKTOP-G8V08V4
+// DateTime: 08.05.2024 9:59:54
+// UserName: ?????????
+// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
+>>>>>>> master
 
 // options: no-lines gplex
 
@@ -64,11 +71,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 // Э�?и об�?явления добавля�?�?ся в класс GPPGParser, п�?едс�?авля�?�?ий собой па�?се�?, гене�?и�?�?ем�?й сис�?емой gppg
     public syntax_tree_node root; // �?о�?невой �?зел син�?акси�?еского де�?ева 
 
-    public List<Error> errors;
-    public string current_file_name;
-    public int max_errors = 10;
-    public PascalParserTools parsertools;
-    public List<compiler_directive> CompilerDirectives;
+    public int maxErrors = 10;
+    public PascalParserTools parserTools;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
@@ -2993,13 +2997,13 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 18: // one_compiler_directive -> tkDirectiveName, tkIdentifier
 {
-			parsertools.AddErrorFromResource("UNSUPPORTED_OLD_DIRECTIVES",CurrentLocationSpan);
+			parserTools.AddErrorFromResource("UNSUPPORTED_OLD_DIRECTIVES",CurrentLocationSpan);
 			CurrentSemanticValue.ob = null;
         }
         break;
       case 19: // one_compiler_directive -> tkDirectiveName, tkStringLiteral
 {
-			parsertools.AddErrorFromResource("UNSUPPORTED_OLD_DIRECTIVES",CurrentLocationSpan);
+			parserTools.AddErrorFromResource("UNSUPPORTED_OLD_DIRECTIVES",CurrentLocationSpan);
 			CurrentSemanticValue.ob = null;
         }
         break;
@@ -3077,7 +3081,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 40: // uses_clause_one_or_empty -> uses_clause_one
 {
-			if (parsertools.buildTreeForFormatter)
+			if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new uses_closure(ValueStack[ValueStack.Depth-1].stn as uses_list,CurrentLocationSpan);
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
 		}
@@ -3089,7 +3093,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 42: // uses_clause -> uses_clause, uses_clause_one
 { 
-   			if (parsertools.buildTreeForFormatter)
+   			if (parserTools.buildTreeForFormatter)
    			{
 	        	if (ValueStack[ValueStack.Depth-2].stn == null)
                 {
@@ -3658,7 +3662,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				}
 				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
 				{
-					parsertools.AddErrorFromResource("BAD_INT2",CurrentLocationSpan);
+					parserTools.AddErrorFromResource("BAD_INT2",CurrentLocationSpan);
 					break;
 				}
 			    // можно сдела�?�? в�?�?исление конс�?ан�?�? с вмон�?и�?ованн�?м мин�?сом
@@ -3722,7 +3726,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                   tkSquareClose
 { 
     		var fe = ValueStack[ValueStack.Depth-2].ex as format_expr;
-            if (!parsertools.buildTreeForFormatter)
+            if (!parserTools.buildTreeForFormatter)
             {
                 if (fe.expr == null)
                     fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
@@ -3926,7 +3930,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 225: // simple_type_question -> simple_type, tkQuestion
 {
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
    			{
                 CurrentSemanticValue.td = ValueStack[ValueStack.Depth-2].td;
             }
@@ -3941,7 +3945,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 226: // simple_type_question -> template_type, tkQuestion
 {
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
    			{
                 CurrentSemanticValue.td = ValueStack[ValueStack.Depth-2].td;
             }
@@ -4031,7 +4035,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 244: // template_param -> simple_type, tkQuestion
 {
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
    			{
                 CurrentSemanticValue.td = ValueStack[ValueStack.Depth-2].td;
             }
@@ -4055,7 +4059,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 248: // simple_type -> range_expr
 {
-	    	CurrentSemanticValue.td = parsertools.ConvertDotNodeOrIdentToNamedTypeReference(ValueStack[ValueStack.Depth-1].ex); 
+	    	CurrentSemanticValue.td = parserTools.ConvertDotNodeOrIdentToNamedTypeReference(ValueStack[ValueStack.Depth-1].ex); 
 	    }
         break;
       case 249: // simple_type -> range_expr, tkDotDot, range_expr
@@ -4086,7 +4090,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 255: // range_factor -> simple_type_identifier
 { 
-			CurrentSemanticValue.ex = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent(ValueStack[ValueStack.Depth-1].td as named_type_reference);
+			CurrentSemanticValue.ex = parserTools.ConvertNamedTypeReferenceToDotNodeOrIdent(ValueStack[ValueStack.Depth-1].td as named_type_reference);
         }
         break;
       case 256: // range_factor -> unsigned_number
@@ -4324,7 +4328,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 306: // class_attributes1 -> class_attributes1, class_attribute
 {
             if (((class_attribute)ValueStack[ValueStack.Depth-2].ob & (class_attribute)ValueStack[ValueStack.Depth-1].ob) == (class_attribute)ValueStack[ValueStack.Depth-1].ob)
-                parsertools.AddErrorFromResource("ATTRIBUTE_REDECLARED",LocationStack[LocationStack.Depth-1]);
+                parserTools.AddErrorFromResource("ATTRIBUTE_REDECLARED",LocationStack[LocationStack.Depth-1]);
 			CurrentSemanticValue.ob  = ((class_attribute)ValueStack[ValueStack.Depth-2].ob) | ((class_attribute)ValueStack[ValueStack.Depth-1].ob);
 			//$$ = $1;
 		}
@@ -4687,7 +4691,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                               tkSemiColon, property_modificator, tkSemiColon, 
                 //                               array_defaultproperty
 { 
-			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",LocationStack[LocationStack.Depth-3],ValueStack[ValueStack.Depth-3].id.name);        	
+			parserTools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",LocationStack[LocationStack.Depth-3],ValueStack[ValueStack.Depth-3].id.name);        	
         }
         break;
       case 383: // simple_property_definition -> tkAuto, tkProperty, func_name, property_interface, 
@@ -4765,7 +4769,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	{
 				var id = NewId("#GetGen", LocationStack[LocationStack.Depth-2]);
                 procedure_definition pr = null;
-                if (!parsertools.buildTreeForFormatter)
+                if (!parserTools.buildTreeForFormatter)
                     pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-2].ex, id, LocationStack[LocationStack.Depth-2]);
 				CurrentSemanticValue.stn = NewPropertySpecifiersRead(ValueStack[ValueStack.Depth-3].id, id, pr, ValueStack[ValueStack.Depth-2].ex, ValueStack[ValueStack.Depth-1].stn as property_accessors, CurrentLocationSpan); // $2 пе�?еда�?�?ся для �?о�?ма�?и�?ования 
 			}
@@ -4787,9 +4791,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	{
 				var id = NewId("#SetGen", LocationStack[LocationStack.Depth-2]);
                 procedure_definition pr = null;
-                if (!parsertools.buildTreeForFormatter)
+                if (!parserTools.buildTreeForFormatter)
                     pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-2].stn as statement,id,LocationStack[LocationStack.Depth-2]);
-                if (parsertools.buildTreeForFormatter)
+                if (parserTools.buildTreeForFormatter)
 					CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-3].id, id, pr, ValueStack[ValueStack.Depth-2].stn as statement, ValueStack[ValueStack.Depth-1].stn as property_accessors, CurrentLocationSpan); // $2 пе�?еда�?�?ся для �?о�?ма�?и�?ования
 				else CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-3].id, id, pr, null, ValueStack[ValueStack.Depth-1].stn as property_accessors, CurrentLocationSpan); 	
 			}
@@ -4810,9 +4814,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	{
 				var id = NewId("#SetGen", LocationStack[LocationStack.Depth-1]);
                 procedure_definition pr = null;
-                if (!parsertools.buildTreeForFormatter)
+                if (!parserTools.buildTreeForFormatter)
                     pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-1].stn as statement,id,LocationStack[LocationStack.Depth-1]);
-                if (parsertools.buildTreeForFormatter)
+                if (parserTools.buildTreeForFormatter)
 					CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-2].id, id, pr, ValueStack[ValueStack.Depth-1].stn as statement, null, CurrentLocationSpan);
 				else CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-2].id, id, pr, null, null, CurrentLocationSpan);	
 			}
@@ -4828,7 +4832,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	{
 				var id = NewId("#GetGen", LocationStack[LocationStack.Depth-1]);
                 procedure_definition pr = null;
-                if (!parsertools.buildTreeForFormatter)
+                if (!parserTools.buildTreeForFormatter)
                     pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-1].ex,id,LocationStack[LocationStack.Depth-1]);
 				CurrentSemanticValue.stn = NewPropertySpecifiersRead(ValueStack[ValueStack.Depth-2].id, id, pr, ValueStack[ValueStack.Depth-1].ex, null, CurrentLocationSpan);
 			}
@@ -4858,7 +4862,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 411: // typed_var_init_expression -> const_simple_expr, tkDotDot, const_term
 { 
-		if (parsertools.buildTreeForFormatter)
+		if (parserTools.buildTreeForFormatter)
 			CurrentSemanticValue.ex = new diapason_expr(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
 		else 
 			CurrentSemanticValue.ex = new diapason_expr_new(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan); 
@@ -4892,7 +4896,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			for (int j = 0; j < cnt; j++)
 			{
 				if (!(el.expressions[j] is ident))
-					parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",el.expressions[j].source_context);
+					parserTools.AddErrorFromResource("ONE_TKIDENTIFIER",el.expressions[j].source_context);
 				idList.idents.Add(el.expressions[j] as ident);
 			}	
 				
@@ -4917,10 +4921,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                      unlabelled_stmt, tkSemiColon
 { 
    			if (ValueStack[ValueStack.Depth-2].stn is empty_statement)
-				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
+				parserTools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,false,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-6].Merge(LocationStack[LocationStack.Depth-2]));
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
@@ -4928,10 +4932,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                      fp_list, tkAssign, unlabelled_stmt, tkSemiColon
 { 
    			if (ValueStack[ValueStack.Depth-2].stn is empty_statement)
-				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
+				parserTools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,true,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-2]));
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
@@ -4944,10 +4948,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                              tkAssign, unlabelled_stmt, tkSemiColon
 { 
    			if (ValueStack[ValueStack.Depth-2].stn is empty_statement)
-				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
+				parserTools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,false,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-6].Merge(LocationStack[LocationStack.Depth-2]));
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
@@ -4955,10 +4959,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                              fp_list, tkAssign, unlabelled_stmt, tkSemiColon
 { 
    			if (ValueStack[ValueStack.Depth-2].stn is empty_statement)
-				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
+				parserTools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,true,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-2]));
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
@@ -5008,7 +5012,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                           tkSemiColon
 {
 			if (ValueStack[ValueStack.Depth-2].ex is dot_question_node)
-				parsertools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",LocationStack[LocationStack.Depth-2]);
+				parserTools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",LocationStack[LocationStack.Depth-2]);
 	
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-6].stn as method_name, null, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
 		}
@@ -5032,7 +5036,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                           unlabelled_stmt, tkSemiColon
 {
 			if (ValueStack[ValueStack.Depth-2].stn is empty_statement)
-				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-2]);
+				parserTools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-2]);
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortProcDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-6].stn as method_name, ValueStack[ValueStack.Depth-2].stn as statement, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
 		}
         break;
@@ -5095,7 +5099,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                                   tkSemiColon
 {
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-7].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-8].stn as method_name, ValueStack[ValueStack.Depth-5].td as type_definition, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-9].Merge(LocationStack[LocationStack.Depth-4]));
-			if (parsertools.buildTreeForFormatter)
+			if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
 		}
         break;
@@ -5104,7 +5108,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                                   expr_l1_func_decl_lambda, tkSemiColon
 {
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-6].stn as method_name, null, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
-			if (parsertools.buildTreeForFormatter)
+			if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
 		}
         break;
@@ -5113,7 +5117,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                                   unlabelled_stmt, tkSemiColon
 {
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortProcDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-6].stn as method_name, ValueStack[ValueStack.Depth-2].stn as statement, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
-			if (parsertools.buildTreeForFormatter)
+			if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
 		}
         break;
@@ -5443,7 +5447,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 522: // assignment -> var_reference, assign_operator, expr_with_func_decl_lambda
 {      
         	if (!(ValueStack[ValueStack.Depth-3].ex is addressed_value))
-        		parsertools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",CurrentLocationSpan);
+        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",CurrentLocationSpan);
 			CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
         }
         break;
@@ -5451,7 +5455,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //               assign_operator, expr
 {
 			if (ValueStack[ValueStack.Depth-2].op.type != Operators.Assignment)
-			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",LocationStack[LocationStack.Depth-2]);
+			    parserTools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",LocationStack[LocationStack.Depth-2]);
 			(ValueStack[ValueStack.Depth-4].ob as addressed_value_list).Insert(0,ValueStack[ValueStack.Depth-6].ex as addressed_value);
 			(ValueStack[ValueStack.Depth-4].ob as syntax_tree_node).source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]);
 			CurrentSemanticValue.stn = new assign_tuple(ValueStack[ValueStack.Depth-4].ob as addressed_value_list, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
@@ -5669,7 +5673,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { 
 			CurrentSemanticValue.stn = new foreach_stmt(ValueStack[ValueStack.Depth-7].id, ValueStack[ValueStack.Depth-6].td, ValueStack[ValueStack.Depth-4].ex, ValueStack[ValueStack.Depth-1].stn as statement, ValueStack[ValueStack.Depth-3].id, CurrentLocationSpan);
             if (ValueStack[ValueStack.Depth-6].td == null)
-                parsertools.AddWarningFromResource("USING_UNLOCAL_FOREACH_VARIABLE", ValueStack[ValueStack.Depth-7].id.source_context);
+                parserTools.AddWarningFromResource("USING_UNLOCAL_FOREACH_VARIABLE", ValueStack[ValueStack.Depth-7].id.source_context);
         }
         break;
       case 569: // foreach_stmt -> tkForeach, tkVar, identifier, optional_type_specification, tkIn, 
@@ -5683,7 +5687,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 570: // foreach_stmt -> tkForeach, tkVar, tkRoundOpen, ident_list, tkRoundClose, tkIn, 
                 //                 expr_l1, index_or_nothing, tkDo, unlabelled_stmt
 { 
-        	if (parsertools.buildTreeForFormatter)
+        	if (parserTools.buildTreeForFormatter)
         	{
         		var il = ValueStack[ValueStack.Depth-7].stn as ident_list;
         		il.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6]); // н�?жно для �?о�?ма�?и�?ования
@@ -5943,7 +5947,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                  expr_l1_for_question_expr
 { 
             if (ValueStack[ValueStack.Depth-3].ex is nil_const && ValueStack[ValueStack.Depth-1].ex is nil_const)
-            	parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",LocationStack[LocationStack.Depth-3]);
+            	parserTools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",LocationStack[LocationStack.Depth-3]);
 			CurrentSemanticValue.ex = new question_colon_expression(ValueStack[ValueStack.Depth-5].ex, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);  
 		}
         break;
@@ -5951,14 +5955,14 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                      expr_l1_for_new_question_expr, tkElse, 
                 //                      expr_l1_for_new_question_expr
 { 
-        	if (parsertools.buildTreeForFormatter)
+        	if (parserTools.buildTreeForFormatter)
         	{
         		CurrentSemanticValue.ex = new if_expr_new(ValueStack[ValueStack.Depth-5].ex, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
         	}
         	else
         	{
             	if (ValueStack[ValueStack.Depth-3].ex is nil_const && ValueStack[ValueStack.Depth-1].ex is nil_const)
-            		parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",LocationStack[LocationStack.Depth-3]);
+            		parserTools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",LocationStack[LocationStack.Depth-3]);
 				CurrentSemanticValue.ex = new question_colon_expression(ValueStack[ValueStack.Depth-5].ex, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 			}			
 		}
@@ -6024,7 +6028,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         		var ac = ValueStack[ValueStack.Depth-1].stn as array_const;
         		if (ac != null && ac.elements != null)
 	        	    cnt = ac.elements.Count;
-	        	else parsertools.AddErrorFromResource("WITHOUT_INIT_AND_SIZE",LocationStack[LocationStack.Depth-2]);
+	        	else parserTools.AddErrorFromResource("WITHOUT_INIT_AND_SIZE",LocationStack[LocationStack.Depth-2]);
         		el = new expression_list(new int32_const(cnt),LocationStack[LocationStack.Depth-6]);
         	}	
 			CurrentSemanticValue.ex = new new_expr(ValueStack[ValueStack.Depth-5].td, el, true, ValueStack[ValueStack.Depth-1].stn as array_const, CurrentLocationSpan);
@@ -6048,7 +6052,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 639: // field_in_unnamed_object -> identifier, tkAssign, expr_l1
 {
 		    if (ValueStack[ValueStack.Depth-1].ex is nil_const)
-				parsertools.AddErrorFromResource("NIL_IN_UNNAMED_OBJECT",CurrentLocationSpan);		    
+				parserTools.AddErrorFromResource("NIL_IN_UNNAMED_OBJECT",CurrentLocationSpan);		    
 			CurrentSemanticValue.ob = new name_assign_expr(ValueStack[ValueStack.Depth-3].id,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
 		}
         break;
@@ -6068,7 +6072,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
             	}            	
             } 
 			if (name == null)
-				parsertools.errors.Add(new bad_anon_type(parsertools.currentFileName, LocationStack[LocationStack.Depth-1], null));	
+				parserTools.errors.Add(new bad_anon_type(parserTools.currentFileName, LocationStack[LocationStack.Depth-1], null));	
 			CurrentSemanticValue.ob = new name_assign_expr(name,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
 		}
         break;
@@ -6084,7 +6088,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			var nel = ValueStack[ValueStack.Depth-3].ob as name_assign_expr_list;
 			var ss = nel.name_expr.Select(ne=>ne.name.name).FirstOrDefault(x=>string.Compare(x,(ValueStack[ValueStack.Depth-1].ob as name_assign_expr).name.name,true)==0);
             if (ss != null)
-            	parsertools.errors.Add(new anon_type_duplicate_name(parsertools.currentFileName, LocationStack[LocationStack.Depth-1], null));
+            	parserTools.errors.Add(new anon_type_duplicate_name(parserTools.currentFileName, LocationStack[LocationStack.Depth-1], null));
 			nel.Add(ValueStack[ValueStack.Depth-1].ob as name_assign_expr);
 			CurrentSemanticValue.ob = ValueStack[ValueStack.Depth-3].ob;
 		}
@@ -6241,7 +6245,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 671: // tuple_pattern -> tkRoundOpen, tuple_pattern_item_list, tkRoundClose
 {
 			if ((ValueStack[ValueStack.Depth-2].ob as List<pattern_parameter>).Count>6) 
-				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);
+				parserTools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);
 			CurrentSemanticValue.stn = new tuple_pattern(ValueStack[ValueStack.Depth-2].ob as List<pattern_parameter>, CurrentLocationSpan);
 		}
         break;
@@ -6508,7 +6512,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 723: // relop -> tkNot, tkIn
 { 
-			if (parsertools.buildTreeForFormatter)
+			if (parserTools.buildTreeForFormatter)
 				CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op;
 			else
 			{
@@ -6522,7 +6526,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 725: // simple_expr -> simple_expr, tkDotDot, term1
 { 
-		if (parsertools.buildTreeForFormatter)
+		if (parserTools.buildTreeForFormatter)
 			CurrentSemanticValue.ex = new diapason_expr(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
 		else 
 			CurrentSemanticValue.ex = new diapason_expr_new(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan); 
@@ -6653,17 +6657,17 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //          lambda_type_ref, optional_full_lambda_fp_list, tkRoundClose
 {
 			if (ValueStack[ValueStack.Depth-6].ex is unpacked_list_of_ident_or_list) 
-				parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",LocationStack[LocationStack.Depth-6]);
+				parserTools.AddErrorFromResource("EXPRESSION_EXPECTED",LocationStack[LocationStack.Depth-6]);
 			foreach (var ex in (ValueStack[ValueStack.Depth-4].stn as expression_list).expressions)
 				if (ex is unpacked_list_of_ident_or_list)
-					parsertools.AddErrorFromResource("EXPRESSION_EXPECTED",ex.source_context);
+					parserTools.AddErrorFromResource("EXPRESSION_EXPECTED",ex.source_context);
 			if (!(ValueStack[ValueStack.Depth-3].td is lambda_inferred_type)) 
-				parsertools.AddErrorFromResource("BAD_TUPLE",LocationStack[LocationStack.Depth-3]);
+				parserTools.AddErrorFromResource("BAD_TUPLE",LocationStack[LocationStack.Depth-3]);
 			if (ValueStack[ValueStack.Depth-2].stn != null) 
-				parsertools.AddErrorFromResource("BAD_TUPLE",LocationStack[LocationStack.Depth-2]);
+				parserTools.AddErrorFromResource("BAD_TUPLE",LocationStack[LocationStack.Depth-2]);
 
 			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).Count>6) 
-				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);
+				parserTools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);
             (ValueStack[ValueStack.Depth-4].stn as expression_list).Insert(0,ValueStack[ValueStack.Depth-6].ex);
 			CurrentSemanticValue.ex = new tuple_node(ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
 		}
@@ -6714,7 +6718,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				}
 				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
 				{
-					parsertools.AddErrorFromResource("BAD_INT2",CurrentLocationSpan);
+					parserTools.AddErrorFromResource("BAD_INT2",CurrentLocationSpan);
 					break;
 				}
 			    // можно сдела�?�? в�?�?исление конс�?ан�?�? с вмон�?и�?ованн�?м мин�?сом
@@ -6790,7 +6794,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 785: // dotted_identifier -> dotted_identifier, tkPoint, identifier_or_keyword
 {
 			if (ValueStack[ValueStack.Depth-3].ex is index)
-				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");
+				parserTools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");
 			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan);
 		}
         break;
@@ -6828,7 +6832,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                   tkRoundClose
 {
 			if (ValueStack[ValueStack.Depth-4].ex is index)
-				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-4], "^");
+				parserTools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-4], "^");
 			CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].ex as addressed_value,ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
         }
         break;
@@ -6845,7 +6849,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 797: // variable -> tkRoundOpen, expr, tkRoundClose
 {
-		    if (!parsertools.buildTreeForFormatter) 
+		    if (!parserTools.buildTreeForFormatter) 
             {
                 ValueStack[ValueStack.Depth-2].ex.source_context = CurrentLocationSpan;
                 CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-2].ex;
@@ -6856,7 +6860,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 798: // variable -> tkRoundOpen, var_with_init_for_expr_with_let_list, expr, 
                 //             tkRoundClose
 {
-		    if (!parsertools.buildTreeForFormatter) 
+		    if (!parserTools.buildTreeForFormatter) 
             {
                 ValueStack[ValueStack.Depth-2].ex.source_context = CurrentLocationSpan;
                 CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-2].ex;
@@ -6873,7 +6877,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 801: // variable -> literal_or_number, tkPoint, identifier_or_keyword
 {
 			if (ValueStack[ValueStack.Depth-3].ex is index)
-				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");		
+				parserTools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");		
 			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); 
 		}
         break;
@@ -6884,7 +6888,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
-                if (!parsertools.buildTreeForFormatter)
+                if (!parserTools.buildTreeForFormatter)
                 {
                     if (fe.expr == null)
                         fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
@@ -6897,7 +6901,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
             else if (el.expressions.Any(e => e is format_expr))
             {
             	if (el.expressions.Count > 4)
-            		parsertools.AddErrorFromResource("SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5",CurrentLocationSpan); // С�?ез�? многоме�?н�?�? массивов �?аз�?е�?ен�? �?ол�?ко для массивов �?азме�?нос�?и < 5  
+            		parserTools.AddErrorFromResource("SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5",CurrentLocationSpan); // С�?ез�? многоме�?н�?�? массивов �?аз�?е�?ен�? �?ол�?ко для массивов �?азме�?нос�?и < 5  
                 var ll = new List<Tuple<expression, expression, expression>>();
                 foreach (var ex in el.expressions)
                 {
@@ -6927,7 +6931,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //             tkSquareClose
 {
         	var fe = ValueStack[ValueStack.Depth-2].ex as format_expr; // SSM 9/01/17
-            if (!parsertools.buildTreeForFormatter)
+            if (!parserTools.buildTreeForFormatter)
             {
                 if (fe.expr == null)
                     fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
@@ -6948,7 +6952,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 806: // variable -> variable, tkPoint, identifier_keyword_operatorname
 {
 			if (ValueStack[ValueStack.Depth-3].ex is index)
-				parsertools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");
+				parserTools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", LocationStack[LocationStack.Depth-3], "^");
 			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan);
         }
         break;
@@ -7014,7 +7018,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 823: // literal -> tkFormatStringLiteral
 {
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
    			{
                 CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].stn as string_const;
             }
@@ -7026,7 +7030,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 824: // literal -> tkMultilineStringLiteral
 {
-            if (parsertools.buildTreeForFormatter)
+            if (parserTools.buildTreeForFormatter)
    			{
    				var sc = ValueStack[ValueStack.Depth-1].stn as string_const;
    				sc.IsMultiline = true;
@@ -7047,7 +7051,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { 
         	var line = ValueStack[ValueStack.Depth-2].stn as literal_const_line;
             if (line.literals.Last() is string_const && ValueStack[ValueStack.Depth-1].ex is string_const)
-            	parsertools.AddErrorFromResource("TWO_STRING_LITERALS_IN_SUCCESSION",LocationStack[LocationStack.Depth-1]);
+            	parserTools.AddErrorFromResource("TWO_STRING_LITERALS_IN_SUCCESSION",LocationStack[LocationStack.Depth-1]);
 			CurrentSemanticValue.stn = line.Add(ValueStack[ValueStack.Depth-1].ex as literal, CurrentLocationSpan);
         }
         break;
@@ -7063,7 +7067,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 829: // optional_method_modificators -> tkSemiColon, meth_modificators, tkSemiColon
 { 
-			//parsertools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
+			//parserTools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-2].stn; 
 		}
         break;
@@ -7074,7 +7078,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 831: // optional_method_modificators1 -> tkSemiColon, meth_modificators
 { 
-			//parsertools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
+			//parserTools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
 		}
         break;
@@ -7127,7 +7131,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 846: // meth_modificator -> tkOverload
 { 
             CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id;
-            parsertools.AddWarningFromResource("OVERLOAD_IS_NOT_USED", ValueStack[ValueStack.Depth-1].id.source_context);
+            parserTools.AddWarningFromResource("OVERLOAD_IS_NOT_USED", ValueStack[ValueStack.Depth-1].id.source_context);
         }
         break;
       case 847: // meth_modificator -> tkReintroduce
@@ -7666,7 +7670,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				{
 					if (ValueStack[ValueStack.Depth-3].stn != null)
 					{
-						parsertools.AddErrorFromResource("SEMICOLON_IN_PARAMS",LocationStack[LocationStack.Depth-3]);
+						parserTools.AddErrorFromResource("SEMICOLON_IN_PARAMS",LocationStack[LocationStack.Depth-3]);
 					}
 				
 					var lst_ex = new List<expression>();
@@ -7690,7 +7694,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				var formal_pars = new formal_parameters();
 				var idd = ValueStack[ValueStack.Depth-7].ex as ident;
 				if (idd==null)
-					parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",LocationStack[LocationStack.Depth-7]);
+					parserTools.AddErrorFromResource("ONE_TKIDENTIFIER",LocationStack[LocationStack.Depth-7]);
 				var lambda_inf_type = new lambda_inferred_type(new lambda_any_type_node_syntax(), null);
 				var new_typed_pars = new typed_parameters(new ident_list(idd, idd.source_context), lambda_inf_type, parametr_kind.none, null, idd.source_context);
 				formal_pars.Add(new_typed_pars);
@@ -7698,7 +7702,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				{
 					var idd1 = id as ident;
 					if (idd1==null)
-						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",id.source_context);
+						parserTools.AddErrorFromResource("ONE_TKIDENTIFIER",id.source_context);
 					
 					lambda_inf_type = new lambda_inferred_type(new lambda_any_type_node_syntax(), null);
 					new_typed_pars = new typed_parameters(new ident_list(idd1, idd1.source_context), lambda_inf_type, parametr_kind.none, null, idd1.source_context);
@@ -7721,7 +7725,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				var loc = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]);
 				var idd = ValueStack[ValueStack.Depth-7].ex as ident;
 				if (idd==null)
-					parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",LocationStack[LocationStack.Depth-7]);
+					parserTools.AddErrorFromResource("ONE_TKIDENTIFIER",LocationStack[LocationStack.Depth-7]);
 				
 				var idList = new ident_list(idd, loc);
 				
@@ -7731,7 +7735,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				{
 					var idd2 = iddlist[j] as ident;
 					if (idd2==null)
-						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",idd2.source_context);
+						parserTools.AddErrorFromResource("ONE_TKIDENTIFIER",idd2.source_context);
 					idList.Add(idd2);
 				}	
 				var parsType = ValueStack[ValueStack.Depth-4].td;
@@ -7922,7 +7926,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 1022: // common_lambda_body -> yield_stmt
 {
-			parsertools.AddErrorFromResource("YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY", CurrentLocationSpan);
+			parserTools.AddErrorFromResource("YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY", CurrentLocationSpan);
 		}
         break;
       case 1023: // common_lambda_body -> tkRoundOpen, assignment, tkRoundClose
@@ -7935,7 +7939,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 		    var id = SyntaxVisitors.HasNameVisitor.HasName(ValueStack[ValueStack.Depth-1].ex, "Result"); 
             if (id != null)
             {
-                 parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);
+                 parserTools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);
             }
 			var sl = new statement_list(new assign("result",ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan),CurrentLocationSpan); // надо поме�?а�?�? е�?�? и assign как ав�?осгене�?и�?ованн�?й для лямбд�? - �?�?об�? зап�?е�?и�?�? явн�?й Result
 			sl.expr_lambda_body = true;

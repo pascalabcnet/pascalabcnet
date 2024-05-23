@@ -1,4 +1,4 @@
-//Syntax Tree Visualisator Plugin
+﻿//Syntax Tree Visualisator Plugin
 %PREFIX%=VPP_SYNTRV_
 
 NAME=语法树

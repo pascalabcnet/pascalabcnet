@@ -1,4 +1,4 @@
-%PREFIX%=SEMANTICERROR_
+﻿%PREFIX%=SEMANTICERROR_
 CIRCULARITY_IN_RECORD=Cycle in the struct layout
 CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}='foreach' or 'yield sequence' statement cannot operate on expression of type '{0}' 
 FOREACH_LOOP_CONTROL_MUST_BE_SIMPLE_LOCAL_VARIABLE=Loop variable must be simple local variable

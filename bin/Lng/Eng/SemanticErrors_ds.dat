@@ -1,4 +1,4 @@
-%PREFIX%=SEMANTICERROR_
+﻿%PREFIX%=SEMANTICERROR_
 CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME=Constructor can have only '{0}' name
 OPERATOR_AS_MUST_BE_USED_WITCH_A_REFERENCE_TYPE_VALUETYPE{0}=The as operator must be used with a reference type ('{0}' is a value type)
 OPERATOR_SIZEOF_MUST_BE_USED_WITCH_A_VALUE_TYPE_REFTYPE{0}=The sizeof operator must be used with a value type ('{0}' is a reference type)

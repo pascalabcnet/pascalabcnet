@@ -1,4 +1,4 @@
-%PREFIX%=OMPERROR_
+﻿%PREFIX%=OMPERROR_
 UNKNOWN_DIRECTIVE=Unknown directive OpenMP. Parallel construction is not builded
 ERROR_IN_CLAUSE_PARAMETERS=Error in option of OpenMP directive. Option ignored
 IN_CLAUSE_PARAMETERS_REPEATED_VARS=Re-used variables in the options of OpenMP directives

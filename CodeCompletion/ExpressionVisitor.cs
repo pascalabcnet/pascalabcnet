@@ -961,7 +961,7 @@ namespace CodeCompletion
                         {
                             returned_scopes[i] = null;
                         }
-                        else if (left_scope is TypeScope && returned_scopes[i] is ProcScope && !(returned_scopes[i] as ProcScope).IsStatic && !(returned_scopes[i] as ProcScope).IsConstructor())
+                        else if (left_scope is TypeScope && returned_scopes[i] is ProcScope && !(returned_scopes[i] as ProcScope).IsStatic && !(returned_scopes[i] as ProcScope).IsConstructor() && !(returned_scope is TypeScope && (returned_scopes[i] as ProcScope).is_extension))
                         {
                             returned_scopes[i] = null;
                         }

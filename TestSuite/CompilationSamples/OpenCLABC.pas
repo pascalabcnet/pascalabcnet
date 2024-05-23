@@ -2486,7 +2486,7 @@ type
         sb += '{ ';
       end;
       if rt<>nil then
-        sb.Append(_ObjectToString(val)) else
+        sb.Append(ObjectToString(val)) else
         sb += 'nil';
       if typeof(T) <> rt then
         sb += ' }';
@@ -2516,7 +2516,7 @@ type
     begin
       if d.Target<>nil then
       begin
-        sb += _ObjectToString(d.Target);
+        sb += ObjectToString(d.Target);
         sb += ' => ';
       end;
       var mi := d.Method;

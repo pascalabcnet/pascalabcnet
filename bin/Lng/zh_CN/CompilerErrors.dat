@@ -1,4 +1,4 @@
-//Compiler error messages
+﻿//Compiler error messages
 %PREFIX%=COMPILATIONERROR_
 
 PROGRAM_MODULE_EXPECTED=需要程序但找到单元

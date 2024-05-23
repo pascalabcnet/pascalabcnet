@@ -1,4 +1,4 @@
-%PREFIX%=SEMANTICERROR_
+﻿%PREFIX%=SEMANTICERROR_
 
 NAME_CANNOT_HAVE_GENERIC_PARAMETERS_{0}=Name {0} can not have generic parameters
 AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Auto class can not have fields of pointer type
