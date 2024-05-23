@@ -70,44 +70,10 @@ namespace Languages.Pascal.Frontend.Core
             pascalABCTypeDeclarations = new List<type_declaration>();
         }
 
-        /// <summary>
-        /// Разбор директивы, согласно спецификации языка
-        /// </summary>
-        public void ParseDirective(string directive, QUT.Gppg.LexLocation location, out string directiveName, out List<string> directiveParams)
+        protected override string ExtractDirectiveTextWithoutSpecialSymbols(string directive)
         {
             // текст без спецсимволов {$}
-            string directiveText = directive.Substring(2, directive.Length - 3);
-            directiveName = GetDirectiveName(directiveText);
-            directiveParams = new List<string>();
-
-            // пустая директива - ошибка
-            if (directiveName == "")
-            {
-                AddErrorFromResource("EMPTY_DIRECTIVE", location);
-                return;
-            }
-
-            // проверка имени директивы
-            if (!ParserRef.ValidDirectives.ContainsKey(directiveName))
-            {
-                AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", location, directiveName);
-                return;
-            }
-
-            // подстрока с параметрами
-            string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
-            
-            // если кавычки используются как специальные символы (для объединения нескольких слов в одно)
-            if (ParserRef.ValidDirectives[directiveName] != null && ParserRef.ValidDirectives[directiveName].quotesAreSpecialSymbols)
-            {
-                directiveParams = SplitDirectiveParamsWithQuotesAsSpecialSymbols(paramsString);
-            }
-            else
-            {
-                directiveParams = SplitDirectiveParamsOrdinary(paramsString);
-            }
-
-            CheckDirectiveParams(directiveName, directiveParams, location);
+            return directive.Substring(2, directive.Length - 3);
         }
 
         protected override string GetFromStringResources(string res)
