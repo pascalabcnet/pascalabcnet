@@ -4000,6 +4000,8 @@ namespace PascalABCCompiler
             if (firstCompilationUnit == null)
                 firstCompilationUnit = currentUnit;
 
+            currentCompilationUnit = currentUnit;
+
             // запоминание языка
             currentUnit.Language = LanguageProvider.SelectLanguageByExtension(unitFileName);
 
@@ -4041,8 +4043,6 @@ namespace PascalABCCompiler
 
             currentUnit.CaseSensitive = currentUnit.Language.CaseSensitive;
 
-            currentCompilationUnit = currentUnit;
-
             currentUnit.SyntaxUnitName = currentUnitNode;
 
             // сопоставление нодам ошибок     EVA
@@ -4051,8 +4051,6 @@ namespace PascalABCCompiler
             CheckErrorsAndThrowTheFirstOne();
 
             UnitTable[UnitId] = currentUnit;
-
-            currentCompilationUnit = currentUnit;
 
             // здесь добавляем стандартные модули в секцию uses интерфейса
 #if DEBUG
