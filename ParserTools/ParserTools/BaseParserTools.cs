@@ -195,7 +195,7 @@ namespace PascalABCCompiler.ParserTools
         }
 
         /// <summary>
-        /// Разбор директивы, согласно спецификации языка
+        /// Разбор директивы + проверка имени и параметров
         /// </summary>
         public void ParseDirective(string directive, LexLocation location, out string directiveName, out List<string> directiveParams)
         {
@@ -240,7 +240,9 @@ namespace PascalABCCompiler.ParserTools
             }
         }
 
-        // Получение имени директивы и ее параметров ("\s*(имя)\s+(параметр1)\s+(параметр2)...\s*") без специфических для языка обозначений
+        /// <summary>
+        /// Получение имени директивы и ее параметров ("\s*(имя)\s+(параметр1)\s+(параметр2)...\s*") без специфических для языка обозначений
+        /// </summary>
         protected abstract string ExtractDirectiveTextWithoutSpecialSymbols(string directive);
 
         /// <summary>
