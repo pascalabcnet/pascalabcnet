@@ -75,8 +75,8 @@ namespace SyntaxVisitors
         {
             string variable_name = _variable_definitions.var_definitions[0].vars.idents[0].name;
             VariablesDeclaredGlobal.Add(variable_name);
-            VariablesToDefinitions.Add(variable_name, _variable_definitions);
-
+            VariablesToDefinitions[variable_name] = _variable_definitions;
+            
             base.visit(_variable_definitions);
         }
 
