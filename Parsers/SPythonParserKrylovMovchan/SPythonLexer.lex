@@ -7,7 +7,7 @@
 
 %namespace SPythonParser
 
-Alpha         [a-zA-Z_]
+Alpha         [[:IsLetter:]_]
 NonZeroDigit  [1-9]
 Digit         0|{NonZeroDigit}
 AlphaDigit {Alpha}|{Digit}
