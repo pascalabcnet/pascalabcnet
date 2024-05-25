@@ -1,16 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using SPythonParserYacc;
-using PascalABCCompiler.Errors;
 
 
 
 namespace SPythonParser
 {
-    public class SPythonGPPGParserHelper
+    /*public class SPythonGPPGParserHelper
     {
         private List<Error> Errs;
         private List<CompilerWarning> Warnings;
@@ -70,21 +68,11 @@ namespace SPythonParser
 #endif
             return parser.root;
         }
-    }
+    }*/
 
     public class SPythonLanguageParser : BaseParser
     {
-        private SPythonGPPGParserHelper localparserhelper;
-
-        public SPythonLanguageParser()
-        {
-            SPythonGPPGParserHelper.CheckIfParsingUnit = CallCheckIfParsingUnit;
-        }
-
-        public bool CallCheckIfParsingUnit()
-        {
-            return CheckIfParsingUnit.Invoke();
-        }
+        //private SPythonGPPGParserHelper localparserhelper;
 
         public override void Reset()
         {
@@ -107,9 +95,7 @@ namespace SPythonParser
             Errors.Clear();
             Warnings.Clear();
 
-            localparserhelper = new SPythonGPPGParserHelper(Errors, Warnings, FileName);
-            localparserhelper.DefinesList = DefinesList;
-            syntax_tree_node root = localparserhelper.Parse(Text);
+            syntax_tree_node root = Parse(Text, FileName, false, DefinesList);
 
             if (Errors.Count > 0)
                 return null;
@@ -118,6 +104,50 @@ namespace SPythonParser
                 (root as compilation_unit).file_name = FileName;
 
             return root;
+        }
+
+        public syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, List<string> definesList = null)
+        {
+#if DEBUG
+#if _ERR
+            FileInfo f = new FileInfo(FileName);
+            var sv = Path.ChangeExtension(FileName,".grmtrack1");
+            var sw = new StreamWriter(sv);
+            Console.SetError(sw);
+#endif
+#endif
+            SPythonParserTools parsertools = new SPythonParserTools(this); // контекст сканера и парсера
+            parsertools.errors = Errors;
+            parsertools.warnings = Warnings;
+            parsertools.compilerDirectives = CompilerDirectives;
+            parsertools.CurrentFileName = Path.GetFullPath(fileName);
+
+
+            IndentArranger ia = new IndentArranger();
+            ia.ProcessSourceText(ref Text);
+
+            var scanner = new Scanner();
+            scanner.SetSource(Text, 0);
+            scanner.parsertools = parsertools;// передали parsertools в объект сканера
+            if (definesList != null)
+                scanner.Defines.AddRange(definesList);
+
+            SPythonGPPGParser parser = new SPythonGPPGParser(scanner);
+            parsertools.build_tree_for_formatter = buildTreeForFormatter;
+
+            parser.is_unit_to_be_parsed = CheckIfParsingUnit.Invoke();
+
+            parser.parsertools = parsertools; // передали parsertools в объект парсера
+
+            if (!parser.Parse())
+                if (Errors.Count == 0)
+                    parsertools.AddErrorFromResource("UNEXPECTED_SYNTAX_ERROR", null);
+#if DEBUG
+#if _ERR
+            sw.Close();
+#endif
+#endif
+            return parser.root;
         }
 
         protected override syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text)

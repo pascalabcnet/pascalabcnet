@@ -76,6 +76,10 @@
 **/PascalABCNETLinux.exe.config
 **/UniversalParserHelper.dll
 
+**/SPythonLanguage.dll
+**/SPythonLanguageParser.dll
+**/SPythonStandardTreeConverter.dll
+**/SPythonSyntaxTreeVisitor.dll
 
 # external .dll files copied to bin
 /bin/AvalonDock.dll
