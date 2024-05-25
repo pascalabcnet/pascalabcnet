@@ -3561,9 +3561,6 @@ namespace PascalABCCompiler
                 CalculatePascalProgramHealth(unitSyntaxTree);
             }
 
-            var sfvugv = new SyntaxVisitors.SPythonRetainUsedGlobalVariablesVisitor();
-            sfvugv.ProcessNode(unitSyntaxTree);
-
             return unitSyntaxTree;
         }
 

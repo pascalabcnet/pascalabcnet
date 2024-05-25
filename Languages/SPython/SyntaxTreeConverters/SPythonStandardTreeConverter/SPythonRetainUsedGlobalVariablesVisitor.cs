@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PascalABCCompiler;
+﻿using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 
-namespace SyntaxVisitors
+namespace Languages.SPython.Frontend.Converters
 {
     public class SPythonRetainUsedGlobalVariablesVisitor : BaseChangeVisitor
     {
