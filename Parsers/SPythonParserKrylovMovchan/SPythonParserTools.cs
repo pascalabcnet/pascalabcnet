@@ -255,7 +255,7 @@ namespace SPythonParser
 
         protected override string GetFromStringResources(string id)
         {
-            throw new NotImplementedException();
+            return StringResources.Get(id);
         }
 
         protected override string ExtractDirectiveTextWithoutSpecialSymbols(string directive)
