@@ -12,8 +12,10 @@ call ..\..\..\Parsers\SPythonParserKrylovMovchan\Gppg.exe /no-lines /gplex ..\..
 call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\Parsers\SPythonParserKrylovMovchan\SPythonParser.csproj
 call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj
 
+copy ..\..\SPythonLanguage.dll .\
 copy ..\..\SPythonLanguageParser.dll .\
 copy ..\..\SPythonSyntaxTreeVisitor.dll .\
+copy ..\..\SPythonStandardTreeConverter.dll .\
 
 copy ..\..\Lng\Rus\SPythonParser.dat .\Lng\Rus\
 copy ..\..\Lng\Rus\SPythonSemantic.dat .\Lng\Rus\
