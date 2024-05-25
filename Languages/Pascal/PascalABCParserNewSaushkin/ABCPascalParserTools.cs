@@ -200,7 +200,7 @@ namespace Languages.Pascal.Frontend.Core
             }
         }
 
-        public literal create_string_const(string text, SourceContext sc)
+        public override literal create_string_const(string text, SourceContext sc)
         {
             literal lt;
             if (text.Length == 3 && text[0] == '\'' && text[2] == '\'')

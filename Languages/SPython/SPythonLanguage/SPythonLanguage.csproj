@@ -52,10 +52,6 @@
       <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
       <Name>LanguageIntegrator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Parsers\SPythonParserKrylovMovchan\SPythonParser.csproj">
-      <Project>{81fe2baa-d100-4596-a392-f03bbe30f829}</Project>
-      <Name>SPythonParser</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\ParserTools\ParserTools.csproj">
       <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
       <Name>ParserTools</Name>
@@ -71,6 +67,10 @@
     <ProjectReference Include="..\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj">
       <Project>{d38a21e0-1d61-4905-82b3-1800e1991d57}</Project>
       <Name>SPythonSyntaxTreeVisitor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SPythonParserKrylovMovchan\SPythonParser.csproj">
+      <Project>{81fe2baa-d100-4596-a392-f03bbe30f829}</Project>
+      <Name>SPythonParser</Name>
     </ProjectReference>
     <ProjectReference Include="..\SyntaxTreeConverters\SPythonStandardTreeConverter\SPythonStandardTreeConverter.csproj">
       <Project>{431aa1a0-81b9-4d93-9cb1-219bdf7825c9}</Project>

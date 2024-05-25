@@ -4,37 +4,31 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{81FE2BAA-D100-4596-A392-F03BBE30F829}</ProjectGuid>
+    <ProjectGuid>{38DAAA26-0231-4BA2-99D5-4430AC20DF8C}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Languages.SPython.Frontend.Wrapping</RootNamespace>
-    <AssemblyName>SPythonLanguageParser</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>YATLParser</RootNamespace>
+    <AssemblyName>YATLParser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,40 +41,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Errors.cs" />
-    <Compile Include="IndentArranger.cs" />
     <Compile Include="Keywords.cs" />
-    <Compile Include="SPythonLexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SPythonParser.cs" />
-    <Compile Include="SPythonParserTools.cs" />
-    <Compile Include="SPythonParserYacc.cs" />
+    <Compile Include="ShiftReduceParserCode.cs" />
+    <Compile Include="YATLLexer.cs" />
+    <Compile Include="YATLParser.cs" />
+    <Compile Include="YATLParserTools.cs" />
+    <Compile Include="YATLParserYacc.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Errors\Errors.csproj">
+    <ProjectReference Include="..\..\..\Errors\Errors.csproj">
       <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
       <Name>Errors</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Localization\Localization.csproj">
+    <ProjectReference Include="..\..\..\Localization\Localization.csproj">
       <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
       <Name>Localization</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ParserTools\ParserTools.csproj">
+    <ProjectReference Include="..\..\..\ParserTools\ParserTools.csproj">
       <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
       <Name>ParserTools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
+    <ProjectReference Include="..\..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SyntaxVisitors\SyntaxVisitors.csproj">
-      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
-      <Name>SyntaxVisitors</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-  </PropertyGroup>
 </Project>
