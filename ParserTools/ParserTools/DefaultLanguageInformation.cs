@@ -2526,7 +2526,7 @@ namespace PascalABCCompiler.Parsers
                     sb.AppendLine(lineText);
                     sb.AppendLine("begin end;");
                     sb.AppendLine("begin end.");
-                    program_module node = this.parser.BuildTree("test.pas", sb.ToString(), ParseMode.Special) as program_module;
+                    program_module node = this.parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special) as program_module;
                     procedure_header header = (node.program_block.defs.defs[0] as procedure_definition).proc_header;
                     get_procedure_template(header, res, col);
                     return res.ToString();
@@ -2537,7 +2537,7 @@ namespace PascalABCCompiler.Parsers
                     sb.AppendLine(lineText);
                     sb.AppendLine("begin end;");
                     sb.AppendLine("begin end.");
-                    program_module node = this.parser.BuildTree("test.pas", sb.ToString(), ParseMode.Special) as program_module;
+                    program_module node = this.parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special) as program_module;
                     if (node.program_block.defs != null && node.program_block.defs.defs.Count > 0 && node.program_block.defs.defs[0] is procedure_definition)
                     {
                         procedure_header header = (node.program_block.defs.defs[0] as procedure_definition).proc_header;

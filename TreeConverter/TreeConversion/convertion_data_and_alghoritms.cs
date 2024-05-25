@@ -3190,7 +3190,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public void create_function_return_variable(common_function_node cfn, SymbolInfo ret_var)
         {
-            if (!SemanticRules.AddResultVariable)
+            if (!SemanticRulesConstants.AddResultVariable)
                 return;
 //#if (DEBUG)
             if (cfn.return_value_type == null)
