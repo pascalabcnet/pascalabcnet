@@ -16,7 +16,7 @@ namespace SPythonSyntaxTreeVisitor
             string err_res = ErrorResourceString;
             if (!ErrorResourceString.StartsWith("SPYTHONSEMANTIC_"))
             {
-                err_res = "SEMANTICERROR_" + ErrResourceString;
+                err_res = "SEMANTICERROR_" + ErrorResourceString;
             }
             if (values != null)
                 return string.Format(PascalABCCompiler.StringResources.Get(err_res), values);
