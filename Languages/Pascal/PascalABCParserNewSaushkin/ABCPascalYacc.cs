@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-V3E9T2U
-// DateTime: 11.05.2024 17:26:27
+// DateTime: 25.05.2024 22:13:45
 // UserName: alex
 // Input file <ABCPascal.y>
 
@@ -14,13 +14,11 @@ using System.Globalization;
 using System.Text;
 using QUT.Gppg;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCSavParser;
+using Languages.Pascal.Frontend.Errors;
 using PascalABCCompiler.ParserTools;
-using PascalABCCompiler.Errors;
 using System.Linq;
-using SyntaxVisitors;
 
-namespace GPPGParserScanner
+namespace Languages.Pascal.Frontend.Core
 {
 public enum Tokens {
     error=1,EOF=2,tkDirectiveName=3,tkAmpersend=4,tkColon=5,tkDotDot=6,
@@ -52,13 +50,13 @@ public enum Tokens {
     tkFloat=157,tkHex=158,tkUnknown=159,tkStep=160};
 
 // Abstract base class for GPLEX scanners
-public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLocation> {
+public abstract class ScanBase : AbstractScanner<PascalABCCompiler.ParserTools.Union,LexLocation> {
   private LexLocation __yylloc = new LexLocation();
   public override LexLocation yylloc { get { return __yylloc; } set { __yylloc = value; } }
   protected virtual bool yywrap() { return true; }
 }
 
-public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
+public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools.Union, LexLocation>
 {
   // Verbatim content from ABCPascal.y
 // Э�?и об�?явления добавля�?�?ся в класс GPPGParser, п�?едс�?авля�?�?ий собой па�?се�?, гене�?и�?�?ем�?й сис�?емой gppg
@@ -68,7 +66,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     public PascalParserTools parserTools;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
-    public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
+    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner) : base(scanner) { }
   // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
