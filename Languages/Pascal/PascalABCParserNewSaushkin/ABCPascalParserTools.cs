@@ -115,6 +115,12 @@ namespace Languages.Pascal.Frontend.Core
             return 0;
         }
 
+        protected override string ReplaceSpecialSymbols(string text)
+        {
+            text = text.Replace("''", "'");
+            return text;
+        }
+
         public string CreateErrorString(string yytext, params object[] args)
         {
             string prefix = "";

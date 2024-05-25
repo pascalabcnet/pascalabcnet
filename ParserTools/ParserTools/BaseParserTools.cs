@@ -93,11 +93,7 @@ namespace PascalABCCompiler.ParserTools
             warnings.Add(new CommonWarning(res, currentFileName, loc.begin_position.line_num, loc.begin_position.column_num));
         }
 
-        protected string ReplaceSpecialSymbols(string text)
-        {
-            text = text.Replace("''", "'");
-            return text;
-        }
+        protected abstract string ReplaceSpecialSymbols(string text);
 
         /// <summary>
         /// Удаление кавычек у параметра директивы
