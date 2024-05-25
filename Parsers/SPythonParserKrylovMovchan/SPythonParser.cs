@@ -1,12 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Text;
-using System.Reflection;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
-using PascalABCCompiler.ParserTools;
-using SPythonParser;
 using SPythonParserYacc;
 using PascalABCCompiler.Errors;
 
@@ -75,13 +71,12 @@ namespace SPythonParser
             return parser.root;
         }
     }
-    public class SPythonLanguageParser: BaseParser, IParser
+
+    public class SPythonLanguageParser : BaseParser
     {
         private SPythonGPPGParserHelper localparserhelper;
-        //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public SPythonLanguageParser()
-            : base("SPython", "0.0.1", "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan", new string[] { "SpythonSystem", "SpythonHidden" }, false, new string[] { ".pys" })
         {
             SPythonGPPGParserHelper.CheckIfParsingUnit = CallCheckIfParsingUnit;
         }
@@ -98,53 +93,19 @@ namespace SPythonParser
             Errors.Clear();
         }
 
-        public override PascalABCCompiler.SourceFilesProviderDelegate SourceFilesProvider
-        {
-            get
-            {
-                return sourceFilesProvider;
-            }
-            set
-            {
-                sourceFilesProvider = value;
-                //preprocessor2.SourceFilesProvider = value;
-            }
-        }
-
-        public override void PreBuildTree(string FileName)
+        protected override void PreBuildTree(string FileName)
         {
             CompilerDirectives = new List<compiler_directive>();
 
             // чтобы строки во всех программах индексировались с нуля | Movchan 18.05.24
             CompilerDirectives.Add(new compiler_directive(new token_info("zerobasedstrings"), new token_info("")));
 
-            //preprocessor2 = new Preprocessor2.Preprocessor2(SourceFilesProvider);
         }
 
-        public override PascalABCCompiler.SyntaxTree.syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
-        {
-            PreBuildTree(FileName);
-            syntax_tree_node root = BuildTreeInNormalMode(FileName, Text, DefinesList);
-
-            if (root != null && root is compilation_unit)
-            {
-                (root as compilation_unit).file_name = FileName;
-                (root as compilation_unit).compiler_directives = CompilerDirectives;
-                if (root is unit_module)
-                    if ((root as unit_module).unit_name.HeaderKeyword == UnitHeaderKeyword.Library)
-                        (root as compilation_unit).compiler_directives.Add(new compiler_directive(new token_info("apptype"), new token_info("dll")));
-            }
-
-            return root;
-        }
-        public override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
+        protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
         {
             Errors.Clear();
             Warnings.Clear();
-            /*string[] file_names = new string[1];
-            file_names[0] = FileName;
-
-            preprocessor2.Build(file_names, Errors, null);*/
 
             localparserhelper = new SPythonGPPGParserHelper(Errors, Warnings, FileName);
             localparserhelper.DefinesList = DefinesList;
@@ -159,5 +120,29 @@ namespace SPythonParser
             return root;
         }
 
+        protected override syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text)
+        {
+            return null;
+        }
+
+        protected override syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
+        {
+            throw null;
+        }
+
+        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
+        {
+            throw null;
+        }
+
+        protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
+        {
+            throw null;
+        }
+
+        protected override syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)
+        {
+            return null;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.IO;
 using System.Text;
 using System.Reflection;
@@ -120,10 +120,10 @@ namespace YATL
         {
             Errors.Clear();
             Warnings.Clear();
-            /*string[] file_names = new string[1];
+            *//*string[] file_names = new string[1];
             file_names[0] = FileName;
 
-            preprocessor2.Build(file_names, Errors, null);*/
+            preprocessor2.Build(file_names, Errors, null);*//*
 
             localparserhelper = new YATLGPPGParserHelper(Errors, Warnings, FileName);
             localparserhelper.DefinesList = DefinesList;
@@ -140,3 +140,4 @@ namespace YATL
 
     }
 }
+*/

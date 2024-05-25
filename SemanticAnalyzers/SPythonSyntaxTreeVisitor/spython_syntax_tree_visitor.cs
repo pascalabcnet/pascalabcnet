@@ -13,19 +13,11 @@ using PascalABCCompiler.Errors;
 
 namespace SPythonSyntaxTreeVisitor
 {
-    public class spython_syntax_tree_visitor : syntax_tree_visitor, ISyntaxTreeVisitor
+    public class spython_syntax_tree_visitor : syntax_tree_visitor
     {
-        private string[] filesExtensions = { ".pys", ".py" };
         public spython_syntax_tree_visitor(): base()
         {
             OnLeave = RunAdditionalChecks;
-        }
-        public override string[] FilesExtensions
-        {
-            get
-            {
-                return filesExtensions;
-            }
         }
         private void RunAdditionalChecks(syntax_tree_node node)
         {

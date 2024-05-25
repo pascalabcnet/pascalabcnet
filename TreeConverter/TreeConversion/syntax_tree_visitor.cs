@@ -39,19 +39,11 @@ namespace PascalABCCompiler.TreeConverter
         }
     }*/
 
-    public partial class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew, TreeConversion.ISyntaxTreeVisitor // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
+    public partial class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
     // Порядок обхода не важен поскольку все узлы visit переопределяются
     // SSM 02.01.17 Использование ReplaceStatement из BaseChangeVisitor плохо изучено - что-то не работает
     // Поэтому используется явный Parent и ReplaceStatement из узла statement_list
     {
-        private string[] filesExtensions = { ".pas" };
-        public virtual string[] FilesExtensions
-        {
-            get
-            {
-                return filesExtensions;
-            }
-        }
         public SymbolTable.PrimaryScope MainScope
         {
             get

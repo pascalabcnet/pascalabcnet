@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  LAPTOP-MPBGOA9N
-// DateTime: 21.02.2024 14:27:52
-// UserName: krylo
+// Machine:  DESKTOP-V3E9T2U
+// DateTime: 25.05.2024 14:13:59
+// UserName: alex
 // Input file <YATL.y>
 
 // options: no-lines gplex
