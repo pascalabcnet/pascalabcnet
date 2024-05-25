@@ -4054,9 +4054,6 @@ namespace PascalABCCompiler
 
             CheckErrorsAndThrowTheFirstOne();
 
-            // запоминание названия языка (если SyntaxTree будет null, то это будет связано с ошибкой, выброшенной выше, поэтому NullReferenceException не возникнет)  EVA
-            currentUnit.languageName = currentUnit.SyntaxTree.Language;
-
             UnitTable[UnitId] = currentUnit;
 
             // здесь добавляем стандартные модули в секцию uses интерфейса
