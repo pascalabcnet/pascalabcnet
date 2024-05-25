@@ -170,6 +170,15 @@ namespace SPythonParser
             return new_text.ToString().Substring(0, curr);
         }
 
+        public override literal create_string_const(string text, SourceContext sc)
+        {
+            literal lt;
+            text = ReplaceSpecialSymbols(text.Substring(1, text.Length - 2));
+            lt = new string_const(text);
+            lt.source_context = sc;
+            return lt;
+        }
+
         public string CreateErrorString(string yytext, params object[] args)
         {
             string prefix = "";
