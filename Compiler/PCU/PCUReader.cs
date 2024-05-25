@@ -2019,7 +2019,7 @@ namespace PascalABCCompiler.PCU
 
         private List<SemanticTree.ICommonTypeNode> ReadGenericParams(common_namespace_node cur_nn)
         {
-            if (SemanticRules.RuntimeInitVariablesOfGenericParameters)
+            if (SemanticRulesConstants.RuntimeInitVariablesOfGenericParameters)
             {
                 if (!SystemLibrary.SystemLibInitializer.NeedsToRestore.Contains(
                     SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction))

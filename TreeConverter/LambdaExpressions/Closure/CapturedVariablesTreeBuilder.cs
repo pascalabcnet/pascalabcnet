@@ -574,17 +574,17 @@ namespace TreeConverter.LambdaExpressions.Closure
                         _visitor.AddError(loc, "LEFT_SIDE_CANNOT_BE_ASSIGNED_TO");
                 }
             }
-            else if (_visitor.context.is_in_cycle() && !SemanticRules.AllowChangeLoopVariable && to.semantic_node_type == semantic_node_type.namespace_variable_reference)
+            else if (_visitor.context.is_in_cycle() && !SemanticRulesConstants.AllowChangeLoopVariable && to.semantic_node_type == semantic_node_type.namespace_variable_reference)
             {
                 if (_visitor.context.is_loop_variable((to as namespace_variable_reference).var))
                     _visitor.AddError(to.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
             }
-            else if (_visitor.context.is_in_cycle() && !SemanticRules.AllowChangeLoopVariable && to.semantic_node_type == semantic_node_type.local_variable_reference)
+            else if (_visitor.context.is_in_cycle() && !SemanticRulesConstants.AllowChangeLoopVariable && to.semantic_node_type == semantic_node_type.local_variable_reference)
             {
                 if (_visitor.context.is_loop_variable((to as local_variable_reference).var))
                     _visitor.AddError(to.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
             }
-            else if (_visitor.context.is_in_cycle() && !SemanticRules.AllowChangeLoopVariable && to.semantic_node_type == semantic_node_type.local_block_variable_reference)
+            else if (_visitor.context.is_in_cycle() && !SemanticRulesConstants.AllowChangeLoopVariable && to.semantic_node_type == semantic_node_type.local_block_variable_reference)
             {
                 if (_visitor.context.is_loop_variable((to as local_block_variable_reference).var))
                     _visitor.AddError(to.location, "CANNOT_ASSIGN_TO_LOOP_VARIABLE");
