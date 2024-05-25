@@ -158,11 +158,6 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibrary.syn_visitor = this;
         }
 
-        public void ProcessNode<T>(T cd) where T : syntax_tree_node
-        {
-            base.ProcessNode(cd);
-        }
-
         public List<TreeRealization.var_definition_node> CompiledVariables => compiledVariables;
 
         public string UniqueNumStr()
