@@ -30,36 +30,36 @@ namespace Languages.Pascal.Frontend.Core
             tokenNum["tkIdentifier"] = StringResources.Get("TKIDENTIFIER");
             tokenNum["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
             tokenNum["tkAmpersend"] = "'";
-            tokenNum["tkColon"]="':'";
-            tokenNum["tkDotDot"]="'..'";
-            tokenNum["tkPoint"]="'.'";
-            tokenNum["tkRoundOpen"]="'('";
-            tokenNum["tkRoundClose"]="')'";
-            tokenNum["tkSemiColon"]="';'";
-            tokenNum["tkSquareOpen"]="'['";
-            tokenNum["tkSquareClose"]="']'";
-            tokenNum["tkQuestion"]="'?'";
-            
-            tokenNum["tkComma"]="','";
-            tokenNum["tkAssign"]="':='";
-            tokenNum["tkPlusEqual"]="'+='";
-            tokenNum["tkMinusEqual"]="'-='";
-            tokenNum["tkMultEqual"]="'*='";
-            tokenNum["tkDivEqual"]="'/='";
-            tokenNum["tkMinus"]="'-'";
-            tokenNum["tkPlus"]="'+'";
-            tokenNum["tkSlash"]="'//'";
-            tokenNum["tkStar"]="'*'";
-            tokenNum["tkEqual"]="'='";
-            tokenNum["tkGreater"]="'>'";
-            tokenNum["tkGreaterEqual"]="'>='";
-            tokenNum["tkLower"]="'<'";
-            tokenNum["tkLowerEqual"]="'<='";
-            tokenNum["tkNotEqual"]="'<>'";
-            tokenNum["tkArrow"]="'->'";
-            tokenNum["tkAddressOf"]="'@'";
-            tokenNum["tkDeref"]="'^'";
-            tokenNum["tkStarStar"]="'**'";
+            tokenNum["tkColon"] = "':'";
+            tokenNum["tkDotDot"] = "'..'";
+            tokenNum["tkPoint"] = "'.'";
+            tokenNum["tkRoundOpen"] = "'('";
+            tokenNum["tkRoundClose"] = "')'";
+            tokenNum["tkSemiColon"] = "';'";
+            tokenNum["tkSquareOpen"] = "'['";
+            tokenNum["tkSquareClose"] = "']'";
+            tokenNum["tkQuestion"] = "'?'";
+
+            tokenNum["tkComma"] = "','";
+            tokenNum["tkAssign"] = "':='";
+            tokenNum["tkPlusEqual"] = "'+='";
+            tokenNum["tkMinusEqual"] = "'-='";
+            tokenNum["tkMultEqual"] = "'*='";
+            tokenNum["tkDivEqual"] = "'/='";
+            tokenNum["tkMinus"] = "'-'";
+            tokenNum["tkPlus"] = "'+'";
+            tokenNum["tkSlash"] = "'//'";
+            tokenNum["tkStar"] = "'*'";
+            tokenNum["tkEqual"] = "'='";
+            tokenNum["tkGreater"] = "'>'";
+            tokenNum["tkGreaterEqual"] = "'>='";
+            tokenNum["tkLower"] = "'<'";
+            tokenNum["tkLowerEqual"] = "'<='";
+            tokenNum["tkNotEqual"] = "'<>'";
+            tokenNum["tkArrow"] = "'->'";
+            tokenNum["tkAddressOf"] = "'@'";
+            tokenNum["tkDeref"] = "'^'";
+            tokenNum["tkStarStar"] = "'**'";
         }
 
         public PascalParserTools(IParser parserRef) : base(parserRef)
@@ -115,6 +115,12 @@ namespace Languages.Pascal.Frontend.Core
             return 0;
         }
 
+        protected override string ReplaceSpecialSymbols(string text)
+        {
+            text = text.Replace("''", "'");
+            return text;
+        }
+
         public string CreateErrorString(string yytext, params object[] args)
         {
             string prefix = "";
@@ -128,7 +134,7 @@ namespace Languages.Pascal.Frontend.Core
                 yytext = "}";
                 prefix = StringResources.Get("FOUND{0}");
             }
-                
+
             // Преобразовали в список строк - хорошо
             List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
 
@@ -178,7 +184,7 @@ namespace Languages.Pascal.Frontend.Core
 
             // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
 
-            return string.Format(prefix + ExpectedString, "'" + yytext + "'", MaxTokHuman); 
+            return string.Format(prefix + ExpectedString, "'" + yytext + "'", MaxTokHuman);
         }
 
         public string directive_parameter(string s)
@@ -194,11 +200,19 @@ namespace Languages.Pascal.Frontend.Core
             }
         }
 
-        public ident create_directive_name(string text, SourceContext sc)
+        public override literal create_string_const(string text, SourceContext sc)
         {
-            ident dn = new ident(new string(text.ToCharArray(1, text.Length - 1)));
-            dn.source_context = sc;
-            return dn;
+            literal lt;
+            if (text.Length == 3 && text[0] == '\'' && text[2] == '\'')
+            {
+                lt = new char_const(text[1]);
+                lt.source_context = sc;
+                return lt;
+            }
+            text = ReplaceSpecialSymbols(text.Substring(1, text.Length - 2));
+            lt = new string_const(text);
+            lt.source_context = sc;
+            return lt;
         }
 
         public function_lambda_definition find_pascalABC_lambda_name(string name)

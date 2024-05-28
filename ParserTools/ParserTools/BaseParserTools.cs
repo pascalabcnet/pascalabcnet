@@ -27,7 +27,7 @@ namespace PascalABCCompiler.ParserTools
 
     // Класс глобальных описаний и статических методов
     // для использования различными подсистемами парсера и сканера
-    public abstract class BaseParserTools 
+    public abstract class BaseParserTools
     {
         protected const int maxCharConst = 0xFFFF;
         // SSM: Errors инициализируется в другом месте - сюда только передается!
@@ -93,11 +93,7 @@ namespace PascalABCCompiler.ParserTools
             warnings.Add(new CommonWarning(res, currentFileName, loc.begin_position.line_num, loc.begin_position.column_num));
         }
 
-        protected string ReplaceSpecialSymbols(string text)
-        {
-            text = text.Replace("''", "'");
-            return text;
-        }
+        protected abstract string ReplaceSpecialSymbols(string text);
 
         /// <summary>
         /// Удаление кавычек у параметра директивы
@@ -106,7 +102,7 @@ namespace PascalABCCompiler.ParserTools
         {
             if (param.Length != 1 && param.StartsWith("'") && param.EndsWith("'"))
                 return param.Substring(1, param.Length - 2);
-           
+
             return param;
         }
 
@@ -201,7 +197,7 @@ namespace PascalABCCompiler.ParserTools
         {
             string directiveText = ExtractDirectiveTextWithoutSpecialSymbols(directive);
             directiveName = GetDirectiveName(directiveText);
-            
+
             ValidateDirectiveName(location, directiveName);
 
             // подстрока с параметрами
@@ -294,7 +290,7 @@ namespace PascalABCCompiler.ParserTools
         {
             string paramsNumString = "";
             int maxParamsNum = directiveInfo.paramsNums.Max();
-            
+
             if (directiveInfo.paramsNums.Length > 1)
             {
                 if (directiveParams.Count > maxParamsNum)
@@ -466,20 +462,7 @@ namespace PascalABCCompiler.ParserTools
             return proc_list;
         }
 
-        public literal create_string_const(string text, SourceContext sc)
-        {
-            literal lt;
-            if (text.Length == 3 && text[0] == '\'' && text[2] == '\'')
-            {
-                lt = new char_const(text[1]);
-                lt.source_context = sc;
-                return lt;
-            }
-            text = ReplaceSpecialSymbols(text.Substring(1, text.Length - 2));
-            lt = new string_const(text);
-            lt.source_context = sc;
-            return lt;
-        }
+        public abstract literal create_string_const(string text, SourceContext sc);
 
         public literal create_multiline_string_const(string text, SourceContext sc)
         {
