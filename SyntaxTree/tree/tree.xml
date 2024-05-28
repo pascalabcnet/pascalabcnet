@@ -761,7 +761,7 @@
       <Fields>
         <ExtendedField Name="file_name" Type="string" CreateVariable="false" DeleteVariable="false" />
         <ExtendedField Name="compiler_directives" Type="List&lt;compiler_directive&gt;" CreateVariable="true" DeleteVariable="false" />
-        <ExtendedField Name="Language" Type="LanguageId" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="Language" Type="string" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>

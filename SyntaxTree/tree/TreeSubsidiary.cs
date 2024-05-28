@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTree
 {
-    public enum LanguageId { CommonLanguage=32, PascalABCNET=2, C=4, VBNET=8, Oberon00 = 16, SPython = 64}
 
 	public enum oberon_export_marker {export,export_readonly};
 
@@ -93,9 +92,11 @@ namespace PascalABCCompiler.SyntaxTree
             }
             return false;
         }
-        public static string ToString(Operators Operator, LanguageId Language)
+
+        // TODO: рефакторинг для многоязычности  EVA
+        public static string ToString(Operators Operator, string Language)
         {
-            if (Language == LanguageId.PascalABCNET)
+            if (Language == StringConstants.pascalLanguageName)
             {
                 switch (Operator)
                 {
@@ -126,48 +127,6 @@ namespace PascalABCCompiler.SyntaxTree
                     case Operators.Is: return "is";                  
                     case Operators.As: return "as"; 
                     case Operators.Power: return "**";
-                }
-            }
-            else
-            if (Language == LanguageId.C)
-            {
-                switch (Operator)
-                {
-                    case Operators.Plus: return "+";
-                    case Operators.Minus: return "-";
-                    case Operators.Multiplication: return "*";
-                    case Operators.Division: return "/";              
-                    case Operators.ModulusRemainder: return "%";      
-                    case Operators.AssignmentAddition: return "+=";   
-                    case Operators.AssignmentSubtraction: return "-=";
-                    case Operators.AssignmentMultiplication: return "*=";
-                    case Operators.AssignmentDivision: return "/=";    
-                    case Operators.AssignmentModulus: return "%=";     
-                    case Operators.PrefixIncrement: return "++";     
-                    case Operators.PostfixIncrement: return "++"; 	   
-                    case Operators.PrefixDecrement: return "--";     
-                    case Operators.PostfixDecrement: return "--"; 	   
-                    case Operators.LogicalAND: return "%%";            
-                    case Operators.LogicalOR: return "||";             
-                    case Operators.Less: return "<";                   
-                    case Operators.Greater: return ">";                
-                    case Operators.LessEqual: return "<=";             
-                    case Operators.GreaterEqual: return ">=";          
-                    case Operators.Equal: return "==";                 
-                    case Operators.NotEqual: return "!=";              
-                    case Operators.LogicalNOT: return "!";        
-                    case Operators.BitwiseLeftShift: return "<<";      
-                    case Operators.BitwiseRightShift: return ">>";     
-                    case Operators.BitwiseAND: return "&";             
-                    case Operators.BitwiseOR: return "|";              
-                    case Operators.BitwiseXOR: return "^";             
-                    case Operators.BitwiseNOT: return "~";   
-                    case Operators.AssignmentBitwiseLeftShift: return "<<=";
-                    case Operators.AssignmentBitwiseRightShift: return ">>=";
-                    case Operators.AssignmentBitwiseAND: return "&=";  
-                    case Operators.AssignmentBitwiseOR: return "|=";   
-                    case Operators.AssignmentBitwiseXOR: return "^=";  
-                    case Operators.Assignment: return "=";             
                 }
             }
             return null;

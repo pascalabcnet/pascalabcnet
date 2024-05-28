@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+
+// TODO: рефакторинг для многоязычности  EVA
 namespace PascalABCCompiler.SyntaxTree
 {
     /// <summary>
@@ -382,7 +383,7 @@ namespace PascalABCCompiler.SyntaxTree
         { }
         public override string ToString()
         {
-            return string.Format("{0} {1} {2}", to, OperatorServices.ToString(operator_type, LanguageId.PascalABCNET), from);
+            return string.Format("{0} {1} {2}", to, OperatorServices.ToString(operator_type, StringConstants.pascalLanguageName), from);
         }
         public bool first_assignment_defines_type = false;
     }
@@ -418,7 +419,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override string ToString()
         {
-            return string.Format("{0} {2} {1}", left, right, OperatorServices.ToString(operation_type, LanguageId.PascalABCNET));
+            return string.Format("{0} {2} {1}", left, right, OperatorServices.ToString(operation_type, StringConstants.pascalLanguageName));
         }
     }
 
@@ -430,7 +431,7 @@ namespace PascalABCCompiler.SyntaxTree
         }
         public override string ToString()
         {
-            return string.Format("{0} {1}", OperatorServices.ToString(operation_type, LanguageId.PascalABCNET), this.subnode);
+            return string.Format("{0} {1}", OperatorServices.ToString(operation_type, StringConstants.pascalLanguageName), this.subnode);
         }
     }
 
@@ -969,7 +970,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class unit_module
     {
-        public unit_module(LanguageId _Language, unit_name _unit_name, interface_node _interface_part, implementation_node _implementation_part, statement_list _initialization_part, statement_list _finalization_part, SourceContext sc)
+        public unit_module(string _Language, unit_name _unit_name, interface_node _interface_part, implementation_node _implementation_part, statement_list _initialization_part, statement_list _finalization_part, SourceContext sc)
         {
             this._Language = _Language;
             this._unit_name = _unit_name;
@@ -981,7 +982,7 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
-    public partial class program_module
+    /*public partial class program_module
     {
         public static program_module create(ident id, uses_list _used_units, block _program_block, using_list _using_namespaces, SourceContext sc = null)
         {
@@ -1001,7 +1002,7 @@ namespace PascalABCCompiler.SyntaxTree
             r.Language = LanguageId.CommonLanguage;
             return r;
         }
-    }
+    }*/
 
     public partial class method_name
     {
