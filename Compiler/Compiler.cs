@@ -2212,8 +2212,41 @@ namespace PascalABCCompiler
                 CompileUnit(
                     new unit_node_list(),
                     new Dictionary<unit_node, CompilationUnit>(),
-                    new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName))),
-                    null);
+                    CurrentSyntaxUnit, null);
+                
+                //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  ////
+                foreach (CompilationUnit CurrentUnit in UnitsToCompile)
+                    if (CurrentUnit.State != UnitState.Compiled)
+                    {
+                        CurrentCompilationUnit = CurrentUnit;
+                        string UnitName = CurrentCompilationUnit.SyntaxTree.file_name;
+                        //if(CurrentUnit.State!=UnitState.InterfaceCompiled)													//DEBUG
+                        //Console.WriteLine("ERROR! interface not compiled "+GetUnitFileName(CurrentUnit.SyntaxUnitName));//DEBUG
+                        System.Collections.Generic.List<SyntaxTree.unit_or_namespace> SyntaxUsesList = GetSyntaxImplementationUsesList(CurrentUnit.SyntaxTree);
+                        CurrentUnit.PossibleNamespaces.Clear();
+                        if (HasIncludeNamespacesDirective(CurrentUnit))
+                            compilerOptions.UseDllForSystemUnits = false;
+                        if (SyntaxUsesList != null)
+                        {
+                            for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
+                                if (!IsPossibleNamespace(SyntaxUsesList[i], false, Path.GetDirectoryName(UnitName)))
+                                {
+                                    compilerOptions.UseDllForSystemUnits = false;
+                                    break;
+                                }
+                            for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
+                                if (!IsPossibleNamespace(SyntaxUsesList[i], true, Path.GetDirectoryName(UnitName)))
+                                {
+                                    CompileUnit(CurrentUnit.ImplementationUsedUnits, CurrentUnit.DirectImplementationCompilationUnits, SyntaxUsesList[i], Path.GetDirectoryName(UnitName));
+                                }
+                                else
+                                {
+                                    CurrentUnit.ImplementationUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])), null);
+                                    CurrentUnit.PossibleNamespaces.Add(SyntaxUsesList[i]);
+                                }
+                        }
+                        //Console.WriteLine("Compile Implementation "+UnitName);//DEBUG
+                        //TODO: Избавиться от преобразования типа.
 
                 // компиляция юнитов из списка отложенной компиляции, если он не пуст
                 CompileUnitsFromDelayedList();
