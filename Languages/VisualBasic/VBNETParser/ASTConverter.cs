@@ -24,7 +24,7 @@ namespace PascalABCCompiler.VBNETParser
 				if (td.Type == ICSharpCode.NRefactory.Ast.ClassType.Module)
 				{
 					mod = new unit_module();
-					mod.Language = LanguageId.VBNET;
+					//mod.Language = "..."; // нужно заполнять !!!
 					mod.file_name = FileName;
 					mod.unit_name = new unit_name();
 					mod.unit_name.idunit_name = new ident(td.Name);

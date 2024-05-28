@@ -1,6 +1,6 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTree
@@ -12157,7 +12157,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public compilation_unit(string _file_name,List<compiler_directive> _compiler_directives,LanguageId _Language)
+		public compilation_unit(string _file_name,List<compiler_directive> _compiler_directives,string _Language)
 		{
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
@@ -12168,7 +12168,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public compilation_unit(string _file_name,List<compiler_directive> _compiler_directives,LanguageId _Language,SourceContext sc)
+		public compilation_unit(string _file_name,List<compiler_directive> _compiler_directives,string _Language,SourceContext sc)
 		{
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
@@ -12184,7 +12184,7 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		protected string _file_name;
 		protected List<compiler_directive> _compiler_directives=new List<compiler_directive>();
-		protected LanguageId _Language;
+		protected string _Language;
 
 		///<summary>
 		///
@@ -12219,7 +12219,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public LanguageId Language
+		public string Language
 		{
 			get
 			{
@@ -12547,7 +12547,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public unit_module(string _file_name,List<compiler_directive> _compiler_directives,LanguageId _Language,unit_name _unit_name,interface_node _interface_part,implementation_node _implementation_part,statement_list _initialization_part,statement_list _finalization_part,attribute_list _attributes)
+		public unit_module(string _file_name,List<compiler_directive> _compiler_directives,string _Language,unit_name _unit_name,interface_node _interface_part,implementation_node _implementation_part,statement_list _initialization_part,statement_list _finalization_part,attribute_list _attributes)
 		{
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
@@ -12564,7 +12564,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public unit_module(string _file_name,List<compiler_directive> _compiler_directives,LanguageId _Language,unit_name _unit_name,interface_node _interface_part,implementation_node _implementation_part,statement_list _initialization_part,statement_list _finalization_part,attribute_list _attributes,SourceContext sc)
+		public unit_module(string _file_name,List<compiler_directive> _compiler_directives,string _Language,unit_name _unit_name,interface_node _interface_part,implementation_node _implementation_part,statement_list _initialization_part,statement_list _finalization_part,attribute_list _attributes,SourceContext sc)
 		{
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
@@ -12935,7 +12935,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public program_module(string _file_name,List<compiler_directive> _compiler_directives,LanguageId _Language,program_name _program_name,uses_list _used_units,block _program_block,using_list _using_namespaces)
+		public program_module(string _file_name,List<compiler_directive> _compiler_directives,string _Language,program_name _program_name,uses_list _used_units,block _program_block,using_list _using_namespaces)
 		{
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
@@ -12950,7 +12950,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public program_module(string _file_name,List<compiler_directive> _compiler_directives,LanguageId _Language,program_name _program_name,uses_list _used_units,block _program_block,using_list _using_namespaces,SourceContext sc)
+		public program_module(string _file_name,List<compiler_directive> _compiler_directives,string _Language,program_name _program_name,uses_list _used_units,block _program_block,using_list _using_namespaces,SourceContext sc)
 		{
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
@@ -34484,7 +34484,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public c_module(string _file_name,List<compiler_directive> _compiler_directives,LanguageId _Language,declarations _defs,uses_list _used_units)
+		public c_module(string _file_name,List<compiler_directive> _compiler_directives,string _Language,declarations _defs,uses_list _used_units)
 		{
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
@@ -34497,7 +34497,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public c_module(string _file_name,List<compiler_directive> _compiler_directives,LanguageId _Language,declarations _defs,uses_list _used_units,SourceContext sc)
+		public c_module(string _file_name,List<compiler_directive> _compiler_directives,string _Language,declarations _defs,uses_list _used_units,SourceContext sc)
 		{
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
