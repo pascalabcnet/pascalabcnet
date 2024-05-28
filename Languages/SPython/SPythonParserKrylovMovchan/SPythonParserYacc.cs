@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-56159VE
-// DateTime: 22.05.2024 22:34:03
-// UserName: ????
+// Machine:  DESKTOP-G8V08V4
+// DateTime: 28.05.2024 15:22:26
+// UserName: ?????????
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -1110,7 +1110,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         public program_module NewProgramModule(program_name progName, Object optHeadCompDirs, uses_list mainUsesClose, syntax_tree_node progBlock, Object optPoint, LexLocation loc)
         {
             var progModule = new program_module(progName, mainUsesClose, progBlock as block, null, loc);
-            progModule.Language = LanguageId.SPython;
+            progModule.Language = "Spython";
             if (optPoint == null && progBlock != null)
             {
                 var fp = progBlock.source_context.end_position;
