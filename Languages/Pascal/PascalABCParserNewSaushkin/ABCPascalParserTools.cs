@@ -30,36 +30,36 @@ namespace Languages.Pascal.Frontend.Core
             tokenNum["tkIdentifier"] = StringResources.Get("TKIDENTIFIER");
             tokenNum["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
             tokenNum["tkAmpersend"] = "'";
-            tokenNum["tkColon"]="':'";
-            tokenNum["tkDotDot"]="'..'";
-            tokenNum["tkPoint"]="'.'";
-            tokenNum["tkRoundOpen"]="'('";
-            tokenNum["tkRoundClose"]="')'";
-            tokenNum["tkSemiColon"]="';'";
-            tokenNum["tkSquareOpen"]="'['";
-            tokenNum["tkSquareClose"]="']'";
-            tokenNum["tkQuestion"]="'?'";
-            
-            tokenNum["tkComma"]="','";
-            tokenNum["tkAssign"]="':='";
-            tokenNum["tkPlusEqual"]="'+='";
-            tokenNum["tkMinusEqual"]="'-='";
-            tokenNum["tkMultEqual"]="'*='";
-            tokenNum["tkDivEqual"]="'/='";
-            tokenNum["tkMinus"]="'-'";
-            tokenNum["tkPlus"]="'+'";
-            tokenNum["tkSlash"]="'//'";
-            tokenNum["tkStar"]="'*'";
-            tokenNum["tkEqual"]="'='";
-            tokenNum["tkGreater"]="'>'";
-            tokenNum["tkGreaterEqual"]="'>='";
-            tokenNum["tkLower"]="'<'";
-            tokenNum["tkLowerEqual"]="'<='";
-            tokenNum["tkNotEqual"]="'<>'";
-            tokenNum["tkArrow"]="'->'";
-            tokenNum["tkAddressOf"]="'@'";
-            tokenNum["tkDeref"]="'^'";
-            tokenNum["tkStarStar"]="'**'";
+            tokenNum["tkColon"] = "':'";
+            tokenNum["tkDotDot"] = "'..'";
+            tokenNum["tkPoint"] = "'.'";
+            tokenNum["tkRoundOpen"] = "'('";
+            tokenNum["tkRoundClose"] = "')'";
+            tokenNum["tkSemiColon"] = "';'";
+            tokenNum["tkSquareOpen"] = "'['";
+            tokenNum["tkSquareClose"] = "']'";
+            tokenNum["tkQuestion"] = "'?'";
+
+            tokenNum["tkComma"] = "','";
+            tokenNum["tkAssign"] = "':='";
+            tokenNum["tkPlusEqual"] = "'+='";
+            tokenNum["tkMinusEqual"] = "'-='";
+            tokenNum["tkMultEqual"] = "'*='";
+            tokenNum["tkDivEqual"] = "'/='";
+            tokenNum["tkMinus"] = "'-'";
+            tokenNum["tkPlus"] = "'+'";
+            tokenNum["tkSlash"] = "'//'";
+            tokenNum["tkStar"] = "'*'";
+            tokenNum["tkEqual"] = "'='";
+            tokenNum["tkGreater"] = "'>'";
+            tokenNum["tkGreaterEqual"] = "'>='";
+            tokenNum["tkLower"] = "'<'";
+            tokenNum["tkLowerEqual"] = "'<='";
+            tokenNum["tkNotEqual"] = "'<>'";
+            tokenNum["tkArrow"] = "'->'";
+            tokenNum["tkAddressOf"] = "'@'";
+            tokenNum["tkDeref"] = "'^'";
+            tokenNum["tkStarStar"] = "'**'";
         }
 
         public PascalParserTools(IParser parserRef) : base(parserRef)
@@ -134,7 +134,7 @@ namespace Languages.Pascal.Frontend.Core
                 yytext = "}";
                 prefix = StringResources.Get("FOUND{0}");
             }
-                
+
             // Преобразовали в список строк - хорошо
             List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
 
@@ -184,7 +184,7 @@ namespace Languages.Pascal.Frontend.Core
 
             // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
 
-            return string.Format(prefix + ExpectedString, "'" + yytext + "'", MaxTokHuman); 
+            return string.Format(prefix + ExpectedString, "'" + yytext + "'", MaxTokHuman);
         }
 
         public string directive_parameter(string s)
