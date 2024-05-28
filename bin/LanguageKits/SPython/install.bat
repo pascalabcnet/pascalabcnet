@@ -26,3 +26,5 @@ move *.pcu "%path_to_pas%\Lib"
 copy *.xshd "%path_to_pas%\Highlighting"
 copy Lng\Rus\*.dat "%path_to_pas%\Lng\Rus"
 :: copy Lng\Eng\*.dat "%path_to_pas%\Lng\Eng"
+
+pause
