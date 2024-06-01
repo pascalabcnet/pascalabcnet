@@ -571,6 +571,11 @@ var
   GenerateTestData: integer -> () := nil;
   TestMode: TestModeType := tmNone;
   TestNumber: integer;
+  
+/// Включить дополнительные сообщения о записи в удаленную базу данных
+procedure SetMessagesOn;
+/// Выключить дополнительные сообщения о записи в удаленную базу данных
+procedure SetMessageOff;
 
 implementation
 
@@ -612,6 +617,9 @@ var
   TaskNamesMap := new Dictionary<string,string>;
   
   ServerAddr := 'https://air.mmcs.sfedu.ru/pascalabc';
+  
+  // Дополнительные сообщения о записи в удаленную базу данных
+  additionalMessages := False;
 
 {=========================================================}
 {                  Типы, связанные с сетью                }
@@ -2741,7 +2749,7 @@ begin
       ColoredMessage($'Неверно составлен тест! Несоответствие типов входных данных в тесте и основном запуске. Возможно, неверно заполнен InputList в GenerateTestData'); 
     end;
   end;
-  // Для задачника надо вызывать процедуру __FinalizeModule__ из модуля PT4 jnhf;tybtv, а в модуле PT4 эту процедуру тогда не вызывть
+  // Для задачника надо вызывать процедуру __FinalizeModule__ из модуля PT4 отражением, а в модуле PT4 эту процедуру тогда не вызывть
   // Для задачника в CheckTaskPT надо сказать, что проверяется задача из задачника. И выводить на экран ничего не надо - только в базу.
   TaskResultInfo := TaskException.Info;
   
@@ -2807,11 +2815,19 @@ end;
 {            Процедуры для записи в базы данных           }
 {=========================================================}
 
+procedure AdditionalMessage(message: string);
+begin
+  if additionalMessages then
+    ColoredMessage(message, MsgColorMagenta);
+end;
+
 procedure WriteInfoToRemoteDatabase(auth: string; LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo: string);
 begin
+  AdditionalMessage($'WriteInfoToRemoteDatabase начало. Урок {LessonName}, задание {TaskName}, результат {TaskResult}');
   // Считать логин пароль из auth
   var data := System.IO.File.ReadAllBytes(auth);
   var arr := Decrypt(data).Split(#10);
+  AdditionalMessage($'Логин и пароль расшифрованы');
   var login,pass: string;
   if arr.Length >= 2 then
   begin
@@ -2819,8 +2835,10 @@ begin
     pass := arr[1];
     // Теперь как-то записать в БД информацию
     var User := new ServerAccessProvider(ServerAddr);
+    AdditionalMessage($'Непосредственно перед SendPostRequest');
     var t2 := User.SendPostRequest(login, pass, LessonName, TaskName, TaskPlatform, TaskResult, text, AdditionalInfo);
     var v := t2.Result;
+    AdditionalMessage($'После SendPostRequest - результат: {v}');
     v := v;
     if v <> 'Success' then
       ColoredMessage('Ошибка сервера: '+v, MsgColorGray);
@@ -2840,6 +2858,12 @@ begin
   try
     var auth := FindAuthDat(); // файл авторизации ищется либо в текущей папке либо в папке на уровень выше
     var args := System.Environment.GetCommandLineArgs;
+    if auth = '' then
+      AdditionalMessage('Файл auth.dat не найден')
+    else if (args.Length < 3) then
+      AdditionalMessage('args.Length < 3')
+    else if args[2].ToLower <> 'true' then
+      AdditionalMessage('args[2].ToLower <> true');
     if (auth <> '') and (args.Length >= 3) and (args[2].ToLower = 'true') then
     begin  
       var text := '';
@@ -2851,6 +2875,7 @@ begin
   except
     on e: System.AggregateException do
     begin
+      ColoredMessage('->>',MsgColorGray);
       foreach var x in e.InnerExceptions do
         if x is HTTPRequestException then
         begin
@@ -2861,8 +2886,18 @@ begin
         else ColoredMessage('Ошибка сервера: '+x.Message,MsgColorGray); 
     end;
     on e: Exception do
-      ColoredMessage(e.Message,MsgColorGray);
+      ColoredMessage('Исключение в WriteInfoToDatabases: '+e.Message,MsgColorGray);
   end;  
+end;
+
+procedure SetMessagesOn;
+begin
+  additionalMessages := True;
+end;
+
+procedure SetMessageOff;
+begin
+  additionalMessages := False;
 end;
 
 {===========================================================}
@@ -2875,7 +2910,7 @@ type
     begin
       if TestMode = tmNone then
         inherited write(obj);
-      OutputString += _ObjectToString(obj);
+      OutputString += ObjectToString(obj);
       OutputList += obj;
       CreateNewLineBeforeMessage := True;
     end;

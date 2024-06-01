@@ -2,10 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using WeifenLuo.WinFormsUI.Docking;
@@ -14,9 +11,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using ICSharpCode.FormsDesigner.Services; 
 using ICSharpCode.FormsDesigner;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 
 namespace VisualPascalABC
 {
@@ -515,8 +509,14 @@ namespace VisualPascalABC
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
+
+            var language = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName);
+
+            if (language == null)
+                return null;
+
             PascalABCCompiler.SyntaxTree.compilation_unit sn =
-                CodeCompletion.CodeCompletionController.ParsersController.GetCompilationUnit(
+                language.Parser.GetCompilationUnit(
                 VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName,
                 existing_text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
@@ -593,7 +593,7 @@ namespace VisualPascalABC
                 if (event_description != null)
                 {
                     MethodInfo mi = event_description.e.EventType.GetMethod(
-                        PascalABCCompiler.TreeConverter.compiler_string_consts.invoke_method_name);
+                        PascalABCCompiler.StringConstants.invoke_method_name);
                     ParameterInfo[] pinfos = mi.GetParameters();
                     bool handler_found = false;
 

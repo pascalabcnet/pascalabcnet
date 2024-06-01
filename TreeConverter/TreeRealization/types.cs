@@ -975,7 +975,7 @@ namespace PascalABCCompiler.TreeRealization
 				if (base.name != null)
                     return base.name;
 				if (_pointed_type != null && !check_for_circularity(_pointed_type,this))
-                return PascalABCCompiler.TreeConverter.compiler_string_consts.get_pointer_type_name_by_type_name(_pointed_type.name);
+                return StringConstants.get_pointer_type_name_by_type_name(_pointed_type.name);
 				return "";
 			}
 		}
@@ -1058,7 +1058,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_implicit_conversion_from(type_node ctn)
         {
-            if (SemanticRules.ImplicitConversionFormPointerToTypedPointer)
+            if (SemanticRulesConstants.ImplicitConversionFormPointerToTypedPointer)
             {
                 if (ctn == SystemLibrary.SystemLibrary.pointer_type)
                 {
@@ -1705,12 +1705,12 @@ namespace PascalABCCompiler.TreeRealization
         {
         	if (!has_flags_attribute())
         		return;
-        	basic_function_node _int_and = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.and_name, this, SemanticTree.basic_function_type.iand);
-            basic_function_node _int_or = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.or_name, this, SemanticTree.basic_function_type.ior);
-            basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.xor_name, this, SemanticTree.basic_function_type.ixor);
-            scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfo(_int_and));
-            scope.AddSymbol(compiler_string_consts.or_name, new SymbolInfo(_int_or));
-            scope.AddSymbol(compiler_string_consts.xor_name, new SymbolInfo(_int_xor));
+        	basic_function_node _int_and = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.and_name, this, SemanticTree.basic_function_type.iand);
+            basic_function_node _int_or = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.or_name, this, SemanticTree.basic_function_type.ior);
+            basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.xor_name, this, SemanticTree.basic_function_type.ixor);
+            scope.AddSymbol(StringConstants.and_name, new SymbolInfo(_int_and));
+            scope.AddSymbol(StringConstants.or_name, new SymbolInfo(_int_or));
+            scope.AddSymbol(StringConstants.xor_name, new SymbolInfo(_int_xor));
         }
         
 		public common_property_node default_property
@@ -1904,7 +1904,7 @@ namespace PascalABCCompiler.TreeRealization
 			get
 			{
                 //if (type_special_kind == SemanticTree.type_special_kind.typed_file)
-                //    return compiler_string_consts.GetTypedFileTypeName(element_type.name);
+                //    return StringConstants.GetTypedFileTypeName(element_type.name);
 				return _name;
 			}
 		}
@@ -1936,7 +1936,7 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (this.is_generic_type_definition)
                 {
-                    int pos = _name.IndexOf(compiler_string_consts.generic_params_infix);
+                    int pos = _name.IndexOf(StringConstants.generic_params_infix);
                     string rez_name = _name.Substring(0, pos) + "<";
                     rez_name += _generic_params[0].name;
                     for (int i = 1; i < _generic_params.Count; i++)
@@ -1967,7 +1967,7 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (this.is_value_type && name.Contains("$"))
                 {
-                    return string.Format(compiler_string_consts.recort_printable_name_template, "...");
+                    return string.Format(StringConstants.recort_printable_name_template, "...");
                 }
                 if (this.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
                 {
@@ -1991,15 +1991,15 @@ namespace PascalABCCompiler.TreeRealization
                             UpperValue = bai.ordinal_type_interface.ordinal_type_to_int(bai.ordinal_type_interface.upper_value).ToString();
                             LowerValue = bai.ordinal_type_interface.ordinal_type_to_int(bai.ordinal_type_interface.lower_value).ToString();
                         }
-                    return string.Format(compiler_string_consts.bounded_array_printable_name_template, LowerValue, UpperValue, bai.element_type.PrintableName);
+                    return string.Format(StringConstants.bounded_array_printable_name_template, LowerValue, UpperValue, bai.element_type.PrintableName);
                     }
                 }
                 if (this.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 {
                     if (rank == 1)
-                        return string.Format(compiler_string_consts.array_printable_name_template, element_type.PrintableName);
+                        return string.Format(StringConstants.array_printable_name_template, element_type.PrintableName);
                     else
-                        return string.Format(compiler_string_consts.multi_dim_array_printable_name_template, new string(',', rank-1), element_type.PrintableName);
+                        return string.Format(StringConstants.multi_dim_array_printable_name_template, new string(',', rank-1), element_type.PrintableName);
                 }
                 if (this.IsDelegate && this.name != null && this.name.IndexOf("$") != -1)
                 {
@@ -2422,7 +2422,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_implicit_conversion_to(type_node ctn)
         {
-            List<SymbolInfo> sil = this.find_in_type(compiler_string_consts.implicit_operator_name);
+            List<SymbolInfo> sil = this.find_in_type(StringConstants.implicit_operator_name);
         	if (sil != null)
         	{
         		function_node fn = null;
@@ -2490,7 +2490,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_implicit_conversion_from(type_node ctn)
         {
-        	List<SymbolInfo> sil = this.find_in_type(compiler_string_consts.implicit_operator_name);
+        	List<SymbolInfo> sil = this.find_in_type(StringConstants.implicit_operator_name);
         	if (sil != null)
         	{
         		function_node fn = null;
@@ -2571,7 +2571,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_explicit_conversion_to(type_node ctn)
         {
-            List<SymbolInfo> sil = this.find_in_type(compiler_string_consts.explicit_operator_name);
+            List<SymbolInfo> sil = this.find_in_type(StringConstants.explicit_operator_name);
         	if (sil != null)
         	{
         		function_node fn = null;
@@ -2589,7 +2589,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_explicit_conversion_from(type_node ctn)
         {
-            List<SymbolInfo> sil = this.find_in_type(compiler_string_consts.explicit_operator_name);
+            List<SymbolInfo> sil = this.find_in_type(StringConstants.explicit_operator_name);
         	if (sil != null)
         	{
         		function_node fn = null;
@@ -2771,7 +2771,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return compiler_string_consts.GetShortStringTypeName(length);
+                return StringConstants.GetShortStringTypeName(length);
             }
         }
         
@@ -2791,7 +2791,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override SymbolInfo find_first_in_type(string name, bool no_search_in_extension_methods = false)
         {
-            if (name == compiler_string_consts.assign_name || name == compiler_string_consts.plusassign_name)
+            if (name == StringConstants.assign_name || name == StringConstants.plusassign_name)
             {
                 var temp = _scope.FindOnlyInType(name, null);
                 return temp?.FirstOrDefault();
@@ -2804,7 +2804,7 @@ namespace PascalABCCompiler.TreeRealization
             //return this.find_in_additional_names(name)
             //SymbolInfo si = _scope.FindOnlyInType(name, null);
             //if (name )
-            if (name == compiler_string_consts.assign_name || name == compiler_string_consts.plusassign_name)
+            if (name == StringConstants.assign_name || name == StringConstants.plusassign_name)
                 return _scope.FindOnlyInType(name, null);
             return SystemLibrary.SystemLibrary.string_type.find_in_type(name);
         }
@@ -2813,7 +2813,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             //return this.find_in_additional_names(name);
             //SymbolInfo si = _scope.FindOnlyInType(name, CurrentScope);
-            if (name == compiler_string_consts.assign_name || name == compiler_string_consts.plusassign_name)
+            if (name == StringConstants.assign_name || name == StringConstants.plusassign_name)
             {
                 return _scope.FindOnlyInType(name, null);
             }
@@ -2849,7 +2849,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             //if (ctn == base_type)
             //    return TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(ctn, this, false);
-            //SymbolInfo si = find_in_type(compiler_string_consts.implicit_operator_name);
+            //SymbolInfo si = find_in_type(StringConstants.implicit_operator_name);
             return null;//ss:=s
         }
 
@@ -3198,7 +3198,7 @@ namespace PascalABCCompiler.TreeRealization
 
         private string MakePseudoInstanceName(List<type_node> param_types)
         {
-            int last = name.LastIndexOf(compiler_string_consts.generic_params_infix);
+            int last = name.LastIndexOf(StringConstants.generic_params_infix);
             string rez = name.Substring(0, last);
             bool first = true;
             foreach (type_node tnode in param_types)
@@ -3253,7 +3253,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 if (base_type == SystemLibrary.SystemLibrary.delegate_base_type)
                 {
-                    SymbolInfo si_int = this.find_first_in_type(compiler_string_consts.invoke_method_name);
+                    SymbolInfo si_int = this.find_first_in_type(StringConstants.invoke_method_name);
 #if DEBUG
                     if (si_int == null)
                     {
@@ -3267,7 +3267,7 @@ namespace PascalABCCompiler.TreeRealization
                         throw new CompilerInternalError("No invoke method in class derived from MulticastDelegate");
                     }
 #endif
-                    SymbolInfo si_cons = this.find_first_in_type(compiler_string_consts.net_constructor_name);
+                    SymbolInfo si_cons = this.find_first_in_type(StringConstants.net_constructor_name);
                     compiled_constructor_node ctor = si_cons.sym_info as compiled_constructor_node;
 #if DEBUG
                     if (ctor == null)
@@ -3279,10 +3279,10 @@ namespace PascalABCCompiler.TreeRealization
                         invoke, ctor);
                     dii.parameters.AddRange(invoke.parameters);
                     this.add_internal_interface(dii);
-                    add_delegate_operator(compiler_string_consts.plusassign_name, type_constructor.instance.delegate_add_assign_compile_time_executor);
-                    add_delegate_operator(compiler_string_consts.plus_name, type_constructor.instance.delegate_add_compile_time_executor);
-                    add_delegate_operator(compiler_string_consts.minusassign_name, type_constructor.instance.delegate_sub_assign_compile_time_executor);
-                    add_delegate_operator(compiler_string_consts.minus_name, type_constructor.instance.delegate_sub_compile_time_executor);
+                    add_delegate_operator(StringConstants.plusassign_name, type_constructor.instance.delegate_add_assign_compile_time_executor);
+                    add_delegate_operator(StringConstants.plus_name, type_constructor.instance.delegate_add_compile_time_executor);
+                    add_delegate_operator(StringConstants.minusassign_name, type_constructor.instance.delegate_sub_assign_compile_time_executor);
+                    add_delegate_operator(StringConstants.minus_name, type_constructor.instance.delegate_sub_compile_time_executor);
                 }
             }
         }
@@ -3294,9 +3294,9 @@ namespace PascalABCCompiler.TreeRealization
             cnfn.ConnectedToType = this;
             cnfn.compile_time_executor = executor;
             add_name(name, new SymbolInfo(cnfn));
-            common_parameter cp1 = new common_parameter(compiler_string_consts.left_param_name, this, SemanticTree.parameter_type.value,
+            common_parameter cp1 = new common_parameter(StringConstants.left_param_name, this, SemanticTree.parameter_type.value,
                                                         cnfn, concrete_parameter_type.cpt_none, null, null);
-            common_parameter cp2 = new common_parameter(compiler_string_consts.right_param_name, this, SemanticTree.parameter_type.value,
+            common_parameter cp2 = new common_parameter(StringConstants.right_param_name, this, SemanticTree.parameter_type.value,
                                                         cnfn, concrete_parameter_type.cpt_none, null, null);
             cnfn.parameters.AddElement(cp1);
             cnfn.parameters.AddElement(cp2);
@@ -3324,8 +3324,8 @@ namespace PascalABCCompiler.TreeRealization
 				compiled_constructor_node ccn=compiled_constructor_node.get_compiled_constructor(ci);
 				SymbolInfo si=new SymbolInfo(ccn);
 				NetHelper.NetHelper.AddConstructor(ci, ccn);
-				//add_additional_name(compiler_string_consts.standart_constructor_name,si);
-                add_name(compiler_string_consts.default_constructor_name, si);
+				//add_additional_name(StringConstants.standart_constructor_name,si);
+                add_name(StringConstants.default_constructor_name, si);
 			}
 		}
 
@@ -3348,17 +3348,17 @@ namespace PascalABCCompiler.TreeRealization
         private static void InitEnumOperations(compiled_type_node ctn)
         {
             if (ctn.compiled_type.GetCustomAttributes(typeof(FlagsAttribute), true).Length == 0) return;
-            basic_function_node _int_and = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.and_name, ctn, SemanticTree.basic_function_type.iand);
+            basic_function_node _int_and = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.and_name, ctn, SemanticTree.basic_function_type.iand);
             _int_and.compile_time_executor = SystemLibrary.static_executors.enum_and_executor;
-            basic_function_node _int_or = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.or_name, ctn, SemanticTree.basic_function_type.ior);
+            basic_function_node _int_or = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.or_name, ctn, SemanticTree.basic_function_type.ior);
             _int_or.compile_time_executor = SystemLibrary.static_executors.enum_or_executor;
-            basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.xor_name, ctn, SemanticTree.basic_function_type.ixor);
+            basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.xor_name, ctn, SemanticTree.basic_function_type.ixor);
             _int_xor.compile_time_executor = SystemLibrary.static_executors.enum_xor_executor;
             if (ctn.scope != null)
             {
-                ctn.scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfo(_int_and));
-                ctn.scope.AddSymbol(compiler_string_consts.or_name, new SymbolInfo(_int_or));
-                ctn.scope.AddSymbol(compiler_string_consts.xor_name, new SymbolInfo(_int_xor));
+                ctn.scope.AddSymbol(StringConstants.and_name, new SymbolInfo(_int_and));
+                ctn.scope.AddSymbol(StringConstants.or_name, new SymbolInfo(_int_or));
+                ctn.scope.AddSymbol(StringConstants.xor_name, new SymbolInfo(_int_xor));
             }
         }
 
@@ -3434,10 +3434,10 @@ namespace PascalABCCompiler.TreeRealization
                     lower_value, upper_value, oti_old.value_to_int, oti_old.ordinal_type_to_int);
 
                 ctn.add_internal_interface(oti_new);
-                SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.gr_name, ctn, SemanticTree.basic_function_type.enumgr, SystemLibrary.SystemLibrary.bool_type);
-                SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.greq_name, ctn, SemanticTree.basic_function_type.enumgreq, SystemLibrary.SystemLibrary.bool_type);
-                SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.sm_name, ctn, SemanticTree.basic_function_type.enumsm, SystemLibrary.SystemLibrary.bool_type);
-                SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.smeq_name, ctn, SemanticTree.basic_function_type.enumsmeq, SystemLibrary.SystemLibrary.bool_type);
+                SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.gr_name, ctn, SemanticTree.basic_function_type.enumgr, SystemLibrary.SystemLibrary.bool_type);
+                SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.greq_name, ctn, SemanticTree.basic_function_type.enumgreq, SystemLibrary.SystemLibrary.bool_type);
+                SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.sm_name, ctn, SemanticTree.basic_function_type.enumsm, SystemLibrary.SystemLibrary.bool_type);
+                SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.smeq_name, ctn, SemanticTree.basic_function_type.enumsmeq, SystemLibrary.SystemLibrary.bool_type);
                 InitEnumOperations(ctn);
             }
             //ctn.init_scope();
@@ -3977,7 +3977,7 @@ namespace PascalABCCompiler.TreeRealization
             function_node fn = null;
             if (_explicit_convertions_from.TryGetValue(ctn, out fn))
                 return fn;
-            if (SemanticRules.PoinerRealization == PoinerRealization.VoidStar)
+            if (SemanticRulesConstants.PoinerRealization == PoinerRealization.VoidStar)
             {
                 if ((this == SystemLibrary.SystemLibrary.integer_type && ctn == SystemLibrary.SystemLibrary.pointer_type) ||
                     (this == SystemLibrary.SystemLibrary.pointer_type && ctn == SystemLibrary.SystemLibrary.integer_type)
@@ -4146,7 +4146,7 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     return base.name;
                 }
-				return PascalABCCompiler.TreeConverter.compiler_string_consts.simple_array_name;
+				return StringConstants.simple_array_name;
 			}
 		}
 		
@@ -4875,7 +4875,7 @@ namespace PascalABCCompiler.TreeRealization
         private string _name=null;
         private string make_name()
         {
-        	if (_proper_methods.Count == 0) return compiler_string_consts.method_group_type_name;
+        	if (_proper_methods.Count == 0) return StringConstants.method_group_type_name;
         	base_function_call bfc = _proper_methods[0];
         	System.Text.StringBuilder sb = new System.Text.StringBuilder();
         	if (bfc.function.return_value_type == null)
@@ -4911,7 +4911,7 @@ namespace PascalABCCompiler.TreeRealization
             {
             	if (_name == null) _name = make_name();
             	return _name;
-            	//return compiler_string_consts.method_group_type_name;
+            	//return StringConstants.method_group_type_name;
             }
         }
 
@@ -4924,7 +4924,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override List<SymbolInfo> find_in_type(string name, bool no_search_in_extension_methods = false)
         {
-        	if (name != compiler_string_consts.plusassign_name && name != compiler_string_consts.minusassign_name)
+        	if (name != StringConstants.plusassign_name && name != StringConstants.minusassign_name)
         	    foreach (base_function_call fn in _proper_methods)
                 {
                     if (fn.simple_function_node.parameters.Count == 0)
@@ -5001,7 +5001,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override string name
         {
-            get { return compiler_string_consts.GetTypedFileTypeName(element_type.name); }
+            get { return StringConstants.GetTypedFileTypeName(element_type.name); }
         }
 
         
@@ -5291,7 +5291,7 @@ namespace PascalABCCompiler.TreeRealization
         private int _length;
         private type_node _element_type;
         public ArrayConstType(type_node element_type, int length, location loc)
-            :base(compiler_string_consts.array_const_type_name, loc)
+            :base(StringConstants.array_const_type_name, loc)
         {
             _length = length;
             _element_type = element_type;
@@ -5324,7 +5324,7 @@ namespace PascalABCCompiler.TreeRealization
     public class RecordConstType : undefined_type
     {
         public RecordConstType(location loc)
-            : base(compiler_string_consts.record_const_type_name, loc)
+            : base(StringConstants.record_const_type_name, loc)
         {
         }
     }
@@ -5335,7 +5335,7 @@ namespace PascalABCCompiler.TreeRealization
     {
         //public type_node real_type = null;
         public auto_type(location loc)
-            : base(compiler_string_consts.auto_type_name, loc) { }
+            : base(StringConstants.auto_type_name, loc) { }
     }
 
     // тип, который объявляется как ienumerable_auto и определяется при компиляции в момент первого присваивания
@@ -5344,7 +5344,7 @@ namespace PascalABCCompiler.TreeRealization
     {
         //public type_node real_type = null;
         public ienumerable_auto_type(location loc)
-            : base(compiler_string_consts.ienumerable_auto_type_name, loc) { }
+            : base(StringConstants.ienumerable_auto_type_name, loc) { }
     }
 
 }

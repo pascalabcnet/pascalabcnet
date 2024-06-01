@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using QUT.Gppg;
+using PascalABCCompiler.Parsers;
+using PascalABCCompiler.ParserTools.Directives;
+using System.Text;
 
 namespace PascalABCCompiler.ParserTools
 {
@@ -24,7 +27,7 @@ namespace PascalABCCompiler.ParserTools
 
     // Класс глобальных описаний и статических методов
     // для использования различными подсистемами парсера и сканера
-    public abstract class BaseParserTools 
+    public abstract class BaseParserTools
     {
         protected const int maxCharConst = 0xFFFF;
         // SSM: Errors инициализируется в другом месте - сюда только передается!
@@ -36,6 +39,13 @@ namespace PascalABCCompiler.ParserTools
         public List<compiler_directive> compilerDirectives;
 
         public static Dictionary<string, string> tokenNum; // строки, соответствующие терминалам, для вывода ошибок - SSM
+
+        public IParser ParserRef { get; private set; }
+
+        protected BaseParserTools(IParser parserRef)
+        {
+            this.ParserRef = parserRef;
+        }
 
         public SourceContext ToSourceContext(LexLocation loc)
         {
@@ -83,10 +93,219 @@ namespace PascalABCCompiler.ParserTools
             warnings.Add(new CommonWarning(res, currentFileName, loc.begin_position.line_num, loc.begin_position.column_num));
         }
 
-        public string ReplaceSpecialSymbols(string text)
+        protected abstract string ReplaceSpecialSymbols(string text);
+
+        /// <summary>
+        /// Удаление кавычек у параметра директивы
+        /// </summary>
+        protected string DeleteQuotesFromDirectiveParam(string param)
         {
-            text = text.Replace("''", "'");
-            return text;
+            if (param.Length != 1 && param.StartsWith("'") && param.EndsWith("'"))
+                return param.Substring(1, param.Length - 2);
+
+            return param;
+        }
+
+        /// <summary>
+        /// Обычный разбор параметров директивы (кавычки - не спецсимволы)
+        /// </summary>
+        protected List<string> SplitDirectiveParamsOrdinary(string parameters)
+        {
+            List<string> words;
+
+            words = parameters.Split(new char[] { ' ', '\t', '\v', '\f', '\u00A0' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            return words;
+        }
+
+        /// <summary>
+        /// Разбор параметров директивы, который воспринимает кавычки как спецсимволы (все символы внутри кавычек добавляются)
+        /// </summary>
+        protected List<string> SplitDirectiveParamsWithQuotesAsSpecialSymbols(string parameters)
+        {
+            List<string> words = new List<string>();
+
+            bool isInQuotes = false;
+            StringBuilder currentWord = new StringBuilder();
+
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                char c = parameters[i];
+
+                if (c == '\'' && !isInQuotes)
+                {
+                    isInQuotes = true;
+                }
+                else if (c == '\'' && isInQuotes)
+                {
+                    isInQuotes = false;
+                }
+                else if (char.IsWhiteSpace(c) && !isInQuotes)
+                {
+                    if (currentWord.Length != 0)
+                    {
+                        words.Add(currentWord.ToString());
+                        currentWord.Clear();
+                    }
+                }
+                else
+                {
+                    currentWord.Append(c);
+                }
+            }
+
+            if (isInQuotes)
+                currentWord.Insert(0, '\'');
+
+            if (currentWord.Length != 0)
+            {
+                words.Add(currentWord.ToString());
+            }
+
+            return words;
+        }
+
+        /// <summary>
+        /// Получение имени директивы из строки с именем и параметрами
+        /// </summary>
+        protected string GetDirectiveName(string directiveText)
+        {
+            string directiveTrimmed = directiveText.Trim();
+            string directiveName = "";
+
+            for (int i = 0; i < directiveTrimmed.Length; i++)
+            {
+                char c = directiveTrimmed[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    directiveName = directiveTrimmed.Substring(0, i);
+                    break;
+                }
+            }
+
+            if (directiveName == "")
+                directiveName = directiveTrimmed;
+
+            return directiveName;
+        }
+
+        /// <summary>
+        /// Разбор директивы + проверка имени и параметров
+        /// </summary>
+        public void ParseDirective(string directive, LexLocation location, out string directiveName, out List<string> directiveParams)
+        {
+            string directiveText = ExtractDirectiveTextWithoutSpecialSymbols(directive);
+            directiveName = GetDirectiveName(directiveText);
+
+            ValidateDirectiveName(location, directiveName);
+
+            // подстрока с параметрами
+            string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
+
+            // если кавычки используются как специальные символы (для объединения нескольких слов в одно)
+            if (ParserRef.ValidDirectives[directiveName].quotesAreSpecialSymbols)
+            {
+                directiveParams = SplitDirectiveParamsWithQuotesAsSpecialSymbols(paramsString);
+            }
+            else
+            {
+                directiveParams = SplitDirectiveParamsOrdinary(paramsString);
+            }
+
+            ValidateDirectiveParams(directiveName, directiveParams, location);
+        }
+
+        /// <summary>
+        /// Проверка корректности имени директивы
+        /// </summary>
+        private void ValidateDirectiveName(LexLocation location, string directiveName)
+        {
+            // пустая директива - ошибка
+            if (directiveName == "")
+            {
+                AddErrorFromResource("EMPTY_DIRECTIVE", location);
+                return;
+            }
+
+            // проверка имени директивы
+            if (!ParserRef.ValidDirectives.ContainsKey(directiveName))
+            {
+                AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", location, directiveName);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Получение имени директивы и ее параметров ("\s*(имя)\s+(параметр1)\s+(параметр2)...\s*") без специфических для языка обозначений
+        /// </summary>
+        protected abstract string ExtractDirectiveTextWithoutSpecialSymbols(string directive);
+
+        /// <summary>
+        /// Проверка парамтеров директивы с помощью проверок из Parser.ValidDirectives
+        /// </summary>
+        public void ValidateDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
+        {
+            var directiveInfo = ParserRef.ValidDirectives[directiveName];
+
+            if (directiveInfo.checkParamsNumNeeded)
+            {
+                // случай директивы, переданной без параметров
+                if (directiveParams.Count == 0)
+                {
+                    // если не поддерживается 0 параметров (та же проверка, что и ниже, но сообщение об ошибке здесь более подходящее для данного случая)
+                    if (!directiveInfo.paramsNums.Contains(0))
+                    {
+                        AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
+                    }
+                    return;
+                }
+
+                // проверка на добавление параметров директиве без параметров
+                if (directiveInfo.paramsNums.Length == 1 && directiveInfo.paramsNums[0] == 0)
+                {
+                    AddErrorFromResource("UNNECESSARY_DIRECTIVE_PARAM{0}", loc, directiveName);
+                    return;
+                }
+
+                // проверка кол-ва параметров директивы (наиболее общая)
+                if (!directiveInfo.paramsNums.Contains(directiveParams.Count))
+                {
+                    AddWrongNumberOfParamsError(directiveName, directiveParams, loc, directiveInfo);
+                    return;
+                }
+            }
+
+            // проверки параметров по отдельности
+            if (!directiveInfo.ParamsValid(directiveParams, out int indexOfMismatch, out string specificErrorMessage))
+            {
+                AddErrorFromResource("INCORRECT_DIRECTIVE_PARAM{0}{1}{2}", loc, directiveName, directiveParams[indexOfMismatch], specificErrorMessage);
+            }
+        }
+
+        /// <summary>
+        /// Формирование ошибки неправильного кол-ва параметров директивы в зависимости от возможных количеств из DirectiveInfo
+        /// </summary>
+        private void AddWrongNumberOfParamsError(string directiveName, List<string> directiveParams, SourceContext loc, DirectiveInfo directiveInfo)
+        {
+            string paramsNumString = "";
+            int maxParamsNum = directiveInfo.paramsNums.Max();
+
+            if (directiveInfo.paramsNums.Length > 1)
+            {
+                if (directiveParams.Count > maxParamsNum)
+                {
+                    string paramString = maxParamsNum > 1 ? GetFromStringResources("PARAM_MULTIPLE1") : GetFromStringResources("PARAM_SINGLE2");
+                    paramsNumString = GetFromStringResources("NOT_MORE_THAN") + " " + maxParamsNum + " " + paramString;
+                }
+            }
+            else
+            {
+                string paramString = directiveInfo.paramsNums[0] > 1 ? GetFromStringResources("PARAM_MULTIPLE2") : GetFromStringResources("PARAM_SINGLE1");
+                paramsNumString = GetFromStringResources("EXACTLY") + " " + directiveInfo.paramsNums[0] + " " + paramString;
+            }
+
+            AddErrorFromResource("DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}", loc, directiveName, paramsNumString);
         }
 
         public char_const create_char_const(string text, SourceContext sc)
@@ -243,20 +462,7 @@ namespace PascalABCCompiler.ParserTools
             return proc_list;
         }
 
-        public literal create_string_const(string text, SourceContext sc)
-        {
-            literal lt;
-            if (text.Length == 3 && text[0] == '\'' && text[2] == '\'')
-            {
-                lt = new char_const(text[1]);
-                lt.source_context = sc;
-                return lt;
-            }
-            text = ReplaceSpecialSymbols(text.Substring(1, text.Length - 2));
-            lt = new string_const(text);
-            lt.source_context = sc;
-            return lt;
-        }
+        public abstract literal create_string_const(string text, SourceContext sc);
 
         public literal create_multiline_string_const(string text, SourceContext sc)
         {

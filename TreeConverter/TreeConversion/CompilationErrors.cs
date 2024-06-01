@@ -133,8 +133,8 @@ namespace PascalABCCompiler.TreeConverter
     // SSM - 01.2014 - ужасно плодить много классов ошибок - достаточно сделать один общий для простых ошибок
     public class SimpleSemanticError : CompilationErrorWithLocation
     {
-        private string ErrResourceString;
-        private object[] values;
+        protected string ErrResourceString;
+        protected object[] values;
 
         public SimpleSemanticError(location loc, string ErrResourceString, params object[] values): base(loc)
         {
@@ -1907,11 +1907,11 @@ namespace PascalABCCompiler.TreeConverter
         public CanNotReferenceToNonStaticMethodWithType(string meth_name, location loc)
             : base(loc)
         {
-            if (meth_name.Contains(compiler_string_consts.event_add_method_prefix) ||
-                meth_name.Contains(compiler_string_consts.event_remove_method_prefix))
+            if (meth_name.Contains(StringConstants.event_add_method_prefix) ||
+                meth_name.Contains(StringConstants.event_remove_method_prefix))
             {
-                meth_name = meth_name.Replace(compiler_string_consts.event_add_method_prefix, "");
-                meth_name = meth_name.Replace(compiler_string_consts.event_remove_method_prefix, "");
+                meth_name = meth_name.Replace(StringConstants.event_add_method_prefix, "");
+                meth_name = meth_name.Replace(StringConstants.event_remove_method_prefix, "");
                 message = "CAN_NOT_REFERENCE_TO_NONSTATIC_EVENT_{0}_WITH_TYPE";
             }
             name=meth_name;
@@ -1934,11 +1934,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 case general_node_type.function_node:
                     meth_name = (dn as function_node).name; 
-                    if (meth_name.Contains(compiler_string_consts.event_add_method_prefix) ||
-                        meth_name.Contains(compiler_string_consts.event_remove_method_prefix))
+                    if (meth_name.Contains(StringConstants.event_add_method_prefix) ||
+                        meth_name.Contains(StringConstants.event_remove_method_prefix))
                     {
-                        meth_name = meth_name.Replace(compiler_string_consts.event_add_method_prefix, "");
-                        meth_name = meth_name.Replace(compiler_string_consts.event_remove_method_prefix, "");
+                        meth_name = meth_name.Replace(StringConstants.event_add_method_prefix, "");
+                        meth_name = meth_name.Replace(StringConstants.event_remove_method_prefix, "");
                         message = "CAN_NOT_REFERENCE_TO_NONSTATIC_EVENT_{0}_FROM_STATIC_METHOD";
                     }
                     break;
@@ -1971,11 +1971,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 case general_node_type.function_node:
                     meth_name = (dn as function_node).name;
-                    if (meth_name.Contains(compiler_string_consts.event_add_method_prefix) ||
-                        meth_name.Contains(compiler_string_consts.event_remove_method_prefix))
+                    if (meth_name.Contains(StringConstants.event_add_method_prefix) ||
+                        meth_name.Contains(StringConstants.event_remove_method_prefix))
                     {
-                        meth_name = meth_name.Replace(compiler_string_consts.event_add_method_prefix, "");
-                        meth_name = meth_name.Replace(compiler_string_consts.event_remove_method_prefix, "");
+                        meth_name = meth_name.Replace(StringConstants.event_add_method_prefix, "");
+                        meth_name = meth_name.Replace(StringConstants.event_remove_method_prefix, "");
                         message = "CAN_NOT_REFERENCE_TO_NONSTATIC_EVENT_{0}_FROM_STATIC_INITIALIZER";
                     }
                     break;

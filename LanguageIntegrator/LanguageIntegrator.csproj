@@ -7,7 +7,7 @@
     <ProjectGuid>{A48D9069-D569-4110-9252-A10F139B669B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LanguageIntegration</RootNamespace>
+    <RootNamespace>Languages.Facade</RootNamespace>
     <AssemblyName>LanguageIntegrator</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,13 +40,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseLanguage.cs" />
+    <Compile Include="ILanguage.cs" />
     <Compile Include="LanguageIntegrator.cs" />
+    <Compile Include="LanguageProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Errors\Errors.csproj">
+      <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
+      <Name>Errors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ParserTools\ParserTools.csproj">
       <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
       <Name>ParserTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
+      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
+      <Name>StringConstants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
+      <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
+      <Name>SyntaxTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
+      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
+      <Name>SyntaxVisitors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
+      <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>
+      <Name>TreeConverter</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

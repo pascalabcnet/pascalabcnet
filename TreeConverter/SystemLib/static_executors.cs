@@ -398,7 +398,7 @@ namespace PascalABCCompiler.SystemLibrary
 
         private static expression_node inline_assign_operator(function_node assign_operator,function_node assign, function_node operation, location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
+            if (!SemanticRulesConstants.UseExtendedAssignmentOperatorsForPrimitiveTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(assign_operator.name, parameters[0]));
             basic_function_call operationc = new basic_function_call((basic_function_node)operation, call_location);
             operationc.parameters.AddElement(parameters[0]);
@@ -412,8 +412,8 @@ namespace PascalABCCompiler.SystemLibrary
         public static expression_node set_plusassign_executor(location call_location, params expression_node[] parameters)
         {
             //return inline_assign_operator(SystemLibrary._byte_plusassign, SystemLibrary.byte_assign, SystemLibrary.int_add, call_location, parameters);
-        	if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
-                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(compiler_string_consts.plusassign_name, parameters[0]));
+        	if (!SemanticRulesConstants.UseExtendedAssignmentOperatorsForPrimitiveTypes)
+                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(StringConstants.plusassign_name, parameters[0]));
         	//basic_function_call operationc = new basic_function_call((basic_function_node)operation, call_location);
             base_function_call cnfc = null;
             if (SystemLibInitializer.SetUnionProcedure.sym_info is common_namespace_function_node)
@@ -423,7 +423,7 @@ namespace PascalABCCompiler.SystemLibrary
             cnfc.parameters.AddElement(parameters[0]);
         	cnfc.parameters.AddElement(parameters[1]);
             //operationc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(parameters[1], parameters[0].type));
-            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(compiler_string_consts.assign_name).sym_info as basic_function_node, call_location);
+            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(StringConstants.assign_name).sym_info as basic_function_node, call_location);
             assignc.parameters.AddElement(parameters[0]);
             assignc.parameters.AddElement(cnfc);
             //assignc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(operationc, parameters[0].type));
@@ -432,12 +432,12 @@ namespace PascalABCCompiler.SystemLibrary
         
         public static expression_node short_string_addassign_executor(location call_location, params expression_node[] parameters)
         {
-        	if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
-                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(compiler_string_consts.plusassign_name, parameters[0]));
+        	if (!SemanticRulesConstants.UseExtendedAssignmentOperatorsForPrimitiveTypes)
+                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(StringConstants.plusassign_name, parameters[0]));
         	compiled_static_method_call csmc = new compiled_static_method_call(SystemLibrary.string_add as compiled_function_node, call_location);
         	csmc.parameters.AddElement(parameters[0]);
         	csmc.parameters.AddElement(parameters[1]);
-        	basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(compiler_string_consts.assign_name).sym_info as basic_function_node, call_location);
+        	basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(StringConstants.assign_name).sym_info as basic_function_node, call_location);
         	assignc.parameters.AddElement(parameters[0]);
             base_function_call cnfc = null;
             if (SystemLibInitializer.ClipShortStringProcedure.sym_info is common_namespace_function_node)
@@ -453,8 +453,8 @@ namespace PascalABCCompiler.SystemLibrary
         public static expression_node set_subassign_executor(location call_location, params expression_node[] parameters)
         {
             //return inline_assign_operator(SystemLibrary._byte_plusassign, SystemLibrary.byte_assign, SystemLibrary.int_add, call_location, parameters);
-        	if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
-                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(compiler_string_consts.plusassign_name, parameters[0]));
+        	if (!SemanticRulesConstants.UseExtendedAssignmentOperatorsForPrimitiveTypes)
+                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(StringConstants.plusassign_name, parameters[0]));
         	//basic_function_call operationc = new basic_function_call((basic_function_node)operation, call_location);
             base_function_call cnfc = null;
             if (SystemLibInitializer.SetSubtractProcedure.sym_info is common_namespace_function_node)
@@ -464,7 +464,7 @@ namespace PascalABCCompiler.SystemLibrary
             cnfc.parameters.AddElement(parameters[0]);
         	cnfc.parameters.AddElement(parameters[1]);
             //operationc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(parameters[1], parameters[0].type));
-            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(compiler_string_consts.assign_name).sym_info as basic_function_node, call_location);
+            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(StringConstants.assign_name).sym_info as basic_function_node, call_location);
             assignc.parameters.AddElement(parameters[0]);
             assignc.parameters.AddElement(cnfc);
             //assignc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(operationc, parameters[0].type));
@@ -474,8 +474,8 @@ namespace PascalABCCompiler.SystemLibrary
         public static expression_node set_multassign_executor(location call_location, params expression_node[] parameters)
         {
             //return inline_assign_operator(SystemLibrary._byte_plusassign, SystemLibrary.byte_assign, SystemLibrary.int_add, call_location, parameters);
-        	if (!SemanticRules.UseExtendedAssignmentOperatorsForPrimitiveTypes)
-                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(compiler_string_consts.plusassign_name, parameters[0]));
+        	if (!SemanticRulesConstants.UseExtendedAssignmentOperatorsForPrimitiveTypes)
+                SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(StringConstants.plusassign_name, parameters[0]));
         	//basic_function_call operationc = new basic_function_call((basic_function_node)operation, call_location);
             base_function_call cnfc = null;
             if (SystemLibInitializer.SetIntersectProcedure.sym_info is common_namespace_function_node)
@@ -485,7 +485,7 @@ namespace PascalABCCompiler.SystemLibrary
             cnfc.parameters.AddElement(parameters[0]);
         	cnfc.parameters.AddElement(parameters[1]);
             //operationc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(parameters[1], parameters[0].type));
-            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(compiler_string_consts.assign_name).sym_info as basic_function_node, call_location);
+            basic_function_call assignc = new basic_function_call(parameters[0].type.find_first_in_type(StringConstants.assign_name).sym_info as basic_function_node, call_location);
             assignc.parameters.AddElement(parameters[0]);
             assignc.parameters.AddElement(cnfc);
             //assignc.parameters.AddElement(SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(operationc, parameters[0].type));
@@ -507,7 +507,7 @@ namespace PascalABCCompiler.SystemLibrary
         }
         private static expression_node byte_divassign_executor(location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes)
+            if (!SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(SystemLibrary._byte_divassign.name, parameters[0]));
             return inline_assign_operator(SystemLibrary._byte_divassign, SystemLibrary.byte_assign, SystemLibrary.int_idiv, call_location, parameters);
         }
@@ -526,7 +526,7 @@ namespace PascalABCCompiler.SystemLibrary
         }
         private static expression_node sbyte_divassign_executor(location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes)
+            if (!SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(SystemLibrary._sbyte_divassign.name, parameters[0]));
             return inline_assign_operator(SystemLibrary._sbyte_divassign, SystemLibrary.sbyte_assign, SystemLibrary.int_idiv, call_location, parameters);
         }
@@ -545,7 +545,7 @@ namespace PascalABCCompiler.SystemLibrary
         }
         private static expression_node short_divassign_executor(location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes)
+            if (!SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(SystemLibrary._short_divassign.name, parameters[0]));
             return inline_assign_operator(SystemLibrary._short_divassign, SystemLibrary.short_assign, SystemLibrary.int_idiv, call_location, parameters);
         }
@@ -564,7 +564,7 @@ namespace PascalABCCompiler.SystemLibrary
         }
         private static expression_node ushort_divassign_executor(location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes)
+            if (!SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(SystemLibrary._ushort_divassign.name, parameters[0]));
             return inline_assign_operator(SystemLibrary._ushort_divassign, SystemLibrary.ushort_assign, SystemLibrary.int_idiv, call_location, parameters);
         }
@@ -583,7 +583,7 @@ namespace PascalABCCompiler.SystemLibrary
         }
         private static expression_node int_divassign_executor(location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes)
+            if (!SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(SystemLibrary._int_divassign.name, parameters[0]));
             return inline_assign_operator(SystemLibrary._int_divassign, SystemLibrary.int_assign, SystemLibrary.int_idiv, call_location, parameters);
         }
@@ -602,7 +602,7 @@ namespace PascalABCCompiler.SystemLibrary
         }
         private static expression_node uint_divassign_executor(location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes)
+            if (!SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(SystemLibrary._uint_divassign.name, parameters[0]));
             return inline_assign_operator(SystemLibrary._uint_divassign, SystemLibrary.uint_assign, SystemLibrary.uint_idiv, call_location, parameters);
         }
@@ -621,7 +621,7 @@ namespace PascalABCCompiler.SystemLibrary
         }
         private static expression_node long_divassign_executor(location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes)
+            if (!SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(SystemLibrary._long_divassign.name, parameters[0]));
             return inline_assign_operator(SystemLibrary._long_divassign, SystemLibrary.long_assign, SystemLibrary.long_idiv, call_location, parameters);
         }
@@ -640,7 +640,7 @@ namespace PascalABCCompiler.SystemLibrary
         }
         private static expression_node ulong_divassign_executor(location call_location, params expression_node[] parameters)
         {
-            if (!SemanticRules.UseDivisionAssignmentOperatorsForIntegerTypes)
+            if (!SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes)
                 SystemLibrary.syn_visitor.AddError(new OperatorCanNotBeAppliedToThisType(SystemLibrary._ulong_divassign.name, parameters[0]));
             return inline_assign_operator(SystemLibrary._ulong_divassign, SystemLibrary.ulong_assign, SystemLibrary.ulong_idiv, call_location, parameters);
         }

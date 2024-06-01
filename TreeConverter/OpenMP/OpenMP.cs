@@ -126,12 +126,12 @@ namespace PascalABCCompiler.TreeConverter
             function_node_stack = syntax_tree_visitor.context.func_stack;
             syntax_tree_visitor.context.func_stack = new common_function_node_stack();
             current_last_created_function = syntax_tree_visitor.context.last_created_function;
-            SemanticRulesThrowErrorWithoutSave = SemanticRules.ThrowErrorWithoutSave;
-            SemanticRules.ThrowErrorWithoutSave = true;
+            SemanticRulesThrowErrorWithoutSave = SemanticRulesConstants.ThrowErrorWithoutSave;
+            SemanticRulesConstants.ThrowErrorWithoutSave = true;
         }
         public void RestoreContext(syntax_tree_visitor syntax_tree_visitor)
         {
-            SemanticRules.ThrowErrorWithoutSave = SemanticRulesThrowErrorWithoutSave;
+            SemanticRulesConstants.ThrowErrorWithoutSave = SemanticRulesThrowErrorWithoutSave;
             syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack = statement_list_stack;
             syntax_tree_visitor.context.converted_type = converted_type;
             syntax_tree_visitor.context.var_defs = current_var_defs;
@@ -2062,7 +2062,7 @@ namespace PascalABCCompiler.TreeConverter
             SyntaxTree.if_node result = new PascalABCCompiler.SyntaxTree.if_node();
             SyntaxTree.un_expr ue = new PascalABCCompiler.SyntaxTree.un_expr();
             ue.operation_type = PascalABCCompiler.SyntaxTree.Operators.LogicalNOT;
-            ue.subnode = new SyntaxTree.ident(TreeConverter.compiler_string_consts.OMP_NESTED);
+            ue.subnode = new SyntaxTree.ident(StringConstants.OMP_NESTED);
             result.condition = ue;
 
             SyntaxTree.assign AssignInParVar = new PascalABCCompiler.SyntaxTree.assign();

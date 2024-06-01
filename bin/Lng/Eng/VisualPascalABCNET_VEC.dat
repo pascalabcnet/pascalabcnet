@@ -1,4 +1,4 @@
-//VisualPascalABCNET.VisualEnvironmentCompiler
+﻿//VisualPascalABCNET.VisualEnvironmentCompiler
 
 %PREFIX%=VP_VEC_
 DIALOGS_FILTER_PART_{0}{1}|{1}|={0} programs ({1})|{1}|
@@ -48,7 +48,8 @@ STATETEXT_FINDREFERNCES_RESULT{0}={0} matches found
 STATETEXT_NOTFOUND=0 matches found
 
 SUPPORTED_LANGUAGES=Supported languages:
-PARSER_CONNECTED{0}{1}=Connected parser {0} ({1})
+LANGUAGE_LOADED{0}{1}=Loaded {0} language ({1})
+LANGUAGE_LOAD_ERROR{0}={0} language loading error
 PARSER_CONNECTED{0}=Connected parser {0}
 
 CONNECTED_PARSERS=Connected parsers:

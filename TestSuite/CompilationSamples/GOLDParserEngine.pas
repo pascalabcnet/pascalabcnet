@@ -1,6 +1,6 @@
-unit GOLDParserEngine;
+﻿unit GOLDParserEngine;
 
-{$NullBasedStrings true}
+{$zerobasedstrings on}
 
 //----------------------------------------------------------------------
 // Gold Parser engine for PascalABC.NET, v0.1 

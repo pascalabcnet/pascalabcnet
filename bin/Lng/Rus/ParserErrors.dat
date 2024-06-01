@@ -1,4 +1,4 @@
-﻿//Parser errors in PascalABCCompiler.Errors
+﻿// UNIVERSAL PARSER ERRORS
 %PREFIX%=PARSER_ERRORS_
 
 BAD_FLOAT=Слишком большое вещественное
@@ -9,6 +9,11 @@ UNEXPECTED_SYMBOL{0}=Неожиданный символ '{0}'
 BAD_EXPR=Неверное выражение
 EXPECTED{0}=Ожидалось {0}
 BIG_CHAR_NUMBER=Слишком большая константа
-LOAD_ERROR{0}=Ошибка загрузки парсера {0} 
 BAD_SOURCEFILE{0}_EXT=Не могу выбрать подходящий парсер для файла '{0}'
 COMPILATION_ERROR{0}{1}{2}={0}{1} Ошибка компиляции: {2}
+
+EXPECTED_IDENTIFIER=Ожидался идентификатор
+INVALID_VERSION=Формат версии должен соответствовать шаблону MAJOR.MINOR.PATCH
+AVAILABLE_PARAM_VARIANTS{0}=Допустимые значения: {0}
+AVAILABLE_EXT_VARIANTS{0}=Допустимые расширения файла: {0}
+SEE_THE_HELP_FOR_VARIANTS=Уточните допустимые значения в документации языка

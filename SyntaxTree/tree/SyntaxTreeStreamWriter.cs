@@ -1582,7 +1582,15 @@ namespace PascalABCCompiler.SyntaxTree
 					}
 				}
 			}
-			bw.Write((byte)_compilation_unit.Language);
+			if (_compilation_unit.Language == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_compilation_unit.Language);
+			}
 		}
 
 

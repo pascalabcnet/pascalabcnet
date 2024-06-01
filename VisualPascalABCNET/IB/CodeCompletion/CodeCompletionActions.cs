@@ -3,16 +3,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
-using System.Threading;
 using System.Text;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Gui.InsightWindow;
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
 
@@ -117,7 +112,7 @@ namespace VisualPascalABC
                 doc.Replace(offset, unitName.name.Length, new_val);
                 doc.CommitUpdate();
             }
-            WorkbenchServiceFactory.CodeCompletionParserController.RunParseThread();
+            WorkbenchServiceFactory.CodeCompletionParserController.SwitchOnIntellisence();
             VisualPABCSingleton.MainForm.StartTimer();
         }
 
@@ -603,7 +598,7 @@ namespace VisualPascalABC
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
-                CodeCompletion.CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(
+                Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName)?.Parser.GetCompilationUnitForFormatter(
                 VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
                text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
@@ -620,7 +615,7 @@ namespace VisualPascalABC
                                 new PascalABCCompiler.SourceLocation(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, cf.Line, cf.Column, cf.Line, cf.Column), VisualPascalABCPlugins.SourceLocationAction.GotoBeg);
                 }
             }
-            else if (!(Errors[0] is PascalABCCompiler.Errors.ParserBadFileExtension))
+            else
             {
                 WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.ExecuteAction(VisualPascalABCPlugins.VisualEnvironmentCompilerAction.AddMessageToErrorListWindow, new List<PascalABCCompiler.Errors.Error>(new PascalABCCompiler.Errors.Error[] { Errors[0] }));
             }

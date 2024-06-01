@@ -510,23 +510,7 @@ namespace PascalABCCompiler
             throw new NotSupportedException();
         }
 
-        public PascalABCCompiler.SyntaxTreeConverters.SyntaxTreeConvertersController SyntaxTreeConvertersController
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-
         public PascalABCCompiler.SemanticTreeConverters.SemanticTreeConvertersController SemanticTreeConvertersController
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-
-        public PascalABCCompiler.Parsers.Controller ParsersController
         {
             get
             {

@@ -202,7 +202,7 @@ program_body->syntax_tree_node
 compilation_unit->syntax_tree_node
 	string file_name
 	List<compiler_directive> compiler_directives
-	LanguageId Language
+	string Language
 
 unit_module->compilation_unit
 	unit_name unit_name

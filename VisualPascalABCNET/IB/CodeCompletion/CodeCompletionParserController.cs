@@ -1,13 +1,8 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using Languages.Integration;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
 
 namespace VisualPascalABC
 {
@@ -61,7 +56,7 @@ namespace VisualPascalABC
 
         public void Init()
         {
-            CodeCompletion.CodeCompletionController.ParsersController.SourceFilesProvider = visualEnvironmentCompiler.SourceFilesProvider;
+            //LanguageProvider.Instance.SourceFilesProvider = visualEnvironmentCompiler.SourceFilesProvider;
             CodeCompletion.CodeCompletionController.currentLanguageISO = PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO;
         }
 
@@ -116,7 +111,10 @@ namespace VisualPascalABC
             }
         }
 
-        public void RunParseThread()
+        /// <summary>
+        /// Запуск потока с Intellisence
+        /// </summary>
+        public void SwitchOnIntellisence()
         {
             th = new System.Threading.Thread(InternalParsing);
             th.Priority = System.Threading.ThreadPriority.BelowNormal;

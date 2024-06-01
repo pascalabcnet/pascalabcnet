@@ -8,7 +8,6 @@ using System.IO;
 using PascalABCCompiler.SyntaxTree;
 using System.Reflection;
 using PascalABCCompiler;
-using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.Parsers;
 
@@ -56,7 +55,7 @@ namespace CodeCompletion
                 foreach (string s in files)
                 {
                     string fname = Path.GetFileNameWithoutExtension(s);
-                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == compiler_string_consts.pascalExtensionsUnitName)
+                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == StringConstants.pascalExtensionsUnitName)
                         continue;
                     SymInfo si = new SymInfo(Path.GetFileNameWithoutExtension(s), SymbolKind.Namespace, null);
                     si.IsUnitNamespace = true;
@@ -117,7 +116,7 @@ namespace CodeCompletion
                 CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
             visitor.Convert(cu);
             is_compiled = true;
-            cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();
+            cur_used_assemblies = visitor.cur_used_assemblies;
             return;
         }
 
@@ -966,7 +965,7 @@ namespace CodeCompletion
         /// <summary>
         /// Получить описание элемента при наведении мышью
         /// </summary>
-        public string GetDescription(expression expr, string FileName, string expr_without_brackets, PascalABCCompiler.Parsers.Controller parser, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, bool header)
+        public string GetDescription(expression expr, string FileName, string expr_without_brackets, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, bool header)
         {
             if (visitor.cur_scope == null) return null;
             SymScope ss = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
@@ -975,7 +974,7 @@ namespace CodeCompletion
             {
                 List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                 List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
-                expr = parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, Warnings);
+                expr = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, Warnings);
                 if (expr == null || Errors.Count > 0)
                     return null;
             }

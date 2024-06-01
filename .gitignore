@@ -46,8 +46,10 @@
 **/OptimizerConversion.dll
 **/PABCRtl.dll
 **/LanguageIntegrator.dll
+**/StringConstants.dll
 **/ParserTools.dll
 **/PascalABCParser.dll
+**/PascalLanguage.dll
 **/PluginsSupport.dll
 **/PluginsSupportLinux.dll
 **/Properties.Resources.Designer.cs.dll

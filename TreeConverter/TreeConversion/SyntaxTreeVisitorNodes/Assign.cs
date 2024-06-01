@@ -90,7 +90,7 @@ namespace PascalABCCompiler.TreeConverter
                         expr,
                         ind_expr,
                         new int_const_node((expr.type as short_string_type_node).Length, null), from);
-                    return_value(find_operator(compiler_string_consts.assign_name, expr, ind_expr, get_location(_assign)));
+                    return_value(find_operator(StringConstants.assign_name, expr, ind_expr, get_location(_assign)));
                     return true;
                 }
                 if (to.type.type_special_kind == type_special_kind.short_string)
@@ -103,7 +103,7 @@ namespace PascalABCCompiler.TreeConverter
                         convertion_data_and_alghoritms.convert_type(from, SystemLibrary.SystemLibrary.string_type),
                         new int_const_node((to.type as short_string_type_node).Length,
                             null));
-                    statement_node en = find_operator(compiler_string_consts.assign_name, to, clip_expr, get_location(_assign));
+                    statement_node en = find_operator(StringConstants.assign_name, to, clip_expr, get_location(_assign));
                     return_value(en);
                     return true;
                 }
@@ -192,7 +192,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 //else check_field_reference_for_assign(to as class_field_reference,loc);
             }
-            if (context.is_in_cycle() && !SemanticRules.AllowChangeLoopVariable)
+            if (context.is_in_cycle() && !SemanticRulesConstants.AllowChangeLoopVariable)
             {
                 var_definition_node toAsVariable = GetLocalVariableFromAdressExpressionIfPossible(to);
                 if (toAsVariable != null && context.is_loop_variable(toAsVariable) && _assign.source_context != null) // последнее - обрезает проверку для сгенерированного i += 1 в foreach ... index i
