@@ -180,7 +180,7 @@ namespace SymbolTable
             ScopeNum = SymbolTable.GetNewScopeNum();
             SymbolTable.ScopeTable.Add(this);
 
-            CaseSensitive = SemanticRules.SymbolTableCaseSensitive;
+            CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
             Symbols = new SymbolsDictionary();
             InternalScopes = new List<Scope>();              

@@ -112,7 +112,7 @@
     <Compile Include="LambdaExpressions\LambdaSearcher.cs" />
     <Compile Include="NetWrappers\AssemblyResolveScope.cs" />
     <Compile Include="TreeConversion\HasCapturedLambdaParameterInInternalLambdaBody.cs" />
-    <Compile Include="TreeConversion\ISyntaxTreeVisitor.cs" />
+    <Compile Include="TreeConversion\InitializationDataForConverting.cs" />
     <Compile Include="TreeConversion\LambdaHelper.cs" />
     <Compile Include="SymbolTable\DSST\AreaArrayTable.cs">
       <SubType>Code</SubType>
@@ -160,17 +160,13 @@
     <Compile Include="TreeConversion\returner.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TreeConversion\SemanticRules.cs" />
+    <Compile Include="TreeConversion\SemanticRulesConstants.cs" />
     <Compile Include="TreeConversion\semantic_checks_for_sugar.cs" />
     <Compile Include="TreeConversion\SubtreeCreator.cs" />
-    <Compile Include="TreeConversion\SyntaxTreeToSemanticTreeConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Assign.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Foreach.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\ForLoop.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Patterns.cs" />
-    <Compile Include="TreeConversion\SyntaxTreeVisitorsController.cs" />
     <Compile Include="TreeConversion\syntax_tree_visitor.cs">
       <SubType>Code</SubType>
     </Compile>

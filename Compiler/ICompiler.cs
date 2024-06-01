@@ -21,16 +21,11 @@ namespace PascalABCCompiler
             get;
         }
 
-        SyntaxTreeConvertersController SyntaxTreeConvertersController
+        /*SyntaxTreeConvertersController SyntaxTreeConvertersController
         {
             get; 
-        }
+        }*/
         SemanticTreeConvertersController SemanticTreeConvertersController
-        {
-            get;
-        }
-        
-        Parsers.Controller ParsersController
         {
             get;
         }
@@ -39,11 +34,6 @@ namespace PascalABCCompiler
         {
             get;
         }
-
-        /*SyntaxTree.syntax_tree_node SyntaxTree
-        {
-            get;
-        }*/
 
         uint LinesCompiled
         {

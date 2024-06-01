@@ -126,12 +126,12 @@ namespace PascalABCCompiler.TreeConverter
             function_node_stack = syntax_tree_visitor.context.func_stack;
             syntax_tree_visitor.context.func_stack = new common_function_node_stack();
             current_last_created_function = syntax_tree_visitor.context.last_created_function;
-            SemanticRulesThrowErrorWithoutSave = SemanticRules.ThrowErrorWithoutSave;
-            SemanticRules.ThrowErrorWithoutSave = true;
+            SemanticRulesThrowErrorWithoutSave = SemanticRulesConstants.ThrowErrorWithoutSave;
+            SemanticRulesConstants.ThrowErrorWithoutSave = true;
         }
         public void RestoreContext(syntax_tree_visitor syntax_tree_visitor)
         {
-            SemanticRules.ThrowErrorWithoutSave = SemanticRulesThrowErrorWithoutSave;
+            SemanticRulesConstants.ThrowErrorWithoutSave = SemanticRulesThrowErrorWithoutSave;
             syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack = statement_list_stack;
             syntax_tree_visitor.context.converted_type = converted_type;
             syntax_tree_visitor.context.var_defs = current_var_defs;

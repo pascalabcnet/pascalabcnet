@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using PascalABCCompiler.Errors;
 using System.IO;
+using Languages.Facade;
 
 namespace VisualPascalABCPlugins
 {
@@ -207,7 +204,7 @@ namespace VisualPascalABCPlugins
             List<Error> Errors=new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.Compiler.ParsersController.Compile(file_name, FileText, Errors, PascalABCCompiler.ParserTools.ParseMode.Expression);
-            PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression(FileName, FileText, Errors, Warnings);
+            PascalABCCompiler.SyntaxTree.syntax_tree_node sn = LanguageProvider.Instance.SelectLanguageByExtensionSafe(FileName)?.Parser.GetExpression(FileName, FileText, Errors, Warnings);
             if (Errors.Count > 0)
                 StatusLabel.Text = Errors.Count + " errors";
             syntaxTreeSelectComboBox.Items.Clear();
@@ -219,7 +216,8 @@ namespace VisualPascalABCPlugins
 
         private void tsParsePart_Click(object sender, EventArgs e)
         {
-            string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
+            // Добавка part_ не поддерживается парсером  EVA
+            /*string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
             string FileText = (string)VisualEnvironmentCompiler.Compiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
             List<Error> Errors = new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
@@ -230,22 +228,29 @@ namespace VisualPascalABCPlugins
             if (sn == null)
                 return;
             syntaxTreeSelectComboBox.Items.Add(new SyntaxTreeSelectComboBoxItem(sn, FileName));
-            syntaxTreeSelectComboBox.SelectedIndex = 0;
+            syntaxTreeSelectComboBox.SelectedIndex = 0;*/
 
         }
 
-        PascalABCCompiler.SyntaxTree.syntax_tree_node ParseCurrent(List<Error> Errors, string fileNamePosfix)
+        PascalABCCompiler.SyntaxTree.syntax_tree_node ParseCurrent(List<Error> Errors)
         {
             string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
             string FileText = (string)VisualEnvironmentCompiler.StandartCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
-            return VisualEnvironmentCompiler.StandartCompiler.ParsersController.SelectParserForUnitAndBuildTree(FileName + fileNamePosfix, FileText, Errors, new List<CompilerWarning>(), PascalABCCompiler.Parsers.ParseMode.Normal);
+            return LanguageProvider.Instance.SelectLanguageByExtensionSafe(FileName)?.Parser.GetCompilationUnit(FileName, FileText, Errors, new List<CompilerWarning>(), PascalABCCompiler.Parsers.ParseMode.Normal);
+        }
+
+        PascalABCCompiler.SyntaxTree.documentation_comment_list ParseCurrentDocs()
+        {
+            string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
+            string FileText = (string)VisualEnvironmentCompiler.StandartCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
+            return LanguageProvider.Instance.SelectLanguageByExtensionSafe(FileName)?.DocParser.BuildTree(FileText);
         }
 
         private void toolStripButton1_Click_1(object sender, EventArgs e)
         {
             List<Error> Errors = new List<Error>();
             DateTime dt = DateTime.Now;
-            PascalABCCompiler.SyntaxTree.syntax_tree_node sn = ParseCurrent(Errors,"");
+            PascalABCCompiler.SyntaxTree.syntax_tree_node sn = ParseCurrent(Errors);
             StatusLabel.Text = string.Format("[{0}ms]", (DateTime.Now - dt).TotalMilliseconds);
             if (Errors.Count > 0)
                 StatusLabel.Text += Errors.Count + " errors";
@@ -261,8 +266,8 @@ namespace VisualPascalABCPlugins
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
             List<Error> Errors = new List<Error>();
-            PascalABCCompiler.SyntaxTree.syntax_tree_node sn = ParseCurrent(Errors, "");
-            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParseCurrent(Errors, "dt_") as PascalABCCompiler.SyntaxTree.documentation_comment_list;
+            PascalABCCompiler.SyntaxTree.syntax_tree_node sn = ParseCurrent(Errors);
+            PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParseCurrentDocs();
             PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
             Dictionary<PascalABCCompiler.SyntaxTree.syntax_tree_node, string> documentation = docconst.Construct(sn, dt);
         }

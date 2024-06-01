@@ -163,10 +163,10 @@ namespace PascalABCCompiler.Parsers
         }
     }
 
-    public interface ICodeFormatter
+    /*public interface ICodeFormatter
     {
         string FormatTree(string Text, compilation_unit cu, int cursor_line, int cursor_col);
-    }
+    }*/
 
     public struct Position
     {

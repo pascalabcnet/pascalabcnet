@@ -133,8 +133,8 @@ namespace PascalABCCompiler.TreeConverter
     // SSM - 01.2014 - ужасно плодить много классов ошибок - достаточно сделать один общий для простых ошибок
     public class SimpleSemanticError : CompilationErrorWithLocation
     {
-        private string ErrResourceString;
-        private object[] values;
+        protected string ErrResourceString;
+        protected object[] values;
 
         public SimpleSemanticError(location loc, string ErrResourceString, params object[] values): base(loc)
         {

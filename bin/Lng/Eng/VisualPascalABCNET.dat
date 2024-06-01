@@ -274,6 +274,9 @@ FILE_NOT_EXIST_MESSAGE=No file on disk. Leave it open in the editor?
 INVALID_SOURCE_FILE_NAME=Invalid characters in file name
 INVALID_SOURCE_FILE_EXTENSION=Invalid file extension
 CANNOT_EXCLUDE_MAIN_FILE=Can not exclude main file from the project
+
+PABCHEALTH_NOT_SUPPORTED=Code health check is not supported for this language
+
 M_NEW_PROJECT=New Project
 M_OPEN_PROJECT=Open Project...
 M_CLOSE_PROJECT=Close Project

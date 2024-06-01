@@ -160,6 +160,7 @@ namespace VisualPascalABCPlugins
                     case "weifenluo.winformsui.docking.dll":
                     case "pluginssupport.dll":
                     case "localization.dll":
+                    case "pascallanguage.dll":
                         continue;
                 }
                 if (fi.Name.StartsWith("NETXP.", StringComparison.InvariantCultureIgnoreCase) || fi.Name.StartsWith("Mono.", StringComparison.InvariantCultureIgnoreCase) || fi.Name.StartsWith("ICSharpCode.", StringComparison.InvariantCultureIgnoreCase))

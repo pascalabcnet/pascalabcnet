@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using VisualPascalABCPlugins;
 using System.Threading;
+using Languages.Integration;
 
 namespace VisualPascalABC
 {
@@ -94,8 +95,8 @@ namespace VisualPascalABC
             this.UserOptions = UserOptions;
             this.OpenDocuments = OpenDocuments;
             
-            PascalABCCompiler.Parsers.Controller.Instance.ParserConnected += OnParserConnected;
-            PascalABCCompiler.Parsers.Controller.Instance.ParserLoadErrorOccured += OnParserLoadErrorOccured;
+            LanguageIntegrator.LanguageLoaded += OnLanguageLoaded;
+            LanguageIntegrator.LanguageLoadErrorOccured += OnLanguageLoadErrorOccured;
         }
 
         void RunnerManager_Exited(string fileName)
@@ -144,7 +145,6 @@ namespace VisualPascalABC
             	CodeCompletion.CodeCompletionController.comp.CompilerOptions.CurrentProject = ProjectFactory.Instance.CurrentProject;
             	ProjectFactory.Instance.Dirty = true;
             }
-            CodeCompletion.CodeCompletionController.ParsersController = standartCompiler.ParsersController;
             CodeCompletion.CodeCompletionController.StandartDirectories = StandartDirectories;
 
             this.CodeCompletionParserController.Init();
@@ -318,21 +318,23 @@ namespace VisualPascalABC
         List<string> ParsedFiles = new List<string>();
         
         /// <summary>
-        /// Выводит сообщения о подключенных парсерах
+        /// Выводит сообщения о подключенных языках
         /// </summary>
-        private void OnParserConnected(PascalABCCompiler.Parsers.IParser parser)
+        private void OnLanguageLoaded(Languages.Facade.ILanguage language)
         {
-            string parserConnectedMessage = string.Format(VECStringResources.Get("PARSER_CONNECTED{0}{1}"), parser, Path.GetFileName(parser.GetType().Assembly.Location));
-            parserConnectedMessage += Environment.NewLine;
-            AddTextToCompilerMessages(parserConnectedMessage);
+            string languageConnectedMessage = string.Format(VECStringResources.Get("LANGUAGE_LOADED{0}{1}"), language.Name, Path.GetFileName(language.GetType().Assembly.Location));
+            languageConnectedMessage += Environment.NewLine;
+            AddTextToCompilerMessages(languageConnectedMessage);
         }
 
         /// <summary>
-        /// Выводит сообщения об ошибках, возникших при загрузке парсеров
+        /// Выводит сообщения об ошибках, возникших при загрузке языков
         /// </summary>
-        private void OnParserLoadErrorOccured(string errorMessage)
+        private void OnLanguageLoadErrorOccured(string languageFileName)
         {
-            AddTextToCompilerMessages(errorMessage);
+            string languageLoadErrorMessage = string.Format(VECStringResources.Get("LANGUAGE_LOAD_ERROR{0}"), Path.GetFileName(languageFileName));
+            languageLoadErrorMessage += Environment.NewLine;
+            AddTextToCompilerMessages(languageLoadErrorMessage);
         }
 
         private void OnChangeCompilerStateEx(PascalABCCompiler.ICompiler sender, PascalABCCompiler.CompilerState State, string FullFileName)
@@ -362,7 +364,6 @@ namespace VisualPascalABC
                 case PascalABCCompiler.CompilerState.SemanticTreeConversion: RusName = VECStringResources.Get("STATE_SEMANTICTREECONVERSION{0}"); break;
                 case PascalABCCompiler.CompilerState.SemanticTreeConverterConnected: RusName = VECStringResources.Get("STATE_SEMANTICTREECONVERTERCONNECTED{0}"); break;
                 case PascalABCCompiler.CompilerState.SyntaxTreeConversion: RusName = VECStringResources.Get("STATE_SYNTAXTREECONVERSION{0}"); break;
-                case PascalABCCompiler.CompilerState.SyntaxTreeConverterConnected: RusName = VECStringResources.Get("STATE_SYNTAXTREECONVERTERCONNECTED{0}"); break;
                 case PascalABCCompiler.CompilerState.Ready:
                     RusName = VECStringResources.Get("STATE_READY");
                     if (!StartingCompleted)

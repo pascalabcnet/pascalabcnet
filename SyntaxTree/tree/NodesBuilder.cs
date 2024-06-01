@@ -691,5 +691,17 @@ namespace PascalABCCompiler.SyntaxTree
 
             return BuildShortProcFuncDefinitionNoSC(ff, ass);
         }
+
+        public static var_statement BuildVarStatementNodeFromAssignNode(assign _assign)
+        {
+            ident to = _assign.to as ident;
+            if (to == null)
+                throw new NotImplementedException();
+            var _var_statement = SyntaxTreeNodesConstructor.CreateVarStatementNode(new ident_list(to.name), null, _assign.from);
+            _var_statement.source_context = _assign.source_context;
+            _var_statement.var_def.source_context = _assign.source_context;
+            _var_statement.var_def.vars.source_context = _assign.to.source_context;
+            return _var_statement;
+        }
     }
 }

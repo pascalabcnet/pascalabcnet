@@ -8,7 +8,7 @@ using PascalABCCompiler.SyntaxTree;
 namespace PascalABCCompiler.TreeConverter
 {
 
-    internal class CompilerDirectivesToSyntaxTreeNodesLinker
+    public class CompilerDirectivesToSyntaxTreeNodesLinker
     {
         public static Dictionary<syntax_tree_node, compiler_directive> BuildLinks(SyntaxTree.compilation_unit unit, List<Errors.Error> ErrorsList)
         {

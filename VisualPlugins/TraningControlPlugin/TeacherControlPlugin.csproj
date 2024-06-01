@@ -127,10 +127,6 @@
       <Project>{cfc683f8-0165-4a9f-9c3f-bb8c5bab507f}</Project>
       <Name>PluginsSupport</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
-      <Project>{f10a5330-dcf4-4533-877c-7b1b1be23884}</Project>
-      <Name>SyntaxTreeConverters</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>

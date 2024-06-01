@@ -1474,7 +1474,14 @@ namespace PascalABCCompiler.SyntaxTree
 					_compilation_unit.compiler_directives.Add(_read_node() as compiler_directive);
 				}
 			}
-			_compilation_unit.Language = (LanguageId)br.ReadByte();
+			if (br.ReadByte() == 0)
+			{
+				_compilation_unit.Language = null;
+			}
+			else
+			{
+				_compilation_unit.Language = br.ReadString();
+			}
 		}
 
 

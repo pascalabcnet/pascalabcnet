@@ -3,14 +3,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using VisualPascalABCPlugins;
-using VisualPascalABC.Utils;
 using Debugger;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
@@ -488,7 +485,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = CodeCompletion.CodeCompletionController.ParsersController.SelectParser(Path.GetExtension(FullFileName).ToLower());
+            this.parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(FullFileName)?.Parser;
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
             //dbg.ProcessStarted += debugProcessStarted;
@@ -512,7 +509,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = CodeCompletion.CodeCompletionController.ParsersController.SelectParser(Path.GetExtension(FullFileName).ToLower());
+            this.parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(FullFileName)?.Parser;
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
 
