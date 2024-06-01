@@ -4225,7 +4225,7 @@ type
     private static empty_obj_arr := new object[0];
     
     public static procedure ContentsToString(o: Object; prev: Stack<object>; res: TextWriter);
-    const val_sep = '; ';
+    const val_sep = ',';
     begin
       res.Write('(');
       var any_vals := false;
@@ -4250,8 +4250,8 @@ type
           if any_vals then
             res.Write( val_sep ) else
             any_vals := true;
-          res.Write( fi.Name );
-          res.Write('=');
+          //res.Write( fi.Name );
+          //res.Write('=');
           Append(fi.GetValue(o), prev, res);
         end;
       
@@ -4264,8 +4264,8 @@ type
           if any_vals then
             res.Write( val_sep ) else
             any_vals := true;
-          res.Write( pi.Name );
-          res.Write('=');
+          //res.Write( pi.Name );
+          //res.Write('=');
           var val: object;
           try
             val := mi.Invoke(o, empty_obj_arr);
@@ -4310,7 +4310,8 @@ type
         exit;
       end;
       
-      if o is Complex then
+      // Исправить это форматирование
+      {if o is Complex then
       begin
         var c := Complex(o);
         res.Write('(');
@@ -4318,6 +4319,18 @@ type
         res.Write(' + i*');
         AppendImpl(c.Imaginary, prev, res);
         res.Write(')');
+        exit;
+      end;}
+      
+      if o is Complex then
+      begin
+        var c := Complex(o);
+        //res.Write('(');
+        AppendImpl(c.Real, prev, res);
+        if c.Imaginary >= 0 then
+          res.Write('+');
+        AppendImpl(c.Imaginary, prev, res);
+        res.Write('i');
         exit;
       end;
       
@@ -4333,8 +4346,10 @@ type
         exit;
       end;
       
-      // Чтобы стандартный .ToString не срабатывал
-      if o_t.IsGenericType and (o_t.GetGenericTypeDefinition=typeof(KeyValuePair<,>)) then
+      // Без пробела при выводе полей
+      if o_t.IsGenericType and ((o_t.GetGenericTypeDefinition=typeof(KeyValuePair<,>)) 
+        or (o_t.FullName.StartsWith('System.Tuple`')))
+        then
       begin
         ContentsToString(o, prev, res);
         exit;
@@ -4378,7 +4393,7 @@ type
         var a := &Array(o);
         if a.Length=0 then
         begin
-          // Алгоритм ниже не расчитан на пустые массив
+          // Алгоритм ниже не расчитан на пустые массивы
           loop a.Rank do res.Write('[');
           loop a.Rank do res.Write(']');
           exit;

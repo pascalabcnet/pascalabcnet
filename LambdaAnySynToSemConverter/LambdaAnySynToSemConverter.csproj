@@ -26,7 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -48,10 +48,6 @@
     <ProjectReference Include="..\SemanticTree\SemanticTree.csproj">
       <Project>{613e0dda-aa8a-437c-ac45-507b47429ff9}</Project>
       <Name>SemanticTree</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
-      <Project>{f10a5330-dcf4-4533-877c-7b1b1be23884}</Project>
-      <Name>SyntaxTreeConverters</Name>
     </ProjectReference>
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>

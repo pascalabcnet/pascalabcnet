@@ -180,7 +180,7 @@ namespace SymbolTable
             ScopeNum = SymbolTable.GetNewScopeNum();
             SymbolTable.ScopeTable.Add(this);
 
-            CaseSensitive = SemanticRules.SymbolTableCaseSensitive;
+            CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
             Symbols = new SymbolsDictionary();
             InternalScopes = new List<Scope>();              
@@ -778,7 +778,7 @@ namespace SymbolTable
                     if (Result.Count() > 0)
                         return Result;
                 }
-                if (CurrentArea is WithScope)//мы очутились в Width
+                if (CurrentArea is WithScope)//мы очутились в With
                 {
                     tn = CurrentArea.Symbols.Find(Name);
                     if (tn != null) //что-то нашли!

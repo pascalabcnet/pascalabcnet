@@ -153,7 +153,7 @@ namespace PascalABCCompiler
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
             // загрузка всех парсеров и других составляющих языков  EVA
-            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
+            Languages.Integration.LanguageIntegrator.LoadAllLanguages();
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
             Compiler.InternalDebug.SkipPCUErrors = false;
