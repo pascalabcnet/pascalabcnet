@@ -192,7 +192,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 //else check_field_reference_for_assign(to as class_field_reference,loc);
             }
-            if (context.is_in_cycle() && !SemanticRules.AllowChangeLoopVariable)
+            if (context.is_in_cycle() && !SemanticRulesConstants.AllowChangeLoopVariable)
             {
                 var_definition_node toAsVariable = GetLocalVariableFromAdressExpressionIfPossible(to);
                 if (toAsVariable != null && context.is_loop_variable(toAsVariable) && _assign.source_context != null) // последнее - обрезает проверку для сгенерированного i += 1 в foreach ... index i

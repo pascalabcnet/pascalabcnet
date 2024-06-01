@@ -95,7 +95,7 @@ namespace PascalABCCompiler
                         Console.WriteLine($"SearchDir \"{value}\" not found relative to \"{Environment.CurrentDirectory}\"");
                         return false;
                     }
-                    co.SearchDirectory.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
+                    co.SearchDirectories.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
                     return true;
 
                 case "locale":
@@ -153,7 +153,7 @@ namespace PascalABCCompiler
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
             // загрузка всех парсеров и других составляющих языков  EVA
-            LanguageIntegration.LanguageIntegrator.LoadAllLanguages();
+            Languages.Integration.LanguageIntegrator.LoadAllLanguages();
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
             Compiler.InternalDebug.SkipPCUErrors = false;

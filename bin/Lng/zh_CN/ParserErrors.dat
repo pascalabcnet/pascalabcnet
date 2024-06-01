@@ -1,4 +1,4 @@
-//Parser errors in PascalABCCompiler.Errors
+﻿//Parser errors in PascalABCCompiler.Errors
 %PREFIX%=PARSER_ERRORS_
 
 BAD_FLOAT=太大（小）的数字

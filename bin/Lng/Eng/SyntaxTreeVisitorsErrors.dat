@@ -1,4 +1,4 @@
-// Syntax tree conversion errors
+﻿// Syntax tree conversion errors
 %PREFIX%=SYNTAXTREEVISITORSERROR_
 
 YIELD_FUNC_MUST_RETURN_SEQUENCE=Functions with yield must return sequences
