@@ -2184,7 +2184,7 @@ if (parserTools.buildTreeForFormatter)
   parserTools.ParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParams);
   var orgDirectiveName = directiveName;
   
-  if (directiveName == "") // сл�?�?ай п�?с�?ой ди�?ек�?ив�?
+  if (directiveName == "") // сл�?�?ай п�?с�?ой ди�?ек�?ив�?
     break;
 
   directiveName = directiveName.ToUpper();
@@ -2281,7 +2281,7 @@ BEGIN(INITIAL);
 parserTools.ParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParams);
   orgDirectiveName = directiveName;
 
-  if (directiveName == "") // сл�?�?ай п�?с�?ой ди�?ек�?ив�?
+  if (directiveName == "") // сл�?�?ай п�?с�?ой ди�?ек�?ив�?
     break;
 	
   directiveName = directiveName.ToUpper();
