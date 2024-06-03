@@ -81,6 +81,8 @@ namespace Languages.Pascal.Frontend.Converters
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
+            AsyncVisitor.New.ProcessNode(root);
+
             CacheFunctionVisitor.New.ProcessNode(root);
 
             // При наличии файла lightpt.dat подключает модули LightPT и Tasks

@@ -43,6 +43,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllVarsInProcYieldsProba.cs" />
+    <Compile Include="Async\AsyncBuilder.cs" />
+    <Compile Include="Async\AsyncVisitor.cs" />
+    <Compile Include="Async\AwaitBuilder.cs" />
+    <Compile Include="Async\LoweringAsyncVisitor.cs" />
+    <Compile Include="Async\MainVisitor.cs" />
+    <Compile Include="Async\ReplaceVarNamesVisitor.cs" />
+    <Compile Include="Async\VarsHelper.cs" />
     <Compile Include="BaseSyntaxTreeConverter.cs" />
     <Compile Include="BaseVisitors\CollectNamespaces.cs" />
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />

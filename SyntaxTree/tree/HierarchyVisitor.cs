@@ -2101,6 +2101,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(await_node _await_node)
+		{
+		}
+
+		public virtual void post_do_visit(await_node _await_node)
+		{
+		}
+
+		public virtual void pre_do_visit(await_node_statement _await_node_statement)
+		{
+		}
+
+		public virtual void post_do_visit(await_node_statement _await_node_statement)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4341,6 +4357,22 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(let_var_expr.id);
 			visit(let_var_expr.ex);
 			post_do_visit(_let_var_expr);
+		}
+
+		public override void visit(await_node _await_node)
+		{
+			DefaultVisit(_await_node);
+			pre_do_visit(_await_node);
+			visit(await_node.ex);
+			post_do_visit(_await_node);
+		}
+
+		public override void visit(await_node_statement _await_node_statement)
+		{
+			DefaultVisit(_await_node_statement);
+			pre_do_visit(_await_node_statement);
+			visit(await_node_statement.aw);
+			post_do_visit(_await_node_statement);
 		}
 	}
 

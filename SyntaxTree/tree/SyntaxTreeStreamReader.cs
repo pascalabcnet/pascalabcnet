@@ -544,6 +544,10 @@ namespace PascalABCCompiler.SyntaxTree
 					return new ref_var_def_statement();
 				case 261:
 					return new let_var_expr();
+				case 262:
+					return new await_node();
+				case 263:
+					return new await_node_statement();
 			}
 			return null;
 		}
@@ -4567,6 +4571,30 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_let_var_expr);
 			_let_var_expr.id = _read_node() as ident;
 			_let_var_expr.ex = _read_node() as expression;
+		}
+
+
+		public void visit(await_node _await_node)
+		{
+			read_await_node(_await_node);
+		}
+
+		public void read_await_node(await_node _await_node)
+		{
+			read_expression(_await_node);
+			_await_node.ex = _read_node() as expression;
+		}
+
+
+		public void visit(await_node_statement _await_node_statement)
+		{
+			read_await_node_statement(_await_node_statement);
+		}
+
+		public void read_await_node_statement(await_node_statement _await_node_statement)
+		{
+			read_statement(_await_node_statement);
+			_await_node_statement.aw = _read_node() as await_node;
 		}
 
 	}
