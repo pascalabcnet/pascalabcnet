@@ -17,6 +17,10 @@ namespace SyntaxVisitors.Async
         {
             New.ProcessNode(st);
         }
+        public static void Accept(procedure_definition pd)
+        {
+            New.ProcessNode(pd);
+        }
         public override void visit(await_node_statement ans)
         {
             flag = true;

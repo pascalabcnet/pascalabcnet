@@ -278,15 +278,21 @@ namespace SyntaxVisitors.Async
 				{
 					var fh = item.proc_header as function_header;
 					s = fh.return_type.ToString();
-
-					// AddError нужно вместо SyntaxVisitorError
-					if (s.StartsWith("Void") || s.StartsWith("Task")) 
+					if (s.Contains("."))
 					{
-					    //BuilderType = "Async" + s + "MethodBuilder";
-					}
-					else
-					throw new SyntaxVisitorError("Возвращаемым типом асинхронного метода должен быть void, Task, Task<T> или аналогичный тип, IAsyncEnumerable<T> или IAsyncEnumerator<T>",
-						item.proc_header.source_context);
+                       s = s.Substring(s.LastIndexOf('.') + 1);
+                    }
+          
+
+                    // AddError нужно вместо SyntaxVisitorError
+                    //if (s.StartsWith("Void") || s.StartsWith("Task")) 
+                    //{
+                    //    //BuilderType = "Async" + s + "MethodBuilder";
+                    //}
+                    //else
+                    if (!s.Contains("Task"))
+						throw new SyntaxVisitorError("Возвращаемым типом асинхронного метода должен быть void, Task, Task<T> или аналогичный тип, IAsyncEnumerable<T> или IAsyncEnumerator<T>",
+							item.proc_header.source_context);
 				}
 				if (s == "Void" || s == "Task")
 				{

@@ -52,6 +52,14 @@ namespace SyntaxVisitors
 		{
 			if (pd.proc_header.IsAsync)
 			{
+				MainVisitor.flag = false;
+				MainVisitor.Accept(pd);
+				if (!MainVisitor.flag)
+				{
+					pd.proc_header.IsAsync = false;
+                    IsAsync = false;
+                    return;
+				}
 				IsAsync = true;
 				proc_def = pd;
 				proc_def_List.Add(pd);
@@ -188,7 +196,11 @@ namespace SyntaxVisitors
 						{
 							var fh = p.proc_header as function_header;
 							var s = fh.return_type.ToString();
-							if (s.StartsWith("Task<"))
+                            if (s.Contains("."))
+                            {
+                                s = s.Substring(s.LastIndexOf('.') + 1);
+                            }
+                            if (s.StartsWith("Task"))
 							{
 								BuilderType = "AsyncTaskMethodBuilder" + s.Substring(4);
 							}
