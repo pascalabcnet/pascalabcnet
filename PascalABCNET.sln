@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34309.116
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34301.259
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualPascalABCNET", "VisualPascalABCNET", "{26843C5D-9D7E-4C2C-AC14-2D227FA5592E}"
 EndProject
@@ -118,6 +118,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{27D9800E-2689-4AA1-A2D6-128E4A9BAE98}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeConverters", "Languages\Pascal\SyntaxTreeConverters\SyntaxTreeConverters\SyntaxTreeConverters.csproj", "{F10A5330-DCF4-4533-877C-7B1B1BE23884}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignTupleDesugar", "AssignTupleOptimizer\AssignTupleDesugar.csproj", "{ADD567B7-8157-45E8-9673-FC6BCF5930D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -551,6 +553,18 @@ Global
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884}.Release|x86.ActiveCfg = Release|Any CPU
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884}.Release|x86.Build.0 = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Debug|x86.Build.0 = Debug|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|x86.ActiveCfg = Release|Any CPU
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -602,6 +616,7 @@ Global
 		{BE2CCDAD-74BE-401F-A92A-81CEF4725E96} = {17A1159B-4039-451E-BBEF-F4643A39F1E6}
 		{27D9800E-2689-4AA1-A2D6-128E4A9BAE98} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884} = {BE2CCDAD-74BE-401F-A92A-81CEF4725E96}
+		{ADD567B7-8157-45E8-9673-FC6BCF5930D1} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68E993E6-EE86-4DDF-B0A1-4FE884F8AC39}

@@ -37,18 +37,14 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="NewAssignTuplesDesugarVisitor.cs" />
-    <Compile Include="desugarAlgoritm\Assign.cs" />
-    <Compile Include="desugarAlgoritm\AssignGraph.cs" />
-    <Compile Include="desugarAlgoritm\Cycle.cs" />
-    <Compile Include="desugarAlgoritm\Edge.cs" />
-    <Compile Include="desugarAlgoritm\GraphUtils.cs" />
-    <Compile Include="desugarAlgoritm\Symbol.cs" />
-    <Compile Include="desugarAlgoritm\SymbolNode.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj">
+    <ProjectReference Include="..\Errors\Errors.csproj">
+      <Project>{44A01F9E-DCE7-470C-AAE5-C3DE0CCBEE3B}</Project>
+      <Name>Errors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Languages\Pascal\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj">
       <Project>{1443f539-dcc7-4491-b4fd-b716c739db3c}</Project>
       <Name>PascalABCSaushkinParser</Name>
     </ProjectReference>

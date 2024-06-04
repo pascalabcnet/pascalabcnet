@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using System.IO;
-using PascalABCCompiler.PascalABCNewParser;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
+using SyntaxVisitors.SugarVisitors;
+using Languages.Pascal.Frontend.Wrapping;
+using System.Collections.Generic;
 
 namespace AssignTupleDesugar
 {
@@ -16,7 +16,7 @@ namespace AssignTupleDesugar
             var sr = new StreamReader(filename);
             string text = sr.ReadToEnd();
             
-            var root = parser.BuildTree(filename, text, ParseMode.Normal);
+            var root = parser.GetCompilationUnit(filename, text, new List<PascalABCCompiler.Errors.Error>(), new List<PascalABCCompiler.Errors.CompilerWarning>(),  ParseMode.Normal);
             root.FillParentsInAllChilds();
            
            var binder = new BindCollectLightSymInfo(root as compilation_unit);

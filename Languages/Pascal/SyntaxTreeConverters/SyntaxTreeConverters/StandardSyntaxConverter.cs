@@ -16,6 +16,7 @@ namespace Languages.Pascal.Frontend.Converters
         protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root)
         {
 
+            var binder = new BindCollectLightSymInfo(root as compilation_unit);
 #if DEBUG
             //            var stat = new ABCStatisticsVisitor();
             //            stat.ProcessNode(root);
@@ -56,7 +57,7 @@ namespace Languages.Pascal.Frontend.Converters
             // теперь коллизия с (a[1:6], a[6:11]):= (a[6:11], a[1:6]);
             // assign_tuple и assign_var_tuple
             AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
-            
+            //NewAssignTuplesDesugarVisitor.Create(binder).ProcessNode(root);
 
             // question_point_desugar_visitor
             QuestionPointDesugarVisitor.New.ProcessNode(root);

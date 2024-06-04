@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
 using AssignTupleDesugarAlgorithm;
 using PascalABCCompiler.SyntaxTree;
-using SyntaxVisitors.SugarVisitors;
 
-namespace AssignTupleDesugar
+namespace SyntaxVisitors.SugarVisitors
 {
     public class NewAssignTuplesDesugarVisitor : AssignTuplesDesugarVisitor
     {
 
-        BindCollectLightSymInfo binder;
+        private BindCollectLightSymInfo binder;
+
+    
+        public static NewAssignTuplesDesugarVisitor Create(BindCollectLightSymInfo binder)
+        {
+            return new NewAssignTuplesDesugarVisitor(binder);
+        }
 
         public NewAssignTuplesDesugarVisitor(BindCollectLightSymInfo binder)
         {
