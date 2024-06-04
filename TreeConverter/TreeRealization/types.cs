@@ -1058,7 +1058,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_implicit_conversion_from(type_node ctn)
         {
-            if (SemanticRules.ImplicitConversionFormPointerToTypedPointer)
+            if (SemanticRulesConstants.ImplicitConversionFormPointerToTypedPointer)
             {
                 if (ctn == SystemLibrary.SystemLibrary.pointer_type)
                 {
@@ -3977,7 +3977,7 @@ namespace PascalABCCompiler.TreeRealization
             function_node fn = null;
             if (_explicit_convertions_from.TryGetValue(ctn, out fn))
                 return fn;
-            if (SemanticRules.PoinerRealization == PoinerRealization.VoidStar)
+            if (SemanticRulesConstants.PoinerRealization == PoinerRealization.VoidStar)
             {
                 if ((this == SystemLibrary.SystemLibrary.integer_type && ctn == SystemLibrary.SystemLibrary.pointer_type) ||
                     (this == SystemLibrary.SystemLibrary.pointer_type && ctn == SystemLibrary.SystemLibrary.integer_type)

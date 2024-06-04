@@ -27,7 +27,7 @@ namespace PascalABCCompiler.ParserTools
 
     // Класс глобальных описаний и статических методов
     // для использования различными подсистемами парсера и сканера
-    public abstract class BaseParserTools 
+    public abstract class BaseParserTools
     {
         protected const int maxCharConst = 0xFFFF;
         // SSM: Errors инициализируется в другом месте - сюда только передается!
@@ -40,8 +40,12 @@ namespace PascalABCCompiler.ParserTools
 
         public static Dictionary<string, string> tokenNum; // строки, соответствующие терминалам, для вывода ошибок - SSM
 
-        protected BaseParser parserCached;
-        protected abstract BaseParser ParserCached { get; }
+        public IParser ParserRef { get; private set; }
+
+        protected BaseParserTools(IParser parserRef)
+        {
+            this.ParserRef = parserRef;
+        }
 
         public SourceContext ToSourceContext(LexLocation loc)
         {
@@ -89,11 +93,7 @@ namespace PascalABCCompiler.ParserTools
             warnings.Add(new CommonWarning(res, currentFileName, loc.begin_position.line_num, loc.begin_position.column_num));
         }
 
-        protected string ReplaceSpecialSymbols(string text)
-        {
-            text = text.Replace("''", "'");
-            return text;
-        }
+        protected abstract string ReplaceSpecialSymbols(string text);
 
         /// <summary>
         /// Удаление кавычек у параметра директивы
@@ -102,7 +102,7 @@ namespace PascalABCCompiler.ParserTools
         {
             if (param.Length != 1 && param.StartsWith("'") && param.EndsWith("'"))
                 return param.Substring(1, param.Length - 2);
-           
+
             return param;
         }
 
@@ -191,37 +191,89 @@ namespace PascalABCCompiler.ParserTools
         }
 
         /// <summary>
+        /// Разбор директивы + проверка имени и параметров
+        /// </summary>
+        public void ParseDirective(string directive, LexLocation location, out string directiveName, out List<string> directiveParams)
+        {
+            string directiveText = ExtractDirectiveTextWithoutSpecialSymbols(directive);
+            directiveName = GetDirectiveName(directiveText);
+
+            ValidateDirectiveName(location, directiveName);
+
+            // подстрока с параметрами
+            string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
+
+            // если кавычки используются как специальные символы (для объединения нескольких слов в одно)
+            if (ParserRef.ValidDirectives[directiveName].quotesAreSpecialSymbols)
+            {
+                directiveParams = SplitDirectiveParamsWithQuotesAsSpecialSymbols(paramsString);
+            }
+            else
+            {
+                directiveParams = SplitDirectiveParamsOrdinary(paramsString);
+            }
+
+            ValidateDirectiveParams(directiveName, directiveParams, location);
+        }
+
+        /// <summary>
+        /// Проверка корректности имени директивы
+        /// </summary>
+        private void ValidateDirectiveName(LexLocation location, string directiveName)
+        {
+            // пустая директива - ошибка
+            if (directiveName == "")
+            {
+                AddErrorFromResource("EMPTY_DIRECTIVE", location);
+                return;
+            }
+
+            // проверка имени директивы
+            if (!ParserRef.ValidDirectives.ContainsKey(directiveName))
+            {
+                AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", location, directiveName);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Получение имени директивы и ее параметров ("\s*(имя)\s+(параметр1)\s+(параметр2)...\s*") без специфических для языка обозначений
+        /// </summary>
+        protected abstract string ExtractDirectiveTextWithoutSpecialSymbols(string directive);
+
+        /// <summary>
         /// Проверка парамтеров директивы с помощью проверок из Parser.ValidDirectives
         /// </summary>
-        public void CheckDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
+        public void ValidateDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
         {
-            BaseParser parserNeeded = ParserCached;
+            var directiveInfo = ParserRef.ValidDirectives[directiveName];
 
-            var directiveInfo = parserNeeded.ValidDirectives[directiveName];
-
-            // случай директивы, переданной без параметров
-            if (directiveParams.Count == 0)
+            if (directiveInfo.checkParamsNumNeeded)
             {
-                // если задан формат параметров и не поддерживается 0 параметров
-                if (directiveInfo != null && directiveInfo.checkParamsNumNeeded && !directiveInfo.paramsNums.Contains(0))
+                // случай директивы, переданной без параметров
+                if (directiveParams.Count == 0)
                 {
-                    AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
+                    // если не поддерживается 0 параметров (та же проверка, что и ниже, но сообщение об ошибке здесь более подходящее для данного случая)
+                    if (!directiveInfo.paramsNums.Contains(0))
+                    {
+                        AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
+                    }
+                    return;
                 }
-                return;
-            }
 
-            // проверка на добавление параметров директиве без параметров
-            if (directiveInfo == null)
-            {
-                AddErrorFromResource("UNNECESSARY_DIRECTIVE_PARAM{0}", loc, directiveName);
-                return;
-            }
+                // проверка на добавление параметров директиве без параметров
+                if (directiveInfo.paramsNums.Length == 1 && directiveInfo.paramsNums[0] == 0)
+                {
+                    AddErrorFromResource("UNNECESSARY_DIRECTIVE_PARAM{0}", loc, directiveName);
+                    return;
+                }
 
-            // проверка кол-ва параметров директивы (учитывается случай, когда их может не быть)
-            if (directiveInfo.checkParamsNumNeeded && !directiveInfo.paramsNums.Contains(directiveParams.Count))
-            {
-                AddWrongNumberOfParamsError(directiveName, directiveParams, loc, directiveInfo);
-                return;
+                // проверка кол-ва параметров директивы (наиболее общая)
+                if (!directiveInfo.paramsNums.Contains(directiveParams.Count))
+                {
+                    AddWrongNumberOfParamsError(directiveName, directiveParams, loc, directiveInfo);
+                    return;
+                }
             }
 
             // проверки параметров по отдельности
@@ -238,7 +290,7 @@ namespace PascalABCCompiler.ParserTools
         {
             string paramsNumString = "";
             int maxParamsNum = directiveInfo.paramsNums.Max();
-            
+
             if (directiveInfo.paramsNums.Length > 1)
             {
                 if (directiveParams.Count > maxParamsNum)
@@ -410,20 +462,7 @@ namespace PascalABCCompiler.ParserTools
             return proc_list;
         }
 
-        public literal create_string_const(string text, SourceContext sc)
-        {
-            literal lt;
-            if (text.Length == 3 && text[0] == '\'' && text[2] == '\'')
-            {
-                lt = new char_const(text[1]);
-                lt.source_context = sc;
-                return lt;
-            }
-            text = ReplaceSpecialSymbols(text.Substring(1, text.Length - 2));
-            lt = new string_const(text);
-            lt.source_context = sc;
-            return lt;
-        }
+        public abstract literal create_string_const(string text, SourceContext sc);
 
         public literal create_multiline_string_const(string text, SourceContext sc)
         {
