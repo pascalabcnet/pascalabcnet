@@ -4,12 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
 {
@@ -34,14 +33,17 @@ namespace VisualPascalABC
             if (expr_without_brackets == null)
                 return null;
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-            PascalABCCompiler.SyntaxTree.expression tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+
+            IParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
+
+            PascalABCCompiler.SyntaxTree.expression tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             bool header = false;
             if (Errors.Count > 0)
             {
                 if (expr.IndexOf('<') != -1 && expr.IndexOf('>') != -1)
                 {
                     Errors.Clear();
-                    tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr.Replace("<", "&<"), Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                    tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr.Replace("<", "&<"), Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                 }
                 else
                 {
@@ -50,14 +52,14 @@ namespace VisualPascalABC
                     {
                         Errors.Clear();
                         expr_without_brackets = expr_without_brackets.TrimStart().Substring(1);
-                        tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), s.Substring(1), Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                        tree = parser.GetExpression("test" + Path.GetExtension(FileName), s.Substring(1), Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                     }
                 }
             }
             if (tree == null || Errors.Count > 0)
             {
                 Errors.Clear();
-                tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                 header = true;
                 if (tree == null || Errors.Count > 0)
                     return null;
@@ -65,7 +67,7 @@ namespace VisualPascalABC
             else
             {
                 Errors.Clear();
-                PascalABCCompiler.SyntaxTree.expression tree2 = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                PascalABCCompiler.SyntaxTree.expression tree2 = parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                 //header = true;
                 if (tree2 == null || Errors.Count > 0)
                     return null;
@@ -74,7 +76,7 @@ namespace VisualPascalABC
             }
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[FileName];
             if (dconv == null) return null;
-            return dconv.GetDescription(tree, FileName, expr_without_brackets, WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController, e.LogicalPosition.Line, e.LogicalPosition.Column, keyw, header);
+            return dconv.GetDescription(tree, FileName, expr_without_brackets, e.LogicalPosition.Line, e.LogicalPosition.Column, keyw, header);
         }
 
         static int _mouse_hint_x = 0, _mouse_hint_y = 0;

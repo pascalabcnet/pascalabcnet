@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using Languages.Integration;
 using System;
 using System.Collections;
 
@@ -55,7 +56,7 @@ namespace VisualPascalABC
 
         public void Init()
         {
-            CodeCompletion.CodeCompletionController.ParsersController.SourceFilesProvider = visualEnvironmentCompiler.SourceFilesProvider;
+            //LanguageProvider.Instance.SourceFilesProvider = visualEnvironmentCompiler.SourceFilesProvider;
             CodeCompletion.CodeCompletionController.currentLanguageISO = PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO;
         }
 

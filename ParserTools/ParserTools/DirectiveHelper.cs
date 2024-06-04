@@ -12,11 +12,13 @@ namespace PascalABCCompiler.ParserTools.Directives
     /// </summary>
     public class DirectiveInfo
     {
-        private ParamChecksCollection checks;
+        private readonly ParamChecksCollection checks;
 
         public int[] paramsNums = new int[1] { 1 }; // по умолчанию один параметр
-        public bool checkParamsNumNeeded;
-        public bool quotesAreSpecialSymbols;
+        
+        public bool checkParamsNumNeeded; // false, если параметров неограниченное кол-во
+        
+        public bool quotesAreSpecialSymbols; // true, если нужно ставить кавычки для объединения нескольких слов в одно (как в пути к файлу с пробелами)
 
         // по умолчанию никаких проверок параметров, но включена проверка их кол-ва
         public DirectiveInfo(ParamChecksCollection paramChecks = null, bool quotesAreSpecialSymbols = false, bool checkParamsNumNeeded = true, int[] paramsNums = null)
@@ -87,7 +89,7 @@ namespace PascalABCCompiler.ParserTools.Directives
     /// </summary>
     public sealed class FuncCheck : ParamCheckBase
     {
-        Predicate<string> check;
+        private readonly Predicate<string> check;
 
         public FuncCheck(Predicate<string> pred, string errorMessage = "", int paramsToCheckNum = 1) : base(paramsToCheckNum)
         {
@@ -121,7 +123,7 @@ namespace PascalABCCompiler.ParserTools.Directives
     /// </summary>
     public class IsAnyOfCheck : ParamCheckBase
     {
-        private string[] paramVariants;
+        private readonly string[] paramVariants;
 
         public IsAnyOfCheck(int paramsToCheckNum = 1, params string[] paramVariants) : base(paramsToCheckNum)
         {
@@ -149,7 +151,7 @@ namespace PascalABCCompiler.ParserTools.Directives
     /// </summary>
     public class IsAnyExtensionsOfCheck : ParamCheckBase
     {
-        private string[] extVariants;
+        private readonly string[] extVariants;
 
         public IsAnyExtensionsOfCheck(int paramsToCheckNum = 1, params string[] extVariants) : base(paramsToCheckNum)
         {
@@ -224,6 +226,11 @@ namespace PascalABCCompiler.ParserTools.Directives
             return new ParamChecksCollection(new FuncCheck(s => Regex.IsMatch(s, @"^\d+\.\d+\.\d+$"), ParserErrorsStringResources.Get("INVALID_VERSION")));
         }
         #endregion
+
+        public static DirectiveInfo NoParamsDirectiveInfo()
+        {
+            return new DirectiveInfo(paramsNums: new int[1] { 0 });
+        }
     }
 }
 
