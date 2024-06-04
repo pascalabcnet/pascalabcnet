@@ -37,7 +37,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssignTupleDesugarVisitor.cs" />
+    <Compile Include="NewAssignTuplesDesugarVisitor.cs" />
     <Compile Include="desugarAlgoritm\Assign.cs" />
     <Compile Include="desugarAlgoritm\AssignGraph.cs" />
     <Compile Include="desugarAlgoritm\Cycle.cs" />
@@ -80,6 +80,7 @@
     <None Include="symInfoTests\test4.pas" />
     <None Include="symInfoTests\test5.pas" />
     <None Include="symInfoTests\test_units.pas" />
+    <None Include="test1.pas" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

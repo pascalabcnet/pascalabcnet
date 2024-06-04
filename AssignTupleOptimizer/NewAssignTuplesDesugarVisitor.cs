@@ -5,12 +5,12 @@ using SyntaxVisitors.SugarVisitors;
 
 namespace AssignTupleDesugar
 {
-    public class AssignTupleDesugarVisitor : AssignTuplesDesugarVisitor
+    public class NewAssignTuplesDesugarVisitor : AssignTuplesDesugarVisitor
     {
 
         BindCollectLightSymInfo binder;
 
-        public AssignTupleDesugarVisitor(BindCollectLightSymInfo binder)
+        public NewAssignTuplesDesugarVisitor(BindCollectLightSymInfo binder)
         {
             this.binder = binder; 
         }

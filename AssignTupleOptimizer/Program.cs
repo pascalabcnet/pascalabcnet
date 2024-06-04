@@ -24,7 +24,7 @@ namespace AssignTupleDesugar
 
             var visitor = new BindTestVisitor(binder);
             // visitor.ProcessNode(root);
-            var assign_visitor = new AssignTupleDesugarVisitor(binder);
+            var assign_visitor = new NewAssignTuplesDesugarVisitor(binder);
             assign_visitor.ProcessNode(root);
 
             var pp_visitor = new SyntaxVisitors.SimplePrettyPrinterVisitor();
@@ -34,7 +34,7 @@ namespace AssignTupleDesugar
         public static void Main()
         {
             
-            string name = "../../dot_node_tests/dot_node_test2.pas";
+            string name = "../../test1.pas";
             var parser = new PascalABCNewLanguageParser();
 
             testFile(name, parser);
@@ -57,7 +57,7 @@ namespace AssignTupleDesugar
      
 
        public override void visit(ident id)
-        {
+       {
 
             var res = binder.bind(id);
            
@@ -79,6 +79,6 @@ namespace AssignTupleDesugar
                 
             }
             Console.WriteLine();
-        }
+       }
     }
 }
