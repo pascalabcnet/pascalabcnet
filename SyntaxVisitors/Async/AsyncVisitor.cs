@@ -26,8 +26,6 @@ namespace SyntaxVisitors
 
 		private string BuilderType = "AsyncVoidMethodBuilder";
 
-		private bool IsAsync = false;
-
 		private int AwaiterCounter = 1;
 
 		private AwaitBuilder AwaitBuilder;
@@ -39,7 +37,6 @@ namespace SyntaxVisitors
 		private bool IsFirstAsync = true;
 
 		private int ChangeBuilderCounter = 0;
-
 
 
         public static AsyncVisitor New
@@ -56,11 +53,19 @@ namespace SyntaxVisitors
 				MainVisitor.Accept(pd);
 				if (!MainVisitor.flag)
 				{
-					pd.proc_header.IsAsync = false;
-                    IsAsync = false;
-                    return;
+					var b = pd.proc_body as block;
+					if (b != null) 
+					{
+						var await = new await_node_statement();
+						await.aw = new await_node();
+						var mc = new method_call();
+						mc.dereferencing_value = new dot_node(new ident("Task"), new ident("Delay"));
+						mc.parameters = new expression_list(new int32_const(0));
+
+                        await.aw.ex = mc;
+						b.program_code.list.Add(await);
+					}
 				}
-				IsAsync = true;
 				proc_def = pd;
 				proc_def_List.Add(pd);
 				if (IsFirstAsync)
@@ -101,23 +106,16 @@ namespace SyntaxVisitors
 		public override void visit(await_node_statement astat)
 		{
 			ProcessNode(astat.aw);
-           // DefaultVisit(astat.aw);
         }
 
         public override void visit(await_node a)
 		{
-			if (!IsAsync)
-			{
-				throw new SyntaxVisitorError("'await' can only be used in an async method ", a.source_context);
-			}
-
 			AwaiterCounter++;
 			if (IsFirstAwait)
 			{
 				IsFirstAwait = false;
 				AwaitBuilder = new AwaitBuilder(program_Module, proc_def);
 				AwaitBuilder.VarsHelper.RepVarsDict = AsyncBuilder.RepVarsDict;
-				//AwaitBuilder.RemoveRedundantAwait();
 				AwaitBuilder.GetCode();
 				AwaitBuilder.AddAwaiter("TaskAwaiter", true, a.ex, ChangeBuilderCounter);
 				AwaitBuilder.ChangeBuilder(BuilderType, ChangeBuilderCounter);
@@ -146,7 +144,6 @@ namespace SyntaxVisitors
 				p.proc_header.name.meth_name = new ident("@AsyncMain", d.source_context);
 				p.proc_header.IsAsync = true;
 				p.source_context = d.source_context;
-				//var n = p.proc_header.name;
 				var b = new block();
 				b.source_context = d.source_context;
 				b.program_code = new statement_list();
@@ -156,7 +153,6 @@ namespace SyntaxVisitors
 					b.program_code.list.Add(item);
 
 				}
-				//b.program_code = pm.program_block.program_code;
 				p.proc_body = b;
 				pm.program_block.program_code.list.Clear();
 				d.Add(p);
@@ -179,7 +175,7 @@ namespace SyntaxVisitors
 			
 
             DefaultVisit(pm);
-			if (IsAsync)
+			if (proc_def_List.Count > 0)
 			{
 				AsyncBuilder.ParseStateMachines();
 				AsyncBuilder.ChangeBodies();
@@ -191,7 +187,6 @@ namespace SyntaxVisitors
 					proc_def = p;
 					if (p.proc_header.IsAsync)
 					{
-						IsAsync = true;
 						if (p.proc_header is function_header)
 						{
 							var fh = p.proc_header as function_header;
@@ -214,8 +209,6 @@ namespace SyntaxVisitors
 
 						}
 					}
-					else
-						IsAsync = false;
 
 					DefaultVisit(p);
 					ChangeBuilderCounter += 4;
