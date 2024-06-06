@@ -15,7 +15,9 @@ namespace Languages.Pascal.Frontend.Converters
         
         protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root)
         {
+            root.FillParentsInAllChilds();
 
+            var binder = new BindCollectLightSymInfo(root as compilation_unit);
 #if DEBUG
             //            var stat = new ABCStatisticsVisitor();
             //            stat.ProcessNode(root);
@@ -42,9 +44,9 @@ namespace Languages.Pascal.Frontend.Converters
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
 #endif
-
+            bool optimize_tuple_assign = true;
             // tuple_node
-            TupleVisitor.New.ProcessNode(root);
+            TupleVisitor.Create(optimize_tuple_assign).ProcessNode(root);
 
             // index 
             IndexVisitor.New.ProcessNode(root);
@@ -55,8 +57,10 @@ namespace Languages.Pascal.Frontend.Converters
 
             // теперь коллизия с (a[1:6], a[6:11]):= (a[6:11], a[1:6]);
             // assign_tuple и assign_var_tuple
-            AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
-            
+            if (!optimize_tuple_assign)
+                AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
+            else 
+                NewAssignTuplesDesugarVisitor.Create(binder).ProcessNode(root);
 
             // question_point_desugar_visitor
             QuestionPointDesugarVisitor.New.ProcessNode(root);
