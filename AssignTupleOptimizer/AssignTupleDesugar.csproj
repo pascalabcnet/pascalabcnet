@@ -37,6 +37,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <None Include="comp\c2.pas" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +63,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="comp\c1.pas" />
+    <None Include="comp\c3.pas" />
     <None Include="dot_node_tests\dot_node_test2.pas" />
     <None Include="indexer_tests\array_test2.pas" />
     <None Include="indexer_tests\array_tests.pas" />

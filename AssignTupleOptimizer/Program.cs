@@ -34,7 +34,7 @@ namespace AssignTupleDesugar
         public static void Main()
         {
             
-            string name = "../../test1.pas";
+            string name = "../../comp/c3.pas";
             var parser = new PascalABCNewLanguageParser();
 
             testFile(name, parser);

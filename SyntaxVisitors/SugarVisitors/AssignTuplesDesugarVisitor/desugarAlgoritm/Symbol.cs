@@ -111,6 +111,8 @@ namespace AssignTupleDesugarAlgorithm
 
         static bool isVarParam(BindResult res)
         {
+            if (res == null)
+                return true;
             return res.symInfo.Attr.HasFlag(SymbolAttributes.varparam_attr);
         }
     }

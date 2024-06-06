@@ -19,21 +19,17 @@ namespace PascalABCCompiler.SyntaxTree
         public BindResult bind(ident node)
         {
          
-            ///Console.WriteLine("searching " + node.ToString());
             Current = null;
             syntax_tree_node cur_node = node;
             var path = new Queue<ScopeSyntax>();
             while (cur_node != null)
             {
-               // Console.WriteLine("cur_node: " + cur_node.ToString());
 
                 if (AbstractScopeCreator.IsScopeCreator(cur_node))
                 {
 
-                    //Console.WriteLine("checking scope" + cur_node.ToString())
                     var cur_scope = scopeCreator.GetScope(cur_node);
                     path.Enqueue(cur_scope);
-                    //Console.WriteLine(cur_scope.ToString() + ": " + cur_scope.Symbols.Count);
                     var prev_scope = Current;
                     
                     if (prev_scope != null)
@@ -42,7 +38,6 @@ namespace PascalABCCompiler.SyntaxTree
                     Current = cur_scope;
                     if (cur_scope.Parent == null && !(Current is GlobalScopeSyntax))
                     {
-                        //Console.WriteLine("visiting " + cur_node.ToString());
                         cur_node.visit(this);
                     }
                     var res = Current.bind(node);

@@ -14,11 +14,14 @@ namespace SyntaxVisitors.SugarVisitors
     /// </summary>
     public class TupleVisitor : BaseChangeVisitor
     {
-        public static TupleVisitor New
+        public bool optimize_tuple_assign;
+
+        public TupleVisitor(bool optimize_tup_opt)
         {
-            get { return new TupleVisitor(); }
+            optimize_tuple_assign = optimize_tup_opt;
         }
 
+        public static TupleVisitor Create(bool optimize_tup_opt) => new TupleVisitor(optimize_tup_opt);
         private int num = 0;
         public string UniqueName()
         {
@@ -85,54 +88,57 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(assign_tuple asstup)
         {
-            if (asstup.expr is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
+            if (!optimize_tuple_assign)
             {
-                var n = asstup.vars.variables.Count();
-                if (n > tn.el.Count)
-                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", asstup.vars.variables[0]);
-
-                // Оптимизация, т.к. все - константы
-                var sl = new List<statement>();
-                for (var i = 0; i < n; i++)
+                if (asstup.expr is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
                 {
-                    var a = new assign(asstup.vars.variables[i],
-                        tn.el.expressions[i],
-                        Operators.Assignment,
-                        asstup.vars.variables[i].source_context);
-                    sl.Add(a);
-                }
-                ReplaceStatementUsingParent(asstup, sl);
-            }
-            else if (asstup.expr is tuple_node tn1 && !tn1.el.expressions.Any(ex => ex is nil_const))
-            {
-                var n = asstup.vars.variables.Count();
-                if (n > tn1.el.Count)
-                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", asstup.vars.variables[0]);
+                    var n = asstup.vars.variables.Count();
+                    if (n > tn.el.Count)
+                        throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", asstup.vars.variables[0]);
 
-                var sl = new List<statement>();
-                for (var i = 0; i < n; i++)
+                    // Оптимизация, т.к. все - константы
+                    var sl = new List<statement>();
+                    for (var i = 0; i < n; i++)
+                    {
+                        var a = new assign(asstup.vars.variables[i],
+                            tn.el.expressions[i],
+                            Operators.Assignment,
+                            asstup.vars.variables[i].source_context);
+                        sl.Add(a);
+                    }
+                    ReplaceStatementUsingParent(asstup, sl);
+                }
+                else if (asstup.expr is tuple_node tn1 && !tn1.el.expressions.Any(ex => ex is nil_const))
                 {
-                    var temp_id = new ident(UniqueName(), tn1.el.expressions[i].source_context);
-                    var var_def = new var_def_statement(temp_id, tn1.el.expressions[i], tn1.el.expressions[i].source_context);
-                    var a = new var_statement(var_def, tn1.el.expressions[i].source_context);
-                    sl.Add(a);
-                }
+                    var n = asstup.vars.variables.Count();
+                    if (n > tn1.el.Count)
+                        throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", asstup.vars.variables[0]);
 
-                //for (var i = 0; i < n; i++)
-                for (var i = n-1; i >= 0; i--)
+                    var sl = new List<statement>();
+                    for (var i = 0; i < n; i++)
+                    {
+                        var temp_id = new ident(UniqueName(), tn1.el.expressions[i].source_context);
+                        var var_def = new var_def_statement(temp_id, tn1.el.expressions[i], tn1.el.expressions[i].source_context);
+                        var a = new var_statement(var_def, tn1.el.expressions[i].source_context);
+                        sl.Add(a);
+                    }
+
+                    //for (var i = 0; i < n; i++)
+                    for (var i = n - 1; i >= 0; i--)
+                    {
+                        var a = new assign(asstup.vars.variables[i],
+                            (sl[i] as var_statement).var_def.vars.idents[0],
+                            Operators.Assignment,
+                            asstup.vars.variables[i].source_context);
+                        sl.Add(a);
+                    }
+
+                    ReplaceStatementUsingParent(asstup, sl);
+                }
+                else
                 {
-                    var a = new assign(asstup.vars.variables[i],
-                        (sl[i] as var_statement).var_def.vars.idents[0],
-                        Operators.Assignment,
-                        asstup.vars.variables[i].source_context);
-                    sl.Add(a);
+                    DefaultVisit(asstup);
                 }
-
-                ReplaceStatementUsingParent(asstup, sl);
-            }
-            else
-            {
-                DefaultVisit(asstup);
             }
         }
 

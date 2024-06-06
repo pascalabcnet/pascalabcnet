@@ -311,7 +311,6 @@ namespace AssignTupleDesugarAlgorithm
             foreach (var g in graphs)
                 resolveGraph(g);
 
-            Console.WriteLine("graphs resolved");
             for (int i = left.Count - 1; i >= 0; i--)
             {
                 if (movedAssigns.Contains(i))
@@ -321,9 +320,7 @@ namespace AssignTupleDesugarAlgorithm
                     movedAssigns.Remove(i);
                 }
             }
-            foreach (var s in left) Console.Write(s.name + ", ");
-            Console.WriteLine();
-            foreach (var s in right) Console.Write(s.name + ", ");
+        
             
             var symbols = new Dictionary<string, SymbolNode>(); 
 
