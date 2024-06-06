@@ -111,6 +111,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             //convertion_data_and_alghoritms.__i = 0;
             Initialize(initializationData);
+
+            this.docs = initializationData.docs;
             //comp_units=UsedUnits;
             //visit(SyntaxUnit
             //SyntaxTreeToSemanticTreeConverter.interface_using_list = namespaces;
@@ -121,6 +123,9 @@ namespace PascalABCCompiler.TreeConverter
         public void InitializeForCompilingImplementation(InitializationDataForCompilingImplementation initializationData)
         {
             Initialize(initializationData);
+
+            if (this.docs != null)
+                this.docs = initializationData.docs;
 
             using_list.AddRange(initializationData.interfaceNamespaces);
             interface_using_list.AddRange(initializationData.interfaceNamespaces);
@@ -150,8 +155,6 @@ namespace PascalABCCompiler.TreeConverter
 
             SymbolTable.CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
-            if (docs != null)
-                this.docs = initializationData.docs;
             this.debug = initializationData.debug;
             this.debugging = initializationData.debugging;
             this.for_intellisense = initializationData.forIntellisense;
