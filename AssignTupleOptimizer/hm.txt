@@ -1,6 +1,0 @@
-﻿Сеттер value 
-Функции A.f() |
-type, const, generics, property |
-var T : T
-constructor не ищется
-SyntaxTreeConvertersController 42 
