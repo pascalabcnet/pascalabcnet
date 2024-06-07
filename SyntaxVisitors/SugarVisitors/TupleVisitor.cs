@@ -62,35 +62,43 @@ namespace SyntaxVisitors.SugarVisitors
         // Остальное раскрывается в AssignTuplesDesugarVisitor
         public override void visit(assign_var_tuple assvartup)
         {
-            if (assvartup.expr is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
+            if (assvartup.expr is tuple_node tn)
             {
-                var n = assvartup.idents.idents.Count();
-                if (n > tn.el.Count)
-                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", assvartup.idents[0]);
-
-                // Оптимизация, т.к. все - константы
-                var sl = new List<statement>();
-                for (var i = 0; i < n; i++)
+                if (tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
                 {
-                    var a = new var_statement(
-                        assvartup.idents.idents[i],
-                        tn.el.expressions[i],
-                        assvartup.idents.idents[i].source_context);
-                    sl.Add(a);
+                    var n = assvartup.idents.idents.Count();
+                    if (n > tn.el.Count)
+                        throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", assvartup.idents[0]);
+
+                    // Оптимизация, т.к. все - константы
+                    var sl = new List<statement>();
+                    for (var i = 0; i < n; i++)
+                    {
+                        var a = new var_statement(
+                            assvartup.idents.idents[i],
+                            tn.el.expressions[i],
+                            assvartup.idents.idents[i].source_context);
+                        sl.Add(a);
+                    }
+                    ReplaceStatementUsingParent(assvartup, sl);
                 }
-                ReplaceStatementUsingParent(assvartup, sl);
+                else if (optimize_tuple_assign)
+                    return;
+                else
+                    DefaultVisit(assvartup);
             }
             else
             {
                 DefaultVisit(assvartup);
             }
+            
         }
 
         public override void visit(assign_tuple asstup)
         {
-            if (!optimize_tuple_assign)
+            if (asstup.expr is tuple_node tn)
             {
-                if (asstup.expr is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
+                if (tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
                 {
                     var n = asstup.vars.variables.Count();
                     if (n > tn.el.Count)
@@ -108,18 +116,20 @@ namespace SyntaxVisitors.SugarVisitors
                     }
                     ReplaceStatementUsingParent(asstup, sl);
                 }
-                else if (asstup.expr is tuple_node tn1 && !tn1.el.expressions.Any(ex => ex is nil_const))
+                else if (optimize_tuple_assign)
+                    return;
+                else if (!tn.el.expressions.Any(ex => ex is nil_const))
                 {
                     var n = asstup.vars.variables.Count();
-                    if (n > tn1.el.Count)
+                    if (n > tn.el.Count)
                         throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", asstup.vars.variables[0]);
 
                     var sl = new List<statement>();
                     for (var i = 0; i < n; i++)
                     {
-                        var temp_id = new ident(UniqueName(), tn1.el.expressions[i].source_context);
-                        var var_def = new var_def_statement(temp_id, tn1.el.expressions[i], tn1.el.expressions[i].source_context);
-                        var a = new var_statement(var_def, tn1.el.expressions[i].source_context);
+                        var temp_id = new ident(UniqueName(), tn.el.expressions[i].source_context);
+                        var var_def = new var_def_statement(temp_id, tn.el.expressions[i], tn.el.expressions[i].source_context);
+                        var a = new var_statement(var_def, tn.el.expressions[i].source_context);
                         sl.Add(a);
                     }
 
@@ -136,10 +146,13 @@ namespace SyntaxVisitors.SugarVisitors
                     ReplaceStatementUsingParent(asstup, sl);
                 }
                 else
-                {
                     DefaultVisit(asstup);
-                }
             }
+            else
+            {
+                DefaultVisit(asstup);
+            }
+            
         }
 
         public void ReplaceVarTupleDefStatementUsingParent(var_tuple_def_statement from, IEnumerable<var_def_statement> to)
@@ -156,27 +169,34 @@ namespace SyntaxVisitors.SugarVisitors
         // А это по идее до begin - там немного другие узлы и внешний контекст
         public override void visit(var_tuple_def_statement vtd)
         {
-            if (vtd.inital_value is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
-            {
-                var n = vtd.vars.idents.Count();
-                if (n > tn.el.Count)
-                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", vtd.vars.idents[0]);
-
-                var vd = new List<var_def_statement>();
-                for (var i = 0; i < n; i++)
+            if (vtd.inital_value is tuple_node tn) {
+                if (tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
                 {
-                    var a = new var_def_statement(vtd.vars.idents[i],
-                        tn.el.expressions[i],
-                        vtd.vars.idents[i].source_context);
-                    vd.Add(a);
+                    var n = vtd.vars.idents.Count();
+                    if (n > tn.el.Count)
+                        throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", vtd.vars.idents[0]);
+
+                    var vd = new List<var_def_statement>();
+                    for (var i = 0; i < n; i++)
+                    {
+                        var a = new var_def_statement(vtd.vars.idents[i],
+                            tn.el.expressions[i],
+                            vtd.vars.idents[i].source_context);
+                        vd.Add(a);
+                    }
+                    ReplaceVarTupleDefStatementUsingParent(vtd, vd);
+                    visit(vtd.inital_value);
                 }
-                ReplaceVarTupleDefStatementUsingParent(vtd, vd);
-                visit(vtd.inital_value);
+                else if (optimize_tuple_assign)
+                    return;
+                else
+                    DefaultVisit(vtd);
             }
             else
             {
                 DefaultVisit(vtd);
             }
+            
         }
 
         public override void visit(tuple_node tup)
