@@ -57,7 +57,7 @@ namespace SyntaxVisitors.SugarVisitors
             else
                 base.visit(node);
         }
-
+        
         public override void visit(assign_var_tuple node)
         {
             if (node.expr is tuple_node tn)
