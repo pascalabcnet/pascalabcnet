@@ -64,7 +64,7 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 var n = node.idents.idents.Count();
                 if (n > tn.el.Count)
-                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", node.vars.variables[0]);
+                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", node.idents.idents[0]);
 
                 var assigns = new List<statement>();
                 for(var i =0; i < n; i++)
@@ -85,7 +85,7 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 var n = node.vars.idents.Count();
                 if (n > tn.el.Count)
-                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", node.vars.variables[0]);
+                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", node.vars.idents[0]);
                 var assigns = new List<var_def_statement>();
                 for (var i = 0; i < n; i++)
                 {
