@@ -129,7 +129,7 @@ namespace SyntaxVisitors
 
             Replace(var_def, newVS);
             listNodes[listNodes.Count - 1] = newVS; //SSM 8.11.18
-            ProcessNode(newVS.inital_value); // SSM 10.06.2020 #2103
+            //ProcessNode(newVS.inital_value); // SSM 10.06.2020 #2103
             //base.visit(newVS); // SSM 10.06.2020 - зачем обходить всё?
         }
 
