@@ -1,14 +1,12 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SyntaxVisitors.Async
 {
     internal class MainVisitor :BaseChangeVisitor
     {
-        public static bool flag = false;
+        // Визитор, который проверяет, есть ли хоть
+        // один await в  асинхронном методе
+        public static bool HasAwait = false;
         public static MainVisitor New
         {
             get { return new MainVisitor(); }
@@ -23,11 +21,11 @@ namespace SyntaxVisitors.Async
         }
         public override void visit(await_node_statement ans)
         {
-            flag = true;
+            HasAwait = true;
         }
         public override void visit(await_node aw)
         {
-            flag = true;
+            HasAwait = true;
         }
     }
 }

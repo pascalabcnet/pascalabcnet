@@ -1,13 +1,7 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using QUT.Gppg;
-using SyntaxVisitors.SugarVisitors;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SyntaxVisitors.Async
 {
@@ -16,30 +10,30 @@ namespace SyntaxVisitors.Async
 		// корень дерева
 		private program_module program_Module { get; set; }
 
-		// тело асинхронной функции 
+		// текущий асинхронный метод
 		public procedure_definition proc_def { get; set; }
 
-		private Dictionary<string, string> Awaiters = new Dictionary<string, string>();
 		int lbnum = 0;
 
+		// тело асинхронного метода
 		private statement_list code_list = new statement_list();
 
+		// Список Taskов, принадлежащих к какому-нибудь await
 		public expression_list TaskList = new expression_list();
 
+		// Счетчик awaitов
 		public int AwaiterCounter = 0;
 
-		public int NewAwaiterCounter = 1;
-		public int TempTaskCounter = 1;
-
-		public int GenAwCounter = 2;
+        // Счетчик временных переменных для Task
+        public int TempTaskCounter = 1;
 
 		public VarsHelper VarsHelper;
 
+		// Возвращаемый тип асинхронного метода
 		public string ResultType = "";
-		public expression ResultVal = new expression();
 
-
-
+        // Результат работы асинхронного метода
+        public expression ResultVal = new expression();
 
         //ctor
         public AwaitBuilder(program_module pm, procedure_definition pd)
@@ -49,8 +43,8 @@ namespace SyntaxVisitors.Async
 			VarsHelper = new VarsHelper();
 
 		}
-
-		public string NewAwaiter()
+        public int NewAwaiterCounter = 1;
+        public string NewAwaiter()
 		{
 			return "@aw@_" + NewAwaiterCounter++;
 		}
@@ -59,11 +53,10 @@ namespace SyntaxVisitors.Async
 			return "@tt@_" + TempTaskCounter++;
 		}
 		// для каждого await добавляем awaiter
-		public void AddAwaiter(string a_type, bool IsFirstTime, expression ex, int c)
+		public void AddAwaiter(bool IsFirstTime, expression ex, int c)
 		{
 
 			var a_name = NewAwaiter();
-			Awaiters.Add(a_name, a_type);
 			TaskList.AddFirst(ex);
 			var tdecl = program_Module.program_block.defs.list[c] as type_declarations;
 			var tdef = tdecl.types_decl[0];
@@ -133,6 +126,8 @@ namespace SyntaxVisitors.Async
 			lbnum++;
 			return "@awlb@_" + lbnum.ToString();
 		}
+
+		// Обрабатываем тело асинхронного метода
 		public void GetCode()
 		{
 			var class_name = proc_def.proc_header.name.class_name;
@@ -316,7 +311,7 @@ namespace SyntaxVisitors.Async
 		}
 
 		// Изменяем метод MoveNext в зависимости от количества await
-		public void GenAwait(int c, expression exx)
+		public void GenAwait(int c)
 		{
 			var pd = program_Module.program_block.defs.list[c] as procedure_definition;
 			var bl = pd.proc_body as block;
@@ -696,6 +691,7 @@ namespace SyntaxVisitors.Async
 
 		}
 
+		// Объявляем локальные переменные полями класса StateMachine
 		public void FillTypedVars(int c)
 		{
 			var tdecl = program_Module.program_block.defs.list[c] as type_declarations;

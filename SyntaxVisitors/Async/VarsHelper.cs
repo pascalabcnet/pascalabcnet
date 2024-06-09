@@ -7,39 +7,46 @@ using System.Threading.Tasks;
 
 namespace SyntaxVisitors.Async
 {
+    // Класс для работы с переменными
     public class VarsHelper
     {
+        // Множество всех переменных, находящихся в данном асинхронном методе
         public HashSet<var_statement> VarsList = new HashSet<var_statement>();
 
+        // Множество  всех явно типизированных переменных 
         public HashSet<var_statement> TypedVarsList = new HashSet<var_statement>();
 
+        // Множество  всех неявно типизированных переменных 
         public HashSet<var_statement> NoneTypedVarsList = new HashSet<var_statement>();
 
-		public HashSet<string> Parametrs = new HashSet<string>();
+        // Множество  всех параметров асинхронного метода 
+        public HashSet<string> Parametrs = new HashSet<string>();
 
-		public HashSet<string> ExprHash = new HashSet<string>();
+        // Множество  переменных, находящихся внутри await
+        public HashSet<string> ExprHash = new HashSet<string>();
 
+        // Множество переменных, являющихся Task<T>
         public HashSet<var_statement> TasksHash = new HashSet<var_statement>();
 
+        // Словарик переменных, которые нужно переименовать
         public Dictionary<string,string> RepVarsDict = new Dictionary<string,string>();
 
+        // Список переменных класса
 		public HashSet<string> ClassIdentSet = new HashSet<string>();
-		public HashSet<string> ClassStaticSet = new HashSet<string>();
 
+        // Список статических переменных класса
+        public HashSet<string> ClassStaticSet = new HashSet<string>();
+
+        // Словарик переменных, являющихся Task<T>
 		public Dictionary<string, string> TaskIdents = new Dictionary<string, string>();
 
-		int k = 0;
-        public VarsHelper()
-        {
-            
-        }
-
+		int LabelNameCounter = 0;
         public string newLabelName(string old)
         {
-            k++;
-            return "@awvar@_" + k.ToString() +"_" + old;
+            LabelNameCounter++;
+            return "@awvar@_" + LabelNameCounter.ToString() +"_" + old;
         }
-
+        // Добавляем новую переменную, которую нужно будет переименовать
         public void AddNewRep(var_statement var_Statement)
         {
             foreach (var v in var_Statement.var_def.vars.list)
@@ -47,7 +54,6 @@ namespace SyntaxVisitors.Async
                 {
                     if (v.name.StartsWith("@"))
                     {
-                        //RepVarsDict.Add(v.name, v.name);
                         continue;
                     }
                     var nv = newLabelName(v.name);
@@ -56,7 +62,8 @@ namespace SyntaxVisitors.Async
                     v.name = nv;
                 }
         }
-
+        // Помечаем какими являются переменные, чтобы знать 
+        // что делать с ними дальше
         public void MarkVars()
         {
             foreach (var var in VarsList) 
