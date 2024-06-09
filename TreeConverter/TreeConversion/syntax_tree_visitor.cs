@@ -12211,6 +12211,8 @@ namespace PascalABCCompiler.TreeConverter
                 context.check_name_free(name, loc);
                 is_direct_type_decl = true;
                 type_node tn = convert_strong(_type_declaration.type_def);
+                if (_type_declaration.type_def is enum_type_definition)
+                    context.check_name_free(name, loc);
                 assign_doc_info(tn,_type_declaration);
                 is_direct_type_decl = false;
                 if (_type_declaration.type_def is SyntaxTree.named_type_reference||
