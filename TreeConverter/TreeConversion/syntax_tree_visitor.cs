@@ -15597,13 +15597,14 @@ namespace PascalABCCompiler.TreeConverter
         private record_initializer ConvertRecordInitializer(common_type_node ctn, record_initializer constant)
         {
         	location loc = constant.location;
+            var non_static_fields = ctn.fields.TakeWhile(x => !x.IsStatic).ToArray();
             if (!ctn.is_value_type)
                 AddError(loc, "RECORD_CONST_NOT_ALLOWED_{0}", ctn.name);
-            if (ctn.fields.Count != constant.record_const_definition_list.Count)
+            if (non_static_fields.Length != constant.record_const_definition_list.Count)
                 AddError(loc, "INVALID_RECORD_CONST_FIELD_COUNT");
             constant.type = ctn;
             constant.field_values.Clear();
-            for (int i = 0; i < ctn.fields.Count; i++)
+            for (int i = 0; i < non_static_fields.Length; i++)
             {
                 class_field cf = ctn.fields[i];
                 if (cf.name.ToLower() != constant.record_const_definition_list[i].name.name.ToLower())
