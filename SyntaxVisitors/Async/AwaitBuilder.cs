@@ -202,7 +202,6 @@ namespace SyntaxVisitors.Async
 						var v = new var_statement(new var_def_statement(id, p.vars_type, p.source_context), p.source_context);
 						VarsHelper.VarsList.Add(v);
 						VarsHelper.Parametrs.Add(id.name);
-						//VarsHelper.TasksHash.Add(v);
 					}
 				}
 			}
@@ -241,10 +240,10 @@ namespace SyntaxVisitors.Async
 							mmc.source_context = v.source_context;
                             if (a.ex is method_call)
 							mmc.dereferencing_value = new dot_node(new dot_node(a.ex as method_call, new ident("GetAwaiter", v.source_context)),
-								new ident("GetResult", v.source_context), v.source_context);
+								new ident("GetResult"), v.source_context);
 							else
                                 mmc.dereferencing_value = new dot_node(new dot_node(new ident(a.ex.ToString(), v.source_context), 
-									new ident("GetAwaiter"), v.source_context), new ident("GetResult", v.source_context), v.source_context);
+									new ident("GetAwaiter"), v.source_context), new ident("GetResult"), v.source_context);
 
                             var ass = new assign(v, mmc, Operators.Assignment, v.source_context);
 							ass.first_assignment_defines_type = true;
@@ -289,7 +288,6 @@ namespace SyntaxVisitors.Async
 						if (pat.name == "Result")
 						{
 							ResultVal = pa.from;
-							//continue;
 						}
 					}
 				}
@@ -364,10 +362,7 @@ namespace SyntaxVisitors.Async
 			var mcс = new method_call();
 			mcс.dereferencing_value = new dot_node(new ident(extp, ifnode.source_context), new ident("GetAwaiter",ifnode.source_context));
 			mcс.source_context = ifnode.source_context;
-			//if (class_name is null)
-			//{
 
-			//}
 			// Убираем лишние присваивания для Task
 			if (VarsHelper.TaskIdents.Count != 0)
 			{
@@ -476,12 +471,17 @@ namespace SyntaxVisitors.Async
 
                 mc2 = new method_call();
 				mc2.source_context= ts.source_context;
+
 				mc2.dereferencing_value = new dot_node(new ident(awaiter + (lbnum - 1).ToString(), ts.source_context), 
-					new ident("GetResult", ts.source_context), ts.source_context);
-				ts.stmt_list.Add(new procedure_call(mc2, ts.source_context), ts.source_context);
+					new ident("GetResult"), ts.source_context);
+
+
+                ts.stmt_list.Add(new procedure_call(mc2, ts.source_context), ts.source_context);
 				var tt = code_list.list[lbnum - 1] as statement_list;
 				var fg = true;
-				foreach (var stat in tt.list)
+
+
+                foreach (var stat in tt.list)
 				{
 					if (stat is assign && fg)
 					{
@@ -505,7 +505,6 @@ namespace SyntaxVisitors.Async
 				mccc.dereferencing_value = new dot_node(new ident(extp + lbnum.ToString(), ts.source_context), 
 					new ident("GetAwaiter", ts.source_context), ts.source_context);
 				mccc.source_context = ts.source_context;
-
                 // Убираем лишние присваивания для Task
                 foreach (var kv in VarsHelper.TaskIdents)
 				{
@@ -551,16 +550,17 @@ namespace SyntaxVisitors.Async
 				ts.stmt_list.Add(if3, ts.source_context);
 				ts.stmt_list.Add(g2, ts.source_context);
 				ts.stmt_list.Add(ls2, ts.source_context);
+
 			}
 
 
 
 
-			// Когда await закончились и пора выводить результат
-			mc2 = new method_call();
+            // Когда await закончились и пора выводить результат
+            mc2 = new method_call();
 			mc2.source_context = ts.source_context;
 			mc2.dereferencing_value = new dot_node(new ident(awaiter + lbnum.ToString(), ts.source_context), 
-				new ident("GetResult", ts.source_context), ts.source_context);
+				new ident("GetResult"), ts.source_context);
 
 
             ts.stmt_list.Add(new procedure_call(mc2, ts.source_context), ts.source_context);
@@ -580,9 +580,8 @@ namespace SyntaxVisitors.Async
                 fg2 = false;
                 ts.stmt_list.Add(stat, stat.source_context);
             }
-           // ts.stmt_list.Add(code_list.list.Last(), ts.source_context);
 
-			// Переименование всех локальных переменных
+			// Переименование всех переменных класса, находящихся в теле асинхронного метода
 			foreach (var cis in VarsHelper.ClassIdentSet)
 			{
 				var replacerVis = new ReplaceVarNamesVisitor(cis, "@awclass." + cis);
@@ -592,10 +591,9 @@ namespace SyntaxVisitors.Async
                     throw new SyntaxVisitorError("Для нестатического поля, метода или свойства требуется ссылка на объект",
                                            ts.source_context);
                 }
-
-
             }
-			foreach (var cis in VarsHelper.ClassStaticSet)
+            // Переименование всех статических переменных класса, находящихся в теле асинхронного метода
+            foreach (var cis in VarsHelper.ClassStaticSet)
 			{
 				var replacerVis = new ReplaceVarNamesVisitor(cis, class_name + "." + cis);
 				ts.visit(replacerVis);
@@ -684,7 +682,6 @@ namespace SyntaxVisitors.Async
 				{
                     var replacerVis = new ReplaceVarNamesVisitor("Result", "@aw_res");
                     ts.visit(replacerVis);
-                    //ts.stmt_list.Add(new assign(new ident("@aw_res"), ResultVal));
                 }
 				
 			}
