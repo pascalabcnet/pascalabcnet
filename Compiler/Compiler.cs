@@ -3366,8 +3366,18 @@ namespace PascalABCCompiler
             // It's not always possible to solve by re-ordering the references, since there are cases of
             // mutually-dependent assemblies (i.e. dependency loops) in the wild.
             foreach (var reference in referenceDirectives)
-                PreloadReference(reference);
-
+            {
+                try
+                {
+                    PreloadReference(reference);
+                }
+                catch (FileLoadException ex)
+                {
+                    throw new CommonCompilerError(ex.Message, compilationUnit.SyntaxTree.file_name, reference.location.begin_line_num, reference.location.end_line_num);
+                }
+            }
+                
+                
             foreach (var reference in referenceDirectives)
                 CompileReference(dlls, reference);
 
