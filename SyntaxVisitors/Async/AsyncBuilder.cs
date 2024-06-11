@@ -323,6 +323,12 @@ namespace SyntaxVisitors.Async
 							RepVarsDict.Add(id.name, nv);
 							parsList.Add(new assign(new dot_node(i, id), id, Operators.Assignment), block.source_context);
 						}
+						else
+						{
+                            var nv = newLabelName(id.name);
+                            RepVarsDict[id.name] = nv;
+                            parsList.Add(new assign(new dot_node(i, id), id, Operators.Assignment), block.source_context);
+                        }
 					}
 				}
 			}
