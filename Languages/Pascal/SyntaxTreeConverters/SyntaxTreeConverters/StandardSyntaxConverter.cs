@@ -101,7 +101,7 @@ namespace Languages.Pascal.Frontend.Converters
             {
                 root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
             }
-            catch(Exception e)
+            catch(System.Exception e)
             {
 
                 System.IO.File.AppendAllText(@"d:\\zzz1.txt",e.Message);
