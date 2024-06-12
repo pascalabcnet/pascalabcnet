@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PascalABCCompiler.Errors;
-using PascalABCCompiler;
+﻿using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors.Async;
-using PascalABCCompiler.Parsers;
-using PascalABCCompiler.ParserTools;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System.IO;
-using System.Collections;
 
 namespace SyntaxVisitors
 {
@@ -20,10 +8,14 @@ namespace SyntaxVisitors
 	{
 		private program_module program_Module { get; set; }
 
+		// текущий асинхронный метод, для которого будет построена StateMachine
 		private procedure_definition proc_def { get; set; }
-
+		
+		// список всех асинхронных методов
 		private List<procedure_definition> proc_def_List = new List<procedure_definition>();
 
+		// Тип билдера, который нужно менять в зависимости от возвращаемого
+		// типа асинхронного типа
 		private string BuilderType = "AsyncVoidMethodBuilder";
 
 		private int AwaiterCounter = 1;
@@ -35,23 +27,25 @@ namespace SyntaxVisitors
 		private bool IsFirstAwait = true;
 
 		private bool IsFirstAsync = true;
-
-		private int ChangeBuilderCounter = 0;
+		
+		// Нужен, чтобы понимать с какой машиной
+		// состояний мы сейчас работаем
+		private int StateMachineNumber = 0;
 
 
         public static AsyncVisitor New
         {
-
             get { return new AsyncVisitor(); }
         }
 
         public override void visit(procedure_definition pd)
 		{
-			if (pd.proc_header.IsAsync)
+            // Собираем все асинхронные методы в proc_def_List
+            if (pd.proc_header.IsAsync)
 			{
-				MainVisitor.flag = false;
+				MainVisitor.HasAwait = false;
 				MainVisitor.Accept(pd);
-				if (!MainVisitor.flag)
+				if (!MainVisitor.HasAwait)
 				{
 					var b = pd.proc_body as block;
 					if (b != null) 
@@ -77,7 +71,6 @@ namespace SyntaxVisitors
 				}
                 LoweringAsyncVisitor.Accept(pd);
                 AsyncBuilder.GetMethods(pd);
-				// DefaultVisit(pd);
 			}
 			else
 			{
@@ -88,15 +81,16 @@ namespace SyntaxVisitors
                     {
                         if (procedure_code.list[i] is await_node_statement)
                         {
-                            throw new SyntaxVisitorError("Ключевое слово 'await' может быть использовано только в асинхронных методах ", procedure_code.list[i].source_context);
+                            throw new SyntaxVisitorError("Ключевое слово 'await' может быть использовано " +
+								"только в асинхронных методах ", procedure_code.list[i].source_context);
                         }
                         if (procedure_code.list[i] is var_statement)
                         {
                             var pp = procedure_code.list[i] as var_statement;
                             if (pp.var_def.inital_value is await_node)
                             {
-                                // AddError нужно вместо SyntaxVisitorError
-                                throw new SyntaxVisitorError("Ключевое слово 'await' может быть использовано только в асинхронных методах ", pp.var_def.inital_value.source_context);
+                                throw new SyntaxVisitorError("Ключевое слово 'await' может быть использовано " +
+									"только в асинхронных методах ", pp.var_def.inital_value.source_context);
                             }
                         }
                     }
@@ -117,29 +111,31 @@ namespace SyntaxVisitors
 				AwaitBuilder = new AwaitBuilder(program_Module, proc_def);
 				AwaitBuilder.VarsHelper.RepVarsDict = AsyncBuilder.RepVarsDict;
 				AwaitBuilder.GetCode();
-				AwaitBuilder.AddAwaiter("TaskAwaiter", true, a.ex, ChangeBuilderCounter);
-				AwaitBuilder.ChangeBuilder(BuilderType, ChangeBuilderCounter);
+				AwaitBuilder.AddAwaiter(true, a.ex, StateMachineNumber);
+				AwaitBuilder.ChangeBuilder(BuilderType, StateMachineNumber);
 			}
 			else
 			{
-				AwaitBuilder.ChangeBuilder(BuilderType, ChangeBuilderCounter);
-				AwaitBuilder.AddAwaiter("TaskAwaiter", false, a.ex, ChangeBuilderCounter);
+				AwaitBuilder.ChangeBuilder(BuilderType, StateMachineNumber);
+				AwaitBuilder.AddAwaiter(false, a.ex, StateMachineNumber);
 			}
 			if (AwaitBuilder.AwaiterCounter == AwaiterCounter - 1)
 			{
 
-				AwaitBuilder.GenAwait(ChangeBuilderCounter + 2, a.ex);
+				AwaitBuilder.GenAwait(StateMachineNumber + 2);
 				AwaitBuilder.DeleteBody();
 			}
 		}
 		public void GenMain(program_module pm)
 		{
-			if (MainVisitor.flag)
+			if (MainVisitor.HasAwait)
 			{
 				var d = pm.program_block.defs;
 				var p = new procedure_definition();
-				p.proc_header = new function_header(new template_type_reference(new named_type_reference(new ident("Task", d.source_context), d.source_context),
-					new template_param_list(new named_type_reference(new ident("integer", d.source_context), d.source_context), d.source_context), d.source_context), d.source_context);
+				p.proc_header = new function_header(new template_type_reference(new named_type_reference(new ident("Task",
+					d.source_context), d.source_context),
+					new template_param_list(new named_type_reference(new ident("integer", d.source_context),
+					d.source_context), d.source_context), d.source_context), d.source_context);
 				p.proc_header.name = new method_name();
 				p.proc_header.name.meth_name = new ident("@AsyncMain", d.source_context);
 				p.proc_header.IsAsync = true;
@@ -151,7 +147,6 @@ namespace SyntaxVisitors
 				foreach (var item in pm.program_block.program_code.list)
 				{
 					b.program_code.list.Add(item);
-
 				}
 				p.proc_body = b;
 				pm.program_block.program_code.list.Clear();
@@ -159,8 +154,10 @@ namespace SyntaxVisitors
 				var mc = new method_call();
 				mc.dereferencing_value = new ident("@AsyncMain");
 				mc.source_context = d.source_context;
-				var vst = new var_statement(new var_def_statement(new ident("@aw_main", d.source_context), mc, d.source_context), d.source_context);
-				var pc = new procedure_call(new dot_node(new dot_node(new ident("@aw_main", d.source_context), new ident("GetAwaiter")), new ident("GetResult"), d.source_context), d.source_context);
+				var vst = new var_statement(new var_def_statement(new ident("@aw_main",
+					d.source_context), mc, d.source_context), d.source_context);
+				var pc = new procedure_call(new dot_node(new dot_node(new ident("@aw_main", d.source_context), 
+					new ident("GetAwaiter")), new ident("GetResult"), d.source_context), d.source_context);
 				pm.program_block.program_code.list.Add(vst);
 				pm.program_block.program_code.list.Add(pc);
 
@@ -169,11 +166,10 @@ namespace SyntaxVisitors
 		public override void visit(program_module pm)
 		{
 			program_Module = pm;
-            MainVisitor.flag = false;
+            MainVisitor.HasAwait = false;
             MainVisitor.Accept(pm.program_block.program_code);
             GenMain(pm);
 			
-
             DefaultVisit(pm);
 			if (proc_def_List.Count > 0)
 			{
@@ -211,7 +207,7 @@ namespace SyntaxVisitors
 					}
 
 					DefaultVisit(p);
-					ChangeBuilderCounter += 4;
+					StateMachineNumber += 4;
 				}
 				AsyncBuilder.SortBlocks();
 

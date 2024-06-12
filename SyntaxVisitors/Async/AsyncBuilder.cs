@@ -1,29 +1,26 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SyntaxVisitors.Async
 {
+	// Билдер для построения StateMachine для каждого асинхронного метода
 	internal class AsyncBuilder
 	{
 		// корень дерева
 		private program_module program_Module { get; set; }
+		// нужен для перестановки defs, содержащихся в блоке program block 
+		public List<declarations> declarationsList = new List<declarations>();
+        // список всех асинхронных методов
+        public List<procedure_definition> pdList = new List<procedure_definition>();
 
-		public List<declarations> declarations = new List<declarations>();
-
-		public List<procedure_definition> pdList = new List<procedure_definition>();
-
-		public HashSet<var_statement> VarsList = new HashSet<var_statement>();
-
+		// Словарик переменных, которые нужно будет переименовать
 		public Dictionary<string, string> RepVarsDict = new Dictionary<string, string>();
-		int k = 0;
 
+		int LabelNameCounter = 0;
 		private int StateCounter = 1;
 
-		private declarations Decls = new declarations();
+        // копирует блоки построенной StateMachine и передает их в declarationsList
+        private declarations Decls = new declarations();
 
 		public AsyncBuilder(program_module program_Module)
 		{
@@ -82,10 +79,6 @@ namespace SyntaxVisitors.Async
             var cd = new class_definition(ntr, classbodylist, defs.source_context);
             var td = new type_declaration(new ident("StateMachine"), cd, program_Module.source_context);
 
-            //block bl = listNodes.FindLast(x => x is block) as block;
-            //var ld = new label_definitions("tbuilder");
-            //bl.defs.Add(ld);
-
             var pd = new procedure_definition();
             pd.proc_header = ph2;
             var a = new assign(new ident("tbuilder"), new dot_node(new ident("AsyncVoidMethodBuilder"), new ident("Create")), Operators.Assignment, defs.source_context);
@@ -125,10 +118,6 @@ namespace SyntaxVisitors.Async
 			Decls.Add(new type_declarations(td, defs.source_context), defs.source_context);
 			Decls.Add(pd, defs.source_context);
 			Decls.Add(pd2, defs.source_context);
-
-            //program_Module.program_block.defs.AddFirst(pd2);
-            //program_Module.program_block.defs.AddFirst(pd);
-            //program_Module.program_block.defs.AddFirst(td);
         }
 
 
@@ -139,7 +128,6 @@ namespace SyntaxVisitors.Async
             BuildStateMachine();
 
             var name = NewStateMachine();
-            //async_pm.program_block.defs
             var t_name = Decls.list[0] as type_declarations;
 			t_name.types_decl[0].type_name = name;
 
@@ -182,16 +170,16 @@ namespace SyntaxVisitors.Async
 			dc.Add(Decls.list[2], defs.source_context);
 			dc.Add(p, defs.source_context);
            
-            declarations.Add(dc);
+            declarationsList.Add(dc);
 			Decls.list.Clear();
 
 
 		}
-		public void ParseStateMachines()
+
+        // Для каждого асинхронного метода вызываем ParseStateMachine
+        public void ParseStateMachines()
 		{
-			//var async_pm = async_root as program_module;
 			var defs = program_Module.program_block.defs;
-			//pdList.Reverse();
 			var t = new List<procedure_definition>();
 			foreach (var item in pdList)
 			{
@@ -204,16 +192,16 @@ namespace SyntaxVisitors.Async
 			{
 				ParseStateMachine(pd);
 			}
-			declarations.Reverse();
+			declarationsList.Reverse();
 
-			foreach (var item in declarations)
+			foreach (var item in declarationsList)
 			{
 				defs.AddFirst(item.list);
 			}
 
 		}
 
-
+		// Переставляем асинхронные методы в нужном порядке
 		public void SortBlocks()
 		{
 			var defs = program_Module.program_block.defs;
@@ -266,7 +254,8 @@ namespace SyntaxVisitors.Async
 		{
 			pdList.Add(p);
 		}
-		public void ChangeBodies()
+        // Для каждого асинхронного метода вызываем ChangeBody
+        public void ChangeBodies()
 		{
 			StateCounter = 1;
 			pdList.Reverse();
@@ -282,14 +271,6 @@ namespace SyntaxVisitors.Async
 					{
                        s = s.Substring(s.LastIndexOf('.') + 1);
                     }
-          
-
-                    // AddError нужно вместо SyntaxVisitorError
-                    //if (s.StartsWith("Void") || s.StartsWith("Task")) 
-                    //{
-                    //    //BuilderType = "Async" + s + "MethodBuilder";
-                    //}
-                    //else
                     if (!s.Contains("Task"))
 						throw new SyntaxVisitorError("Возвращаемым типом асинхронного метода должен быть void, Task, Task<T> или аналогичный тип, IAsyncEnumerable<T> или IAsyncEnumerator<T>",
 							item.proc_header.source_context);
@@ -306,8 +287,8 @@ namespace SyntaxVisitors.Async
 		}
 		public string newLabelName(string old)
 		{
-			k++;
-			return "@awvar@_" + k.ToString() + "_" + old;
+			LabelNameCounter++;
+			return "@awvar@_" + LabelNameCounter.ToString() + "_" + old;
 		}
 
 		// Изменяем тело асинхронной функции, добавляя AsyncBuilder для запуска StateMachine
@@ -315,6 +296,7 @@ namespace SyntaxVisitors.Async
 		{
 			var state = "@awst@_";
 			var block = pd.proc_body as block;
+			
 			if (pd.proc_header.IsAsync == false)
 			{
 				return;
@@ -340,9 +322,14 @@ namespace SyntaxVisitors.Async
 						{
 							var nv = newLabelName(id.name);
 							RepVarsDict.Add(id.name, nv);
-							//id.name = nv;
 							parsList.Add(new assign(new dot_node(i, id), id, Operators.Assignment), block.source_context);
 						}
+						else
+						{
+                            var nv = newLabelName(id.name);
+                            RepVarsDict[id.name] = nv;
+                            parsList.Add(new assign(new dot_node(i, id), id, Operators.Assignment), block.source_context);
+                        }
 					}
 				}
 			}
@@ -375,9 +362,32 @@ namespace SyntaxVisitors.Async
 			m.dereferencing_value = new dot_node(new dot_node(i, new ident("tbuilder", block.source_context)), new ident("Start", block.source_context), block.source_context);
 			var p = new procedure_call(m, block.source_context);//st.tbuilder.Start(st);
 
-			
-		
-			var stl = new statement_list((pd.proc_body as block).program_code, st, a, parsList, a2);
+			var temp_def = new declarations();
+			var defsCount = 0;
+			if (block.defs != null)
+			{
+                foreach (var dl in block.defs.list)
+                {
+                    if (dl is variable_definitions)
+                    {
+                        defsCount++;
+                        var ddl = dl as variable_definitions;
+                        foreach (var item in ddl.list)
+                        {
+                            (pd.proc_body as block).program_code.AddFirst(new var_statement(item));
+                        }
+                    }
+                    else
+                        temp_def.Add(dl);
+                }
+            }
+  
+			if (defsCount > 0) 
+			{
+                block.defs = temp_def;
+            }
+            var stl = new statement_list((pd.proc_body as block).program_code, st, a, parsList, a2);
+
 
             var class_name = pd.proc_header.name.class_name;
 			if (class_name != null) 
