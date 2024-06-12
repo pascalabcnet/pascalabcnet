@@ -109,6 +109,21 @@ namespace AssignTupleDesugarAlgorithm
                 }
             }
 
+            // if repeated assigns or pointers -> 2n 
+            for (int i = 0; i < left.Count(); i++)
+            {
+                if (left_visited.Find(it => it.StructurallyEquals(left[i])) != null
+                    || right[i].type == Symbol.Type.POINTER
+                    || left[i].type == Symbol.Type.POINTER)
+                {
+                    var res = new AssignGraph();
+                    res.assignFirst = make2n(left, right);
+                    return res;
+                }
+                else
+                    left_visited.Add(left[i]);
+            }
+
             //handle expressions and var params
             for (int i = 0; i < left.Count(); i++)
             {
@@ -124,7 +139,7 @@ namespace AssignTupleDesugarAlgorithm
 
             for (int i = left.Count - 1; i > -1; i--)
             {
-                //delete loops
+                //handle loops
                 if (left[i].StructurallyEquals(right[i]))
                 {
                     var f = new SymbolNode(right[i]);
@@ -133,23 +148,11 @@ namespace AssignTupleDesugarAlgorithm
                     left.RemoveAt(i);
                     right.RemoveAt(i);
                 }
-                // if repeated assigns or pointers -> 2n
-                else if (left_visited.Find(it => it.StructurallyEquals(left[i])) != null
-                    || right[i].type == Symbol.Type.POINTER
-                    || left[i].type == Symbol.Type.POINTER)
-                {
-                    var res = new AssignGraph();
-                    res.assignFirst = make2n(left, right);
-                    return res;
-                }
-                else
-                    left_visited.Add(left[i]);
             }
 
 
             var indexerGraph = new SynonymsGraph(SynonymsGraph.Type.INDEXER);
             var nameToGraph = new Dictionary<string, SynonymsGraph>();
-
 
 
             for (int i = 0; i < left.Count; i++)
