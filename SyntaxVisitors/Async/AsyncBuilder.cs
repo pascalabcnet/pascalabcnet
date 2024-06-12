@@ -296,6 +296,7 @@ namespace SyntaxVisitors.Async
 		{
 			var state = "@awst@_";
 			var block = pd.proc_body as block;
+			
 			if (pd.proc_header.IsAsync == false)
 			{
 				return;
@@ -361,9 +362,32 @@ namespace SyntaxVisitors.Async
 			m.dereferencing_value = new dot_node(new dot_node(i, new ident("tbuilder", block.source_context)), new ident("Start", block.source_context), block.source_context);
 			var p = new procedure_call(m, block.source_context);//st.tbuilder.Start(st);
 
-			
-		
-			var stl = new statement_list((pd.proc_body as block).program_code, st, a, parsList, a2);
+			var temp_def = new declarations();
+			var defsCount = 0;
+			if (block.defs != null)
+			{
+                foreach (var dl in block.defs.list)
+                {
+                    if (dl is variable_definitions)
+                    {
+                        defsCount++;
+                        var ddl = dl as variable_definitions;
+                        foreach (var item in ddl.list)
+                        {
+                            (pd.proc_body as block).program_code.AddFirst(new var_statement(item));
+                        }
+                    }
+                    else
+                        temp_def.Add(dl);
+                }
+            }
+  
+			if (defsCount > 0) 
+			{
+                block.defs = temp_def;
+            }
+            var stl = new statement_list((pd.proc_body as block).program_code, st, a, parsList, a2);
+
 
             var class_name = pd.proc_header.name.class_name;
 			if (class_name != null) 
