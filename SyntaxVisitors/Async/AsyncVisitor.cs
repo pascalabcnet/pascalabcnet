@@ -51,10 +51,14 @@ namespace SyntaxVisitors
 					if (b != null) 
 					{
 						var await = new await_node_statement();
+						await.source_context = b.source_context;
 						await.aw = new await_node();
+						await.aw.source_context = b.source_context;
 						var mc = new method_call();
-						mc.dereferencing_value = new dot_node(new ident("Task"), new ident("Delay"));
+						mc.dereferencing_value = new dot_node(new dot_node(new dot_node(new dot_node(new ident("System"), 
+							new ident("Threading")), new ident("Tasks")), new ident("Task")), new ident("Delay"));
 						mc.parameters = new expression_list(new int32_const(0));
+						mc.source_context = b.source_context;
 
                         await.aw.ex = mc;
 						b.program_code.list.Add(await);
