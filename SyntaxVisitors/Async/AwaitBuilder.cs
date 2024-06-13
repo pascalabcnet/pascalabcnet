@@ -265,7 +265,6 @@ namespace SyntaxVisitors.Async
                     }
                     else
                     {
-                        VarsHelper.VarsList.Add(pp);
                         if (pp.var_def.inital_value != null)
                         {
                             foreach (var item in pp.var_def.vars.list)
@@ -275,6 +274,22 @@ namespace SyntaxVisitors.Async
                                 temp_list.Add(ass);
                             }
                         }
+                        else
+                        {
+                            if (pp.var_def.vars_type.ToString().Contains("Task"))
+                            {
+                                pp.var_def.inital_value = new default_operator(new named_type_reference
+                                    (new ident(pp.var_def.vars_type.ToString())));
+                                pp.var_def.vars_type = null;
+                                foreach (var item in pp.var_def.vars.list)
+                                {
+                                    var ass = new assign(item, pp.var_def.inital_value, Operators.Assignment, item.source_context);
+                                    ass.first_assignment_defines_type = true;
+                                    temp_list.Add(ass);
+                                }
+                            }
+                        }
+                        VarsHelper.VarsList.Add(pp);
                         continue;
                     }
                 }
@@ -365,15 +380,15 @@ namespace SyntaxVisitors.Async
             mcс.source_context = TaskList[0].source_context;
 
             // Убираем лишние присваивания для Task
-            if (VarsHelper.TaskIdents.Count != 0)
-            {
-                if (VarsHelper.TaskIdents.First().Value == "1")
-                {
-                    mcс.dereferencing_value = new dot_node(new ident(VarsHelper.TaskIdents.First().Key, TaskList[0].source_context),
-                        new ident("GetAwaiter", TaskList[0].source_context), TaskList[0].source_context);
-                    (code_list.list[0] as statement_list).Remove(extemp);
-                }
-            }
+            //if (VarsHelper.TaskIdents.Count != 0)
+            //{
+            //    if (VarsHelper.TaskIdents.First().Value == "1")
+            //    {
+            //        mcс.dereferencing_value = new dot_node(new ident(VarsHelper.TaskIdents.First().Key, TaskList[0].source_context),
+            //            new ident("GetAwaiter", TaskList[0].source_context), TaskList[0].source_context);
+            //        (code_list.list[0] as statement_list).Remove(extemp);
+            //    }
+            //}
 
 
             var assign_ = new assign(new ident("@aw@_" + "1", ts.source_context), mcс, Operators.Assignment, ts.source_context);
@@ -507,16 +522,16 @@ namespace SyntaxVisitors.Async
                     new ident("GetAwaiter", TaskList[lbnum - 1].source_context), TaskList[lbnum - 1].source_context);
                 mccc.source_context = TaskList[lbnum - 1].source_context;
                 // Убираем лишние присваивания для Task
-                foreach (var kv in VarsHelper.TaskIdents)
-                {
-                    if (kv.Value == lbnum.ToString())
-                    {
-                        mccc.dereferencing_value = new dot_node(new ident(kv.Key, TaskList[lbnum - 1].source_context),
-                            new ident("GetAwaiter", TaskList[lbnum - 1].source_context), TaskList[lbnum - 1].source_context);
-                        ts.stmt_list.Remove(extemp);
-                        break;
-                    }
-                }
+                //foreach (var kv in VarsHelper.TaskIdents)
+                //{
+                //    if (kv.Value == lbnum.ToString())
+                //    {
+                //        mccc.dereferencing_value = new dot_node(new ident(kv.Key, TaskList[lbnum - 1].source_context),
+                //            new ident("GetAwaiter", TaskList[lbnum - 1].source_context), TaskList[lbnum - 1].source_context);
+                //        ts.stmt_list.Remove(extemp);
+                //        break;
+                //    }
+                //}
 
                 var assign22_ = new assign(new ident(awaiter + lbnum.ToString(), ts.source_context), mccc, Operators.Assignment, ts.source_context);
                 assign22_.source_context = ts.source_context;
