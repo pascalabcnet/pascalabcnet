@@ -3375,8 +3375,6 @@ expr_l1_for_lambda
 expr_dq
 	: relop_expr
 		{ $$ = $1; }
-	| tkAwait relop_expr
-		{ $$ = new await_node($2 as expression, @$); }
 	| expr_dq tkDoubleQuestion relop_expr
 		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
 	;
@@ -4160,6 +4158,8 @@ factor
 			$$ = new nil_const();  
 			$$.source_context = @$;
 		}
+	| tkAwait factor
+		{ $$ = new await_node($2 as expression, @$); } 
     | literal_or_number
 		{ $$ = $1; }
     | default_expr
