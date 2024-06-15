@@ -2761,6 +2761,8 @@ unlabelled_stmt
 		{ $$ = $1; }
     | proc_call
 		{ $$ = $1; }
+	| tkAwait expr_l1
+    	{ $$ = new await_node_statement(new await_node($2,@$),@$); }
     | goto_stmt
 		{ $$ = $1; }
     | compound_stmt
@@ -3373,8 +3375,6 @@ expr_l1_for_lambda
 expr_dq
 	: relop_expr
 		{ $$ = $1; }
-	| tkAwait relop_expr
-		{ $$ = $2; }
 	| expr_dq tkDoubleQuestion relop_expr
 		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
 	;
@@ -4158,6 +4158,8 @@ factor
 			$$ = new nil_const();  
 			$$.source_context = @$;
 		}
+	| tkAwait factor
+		{ $$ = new await_node($2 as expression, @$); } 
     | literal_or_number
 		{ $$ = $1; }
     | default_expr
