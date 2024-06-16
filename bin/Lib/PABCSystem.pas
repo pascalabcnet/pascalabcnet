@@ -7,8 +7,6 @@ unit PABCSystem;
 
 {$zerobasedstrings off}
 
-{$gendoc true}
-
 // Default Application type
 {$apptype console}
 
