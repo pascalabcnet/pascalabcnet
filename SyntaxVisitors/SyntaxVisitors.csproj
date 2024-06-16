@@ -46,6 +46,7 @@
     <Compile Include="Async\AsyncBuilder.cs" />
     <Compile Include="Async\AsyncVisitor.cs" />
     <Compile Include="Async\AwaitBuilder.cs" />
+    <Compile Include="Async\OperationsVisitor.cs" />
     <Compile Include="Async\LoweringAsyncVisitor.cs" />
     <Compile Include="Async\MainVisitor.cs" />
     <Compile Include="Async\ReplaceVarNamesVisitor.cs" />
