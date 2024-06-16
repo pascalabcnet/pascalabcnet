@@ -128,7 +128,7 @@ namespace SyntaxVisitors.Async
         }
 
         // Обрабатываем тело асинхронного метода
-        public void GetCode()
+        public  void GetCode()
         {
             var class_name = proc_def.proc_header.name.class_name;
             if (class_name != null)
@@ -223,6 +223,53 @@ namespace SyntaxVisitors.Async
                         {
                             VarsHelper.TaskIdents.Add(a.ex.ToString(), await_counter.ToString());
                         }
+
+                    }
+                }
+
+                if (procedure_code.list[i] is if_node)
+                {
+                    var if_node = procedure_code.list[i] as if_node;
+                    if (if_node.condition[0] is bin_expr)
+                    {
+                        var b_epxr = if_node.condition[0] as bin_expr; 
+                        var left = b_epxr.left;
+                        var right = b_epxr.right;
+                        if (left is await_node)
+                        {
+                             var a = left as await_node;
+                            var mmc = new method_call();
+                            mmc.source_context = a.source_context;
+                            if (a.ex is method_call)
+                                mmc.dereferencing_value = new dot_node(new dot_node(a.ex as method_call, new ident("GetAwaiter", a.source_context)),
+                                    new ident("GetResult"), a.source_context);
+                            else
+                                mmc.dereferencing_value = new dot_node(new dot_node(new ident(a.ex.ToString(), a.source_context),
+                                    new ident("GetAwaiter"), a.source_context), new ident("GetResult"), a.source_context);
+                            b_epxr.left = mmc;
+                            temp_list.Add(procedure_code.list[i]);
+                            await_counter++;
+                            flag = false;
+
+                        }
+                        if (right is await_node)
+                        {
+                            var a = right as await_node;
+                            var mmc = new method_call();
+                            mmc.source_context = a.source_context;
+                            if (a.ex is method_call)
+                                mmc.dereferencing_value = new dot_node(new dot_node(a.ex as method_call, new ident("GetAwaiter", a.source_context)),
+                                    new ident("GetResult"), a.source_context);
+                            else
+                                mmc.dereferencing_value = new dot_node(new dot_node(new ident(a.ex.ToString(), a.source_context),
+                                    new ident("GetAwaiter"), a.source_context), new ident("GetResult"), a.source_context);
+                            b_epxr.right = mmc;
+                            temp_list.Add(procedure_code.list[i]);
+                            await_counter++;
+                            flag = false;
+                        }
+
+
 
                     }
                 }
