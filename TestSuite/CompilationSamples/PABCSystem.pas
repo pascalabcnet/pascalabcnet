@@ -13755,6 +13755,12 @@ begin
   Result := Self.Split(delims.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
+/// Преобразует многострочную строку в массив строк
+function ToLines(Self: string): array of string; extensionmethod;
+begin
+  Result := Self.Split(|NewLine|, System.StringSplitOptions.None);
+end;
+
 procedure PassSpaces(var s: string; var from: integer); 
 begin
   while (from <= s.Length) and char.IsWhiteSpace(s[from]) do
