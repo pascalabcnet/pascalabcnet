@@ -241,37 +241,32 @@ namespace SyntaxVisitors.Async
                             await_counter++;
                             flag = false;
                         }
-                   
-                   
                 }
+                // бывший цикл while
                 if (procedure_code.list[i] is labeled_statement)
                 {
                     var lb = procedure_code.list[i] as labeled_statement;
-                    var if_node = lb.to_statement as if_node;
-                    OperationsVisitor.HasAwait = false;
-                    OperationsVisitor.Accept(if_node);
-                    if (OperationsVisitor.HasAwait == true)
+                    if (lb.to_statement is if_node)
                     {
-                        temp_list.Add(procedure_code.list[i]);
-                        await_counter++;
-                        flag = false;
+                        var if_node = lb.to_statement as if_node;
+                        OperationsVisitor.HasAwait = false;
+                        OperationsVisitor.Accept(if_node);
+                        if (OperationsVisitor.HasAwait == true)
+                        {
+                            temp_list.Add(procedure_code.list[i]);
+                            await_counter++;
+                            flag = false;
+                        }
                     }
-
                 }
 
                 if (procedure_code.list[i] is var_statement)
                 {
                     var pp = procedure_code.list[i] as var_statement;
-                    if (pp.var_def.inital_value is bin_expr)
+                    if (pp.var_def.inital_value is bin_expr || pp.var_def.inital_value is un_expr)
                     {
                         OperationsVisitor.HasAwait = false;
                         OperationsVisitor.Accept(pp.var_def);
-                        //if (OperationsVisitor.HasAwait == true)
-                        //{
-                        //    //temp_list.Add(procedure_code.list[i]);
-                        //    await_counter++;
-                        //    flag = false;
-                        //}
                     }
                     if (pp.var_def.inital_value is await_node)
                     {
